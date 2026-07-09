@@ -1,0 +1,52 @@
+from typing import List
+from context.context_orchestrator import ContextSnapshot
+from context.fvg import FvgType
+from signal.models import SignalCandidate, SignalType
+
+class StrategyConfig:
+    FVG_BOS_WINDOW = 15
+
+class FVGStrategy:
+    """
+    Analyzes FVG formations confirmed by structural delivery (BOS/CHoCH).
+    Stateless and read-only.
+    """
+
+    def analyze(self, context: ContextSnapshot) -> List[SignalCandidate]:
+        candidates: List[SignalCandidate] = []
+        
+        if not context.fair_value_gaps:
+            return candidates
+
+        latest_fvg = context.fair_value_gaps[-1]
+        if latest_fvg.filled:
+            return candidates
+
+        is_bullish = latest_fvg.type == FvgType.BULLISH
+        
+        # Combine structural events for broader validation
+        structural_events = list(context.bos_events) + list(context.choch_events)
+        
+        for structural_event in structural_events:
+            # Validate structural delivery window
+            if abs(structural_event.index - latest_fvg.index) <= StrategyConfig.FVG_BOS_WINDOW:
+                
+                s_type = SignalType.BUY if is_bullish else SignalType.SELL
+                
+                # Model-compliant pricing
+                entry = (latest_fvg.top + latest_fvg.bottom) / 2
+                stop_loss = latest_fvg.bottom if is_bullish else latest_fvg.top
+                take_profit = structural_event.price
+                
+                candidates.append(SignalCandidate(
+                    signal_type=s_type,
+                    entry=entry,
+                    stop_loss=stop_loss,
+                    take_profit=take_profit,
+                    strategy_name="FVG_STRATEGY",
+                    confidence=0.70,
+                    reasons=[f"FVG at {latest_fvg.index} confirmed by structure at {structural_event.index}"]
+                ))
+                break
+                    
+        return candidates
