@@ -3,7 +3,10 @@ from enum import Enum
 from typing import List, Sequence
 from datetime import datetime
 from data.twelve_data_client import Candle
-from context.market_structure import SwingPoint, SwingType
+from context.market_structure import StructurePoint, StructureType
+from core.logger import setup_logger
+
+logger = setup_logger("BOSEngine")
 
 class BosDirection(Enum):
     BULLISH = "BULLISH"
@@ -14,46 +17,52 @@ class BosEvent:
     index: int
     timestamp: datetime
     direction: BosDirection
-    broken_swing_price: float
+    broken_structure: StructurePoint
 
-def detect_bos(candles: Sequence[Candle], swings: Sequence[SwingPoint]) -> List[BosEvent]:
+def detect_bos(candles: Sequence[Candle], structures: Sequence[StructurePoint]) -> List[BosEvent]:
     """
-    Detects confirmed Break of Structure events based on candle closes.
-    A BOS is confirmed when a candle closes beyond a validated Swing High (Bullish)
-    or Swing Low (Bearish).
+    Detects confirmed Break of Structure (BOS) events.
+    BOS is confirmed only when price closes beyond a trend-aligned 
+    structural pivot (HH for Bullish, LL for Bearish).
     """
     bos_events: List[BosEvent] = []
     
-    if len(swings) < 2:
+    if len(structures) < 1:
         return bos_events
 
-    # Iterate through confirmed swings to find structural breaks
-    for i in range(1, len(swings)):
-        prev_swing = swings[i-1]
-        
-        # Bullish BOS: Price closes above previous Swing High
-        if prev_swing.type == SwingType.HIGH:
-            # Look for the first candle after the swing that closes above the high
-            for j in range(prev_swing.index + 1, len(candles)):
-                if candles[j].close > prev_swing.price:
+    last_bos_index = -1
+
+    for struct in structures:
+        # Bullish BOS: Structural continuation from Higher High
+        if struct.structure == StructureType.HIGHER_HIGH:
+            for j in range(struct.swing.index + 1, len(candles)):
+                if j <= last_bos_index:
+                    continue
+                
+                if candles[j].close > struct.swing.price:
                     bos_events.append(BosEvent(
                         index=j,
                         timestamp=candles[j].timestamp,
                         direction=BosDirection.BULLISH,
-                        broken_swing_price=prev_swing.price
+                        broken_structure=struct
                     ))
-                    break
-        
-        # Bearish BOS: Price closes below previous Swing Low
-        elif prev_swing.type == SwingType.LOW:
-            for j in range(prev_swing.index + 1, len(candles)):
-                if candles[j].close < prev_swing.price:
+                    last_bos_index = j
+                    break 
+                    
+        # Bearish BOS: Structural continuation from Lower Low
+        elif struct.structure == StructureType.LOWER_LOW:
+            for j in range(struct.swing.index + 1, len(candles)):
+                if j <= last_bos_index:
+                    continue
+                
+                if candles[j].close < struct.swing.price:
                     bos_events.append(BosEvent(
                         index=j,
                         timestamp=candles[j].timestamp,
                         direction=BosDirection.BEARISH,
-                        broken_swing_price=prev_swing.price
+                        broken_structure=struct
                     ))
+                    last_bos_index = j
                     break
                 
     return bos_events
