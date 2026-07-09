@@ -1,0 +1,58 @@
+from typing import List, Optional
+from context.context_orchestrator import ContextSnapshot
+from context.amd import AmdEventType
+from signal.models import SignalCandidate, SignalType
+
+class StrategyConfig:
+    AMD_CONFIRMATION_WINDOW = 20
+
+class AMDStrategy:
+    """
+    Analyzes AMD cycles. Correlates Distribution with structural 
+    Order Block or FVG footprints.
+    """
+
+    def analyze(self, context: ContextSnapshot) -> List[SignalCandidate]:
+        candidates: List[SignalCandidate] = []
+        
+        if not context.amd_events:
+            return candidates
+
+        for amd in reversed(context.amd_events):
+            if amd.type == AmdEventType.DISTRIBUTION:
+                
+                # 1. Structural Confirmation (BOS/CHoCH)
+                struct_events = list(context.bos_events) + list(context.choch_events)
+                valid_break = next((se for se in struct_events if abs(se.index - amd.index) <= StrategyConfig.AMD_CONFIRMATION_WINDOW), None)
+                
+                if not valid_break:
+                    continue
+                
+                # 2. Footprint Confirmation (OB or FVG)
+                confirming_ob = next((ob for ob in context.order_blocks if abs(ob.index - amd.index) <= StrategyConfig.AMD_CONFIRMATION_WINDOW), None)
+                confirming_fvg = next((fvg for fvg in context.fair_value_gaps if abs(fvg.index - amd.index) <= StrategyConfig.AMD_CONFIRMATION_WINDOW), None)
+                
+                footprint = confirming_ob or confirming_fvg
+                if footprint:
+                    s_type = SignalType.BUY if amd.is_bullish else SignalType.SELL
+                    
+                    # Logic: Entry at midpoint, SL at footprint boundary, TP at break
+                    if hasattr(footprint, 'high'): # Is OrderBlock
+                        entry = (footprint.high + footprint.low) / 2
+                        stop_loss = footprint.low if amd.is_bullish else footprint.high
+                    else: # Is FVG
+                        entry = (footprint.top + footprint.bottom) / 2
+                        stop_loss = footprint.bottom if amd.is_bullish else footprint.top
+                        
+                    candidates.append(SignalCandidate(
+                        signal_type=s_type,
+                        entry=entry,
+                        stop_loss=stop_loss,
+                        take_profit=valid_break.price,
+                        strategy_name="AMD_STRATEGY",
+                        confidence=0.85,
+                        reasons=[f"AMD Distribution at {amd.index} confirmed by {type(footprint).__name__} at {footprint.index}"]
+                    ))
+                    break # Single high-conviction signal per cycle
+                        
+        return candidates
