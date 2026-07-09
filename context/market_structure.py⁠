@@ -1,0 +1,49 @@
+from dataclasses import dataclass
+from enum import Enum
+from typing import List
+from datetime import datetime
+from data.twelve_data_client import Candle
+
+class SwingType(Enum):
+    HIGH = "HIGH"
+    LOW = "LOW"
+
+@dataclass(frozen=True)
+class SwingPoint:
+    index: int  # Original candle index
+    price: float
+    timestamp: datetime
+    type: SwingType
+
+def detect_swing_points(candles: List[Candle], left_strength: int, right_strength: int) -> List[SwingPoint]:
+    """
+    Identifies confirmed swing points (fractals) in a candle series.
+    A swing point is only confirmed once both sides have met strength requirements.
+    """
+    if left_strength <= 0 or right_strength <= 0:
+        raise ValueError("Strength parameters must be greater than zero.")
+        
+    swings: List[SwingPoint] = []
+    
+    if len(candles) < (left_strength + right_strength + 1):
+        return swings
+
+    for i in range(left_strength, len(candles) - right_strength):
+        current = candles[i]
+        
+        # Check for Swing High
+        is_swing_high = all(candles[i-j].high < current.high for j in range(1, left_strength + 1)) and \
+                        all(candles[i+j].high < current.high for j in range(1, right_strength + 1))
+        
+        if is_swing_high:
+            swings.append(SwingPoint(i, current.high, current.timestamp, SwingType.HIGH))
+            continue
+            
+        # Check for Swing Low
+        is_swing_low = all(candles[i-j].low > current.low for j in range(1, left_strength + 1)) and \
+                       all(candles[i+j].low > current.low for j in range(1, right_strength + 1))
+        
+        if is_swing_low:
+            swings.append(SwingPoint(i, current.low, current.timestamp, SwingType.LOW))
+            
+    return swings
