@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from context.context_orchestrator import ContextSnapshot
-from signal.models import SignalCandidate
+from signals.models import SignalCandidate
+
 
 @dataclass(frozen=True)
 class AIAnalysisResult:
@@ -13,6 +14,7 @@ class AIAnalysisResult:
     risk_score: float
     explanation: str
 
+
 class AIAnalyzer:
     """
     Evaluates signal candidates using heuristic and heuristic-AI models.
@@ -21,12 +23,12 @@ class AIAnalyzer:
 
     def analyze(self, signal: SignalCandidate, context: ContextSnapshot) -> AIAnalysisResult:
         """
-        Processes a signal candidate against the broader market context 
+        Processes a signal candidate against the broader market context
         to verify if the setup meets institutional-grade requirements.
         """
         # Note: Heuristic scoring logic will be implemented in Phase 6.0.1
         # This layer performs the "AI Evaluation" without creating signals.
-        
+
         return AIAnalysisResult(
             approved=False,
             confidence=0.0,
