@@ -17,12 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Debug repository
-        run: |
-          pwd
-          ls -la
-          ls -la decision
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -30,6 +24,13 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Debug Python imports
+        run: |
+          python --version
+          python -c "import os; print(os.getcwd())"
+          python -c "import decision; print(decision.__file__)"
+          python -c "import decision.decision_engine; print('IMPORT OK')"
 
       - name: Run GoldBot
         env:
