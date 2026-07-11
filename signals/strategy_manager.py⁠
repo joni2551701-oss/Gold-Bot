@@ -1,6 +1,6 @@
 from typing import List
 from context.context_orchestrator import ContextSnapshot
-from signal.models import SignalCandidate
+from signals.models import SignalCandidate
 
 # Placeholder imports for future strategy modules
 # from signal.liquidity_strategy import LiquidityStrategy
