@@ -1,25 +1,40 @@
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v4
+name: GoldBot Trading Pipeline
 
-  - name: Debug repository
-    run: |
-      pwd
-      ls -la
-      ls -la decision
+on:
+  schedule:
+    - cron: "*/5 3-18 * * 1-5"
+  workflow_dispatch:
 
-  - name: Setup Python
-    uses: actions/setup-python@v5
-    with:
-      python-version: "3.11"
+concurrency:
+  group: goldbot
+  cancel-in-progress: true
 
-  - name: Install dependencies
-    run: pip install -r requirements.txt
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
 
-  - name: Run GoldBot
-    env:
-      TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-    run: python main.py
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Debug repository
+        run: |
+          pwd
+          ls -la
+          ls -la decision
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run GoldBot
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python main.py
