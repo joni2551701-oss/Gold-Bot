@@ -3,8 +3,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from signal.models import SignalCandidate
+    from signals.models import SignalCandidate
     from ai.ai_analyzer import AIAnalysisResult
+
 
 class DecisionType(Enum):
     """
@@ -13,6 +14,7 @@ class DecisionType(Enum):
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
     NO_TRADE = "NO_TRADE"
+
 
 @dataclass(frozen=True)
 class DecisionResult:
@@ -25,6 +27,7 @@ class DecisionResult:
     risk_score: float
     explanation: str
 
+
 @dataclass(frozen=True)
 class DecisionConfig:
     """
@@ -34,6 +37,7 @@ class DecisionConfig:
     min_confidence: float = 0.65
     approve_confidence: float = 0.80
 
+
 class DecisionEngine:
     """
     Evaluates AI analysis results against configured confidence thresholds
@@ -42,7 +46,7 @@ class DecisionEngine:
 
     def __init__(self, config: DecisionConfig = None):
         """
-        Initializes the engine with the provided config, 
+        Initializes the engine with the provided config,
         or defaults to standard thresholds if none provided.
         """
         self.config = config or DecisionConfig()
@@ -53,10 +57,10 @@ class DecisionEngine:
         ai_result: 'AIAnalysisResult'
     ) -> DecisionResult:
         """
-        Applies normalized confidence thresholds from config and AI approval flags 
+        Applies normalized confidence thresholds from config and AI approval flags
         to determine the final decision.
         """
-        
+
         # 1. Mandatory Constraint & Configured Threshold Evaluation
         if not ai_result.approved:
             final_decision = DecisionType.NO_TRADE
