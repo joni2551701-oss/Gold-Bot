@@ -1,6 +1,6 @@
 from typing import List
 from context.context_orchestrator import ContextSnapshot
-from signal.models import SignalCandidate, SignalType
+from signals.models import SignalCandidate, SignalType
 from context.liquidity import LiquiditySweepEvent
 
 class LiquidityStrategy:
