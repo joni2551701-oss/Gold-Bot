@@ -1,7 +1,8 @@
 from typing import List
 from context.context_orchestrator import ContextSnapshot
 from signals.models import SignalCandidate
-from strategies.strategy_manager import StrategyManager
+from signals.strategy_manager import StrategyManager
+
 
 class SignalEngine:
     """
@@ -9,7 +10,7 @@ class SignalEngine:
     Orchestrates the strategy execution pipeline by consuming
     an immutable ContextSnapshot and aggregating strategy results.
     """
-    
+
     def __init__(self):
         self.strategy_manager = StrategyManager()
 
