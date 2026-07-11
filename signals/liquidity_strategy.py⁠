@@ -1,7 +1,8 @@
 from typing import List
 from context.context_orchestrator import ContextSnapshot
+from context.bos import BosDirection
 from signals.models import SignalCandidate, SignalType
-from context.liquidity import LiquiditySweepEvent
+
 
 class LiquidityStrategy:
     """
@@ -11,13 +12,13 @@ class LiquidityStrategy:
 
     def analyze(self, context: ContextSnapshot) -> List[SignalCandidate]:
         candidates: List[SignalCandidate] = []
-        
+
         if not context.liquidity_sweeps or not context.bos_events:
             return candidates
 
         # Only process the most recent sweep to prevent signal flooding
         latest_sweep = context.liquidity_sweeps[-1]
-        
+
         # Check for structural alignment (BOS)
         for bos in context.bos_events:
             if bos.index > latest_sweep.index:
@@ -27,16 +28,22 @@ class LiquidityStrategy:
                     if abs(ob.index - latest_sweep.index) <= 5:
                         relevant_ob = ob
                         break
-                
+
                 if relevant_ob:
-                    # Determine Signal Direction
-                    s_type = SignalType.BUY if latest_sweep.is_bullish else SignalType.SELL
-                    
+                    # Signal direction comes directly from the confirmed
+                    # structural break direction (BosEvent.direction),
+                    # not inferred from the liquidity sweep type.
+                    s_type = (
+                        SignalType.BUY
+                        if bos.direction == BosDirection.BULLISH
+                        else SignalType.SELL
+                    )
+
                     # Logic: Entry at OB, SL at Sweep, TP at Break (Non-magic values)
                     entry = (relevant_ob.high + relevant_ob.low) / 2
-                    stop_loss = latest_sweep.price
-                    take_profit = bos.price 
-                    
+                    stop_loss = latest_sweep.sweep_price
+                    take_profit = bos.broken_structure.swing.price
+
                     candidates.append(SignalCandidate(
                         signal_type=s_type,
                         entry=entry,
@@ -48,5 +55,5 @@ class LiquidityStrategy:
                     ))
                     # Break after first valid setup to ensure latest-only logic
                     break
-                    
+
         return candidates
