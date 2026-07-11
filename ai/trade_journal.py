@@ -1,17 +1,20 @@
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
-from signal.models import SignalType  # Reusing established SignalType
+from signals.models import SignalType  # Reusing established SignalType
+
 
 class TradeOutcome(Enum):
     WIN = "WIN"
     LOSS = "LOSS"
     BREAK_EVEN = "BREAK_EVEN"
 
+
 class DecisionType(Enum):
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
     NO_TRADE = "NO_TRADE"
+
 
 @dataclass(frozen=True)
 class TradeJournalEntry:
@@ -33,6 +36,7 @@ class TradeJournalEntry:
     outcome: TradeOutcome
     timestamp: datetime
     notes: str
+
 
 def create_journal_entry(
     signal_id: str,
