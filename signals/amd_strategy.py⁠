@@ -1,7 +1,7 @@
 from typing import List, Optional
 from context.context_orchestrator import ContextSnapshot
 from context.amd import AmdEventType
-from signal.models import SignalCandidate, SignalType
+from signals.models import SignalCandidate, SignalType
 
 class StrategyConfig:
     AMD_CONFIRMATION_WINDOW = 20
