@@ -24,17 +24,18 @@ class PromptPayload:
 
 def _summarize_context(context: ContextSnapshot) -> str:
     """Deterministic, comprehensive context summary."""
+    latest_structure = context.structure[-1] if context.structure else None
     return (
-        f"Trend/Bias: {context.structure.trend if context.structure else 'Neutral'}, "
-        f"BOS: {context.bos_events[-1].price if context.bos_events else 'N/A'}, "
-        f"CHoCH: {context.choch_events[-1].price if context.choch_events else 'N/A'}, "
-        f"Liquidity Sweep: {context.liquidity_sweeps[-1].price if context.liquidity_sweeps else 'N/A'}, "
+        f"Trend/Bias: {latest_structure.structure.value if latest_structure else 'Neutral'}, "
+        f"BOS: {context.bos_events[-1].broken_structure.swing.price if context.bos_events else 'N/A'}, "
+        f"CHoCH: {context.choch_events[-1].broken_structure.swing.price if context.choch_events else 'N/A'}, "
+        f"Liquidity Sweep: {context.liquidity_sweeps[-1].sweep_price if context.liquidity_sweeps else 'N/A'}, "
         f"Liquidity Zone: {context.liquidity_zones[-1].price if context.liquidity_zones else 'N/A'}, "
         f"OB: {context.order_blocks[-1].high if context.order_blocks else 'N/A'}, "
         f"FVG: {context.fair_value_gaps[-1].top if context.fair_value_gaps else 'N/A'}, "
         f"AMD: {context.amd_events[-1].type if context.amd_events else 'N/A'}, "
-        f"Session: {context.session if context.session else 'N/A'}, "
-        f"Premium/Discount: {context.market_phase if context.market_phase else 'N/A'}"
+        f"Session: unknown, "
+        f"Premium/Discount: unknown"
     )
 
 def build_prompt(signal: SignalCandidate, context: ContextSnapshot, conf: ConfidenceResult) -> PromptPayload:

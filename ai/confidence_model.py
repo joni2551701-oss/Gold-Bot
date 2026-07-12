@@ -22,37 +22,44 @@ class ConfidenceResult:
 
 def evaluate_confidence(signal: SignalCandidate, context: ContextSnapshot) -> ConfidenceResult:
     """
-    Deterministic scoring engine utilizing cached context references 
-    from SignalCandidate.context_refs.
+    Deterministic scoring engine utilizing cached context references
+    from SignalCandidate.context_refs, when present.
+
+    SignalCandidate does not currently declare a `context_refs` field
+    (no Strategy Layer producer populates one yet), so it is read
+    defensively via getattr() rather than assumed to exist. Until a
+    future phase adds it, this confluence scoring is a no-op and the
+    function still returns a valid ConfidenceResult instead of raising.
     """
     score = 0.0
     reasons = []
     warnings = []
-    refs = signal.context_refs
+    refs = getattr(signal, "context_refs", None)
 
-    # 1. Structural/BOS/CHoCH Confluence
-    if refs.bos_index is not None:
-        score += ScoringConfig.WEIGHT_BOS
-        reasons.append("BOS structural confluence validated.")
-    if refs.choch_index is not None:
-        score += ScoringConfig.WEIGHT_CHOCH
-        reasons.append("CHoCH reversal confluence validated.")
+    if refs is not None:
+        # 1. Structural/BOS/CHoCH Confluence
+        if refs.bos_index is not None:
+            score += ScoringConfig.WEIGHT_BOS
+            reasons.append("BOS structural confluence validated.")
+        if refs.choch_index is not None:
+            score += ScoringConfig.WEIGHT_CHOCH
+            reasons.append("CHoCH reversal confluence validated.")
 
-    # 2. Footprint Confluence (OB/FVG)
-    if refs.ob_index is not None or refs.fvg_index is not None:
-        score += ScoringConfig.WEIGHT_FOOTPRINT
-        reasons.append("Institutional footprint (OB/FVG) confirmed.")
+        # 2. Footprint Confluence (OB/FVG)
+        if refs.ob_index is not None or refs.fvg_index is not None:
+            score += ScoringConfig.WEIGHT_FOOTPRINT
+            reasons.append("Institutional footprint (OB/FVG) confirmed.")
 
-    # 3. AMD Confluence
-    if refs.amd_index is not None:
-        score += ScoringConfig.WEIGHT_AMD
-        reasons.append("AMD cycle alignment confirmed.")
+        # 3. AMD Confluence
+        if refs.amd_index is not None:
+            score += ScoringConfig.WEIGHT_AMD
+            reasons.append("AMD cycle alignment confirmed.")
 
-    # 4. Latency Check
-    current_index = context.candles[-1].index
-    if (current_index - refs.entry_index) > ScoringConfig.MAX_SIGNAL_AGE:
-        warnings.append("Stale signal: Setup index aged beyond threshold.")
-        score -= ScoringConfig.PENALTY_LATENCY
+        # 4. Latency Check
+        current_index = len(context.candles) - 1
+        if (current_index - refs.entry_index) > ScoringConfig.MAX_SIGNAL_AGE:
+            warnings.append("Stale signal: Setup index aged beyond threshold.")
+            score -= getattr(ScoringConfig, "PENALTY_LATENCY", 0)
 
     final_score = max(0.0, min(100.0, score))
     return ConfidenceResult(
