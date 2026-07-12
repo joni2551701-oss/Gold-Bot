@@ -23,10 +23,3 @@ class Config:
         "H1": 200,
         "H4": 100
     }
-
-    # Context Layer — Market Structure Detection (v0.1)
-    SWING_LEFT_STRENGTH: int = 2
-    SWING_RIGHT_STRENGTH: int = 2
-
-    # Context Layer — Liquidity Detection (v0.1)
-    LIQUIDITY_EQUAL_LEVEL_TOLERANCE: float = 0.30
