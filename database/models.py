@@ -36,3 +36,31 @@ def init_schema(connection: sqlite3.Connection):
     except sqlite3.Error as e:
         logger.error(f"Failed to initialize database schema: {e}")
         raise
+
+
+def init_user_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the users table schema (Telegram user profile
+    foundation). No relation to the signals table -- separate,
+    independently-initialized table.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id TEXT UNIQUE NOT NULL,
+        username TEXT,
+        language TEXT DEFAULT 'UZ',
+        trading_style TEXT DEFAULT 'Intraday',
+        risk_percent REAL DEFAULT 2.0,
+        timeframe TEXT DEFAULT 'M15',
+        created_at TEXT NOT NULL,
+        updated_at TEXT
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (users table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize users schema: {e}")
+        raise
