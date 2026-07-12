@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 from context.context_orchestrator import ContextSnapshot
-from signal.models import SignalCandidate
+from signals.models import SignalCandidate
 
 @dataclass(frozen=True)
 class ScoringConfig:

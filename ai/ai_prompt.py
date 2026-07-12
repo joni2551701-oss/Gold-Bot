@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 from context.context_orchestrator import ContextSnapshot
-from signal.models import SignalCandidate
+from signals.models import SignalCandidate
 from ai.confidence_model import ConfidenceResult
 
 SYSTEM_PROMPT = """

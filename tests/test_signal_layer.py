@@ -29,19 +29,19 @@ def run_test() -> bool:
         print("      OK: SignalEngine imported successfully.")
 
         print("[1/3] Importing signals.strategy_manager.StrategyManager ...")
-        from signals.strategy_manager import StrategyManager
+        from strategies.strategy_manager import StrategyManager
         print("      OK: StrategyManager imported successfully.")
 
         print("[1/3] Importing signals.liquidity_strategy.LiquidityStrategy ...")
-        from signals.liquidity_strategy import LiquidityStrategy
+        from strategies.liquidity_strategy import LiquidityStrategy
         print("      OK: LiquidityStrategy imported successfully.")
 
         print("[1/3] Importing signals.fvg_strategy.FVGStrategy ...")
-        from signals.fvg_strategy import FVGStrategy
+        from strategies.fvg_strategy import FVGStrategy
         print("      OK: FVGStrategy imported successfully.")
 
         print("[1/3] Importing signals.amd_strategy.AMDStrategy ...")
-        from signals.amd_strategy import AMDStrategy
+        from strategies.amd_strategy import AMDStrategy
         print("      OK: AMDStrategy imported successfully.")
 
     except Exception:

@@ -11,7 +11,7 @@ class Config:
     DEBUG = os.getenv("DEBUG", "False") == "True"
 
     # Base paths
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     # Database path
     DB_PATH = os.path.join(BASE_DIR, "database", "goldbot.db")
