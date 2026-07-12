@@ -1,8 +1,8 @@
 from typing import List
+
 from context.context_orchestrator import ContextSnapshot
 from context.bos import BosDirection
 from signals.models import SignalCandidate, SignalType
-
 
 class LiquidityStrategy:
     """
