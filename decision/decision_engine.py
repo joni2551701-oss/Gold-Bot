@@ -2,6 +2,8 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from decision.models import DecisionAction, TradeDecision
+
 if TYPE_CHECKING:
     from signals.models import SignalCandidate
     from ai.ai_analyzer import AIAnalysisResult
@@ -33,8 +35,12 @@ class DecisionConfig:
     """
     Configuration for the Decision Engine thresholds.
     Extracted to allow easy optimization and backtesting without code changes.
+
+    Thresholds apply to the blended (signal + AI) confidence used by
+    DecisionEngine.evaluate(), on the same 0.0-1.0 scale used across
+    SignalCandidate.confidence and AIAnalysisResult.confidence.
     """
-    min_confidence: float = 0.65
+    min_confidence: float = 0.50
     approve_confidence: float = 0.80
 
 
@@ -54,27 +60,42 @@ class DecisionEngine:
     def evaluate(
         self,
         signal: 'SignalCandidate',
-        ai_result: 'AIAnalysisResult'
-    ) -> DecisionResult:
+        ai_analysis: 'AIAnalysisResult'
+    ) -> TradeDecision:
         """
-        Applies normalized confidence thresholds from config and AI approval flags
-        to determine the final decision.
+        Produces a TradeDecision from a SignalCandidate + AIAnalysisResult
+        pair. The AI Analyzer's verdict is never accepted blindly: both
+        the signal's own confidence and the AI's confidence are blended,
+        and the AI's explicit approval flag is checked as a hard gate.
         """
+        final_confidence = (signal.confidence + ai_analysis.confidence) / 2
 
-        # 1. Mandatory Constraint & Configured Threshold Evaluation
-        if not ai_result.approved:
-            final_decision = DecisionType.NO_TRADE
-        elif ai_result.confidence < self.config.min_confidence:
-            final_decision = DecisionType.NO_TRADE
-        elif ai_result.confidence < self.config.approve_confidence:
-            final_decision = DecisionType.REJECTED
+        if not ai_analysis.approved:
+            action = DecisionAction.REJECT
+            reason = f"AI Analyzer did not approve this signal: {ai_analysis.explanation}"
+        elif final_confidence < self.config.min_confidence:
+            action = DecisionAction.NO_TRADE
+            reason = (
+                f"Combined confidence {final_confidence:.2f} is below the "
+                f"minimum threshold ({self.config.min_confidence:.2f})."
+            )
+        elif final_confidence < self.config.approve_confidence:
+            action = DecisionAction.REJECT
+            reason = (
+                f"Combined confidence {final_confidence:.2f} is below the "
+                f"approval threshold ({self.config.approve_confidence:.2f})."
+            )
         else:
-            final_decision = DecisionType.APPROVED
+            action = DecisionAction.APPROVE
+            reason = (
+                f"Signal and AI analysis aligned with sufficient confidence "
+                f"({final_confidence:.2f})."
+            )
 
-        # 2. Return Clean Immutable Contract
-        return DecisionResult(
-            decision=final_decision,
-            ai_confidence=ai_result.confidence,
-            risk_score=ai_result.risk_score,
-            explanation=ai_result.explanation
+        return TradeDecision(
+            action=action,
+            confidence=final_confidence,
+            reason=reason,
+            signal=signal,
+            ai_analysis=ai_analysis,
         )
