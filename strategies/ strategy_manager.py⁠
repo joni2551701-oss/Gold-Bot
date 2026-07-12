@@ -1,23 +1,24 @@
 from typing import List
-
 from context.context_orchestrator import ContextSnapshot
 from signals.models import SignalCandidate
-
 from strategies.liquidity_strategy import LiquidityStrategy
 from strategies.fvg_strategy import FVGStrategy
 from strategies.amd_strategy import AMDStrategy
 
+
 class StrategyManager:
     """
     Orchestrates the execution of all registered trading strategies.
-    Aggregates candidates from disparate SMC methodologies into a 
+    Aggregates candidates from disparate SMC methodologies into a
     unified list for the Signal Engine.
     """
 
     def __init__(self):
-        # Initialize strategy instances
-        # self.strategies = [LiquidityStrategy(), FVGStrategy(), AMDStrategy()]
-        self.strategies = []
+        self.strategies = [
+            LiquidityStrategy(),
+            FVGStrategy(),
+            AMDStrategy(),
+        ]
 
     def run_all_strategies(self, context: ContextSnapshot) -> List[SignalCandidate]:
         """
@@ -25,11 +26,9 @@ class StrategyManager:
         Aggregation is performed linearly.
         """
         all_candidates: List[SignalCandidate] = []
-        
+
         for strategy in self.strategies:
-            # Each strategy implements an 'analyze' method
-            # candidates = strategy.analyze(context)
-            # all_candidates.extend(candidates)
-            pass
-            
+            candidates = strategy.analyze(context)
+            all_candidates.extend(candidates)
+
         return all_candidates
