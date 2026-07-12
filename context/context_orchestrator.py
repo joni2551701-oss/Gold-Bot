@@ -1,20 +1,41 @@
 from dataclasses import dataclass
-from typing import Sequence
+from typing import List, Sequence
+
 from data.twelve_data_client import Candle
 
-# Standardized imports verified against Module definitions
-from context.market_structure import detect_market_structure, MarketStructure
+from context.context_config import ContextConfig
+from context.market_structure import (
+    detect_swing_points,
+    classify_structure,
+    SwingPoint,
+    StructurePoint,
+)
 from context.bos import detect_bos, BosEvent
 from context.choch import detect_choch, ChochEvent
-from context.liquidity import detect_liquidity_zones, detect_liquidity_sweeps, LiquidityZone, LiquiditySweepEvent
+from context.liquidity import (
+    detect_equal_levels,
+    detect_sweeps,
+    LiquidityZone,
+    LiquiditySweepEvent,
+)
 from context.order_block import detect_order_blocks, OrderBlock
 from context.fvg import detect_fvg, FairValueGap
 from context.amd import detect_amd_events, AmdEvent
 
+
 @dataclass(frozen=True)
 class ContextSnapshot:
+    """
+    Immutable, fully-resolved market context for a single symbol at a
+    single point in time.
+
+    Consumed by the Strategy Layer, AI Layer, and any downstream
+    engine that requires a complete Smart Money Concepts view of the
+    market. Field names and their semantic meaning are a stable
+    contract; downstream consumers depend on them remaining unchanged.
+    """
     candles: Sequence[Candle]
-    structure: Sequence[MarketStructure]
+    structure: Sequence[StructurePoint]
     bos_events: Sequence[BosEvent]
     choch_events: Sequence[ChochEvent]
     liquidity_zones: Sequence[LiquidityZone]
@@ -23,33 +44,147 @@ class ContextSnapshot:
     fair_value_gaps: Sequence[FairValueGap]
     amd_events: Sequence[AmdEvent]
 
+
+class ContextEngine:
+    """
+    Orchestrates the full Context Layer detection pipeline.
+
+    Pipeline stages:
+        Candles
+          -> SwingPoints            (_build_structure)
+          -> StructurePoints        (_build_structure)
+          -> BOS / CHoCH            (_build_breaks)
+          -> Liquidity Zones        (_build_liquidity)
+          -> Liquidity Sweeps       (_build_liquidity)
+          -> Order Blocks           (_build_footprints)
+          -> Fair Value Gaps        (_build_footprints)
+          -> AMD Events             (_build_amd)
+          -> ContextSnapshot        (build)
+
+    The engine holds no mutable state between calls to build(): each
+    invocation is independent and deterministic for a given candle
+    series and configuration, which keeps it safe for repeated or
+    concurrent use in future phases (e.g. multi-symbol scanning).
+    """
+
+    def __init__(self, config: ContextConfig = None):
+        """
+        Initializes the engine with the provided configuration, or
+        falls back to default detection parameters if none is given.
+        """
+        self.config = config or ContextConfig()
+
+    def build(self, candles: Sequence[Candle]) -> ContextSnapshot:
+        """
+        Runs the full detection pipeline against the provided candle
+        series and returns an immutable ContextSnapshot.
+        """
+        swings, structure = self._build_structure(candles)
+        bos, choch = self._build_breaks(candles, structure)
+        liquidity_zones, liquidity_sweeps = self._build_liquidity(candles, swings)
+        order_blocks, fair_value_gaps = self._build_footprints(
+            candles, liquidity_sweeps, bos, choch
+        )
+        amd_events = self._build_amd(
+            candles, liquidity_sweeps, bos, choch, order_blocks, fair_value_gaps
+        )
+
+        return ContextSnapshot(
+            candles=candles,
+            structure=structure,
+            bos_events=bos,
+            choch_events=choch,
+            liquidity_zones=liquidity_zones,
+            liquidity_sweeps=liquidity_sweeps,
+            order_blocks=order_blocks,
+            fair_value_gaps=fair_value_gaps,
+            amd_events=amd_events,
+        )
+
+    def _build_structure(
+        self, candles: Sequence[Candle]
+    ) -> "tuple[List[SwingPoint], List[StructurePoint]]":
+        """
+        Stage 1: Detects raw swing points (fractals) using the
+        configured left/right strength, then classifies them into
+        structural points (HH / HL / LH / LL).
+        """
+        swings: List[SwingPoint] = detect_swing_points(
+            candles,
+            self.config.swing_left_strength,
+            self.config.swing_right_strength,
+        )
+        structure: List[StructurePoint] = classify_structure(swings)
+        return swings, structure
+
+    def _build_breaks(
+        self, candles: Sequence[Candle], structure: Sequence[StructurePoint]
+    ) -> "tuple[List[BosEvent], List[ChochEvent]]":
+        """
+        Stage 2: Detects confirmed trend-continuation breaks (BOS) and
+        counter-trend reversals (CHoCH) from classified structure.
+        """
+        bos: List[BosEvent] = detect_bos(candles, structure)
+        choch: List[ChochEvent] = detect_choch(candles, structure)
+        return bos, choch
+
+    def _build_liquidity(
+        self, candles: Sequence[Candle], swings: Sequence[SwingPoint]
+    ) -> "tuple[List[LiquidityZone], List[LiquiditySweepEvent]]":
+        """
+        Stage 3: Detects equal-level liquidity zones (EQH/EQL) from
+        swing points using the configured tolerance, then detects
+        sweeps of those zones on the candle series.
+        """
+        zones: List[LiquidityZone] = detect_equal_levels(
+            swings,
+            self.config.liquidity_equal_level_tolerance,
+        )
+        sweeps: List[LiquiditySweepEvent] = detect_sweeps(candles, zones)
+        return zones, sweeps
+
+    def _build_footprints(
+        self,
+        candles: Sequence[Candle],
+        sweeps: Sequence[LiquiditySweepEvent],
+        bos: Sequence[BosEvent],
+        choch: Sequence[ChochEvent],
+    ) -> "tuple[List[OrderBlock], List[FairValueGap]]":
+        """
+        Stage 4: Detects institutional footprints — Order Blocks
+        (sweep-and-structural-break confirmed) and Fair Value Gaps
+        (three-candle structural imbalances).
+        """
+        order_blocks: List[OrderBlock] = detect_order_blocks(
+            candles, sweeps, bos, choch
+        )
+        fair_value_gaps: List[FairValueGap] = detect_fvg(candles)
+        return order_blocks, fair_value_gaps
+
+    def _build_amd(
+        self,
+        candles: Sequence[Candle],
+        sweeps: Sequence[LiquiditySweepEvent],
+        bos: Sequence[BosEvent],
+        choch: Sequence[ChochEvent],
+        order_blocks: Sequence[OrderBlock],
+        fair_value_gaps: Sequence[FairValueGap],
+    ) -> List[AmdEvent]:
+        """
+        Stage 5: Correlates liquidity sweeps, structural breaks, and
+        footprints into Accumulation-Manipulation-Distribution cycles.
+        """
+        return detect_amd_events(
+            candles, sweeps, bos, choch, order_blocks, fair_value_gaps
+        )
+
+
 def build_context_snapshot(candles: Sequence[Candle]) -> ContextSnapshot:
     """
-    Finalized aggregation pipeline. 
-    Dependencies are resolved sequentially to ensure snapshot integrity.
+    Backward-compatible functional entry point.
+
+    Delegates to ContextEngine with default configuration. Retained
+    so any existing caller using the original function-based API
+    continues to work unchanged.
     """
-    # 1. Structural Foundation
-    structure = detect_market_structure(candles)
-    bos = detect_bos(candles, structure)
-    choch = detect_choch(candles, structure)
-    
-    # 2. Liquidity & Footprints
-    l_zones = detect_liquidity_zones(candles)
-    l_sweeps = detect_liquidity_sweeps(candles, l_zones)
-    obs = detect_order_blocks(candles, l_sweeps, bos, choch)
-    fvgs = detect_fvg(candles)
-    
-    # 3. Correlation Layer
-    amd = detect_amd_events(candles, l_sweeps, bos, choch, obs, fvgs)
-    
-    return ContextSnapshot(
-        candles=candles,
-        structure=structure,
-        bos_events=bos,
-        choch_events=choch,
-        liquidity_zones=l_zones,
-        liquidity_sweeps=l_sweeps,
-        order_blocks=obs,
-        fair_value_gaps=fvgs,
-        amd_events=amd
-    )
+    return ContextEngine(ContextConfig()).build(candles)
