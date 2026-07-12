@@ -25,5 +25,14 @@ class Secrets:
         return self.get("TELEGRAM_BOT_TOKEN")
 
     @property
-    def TELEGRAM_CHAT_ID(self) -> str: 
+    def TELEGRAM_CHAT_ID(self) -> str:
         return self.get("TELEGRAM_CHAT_ID")
+
+    @property
+    def TELEGRAM_OWNER_ID(self) -> str:
+        """
+        Telegram user_id of the bot owner, used by telegram/permissions.py.
+        Defaults to "" (no owner configured) instead of raising -- the
+        permission layer must fail closed (nobody is OWNER), not crash.
+        """
+        return self.get("TELEGRAM_OWNER_ID", default="")
