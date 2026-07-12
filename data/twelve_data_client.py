@@ -37,7 +37,12 @@ class TwelveDataClient:
 
     def __init__(self):
         self.secrets = Secrets()
-        self.api_key = self.secrets.TWELVE_DATA_API_KEY
+        try:
+            self.api_key = self.secrets.TWELVE_DATA_API_KEY
+        except Exception:
+            # Missing/invalid key: fail gracefully. fetch_candles() will
+            # report this per-call instead of crashing at construction time.
+            self.api_key = None
 
     def _format_symbol(self, symbol: str) -> str:
         """
@@ -60,6 +65,9 @@ class TwelveDataClient:
                 f"Unsupported timeframe '{interval}'. "
                 f"GoldBot strictly supports: {', '.join(self.INTERVAL_MAP.keys())}"
             )
+
+        if self.api_key is None:
+            raise ValueError("TWELVE_DATA_API_KEY not configured.")
 
         formatted_symbol = self._format_symbol(symbol)
         mapped_interval = self.INTERVAL_MAP[interval]

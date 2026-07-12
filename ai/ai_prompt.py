@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 from context.context_orchestrator import ContextSnapshot
 from signals.models import SignalCandidate
 from ai.confidence_model import ConfidenceResult

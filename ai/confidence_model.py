@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 from context.context_orchestrator import ContextSnapshot
 from signals.models import SignalCandidate
 

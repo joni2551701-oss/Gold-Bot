@@ -74,7 +74,7 @@ def run_test() -> bool:
     try:
         print("\n[3/3] Calling engine.generate_signals(mock_context) ...")
         result = engine.generate_signals(mock_context)
-        print(f"      OK: generate_signals() returned without raising an exception.")
+        print("      OK: generate_signals() returned without raising an exception.")
 
         if not isinstance(result, list):
             print(f"FAIL: Expected result type 'list', got '{type(result).__name__}'.")
