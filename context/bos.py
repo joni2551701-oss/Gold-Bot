@@ -30,15 +30,16 @@ def detect_bos(candles: Sequence[Candle], structures: Sequence[StructurePoint]) 
     if len(structures) < 1:
         return bos_events
 
-    last_bos_index = -1
+    last_bullish_bos_index = -1
+    last_bearish_bos_index = -1
 
     for struct in structures:
         # Bullish BOS: Structural continuation from Higher High
         if struct.structure == StructureType.HIGHER_HIGH:
             for j in range(struct.swing.index + 1, len(candles)):
-                if j <= last_bos_index:
+                if j <= last_bullish_bos_index:
                     continue
-                
+
                 if candles[j].close > struct.swing.price:
                     bos_events.append(BosEvent(
                         index=j,
@@ -46,15 +47,15 @@ def detect_bos(candles: Sequence[Candle], structures: Sequence[StructurePoint]) 
                         direction=BosDirection.BULLISH,
                         broken_structure=struct
                     ))
-                    last_bos_index = j
-                    break 
-                    
+                    last_bullish_bos_index = j
+                    break
+
         # Bearish BOS: Structural continuation from Lower Low
         elif struct.structure == StructureType.LOWER_LOW:
             for j in range(struct.swing.index + 1, len(candles)):
-                if j <= last_bos_index:
+                if j <= last_bearish_bos_index:
                     continue
-                
+
                 if candles[j].close < struct.swing.price:
                     bos_events.append(BosEvent(
                         index=j,
@@ -62,7 +63,7 @@ def detect_bos(candles: Sequence[Candle], structures: Sequence[StructurePoint]) 
                         direction=BosDirection.BEARISH,
                         broken_structure=struct
                     ))
-                    last_bos_index = j
+                    last_bearish_bos_index = j
                     break
                 
     return bos_events

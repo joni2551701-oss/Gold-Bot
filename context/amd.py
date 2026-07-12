@@ -130,9 +130,11 @@ def detect_amd_events(
             if is_bull:
                 last_bullish_sweep = event
                 bullish_fvgs.clear()
+                bullish_obs.clear()
             else:
                 last_bearish_sweep = event
                 bearish_fvgs.clear()
+                bearish_obs.clear()
 
         elif etype == 'fvg':
             if is_bull and last_bullish_sweep and idx >= last_bullish_sweep.index:
