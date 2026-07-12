@@ -9,6 +9,8 @@ from decision.models import TradeDecision
 from risk.risk_manager import RiskManager, RiskResult
 from telegram.signal_formatter import SignalFormatter
 from telegram.notifier import Notifier
+from database.signal_repository import SignalRepository
+from database.signal_record import SignalRecord, create_signal_record
 from core.logger import setup_logger
 
 logger = setup_logger("TradingPipeline")
@@ -17,14 +19,17 @@ logger = setup_logger("TradingPipeline")
 class TradingPipeline:
     """
     Wires Data -> Context -> Signal -> AI -> Decision -> Risk ->
-    Signal Formatter -> Telegram Delivery into a single, runnable flow.
+    Signal Formatter -> Telegram Delivery -> Persistence into a
+    single, runnable flow.
 
-    Execution and Monitoring are intentionally not part of this
-    pipeline (Phase 26.1+). Risk Layer output is a sizing suggestion
+    Execution and TP/SL Monitoring are intentionally not part of this
+    pipeline (Phase 27.2+). Risk Layer output is a sizing suggestion
     only -- no MT5/broker connection, no order execution.
 
     Telegram messages are always generated, but never sent unless
-    send_notifications=True is passed explicitly. This keeps
+    send_notifications=True is passed explicitly. Signal records are
+    always built in memory, but never written to the database unless
+    persist_signals=True is passed explicitly. This keeps
     backtesting/testing runs free of side effects by default.
     """
 
@@ -34,11 +39,13 @@ class TradingPipeline:
         interval: str,
         outputsize: int,
         send_notifications: bool = False,
+        persist_signals: bool = False,
     ):
         self.symbol = symbol
         self.interval = interval
         self.outputsize = outputsize
         self.send_notifications = send_notifications
+        self.persist_signals = persist_signals
 
         self.data_normalizer = MarketDataNormalizer()
         self.signal_engine = SignalEngine()
@@ -47,6 +54,10 @@ class TradingPipeline:
         self.risk_manager = RiskManager()
         self.signal_formatter = SignalFormatter()
         self.notifier = Notifier()
+        # Only constructed when needed: SignalRepository.__init__() touches
+        # disk (creates the DB file/schema), which must not happen for a
+        # default/backtesting run.
+        self.signal_repository = SignalRepository() if persist_signals else None
 
     def run(self) -> dict:
         """
@@ -54,8 +65,9 @@ class TradingPipeline:
         generate signal candidates, evaluate each with the AI Analyzer,
         produce a TradeDecision per candidate, pass each decision
         through the Risk Layer, format a Telegram message per
-        candidate, and (only if send_notifications=True) deliver each
-        message via the Notifier.
+        candidate, (only if send_notifications=True) deliver each
+        message via the Notifier, and (only if persist_signals=True)
+        persist a SignalRecord per candidate via the SignalRepository.
         """
         candles = self.data_normalizer.get_candles(
             self.symbol,
@@ -108,6 +120,14 @@ class TradingPipeline:
                 f"{len(notification_results)} telegram notification(s)."
             )
 
+        signal_records: List[SignalRecord] = []
+        if self.persist_signals:
+            for candidate, decision, risk_result in zip(signal_candidates, decisions, risk_results):
+                record = create_signal_record(candidate, decision, risk_result)
+                self.signal_repository.save_signal_record(record)
+                signal_records.append(record)
+            logger.info(f"[{self.symbol}|{self.interval}] Persisted {len(signal_records)} signal record(s).")
+
         return {
             "context": context,
             "signals": signal_candidates,
@@ -116,4 +136,5 @@ class TradingPipeline:
             "risk_results": risk_results,
             "telegram_messages": telegram_messages,
             "notification_results": notification_results,
+            "signal_records": signal_records,
         }

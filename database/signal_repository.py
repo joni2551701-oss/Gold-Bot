@@ -2,6 +2,7 @@ import sqlite3
 from typing import List, Optional, Dict
 from datetime import datetime, timezone
 from database.database import Database
+from database.signal_record import SignalRecord
 from core.logger import setup_logger
 
 logger = setup_logger("SignalRepository")
@@ -13,6 +14,39 @@ class SignalRepository:
     """
     def __init__(self):
         self.db = Database()
+        # Idempotent (CREATE TABLE IF NOT EXISTS): safe to call on every
+        # construction, never crashes if the schema already exists.
+        self.db.init_db()
+
+    def save_signal_record(self, record: SignalRecord) -> str:
+        """
+        Maps a SignalRecord (signal + decision + risk_result, wrapped
+        with a signal_id) onto the existing 'signals' table row shape
+        and persists it via create_signal(). The schema is not
+        redesigned: fields with no direct source on the wrapped
+        objects (symbol, a second take-profit, risk_percent) are left
+        empty rather than invented.
+        """
+        signal = record.signal
+        decision = record.decision
+        risk_result = record.risk_result
+
+        data = {
+            "signal_id": record.signal_id,
+            "symbol": "",
+            "direction": getattr(getattr(signal, "signal_type", None), "value", ""),
+            "entry_zone_min": signal.entry,
+            "entry_zone_max": signal.entry,
+            "stop_loss": signal.stop_loss,
+            "take_profit_1": signal.take_profit,
+            "take_profit_2": 0.0,
+            "risk_percent": 0.0,
+            "lot_size": risk_result.lot_size,
+            "strategy_name": signal.strategy_name,
+            "confidence_score": decision.confidence,
+            "ai_explanation": decision.ai_analysis.explanation,
+        }
+        return self.create_signal(data)
 
     def create_signal(self, data: Dict) -> str:
         """Inserts a new signal into the database."""
