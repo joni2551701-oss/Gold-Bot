@@ -31,7 +31,13 @@ class TelegramBot:
     ):
         self.config = config or BotConfig()
         self._secrets = Secrets()
-        self._bot = Bot(token=self._secrets.TELEGRAM_BOT_TOKEN)
+        self._bot: Optional[Bot] = None
+        try:
+            self._bot = Bot(token=self._secrets.TELEGRAM_BOT_TOKEN)
+        except Exception:
+            # Token missing/invalid: fail gracefully. send_message() will
+            # report this per-call instead of crashing at construction time.
+            self._bot = None
 
     async def send_message(
         self,
@@ -44,6 +50,9 @@ class TelegramBot:
         """
         if not self.config.enabled:
             return BotResult(sent=False, reason="Bot disabled")
+
+        if self._bot is None:
+            return BotResult(sent=False, reason="Telegram bot token not configured")
 
         try:
             await self._bot.send_message(chat_id=chat_id, text=text)

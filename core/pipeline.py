@@ -8,6 +8,7 @@ from decision.decision_engine import DecisionEngine
 from decision.models import TradeDecision
 from risk.risk_manager import RiskManager, RiskResult
 from telegram.signal_formatter import SignalFormatter
+from telegram.notifier import Notifier
 from core.logger import setup_logger
 
 logger = setup_logger("TradingPipeline")
@@ -16,18 +17,28 @@ logger = setup_logger("TradingPipeline")
 class TradingPipeline:
     """
     Wires Data -> Context -> Signal -> AI -> Decision -> Risk ->
-    Telegram Output into a single, runnable flow.
+    Signal Formatter -> Telegram Delivery into a single, runnable flow.
 
     Execution and Monitoring are intentionally not part of this
-    pipeline (Phase 25.1+). Risk Layer output is a sizing suggestion
-    only -- no MT5/broker connection, no order execution. The
-    Telegram step only formats text -- no bot, no aiogram, no sending.
+    pipeline (Phase 26.1+). Risk Layer output is a sizing suggestion
+    only -- no MT5/broker connection, no order execution.
+
+    Telegram messages are always generated, but never sent unless
+    send_notifications=True is passed explicitly. This keeps
+    backtesting/testing runs free of side effects by default.
     """
 
-    def __init__(self, symbol: str, interval: str, outputsize: int):
+    def __init__(
+        self,
+        symbol: str,
+        interval: str,
+        outputsize: int,
+        send_notifications: bool = False,
+    ):
         self.symbol = symbol
         self.interval = interval
         self.outputsize = outputsize
+        self.send_notifications = send_notifications
 
         self.data_normalizer = MarketDataNormalizer()
         self.signal_engine = SignalEngine()
@@ -35,14 +46,16 @@ class TradingPipeline:
         self.decision_engine = DecisionEngine()
         self.risk_manager = RiskManager()
         self.signal_formatter = SignalFormatter()
+        self.notifier = Notifier()
 
     def run(self) -> dict:
         """
         Runs one full pipeline cycle: fetch candles, build context,
         generate signal candidates, evaluate each with the AI Analyzer,
         produce a TradeDecision per candidate, pass each decision
-        through the Risk Layer, and format a Telegram message per
-        candidate.
+        through the Risk Layer, format a Telegram message per
+        candidate, and (only if send_notifications=True) deliver each
+        message via the Notifier.
         """
         candles = self.data_normalizer.get_candles(
             self.symbol,
@@ -84,6 +97,17 @@ class TradingPipeline:
         ]
         logger.info(f"[{self.symbol}|{self.interval}] Produced {len(telegram_messages)} telegram message(s).")
 
+        notification_results: List[bool] = []
+        if self.send_notifications:
+            notification_results = [
+                self.notifier.send_message(message)
+                for message in telegram_messages
+            ]
+            logger.info(
+                f"[{self.symbol}|{self.interval}] Sent {sum(notification_results)}/"
+                f"{len(notification_results)} telegram notification(s)."
+            )
+
         return {
             "context": context,
             "signals": signal_candidates,
@@ -91,4 +115,5 @@ class TradingPipeline:
             "decisions": decisions,
             "risk_results": risk_results,
             "telegram_messages": telegram_messages,
+            "notification_results": notification_results,
         }
