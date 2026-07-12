@@ -6,6 +6,7 @@ from signals.signal_engine import SignalEngine
 from ai.ai_analyzer import AIAnalyzer, AIAnalysisResult
 from decision.decision_engine import DecisionEngine
 from decision.models import TradeDecision
+from risk.risk_manager import RiskManager, RiskResult
 from core.logger import setup_logger
 
 logger = setup_logger("TradingPipeline")
@@ -13,11 +14,12 @@ logger = setup_logger("TradingPipeline")
 
 class TradingPipeline:
     """
-    Wires Data -> Context -> Signal -> AI -> Decision into a single,
-    runnable flow.
+    Wires Data -> Context -> Signal -> AI -> Decision -> Risk into a
+    single, runnable flow.
 
-    Risk, Execution, Telegram, and Monitoring are intentionally not
-    part of this pipeline (Phase 23.1+).
+    Execution, Telegram, and Monitoring are intentionally not part of
+    this pipeline (Phase 24.2+). Risk Layer output is a sizing
+    suggestion only -- no MT5/broker connection, no order execution.
     """
 
     def __init__(self, symbol: str, interval: str, outputsize: int):
@@ -29,12 +31,14 @@ class TradingPipeline:
         self.signal_engine = SignalEngine()
         self.ai_analyzer = AIAnalyzer()
         self.decision_engine = DecisionEngine()
+        self.risk_manager = RiskManager()
 
     def run(self) -> dict:
         """
         Runs one full pipeline cycle: fetch candles, build context,
         generate signal candidates, evaluate each with the AI Analyzer,
-        and produce a TradeDecision per candidate.
+        produce a TradeDecision per candidate, and pass each decision
+        through the Risk Layer.
         """
         candles = self.data_normalizer.get_candles(
             self.symbol,
@@ -62,9 +66,16 @@ class TradingPipeline:
         ]
         logger.info(f"[{self.symbol}|{self.interval}] Produced {len(decisions)} trade decision(s).")
 
+        risk_results: List[RiskResult] = [
+            self.risk_manager.evaluate(decision)
+            for decision in decisions
+        ]
+        logger.info(f"[{self.symbol}|{self.interval}] Produced {len(risk_results)} risk result(s).")
+
         return {
             "context": context,
             "signals": signal_candidates,
             "ai_results": ai_results,
             "decisions": decisions,
+            "risk_results": risk_results,
         }
