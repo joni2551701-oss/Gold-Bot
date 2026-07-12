@@ -1,8 +1,8 @@
 from typing import List
-
 from context.context_orchestrator import ContextSnapshot
 from context.bos import BosDirection
 from signals.models import SignalCandidate, SignalType
+
 
 class LiquidityStrategy:
     """
@@ -16,13 +16,10 @@ class LiquidityStrategy:
         if not context.liquidity_sweeps or not context.bos_events:
             return candidates
 
-        # Only process the most recent sweep to prevent signal flooding
         latest_sweep = context.liquidity_sweeps[-1]
 
-        # Check for structural alignment (BOS)
         for bos in context.bos_events:
             if bos.index > latest_sweep.index:
-                # Find supporting Order Block
                 relevant_ob = None
                 for ob in context.order_blocks:
                     if abs(ob.index - latest_sweep.index) <= 5:
@@ -30,16 +27,12 @@ class LiquidityStrategy:
                         break
 
                 if relevant_ob:
-                    # Signal direction comes directly from the confirmed
-                    # structural break direction (BosEvent.direction),
-                    # not inferred from the liquidity sweep type.
                     s_type = (
                         SignalType.BUY
                         if bos.direction == BosDirection.BULLISH
                         else SignalType.SELL
                     )
 
-                    # Logic: Entry at OB, SL at Sweep, TP at Break (Non-magic values)
                     entry = (relevant_ob.high + relevant_ob.low) / 2
                     stop_loss = latest_sweep.sweep_price
                     take_profit = bos.broken_structure.swing.price
@@ -53,7 +46,6 @@ class LiquidityStrategy:
                         confidence=0.75,
                         reasons=[f"Sweep at {latest_sweep.index} confirmed by BOS at {bos.index}"]
                     ))
-                    # Break after first valid setup to ensure latest-only logic
                     break
 
         return candidates
