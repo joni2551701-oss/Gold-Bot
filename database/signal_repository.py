@@ -88,6 +88,12 @@ class SignalRepository:
             cursor = conn.execute("SELECT * FROM signals WHERE status = 'OPEN'")
             return [dict(row) for row in cursor.fetchall()]
 
+    def get_closed_signals(self) -> List[Dict]:
+        """Retrieves all signals with status 'CLOSED'. Empty list if none."""
+        with self.db as conn:
+            cursor = conn.execute("SELECT * FROM signals WHERE status = 'CLOSED'")
+            return [dict(row) for row in cursor.fetchall()]
+
     def update_signal_status(self, signal_id: str, status: str) -> bool:
         """Updates the status and updates closed_at if status is changed to CLOSED."""
         query = "UPDATE signals SET status = ?, closed_at = ? WHERE signal_id = ?"
