@@ -1,27 +1,33 @@
 """
-Telegram Layer — admin service (Phase 37).
+Telegram Layer — admin service (Phase 37; finalized Phase 41).
 
 Bridges Telegram owner/admin commands to database.admin_repository.
 AdminRepository (admin membership) and database.user_repository.
 UserRepository / database.signal_repository.SignalRepository
-(read-only, for get_statistics() counts). No Telegram/aiogram objects
-here, no permission decisions (that's telegram/permissions.py) --
-only admin CRUD and basic statistics aggregation, with exception
-handling so a database failure never propagates up to a command
-handler.
+(read-only, for get_statistics()/get_user_summary() counts). Also
+sends broadcast messages via telegram.bot.TelegramBot -- unmodified,
+same class Notifier already uses for outbound delivery. No permission
+decisions here (that's telegram/permissions.py) -- only admin CRUD,
+statistics aggregation, system health, and broadcast delivery, with
+exception handling so a database or network failure never propagates
+up to a command handler.
 
     Telegram Handler -> AdminService -> AdminRepository -> Database
                                       -> UserRepository -> Database
                                       -> SignalRepository -> Database
+                                      -> TelegramBot -> Telegram API
 """
 
-from typing import Optional
+import asyncio
+from typing import List, Optional
 from dataclasses import dataclass
 
 from database.admin_repository import AdminRepository
 from database.admin_models import AdminRecord
 from database.user_repository import UserRepository
 from database.signal_repository import SignalRepository
+from telegram.bot import TelegramBot
+from core.secrets import Secrets
 from core.logger import setup_logger
 
 logger = setup_logger("AdminService")
@@ -31,10 +37,34 @@ logger = setup_logger("AdminService")
 class AdminStatistics:
     total_users: int = 0
     total_signals: int = 0
+    approved_signals: int = 0
+    rejected_signals: int = 0
     # Fraction (0.0-1.0), not a percentage -- same convention as
     # SignalCandidate.confidence / TradeDecision.confidence elsewhere
     # in the codebase.
     average_confidence: float = 0.0
+
+
+@dataclass(frozen=True)
+class UserSummary:
+    total: int = 0
+    active: int = 0
+    created_today: int = 0
+
+
+@dataclass(frozen=True)
+class SystemStatus:
+    database: str = "N/A"
+    telegram: str = "N/A"
+    market_data: str = "N/A"
+    ai: str = "N/A"
+    api: str = "N/A"
+
+
+@dataclass(frozen=True)
+class BroadcastResult:
+    sent: int = 0
+    failed: int = 0
 
 
 @dataclass(frozen=True)
@@ -43,6 +73,9 @@ class AdminServiceResult:
     reason: str
     admin: Optional[AdminRecord] = None
     statistics: Optional[AdminStatistics] = None
+    user_summary: Optional[UserSummary] = None
+    system_status: Optional[SystemStatus] = None
+    broadcast: Optional[BroadcastResult] = None
 
 
 class AdminService:
@@ -127,9 +160,12 @@ class AdminService:
     def get_statistics(self) -> AdminServiceResult:
         """
         Aggregates basic bot-wide statistics: total registered users,
-        total signals (open + closed), and average confidence across
-        all persisted signals. Never raises: any repository failure
-        degrades to success=False rather than propagating.
+        total signals (open + closed), approved/rejected counts (from
+        the Phase 39 ai_decision column -- NO_TRADE is counted with
+        REJECT, since the display only has two buckets), and average
+        confidence across all persisted signals. Never raises: any
+        repository failure degrades to success=False rather than
+        propagating.
         """
         try:
             total_users = UserRepository().count_users()
@@ -146,15 +182,131 @@ class AdminService:
                 sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0.0
             )
 
+            approved_signals = sum(1 for row in all_signals if row.get("ai_decision") == "APPROVE")
+            rejected_signals = len(all_signals) - approved_signals
+
             return AdminServiceResult(
                 success=True,
                 reason="",
                 statistics=AdminStatistics(
                     total_users=total_users,
                     total_signals=len(all_signals),
+                    approved_signals=approved_signals,
+                    rejected_signals=rejected_signals,
                     average_confidence=average_confidence,
                 ),
             )
         except Exception as e:
             logger.warning(f"get_statistics failed: {e}")
             return AdminServiceResult(success=False, reason=f"Database error: {e}")
+
+    def get_user_summary(self) -> AdminServiceResult:
+        """
+        Aggregates basic user-table counts for /users: total
+        registered, "active" (notifications_enabled=1 -- the closest
+        available signal; no dedicated activity-tracking column
+        exists), and created today (UTC). Never raises.
+        """
+        try:
+            repository = UserRepository()
+            return AdminServiceResult(
+                success=True,
+                reason="",
+                user_summary=UserSummary(
+                    total=repository.count_users(),
+                    active=repository.count_active_users(),
+                    created_today=repository.count_users_created_today(),
+                ),
+            )
+        except Exception as e:
+            logger.warning(f"get_user_summary failed: {e}")
+            return AdminServiceResult(success=False, reason=f"Database error: {e}")
+
+    def get_system_status(self) -> SystemStatus:
+        """
+        Lightweight health summary for /system: database reachability
+        plus whether the required environment keys are present. No
+        live network calls to Telegram/TwelveData/Gemini -- out of
+        scope, and a status command must never block on external I/O.
+        "API" has no dedicated check today -- always "N/A", per the
+        Phase 41 spec's own fallback for an unavailable check. Never
+        raises.
+        """
+        database = "OK" if self.check_database() else "FAIL"
+
+        try:
+            secrets = Secrets()
+        except Exception:
+            return SystemStatus(database=database, telegram="FAIL", market_data="FAIL", ai="FAIL", api="N/A")
+
+        def _has_key(getter) -> str:
+            try:
+                getter()
+                return "OK"
+            except Exception:
+                return "FAIL"
+
+        return SystemStatus(
+            database=database,
+            telegram=_has_key(lambda: secrets.TELEGRAM_BOT_TOKEN),
+            market_data=_has_key(lambda: secrets.TWELVE_DATA_API_KEY),
+            ai=_has_key(lambda: secrets.GEMINI_API_KEY),
+            api="N/A",
+        )
+
+    async def _broadcast_all(self, message: str, chat_ids: List[str]) -> BroadcastResult:
+        """
+        Sends `message` to every chat_id using one TelegramBot instance
+        inside one event loop, closing its session once at the end --
+        same event-loop-safety pattern as Notifier._send_all() (Phase
+        33.1): a fresh asyncio.run() per recipient would reopen the
+        "Event loop is closed" bug that phase fixed. One recipient's
+        failure is caught and counted, never stops the rest.
+        """
+        bot = TelegramBot()
+        sent = 0
+        failed = 0
+        try:
+            for chat_id in chat_ids:
+                try:
+                    result = await bot.send_message(message, str(chat_id))
+                except Exception as e:
+                    logger.warning(f"Broadcast to {chat_id} failed: {e}")
+                    failed += 1
+                    continue
+                if result.sent:
+                    sent += 1
+                else:
+                    failed += 1
+        finally:
+            await bot.close()
+        return BroadcastResult(sent=sent, failed=failed)
+
+    def broadcast(self, message: str) -> AdminServiceResult:
+        """
+        Sends `message` to every registered user. Never raises: a
+        total failure (empty message, no users, database error,
+        network error opening the loop) is reported as success=False
+        rather than propagating; a single recipient's delivery
+        failure is only ever counted, never fatal.
+        """
+        if not message or not message.strip():
+            return AdminServiceResult(success=False, reason="Broadcast message is empty")
+
+        try:
+            users = UserRepository().get_all_users()
+        except Exception as e:
+            logger.warning(f"broadcast failed to load users: {e}")
+            return AdminServiceResult(success=False, reason=f"Database error: {e}")
+
+        if not users:
+            return AdminServiceResult(success=True, reason="", broadcast=BroadcastResult(sent=0, failed=0))
+
+        chat_ids = [u.telegram_id for u in users]
+        try:
+            result = asyncio.run(self._broadcast_all(message, chat_ids))
+        except Exception as e:
+            logger.warning(f"broadcast failed: {e}")
+            return AdminServiceResult(success=False, reason=f"Broadcast error: {e}")
+
+        return AdminServiceResult(success=True, reason="", broadcast=result)

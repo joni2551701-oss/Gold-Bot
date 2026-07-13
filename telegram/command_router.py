@@ -37,6 +37,7 @@ from telegram.keyboards import (
     timeframe_keyboard,
     strategy_keyboard,
     settings_keyboard,
+    admin_panel_keyboard,
 )
 from telegram.permissions import PermissionLevel, get_permission_level
 from core.logger import setup_logger
@@ -63,6 +64,7 @@ _KEYBOARD_BY_COMMAND = {
     "risk": risk_keyboard,
     "strategy": strategy_keyboard,
     "timeframe": timeframe_keyboard,
+    "admin": admin_panel_keyboard,
 }
 
 _LEVEL_RANK = {

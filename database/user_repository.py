@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime, timezone
 
 from database.database import Database
@@ -99,6 +99,30 @@ class UserRepository:
         """Total registered users. Used by AdminService statistics."""
         with self.db as conn:
             cursor = conn.execute("SELECT COUNT(*) as count FROM users")
+            row = cursor.fetchone()
+            return row["count"] if row else 0
+
+    def get_all_users(self) -> List[UserRecord]:
+        """All registered users. Used by AdminService.broadcast()."""
+        with self.db as conn:
+            cursor = conn.execute("SELECT * FROM users")
+            return [_row_to_record(row) for row in cursor.fetchall()]
+
+    def count_active_users(self) -> int:
+        """
+        Users with notifications_enabled=1 -- the closest available
+        "active" signal (no dedicated activity-tracking column exists;
+        Phase 41 audit chose not to add one for a single display field).
+        """
+        with self.db as conn:
+            cursor = conn.execute("SELECT COUNT(*) as count FROM users WHERE notifications_enabled = 1")
+            row = cursor.fetchone()
+            return row["count"] if row else 0
+
+    def count_users_created_today(self) -> int:
+        """Users whose created_at falls on today's UTC date."""
+        with self.db as conn:
+            cursor = conn.execute("SELECT COUNT(*) as count FROM users WHERE date(created_at) = date('now')")
             row = cursor.fetchone()
             return row["count"] if row else 0
 

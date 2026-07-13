@@ -81,4 +81,18 @@ def settings_keyboard():
 
 
 def admin_panel_keyboard():
-    pass
+    """
+    /admin hint keyboard (Phase 41). Same command-based interaction
+    model as the Phase 40 settings keyboards -- no callback_query
+    handler consumes these buttons; the real commands are /users,
+    /stats, /system, /broadcast, /addadmin, /removeadmin.
+    """
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Users", callback_data="admin_users")],
+            [InlineKeyboardButton(text="Statistics", callback_data="admin_statistics")],
+            [InlineKeyboardButton(text="System", callback_data="admin_system")],
+            [InlineKeyboardButton(text="Broadcast", callback_data="admin_broadcast")],
+            [InlineKeyboardButton(text="Admins", callback_data="admin_admins")],
+        ]
+    )

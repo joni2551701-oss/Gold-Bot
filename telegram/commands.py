@@ -31,9 +31,11 @@ OWNER_COMMANDS = {
 }
 
 ADMIN_COMMANDS = {
+    "admin": "Open admin panel",
     "stats": "Show bot statistics",
     "users": "List users",
     "userinfo": "Show a user's info",
     "vipinfo": "Show VIP info",
     "broadcast": "Broadcast a message to all users",
+    "system": "Show system status",
 }

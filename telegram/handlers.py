@@ -27,14 +27,19 @@ result via telegram.signal_formatter.SignalFormatter. Both are USER
 commands -- no permission tier required.
 
 admin_handler, addadmin_handler, removeadmin_handler, system_handler,
-stats_handler, users_handler, and userinfo_handler (Phase 37) are real:
-they call telegram.admin_service.AdminService (or, for /userinfo,
+stats_handler, users_handler, userinfo_handler, and broadcast_handler
+(Phase 37; finalized Phase 41) are real: they call
+telegram.admin_service.AdminService (or, for /userinfo,
 telegram.user_service.UserService -- it reads a *user's* profile, not
-admin data). broadcast_handler and vipinfo_handler stay static
-placeholders -- foundation only, no mass-messaging or VIP system yet.
+admin data). admin_handler renders a different panel for OWNER vs
+ADMIN via telegram.permissions.is_owner() -- command_router only
+checks "at least ADMIN", so the handler still needs to know if this
+specific caller is *the* owner. vipinfo_handler stays a static
+placeholder -- foundation only, no VIP/subscription system exists.
 Which permission tier (OWNER/ADMIN/USER) a command requires is decided
 by telegram.command_router before a handler ever runs; a handler
-itself does not check permissions.
+itself does not check permissions (is_owner() here is a read of an
+already-established fact, not a permission gate).
 
 A handler must never import database.* or core.pipeline directly --
 only Handler -> Service. telegram.command_router routes incoming
@@ -55,6 +60,7 @@ from telegram.user_service import UserService
 from telegram.admin_service import AdminService
 from telegram.signal_service import SignalService
 from telegram.signal_formatter import SignalFormatter
+from telegram.permissions import is_owner
 
 
 async def start_handler(telegram_id, username=None) -> str:
@@ -314,14 +320,26 @@ def _first_arg(args) -> Optional[str]:
     return args.strip().split()[0]
 
 
-async def admin_handler() -> str:
-    """/admin -> owner panel static menu. OWNER only (enforced by command_router)."""
+async def admin_handler(telegram_id=None) -> str:
+    """
+    /admin -> role-specific panel menu (Phase 41). ADMIN or OWNER
+    (enforced by command_router); OWNER sees the full panel, ADMIN
+    sees a reduced one (no Broadcast/Admin Management). Never raises.
+    """
+    if is_owner(telegram_id):
+        return (
+            "GoldBot Owner Panel\n\n"
+            "👥 Users\n"
+            "📊 Statistics\n"
+            "🛠 System\n"
+            "📢 Broadcast\n"
+            "👑 Admin Management"
+        )
     return (
-        "Owner Panel\n\n"
-        "Users\n"
-        "Statistics\n"
-        "Admins\n"
-        "System"
+        "GoldBot Admin Panel\n\n"
+        "👥 Users\n"
+        "📊 Statistics\n"
+        "🛠 System"
     )
 
 
@@ -338,6 +356,8 @@ async def addadmin_handler(args=None) -> str:
 
     if result.success:
         return "Admin added."
+    if result.reason == "Already an admin":
+        return "Already admin."
     return f"Could not add admin: {result.reason}"
 
 
@@ -358,25 +378,54 @@ async def removeadmin_handler(args=None) -> str:
 
 
 async def system_handler() -> str:
-    """/system -> lightweight status summary. OWNER only. Never raises."""
+    """
+    /system -> AdminService.get_system_status(). ADMIN or OWNER.
+    Never raises.
+    """
     try:
-        db_ok = AdminService().check_database()
+        status = AdminService().get_system_status()
     except Exception:
-        db_ok = False
-    db_status = "OK" if db_ok else "FAIL"
+        return "Could not load system status."
 
     return (
-        "System Status\n\n"
-        f"Database: {db_status}\n"
-        "API: OK\n"
-        "AI: OK\n"
-        "Telegram: OK"
+        "GoldBot System Status\n\n"
+        "Database:\n"
+        f"{status.database}\n\n"
+        "Telegram:\n"
+        f"{status.telegram}\n\n"
+        "Market Data:\n"
+        f"{status.market_data}\n\n"
+        "AI:\n"
+        f"{status.ai}\n\n"
+        "API:\n"
+        f"{status.api}"
     )
 
 
-async def broadcast_handler() -> str:
-    """/broadcast -> placeholder. Real mass-message delivery is a later phase."""
-    return "Broadcast is not available yet."
+async def broadcast_handler(args=None) -> str:
+    """
+    /broadcast MESSAGE -> AdminService.broadcast() -> sent/failed
+    counts. ADMIN or OWNER. Never raises.
+    """
+    message = (args or "").strip()
+    if not message:
+        return "Usage: /broadcast MESSAGE"
+
+    try:
+        result = AdminService().broadcast(message)
+    except Exception as e:
+        return f"Could not broadcast: {e}"
+
+    if not result.success or result.broadcast is None:
+        return f"Could not broadcast: {result.reason}"
+
+    return (
+        "Broadcast completed\n\n"
+        "Sent:\n"
+        f"{result.broadcast.sent}\n\n"
+        "Failed:\n"
+        f"{result.broadcast.failed}"
+    )
 
 
 async def stats_handler() -> str:
@@ -397,29 +446,41 @@ async def stats_handler() -> str:
         f"{stats.total_users}\n\n"
         "Signals:\n"
         f"{stats.total_signals}\n\n"
+        "Approved:\n"
+        f"{stats.approved_signals}\n\n"
+        "Rejected:\n"
+        f"{stats.rejected_signals}\n\n"
         "Average Confidence:\n"
         f"{confidence_percent}%"
     )
 
 
 async def users_handler() -> str:
-    """/users -> total registered user count. ADMIN or OWNER. Never raises."""
+    """/users -> AdminService.get_user_summary(). ADMIN or OWNER. Never raises."""
     try:
-        result = AdminService().get_statistics()
+        result = AdminService().get_user_summary()
     except Exception as e:
         return f"Could not load users: {e}"
 
-    if not result.success or result.statistics is None:
+    if not result.success or result.user_summary is None:
         return f"Could not load users: {result.reason}"
 
-    return f"Total users:\n{result.statistics.total_users}"
+    summary = result.user_summary
+    return (
+        "GoldBot Users\n\n"
+        "Total:\n"
+        f"{summary.total}\n\n"
+        "Active:\n"
+        f"{summary.active}\n\n"
+        "Created today:\n"
+        f"{summary.created_today}"
+    )
 
 
 async def userinfo_handler(args=None) -> str:
     """
     /userinfo USER_ID -> UserService.get_profile() for the target
-    user (not the caller). ADMIN or OWNER. Never raises. "Plan: Trial"
-    is a static placeholder -- no subscription/VIP system exists yet.
+    user (not the caller). ADMIN or OWNER. Never raises.
     """
     target_id = _first_arg(args)
     if target_id is None:
@@ -437,13 +498,21 @@ async def userinfo_handler(args=None) -> str:
     return (
         "User Info\n\n"
         "ID:\n"
-        f"{p.telegram_id}\n"
+        f"{p.telegram_id}\n\n"
         "Username:\n"
-        f"{p.username or 'N/A'}\n"
-        "Plan:\n"
-        "Trial\n"
+        f"{p.username or 'N/A'}\n\n"
+        "Language:\n"
+        f"{p.language}\n\n"
         "Risk:\n"
-        f"{round(p.risk_percent)}%"
+        f"{p.risk_percent:g}%\n\n"
+        "Strategy:\n"
+        f"{p.strategy}\n\n"
+        "Timeframe:\n"
+        f"{p.timeframe}\n\n"
+        "Created:\n"
+        f"{p.created_at}\n\n"
+        "Notifications:\n"
+        f"{'On' if p.notifications_enabled else 'Off'}"
     )
 
 
