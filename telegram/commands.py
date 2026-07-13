@@ -24,6 +24,7 @@ COMMANDS = {
     "subscription": "Subscription status",
     "upgrade": "Upgrade foundation",
     "notifications": "Manage notification preference",
+    "feedback": "Send feedback",
 }
 
 OWNER_COMMANDS = {
@@ -42,4 +43,5 @@ ADMIN_COMMANDS = {
     "vipinfo": "Show VIP info",
     "broadcast": "Broadcast a message to all users",
     "system": "Show system status",
+    "feedbacks": "View feedback list",
 }

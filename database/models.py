@@ -201,6 +201,37 @@ def init_subscription_schema(connection: sqlite3.Connection):
         raise
 
 
+def init_feedback_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the feedback table schema (Phase 46 Feedback
+    System Foundation). Independent of the other tables. Brand new
+    table -- no migration needed (same reasoning as
+    init_subscription_schema(), Phase 42): CREATE TABLE IF NOT EXISTS
+    alone is safe for both a fresh database and an existing one that
+    simply doesn't have this table yet. telegram_id/created_at use
+    TEXT (not INTEGER/TIMESTAMP) to match every other table's
+    convention in this schema (str(telegram_id), ISO-format
+    timestamps) -- SQLite's dynamic typing makes this a pure
+    consistency choice, not a functional one.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS feedback (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id TEXT NOT NULL,
+        message TEXT NOT NULL,
+        status TEXT DEFAULT 'OPEN',
+        created_at TEXT NOT NULL
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (feedback table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize feedback schema: {e}")
+        raise
+
+
 def init_admin_schema(connection: sqlite3.Connection):
     """
     Defines and creates the admins table schema (Owner/Admin permission

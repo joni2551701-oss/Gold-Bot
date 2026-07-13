@@ -65,6 +65,13 @@ in telegram/keyboards.py but is not wired to a reply here, since
 telegram/command_router.py (the only place a keyboard gets attached)
 is out of scope for this phase.
 
+feedback_handler and feedbacks_handler (Phase 46) are real: the
+former (USER, no permission tier) submits an entry via
+telegram.feedback_service.FeedbackService.send_feedback(); the latter
+(ADMIN or OWNER) lists all entries via AdminService.get_feedback(),
+which itself delegates to FeedbackService -- AdminService never talks
+to FeedbackRepository directly.
+
 Phase 45 (User Lifecycle State): start_handler, profile_handler,
 settings_handler, signal_handler, history_handler, plan_handler, and
 subscription_handler all call UserService.touch_activity() (updates
@@ -103,6 +110,7 @@ from telegram.signal_formatter import SignalFormatter
 from telegram.subscription_service import SubscriptionService
 from telegram.notification_service import NotificationService
 from telegram.signal_access_service import SignalAccessService
+from telegram.feedback_service import FeedbackService
 from telegram.permissions import is_owner
 
 
@@ -561,6 +569,36 @@ async def upgrade_handler(telegram_id=None) -> str:
     return "Upgrade request received.\n\nPremium plans will be available soon."
 
 
+async def feedback_handler(telegram_id=None, args=None) -> str:
+    """
+    /feedback MESSAGE -> FeedbackService.send_feedback(). No argument
+    shows a prompt instead of submitting an empty entry. USER command,
+    no permission required. Touches activity (Phase 45). Never raises.
+    """
+    try:
+        UserService().touch_activity(telegram_id)
+    except Exception:
+        pass
+
+    message = (args or "").strip()
+    if not message:
+        return "Send your feedback:\n\nUse /feedback <your message>."
+
+    try:
+        result = FeedbackService().send_feedback(telegram_id, message)
+    except Exception as e:
+        return f"Could not send feedback: {e}"
+
+    if not result.success or result.feedback is None:
+        return f"Could not send feedback: {result.reason}"
+
+    return (
+        "✅ Feedback received.\n"
+        f"ID: #{result.feedback.id}\n"
+        f"Status: {result.feedback.status}"
+    )
+
+
 def _first_arg(args) -> Optional[str]:
     """'123456789 extra text' -> '123456789'. None if args is empty/blank."""
     if not args or not args.strip():
@@ -788,3 +826,35 @@ async def userinfo_handler(args=None) -> str:
 async def vipinfo_handler() -> str:
     """/vipinfo -> foundation only. No VIP tier exists on top of the Phase 42 plan/subscription system."""
     return "VIP system not enabled."
+
+
+async def feedbacks_handler() -> str:
+    """
+    /feedbacks -> AdminService.get_feedback(). ADMIN or OWNER. Never
+    raises.
+    """
+    try:
+        result = AdminService().get_feedback()
+    except Exception as e:
+        return f"Could not load feedback: {e}"
+
+    if not result.success:
+        return f"Could not load feedback: {result.reason}"
+
+    if not result.feedback_list:
+        return "📩 Feedback List\n\nNo feedback yet."
+
+    lines = ["📩 Feedback List"]
+    for item in result.feedback_list:
+        lines.append(
+            f"\n#{item.id}\n\n"
+            "User:\n"
+            f"{item.telegram_id}\n\n"
+            "Message:\n"
+            f"{item.message}\n\n"
+            "Status:\n"
+            f"{item.status}\n\n"
+            "Date:\n"
+            f"{item.created_at}"
+        )
+    return "\n".join(lines)

@@ -1,32 +1,40 @@
 """
-Telegram Layer — admin service (Phase 37; finalized Phase 41).
+Telegram Layer — admin service (Phase 37; finalized Phase 41; feedback
+review added Phase 46).
 
 Bridges Telegram owner/admin commands to database.admin_repository.
 AdminRepository (admin membership) and database.user_repository.
 UserRepository / database.signal_repository.SignalRepository
 (read-only, for get_statistics()/get_user_summary() counts). Also
 sends broadcast messages via telegram.bot.TelegramBot -- unmodified,
-same class Notifier already uses for outbound delivery. No permission
-decisions here (that's telegram/permissions.py) -- only admin CRUD,
-statistics aggregation, system health, and broadcast delivery, with
-exception handling so a database or network failure never propagates
-up to a command handler.
+same class Notifier already uses for outbound delivery. Feedback
+review delegates to telegram.feedback_service.FeedbackService rather
+than talking to FeedbackRepository directly -- FeedbackService already
+owns validation/status logic, so AdminService reuses it instead of
+duplicating it. No permission decisions here (that's
+telegram/permissions.py) -- only admin CRUD, statistics aggregation,
+system health, broadcast delivery, and feedback review, with exception
+handling so a database or network failure never propagates up to a
+command handler.
 
     Telegram Handler -> AdminService -> AdminRepository -> Database
                                       -> UserRepository -> Database
                                       -> SignalRepository -> Database
                                       -> TelegramBot -> Telegram API
+                                      -> FeedbackService -> FeedbackRepository -> Database
 """
 
 import asyncio
 from typing import List, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from database.admin_repository import AdminRepository
 from database.admin_models import AdminRecord
 from database.user_repository import UserRepository
 from database.signal_repository import SignalRepository
+from database.feedback_models import FeedbackRecord
 from telegram.bot import TelegramBot
+from telegram.feedback_service import FeedbackService
 from core.secrets import Secrets
 from core.logger import setup_logger
 
@@ -82,6 +90,8 @@ class AdminServiceResult:
     user_summary: Optional[UserSummary] = None
     system_status: Optional[SystemStatus] = None
     broadcast: Optional[BroadcastResult] = None
+    feedback_item: Optional[FeedbackRecord] = None
+    feedback_list: List[FeedbackRecord] = field(default_factory=list)
 
 
 class AdminService:
@@ -319,3 +329,30 @@ class AdminService:
             return AdminServiceResult(success=False, reason=f"Broadcast error: {e}")
 
         return AdminServiceResult(success=True, reason="", broadcast=result)
+
+    def get_feedback(self, limit: int = 50) -> AdminServiceResult:
+        """
+        Most recent feedback entries for /feedbacks, newest first.
+        Never raises.
+        """
+        try:
+            result = FeedbackService().get_feedback_list(limit=limit)
+        except Exception as e:
+            logger.warning(f"get_feedback failed: {e}")
+            return AdminServiceResult(success=False, reason=f"Database error: {e}")
+
+        if not result.success:
+            return AdminServiceResult(success=False, reason=result.reason)
+        return AdminServiceResult(success=True, reason="", feedback_list=result.feedback_list)
+
+    def resolve_feedback(self, feedback_id, status: str = "RESOLVED") -> AdminServiceResult:
+        """Updates a feedback entry's status (OPEN/REVIEWED/RESOLVED). Never raises."""
+        try:
+            result = FeedbackService().resolve_feedback(feedback_id, status)
+        except Exception as e:
+            logger.warning(f"resolve_feedback failed for feedback_id={feedback_id}: {e}")
+            return AdminServiceResult(success=False, reason=f"Database error: {e}")
+
+        if not result.success:
+            return AdminServiceResult(success=False, reason=result.reason)
+        return AdminServiceResult(success=True, reason="", feedback_item=result.feedback)
