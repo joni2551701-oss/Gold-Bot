@@ -8,10 +8,18 @@ Shape:
 start_handler() and profile_handler() are real (Phase 33 -- User
 Profile Foundation; Phase 34 -- Command Wiring Foundation): they call
 telegram.user_service.UserService and return plain text. help_handler,
-status_handler, about_handler (Phase 34), and settings_handler,
-language_handler, risk_handler, strategy_handler, timeframe_handler
-(Phase 36) return static text -- no service backs them yet, so they
-stay simple and dependency-free until a later phase adds one.
+status_handler, and about_handler (Phase 34) return static text -- no
+service backs them yet, so they stay simple and dependency-free.
+
+settings_handler, language_handler, risk_handler, strategy_handler,
+and timeframe_handler (Phase 40) are real: called with no argument
+they show the option keyboard (attached by command_router) plus a
+usage hint; called with an argument (e.g. "/risk 5") they validate it
+and call telegram.user_service.UserService's change_*() methods.
+Settings change via command argument, not an aiogram callback_query
+handler -- keyboards here are still display hints (same precedent as
+language_keyboard() since Phase 34), consistent with how /addadmin,
+/removeadmin, and /userinfo already take an argument.
 
 signal_handler and history_handler (Phase 38) are real: they call
 telegram.signal_service.SignalService (read-only) and format the
@@ -78,8 +86,10 @@ async def help_handler() -> str:
         "👤 Profile\n"
         "/profile\n"
         "/settings\n"
+        "/language\n"
         "/risk\n"
         "/strategy\n"
+        "/timeframe\n"
         "ℹ️ Info\n"
         "/help\n"
         "/about"
@@ -98,40 +108,158 @@ async def profile_handler(telegram_id) -> str:
 
     p = result.profile
     return (
-        "GoldBot Profile\n"
-        f"ID: {p.telegram_id}\n"
-        f"Username: {p.username or 'N/A'}\n"
-        f"Language: {p.language}\n"
-        f"Trading Style: {p.trading_style}\n"
-        f"Risk: {p.risk_percent}\n"
-        f"Timeframe: {p.timeframe}\n"
-        f"Created: {p.created_at}"
+        "GoldBot Profile\n\n"
+        "ID:\n"
+        f"{p.telegram_id}\n\n"
+        "Username:\n"
+        f"{p.username or 'N/A'}\n\n"
+        "Language:\n"
+        f"{p.language}\n\n"
+        "Trading Style:\n"
+        f"{p.trading_style}\n\n"
+        "Strategy:\n"
+        f"{p.strategy}\n\n"
+        "Risk:\n"
+        f"{p.risk_percent:g}%\n\n"
+        "Timeframe:\n"
+        f"{p.timeframe}\n\n"
+        "Created:\n"
+        f"{p.created_at}"
     )
 
 
 async def settings_handler() -> str:
-    """/settings -> placeholder. Real settings editor is a later phase."""
-    return "Settings management is not available yet."
+    """/settings -> menu (keyboard attached by command_router). USER command. Never raises."""
+    return (
+        "Settings\n\n"
+        "Language\n"
+        "Risk\n"
+        "Strategy\n"
+        "Timeframe\n"
+        "Notifications\n\n"
+        "Use /language, /risk, /strategy, or /timeframe to change a setting."
+    )
 
 
-async def language_handler() -> str:
-    """/language -> placeholder. Real language switching is a later phase."""
-    return "Language selection is not available yet."
+_LANGUAGE_OPTIONS = {"UZ", "RU", "EN"}
+_RISK_OPTIONS = {"1", "2", "3", "5"}
+_TIMEFRAME_OPTIONS = {"M15", "H1", "H4"}
+_STRATEGY_OPTIONS = {
+    "liquidity sweep": "Liquidity Sweep",
+    "fvg": "FVG",
+    "amd": "AMD",
+    "order block": "Order Block",
+}
 
 
-async def risk_handler() -> str:
-    """/risk -> placeholder. Real risk-percent editing is a later phase."""
-    return "Risk settings are not available yet."
+async def language_handler(telegram_id=None, args=None) -> str:
+    """
+    /language [UZ|RU|EN] -> UserService.change_language(). No argument
+    shows the option keyboard (attached by command_router) plus a
+    usage hint. Never raises.
+    """
+    choice = _first_arg(args)
+    if choice is None:
+        return (
+            "Choose language:\n"
+            "🇺🇿 Uzbek (UZ)\n"
+            "🇷🇺 Русский (RU)\n"
+            "🇬🇧 English (EN)\n\n"
+            "Use /language UZ, /language RU, or /language EN."
+        )
+
+    normalized = choice.upper()
+    if normalized not in _LANGUAGE_OPTIONS:
+        return "Invalid language. Choose one of: UZ, RU, EN."
+
+    try:
+        result = UserService().change_language(telegram_id, normalized)
+    except Exception as e:
+        return f"Could not update language: {e}"
+
+    if not result.success:
+        return f"Could not update language: {result.reason}"
+    return f"Language updated to {normalized}."
 
 
-async def strategy_handler() -> str:
-    """/strategy -> placeholder. Real trading-style editing is a later phase."""
-    return "Strategy settings are not available yet."
+async def risk_handler(telegram_id=None, args=None) -> str:
+    """
+    /risk [1|2|3|5] -> UserService.change_risk(). No argument shows
+    the option keyboard (attached by command_router) plus a usage
+    hint. Never raises.
+    """
+    choice = _first_arg(args)
+    if choice is None:
+        return "Choose risk percent:\n1%\n2%\n3%\n5%\n\nUse /risk 1, /risk 2, /risk 3, or /risk 5."
+
+    normalized = choice.rstrip("%")
+    if normalized not in _RISK_OPTIONS:
+        return "Invalid risk percent. Choose one of: 1, 2, 3, 5."
+
+    try:
+        result = UserService().change_risk(telegram_id, float(normalized))
+    except Exception as e:
+        return f"Could not update risk: {e}"
+
+    if not result.success:
+        return f"Could not update risk: {result.reason}"
+    return f"Risk updated to {normalized}%."
 
 
-async def timeframe_handler() -> str:
-    """/timeframe -> placeholder. Real timeframe editing is a later phase."""
-    return "Timeframe settings are not available yet."
+async def strategy_handler(telegram_id=None, args=None) -> str:
+    """
+    /strategy [Liquidity Sweep|FVG|AMD|Order Block] ->
+    UserService.change_strategy(). No argument shows the option
+    keyboard (attached by command_router) plus a usage hint. Never
+    raises.
+    """
+    choice = (args or "").strip()
+    if not choice:
+        return (
+            "Choose strategy:\n"
+            "Liquidity Sweep\n"
+            "FVG\n"
+            "AMD\n"
+            "Order Block\n\n"
+            "Use /strategy Liquidity Sweep, /strategy FVG, /strategy AMD, or /strategy Order Block."
+        )
+
+    normalized = _STRATEGY_OPTIONS.get(choice.lower())
+    if normalized is None:
+        return "Invalid strategy. Choose one of: Liquidity Sweep, FVG, AMD, Order Block."
+
+    try:
+        result = UserService().change_strategy(telegram_id, normalized)
+    except Exception as e:
+        return f"Could not update strategy: {e}"
+
+    if not result.success:
+        return f"Could not update strategy: {result.reason}"
+    return f"Strategy updated to {normalized}."
+
+
+async def timeframe_handler(telegram_id=None, args=None) -> str:
+    """
+    /timeframe [M15|H1|H4] -> UserService.change_timeframe(). No
+    argument shows the option keyboard (attached by command_router)
+    plus a usage hint. Never raises.
+    """
+    choice = _first_arg(args)
+    if choice is None:
+        return "Choose timeframe:\nM15\nH1\nH4\n\nUse /timeframe M15, /timeframe H1, or /timeframe H4."
+
+    normalized = choice.upper()
+    if normalized not in _TIMEFRAME_OPTIONS:
+        return "Invalid timeframe. Choose one of: M15, H1, H4."
+
+    try:
+        result = UserService().change_timeframe(telegram_id, normalized)
+    except Exception as e:
+        return f"Could not update timeframe: {e}"
+
+    if not result.success:
+        return f"Could not update timeframe: {result.reason}"
+    return f"Timeframe updated to {normalized}."
 
 
 async def signal_handler() -> str:

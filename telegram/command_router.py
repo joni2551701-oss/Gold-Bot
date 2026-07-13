@@ -31,7 +31,13 @@ from typing import Optional, Tuple
 
 from telegram import handlers
 from telegram.commands import COMMANDS, OWNER_COMMANDS, ADMIN_COMMANDS
-from telegram.keyboards import language_keyboard
+from telegram.keyboards import (
+    language_keyboard,
+    risk_keyboard,
+    timeframe_keyboard,
+    strategy_keyboard,
+    settings_keyboard,
+)
 from telegram.permissions import PermissionLevel, get_permission_level
 from core.logger import setup_logger
 
@@ -44,6 +50,20 @@ PERMISSION_DENIED_TEXT = "Permission denied."
 # Union of all three registries: the single source of truth for "does
 # this command exist at all" (regardless of who is allowed to use it).
 _ALL_COMMANDS = {**COMMANDS, **OWNER_COMMANDS, **ADMIN_COMMANDS}
+
+# Which commands get a hint keyboard attached to their reply, and which
+# builder produces it (Phase 40). Not command-specific business logic --
+# just display; the keyboard's buttons are not wired to a callback_query
+# handler, so telegram.handlers documents the real interaction as a
+# command argument (e.g. "/risk 5").
+_KEYBOARD_BY_COMMAND = {
+    "start": language_keyboard,
+    "settings": settings_keyboard,
+    "language": language_keyboard,
+    "risk": risk_keyboard,
+    "strategy": strategy_keyboard,
+    "timeframe": timeframe_keyboard,
+}
 
 _LEVEL_RANK = {
     PermissionLevel.USER: 0,
@@ -125,7 +145,8 @@ async def route_command(command_text: str, telegram_id=None, username=None) -> R
         logger.warning(f"Handler for /{command} failed: {e}")
         return RouterResult(text=SERVICE_UNAVAILABLE_TEXT)
 
-    keyboard = language_keyboard() if command == "start" else None
+    keyboard_builder = _KEYBOARD_BY_COMMAND.get(command)
+    keyboard = keyboard_builder() if keyboard_builder else None
     return RouterResult(text=text, keyboard=keyboard)
 
 

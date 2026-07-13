@@ -82,6 +82,21 @@ class UserService:
     def update_language(self, telegram_id, language: str) -> UserServiceResult:
         return self.update_settings(telegram_id, {"language": language})
 
+    def change_language(self, telegram_id, language: str) -> UserServiceResult:
+        return self.update_settings(telegram_id, {"language": language})
+
+    def change_risk(self, telegram_id, risk_percent: float) -> UserServiceResult:
+        return self.update_settings(telegram_id, {"risk_percent": risk_percent})
+
+    def change_timeframe(self, telegram_id, timeframe: str) -> UserServiceResult:
+        return self.update_settings(telegram_id, {"timeframe": timeframe})
+
+    def change_strategy(self, telegram_id, strategy: str) -> UserServiceResult:
+        return self.update_settings(telegram_id, {"strategy": strategy})
+
+    def change_notifications(self, telegram_id, enabled: bool) -> UserServiceResult:
+        return self.update_settings(telegram_id, {"notifications_enabled": enabled})
+
     def update_settings(self, telegram_id, settings: dict) -> UserServiceResult:
         """Updates one or more profile fields. Never raises."""
         try:

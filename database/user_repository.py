@@ -19,6 +19,8 @@ def _row_to_record(row) -> UserRecord:
         risk_percent=row["risk_percent"],
         timeframe=row["timeframe"],
         created_at=datetime.fromisoformat(row["created_at"]),
+        strategy=row["strategy"],
+        notifications_enabled=bool(row["notifications_enabled"]),
     )
 
 
@@ -51,6 +53,8 @@ class UserRepository:
         trading_style: str = "Intraday",
         risk_percent: float = 2.0,
         timeframe: str = "M15",
+        strategy: str = "Liquidity Sweep",
+        notifications_enabled: bool = True,
     ) -> Optional[UserRecord]:
         """
         Inserts a new user with safe defaults. Returns None (no insert
@@ -66,10 +70,13 @@ class UserRepository:
         query = """
         INSERT INTO users (
             telegram_id, username, language, trading_style,
-            risk_percent, timeframe, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            risk_percent, timeframe, created_at, strategy, notifications_enabled
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
-        params = (str(telegram_id), username, language, trading_style, risk_percent, timeframe, created_at)
+        params = (
+            str(telegram_id), username, language, trading_style, risk_percent,
+            timeframe, created_at, strategy, notifications_enabled,
+        )
 
         with self.db as conn:
             try:
@@ -101,7 +108,10 @@ class UserRepository:
         names are ignored (not written) rather than raising -- keeps
         UserService safe from a bad settings key crashing the bot.
         """
-        allowed = {"username", "language", "trading_style", "risk_percent", "timeframe"}
+        allowed = {
+            "username", "language", "trading_style", "risk_percent",
+            "timeframe", "strategy", "notifications_enabled",
+        }
         updates = {k: v for k, v in fields.items() if k in allowed}
         if not updates:
             return False
@@ -115,3 +125,18 @@ class UserRepository:
                 f"UPDATE users SET {set_clause} WHERE telegram_id = ?", params
             )
             return cursor.rowcount > 0
+
+    def update_language(self, telegram_id, language: str) -> bool:
+        return self.update_user(telegram_id, language=language)
+
+    def update_risk(self, telegram_id, risk_percent: float) -> bool:
+        return self.update_user(telegram_id, risk_percent=risk_percent)
+
+    def update_timeframe(self, telegram_id, timeframe: str) -> bool:
+        return self.update_user(telegram_id, timeframe=timeframe)
+
+    def update_strategy(self, telegram_id, strategy: str) -> bool:
+        return self.update_user(telegram_id, strategy=strategy)
+
+    def update_notifications(self, telegram_id, enabled: bool) -> bool:
+        return self.update_user(telegram_id, notifications_enabled=enabled)

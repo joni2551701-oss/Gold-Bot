@@ -95,8 +95,9 @@ def _migrate_signals_schema(connection: sqlite3.Connection):
 def init_user_schema(connection: sqlite3.Connection):
     """
     Defines and creates the users table schema (Telegram user profile
-    foundation). No relation to the signals table -- separate,
-    independently-initialized table.
+    foundation), then migrates any pre-existing table (created before
+    Phase 40) to include the newer settings columns. No relation to
+    the signals table -- separate, independently-initialized table.
     """
     query = """
     CREATE TABLE IF NOT EXISTS users (
@@ -108,7 +109,9 @@ def init_user_schema(connection: sqlite3.Connection):
         risk_percent REAL DEFAULT 2.0,
         timeframe TEXT DEFAULT 'M15',
         created_at TEXT NOT NULL,
-        updated_at TEXT
+        updated_at TEXT,
+        strategy TEXT DEFAULT 'Liquidity Sweep',
+        notifications_enabled INTEGER DEFAULT 1
     );
     """
     try:
@@ -118,6 +121,44 @@ def init_user_schema(connection: sqlite3.Connection):
     except sqlite3.Error as e:
         logger.error(f"Failed to initialize users schema: {e}")
         raise
+
+    _migrate_users_schema(connection)
+
+
+def _migrate_users_schema(connection: sqlite3.Connection):
+    """
+    Adds the Phase 40 settings columns to a 'users' table created
+    before this phase. SQLite has no "ADD COLUMN IF NOT EXISTS", so
+    each column's presence is checked via PRAGMA table_info first --
+    on a fresh table (already created with all columns above) every
+    column is already present and this is a no-op.
+    """
+    new_columns = [
+        ("strategy", "TEXT DEFAULT 'Liquidity Sweep'"),
+        ("notifications_enabled", "INTEGER DEFAULT 1"),
+    ]
+
+    try:
+        cursor = connection.execute("PRAGMA table_info(users)")
+        existing_columns = {row[1] for row in cursor.fetchall()}
+    except sqlite3.Error as e:
+        logger.error(f"Failed to inspect users table for migration: {e}")
+        raise
+
+    migrated = False
+    for column_name, column_def in new_columns:
+        if column_name in existing_columns:
+            continue
+        try:
+            connection.execute(f"ALTER TABLE users ADD COLUMN {column_name} {column_def}")
+            logger.info(f"Migrated users table: added column '{column_name}'.")
+            migrated = True
+        except sqlite3.Error as e:
+            logger.error(f"Failed to add column '{column_name}' to users table: {e}")
+            raise
+
+    if migrated:
+        connection.commit()
 
 
 def init_admin_schema(connection: sqlite3.Connection):
