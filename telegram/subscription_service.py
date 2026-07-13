@@ -24,6 +24,10 @@ logger = setup_logger("SubscriptionService")
 DEFAULT_PLAN = "FREE"
 DEFAULT_STATUS = "ACTIVE"
 
+# Plans that grant signal access (Phase 44). FREE and any unrecognized
+# plan value are fail-safe DENY -- not an exclusion list, an allowlist.
+SIGNAL_ACCESS_PLANS = {"PREMIUM", "VIP"}
+
 
 @dataclass(frozen=True)
 class SubscriptionServiceResult:
@@ -83,6 +87,21 @@ class SubscriptionService:
         except Exception as e:
             logger.warning(f"get_subscription failed for telegram_id={telegram_id}: {e}")
             return SubscriptionServiceResult(success=False, reason=f"Database error: {e}")
+
+    def has_signal_access(self, telegram_id) -> bool:
+        """
+        True if the user's plan grants signal access (PREMIUM/VIP).
+        FREE and any unrecognized plan value are fail-safe DENY. Never
+        raises -- a database error also resolves to False (Phase 44:
+        this is a permission gate, not a display value; it must not
+        fail open).
+        """
+        try:
+            subscription = self._get_or_create(telegram_id)
+            return subscription.plan in SIGNAL_ACCESS_PLANS
+        except Exception as e:
+            logger.warning(f"has_signal_access failed for telegram_id={telegram_id}: {e}")
+            return False
 
     def upgrade_request(self, telegram_id) -> SubscriptionServiceResult:
         """

@@ -24,7 +24,12 @@ language_keyboard() since Phase 34), consistent with how /addadmin,
 signal_handler and history_handler (Phase 38) are real: they call
 telegram.signal_service.SignalService (read-only) and format the
 result via telegram.signal_formatter.SignalFormatter. Both are USER
-commands -- no permission tier required.
+commands (no command_router permission tier). signal_handler (Phase
+44) additionally gates on telegram.signal_access_service.
+SignalAccessService: FREE-plan users are denied with a static
+upgrade message, PREMIUM/VIP and OWNER/ADMIN pass through.
+history_handler is deliberately left ungated -- see its own
+docstring.
 
 admin_handler, addadmin_handler, removeadmin_handler, system_handler,
 stats_handler, users_handler, userinfo_handler, and broadcast_handler
@@ -81,6 +86,7 @@ from telegram.signal_service import SignalService
 from telegram.signal_formatter import SignalFormatter
 from telegram.subscription_service import SubscriptionService
 from telegram.notification_service import NotificationService
+from telegram.signal_access_service import SignalAccessService
 from telegram.permissions import is_owner
 
 
@@ -347,11 +353,23 @@ async def notifications_handler(telegram_id=None, args=None) -> str:
     return "Notifications enabled." if normalized == "on" else "Notifications disabled."
 
 
-async def signal_handler() -> str:
+async def signal_handler(telegram_id=None) -> str:
     """
-    /signal -> SignalService.get_latest_signal() -> SignalFormatter.
-    USER command, no permission required. Never raises.
+    /signal -> SignalAccessService gate (Phase 44: FREE plan denied;
+    PREMIUM/VIP plans and OWNER/ADMIN allowed) -> SignalService.
+    get_latest_signal() -> SignalFormatter. No command_router
+    permission tier (still USER-level routing) -- the plan check
+    happens inside the handler, not at the command-router layer, since
+    it depends on subscription state, not Telegram admin/owner role.
+    Never raises.
     """
+    try:
+        access_service = SignalAccessService()
+        if not access_service.can_access_signal(telegram_id):
+            return access_service.denied_message(telegram_id)
+    except Exception as e:
+        return f"Could not check signal access: {e}"
+
     try:
         result = SignalService().get_latest_signal()
     except Exception as e:
@@ -366,7 +384,12 @@ async def signal_handler() -> str:
 async def history_handler() -> str:
     """
     /history -> SignalService.get_signal_history() -> SignalFormatter.
-    USER command, no permission required. Never raises.
+    USER command, no permission required. Deliberately NOT gated by
+    SignalAccessService (Phase 44 design decision): a FREE user can
+    browse past signals but not the live one -- /history is the
+    product-discovery funnel that shows GoldBot's output is real
+    before a user decides whether to upgrade, while /signal is the
+    thing worth paying for. Never raises.
     """
     try:
         result = SignalService().get_signal_history(limit=5)
