@@ -8,9 +8,11 @@ Shape:
 start_handler() and profile_handler() are real (Phase 33 -- User
 Profile Foundation; Phase 34 -- Command Wiring Foundation): they call
 telegram.user_service.UserService and return plain text. help_handler,
-signal_handler, history_handler, status_handler, and about_handler
-(Phase 34) return static text -- no service backs them yet, so they
-stay simple and dependency-free until a later phase adds one.
+signal_handler, history_handler, status_handler, about_handler
+(Phase 34), and settings_handler, language_handler, risk_handler,
+strategy_handler, timeframe_handler (Phase 36) return static text --
+no service backs them yet, so they stay simple and dependency-free
+until a later phase adds one.
 
 A handler must never import database.* or core.pipeline directly --
 only Handler -> Service. telegram.command_router routes incoming
@@ -86,6 +88,31 @@ async def profile_handler(telegram_id) -> str:
         f"Timeframe: {p.timeframe}\n"
         f"Created: {p.created_at}"
     )
+
+
+async def settings_handler() -> str:
+    """/settings -> placeholder. Real settings editor is a later phase."""
+    return "Settings management is not available yet."
+
+
+async def language_handler() -> str:
+    """/language -> placeholder. Real language switching is a later phase."""
+    return "Language selection is not available yet."
+
+
+async def risk_handler() -> str:
+    """/risk -> placeholder. Real risk-percent editing is a later phase."""
+    return "Risk settings are not available yet."
+
+
+async def strategy_handler() -> str:
+    """/strategy -> placeholder. Real trading-style editing is a later phase."""
+    return "Strategy settings are not available yet."
+
+
+async def timeframe_handler() -> str:
+    """/timeframe -> placeholder. Real timeframe editing is a later phase."""
+    return "Timeframe settings are not available yet."
 
 
 async def signal_handler() -> str:
