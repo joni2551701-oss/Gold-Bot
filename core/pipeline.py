@@ -1,3 +1,4 @@
+import time
 from typing import List
 
 from data.market_data import MarketDataNormalizer
@@ -14,6 +15,14 @@ from database.signal_record import SignalRecord, create_signal_record
 from core.logger import setup_logger
 
 logger = setup_logger("TradingPipeline")
+
+# Phase 53 performance monitoring: any single stage taking longer than
+# this is logged as a WARNING (monitoring only -- never blocks, never
+# retries, never changes behavior). 2s comfortably covers this
+# pipeline's own compute (sub-millisecond per stage, benchmarked in
+# docs/performance_report.md) while still catching a slow network call
+# (Market Data fetch, Telegram delivery) worth knowing about.
+SLOW_OPERATION_THRESHOLD_SECONDS = 2.0
 
 
 class TradingPipeline:
@@ -68,6 +77,19 @@ class TradingPipeline:
         # default/backtesting run.
         self.signal_repository = SignalRepository() if persist_signals else None
 
+    def _log_stage(self, stage: str, duration: float) -> None:
+        """
+        Phase 53 performance monitoring: one consistent log line per
+        stage, plus a WARNING if it crossed SLOW_OPERATION_THRESHOLD_SECONDS.
+        Monitoring only -- never raises, never alters the stage's result.
+        """
+        logger.info(f"[{self.symbol}|{self.interval}] stage={stage} duration={duration:.3f}s")
+        if duration > SLOW_OPERATION_THRESHOLD_SECONDS:
+            logger.warning(
+                f"slow_operation module=TradingPipeline stage={stage} "
+                f"duration={duration:.3f}s threshold={SLOW_OPERATION_THRESHOLD_SECONDS}s"
+            )
+
     def run(self) -> dict:
         """
         Runs one full pipeline cycle: fetch candles, build context,
@@ -79,36 +101,51 @@ class TradingPipeline:
         Notifier, and (only if persist_signals=True) persist a
         SignalRecord for every candidate via the SignalRepository.
         """
+        pipeline_start = time.perf_counter()
+        logger.info(f"[{self.symbol}|{self.interval}] pipeline_started")
+
+        t0 = time.perf_counter()
         candles = self.data_normalizer.get_candles(
             self.symbol,
             self.interval,
             self.outputsize,
         )
+        self._log_stage("market_data", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Fetched {len(candles)} candles.")
 
+        t0 = time.perf_counter()
         context = build_context_snapshot(candles)
+        self._log_stage("context", time.perf_counter() - t0)
 
         # NOTE: SignalEngine.generate_signals() already runs StrategyManager
         # internally. StrategyManager must not be called separately here,
         # or every strategy would execute twice against the same context.
+        t0 = time.perf_counter()
         signal_candidates = self.signal_engine.generate_signals(context)
+        self._log_stage("signal", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Generated {len(signal_candidates)} signal candidate(s).")
 
+        t0 = time.perf_counter()
         ai_results: List[AIAnalysisResult] = [
             self.ai_analyzer.analyze(candidate, context)
             for candidate in signal_candidates
         ]
+        self._log_stage("ai", time.perf_counter() - t0)
 
+        t0 = time.perf_counter()
         decisions: List[TradeDecision] = [
             self.decision_engine.evaluate(candidate, ai_result)
             for candidate, ai_result in zip(signal_candidates, ai_results)
         ]
+        self._log_stage("decision", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Produced {len(decisions)} trade decision(s).")
 
+        t0 = time.perf_counter()
         risk_results: List[RiskResult] = [
             self.risk_manager.evaluate(decision)
             for decision in decisions
         ]
+        self._log_stage("risk", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Produced {len(risk_results)} risk result(s).")
 
         # Only a candidate the Decision Engine APPROVEd AND the Risk
@@ -135,6 +172,7 @@ class TradingPipeline:
             else None
         )
 
+        t0 = time.perf_counter()
         telegram_messages: List[str] = []
         if best_index is not None:
             telegram_messages = [
@@ -145,8 +183,10 @@ class TradingPipeline:
                     risk_results[best_index],
                 )
             ]
+        self._log_stage("telegram_format", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Produced {len(telegram_messages)} telegram message(s).")
 
+        t0 = time.perf_counter()
         notification_results: List[bool] = []
         if self.send_notifications:
             # send_messages() delivers the whole batch through one
@@ -159,7 +199,9 @@ class TradingPipeline:
                 f"[{self.symbol}|{self.interval}] Sent {sum(notification_results)}/"
                 f"{len(notification_results)} telegram notification(s)."
             )
+        self._log_stage("telegram_delivery", time.perf_counter() - t0)
 
+        t0 = time.perf_counter()
         signal_records: List[SignalRecord] = []
         if self.persist_signals:
             for candidate, decision, risk_result in zip(signal_candidates, decisions, risk_results):
@@ -170,6 +212,10 @@ class TradingPipeline:
                 self.signal_repository.save_signal_record(record)
                 signal_records.append(record)
             logger.info(f"[{self.symbol}|{self.interval}] Persisted {len(signal_records)} signal record(s).")
+        self._log_stage("database", time.perf_counter() - t0)
+
+        total_duration = time.perf_counter() - pipeline_start
+        logger.info(f"[{self.symbol}|{self.interval}] pipeline_finished duration={total_duration:.3f}s")
 
         return {
             "context": context,
