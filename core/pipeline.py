@@ -5,7 +5,7 @@ from context.context_orchestrator import build_context_snapshot
 from signals.signal_engine import SignalEngine
 from ai.ai_analyzer import AIAnalyzer, AIAnalysisResult
 from decision.decision_engine import DecisionEngine
-from decision.models import TradeDecision
+from decision.models import TradeDecision, DecisionAction
 from risk.risk_manager import RiskManager, RiskResult
 from telegram.signal_formatter import SignalFormatter
 from telegram.notifier import Notifier
@@ -26,11 +26,20 @@ class TradingPipeline:
     pipeline (Phase 27.2+). Risk Layer output is a sizing suggestion
     only -- no MT5/broker connection, no order execution.
 
-    Telegram messages are always generated, but never sent unless
+    Telegram messages are only ever generated for the single best
+    candidate that both the Decision Engine APPROVEd and the Risk
+    Manager approved (action == APPROVE and risk_result.approved is
+    True) -- REJECT, NO_TRADE, and risk-blocked candidates (including
+    invalid SL/TP geometry, caught by RiskManager.validate_geometry())
+    are never formatted or sent. When multiple candidates qualify in
+    one cycle, only the highest-confidence one is sent -- at most one
+    Telegram message per pipeline run. Delivery only happens if
     send_notifications=True is passed explicitly. Signal records are
-    always built in memory, but never written to the database unless
-    persist_signals=True is passed explicitly. This keeps
-    backtesting/testing runs free of side effects by default.
+    always built for every candidate regardless of approval (so
+    rejected/blocked signals remain available for analytics), but
+    only written to the database if persist_signals=True is passed
+    explicitly. This keeps backtesting/testing runs free of side
+    effects by default.
     """
 
     def __init__(
@@ -64,10 +73,11 @@ class TradingPipeline:
         Runs one full pipeline cycle: fetch candles, build context,
         generate signal candidates, evaluate each with the AI Analyzer,
         produce a TradeDecision per candidate, pass each decision
-        through the Risk Layer, format a Telegram message per
-        candidate, (only if send_notifications=True) deliver each
-        message via the Notifier, and (only if persist_signals=True)
-        persist a SignalRecord per candidate via the SignalRepository.
+        through the Risk Layer, select the single best APPROVE+approved
+        candidate (if any) and format one Telegram message for it,
+        (only if send_notifications=True) deliver that message via the
+        Notifier, and (only if persist_signals=True) persist a
+        SignalRecord for every candidate via the SignalRepository.
         """
         candles = self.data_normalizer.get_candles(
             self.symbol,
@@ -101,12 +111,40 @@ class TradingPipeline:
         ]
         logger.info(f"[{self.symbol}|{self.interval}] Produced {len(risk_results)} risk result(s).")
 
-        telegram_messages: List[str] = [
-            self.signal_formatter.format_signal(candidate, ai_result, decision, risk_result)
-            for candidate, ai_result, decision, risk_result in zip(
-                signal_candidates, ai_results, decisions, risk_results
-            )
+        # Only a candidate the Decision Engine APPROVEd AND the Risk
+        # Manager approved (valid geometry, valid stop-loss distance)
+        # is eligible for Telegram. REJECT/NO_TRADE decisions and
+        # risk-blocked candidates are still returned in "decisions"/
+        # "risk_results" and still persisted below, but must never be
+        # formatted or sent -- this is the fix for rejected/blocked
+        # signals reaching production users.
+        approved_indices = [
+            i
+            for i, (decision, risk_result) in enumerate(zip(decisions, risk_results))
+            if decision.action == DecisionAction.APPROVE and risk_result.approved
         ]
+
+        # A single pipeline cycle can produce several independently
+        # APPROVEd candidates (one per strategy). At most one
+        # notification may ever be sent per cycle, so the
+        # highest-confidence approved candidate is selected as the
+        # winner and the rest are dropped from the Telegram path.
+        best_index = (
+            max(approved_indices, key=lambda i: decisions[i].confidence)
+            if approved_indices
+            else None
+        )
+
+        telegram_messages: List[str] = []
+        if best_index is not None:
+            telegram_messages = [
+                self.signal_formatter.format_signal(
+                    signal_candidates[best_index],
+                    ai_results[best_index],
+                    decisions[best_index],
+                    risk_results[best_index],
+                )
+            ]
         logger.info(f"[{self.symbol}|{self.interval}] Produced {len(telegram_messages)} telegram message(s).")
 
         notification_results: List[bool] = []

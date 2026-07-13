@@ -1,6 +1,7 @@
 from typing import Optional
 from dataclasses import dataclass
 from decision.models import TradeDecision, DecisionAction
+from signals.models import SignalCandidate, SignalType
 
 
 @dataclass(frozen=True)
@@ -62,6 +63,20 @@ class RiskManager:
             )
 
         signal = trade_decision.signal
+
+        if not self.validate_geometry(signal):
+            return RiskResult(
+                approved=False,
+                lot_size=0.0,
+                risk_amount=0.0,
+                risk_reward=0.0,
+                reason=(
+                    f"Invalid {signal.signal_type.value} geometry: "
+                    f"entry={signal.entry}, stop_loss={signal.stop_loss}, "
+                    f"take_profit={signal.take_profit}."
+                ),
+            )
+
         stop_loss_distance = abs(signal.entry - signal.stop_loss)
 
         if not self.validate_stop_loss_distance(stop_loss_distance):
@@ -145,3 +160,19 @@ class RiskManager:
         A stop-loss distance must be strictly positive to be usable.
         """
         return stop_loss_distance > 0
+
+    def validate_geometry(
+        self,
+        signal: SignalCandidate,
+    ) -> bool:
+        """
+        A BUY must risk downward and target upward
+        (stop_loss < entry < take_profit); a SELL is the mirror
+        (take_profit < entry < stop_loss). Any other arrangement is
+        not executable and must never reach a trader.
+        """
+        if signal.signal_type == SignalType.BUY:
+            return signal.stop_loss < signal.entry < signal.take_profit
+        if signal.signal_type == SignalType.SELL:
+            return signal.take_profit < signal.entry < signal.stop_loss
+        return False
