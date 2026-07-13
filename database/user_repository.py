@@ -88,6 +88,13 @@ class UserRepository:
             row = cursor.fetchone()
             return _row_to_record(row) if row else None
 
+    def count_users(self) -> int:
+        """Total registered users. Used by AdminService statistics."""
+        with self.db as conn:
+            cursor = conn.execute("SELECT COUNT(*) as count FROM users")
+            row = cursor.fetchone()
+            return row["count"] if row else 0
+
     def update_user(self, telegram_id, **fields) -> bool:
         """
         Updates one or more allowed columns for a user. Unknown field

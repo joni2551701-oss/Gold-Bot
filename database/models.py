@@ -64,3 +64,25 @@ def init_user_schema(connection: sqlite3.Connection):
     except sqlite3.Error as e:
         logger.error(f"Failed to initialize users schema: {e}")
         raise
+
+
+def init_admin_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the admins table schema (Owner/Admin permission
+    foundation). Independent of the signals/users tables.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS admins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id TEXT UNIQUE NOT NULL,
+        role TEXT DEFAULT 'ADMIN',
+        created_at TEXT NOT NULL
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (admins table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize admins schema: {e}")
+        raise

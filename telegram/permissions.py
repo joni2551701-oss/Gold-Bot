@@ -3,11 +3,13 @@ Telegram Layer — permission tier foundation.
 
 Classifies a Telegram user_id into OWNER / ADMIN / USER. No business
 logic beyond tier classification -- what each tier is allowed to do
-is a decision for handlers.py / user_service.py / admin_service.py in
-a later phase.
+is command_router.py's decision (Phase 37: per-command permission
+check against telegram.commands.OWNER_COMMANDS / ADMIN_COMMANDS).
 
 OWNER_ID is sourced from core.secrets.Secrets (env var
-TELEGRAM_OWNER_ID), never hardcoded.
+TELEGRAM_OWNER_ID), never hardcoded. ADMIN membership is sourced from
+the 'admins' table via telegram.admin_service.AdminService, never
+hardcoded.
 """
 
 from enum import Enum
@@ -36,11 +38,18 @@ def is_owner(user_id) -> bool:
 
 def is_admin(user_id) -> bool:
     """
-    Foundation only: no admin list source exists yet (no database
-    schema change in this phase). Only the owner currently qualifies
-    as admin; a real admin list will be wired in a future phase.
+    OWNER always counts as ADMIN. Otherwise checks the 'admins' table
+    via AdminService. Never raises: a database failure or an
+    unresolvable user_id resolves to False (fail-closed -- an unknown
+    user stays USER, never silently promoted).
     """
-    return is_owner(user_id)
+    if is_owner(user_id):
+        return True
+    try:
+        from telegram.admin_service import AdminService
+        return AdminService().is_admin(user_id)
+    except Exception:
+        return False
 
 
 def is_user(user_id) -> bool:

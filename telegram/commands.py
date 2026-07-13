@@ -22,9 +22,18 @@ COMMANDS = {
     "about": "About GoldBot",
 }
 
-ADMIN_COMMANDS = {
+OWNER_COMMANDS = {
     "admin": "Open admin panel",
-    "users": "List users",
+    "addadmin": "Add a new admin",
+    "removeadmin": "Remove an admin",
+    "system": "Show system status",
+    "broadcast": "Broadcast a message to all users",
+}
+
+ADMIN_COMMANDS = {
     "stats": "Show bot statistics",
+    "users": "List users",
+    "userinfo": "Show a user's info",
+    "vipinfo": "Show VIP info",
     "broadcast": "Broadcast a message to all users",
 }
