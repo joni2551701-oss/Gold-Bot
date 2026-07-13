@@ -9,6 +9,12 @@ from core.logger import setup_logger
 
 logger = setup_logger("AdminRepository")
 
+# Phase 50 query optimization: named columns matching exactly what
+# _row_to_record() reads, instead of SELECT * -- deliberately excludes
+# 'id' (not part of AdminRecord). Row access below is by column name
+# (sqlite3.Row), so column order is irrelevant.
+_ADMIN_SELECT_COLUMNS = "SELECT telegram_id, role, created_at"
+
 
 def _row_to_record(row) -> AdminRecord:
     return AdminRecord(
@@ -66,7 +72,7 @@ class AdminRepository:
     def get_admin(self, telegram_id) -> Optional[AdminRecord]:
         with self.db as conn:
             cursor = conn.execute(
-                "SELECT * FROM admins WHERE telegram_id = ?", (str(telegram_id),)
+                _ADMIN_SELECT_COLUMNS + " FROM admins WHERE telegram_id = ?", (str(telegram_id),)
             )
             row = cursor.fetchone()
             return _row_to_record(row) if row else None
@@ -80,5 +86,5 @@ class AdminRepository:
 
     def get_all_admins(self) -> List[AdminRecord]:
         with self.db as conn:
-            cursor = conn.execute("SELECT * FROM admins")
+            cursor = conn.execute(_ADMIN_SELECT_COLUMNS + " FROM admins")
             return [_row_to_record(row) for row in cursor.fetchall()]

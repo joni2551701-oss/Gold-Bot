@@ -49,6 +49,31 @@ def init_schema(connection: sqlite3.Connection):
         raise
 
     _migrate_signals_schema(connection)
+    _create_signals_indexes(connection)
+
+
+def _create_signals_indexes(connection: sqlite3.Connection):
+    """
+    Phase 50 index audit: 'status' (SignalRepository.get_open_signals()/
+    get_closed_signals()) and 'created_at' (get_latest_signal()/
+    get_recent_signals()'s ORDER BY) are the two columns actually
+    filtered/sorted on today. signal_id already has an implicit index
+    via its UNIQUE constraint, so it is not duplicated here.
+    CREATE INDEX IF NOT EXISTS is idempotent -- safe on every
+    construction, including against a database that already has these
+    indexes from a prior run.
+    """
+    statements = [
+        "CREATE INDEX IF NOT EXISTS idx_signals_status ON signals(status)",
+        "CREATE INDEX IF NOT EXISTS idx_signals_created_at ON signals(created_at)",
+    ]
+    try:
+        for statement in statements:
+            connection.execute(statement)
+        connection.commit()
+    except sqlite3.Error as e:
+        logger.error(f"Failed to create signals indexes: {e}")
+        raise
 
 
 def _migrate_signals_schema(connection: sqlite3.Connection):
@@ -126,6 +151,31 @@ def init_user_schema(connection: sqlite3.Connection):
         raise
 
     _migrate_users_schema(connection)
+    _create_users_indexes(connection)
+
+
+def _create_users_indexes(connection: sqlite3.Connection):
+    """
+    Phase 50 index audit: 'status' is filtered by get_active_users()/
+    count_by_status(); 'created_at' is filtered by
+    count_users_created_today() (via date(created_at) = date('now') --
+    note this specific function-wrapped predicate will not itself be
+    accelerated by a plain B-tree index, but the column is kept
+    indexed for any future direct created_at range query). telegram_id
+    already has an implicit index via its UNIQUE constraint, so it is
+    not duplicated here. CREATE INDEX IF NOT EXISTS is idempotent.
+    """
+    statements = [
+        "CREATE INDEX IF NOT EXISTS idx_users_status ON users(status)",
+        "CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at)",
+    ]
+    try:
+        for statement in statements:
+            connection.execute(statement)
+        connection.commit()
+    except sqlite3.Error as e:
+        logger.error(f"Failed to create users indexes: {e}")
+        raise
 
 
 def _migrate_users_schema(connection: sqlite3.Connection):
@@ -229,6 +279,30 @@ def init_feedback_schema(connection: sqlite3.Connection):
         logger.info("Database schema (feedback table) initialized successfully.")
     except sqlite3.Error as e:
         logger.error(f"Failed to initialize feedback schema: {e}")
+        raise
+
+    _create_feedback_indexes(connection)
+
+
+def _create_feedback_indexes(connection: sqlite3.Connection):
+    """
+    Phase 50 index audit: 'status' is filtered by count_open_feedback();
+    'created_at' is sorted on by get_all_feedback()'s ORDER BY.
+    telegram_id has no current WHERE-clause usage anywhere in
+    FeedbackRepository, so it is intentionally not indexed here (no
+    query would benefit today -- see docs/database_architecture.md).
+    CREATE INDEX IF NOT EXISTS is idempotent.
+    """
+    statements = [
+        "CREATE INDEX IF NOT EXISTS idx_feedback_status ON feedback(status)",
+        "CREATE INDEX IF NOT EXISTS idx_feedback_created_at ON feedback(created_at)",
+    ]
+    try:
+        for statement in statements:
+            connection.execute(statement)
+        connection.commit()
+    except sqlite3.Error as e:
+        logger.error(f"Failed to create feedback indexes: {e}")
         raise
 
 

@@ -9,6 +9,16 @@ from core.logger import setup_logger
 
 logger = setup_logger("UserRepository")
 
+# Phase 50 query optimization: named columns matching exactly what
+# _row_to_record() reads, instead of SELECT * -- deliberately excludes
+# 'id' (repository-internal rowid, not part of UserRecord) and
+# 'updated_at' (also not part of UserRecord). Row access below is by
+# column name (sqlite3.Row), so column order here is irrelevant.
+_USER_SELECT_COLUMNS = (
+    "SELECT telegram_id, username, language, trading_style, risk_percent, "
+    "timeframe, created_at, strategy, notifications_enabled, status, last_activity"
+)
+
 
 def _row_to_record(row) -> UserRecord:
     return UserRecord(
@@ -96,7 +106,7 @@ class UserRepository:
     def get_user(self, telegram_id) -> Optional[UserRecord]:
         with self.db as conn:
             cursor = conn.execute(
-                "SELECT * FROM users WHERE telegram_id = ?", (str(telegram_id),)
+                _USER_SELECT_COLUMNS + " FROM users WHERE telegram_id = ?", (str(telegram_id),)
             )
             row = cursor.fetchone()
             return _row_to_record(row) if row else None
@@ -111,7 +121,7 @@ class UserRepository:
     def get_all_users(self) -> List[UserRecord]:
         """All registered users. Used by AdminService.broadcast()."""
         with self.db as conn:
-            cursor = conn.execute("SELECT * FROM users")
+            cursor = conn.execute(_USER_SELECT_COLUMNS + " FROM users")
             return [_row_to_record(row) for row in cursor.fetchall()]
 
     def count_active_users(self) -> int:
@@ -169,7 +179,7 @@ class UserRepository:
         notification-respecting broadcast/signal send (Phase 43).
         """
         with self.db as conn:
-            cursor = conn.execute("SELECT * FROM users WHERE notifications_enabled = 1")
+            cursor = conn.execute(_USER_SELECT_COLUMNS + " FROM users WHERE notifications_enabled = 1")
             return [_row_to_record(row) for row in cursor.fetchall()]
 
     def update_status(self, telegram_id, status: str) -> bool:
@@ -206,7 +216,7 @@ class UserRepository:
     def get_active_users(self) -> List[UserRecord]:
         """Users with status='ACTIVE'."""
         with self.db as conn:
-            cursor = conn.execute("SELECT * FROM users WHERE status = 'ACTIVE'")
+            cursor = conn.execute(_USER_SELECT_COLUMNS + " FROM users WHERE status = 'ACTIVE'")
             return [_row_to_record(row) for row in cursor.fetchall()]
 
     def count_by_status(self, status: str) -> int:

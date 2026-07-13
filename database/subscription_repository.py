@@ -9,6 +9,12 @@ from core.logger import setup_logger
 
 logger = setup_logger("SubscriptionRepository")
 
+# Phase 50 query optimization: named columns matching exactly what
+# _row_to_record() reads, instead of SELECT * -- deliberately excludes
+# 'id' and 'updated_at' (not part of SubscriptionRecord). Row access
+# below is by column name (sqlite3.Row), so column order is irrelevant.
+_SUBSCRIPTION_SELECT_COLUMNS = "SELECT telegram_id, plan, status, started_at, expires_at"
+
 
 def _row_to_record(row) -> SubscriptionRecord:
     return SubscriptionRecord(
@@ -80,7 +86,7 @@ class SubscriptionRepository:
     def get_subscription(self, telegram_id) -> Optional[SubscriptionRecord]:
         with self.db as conn:
             cursor = conn.execute(
-                "SELECT * FROM subscriptions WHERE telegram_id = ?", (str(telegram_id),)
+                _SUBSCRIPTION_SELECT_COLUMNS + " FROM subscriptions WHERE telegram_id = ?", (str(telegram_id),)
             )
             row = cursor.fetchone()
             return _row_to_record(row) if row else None
@@ -109,5 +115,5 @@ class SubscriptionRepository:
 
     def get_all_subscriptions(self) -> List[SubscriptionRecord]:
         with self.db as conn:
-            cursor = conn.execute("SELECT * FROM subscriptions")
+            cursor = conn.execute(_SUBSCRIPTION_SELECT_COLUMNS + " FROM subscriptions")
             return [_row_to_record(row) for row in cursor.fetchall()]
