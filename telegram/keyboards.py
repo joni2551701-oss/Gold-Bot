@@ -96,3 +96,23 @@ def admin_panel_keyboard():
             [InlineKeyboardButton(text="Admins", callback_data="admin_admins")],
         ]
     )
+
+
+def notifications_keyboard():
+    """
+    /notifications hint keyboard (Phase 43). Same command-based
+    interaction model as the other Phase 40/41 keyboards -- no
+    callback_query handler consumes these buttons; the real commands
+    are /notifications on and /notifications off. telegram/
+    command_router.py is out of scope for this phase (not in its
+    Files restriction list), so this keyboard is not wired into
+    command_router._KEYBOARD_BY_COMMAND -- it exists as a display
+    asset for a future phase to attach, same as admin_panel_keyboard()
+    was for several phases before Phase 41 wired it in.
+    """
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Enable Notifications", callback_data="notifications_on")],
+            [InlineKeyboardButton(text="Disable Notifications", callback_data="notifications_off")],
+        ]
+    )

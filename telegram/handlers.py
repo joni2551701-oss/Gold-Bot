@@ -51,6 +51,15 @@ commands -- no permission tier required. upgrade_handler is a
 foundation only: no payment gateway, no real plan change, just a
 static confirmation.
 
+notifications_handler (Phase 43) is real: it calls
+telegram.notification_service.NotificationService. USER command -- no
+permission tier required. Changes happen via command argument
+("/notifications on"/"off"), same interaction model as
+language_handler/risk_handler/etc. -- notifications_keyboard() exists
+in telegram/keyboards.py but is not wired to a reply here, since
+telegram/command_router.py (the only place a keyboard gets attached)
+is out of scope for this phase.
+
 A handler must never import database.* or core.pipeline directly --
 only Handler -> Service. telegram.command_router routes incoming
 commands to these functions and is the only place a keyboard
@@ -71,6 +80,7 @@ from telegram.admin_service import AdminService
 from telegram.signal_service import SignalService
 from telegram.signal_formatter import SignalFormatter
 from telegram.subscription_service import SubscriptionService
+from telegram.notification_service import NotificationService
 from telegram.permissions import is_owner
 
 
@@ -115,6 +125,7 @@ async def help_handler() -> str:
         "/risk\n"
         "/strategy\n"
         "/timeframe\n"
+        "/notifications\n"
         "💳 Plan\n"
         "/plan\n"
         "/subscription\n"
@@ -156,6 +167,8 @@ async def profile_handler(telegram_id) -> str:
         f"{p.timeframe}\n\n"
         "Plan:\n"
         f"{plan}\n\n"
+        "Notifications:\n"
+        f"{'ON' if p.notifications_enabled else 'OFF'}\n\n"
         "Created:\n"
         f"{p.created_at}"
     )
@@ -293,6 +306,45 @@ async def timeframe_handler(telegram_id=None, args=None) -> str:
     if not result.success:
         return f"Could not update timeframe: {result.reason}"
     return f"Timeframe updated to {normalized}."
+
+
+async def notifications_handler(telegram_id=None, args=None) -> str:
+    """
+    /notifications [on|off] -> NotificationService.enable_notifications()
+    / disable_notifications(). No argument shows current status plus a
+    usage hint. Never raises.
+    """
+    choice = _first_arg(args)
+    if choice is None:
+        try:
+            enabled = NotificationService().is_enabled(telegram_id)
+        except Exception:
+            enabled = True  # schema default
+        status_text = "ON ✅" if enabled else "OFF ❌"
+        return (
+            "Notifications\n\n"
+            "Current status:\n\n"
+            "Notifications:\n"
+            f"{status_text}\n\n"
+            "Options:\n\n"
+            "Enable\n"
+            "Disable\n\n"
+            "Use /notifications on or /notifications off."
+        )
+
+    normalized = choice.lower()
+    if normalized not in {"on", "off"}:
+        return "Invalid option. Use /notifications on or /notifications off."
+
+    try:
+        service = NotificationService()
+        result = service.enable_notifications(telegram_id) if normalized == "on" else service.disable_notifications(telegram_id)
+    except Exception as e:
+        return f"Could not update notifications: {e}"
+
+    if not result.success:
+        return f"Could not update notifications: {result.reason}"
+    return "Notifications enabled." if normalized == "on" else "Notifications disabled."
 
 
 async def signal_handler() -> str:

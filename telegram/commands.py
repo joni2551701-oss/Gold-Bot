@@ -23,6 +23,7 @@ COMMANDS = {
     "plan": "Plan information",
     "subscription": "Subscription status",
     "upgrade": "Upgrade foundation",
+    "notifications": "Manage notification preference",
 }
 
 OWNER_COMMANDS = {

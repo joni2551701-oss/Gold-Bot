@@ -284,17 +284,19 @@ class AdminService:
 
     def broadcast(self, message: str) -> AdminServiceResult:
         """
-        Sends `message` to every registered user. Never raises: a
-        total failure (empty message, no users, database error,
-        network error opening the loop) is reported as success=False
-        rather than propagating; a single recipient's delivery
-        failure is only ever counted, never fatal.
+        Sends `message` to every registered user who has notifications
+        enabled (Phase 43 -- respects users.notifications_enabled;
+        previously sent to every registered user regardless). Never
+        raises: a total failure (empty message, no eligible users,
+        database error, network error opening the loop) is reported as
+        success=False rather than propagating; a single recipient's
+        delivery failure is only ever counted, never fatal.
         """
         if not message or not message.strip():
             return AdminServiceResult(success=False, reason="Broadcast message is empty")
 
         try:
-            users = UserRepository().get_all_users()
+            users = UserRepository().get_notification_users()
         except Exception as e:
             logger.warning(f"broadcast failed to load users: {e}")
             return AdminServiceResult(success=False, reason=f"Database error: {e}")

@@ -164,3 +164,18 @@ class UserRepository:
 
     def update_notifications(self, telegram_id, enabled: bool) -> bool:
         return self.update_user(telegram_id, notifications_enabled=enabled)
+
+    def enable_notifications(self, telegram_id) -> bool:
+        return self.update_user(telegram_id, notifications_enabled=True)
+
+    def disable_notifications(self, telegram_id) -> bool:
+        return self.update_user(telegram_id, notifications_enabled=False)
+
+    def get_notification_users(self) -> List[UserRecord]:
+        """
+        Users with notifications_enabled=1 -- the recipient list for a
+        notification-respecting broadcast/signal send (Phase 43).
+        """
+        with self.db as conn:
+            cursor = conn.execute("SELECT * FROM users WHERE notifications_enabled = 1")
+            return [_row_to_record(row) for row in cursor.fetchall()]
