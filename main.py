@@ -4,6 +4,9 @@ from core.pipeline import TradingPipeline
 
 logger = setup_logger("GoldBot")
 
+logger.info("GoldBot starting...")
+logger.info("Configuration loaded.")
+
 
 class GoldBot:
     """
@@ -24,6 +27,7 @@ class GoldBot:
             send_notifications=True,
             persist_signals=True,
         )
+        logger.info("Trading Pipeline initialized.")
 
     def run(self):
         """
@@ -37,7 +41,9 @@ class GoldBot:
         logger.info("GoldBot started")
 
         try:
+            logger.info("Starting pipeline...")
             result = self.pipeline.run()
+            logger.info("Pipeline finished.")
             logger.info(
                 f"GoldBot run cycle completed: "
                 f"{len(result['signals'])} signal(s), "
@@ -47,8 +53,13 @@ class GoldBot:
             return result
 
         except Exception as e:
-            logger.error(f"GoldBot run failed: {e}")
+            # Fatal for this run (re-raised below): logger.exception()
+            # attaches the stack trace to the same log record, same
+            # message text and control flow as before.
+            logger.exception(f"GoldBot run failed: {e}")
             raise
+        finally:
+            logger.info("GoldBot finished.")
 
 
 if __name__ == "__main__":

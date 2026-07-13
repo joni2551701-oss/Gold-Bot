@@ -112,6 +112,9 @@ from telegram.notification_service import NotificationService
 from telegram.signal_access_service import SignalAccessService
 from telegram.feedback_service import FeedbackService
 from telegram.permissions import is_owner
+from core.logger import setup_logger
+
+logger = setup_logger("Handlers")
 
 
 async def start_handler(telegram_id, username=None) -> str:
@@ -131,20 +134,22 @@ async def start_handler(telegram_id, username=None) -> str:
     try:
         result = UserService().register_user(telegram_id, username)
     except Exception as e:
+        logger.warning(f"start_handler: register_user failed for telegram_id={telegram_id}: {e}")
         return f"Could not start: {e}"
 
     try:
         SubscriptionService().get_plan(telegram_id)
-    except Exception:
-        pass  # best-effort: a subscription hiccup must not break /start
+    except Exception as e:
+        # best-effort: a subscription hiccup must not break /start
+        logger.warning(f"start_handler: get_plan failed for telegram_id={telegram_id}: {e}")
 
     if result.success:
         return "Profile created."
     if result.reason == "User already exists":
         try:
             UserService().touch_activity(telegram_id)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"start_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
         return "User already exists."
     return f"Could not start: {result.reason}"
 
@@ -185,12 +190,13 @@ async def profile_handler(telegram_id) -> str:
     """
     try:
         UserService().touch_activity(telegram_id)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"profile_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
     try:
         result = UserService().get_profile(telegram_id)
     except Exception as e:
+        logger.warning(f"profile_handler: get_profile failed for telegram_id={telegram_id}: {e}")
         return f"Could not load profile: {e}"
 
     if not result.success or result.profile is None:
@@ -233,8 +239,8 @@ async def settings_handler(telegram_id=None) -> str:
     """
     try:
         UserService().touch_activity(telegram_id)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"settings_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
     return (
         "Settings\n\n"
@@ -281,6 +287,7 @@ async def language_handler(telegram_id=None, args=None) -> str:
     try:
         result = UserService().change_language(telegram_id, normalized)
     except Exception as e:
+        logger.warning(f"language_handler: change_language failed for telegram_id={telegram_id}: {e}")
         return f"Could not update language: {e}"
 
     if not result.success:
@@ -305,6 +312,7 @@ async def risk_handler(telegram_id=None, args=None) -> str:
     try:
         result = UserService().change_risk(telegram_id, float(normalized))
     except Exception as e:
+        logger.warning(f"risk_handler: change_risk failed for telegram_id={telegram_id}: {e}")
         return f"Could not update risk: {e}"
 
     if not result.success:
@@ -337,6 +345,7 @@ async def strategy_handler(telegram_id=None, args=None) -> str:
     try:
         result = UserService().change_strategy(telegram_id, normalized)
     except Exception as e:
+        logger.warning(f"strategy_handler: change_strategy failed for telegram_id={telegram_id}: {e}")
         return f"Could not update strategy: {e}"
 
     if not result.success:
@@ -361,6 +370,7 @@ async def timeframe_handler(telegram_id=None, args=None) -> str:
     try:
         result = UserService().change_timeframe(telegram_id, normalized)
     except Exception as e:
+        logger.warning(f"timeframe_handler: change_timeframe failed for telegram_id={telegram_id}: {e}")
         return f"Could not update timeframe: {e}"
 
     if not result.success:
@@ -378,7 +388,8 @@ async def notifications_handler(telegram_id=None, args=None) -> str:
     if choice is None:
         try:
             enabled = NotificationService().is_enabled(telegram_id)
-        except Exception:
+        except Exception as e:
+            logger.warning(f"notifications_handler: is_enabled failed for telegram_id={telegram_id}: {e}")
             enabled = True  # schema default
         status_text = "ON ✅" if enabled else "OFF ❌"
         return (
@@ -400,6 +411,7 @@ async def notifications_handler(telegram_id=None, args=None) -> str:
         service = NotificationService()
         result = service.enable_notifications(telegram_id) if normalized == "on" else service.disable_notifications(telegram_id)
     except Exception as e:
+        logger.warning(f"notifications_handler: update failed for telegram_id={telegram_id}: {e}")
         return f"Could not update notifications: {e}"
 
     if not result.success:
@@ -419,19 +431,21 @@ async def signal_handler(telegram_id=None) -> str:
     """
     try:
         UserService().touch_activity(telegram_id)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"signal_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
     try:
         access_service = SignalAccessService()
         if not access_service.can_access_signal(telegram_id):
             return access_service.denied_message(telegram_id)
     except Exception as e:
+        logger.warning(f"signal_handler: can_access_signal failed for telegram_id={telegram_id}: {e}")
         return f"Could not check signal access: {e}"
 
     try:
         result = SignalService().get_latest_signal()
     except Exception as e:
+        logger.warning(f"signal_handler: get_latest_signal failed for telegram_id={telegram_id}: {e}")
         return f"Could not load signal: {e}"
 
     if not result.success or result.signal is None:
@@ -452,12 +466,13 @@ async def history_handler(telegram_id=None) -> str:
     """
     try:
         UserService().touch_activity(telegram_id)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"history_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
     try:
         result = SignalService().get_signal_history(limit=5)
     except Exception as e:
+        logger.warning(f"history_handler: get_signal_history failed for telegram_id={telegram_id}: {e}")
         return f"Could not load history: {e}"
 
     if not result.success or not result.signals:
@@ -489,8 +504,8 @@ def _current_plan(telegram_id) -> str:
         result = SubscriptionService().get_plan(telegram_id)
         if result.success and result.subscription is not None:
             return result.subscription.plan
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"_current_plan: get_plan failed for telegram_id={telegram_id}: {e}")
     return "FREE"
 
 
@@ -501,12 +516,13 @@ async def plan_handler(telegram_id=None) -> str:
     """
     try:
         UserService().touch_activity(telegram_id)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"plan_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
     try:
         result = SubscriptionService().get_plan(telegram_id)
     except Exception as e:
+        logger.warning(f"plan_handler: get_plan failed for telegram_id={telegram_id}: {e}")
         return f"Could not load plan: {e}"
 
     if not result.success or result.subscription is None:
@@ -532,12 +548,13 @@ async def subscription_handler(telegram_id=None) -> str:
     """
     try:
         UserService().touch_activity(telegram_id)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"subscription_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
     try:
         result = SubscriptionService().get_subscription(telegram_id)
     except Exception as e:
+        logger.warning(f"subscription_handler: get_subscription failed for telegram_id={telegram_id}: {e}")
         return f"Could not load subscription: {e}"
 
     if not result.success or result.subscription is None:
@@ -563,8 +580,9 @@ async def upgrade_handler(telegram_id=None) -> str:
     """
     try:
         SubscriptionService().upgrade_request(telegram_id)
-    except Exception:
-        pass  # the confirmation text below is static either way
+    except Exception as e:
+        # the confirmation text below is static either way
+        logger.warning(f"upgrade_handler: upgrade_request failed for telegram_id={telegram_id}: {e}")
 
     return "Upgrade request received.\n\nPremium plans will be available soon."
 
@@ -577,8 +595,8 @@ async def feedback_handler(telegram_id=None, args=None) -> str:
     """
     try:
         UserService().touch_activity(telegram_id)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"feedback_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
     message = (args or "").strip()
     if not message:
@@ -587,6 +605,7 @@ async def feedback_handler(telegram_id=None, args=None) -> str:
     try:
         result = FeedbackService().send_feedback(telegram_id, message)
     except Exception as e:
+        logger.warning(f"feedback_handler: send_feedback failed for telegram_id={telegram_id}: {e}")
         return f"Could not send feedback: {e}"
 
     if not result.success or result.feedback is None:
@@ -638,6 +657,7 @@ async def addadmin_handler(args=None) -> str:
     try:
         result = AdminService().add_admin(target_id)
     except Exception as e:
+        logger.warning(f"addadmin_handler: add_admin failed for target_id={target_id}: {e}")
         return f"Could not add admin: {e}"
 
     if result.success:
@@ -656,6 +676,7 @@ async def removeadmin_handler(args=None) -> str:
     try:
         result = AdminService().remove_admin(target_id)
     except Exception as e:
+        logger.warning(f"removeadmin_handler: remove_admin failed for target_id={target_id}: {e}")
         return f"Could not remove admin: {e}"
 
     if result.success:
@@ -670,7 +691,8 @@ async def system_handler() -> str:
     """
     try:
         status = AdminService().get_system_status()
-    except Exception:
+    except Exception as e:
+        logger.warning(f"system_handler: get_system_status failed: {e}")
         return "Could not load system status."
 
     return (
@@ -706,6 +728,8 @@ async def broadcast_handler(args=None) -> str:
     try:
         result = await AdminService().broadcast(message)
     except Exception as e:
+        # message content intentionally not logged (Phase 51 privacy rule)
+        logger.warning(f"broadcast_handler: broadcast failed: {e}")
         return f"Could not broadcast: {e}"
 
     if not result.success or result.broadcast is None:
@@ -725,6 +749,7 @@ async def stats_handler() -> str:
     try:
         result = AdminService().get_statistics()
     except Exception as e:
+        logger.warning(f"stats_handler: get_statistics failed: {e}")
         return f"Could not load statistics: {e}"
 
     if not result.success or result.statistics is None:
@@ -752,6 +777,7 @@ async def users_handler() -> str:
     try:
         result = AdminService().get_user_summary()
     except Exception as e:
+        logger.warning(f"users_handler: get_user_summary failed: {e}")
         return f"Could not load users: {e}"
 
     if not result.success or result.user_summary is None:
@@ -785,6 +811,7 @@ async def userinfo_handler(args=None) -> str:
     try:
         result = UserService().get_profile(target_id)
     except Exception as e:
+        logger.warning(f"userinfo_handler: get_profile failed for target_id={target_id}: {e}")
         return f"Could not load user info: {e}"
 
     if not result.success or result.profile is None:
@@ -795,7 +822,8 @@ async def userinfo_handler(args=None) -> str:
     try:
         sub_result = SubscriptionService().get_subscription(target_id)
         sub = sub_result.subscription if sub_result.success else None
-    except Exception:
+    except Exception as e:
+        logger.warning(f"userinfo_handler: get_subscription failed for target_id={target_id}: {e}")
         sub = None
     plan = sub.plan if sub is not None else "FREE"
     sub_status = sub.status if sub is not None else "ACTIVE"
@@ -842,6 +870,7 @@ async def feedbacks_handler() -> str:
     try:
         result = AdminService().get_feedback()
     except Exception as e:
+        logger.warning(f"feedbacks_handler: get_feedback failed: {e}")
         return f"Could not load feedback: {e}"
 
     if not result.success:

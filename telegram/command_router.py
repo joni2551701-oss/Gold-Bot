@@ -135,6 +135,10 @@ async def route_command(command_text: str, telegram_id=None, username=None) -> R
     required_level = _required_level(command)
     user_level = get_permission_level(telegram_id)
     if not _level_satisfies(user_level, required_level):
+        logger.info(
+            f"Permission denied: telegram_id={telegram_id} ({user_level.value}) "
+            f"attempted /{command} (requires {required_level.value})."
+        )
         return RouterResult(text=PERMISSION_DENIED_TEXT)
 
     handler = getattr(handlers, f"{command}_handler", None)

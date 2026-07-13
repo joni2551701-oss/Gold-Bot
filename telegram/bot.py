@@ -2,6 +2,9 @@ from typing import Optional
 from dataclasses import dataclass
 from aiogram import Bot
 from core.secrets import Secrets
+from core.logger import setup_logger
+
+logger = setup_logger("TelegramBot")
 
 
 @dataclass(frozen=True)
@@ -34,9 +37,10 @@ class TelegramBot:
         self._bot: Optional[Bot] = None
         try:
             self._bot = Bot(token=self._secrets.TELEGRAM_BOT_TOKEN)
-        except Exception:
+        except Exception as e:
             # Token missing/invalid: fail gracefully. send_message() will
             # report this per-call instead of crashing at construction time.
+            logger.warning(f"TelegramBot init failed (token missing/invalid): {e}")
             self._bot = None
 
     async def send_message(
@@ -58,6 +62,8 @@ class TelegramBot:
             await self._bot.send_message(chat_id=chat_id, text=text)
             return BotResult(sent=True, reason="")
         except Exception as e:
+            # message text intentionally not logged (Phase 51 privacy rule)
+            logger.warning(f"send_message failed for chat_id={chat_id}: {e}")
             return BotResult(sent=False, reason=str(e))
 
     async def close(self) -> None:

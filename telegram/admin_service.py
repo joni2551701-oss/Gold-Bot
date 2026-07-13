@@ -312,6 +312,9 @@ class AdminService:
         if not message or not message.strip():
             return AdminServiceResult(success=False, reason="Broadcast message is empty")
 
+        # message content intentionally not logged (Phase 51 privacy rule)
+        logger.info("Broadcast started.")
+
         try:
             users = UserRepository().get_notification_users()
         except Exception as e:
@@ -319,6 +322,7 @@ class AdminService:
             return AdminServiceResult(success=False, reason=f"Database error: {e}")
 
         if not users:
+            logger.info("Broadcast finished: 0 sent, 0 failed (no eligible users).")
             return AdminServiceResult(success=True, reason="", broadcast=BroadcastResult(sent=0, failed=0))
 
         chat_ids = [u.telegram_id for u in users]
@@ -328,6 +332,7 @@ class AdminService:
             logger.warning(f"broadcast failed: {e}")
             return AdminServiceResult(success=False, reason=f"Broadcast error: {e}")
 
+        logger.info(f"Broadcast finished: {result.sent} sent, {result.failed} failed.")
         return AdminServiceResult(success=True, reason="", broadcast=result)
 
     def get_feedback(self, limit: int = 50) -> AdminServiceResult:

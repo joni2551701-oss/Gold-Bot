@@ -15,6 +15,9 @@ hardcoded.
 from enum import Enum
 
 from core.secrets import Secrets
+from core.logger import setup_logger
+
+logger = setup_logger("Permissions")
 
 
 class PermissionLevel(Enum):
@@ -48,7 +51,8 @@ def is_admin(user_id) -> bool:
     try:
         from telegram.admin_service import AdminService
         return AdminService().is_admin(user_id)
-    except Exception:
+    except Exception as e:
+        logger.warning(f"is_admin check failed for user_id={user_id}: {e}")
         return False
 
 
