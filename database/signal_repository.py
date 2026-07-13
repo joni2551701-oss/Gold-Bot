@@ -22,10 +22,13 @@ class SignalRepository:
         """
         Maps a SignalRecord (signal + decision + risk_result, wrapped
         with a signal_id) onto the existing 'signals' table row shape
-        and persists it via create_signal(). The schema is not
-        redesigned: fields with no direct source on the wrapped
+        and persists it via create_signal(). The original schema is
+        not redesigned: fields with no direct source on the wrapped
         objects (symbol, a second take-profit, risk_percent) are left
-        empty rather than invented.
+        empty rather than invented. strategy/timeframe/rr_ratio/
+        ai_decision/risk_status/risk_amount/signal_status (Phase 39)
+        are read straight off the record -- create_signal_record()
+        already computed/collected them.
         """
         signal = record.signal
         decision = record.decision
@@ -45,28 +48,50 @@ class SignalRepository:
             "strategy_name": signal.strategy_name,
             "confidence_score": decision.confidence,
             "ai_explanation": decision.ai_analysis.explanation,
+            "strategy": record.strategy,
+            "timeframe": record.timeframe,
+            "rr_ratio": record.rr_ratio,
+            "ai_decision": record.ai_decision,
+            "risk_status": record.risk_status,
+            "risk_amount": record.risk_amount,
+            "signal_status": record.signal_status,
         }
         return self.create_signal(data)
 
     def create_signal(self, data: Dict) -> str:
-        """Inserts a new signal into the database."""
+        """
+        Inserts a new signal into the database. The Phase 39 display
+        columns (strategy, timeframe, rr_ratio, ai_decision,
+        risk_status, risk_amount, signal_status) default when an
+        old-style caller doesn't supply them, so this method's
+        existing callers/contract are unaffected.
+        """
         query = """
         INSERT INTO signals (
-            signal_id, symbol, direction, entry_zone_min, entry_zone_max, 
-            stop_loss, take_profit_1, take_profit_2, risk_percent, 
-            lot_size, strategy_name, confidence_score, ai_explanation, 
-            status, result, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'OPEN', 'OPEN', ?)
+            signal_id, symbol, direction, entry_zone_min, entry_zone_max,
+            stop_loss, take_profit_1, take_profit_2, risk_percent,
+            lot_size, strategy_name, confidence_score, ai_explanation,
+            status, result, created_at,
+            strategy, timeframe, rr_ratio, ai_decision, risk_status,
+            risk_amount, signal_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'OPEN', 'OPEN', ?, ?, ?, ?, ?, ?, ?, ?)
         """
         created_at = datetime.now(timezone.utc).isoformat()
         params = (
-            data['signal_id'], data['symbol'], data['direction'], 
+            data['signal_id'], data['symbol'], data['direction'],
             data['entry_zone_min'], data['entry_zone_max'], data['stop_loss'],
             data['take_profit_1'], data['take_profit_2'], data['risk_percent'],
             data['lot_size'], data['strategy_name'], data['confidence_score'],
-            data['ai_explanation'], created_at
+            data['ai_explanation'], created_at,
+            data.get('strategy', 'UNKNOWN'),
+            data.get('timeframe', 'M15'),
+            data.get('rr_ratio', 0.0),
+            data.get('ai_decision', 'N/A'),
+            data.get('risk_status', 'N/A'),
+            data.get('risk_amount', 0.0),
+            data.get('signal_status', 'NEW'),
         )
-        
+
         with self.db as conn:
             try:
                 conn.execute(query, params)

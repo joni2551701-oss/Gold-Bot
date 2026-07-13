@@ -130,16 +130,20 @@ class SignalFormatter:
         format_signal(), this reads a flat DB row dict, not live
         pipeline objects.
 
-        The current signals schema does not persist a discrete AI
-        decision (APPROVE/REJECT) or risk-approval verdict as their
-        own columns (only a free-text ai_explanation, and a lot_size
-        that is 0.0 whenever the pipeline runs without an
-        account_balance, which is always true today) -- "RR", "AI
-        Decision", and "Risk" render as "N/A" rather than guessing
-        from those unrelated columns.
+        strategy/timeframe/rr_ratio/ai_decision/risk_status/
+        risk_amount/signal_status (Phase 39) are read straight off the
+        row -- SignalRepository.save_signal_record() populates them at
+        write time via database.signal_record.create_signal_record().
+        A pre-Phase-39 row still renders correctly: the schema
+        migration backfills these columns with their SQL defaults
+        ('UNKNOWN'/'N/A'/'NEW'/0), and any value still missing or
+        non-numeric falls back to "N/A" here, same as every other
+        field in this method.
         """
         symbol = row.get("symbol") or "XAUUSD"
         direction = row.get("direction") or "N/A"
+        strategy = row.get("strategy") or "UNKNOWN"
+        timeframe = row.get("timeframe") or "M15"
 
         entry = row.get("entry_zone_min")
         stop_loss = row.get("stop_loss")
@@ -149,22 +153,38 @@ class SignalFormatter:
         sl_text = f"{stop_loss:.2f}" if isinstance(stop_loss, (int, float)) else "N/A"
         tp_text = f"{take_profit:.2f}" if isinstance(take_profit, (int, float)) else "N/A"
 
+        rr_ratio = row.get("rr_ratio")
+        rr_text = f"1:{rr_ratio:.1f}" if isinstance(rr_ratio, (int, float)) and rr_ratio > 0 else "N/A"
+
         confidence = row.get("confidence_score")
         confidence_text = f"{confidence * 100:.0f}%" if isinstance(confidence, (int, float)) else "N/A"
 
+        ai_decision = row.get("ai_decision") or "N/A"
+        risk_status = row.get("risk_status") or "N/A"
+
+        risk_amount = row.get("risk_amount")
+        risk_amount_text = (
+            f"${risk_amount:.2f}" if isinstance(risk_amount, (int, float)) and risk_amount > 0 else "N/A"
+        )
+
+        signal_status = row.get("signal_status") or "N/A"
         date = row.get("created_at") or "N/A"
 
         return (
             "🟡 GOLD SIGNAL\n\n"
             f"Symbol:\n{symbol}\n\n"
             f"Direction:\n{direction}\n\n"
+            f"Strategy:\n{strategy}\n\n"
+            f"Timeframe:\n{timeframe}\n\n"
             f"Entry:\n{entry_text}\n\n"
             f"Stop Loss:\n{sl_text}\n\n"
             f"Take Profit:\n{tp_text}\n\n"
-            "RR:\nN/A\n\n"
+            f"RR:\n{rr_text}\n\n"
             f"Confidence:\n{confidence_text}\n\n"
-            "AI Decision:\nN/A\n\n"
-            "Risk:\nN/A\n\n"
+            f"AI Decision:\n{ai_decision}\n\n"
+            f"Risk:\n{risk_status}\n\n"
+            f"Risk Amount:\n{risk_amount_text}\n\n"
+            f"Status:\n{signal_status}\n\n"
             f"Date:\n{date}"
         )
 
@@ -172,16 +192,26 @@ class SignalFormatter:
         """
         Renders a numbered list of persisted signal rows (newest
         first, as returned by SignalRepository.get_recent_signals())
-        for /history.
+        for /history. Same Phase 39 field/fallback rules as
+        format_signal_row().
         """
         lines = ["Signal History"]
         for i, row in enumerate(rows, start=1):
             symbol = row.get("symbol") or "XAUUSD"
             direction = row.get("direction") or "N/A"
+            strategy = row.get("strategy") or "UNKNOWN"
+
+            rr_ratio = row.get("rr_ratio")
+            rr_text = f"1:{rr_ratio:.1f}" if isinstance(rr_ratio, (int, float)) and rr_ratio > 0 else "N/A"
+
             confidence = row.get("confidence_score")
             confidence_text = f"{confidence * 100:.0f}%" if isinstance(confidence, (int, float)) else "N/A"
             date = row.get("created_at") or "N/A"
             lines.append(
-                f"\n{i}.\n\n{symbol} {direction}\n\nConfidence:\n{confidence_text}\n\nDate:\n{date}"
+                f"\n{i}.\n\n{symbol} {direction}\n\n"
+                f"Strategy:\n{strategy}\n\n"
+                f"RR:\n{rr_text}\n\n"
+                f"Confidence:\n{confidence_text}\n\n"
+                f"Date:\n{date}"
             )
         return "\n".join(lines)

@@ -125,7 +125,10 @@ class TradingPipeline:
         signal_records: List[SignalRecord] = []
         if self.persist_signals:
             for candidate, decision, risk_result in zip(signal_candidates, decisions, risk_results):
-                record = create_signal_record(candidate, decision, risk_result)
+                # timeframe has no source on SignalCandidate/TradeDecision/
+                # RiskResult -- the pipeline is the only thing that knows
+                # which interval it queried (Phase 39 display field).
+                record = create_signal_record(candidate, decision, risk_result, timeframe=self.interval)
                 self.signal_repository.save_signal_record(record)
                 signal_records.append(record)
             logger.info(f"[{self.symbol}|{self.interval}] Persisted {len(signal_records)} signal record(s).")

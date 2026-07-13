@@ -5,7 +5,11 @@ logger = setup_logger("DatabaseModels")
 
 def init_schema(connection: sqlite3.Connection):
     """
-    Defines and creates the signals table schema.
+    Defines and creates the signals table schema, then migrates any
+    pre-existing table (created before Phase 39) to include the newer
+    display columns. Safe to call on every construction: CREATE TABLE
+    IF NOT EXISTS is a no-op once the table exists, and the migration
+    step below only adds a column that isn't already there.
     """
     query = """
     CREATE TABLE IF NOT EXISTS signals (
@@ -26,7 +30,14 @@ def init_schema(connection: sqlite3.Connection):
         status TEXT DEFAULT 'OPEN',
         result TEXT DEFAULT 'OPEN',
         created_at TEXT NOT NULL,
-        closed_at TEXT
+        closed_at TEXT,
+        strategy TEXT DEFAULT 'UNKNOWN',
+        timeframe TEXT DEFAULT 'M15',
+        rr_ratio REAL DEFAULT 0,
+        ai_decision TEXT DEFAULT 'N/A',
+        risk_status TEXT DEFAULT 'N/A',
+        risk_amount REAL DEFAULT 0,
+        signal_status TEXT DEFAULT 'NEW'
     );
     """
     try:
@@ -36,6 +47,49 @@ def init_schema(connection: sqlite3.Connection):
     except sqlite3.Error as e:
         logger.error(f"Failed to initialize database schema: {e}")
         raise
+
+    _migrate_signals_schema(connection)
+
+
+def _migrate_signals_schema(connection: sqlite3.Connection):
+    """
+    Adds the Phase 39 display columns to a 'signals' table created
+    before this phase. SQLite has no "ADD COLUMN IF NOT EXISTS", so
+    each column's presence is checked via PRAGMA table_info first --
+    on a fresh table (already created with all columns above) every
+    column is already present and this is a no-op.
+    """
+    new_columns = [
+        ("strategy", "TEXT DEFAULT 'UNKNOWN'"),
+        ("timeframe", "TEXT DEFAULT 'M15'"),
+        ("rr_ratio", "REAL DEFAULT 0"),
+        ("ai_decision", "TEXT DEFAULT 'N/A'"),
+        ("risk_status", "TEXT DEFAULT 'N/A'"),
+        ("risk_amount", "REAL DEFAULT 0"),
+        ("signal_status", "TEXT DEFAULT 'NEW'"),
+    ]
+
+    try:
+        cursor = connection.execute("PRAGMA table_info(signals)")
+        existing_columns = {row[1] for row in cursor.fetchall()}
+    except sqlite3.Error as e:
+        logger.error(f"Failed to inspect signals table for migration: {e}")
+        raise
+
+    migrated = False
+    for column_name, column_def in new_columns:
+        if column_name in existing_columns:
+            continue
+        try:
+            connection.execute(f"ALTER TABLE signals ADD COLUMN {column_name} {column_def}")
+            logger.info(f"Migrated signals table: added column '{column_name}'.")
+            migrated = True
+        except sqlite3.Error as e:
+            logger.error(f"Failed to add column '{column_name}' to signals table: {e}")
+            raise
+
+    if migrated:
+        connection.commit()
 
 
 def init_user_schema(connection: sqlite3.Connection):
