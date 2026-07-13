@@ -4,7 +4,9 @@ __pycache__/
 .DS_Store
 data/.cache_state.json
 database/goldbot.db
+*.db
 .pytest_cache/
 logs/*.log
+*.log
 .coverage
 htmlcov/

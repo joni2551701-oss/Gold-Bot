@@ -81,3 +81,76 @@ def test_feedback_command_with_no_argument_prompts_instead_of_submitting():
 def test_feedback_command_with_only_whitespace_prompts_instead_of_submitting():
     result = _run(route_command("/feedback    ", telegram_id=USER_ID))
     assert result.text == "Send your feedback:\n\nUse /feedback <your message>."
+
+
+# ---------------------------------------------------------------------------
+# Phase 54 — crash-safety additions: non-numeric input, very long text, and
+# special/unicode characters must never raise, only ever produce a safe text
+# response (this phase's spec's exact example: "/risk abc" must not crash).
+# ---------------------------------------------------------------------------
+
+def test_risk_command_with_non_numeric_value_does_not_crash():
+    """The exact scenario this phase's spec named: /risk abc must not crash."""
+    result = _run(route_command("/risk abc", telegram_id=USER_ID))
+    assert result.text == "Invalid risk percent. Choose one of: 1, 2, 3, 5."
+
+
+def test_risk_command_with_negative_and_float_values_does_not_crash():
+    for bad_value in ("-5", "1.5", "999999999999999999999", "0", "٥"):
+        result = _run(route_command(f"/risk {bad_value}", telegram_id=USER_ID))
+        assert result.text == "Invalid risk percent. Choose one of: 1, 2, 3, 5."
+
+
+def test_feedback_command_with_very_long_message_does_not_crash():
+    """Telegram's own message cap is 4096 chars; well past it must still not crash."""
+    long_message = "A" * 10000
+    result = _run(route_command(f"/feedback {long_message}", telegram_id=USER_ID))
+    assert result.text.startswith("✅ Feedback received.")
+
+
+def test_feedback_command_with_special_and_unicode_characters_does_not_crash():
+    payloads = [
+        "😀🚀💰 emoji feedback",
+        "Ω≈ç√∫˜µ≤≥÷ unicode symbols",
+        "\x00\x01\x02 control characters",
+        "line1\nline2\ttabbed",
+        "<script>alert('xss')</script>",
+        "'; DROP TABLE feedback; --",
+        "بازخورد به زبان فارسی",  # right-to-left script
+        "𝕿𝖊𝖘𝖙 𝖚𝖓𝖎𝖈𝖔𝖉𝖊 𝖇𝖑𝖔𝖈𝖐𝖘",  # astral-plane unicode
+    ]
+    for payload in payloads:
+        result = _run(route_command(f"/feedback {payload}", telegram_id=USER_ID))
+        assert result.text.startswith("✅ Feedback received."), f"crashed or rejected on: {payload!r}"
+
+
+def test_broadcast_command_with_very_long_message_does_not_crash(owner_user):
+    long_message = "B" * 10000
+    result = _run(route_command(f"/broadcast {long_message}", telegram_id=owner_user))
+    assert not result.text.startswith("Permission denied")
+
+
+def test_userinfo_command_with_special_character_target_id_does_not_crash(admin_user):
+    for payload in ("' OR '1'='1", "../../etc/passwd", "\x00", "🚀"):
+        result = _run(route_command(f"/userinfo {payload}", telegram_id=admin_user))
+        assert result.text == "User not found."  # safe, well-formed response, no crash
+
+
+def test_strategy_command_with_very_long_argument_does_not_crash():
+    result = _run(route_command(f"/strategy {'X' * 5000}", telegram_id=USER_ID))
+    assert result.text == "Invalid strategy. Choose one of: Liquidity Sweep, FVG, AMD, Order Block."
+
+
+def test_addadmin_command_with_special_character_argument_does_not_crash(owner_user):
+    """
+    A non-numeric/malicious-looking target_id must still be handled
+    safely (stored literally, not executed). addadmin_handler's
+    _first_arg() only takes the first whitespace-separated token from
+    args -- matching that real, existing (and correct) behavior, not
+    a bug this test should force-work-around.
+    """
+    result = _run(route_command("/addadmin ';DROP_TABLE_admins;--", telegram_id=owner_user))
+    assert result.text == "Admin added."
+
+    from database.admin_repository import AdminRepository
+    assert AdminRepository().is_admin("';DROP_TABLE_admins;--") is True
