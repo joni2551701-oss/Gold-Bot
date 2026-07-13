@@ -13,6 +13,8 @@ COMMANDS = {
     "profile": "Show profile",
     "signal": "Latest signal",
     "history": "Signal history",
+    "status": "Bot status",
+    "about": "About GoldBot",
 }
 
 ADMIN_COMMANDS = {

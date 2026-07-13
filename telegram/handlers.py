@@ -5,11 +5,17 @@ Shape:
 
     Telegram Message -> Handler -> Service -> Database/Core
 
-start_handler() and profile_handler() are minimally real (Phase 33 --
-User Profile Foundation): they call telegram.user_service.UserService
-and return plain text. No aiogram Dispatcher registration yet, no
-inline keyboard, no language selection -- just user creation/lookup.
-The remaining handlers stay empty stubs pending later phases.
+start_handler() and profile_handler() are real (Phase 33 -- User
+Profile Foundation; Phase 34 -- Command Wiring Foundation): they call
+telegram.user_service.UserService and return plain text. help_handler,
+signal_handler, history_handler, status_handler, and about_handler
+(Phase 34) return static text -- no service backs them yet, so they
+stay simple and dependency-free until a later phase adds one.
+
+A handler must never import database.* or core.pipeline directly --
+only Handler -> Service. telegram.command_router routes incoming
+commands to these functions and is the only place a keyboard
+(telegram/keyboards.py) gets attached.
 
 Note: Notifier.send_message() runs its own asyncio.run() internally,
 so it must not be called directly from inside these (already-async)
@@ -40,8 +46,23 @@ async def start_handler(telegram_id, username=None) -> str:
     return f"Could not start: {result.reason}"
 
 
-async def help_handler():
-    pass
+async def help_handler() -> str:
+    """/help -> static command reference. No service call needed."""
+    return (
+        "GoldBot Commands\n"
+        "📊 Trading\n"
+        "/signal\n"
+        "/history\n"
+        "/status\n"
+        "👤 Profile\n"
+        "/profile\n"
+        "/settings\n"
+        "/risk\n"
+        "/strategy\n"
+        "ℹ️ Info\n"
+        "/help\n"
+        "/about"
+    )
 
 
 async def profile_handler(telegram_id) -> str:
@@ -52,7 +73,7 @@ async def profile_handler(telegram_id) -> str:
         return f"Could not load profile: {e}"
 
     if not result.success or result.profile is None:
-        return "No profile found. Send /start first."
+        return "No profile found.\nUse /start first."
 
     p = result.profile
     return (
@@ -67,12 +88,27 @@ async def profile_handler(telegram_id) -> str:
     )
 
 
-async def signal_handler():
-    pass
+async def signal_handler() -> str:
+    """/signal -> placeholder. Real signal delivery is a later phase."""
+    return "No signal feature available yet."
 
 
-async def history_handler():
-    pass
+async def history_handler() -> str:
+    """/history -> placeholder. Real signal history is a later phase."""
+    return "No history feature available yet."
+
+
+async def status_handler() -> str:
+    """/status -> static bot status. No service call needed yet."""
+    return "GoldBot is running."
+
+
+async def about_handler() -> str:
+    """/about -> static bot description."""
+    return (
+        "GoldBot is a semi-automatic XAUUSD (Gold) trading signal assistant.\n"
+        "It analyzes market structure and delivers signals via Telegram."
+    )
 
 
 async def admin_handler():

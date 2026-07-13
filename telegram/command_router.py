@@ -1,0 +1,98 @@
+"""
+Telegram Layer — command router foundation (Phase 34).
+
+Routes an incoming Telegram command to its handler function in
+telegram.handlers. Command names come from telegram.commands.COMMANDS
+-- the single source of truth -- so there is no second hardcoded
+command list here: the handler for "start" is looked up dynamically
+as telegram.handlers.start_handler, and so on for every key in
+COMMANDS.
+
+    Telegram Update -> Command Router -> Handler -> Service -> Database
+
+No aiogram Dispatcher/polling wiring yet -- that is a later phase.
+This module turns (command text, Telegram user info) into a response,
+so it can be called from any future update-receiving entry point
+(polling loop, webhook handler, or a Dispatcher registration).
+
+Never raises: a broken handler or an unexpected error becomes
+"Service temporarily unavailable." here, so an exception never
+reaches the Telegram event loop (Phase 34, Part 10).
+"""
+
+import inspect
+from dataclasses import dataclass
+from typing import Optional
+
+from telegram import handlers
+from telegram.commands import COMMANDS
+from telegram.keyboards import language_keyboard
+from core.logger import setup_logger
+
+logger = setup_logger("CommandRouter")
+
+UNKNOWN_COMMAND_TEXT = "Unknown command. Use /help to see available commands."
+SERVICE_UNAVAILABLE_TEXT = "Service temporarily unavailable."
+
+
+@dataclass(frozen=True)
+class RouterResult:
+    text: str
+    keyboard: Optional[object] = None
+
+
+def _parse_command(text: str) -> Optional[str]:
+    """'/start@GoldBotBot arg1' -> 'start'. Returns None if not a command."""
+    if not text or not text.startswith("/"):
+        return None
+    first = text.strip().split()[0]
+    command = first[1:].split("@")[0].lower()
+    return command or None
+
+
+async def _call_handler(handler, telegram_id, username) -> str:
+    """Calls handler with only the keyword arguments its signature accepts."""
+    params = inspect.signature(handler).parameters
+    kwargs = {}
+    if "telegram_id" in params:
+        kwargs["telegram_id"] = telegram_id
+    if "username" in params:
+        kwargs["username"] = username
+    return await handler(**kwargs)
+
+
+async def route_command(command_text: str, telegram_id=None, username=None) -> RouterResult:
+    """
+    Routes a raw command string (e.g. "/start") to its handler.
+    Unknown commands and handler failures both return a safe text
+    response instead of raising.
+    """
+    command = _parse_command(command_text)
+    if command is None or command not in COMMANDS:
+        return RouterResult(text=UNKNOWN_COMMAND_TEXT)
+
+    handler = getattr(handlers, f"{command}_handler", None)
+    if handler is None:
+        return RouterResult(text=UNKNOWN_COMMAND_TEXT)
+
+    try:
+        text = await _call_handler(handler, telegram_id, username)
+    except Exception as e:
+        logger.warning(f"Handler for /{command} failed: {e}")
+        return RouterResult(text=SERVICE_UNAVAILABLE_TEXT)
+
+    keyboard = language_keyboard() if command == "start" else None
+    return RouterResult(text=text, keyboard=keyboard)
+
+
+async def route_message(message) -> RouterResult:
+    """
+    Routes an aiogram Message-like object. Extracts telegram_id/username
+    the same way a future Dispatcher handler would:
+
+        telegram_id = message.from_user.id
+        username = message.from_user.username
+    """
+    telegram_id = message.from_user.id
+    username = message.from_user.username
+    return await route_command(message.text, telegram_id=telegram_id, username=username)
