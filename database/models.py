@@ -96,8 +96,9 @@ def init_user_schema(connection: sqlite3.Connection):
     """
     Defines and creates the users table schema (Telegram user profile
     foundation), then migrates any pre-existing table (created before
-    Phase 40) to include the newer settings columns. No relation to
-    the signals table -- separate, independently-initialized table.
+    Phase 40/45) to include the newer settings/lifecycle columns. No
+    relation to the signals table -- separate, independently-initialized
+    table.
     """
     query = """
     CREATE TABLE IF NOT EXISTS users (
@@ -111,7 +112,9 @@ def init_user_schema(connection: sqlite3.Connection):
         created_at TEXT NOT NULL,
         updated_at TEXT,
         strategy TEXT DEFAULT 'Liquidity Sweep',
-        notifications_enabled INTEGER DEFAULT 1
+        notifications_enabled INTEGER DEFAULT 1,
+        status TEXT DEFAULT 'NEW',
+        last_activity TIMESTAMP
     );
     """
     try:
@@ -127,15 +130,20 @@ def init_user_schema(connection: sqlite3.Connection):
 
 def _migrate_users_schema(connection: sqlite3.Connection):
     """
-    Adds the Phase 40 settings columns to a 'users' table created
-    before this phase. SQLite has no "ADD COLUMN IF NOT EXISTS", so
-    each column's presence is checked via PRAGMA table_info first --
-    on a fresh table (already created with all columns above) every
-    column is already present and this is a no-op.
+    Adds the Phase 40 settings columns and Phase 45 lifecycle columns
+    (status, last_activity) to a 'users' table created before those
+    phases. SQLite has no "ADD COLUMN IF NOT EXISTS", so each column's
+    presence is checked via PRAGMA table_info first -- on a fresh
+    table (already created with all columns above) every column is
+    already present and this is a no-op. Idempotent: safe to call
+    every time a UserRepository is constructed, including a second run
+    against an already-migrated table (no duplicate-column error).
     """
     new_columns = [
         ("strategy", "TEXT DEFAULT 'Liquidity Sweep'"),
         ("notifications_enabled", "INTEGER DEFAULT 1"),
+        ("status", "TEXT DEFAULT 'NEW'"),
+        ("last_activity", "TIMESTAMP"),
     ]
 
     try:

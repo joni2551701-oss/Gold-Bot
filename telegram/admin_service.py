@@ -48,8 +48,14 @@ class AdminStatistics:
 @dataclass(frozen=True)
 class UserSummary:
     total: int = 0
+    # "active" is the real Phase 45 lifecycle state (status='ACTIVE'),
+    # not the Phase 41 notifications_enabled proxy that predated user
+    # lifecycle tracking -- UserRepository.count_active_users() (the
+    # old proxy) is left in place, unused here, for backward compat.
     active: int = 0
     created_today: int = 0
+    new: int = 0
+    banned: int = 0
 
 
 @dataclass(frozen=True)
@@ -203,9 +209,8 @@ class AdminService:
     def get_user_summary(self) -> AdminServiceResult:
         """
         Aggregates basic user-table counts for /users: total
-        registered, "active" (notifications_enabled=1 -- the closest
-        available signal; no dedicated activity-tracking column
-        exists), and created today (UTC). Never raises.
+        registered, active/new/banned (Phase 45 lifecycle status), and
+        created today (UTC). Never raises.
         """
         try:
             repository = UserRepository()
@@ -214,8 +219,10 @@ class AdminService:
                 reason="",
                 user_summary=UserSummary(
                     total=repository.count_users(),
-                    active=repository.count_active_users(),
+                    active=repository.count_by_status("ACTIVE"),
                     created_today=repository.count_users_created_today(),
+                    new=repository.count_by_status("NEW"),
+                    banned=repository.count_by_status("BANNED"),
                 ),
             )
         except Exception as e:

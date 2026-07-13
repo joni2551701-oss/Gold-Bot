@@ -97,6 +97,65 @@ class UserService:
     def change_notifications(self, telegram_id, enabled: bool) -> UserServiceResult:
         return self.update_settings(telegram_id, {"notifications_enabled": enabled})
 
+    def get_user_state(self, telegram_id) -> UserServiceResult:
+        """
+        Returns the user's profile, including lifecycle status
+        (NEW/ACTIVE/BANNED -- Phase 45). Deliberately separate from
+        subscription plan (telegram.subscription_service.
+        SubscriptionService). Never raises.
+        """
+        try:
+            repository = self._get_repository()
+            profile = repository.get_user(telegram_id)
+            if profile is None:
+                return UserServiceResult(success=False, reason="User not found")
+            return UserServiceResult(success=True, reason="", profile=profile)
+        except Exception as e:
+            logger.warning(f"get_user_state failed for telegram_id={telegram_id}: {e}")
+            return UserServiceResult(success=False, reason=f"Database error: {e}")
+
+    def activate_user(self, telegram_id) -> UserServiceResult:
+        """Sets the user's lifecycle status to ACTIVE. Never raises."""
+        try:
+            repository = self._get_repository()
+            updated = repository.activate_user(telegram_id)
+            if not updated:
+                return UserServiceResult(success=False, reason="User not found")
+            return UserServiceResult(success=True, reason="", profile=repository.get_user(telegram_id))
+        except Exception as e:
+            logger.warning(f"activate_user failed for telegram_id={telegram_id}: {e}")
+            return UserServiceResult(success=False, reason=f"Database error: {e}")
+
+    def ban_user(self, telegram_id) -> UserServiceResult:
+        """Sets the user's lifecycle status to BANNED. Never raises."""
+        try:
+            repository = self._get_repository()
+            updated = repository.ban_user(telegram_id)
+            if not updated:
+                return UserServiceResult(success=False, reason="User not found")
+            return UserServiceResult(success=True, reason="", profile=repository.get_user(telegram_id))
+        except Exception as e:
+            logger.warning(f"ban_user failed for telegram_id={telegram_id}: {e}")
+            return UserServiceResult(success=False, reason=f"Database error: {e}")
+
+    def touch_activity(self, telegram_id) -> UserServiceResult:
+        """
+        Records this interaction as activity (updates last_activity;
+        promotes a NEW user to ACTIVE, never touches a BANNED user's
+        status -- see UserRepository.update_last_activity()). Called
+        before /profile, /settings, /signal, /history, /plan,
+        /subscription, and (conditionally) /start. Never raises.
+        """
+        try:
+            repository = self._get_repository()
+            updated = repository.update_last_activity(telegram_id)
+            if not updated:
+                return UserServiceResult(success=False, reason="User not found")
+            return UserServiceResult(success=True, reason="", profile=repository.get_user(telegram_id))
+        except Exception as e:
+            logger.warning(f"touch_activity failed for telegram_id={telegram_id}: {e}")
+            return UserServiceResult(success=False, reason=f"Database error: {e}")
+
     def update_settings(self, telegram_id, settings: dict) -> UserServiceResult:
         """Updates one or more profile fields. Never raises."""
         try:

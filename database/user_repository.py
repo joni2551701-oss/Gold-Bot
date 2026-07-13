@@ -21,6 +21,8 @@ def _row_to_record(row) -> UserRecord:
         created_at=datetime.fromisoformat(row["created_at"]),
         strategy=row["strategy"],
         notifications_enabled=bool(row["notifications_enabled"]),
+        status=row["status"],
+        last_activity=row["last_activity"],
     )
 
 
@@ -55,12 +57,16 @@ class UserRepository:
         timeframe: str = "M15",
         strategy: str = "Liquidity Sweep",
         notifications_enabled: bool = True,
+        status: str = "NEW",
     ) -> Optional[UserRecord]:
         """
         Inserts a new user with safe defaults. Returns None (no insert
         performed) if telegram_id already exists -- never raises for a
         duplicate, whether caught up front or via a lost race against
         a concurrent insert (IntegrityError on the UNIQUE constraint).
+        A brand new user starts life as status=NEW (Phase 45); promotion
+        to ACTIVE happens on their next real interaction, via
+        update_last_activity() -- not at registration time.
         """
         if self.user_exists(telegram_id):
             logger.info(f"User already exists: telegram_id={telegram_id}")
@@ -70,12 +76,12 @@ class UserRepository:
         query = """
         INSERT INTO users (
             telegram_id, username, language, trading_style,
-            risk_percent, timeframe, created_at, strategy, notifications_enabled
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            risk_percent, timeframe, created_at, strategy, notifications_enabled, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         params = (
             str(telegram_id), username, language, trading_style, risk_percent,
-            timeframe, created_at, strategy, notifications_enabled,
+            timeframe, created_at, strategy, notifications_enabled, status,
         )
 
         with self.db as conn:
@@ -135,6 +141,7 @@ class UserRepository:
         allowed = {
             "username", "language", "trading_style", "risk_percent",
             "timeframe", "strategy", "notifications_enabled",
+            "status", "last_activity",
         }
         updates = {k: v for k, v in fields.items() if k in allowed}
         if not updates:
@@ -179,3 +186,53 @@ class UserRepository:
         with self.db as conn:
             cursor = conn.execute("SELECT * FROM users WHERE notifications_enabled = 1")
             return [_row_to_record(row) for row in cursor.fetchall()]
+
+    def update_status(self, telegram_id, status: str) -> bool:
+        """
+        Sets the user's lifecycle status directly (NEW/ACTIVE/BANNED).
+        Deliberately separate from subscription plan/status (Phase 42) --
+        this table never stores FREE/PREMIUM/VIP.
+        """
+        return self.update_user(telegram_id, status=status)
+
+    def get_status(self, telegram_id) -> Optional[str]:
+        """The user's lifecycle status, or None if telegram_id is unknown."""
+        user = self.get_user(telegram_id)
+        return user.status if user is not None else None
+
+    def update_last_activity(self, telegram_id) -> bool:
+        """
+        Updates last_activity to now, and promotes a NEW user to
+        ACTIVE (Phase 45: "first successful interaction" -> ACTIVE). A
+        BANNED user's status is left untouched here -- activity
+        tracking must never silently un-ban someone. Returns False if
+        telegram_id has no user row (nothing to update).
+        """
+        user = self.get_user(telegram_id)
+        if user is None:
+            return False
+
+        fields = {"last_activity": datetime.now(timezone.utc).isoformat()}
+        if user.status == "NEW":
+            fields["status"] = "ACTIVE"
+
+        return self.update_user(telegram_id, **fields)
+
+    def get_active_users(self) -> List[UserRecord]:
+        """Users with status='ACTIVE'."""
+        with self.db as conn:
+            cursor = conn.execute("SELECT * FROM users WHERE status = 'ACTIVE'")
+            return [_row_to_record(row) for row in cursor.fetchall()]
+
+    def count_by_status(self, status: str) -> int:
+        """Count of users with the given lifecycle status (NEW/ACTIVE/BANNED)."""
+        with self.db as conn:
+            cursor = conn.execute("SELECT COUNT(*) as count FROM users WHERE status = ?", (status,))
+            row = cursor.fetchone()
+            return row["count"] if row else 0
+
+    def ban_user(self, telegram_id) -> bool:
+        return self.update_user(telegram_id, status="BANNED")
+
+    def activate_user(self, telegram_id) -> bool:
+        return self.update_user(telegram_id, status="ACTIVE")

@@ -65,6 +65,22 @@ in telegram/keyboards.py but is not wired to a reply here, since
 telegram/command_router.py (the only place a keyboard gets attached)
 is out of scope for this phase.
 
+Phase 45 (User Lifecycle State): start_handler, profile_handler,
+settings_handler, signal_handler, history_handler, plan_handler, and
+subscription_handler all call UserService.touch_activity() (updates
+last_activity; promotes a NEW user to ACTIVE; never reactivates a
+BANNED user) before doing their normal work -- best-effort, wrapped in
+its own try/except so a touch_activity hiccup never blocks the
+handler's real response. start_handler is the one exception with
+special-cased logic: a brand new registration is left at status=NEW
+(no touch_activity call for that specific branch -- see its
+docstring), matching the Phase 45 spec's own state diagram. User
+lifecycle status (NEW/ACTIVE/BANNED) is deliberately a separate axis
+from subscription plan (FREE/PREMIUM/VIP, Phase 42) -- userinfo_handler
+and users_handler show both, never conflated. No command blocks a
+BANNED user yet (ban_user()/activate_user() exist on UserService for
+a future phase's enforcement).
+
 A handler must never import database.* or core.pipeline directly --
 only Handler -> Service. telegram.command_router routes incoming
 commands to these functions and is the only place a keyboard
@@ -95,9 +111,14 @@ async def start_handler(telegram_id, username=None) -> str:
     /start -> UserService.register_user() -> profile created, plus
     SubscriptionService ensures a default FREE/ACTIVE subscription row
     exists (Phase 42) -- so /plan and /subscription always have data
-    from the very first /start. Duplicate /start (existing user)
-    returns the existing profile instead of creating a second row.
-    Never raises.
+    from the very first /start. Never raises.
+
+    Phase 45 lifecycle: a brand new user is created with status=NEW
+    and left there -- promotion to ACTIVE happens on the *next* real
+    interaction, not on the registration call itself. Duplicate /start
+    (existing user) is exactly that next interaction, so it calls
+    touch_activity() (updates last_activity, and promotes NEW->ACTIVE;
+    a BANNED user is never silently reactivated by this).
     """
     try:
         result = UserService().register_user(telegram_id, username)
@@ -112,6 +133,10 @@ async def start_handler(telegram_id, username=None) -> str:
     if result.success:
         return "Profile created."
     if result.reason == "User already exists":
+        try:
+            UserService().touch_activity(telegram_id)
+        except Exception:
+            pass
         return "User already exists."
     return f"Could not start: {result.reason}"
 
@@ -143,7 +168,18 @@ async def help_handler() -> str:
 
 
 async def profile_handler(telegram_id) -> str:
-    """/profile -> UserService.get_profile() -> formatted response. Never raises."""
+    """
+    /profile -> UserService.get_profile() -> formatted response.
+    Touches activity (Phase 45: promotes a NEW user to ACTIVE, updates
+    last_activity) before loading the profile, so a NEW user's very
+    first /profile call already reflects their new state. Never
+    raises.
+    """
+    try:
+        UserService().touch_activity(telegram_id)
+    except Exception:
+        pass
+
     try:
         result = UserService().get_profile(telegram_id)
     except Exception as e:
@@ -175,13 +211,23 @@ async def profile_handler(telegram_id) -> str:
         f"{plan}\n\n"
         "Notifications:\n"
         f"{'ON' if p.notifications_enabled else 'OFF'}\n\n"
+        "Status:\n"
+        f"{p.status}\n\n"
         "Created:\n"
         f"{p.created_at}"
     )
 
 
-async def settings_handler() -> str:
-    """/settings -> menu (keyboard attached by command_router). USER command. Never raises."""
+async def settings_handler(telegram_id=None) -> str:
+    """
+    /settings -> menu (keyboard attached by command_router). USER
+    command. Touches activity (Phase 45). Never raises.
+    """
+    try:
+        UserService().touch_activity(telegram_id)
+    except Exception:
+        pass
+
     return (
         "Settings\n\n"
         "Language\n"
@@ -361,8 +407,13 @@ async def signal_handler(telegram_id=None) -> str:
     permission tier (still USER-level routing) -- the plan check
     happens inside the handler, not at the command-router layer, since
     it depends on subscription state, not Telegram admin/owner role.
-    Never raises.
+    Touches activity (Phase 45). Never raises.
     """
+    try:
+        UserService().touch_activity(telegram_id)
+    except Exception:
+        pass
+
     try:
         access_service = SignalAccessService()
         if not access_service.can_access_signal(telegram_id):
@@ -381,7 +432,7 @@ async def signal_handler(telegram_id=None) -> str:
     return SignalFormatter().format_signal_row(result.signal)
 
 
-async def history_handler() -> str:
+async def history_handler(telegram_id=None) -> str:
     """
     /history -> SignalService.get_signal_history() -> SignalFormatter.
     USER command, no permission required. Deliberately NOT gated by
@@ -389,8 +440,13 @@ async def history_handler() -> str:
     browse past signals but not the live one -- /history is the
     product-discovery funnel that shows GoldBot's output is real
     before a user decides whether to upgrade, while /signal is the
-    thing worth paying for. Never raises.
+    thing worth paying for. Touches activity (Phase 45). Never raises.
     """
+    try:
+        UserService().touch_activity(telegram_id)
+    except Exception:
+        pass
+
     try:
         result = SignalService().get_signal_history(limit=5)
     except Exception as e:
@@ -433,8 +489,13 @@ def _current_plan(telegram_id) -> str:
 async def plan_handler(telegram_id=None) -> str:
     """
     /plan -> SubscriptionService.get_plan(). USER command, no
-    permission required. Never raises.
+    permission required. Touches activity (Phase 45). Never raises.
     """
+    try:
+        UserService().touch_activity(telegram_id)
+    except Exception:
+        pass
+
     try:
         result = SubscriptionService().get_plan(telegram_id)
     except Exception as e:
@@ -458,8 +519,14 @@ async def plan_handler(telegram_id=None) -> str:
 async def subscription_handler(telegram_id=None) -> str:
     """
     /subscription -> SubscriptionService.get_subscription(). USER
-    command, no permission required. Never raises.
+    command, no permission required. Touches activity (Phase 45).
+    Never raises.
     """
+    try:
+        UserService().touch_activity(telegram_id)
+    except Exception:
+        pass
+
     try:
         result = SubscriptionService().get_subscription(telegram_id)
     except Exception as e:
@@ -653,6 +720,10 @@ async def users_handler() -> str:
         f"{summary.total}\n\n"
         "Active:\n"
         f"{summary.active}\n\n"
+        "New:\n"
+        f"{summary.new}\n\n"
+        "Banned:\n"
+        f"{summary.banned}\n\n"
         "Created today:\n"
         f"{summary.created_today}"
     )
@@ -703,6 +774,10 @@ async def userinfo_handler(args=None) -> str:
         f"{plan}\n\n"
         "Subscription Status:\n"
         f"{sub_status}\n\n"
+        "Status:\n"
+        f"{p.status}\n\n"
+        "Last activity:\n"
+        f"{p.last_activity or 'N/A'}\n\n"
         "Created:\n"
         f"{p.created_at}\n\n"
         "Notifications:\n"
