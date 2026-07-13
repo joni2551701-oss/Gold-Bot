@@ -1,0 +1,15 @@
+# GoldBot v0.3 -- health check schedule (Phase 58).
+#
+# Runs goldbot-healthcheck.service every 10 minutes.
+#
+# Enable with: systemctl enable --now goldbot-healthcheck.timer
+
+[Unit]
+Description=Run GoldBot health check every 10 minutes
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=true
+
+[Install]
+WantedBy=timers.target

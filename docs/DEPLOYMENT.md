@@ -7,7 +7,9 @@ pipeline (`main.py`) runs on GitHub Actions
 needs no separate VPS. The Telegram product layer
 (`telegram/polling.py`) is a long-running process and does need a
 host that stays up — a VPS, a small always-on container, or similar.
-This guide covers both.
+This guide covers both. For process supervision, crash recovery, and
+a monitoring foundation specific to unattended VPS hosting, see
+`docs/production_setup.md` (Phase 58).
 
 ## Requirements
 

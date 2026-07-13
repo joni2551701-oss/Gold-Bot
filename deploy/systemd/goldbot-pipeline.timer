@@ -1,0 +1,20 @@
+# GoldBot v0.3 -- Trading pipeline schedule (Phase 58).
+#
+# Runs goldbot-pipeline.service every 5 minutes, mirroring
+# .github/workflows/trading_bot.yml's cadence. Persistent=true means a
+# missed run (e.g. the VPS was down) fires once on next boot instead
+# of silently skipping.
+#
+# Enable with: systemctl enable --now goldbot-pipeline.timer
+# (Do not also enable trading_bot.yml against the same database if
+# using this timer -- pick one scheduler, see docs/production_setup.md.)
+
+[Unit]
+Description=Run GoldBot Trading Pipeline every 5 minutes
+
+[Timer]
+OnCalendar=*:0/5
+Persistent=true
+
+[Install]
+WantedBy=timers.target
