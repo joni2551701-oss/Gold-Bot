@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pytest pyflakes
+          pip install pytest pyflakes pytest-cov
 
       - name: Compile check
         run: python -m compileall -q .
@@ -78,10 +78,14 @@ jobs:
         # sets a different value first, which would silently break
         # every OWNER-permission test (discovered during Phase 47.1
         # validation).
+        #
+        # Coverage (Phase 52) is reported, not gated -- --cov-fail-under
+        # is intentionally not set. See docs/testing_strategy.md for the
+        # rationale and how to add a hard threshold in a future phase.
         env:
           TELEGRAM_BOT_TOKEN: "123456789:AAFakeCITokenForPytestOnly0000000"
           TELEGRAM_CHAT_ID: "999999"
           TELEGRAM_OWNER_ID: "111"
           TWELVE_DATA_API_KEY: "unused"
           GEMINI_API_KEY: "unused"
-        run: python -m pytest tests/ -v
+        run: python -m pytest tests/ -v --cov=. --cov-report=term-missing

@@ -6,3 +6,5 @@ data/.cache_state.json
 database/goldbot.db
 .pytest_cache/
 logs/*.log
+.coverage
+htmlcov/

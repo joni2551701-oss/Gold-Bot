@@ -43,9 +43,11 @@ Read exclusively through `core/secrets.py` (never hardcoded, no
 ## Testing
 
 ```
-pip install -r requirements.txt pytest pyflakes
+pip install -r requirements.txt pytest pyflakes pytest-cov
 python -m pytest tests/
+python -m pytest tests/ --cov=. --cov-report=term-missing   # with coverage
 ```
 
 `.github/workflows/ci.yml` runs this (plus `compileall` and a full
-module import sweep) on every push/PR.
+module import sweep) on every push/PR. See `docs/testing_strategy.md`
+for test philosophy, naming rules, fixtures, and directory layout.
