@@ -30,16 +30,26 @@ admin_handler, addadmin_handler, removeadmin_handler, system_handler,
 stats_handler, users_handler, userinfo_handler, and broadcast_handler
 (Phase 37; finalized Phase 41) are real: they call
 telegram.admin_service.AdminService (or, for /userinfo,
-telegram.user_service.UserService -- it reads a *user's* profile, not
+telegram.user_service.UserService plus telegram.subscription_service.
+SubscriptionService -- it reads a *user's* profile and plan, not
 admin data). admin_handler renders a different panel for OWNER vs
 ADMIN via telegram.permissions.is_owner() -- command_router only
 checks "at least ADMIN", so the handler still needs to know if this
 specific caller is *the* owner. vipinfo_handler stays a static
-placeholder -- foundation only, no VIP/subscription system exists.
+placeholder -- foundation only, no VIP tier on top of the plan system.
 Which permission tier (OWNER/ADMIN/USER) a command requires is decided
 by telegram.command_router before a handler ever runs; a handler
 itself does not check permissions (is_owner() here is a read of an
 already-established fact, not a permission gate).
+
+plan_handler, subscription_handler, and upgrade_handler (Phase 42) are
+real: they call telegram.subscription_service.SubscriptionService,
+which lazily creates a default FREE/ACTIVE subscription row on first
+lookup for any telegram_id (also called eagerly from start_handler, so
+/plan and /subscription always have data right after /start). USER
+commands -- no permission tier required. upgrade_handler is a
+foundation only: no payment gateway, no real plan change, just a
+static confirmation.
 
 A handler must never import database.* or core.pipeline directly --
 only Handler -> Service. telegram.command_router routes incoming
@@ -60,19 +70,28 @@ from telegram.user_service import UserService
 from telegram.admin_service import AdminService
 from telegram.signal_service import SignalService
 from telegram.signal_formatter import SignalFormatter
+from telegram.subscription_service import SubscriptionService
 from telegram.permissions import is_owner
 
 
 async def start_handler(telegram_id, username=None) -> str:
     """
-    /start -> UserService.register_user() -> profile created.
-    Duplicate /start (existing user) returns the existing profile
-    instead of creating a second row. Never raises.
+    /start -> UserService.register_user() -> profile created, plus
+    SubscriptionService ensures a default FREE/ACTIVE subscription row
+    exists (Phase 42) -- so /plan and /subscription always have data
+    from the very first /start. Duplicate /start (existing user)
+    returns the existing profile instead of creating a second row.
+    Never raises.
     """
     try:
         result = UserService().register_user(telegram_id, username)
     except Exception as e:
         return f"Could not start: {e}"
+
+    try:
+        SubscriptionService().get_plan(telegram_id)
+    except Exception:
+        pass  # best-effort: a subscription hiccup must not break /start
 
     if result.success:
         return "Profile created."
@@ -96,6 +115,10 @@ async def help_handler() -> str:
         "/risk\n"
         "/strategy\n"
         "/timeframe\n"
+        "💳 Plan\n"
+        "/plan\n"
+        "/subscription\n"
+        "/upgrade\n"
         "ℹ️ Info\n"
         "/help\n"
         "/about"
@@ -113,6 +136,8 @@ async def profile_handler(telegram_id) -> str:
         return "No profile found.\nUse /start first."
 
     p = result.profile
+    plan = _current_plan(telegram_id)
+
     return (
         "GoldBot Profile\n\n"
         "ID:\n"
@@ -129,6 +154,8 @@ async def profile_handler(telegram_id) -> str:
         f"{p.risk_percent:g}%\n\n"
         "Timeframe:\n"
         f"{p.timeframe}\n\n"
+        "Plan:\n"
+        f"{plan}\n\n"
         "Created:\n"
         f"{p.created_at}"
     )
@@ -313,6 +340,85 @@ async def about_handler() -> str:
     )
 
 
+def _current_plan(telegram_id) -> str:
+    """
+    Best-effort plan lookup shared by profile_handler/userinfo_handler.
+    Falls back to "FREE" (the schema default) rather than surfacing a
+    subscription error inside an otherwise-successful profile display.
+    """
+    try:
+        result = SubscriptionService().get_plan(telegram_id)
+        if result.success and result.subscription is not None:
+            return result.subscription.plan
+    except Exception:
+        pass
+    return "FREE"
+
+
+async def plan_handler(telegram_id=None) -> str:
+    """
+    /plan -> SubscriptionService.get_plan(). USER command, no
+    permission required. Never raises.
+    """
+    try:
+        result = SubscriptionService().get_plan(telegram_id)
+    except Exception as e:
+        return f"Could not load plan: {e}"
+
+    if not result.success or result.subscription is None:
+        return f"Could not load plan: {result.reason}"
+
+    return (
+        "GoldBot Plan\n\n"
+        "Current Plan:\n"
+        f"{result.subscription.plan}\n\n"
+        "Features:\n"
+        "✓ Basic signals\n"
+        "✓ Signal history\n\n"
+        "Upgrade:\n"
+        "Use /upgrade"
+    )
+
+
+async def subscription_handler(telegram_id=None) -> str:
+    """
+    /subscription -> SubscriptionService.get_subscription(). USER
+    command, no permission required. Never raises.
+    """
+    try:
+        result = SubscriptionService().get_subscription(telegram_id)
+    except Exception as e:
+        return f"Could not load subscription: {e}"
+
+    if not result.success or result.subscription is None:
+        return f"Could not load subscription: {result.reason}"
+
+    sub = result.subscription
+    return (
+        "Subscription Status\n\n"
+        "Plan:\n"
+        f"{sub.plan}\n\n"
+        "Status:\n"
+        f"{sub.status}\n\n"
+        "Expires:\n"
+        f"{sub.expires_at if sub.expires_at else 'N/A'}"
+    )
+
+
+async def upgrade_handler(telegram_id=None) -> str:
+    """
+    /upgrade -> SubscriptionService.upgrade_request(). Foundation
+    only -- no payment gateway, no real plan change. USER command, no
+    permission required. Never raises.
+    """
+    try:
+        SubscriptionService().upgrade_request(telegram_id)
+    except Exception:
+        pass  # the confirmation text below is static either way
+
+    return "Upgrade request received.\n\nPremium plans will be available soon."
+
+
 def _first_arg(args) -> Optional[str]:
     """'123456789 extra text' -> '123456789'. None if args is empty/blank."""
     if not args or not args.strip():
@@ -495,6 +601,15 @@ async def userinfo_handler(args=None) -> str:
         return "User not found."
 
     p = result.profile
+
+    try:
+        sub_result = SubscriptionService().get_subscription(target_id)
+        sub = sub_result.subscription if sub_result.success else None
+    except Exception:
+        sub = None
+    plan = sub.plan if sub is not None else "FREE"
+    sub_status = sub.status if sub is not None else "ACTIVE"
+
     return (
         "User Info\n\n"
         "ID:\n"
@@ -509,6 +624,10 @@ async def userinfo_handler(args=None) -> str:
         f"{p.strategy}\n\n"
         "Timeframe:\n"
         f"{p.timeframe}\n\n"
+        "Plan:\n"
+        f"{plan}\n\n"
+        "Subscription Status:\n"
+        f"{sub_status}\n\n"
         "Created:\n"
         f"{p.created_at}\n\n"
         "Notifications:\n"
@@ -517,5 +636,5 @@ async def userinfo_handler(args=None) -> str:
 
 
 async def vipinfo_handler() -> str:
-    """/vipinfo -> foundation only. No VIP/subscription system exists yet."""
+    """/vipinfo -> foundation only. No VIP tier exists on top of the Phase 42 plan/subscription system."""
     return "VIP system not enabled."

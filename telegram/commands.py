@@ -20,6 +20,9 @@ COMMANDS = {
     "history": "Signal history",
     "status": "Bot status",
     "about": "About GoldBot",
+    "plan": "Plan information",
+    "subscription": "Subscription status",
+    "upgrade": "Upgrade foundation",
 }
 
 OWNER_COMMANDS = {

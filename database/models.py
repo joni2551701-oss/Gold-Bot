@@ -161,6 +161,38 @@ def _migrate_users_schema(connection: sqlite3.Connection):
         connection.commit()
 
 
+def init_subscription_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the subscriptions table schema (Phase 42
+    Subscription Foundation). Independent of the users/signals/admins
+    tables -- linked to users via telegram_id, not a SQL foreign key
+    (none of the other tables here use one either). Brand new table,
+    so unlike init_schema()/init_user_schema() there is no pre-Phase-42
+    column set to migrate from: CREATE TABLE IF NOT EXISTS alone is
+    safe for both a fresh database and an existing one that simply
+    doesn't have this table yet.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS subscriptions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id TEXT UNIQUE NOT NULL,
+        plan TEXT DEFAULT 'FREE',
+        status TEXT DEFAULT 'ACTIVE',
+        started_at TEXT NOT NULL,
+        expires_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (subscriptions table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize subscriptions schema: {e}")
+        raise
+
+
 def init_admin_schema(connection: sqlite3.Connection):
     """
     Defines and creates the admins table schema (Owner/Admin permission
