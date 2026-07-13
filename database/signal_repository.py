@@ -94,6 +94,23 @@ class SignalRepository:
             cursor = conn.execute("SELECT * FROM signals WHERE status = 'CLOSED'")
             return [dict(row) for row in cursor.fetchall()]
 
+    def get_latest_signal(self) -> Optional[Dict]:
+        """Most recently created signal, or None if the table is empty."""
+        with self.db as conn:
+            cursor = conn.execute(
+                "SELECT * FROM signals ORDER BY created_at DESC, id DESC LIMIT 1"
+            )
+            row = cursor.fetchone()
+            return dict(row) if row else None
+
+    def get_recent_signals(self, limit: int = 5) -> List[Dict]:
+        """Most recent `limit` signals, newest first. Empty list if none."""
+        with self.db as conn:
+            cursor = conn.execute(
+                "SELECT * FROM signals ORDER BY created_at DESC, id DESC LIMIT ?", (limit,)
+            )
+            return [dict(row) for row in cursor.fetchall()]
+
     def update_signal_status(self, signal_id: str, status: str) -> bool:
         """Updates the status and updates closed_at if status is changed to CLOSED."""
         query = "UPDATE signals SET status = ?, closed_at = ? WHERE signal_id = ?"

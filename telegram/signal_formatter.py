@@ -121,3 +121,67 @@ class SignalFormatter:
             f"Reason:\n\n{decision_reason}\n"
             "===================="
         )
+
+    def format_signal_row(self, row: dict) -> str:
+        """
+        Renders a single persisted 'signals' table row (as returned by
+        SignalRepository.get_latest_signal() / get_signal() /
+        get_recent_signals()) for /signal and /history. Unlike
+        format_signal(), this reads a flat DB row dict, not live
+        pipeline objects.
+
+        The current signals schema does not persist a discrete AI
+        decision (APPROVE/REJECT) or risk-approval verdict as their
+        own columns (only a free-text ai_explanation, and a lot_size
+        that is 0.0 whenever the pipeline runs without an
+        account_balance, which is always true today) -- "RR", "AI
+        Decision", and "Risk" render as "N/A" rather than guessing
+        from those unrelated columns.
+        """
+        symbol = row.get("symbol") or "XAUUSD"
+        direction = row.get("direction") or "N/A"
+
+        entry = row.get("entry_zone_min")
+        stop_loss = row.get("stop_loss")
+        take_profit = row.get("take_profit_1")
+
+        entry_text = f"{entry:.2f}" if isinstance(entry, (int, float)) else "N/A"
+        sl_text = f"{stop_loss:.2f}" if isinstance(stop_loss, (int, float)) else "N/A"
+        tp_text = f"{take_profit:.2f}" if isinstance(take_profit, (int, float)) else "N/A"
+
+        confidence = row.get("confidence_score")
+        confidence_text = f"{confidence * 100:.0f}%" if isinstance(confidence, (int, float)) else "N/A"
+
+        date = row.get("created_at") or "N/A"
+
+        return (
+            "🟡 GOLD SIGNAL\n\n"
+            f"Symbol:\n{symbol}\n\n"
+            f"Direction:\n{direction}\n\n"
+            f"Entry:\n{entry_text}\n\n"
+            f"Stop Loss:\n{sl_text}\n\n"
+            f"Take Profit:\n{tp_text}\n\n"
+            "RR:\nN/A\n\n"
+            f"Confidence:\n{confidence_text}\n\n"
+            "AI Decision:\nN/A\n\n"
+            "Risk:\nN/A\n\n"
+            f"Date:\n{date}"
+        )
+
+    def format_signal_history(self, rows) -> str:
+        """
+        Renders a numbered list of persisted signal rows (newest
+        first, as returned by SignalRepository.get_recent_signals())
+        for /history.
+        """
+        lines = ["Signal History"]
+        for i, row in enumerate(rows, start=1):
+            symbol = row.get("symbol") or "XAUUSD"
+            direction = row.get("direction") or "N/A"
+            confidence = row.get("confidence_score")
+            confidence_text = f"{confidence * 100:.0f}%" if isinstance(confidence, (int, float)) else "N/A"
+            date = row.get("created_at") or "N/A"
+            lines.append(
+                f"\n{i}.\n\n{symbol} {direction}\n\nConfidence:\n{confidence_text}\n\nDate:\n{date}"
+            )
+        return "\n".join(lines)

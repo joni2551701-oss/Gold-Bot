@@ -8,11 +8,15 @@ Shape:
 start_handler() and profile_handler() are real (Phase 33 -- User
 Profile Foundation; Phase 34 -- Command Wiring Foundation): they call
 telegram.user_service.UserService and return plain text. help_handler,
-signal_handler, history_handler, status_handler, about_handler
-(Phase 34), and settings_handler, language_handler, risk_handler,
-strategy_handler, timeframe_handler (Phase 36) return static text --
-no service backs them yet, so they stay simple and dependency-free
-until a later phase adds one.
+status_handler, about_handler (Phase 34), and settings_handler,
+language_handler, risk_handler, strategy_handler, timeframe_handler
+(Phase 36) return static text -- no service backs them yet, so they
+stay simple and dependency-free until a later phase adds one.
+
+signal_handler and history_handler (Phase 38) are real: they call
+telegram.signal_service.SignalService (read-only) and format the
+result via telegram.signal_formatter.SignalFormatter. Both are USER
+commands -- no permission tier required.
 
 admin_handler, addadmin_handler, removeadmin_handler, system_handler,
 stats_handler, users_handler, and userinfo_handler (Phase 37) are real:
@@ -41,6 +45,8 @@ from typing import Optional
 
 from telegram.user_service import UserService
 from telegram.admin_service import AdminService
+from telegram.signal_service import SignalService
+from telegram.signal_formatter import SignalFormatter
 
 
 async def start_handler(telegram_id, username=None) -> str:
@@ -129,13 +135,35 @@ async def timeframe_handler() -> str:
 
 
 async def signal_handler() -> str:
-    """/signal -> placeholder. Real signal delivery is a later phase."""
-    return "No signal feature available yet."
+    """
+    /signal -> SignalService.get_latest_signal() -> SignalFormatter.
+    USER command, no permission required. Never raises.
+    """
+    try:
+        result = SignalService().get_latest_signal()
+    except Exception as e:
+        return f"Could not load signal: {e}"
+
+    if not result.success or result.signal is None:
+        return "No active signal available."
+
+    return SignalFormatter().format_signal_row(result.signal)
 
 
 async def history_handler() -> str:
-    """/history -> placeholder. Real signal history is a later phase."""
-    return "No history feature available yet."
+    """
+    /history -> SignalService.get_signal_history() -> SignalFormatter.
+    USER command, no permission required. Never raises.
+    """
+    try:
+        result = SignalService().get_signal_history(limit=5)
+    except Exception as e:
+        return f"Could not load history: {e}"
+
+    if not result.success or not result.signals:
+        return "No signal history available."
+
+    return SignalFormatter().format_signal_history(result.signals)
 
 
 async def status_handler() -> str:
