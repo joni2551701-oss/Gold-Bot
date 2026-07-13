@@ -59,3 +59,16 @@ class TelegramBot:
             return BotResult(sent=True, reason="")
         except Exception as e:
             return BotResult(sent=False, reason=str(e))
+
+    async def close(self) -> None:
+        """
+        Closes the underlying aiohttp session/connector (aiogram lazily
+        creates it on the first send_message() call, bound to whichever
+        event loop is running at that moment). Must be awaited from
+        inside the same event loop the session was created in -- calling
+        it after that loop has already closed cannot clean anything up.
+        No-op if the bot never initialized (self._bot is None) or no
+        message was ever sent (session never created).
+        """
+        if self._bot is not None:
+            await self._bot.session.close()

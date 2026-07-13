@@ -111,10 +111,12 @@ class TradingPipeline:
 
         notification_results: List[bool] = []
         if self.send_notifications:
-            notification_results = [
-                self.notifier.send_message(message)
-                for message in telegram_messages
-            ]
+            # send_messages() delivers the whole batch through one
+            # event loop / one aiohttp session (Phase 33.1) -- calling
+            # send_message() once per message here previously opened a
+            # fresh event loop per call while reusing the same bot,
+            # which broke after the first successful send.
+            notification_results = self.notifier.send_messages(telegram_messages)
             logger.info(
                 f"[{self.symbol}|{self.interval}] Sent {sum(notification_results)}/"
                 f"{len(notification_results)} telegram notification(s)."
