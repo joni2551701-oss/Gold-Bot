@@ -24,7 +24,6 @@ command handler.
                                       -> FeedbackService -> FeedbackRepository -> Database
 """
 
-import asyncio
 from typing import List, Optional
 from dataclasses import dataclass, field
 
@@ -299,15 +298,28 @@ class AdminService:
             await bot.close()
         return BroadcastResult(sent=sent, failed=failed)
 
-    def broadcast(self, message: str) -> AdminServiceResult:
+    async def broadcast(self, message: str) -> AdminServiceResult:
         """
         Sends `message` to every registered user who has notifications
         enabled (Phase 43 -- respects users.notifications_enabled;
-        previously sent to every registered user regardless). Never
-        raises: a total failure (empty message, no eligible users,
-        database error, network error opening the loop) is reported as
-        success=False rather than propagating; a single recipient's
-        delivery failure is only ever counted, never fatal.
+        previously sent to every registered user regardless).
+
+        Phase 47 audit fix: this used to be a *synchronous* method that
+        wrapped _broadcast_all() in its own asyncio.run() call -- the
+        same nested-event-loop trap Notifier.send_message() hit before
+        Phase 33.1 (see this module's own module docstring / telegram/
+        handlers.py's note on it). broadcast_handler() is itself async
+        and runs inside telegram/polling.py's already-active event
+        loop, so calling asyncio.run() from in there always raised
+        "asyncio.run() cannot be called from a running event loop" in
+        real Telegram usage. Now broadcast() is async and the caller
+        awaits it directly -- one event loop for the whole call chain,
+        exactly like the Phase 33.1 fix.
+
+        Never raises: a total failure (empty message, no eligible
+        users, database error) is reported as success=False rather
+        than propagating; a single recipient's delivery failure is
+        only ever counted, never fatal.
         """
         if not message or not message.strip():
             return AdminServiceResult(success=False, reason="Broadcast message is empty")
@@ -323,7 +335,7 @@ class AdminService:
 
         chat_ids = [u.telegram_id for u in users]
         try:
-            result = asyncio.run(self._broadcast_all(message, chat_ids))
+            result = await self._broadcast_all(message, chat_ids)
         except Exception as e:
             logger.warning(f"broadcast failed: {e}")
             return AdminServiceResult(success=False, reason=f"Broadcast error: {e}")

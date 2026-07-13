@@ -692,13 +692,19 @@ async def broadcast_handler(args=None) -> str:
     """
     /broadcast MESSAGE -> AdminService.broadcast() -> sent/failed
     counts. ADMIN or OWNER. Never raises.
+
+    Phase 47 audit fix: AdminService.broadcast() is async now (it used
+    to wrap its own asyncio.run() call, which crashed with "asyncio.run()
+    cannot be called from a running event loop" when invoked from here --
+    this handler already runs inside telegram/polling.py's event loop).
+    Must be awaited, not called synchronously.
     """
     message = (args or "").strip()
     if not message:
         return "Usage: /broadcast MESSAGE"
 
     try:
-        result = AdminService().broadcast(message)
+        result = await AdminService().broadcast(message)
     except Exception as e:
         return f"Could not broadcast: {e}"
 
