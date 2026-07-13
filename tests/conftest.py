@@ -2,11 +2,19 @@ import os
 
 import pytest
 
-os.environ.setdefault("TELEGRAM_BOT_TOKEN", "123456789:AAFakeTestTokenForPytestOnly000")
-os.environ.setdefault("TELEGRAM_CHAT_ID", "999999")
-os.environ.setdefault("TELEGRAM_OWNER_ID", "111")
-os.environ.setdefault("TWELVE_DATA_API_KEY", "unused")
-os.environ.setdefault("GEMINI_API_KEY", "unused")
+# Forced (not setdefault): several tests hardcode "111" as the OWNER
+# telegram_id (matching this value). setdefault() would silently lose
+# to a pre-existing TELEGRAM_OWNER_ID in the calling shell/CI
+# environment, breaking every OWNER-permission test in a way that's
+# hard to diagnose (found during Phase 47.1 CI validation -- the first
+# draft of .github/workflows/ci.yml set TELEGRAM_OWNER_ID=1 and broke
+# 5 tests silently). The test suite must be deterministic regardless
+# of ambient environment state.
+os.environ["TELEGRAM_BOT_TOKEN"] = "123456789:AAFakeTestTokenForPytestOnly000"
+os.environ["TELEGRAM_CHAT_ID"] = "999999"
+os.environ["TELEGRAM_OWNER_ID"] = "111"
+os.environ["TWELVE_DATA_API_KEY"] = "unused"
+os.environ["GEMINI_API_KEY"] = "unused"
 
 import config  # noqa: E402
 

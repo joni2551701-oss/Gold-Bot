@@ -1,0 +1,87 @@
+name: GoldBot CI
+
+# Validation-only pipeline (Phase 47.1): compiles, lints, and tests the
+# repository on every push/PR. This is separate from trading_bot.yml,
+# which is the scheduled production runner -- ci.yml never runs the
+# real pipeline against live APIs and never needs production secrets.
+
+on:
+  push:
+    branches:
+      - main
+      - "claude/**"
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pyflakes
+
+      - name: Compile check
+        run: python -m compileall -q .
+
+      - name: Lint (pyflakes)
+        run: python -m pyflakes $(git ls-files '*.py')
+
+      - name: Smoke import (every module in the repo)
+        run: |
+          python -c "
+          import os, importlib, sys
+          fails = []
+          count = 0
+          for root, dirs, files in os.walk('.'):
+              dirs[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
+              for f in files:
+                  if f.endswith('.py'):
+                      rel = os.path.relpath(os.path.join(root, f), '.')
+                      mod = rel[:-3].replace(os.sep, '.')
+                      if mod.endswith('.__init__'):
+                          mod = mod[:-9]
+                      if mod.startswith('tests.'):
+                          continue
+                      count += 1
+                      try:
+                          importlib.import_module(mod)
+                      except Exception as e:
+                          fails.append((mod, str(e)))
+          print(f'Modules checked: {count}')
+          if fails:
+              for mod, err in fails:
+                  print(f'FAILED: {mod}: {err}')
+              sys.exit(1)
+          print('All modules imported successfully.')
+          "
+
+      - name: Run tests
+        # TELEGRAM_OWNER_ID must match tests/conftest.py's default (111)
+        # -- os.environ.setdefault() there is a no-op if this workflow
+        # sets a different value first, which would silently break
+        # every OWNER-permission test (discovered during Phase 47.1
+        # validation).
+        env:
+          TELEGRAM_BOT_TOKEN: "123456789:AAFakeCITokenForPytestOnly0000000"
+          TELEGRAM_CHAT_ID: "999999"
+          TELEGRAM_OWNER_ID: "111"
+          TWELVE_DATA_API_KEY: "unused"
+          GEMINI_API_KEY: "unused"
+        run: python -m pytest tests/ -v

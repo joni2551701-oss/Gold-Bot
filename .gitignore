@@ -4,3 +4,4 @@ __pycache__/
 .DS_Store
 data/.cache_state.json
 database/goldbot.db
+.pytest_cache/
