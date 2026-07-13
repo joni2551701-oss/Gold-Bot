@@ -3,7 +3,7 @@
 System-level overview and dependency rules. For the detailed
 per-module responsibility map, see `docs/code_structure.md`; for the
 database-specific schema/relationship map, see
-`docs/database_architecture.md`; for the Telegram-specific
+`docs/DATABASE.md`; for the Telegram-specific
 service/permission map, see `docs/telegram_layer.md`. This document
 is the entry point that ties them together and states the dependency
 rules explicitly, which none of the earlier docs did as their primary

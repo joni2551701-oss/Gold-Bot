@@ -49,5 +49,5 @@ python -m pytest tests/ --cov=. --cov-report=term-missing   # with coverage
 ```
 
 `.github/workflows/ci.yml` runs this (plus `compileall` and a full
-module import sweep) on every push/PR. See `docs/testing_strategy.md`
+module import sweep) on every push/PR. See `docs/TESTING.md`
 for test philosophy, naming rules, fixtures, and directory layout.

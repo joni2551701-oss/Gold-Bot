@@ -4,6 +4,17 @@
 Validates a decision's trade geometry and computes a sizing
 suggestion. The last gate before a signal can reach Telegram.
 
+## Flow
+```
+Decision Engine
+      |
+      v
+Risk Manager   -- geometry + stop-loss validation
+      |
+      v
+Telegram Notification Filter (core/pipeline.py)
+```
+
 ## Responsibilities
 - SL/TP geometry validation (BUY: `stop_loss < entry < take_profit`;
   SELL: mirrored).

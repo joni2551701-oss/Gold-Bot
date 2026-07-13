@@ -20,7 +20,7 @@ logger = setup_logger("TradingPipeline")
 # this is logged as a WARNING (monitoring only -- never blocks, never
 # retries, never changes behavior). 2s comfortably covers this
 # pipeline's own compute (sub-millisecond per stage, benchmarked in
-# docs/performance_report.md) while still catching a slow network call
+# docs/PERFORMANCE.md) while still catching a slow network call
 # (Market Data fetch, Telegram delivery) worth knowing about.
 SLOW_OPERATION_THRESHOLD_SECONDS = 2.0
 

@@ -25,7 +25,7 @@ support.
   (`Secrets().TWELVE_DATA_API_KEY`).
 - **Logger names**: `PascalCase`, one `setup_logger("Name")` call per
   module at import time, `Name` matching the module's primary
-  class/responsibility — see `docs/logging_standard.md` for the full
+  class/responsibility — see `docs/LOGGING.md` for the full
   hierarchy.
 - **Test functions**: `test_<condition>_<expected_result>`, e.g.
   `test_invalid_buy_geometry_blocked` — a reader should be able to
@@ -33,7 +33,7 @@ support.
 
 ## Testing Rules
 
-See `docs/testing_strategy.md` for the full policy (directory layout,
+See `docs/TESTING.md` for the full policy (directory layout,
 fixture rules, running tests, CI behavior). The short version:
 
 - Test through the real chain — real services/repositories against a
@@ -58,7 +58,7 @@ fixture rules, running tests, CI behavior). The short version:
   commit history is itself a verification log, not just a change log.
 - Never commit a secret, credential, or `.env` file — `.gitignore`
   covers `.env`, `*.db`, `*.log`, `__pycache__/`, `.pytest_cache/` (see
-  `docs/security_report.md`'s Section 2 for the full policy and the
+  `docs/SECURITY.md`'s Section 2 for the full policy and the
   full-history scan confirming this has held).
 
 ## Review Process

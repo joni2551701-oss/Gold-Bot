@@ -290,7 +290,7 @@ def _create_feedback_indexes(connection: sqlite3.Connection):
     'created_at' is sorted on by get_all_feedback()'s ORDER BY.
     telegram_id has no current WHERE-clause usage anywhere in
     FeedbackRepository, so it is intentionally not indexed here (no
-    query would benefit today -- see docs/database_architecture.md).
+    query would benefit today -- see docs/DATABASE.md).
     CREATE INDEX IF NOT EXISTS is idempotent.
     """
     statements = [

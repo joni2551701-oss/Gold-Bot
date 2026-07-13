@@ -3,7 +3,7 @@ Phase 54 — database / SQL injection security tests.
 
 Every query in database/*.py already uses parameterized ('?')
 placeholders (confirmed by static audit in the Phase 48 full-system
-audit and re-confirmed this phase -- see docs/security_report.md).
+audit and re-confirmed this phase -- see docs/SECURITY.md).
 These tests prove it dynamically: classic SQL-injection payloads are
 fed through as telegram_id/message/username values and must be stored
 and read back literally, never alter query structure, corrupt data,

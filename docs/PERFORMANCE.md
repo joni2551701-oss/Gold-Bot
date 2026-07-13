@@ -206,7 +206,7 @@ Compute-stage timings are unchanged (instrumentation adds
 line — no measurable overhead): re-running the same synthetic
 benchmark after instrumentation still shows sub-millisecond compute
 stages. The material change is **visibility**, not speed:
-`docs/performance_report.md`'s "Before" numbers were only obtainable
+`docs/PERFORMANCE.md`'s "Before" numbers were only obtainable
 by writing a one-off script; every future `python main.py` run now
 emits this data as a normal part of its logs, so a real production
 slowdown (most likely bottleneck #2, network I/O) is now directly

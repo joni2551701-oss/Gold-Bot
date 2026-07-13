@@ -6,6 +6,14 @@ signal access control, admin panel, feedback. Built entirely on top
 of the pipeline's output, without modifying pipeline/strategy/AI/risk
 logic.
 
+## Flow
+```
+Telegram Update
+      |
+      v
+Command Router -> Permission Check -> Handler -> Service -> Database
+```
+
 ## Responsibilities
 Routing (`command_router.py`), permissions (`permissions.py`),
 handlers (`handlers.py`, Handler → Service only), services

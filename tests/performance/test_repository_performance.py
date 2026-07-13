@@ -1,7 +1,7 @@
 """
 Phase 53 — repository construction/CRUD performance regression tests.
 
-Real numbers (docs/performance_report.md): SignalRepository()
+Real numbers (docs/PERFORMANCE.md): SignalRepository()
 construction (schema + Phase 50 index creation) ~15ms one-time per
 pipeline run; a single insert ~3ms. Budgets here are generous
 regression guards, not tight benchmarks.

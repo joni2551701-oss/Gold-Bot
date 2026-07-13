@@ -3,6 +3,17 @@
 ## Purpose
 Scaffolding for a future MT5 order-execution layer. Currently inert.
 
+## Flow
+```
+Risk Manager (approved signal)
+      |
+      v
+execution/   -- NOT WIRED, "not implemented" today
+      |
+      v
+(future) MT5 order
+```
+
 ## Responsibilities
 `execution_engine.py`/`signal_lifecycle.py` unconditionally return
 "not implemented" — no MT5 client, no order calls, no I/O. GoldBot

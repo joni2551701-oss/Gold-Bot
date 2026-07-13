@@ -4,6 +4,17 @@
 Defines the signal candidate data contract and routes context to
 strategies for candidate generation.
 
+## Flow
+```
+Strategies
+      |
+      v
+Signal Engine   -- aggregates candidates
+      |
+      v
+AI Layer
+```
+
 ## Responsibilities
 - `models.py` — `SignalCandidate`, the immutable contract every
   strategy produces and every downstream layer (AI/Decision/Risk/

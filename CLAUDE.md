@@ -18,7 +18,7 @@ bot — read this before making any change, not after.
 - Services own business logic. Repositories own SQL only — no
   business rule belongs in a `database/*_repository.py` file (a
   handful of pre-existing exceptions are documented in
-  `docs/security_report.md`/`docs/AUDIT_REPORT.md`; don't add new
+  `docs/SECURITY.md`/`docs/AUDIT_REPORT.md`; don't add new
   ones).
 - Keep modules isolated: `strategies/` doesn't import `telegram/`,
   `ai/` doesn't import `database/`, etc. If a change requires a new
@@ -27,18 +27,25 @@ bot — read this before making any change, not after.
 
 ## Before Code Changes
 
-1. Read the related documentation first — `docs/ARCHITECTURE.md`,
-   the relevant module's `README.md` (`data/README.md`,
-   `context/README.md`, `signals/README.md`, `risk/README.md`,
-   `execution/README.md`, `telegram/README.md`, `ai/README.md`), and
-   any `docs/*_report.md`/`docs/*_architecture.md` covering the area.
-2. Understand dependencies — what imports the file you're about to
-   change, and what does it import. A quick `grep` before editing is
-   cheaper than a regression after.
-3. Check existing tests — `tests/` (plus `tests/unit/`,
-   `tests/integration/`, `tests/security/`, `tests/performance/`,
-   `tests/ai/`) almost certainly already covers the area; read the
-   relevant test file before assuming behavior.
+1. Read architecture docs — `docs/ARCHITECTURE.md`, the relevant
+   module's `README.md` (`data/README.md`, `context/README.md`,
+   `signals/README.md`, `decision/README.md`, `risk/README.md`,
+   `execution/README.md`, `database/README.md`, `telegram/README.md`,
+   `ai/README.md`), and any `docs/*.md` covering the area.
+2. Check dependencies — what imports the file you're about to change,
+   and what does it import. A quick `grep` before editing is cheaper
+   than a regression after.
+3. Do not break the pipeline — `core/pipeline.py`'s
+   Data→Context→Signal→AI→Decision→Risk→Telegram flow (see
+   `docs/ARCHITECTURE.md`'s Data Flow diagram) must keep working
+   exactly as documented; if a change touches it, re-read
+   `docs/AUDIT_REPORT.md` first.
+4. Add tests — `tests/` (plus `tests/unit/`, `tests/integration/`,
+   `tests/security/`, `tests/performance/`, `tests/ai/`) almost
+   certainly already covers the area; read the relevant test file
+   before assuming behavior, and add a new test for any new behavior.
+5. Run validation — see "After Code Changes" below; do this before
+   reporting a change as done, not after.
 
 ## After Code Changes
 
@@ -69,8 +76,17 @@ bot — read this before making any change, not after.
 
 ## Trading Safety
 
-- Never modify signal logic (`strategies/`, `signals/`) without
-  explicit approval for that specific change.
+Never modify, without explicit approval for that specific change:
+- **Signal logic** (`strategies/`, `signals/`).
+- **Risk limits** (`risk/risk_manager.py`'s geometry/stop-loss
+  validation and sizing formulas).
+- **Decision flow** (`decision/decision_engine.py`'s
+  confidence-blending and APPROVE/REJECT/NO_TRADE thresholds).
+- **Execution rules** — `execution/` is intentionally inert (no MT5
+  order calls exist yet); wiring it up is itself a change requiring
+  explicit approval, not a routine addition.
+
+Specific hard rules:
 - Never bypass Risk Manager. Every signal that could reach a user
   must pass through `risk.risk_manager.RiskManager.evaluate()` —
   no shortcut path to Telegram delivery.

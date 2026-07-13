@@ -1,0 +1,18 @@
+# GoldBot v0.3.0-rc1 — exact tested dependency snapshot (Phase 56).
+#
+# requirements.txt stays intentionally unpinned (see docs/SECURITY.md's
+# Dependency Audit section for why: a fresh `pip install -r
+# requirements.txt` automatically resolves to the current, already-
+# patched release via pip's own resolver, which is a deliberate
+# security choice re-verified this phase with a clean `pip-audit -r
+# requirements.txt` scan). This file is a separate, optional,
+# additional artifact: the exact versions this release was built and
+# tested against, for anyone who wants byte-for-byte reproducibility
+# (e.g. pinning a VPS deployment to a known-good snapshot).
+#
+# To use: pip install -r requirements-freeze.txt
+# To refresh after re-testing a newer version: pip freeze | grep -iE
+# "^(aiogram|requests)==" and update the two lines below.
+
+aiogram==3.29.1
+requests==2.33.1

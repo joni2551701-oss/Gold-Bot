@@ -97,7 +97,7 @@ same import-site grep as Part 1's audit table above:
   `ai_analyzer.py`, `context_memory.py`, `prompt_manager.py`,
   `user_profile.py`, and `trade_journal.py` are), so there is no
   requested destination to move them to. They stay exactly where they
-  are; `docs/ai_architecture.md` (this file) is their audit record.
+  are; `docs/AI_ARCHITECTURE.md` (this file) is their audit record.
 
 ## Part 3 — Interface Foundation
 

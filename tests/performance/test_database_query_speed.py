@@ -2,7 +2,7 @@
 Phase 53 — database query speed regression tests.
 
 Budgets are generous regression guards (task-specified: query < 1s),
-not benchmarks -- see docs/performance_report.md for real timing
+not benchmarks -- see docs/PERFORMANCE.md for real timing
 numbers (single-digit milliseconds on this hardware). These exist to
 catch a real regression (e.g. an accidentally-missing index, an N+1
 query pattern) rather than to chase microseconds.

@@ -3,6 +3,17 @@
 ## Purpose
 Fetches and normalizes XAUUSD market data from Twelve Data.
 
+## Flow
+```
+Twelve Data API
+      |
+      v
+data/   -- fetch + validate + de-duplicate
+      |
+      v
+Context Engine
+```
+
 ## Responsibilities
 - Raw API calls with retry/backoff (`twelve_data_client.py`).
 - Candle validation and de-duplication (`market_data.py`).
@@ -21,6 +32,6 @@ dependency on `context/`, `signals/`, `database/`, or `telegram/`.
 
 ## Future Roadmap
 Wire `SmartDataCache` in if the pipeline ever fetches more than one
-symbol/interval per cycle (see `docs/performance_report.md`). Wire
+symbol/interval per cycle (see `docs/PERFORMANCE.md`). Wire
 `is_trading_time()` in if in-process trading-hours gating becomes
 necessary beyond the GitHub Actions cron window.

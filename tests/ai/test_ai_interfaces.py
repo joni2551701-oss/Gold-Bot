@@ -87,7 +87,7 @@ def test_ai_analyzer_interface_can_be_implemented():
 
 def test_production_analyzer_does_not_implement_the_new_interface_yet():
     """
-    Documents the current, deliberate state (docs/ai_architecture.md):
+    Documents the current, deliberate state (docs/AI_ARCHITECTURE.md):
     retrofitting the production AIAnalyzer onto this interface is out
     of scope this phase. This test exists so that decision is visible
     and explicit in the test suite, not just in a doc.

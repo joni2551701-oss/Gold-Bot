@@ -1,7 +1,7 @@
 """
 Phase 53 — pipeline execution time regression tests.
 
-Not benchmarks (see docs/performance_report.md for real timing
+Not benchmarks (see docs/PERFORMANCE.md for real timing
 numbers) -- these are regression guards. The real bottleneck is
 network I/O (Market Data fetch, Telegram delivery, not reproducible
 in a test run) and the aiogram import (paid once per process, not per

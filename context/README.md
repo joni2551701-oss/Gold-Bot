@@ -3,6 +3,17 @@
 ## Purpose
 Pure Smart Money Concepts (SMC) market-structure detection.
 
+## Flow
+```
+Market Data
+      |
+      v
+Context Engine   -- swings, BOS/CHoCH, liquidity, OB, FVG, AMD
+      |
+      v
+Strategies
+```
+
 ## Responsibilities
 Swing points, BOS/CHoCH, liquidity sweeps, order blocks, fair value
 gaps, and AMD (Accumulation-Manipulation-Distribution) cycle
