@@ -157,21 +157,6 @@ class UserRepository:
             )
             return cursor.rowcount > 0
 
-    def update_language(self, telegram_id, language: str) -> bool:
-        return self.update_user(telegram_id, language=language)
-
-    def update_risk(self, telegram_id, risk_percent: float) -> bool:
-        return self.update_user(telegram_id, risk_percent=risk_percent)
-
-    def update_timeframe(self, telegram_id, timeframe: str) -> bool:
-        return self.update_user(telegram_id, timeframe=timeframe)
-
-    def update_strategy(self, telegram_id, strategy: str) -> bool:
-        return self.update_user(telegram_id, strategy=strategy)
-
-    def update_notifications(self, telegram_id, enabled: bool) -> bool:
-        return self.update_user(telegram_id, notifications_enabled=enabled)
-
     def enable_notifications(self, telegram_id) -> bool:
         return self.update_user(telegram_id, notifications_enabled=True)
 

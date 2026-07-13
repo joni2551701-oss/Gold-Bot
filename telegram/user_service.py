@@ -79,9 +79,6 @@ class UserService:
             logger.warning(f"get_profile failed for telegram_id={telegram_id}: {e}")
             return UserServiceResult(success=False, reason=f"Database error: {e}")
 
-    def update_language(self, telegram_id, language: str) -> UserServiceResult:
-        return self.update_settings(telegram_id, {"language": language})
-
     def change_language(self, telegram_id, language: str) -> UserServiceResult:
         return self.update_settings(telegram_id, {"language": language})
 

@@ -72,17 +72,3 @@ class SignalService:
         except Exception as e:
             logger.warning(f"get_signal_history failed: {e}")
             return SignalServiceResult(success=False, reason=f"Database error: {e}")
-
-    def get_signal_status(self) -> SignalServiceResult:
-        """Whether at least one signal has ever been persisted. Never raises."""
-        try:
-            repository = self._get_repository()
-            row = repository.get_latest_signal()
-            exists = row is not None
-            return SignalServiceResult(
-                success=exists,
-                reason="" if exists else "No signals recorded yet.",
-            )
-        except Exception as e:
-            logger.warning(f"get_signal_status failed: {e}")
-            return SignalServiceResult(success=False, reason=f"Database error: {e}")

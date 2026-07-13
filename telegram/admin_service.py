@@ -135,18 +135,6 @@ class AdminService:
             logger.warning(f"remove_admin failed for telegram_id={telegram_id}: {e}")
             return AdminServiceResult(success=False, reason=f"Database error: {e}")
 
-    def get_admin_info(self, telegram_id) -> AdminServiceResult:
-        """Looks up a specific admin's record. Never raises."""
-        try:
-            repository = self._get_repository()
-            admin = repository.get_admin(telegram_id)
-            if admin is None:
-                return AdminServiceResult(success=False, reason="Not an admin")
-            return AdminServiceResult(success=True, reason="", admin=admin)
-        except Exception as e:
-            logger.warning(f"get_admin_info failed for telegram_id={telegram_id}: {e}")
-            return AdminServiceResult(success=False, reason=f"Database error: {e}")
-
     def is_admin(self, telegram_id) -> bool:
         """
         Convenience membership check used by telegram.permissions.
@@ -356,15 +344,3 @@ class AdminService:
         if not result.success:
             return AdminServiceResult(success=False, reason=result.reason)
         return AdminServiceResult(success=True, reason="", feedback_list=result.feedback_list)
-
-    def resolve_feedback(self, feedback_id, status: str = "RESOLVED") -> AdminServiceResult:
-        """Updates a feedback entry's status (OPEN/REVIEWED/RESOLVED). Never raises."""
-        try:
-            result = FeedbackService().resolve_feedback(feedback_id, status)
-        except Exception as e:
-            logger.warning(f"resolve_feedback failed for feedback_id={feedback_id}: {e}")
-            return AdminServiceResult(success=False, reason=f"Database error: {e}")
-
-        if not result.success:
-            return AdminServiceResult(success=False, reason=result.reason)
-        return AdminServiceResult(success=True, reason="", feedback_item=result.feedback)

@@ -28,10 +28,6 @@ def language_keyboard():
     )
 
 
-def trading_style_keyboard():
-    pass
-
-
 def risk_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[

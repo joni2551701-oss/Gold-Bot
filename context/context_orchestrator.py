@@ -21,6 +21,9 @@ from context.liquidity import (
 from context.order_block import detect_order_blocks, OrderBlock
 from context.fvg import detect_fvg, FairValueGap
 from context.amd import detect_amd_events, AmdEvent
+from core.logger import setup_logger
+
+logger = setup_logger("ContextEngine")
 
 
 @dataclass(frozen=True)
@@ -79,6 +82,8 @@ class ContextEngine:
         Runs the full detection pipeline against the provided candle
         series and returns an immutable ContextSnapshot.
         """
+        self._validate_candle_order(candles)
+
         swings, structure = self._build_structure(candles)
         bos, choch = self._build_breaks(candles, structure)
         liquidity_zones, liquidity_sweeps = self._build_liquidity(candles, swings)
@@ -100,6 +105,26 @@ class ContextEngine:
             fair_value_gaps=fair_value_gaps,
             amd_events=amd_events,
         )
+
+    def _validate_candle_order(self, candles: Sequence[Candle]) -> None:
+        """
+        Logs (never raises, never filters/reorders) if the incoming
+        candle series is not strictly ascending by timestamp. Every
+        detector below indexes candles positionally and assumes
+        chronological order; production candles are already
+        deduplicated/sorted by MarketDataNormalizer._validate_and_clean(),
+        so this is a diagnostic safety net for any other caller
+        (tests, a future data source) that hands build() unsorted or
+        duplicate-timestamp candles, not a behavior change.
+        """
+        for prev, curr in zip(candles, candles[1:]):
+            if curr.timestamp <= prev.timestamp:
+                logger.warning(
+                    "Candle series is not strictly ascending by timestamp "
+                    f"({prev.timestamp} -> {curr.timestamp}); detection "
+                    "results may be unreliable."
+                )
+                return
 
     def _build_structure(
         self, candles: Sequence[Candle]
