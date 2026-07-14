@@ -9,6 +9,16 @@ is the entry point that ties them together and states the dependency
 rules explicitly, which none of the earlier docs did as their primary
 focus.
 
+This document is the **detailed, implementation-accurate** technical
+reference, kept current every phase. For the short, stable rule
+statements built on top of it (Phase A14's Documentation Architecture
+Foundation), see `docs/ARCHITECTURE_RULES.md` (module boundaries),
+`docs/DECISION_PRINCIPLES.md` (decision ownership), and
+`docs/SYSTEM_OVERVIEW.md` (a first-read map for a new developer or
+agent). `docs/DEVELOPMENT_GUIDE.md` states the workflow for changing
+this codebase; `docs/DOCUMENTATION_STANDARD.md` states the format
+every module's own documentation follows.
+
 ## System Overview
 
 GoldBot is two independent OS processes sharing one SQLite database

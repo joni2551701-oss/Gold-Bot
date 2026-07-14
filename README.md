@@ -25,6 +25,26 @@ See `docs/telegram_layer.md` for the full service/permission map,
 `docs/commands_reference.md` for every Telegram command. Release-level
 notes live in `docs/v0.2_release_notes.md`.
 
+## Documentation
+
+Start with `docs/SYSTEM_OVERVIEW.md` for a first-read map of what
+GoldBot is and where to go next. The full documentation set:
+
+| Document | Answers |
+|---|---|
+| `docs/SYSTEM_OVERVIEW.md` | What is GoldBot? Architecture, data flow, version roadmap. |
+| `docs/ARCHITECTURE.md` | The detailed, implementation-accurate technical reference — every module, every phase, the exact pipeline stage order. |
+| `docs/ARCHITECTURE_RULES.md` | Module boundaries — what each module may and may not do. |
+| `docs/DECISION_PRINCIPLES.md` | Decision ownership — which module has final say over what. |
+| `docs/DEVELOPMENT_GUIDE.md` | Development rules — the workflow for any code change, and what's forbidden without explicit approval. |
+| `docs/DOCUMENTATION_STANDARD.md` | The format every module's own documentation follows. |
+| `CLAUDE.md` | The enforced, checked-in version of the same architecture and Trading Safety rules, for any AI agent working in this repository. |
+
+Every other `docs/*.md` file is a phase- or topic-specific deep dive
+(e.g. `docs/FEATURE_ENGINEERING.md`, `docs/STRATEGY_LIFECYCLE.md`,
+`docs/ASSET_INTELLIGENCE.md`, `docs/CONFIGURATION_MANAGEMENT.md`) —
+linked from `docs/ARCHITECTURE.md`'s own per-phase sections.
+
 ## Environment variables
 
 Read exclusively through `core/secrets.py` (never hardcoded, no
