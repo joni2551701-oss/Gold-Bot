@@ -20,7 +20,7 @@ refactor" rule forbids. TwelveDataProvider instead wraps the existing,
 completely untouched TwelveDataClient.
 """
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from data.api_error_classifier import classify_api_error, classify_empty_response
 from data.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
@@ -55,6 +55,13 @@ class TwelveDataProvider(MarketDataProvider):
         # monitoring/performance.py's PerformanceTracker taking an
         # optional SignalRepository.
         self.client = client or TwelveDataClient()
+
+    def get_provider_name(self) -> str:
+        return "twelvedata"
+
+    def get_supported_timeframes(self) -> Tuple[str, ...]:
+        """The real, live set -- TwelveDataClient.INTERVAL_MAP's own keys, not a separately maintained duplicate list."""
+        return tuple(self.client.INTERVAL_MAP.keys())
 
     def get_candles(self, symbol: str, timeframe: str, limit: int) -> List[MarketCandle]:
         """

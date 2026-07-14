@@ -20,7 +20,7 @@ directly -- a genuine "this doesn't exist yet" signal for a caller
 that skips the status check, not a silently wrong empty result.
 """
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from data.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
 
@@ -36,6 +36,13 @@ class MT5Provider(MarketDataProvider):
     """
 
     UNAVAILABLE_REASON = "MT5 integration is not implemented yet (Phase 59.1 is TwelveData-only)"
+
+    def get_provider_name(self) -> str:
+        return "mt5"
+
+    def get_supported_timeframes(self) -> Tuple[str, ...]:
+        """Empty -- an honest "not implemented yet" answer, never raises (see base_provider.py's own docstring on why this must be safe to call on every registered provider)."""
+        return ()
 
     def get_candles(self, symbol: str, timeframe: str, limit: int) -> List[MarketCandle]:
         raise NotImplementedError(self.UNAVAILABLE_REASON)

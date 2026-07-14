@@ -129,6 +129,16 @@ def test_supported_symbols_all_use_the_existing_generic_formatter():
         assert formatted == f"{symbol[:3]}/{symbol[3:]}"
 
 
+def test_get_provider_name_returns_twelvedata():
+    provider = TwelveDataProvider()
+    assert provider.get_provider_name() == "twelvedata"
+
+
+def test_get_supported_timeframes_matches_the_real_client_interval_map():
+    provider = TwelveDataProvider()
+    assert set(provider.get_supported_timeframes()) == {"M5", "M15", "H1", "H4", "Daily"}
+
+
 def test_provider_never_generates_a_signal_or_knows_strategy():
     """A structural guard: TwelveDataProvider exposes no signal/strategy/decision-shaped attribute or method."""
     provider = TwelveDataProvider()

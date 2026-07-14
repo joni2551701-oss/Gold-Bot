@@ -228,33 +228,11 @@ condition that was never an exception to classify in the first place.
 
 ## Owner Mode (TASK 6 — contract only, not implemented)
 
-**Not implemented in this phase.** A future, separately-approved phase
-would add an owner-only Telegram command to switch the active
-provider at runtime:
-
-```
-/provider                → shows the current MARKET_DATA_PROVIDER and each provider's ProviderStatus
-/provider twelvedata     → sets MARKET_DATA_PROVIDER=twelvedata (owner-only)
-/provider mt5            → sets MARKET_DATA_PROVIDER=mt5 (owner-only, rejected today -- ENABLE_MT5=False)
-```
-
-Contract, for whoever implements this later:
-- Must go through `telegram/*_service.py` → a repository, per this
-  codebase's own handler/service/repository rule
-  (`telegram/handlers.py` never calls `database/*` directly) — no new
-  exception to that rule.
-  - Owner-only, matching the existing `database/admin_repository.py`
-  role check other owner-scoped commands already use (not audited in
-  detail in this phase — that audit belongs to whoever implements the
-  command).
-- Should call `data/providers/get_provider()` to validate a requested
-  provider name and surface its exact `ValueError` message back to the
-  owner (e.g. "MARKET_DATA_PROVIDER=mt5 requires ENABLE_MT5=True") —
-  not a new, separate validation.
-- Does not change `MARKET_DATA_PROVIDER` at the process level (an
-  `os.getenv()` read happens once, at `config.py` import time) — a
-  real implementation would need either a restart, or a runtime
-  override mechanism this phase does not design.
+**Not implemented in this phase.** Superseded by, and now fully
+specified in, `docs/OWNER_COMMANDS.md` (Phase 59.2, TASK 7) — that
+document is the single source of truth for the owner-only
+`/provider`/`/providers`/`/provider_status`/`/enable_provider`/
+`/disable_provider` command contract, so it is not duplicated here.
 
 ## Data Flow
 

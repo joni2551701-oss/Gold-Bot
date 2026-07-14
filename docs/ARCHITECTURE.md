@@ -696,6 +696,63 @@ every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
 exists in exactly the shape it does.
 
+### Phase 59.2 — Market Data Intelligence Layer
+
+Hardens the Phase 59.1 provider foundation before adding new
+providers — full detail: `docs/MARKET_DATA_ARCHITECTURE.md`,
+`docs/PROVIDER_CONTRACTS.md`, `docs/TRADINGVIEW_PROVIDER.md`,
+`docs/OWNER_COMMANDS.md`. `data/providers/base_provider.py`'s
+`MarketDataProvider` was split from a new, more general
+`DataProvider` root (`get_provider_name()`, `get_market_status()`),
+so a non-candle provider (macro/economic data) can share the same
+registry without being force-fit into a candle shape.
+`MarketDataProvider` gained `get_supported_timeframes()`; a third
+candidate method, `get_symbol_info()`, was audited and deliberately
+**not** added (no concrete consumer yet — see
+`docs/PROVIDER_CONTRACTS.md`'s audit table).
+
+Two new provider stubs, same inert-by-design posture as
+`mt5_provider.py`: `binance_provider.py`'s `BinanceProvider` (v0.9
+Multi Asset foundation; validates `BTCUSDT`/`ETHUSDT` symbols before
+raising `NotImplementedError`) and a new, separate hierarchy —
+`fundamental_base.py`'s `FundamentalDataProvider` (`get_macro_indicator()`,
+`get_interest_rate()`, `get_inflation_data()`, `FundamentalDataPoint`,
+`FundamentalSnapshot`) — and `fred_provider.py`'s `FredProvider`
+(verified real FRED series IDs `FEDFUNDS`/`CPIAUCSL`/`DTWEXBGS`, no
+live connection). TradingView was researched, not coded —
+`docs/TRADINGVIEW_PROVIDER.md` concluded TradingView's own Terms of
+Service forbid the commercial/automated use a `MarketDataProvider`
+implementation would require, so no `tradingview_provider.py` exists.
+
+`data/providers/registry.py`'s `ProviderRegistry`
+(`register()`/`get()`/`available()`/`all_names()`) is a new, broader
+catalog — explicitly not a replacement for Phase 59.1's `get_provider()`
+(single active choice, `Config`-driven); see `registry.py`'s own
+docstring for the exact relationship. `build_default_registry()`
+registers all four real/stub providers (not TradingView).
+
+`monitoring/provider_health.py` (a new file in the pre-existing
+`monitoring/` package, alongside `monitoring/performance.py`) adds
+`ProviderHealthStatus` (`ONLINE`/`DEGRADED`/`OFFLINE`) and
+`check_provider_health()`/`check_registry_health()`, timing each
+provider's own always-safe `get_market_status()` call — a third,
+distinct kind of "performance" from `performance/` (Phase A19, system
+timing) and `analytics/` (Phase 59 Preparation, trading outcome).
+
+`docs/OWNER_COMMANDS.md` is a new, dedicated contract-only document
+(migrated and expanded from Phase 59.1's own "Owner Mode" section,
+which now just points here) — five owner-only Telegram commands
+(`/provider`, `/providers`, `/provider_status`, `/enable_provider`,
+`/disable_provider`), none implemented.
+
+None of `data/market_data.py`, `core/pipeline.py`, `context/`,
+`strategies/`, `signals/` (candidate generation),
+`decision/decision_engine.py`, `risk/risk_manager.py`, `ai/`,
+`execution/`, or any Telegram file changed in this phase — see
+`docs/MARKET_DATA_ARCHITECTURE.md`'s "As implemented today" section
+for the explicit, disclosed gap between this diagram and what
+`data/market_data.py` actually calls.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real
@@ -884,7 +941,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
-| `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07/Phase 59.1 TASK 5) — maps a caught fetch exception (or a known empty-response condition) to a structured `ExternalAPIError` for logging only, never changes control flow — Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation/59.1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store — and Market Provider Abstraction (`providers/`, Phase 59.1) — `MarketDataProvider`/`TwelveDataProvider`/`MT5Provider`, data-only, not wired into the live pipeline. |
+| `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07/Phase 59.1 TASK 5) — maps a caught fetch exception (or a known empty-response condition) to a structured `ExternalAPIError` for logging only, never changes control flow — Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation/59.1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store — and Market Provider Abstraction (`providers/`, Phase 59.1) — `DataProvider`/`MarketDataProvider`/`FundamentalDataProvider`, `TwelveDataProvider`/`MT5Provider`/`BinanceProvider`/`FredProvider`, `ProviderRegistry`, data-only, not wired into the live pipeline. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. `snapshot.py` (Phase A16) additionally standardizes a `ContextSnapshot` into a flat, JSON-serializable `ContextSnapshotSchema`, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) — a distinct type, not a replacement. `market_phase.py` (AC-02) adds a wired, advisory 5-state (+`UNKNOWN`) `MarketPhase` classification reusing already-detected Wyckoff/AMD/Market Regime data. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology, plus a Strategy Lifecycle metadata layer (`lifecycle/`, Phase A11) — `StrategyDefinition`/`StrategyRegistry`, storing status/version/supported-assets metadata only, never running a strategy or generating a signal. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria — and Signal Schema (`schema.py`/`adapter.py`, Phase A15) — one standard, JSON-serializable cross-module signal contract, computing nothing itself, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) with a new `decision_id` field. |
@@ -893,7 +950,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | `decision/` | Blends signal confidence, HTF bias, (inverted) AI risk score, and AI confidence — weighted, Phase A3 — into APPROVE/REJECT/NO_TRADE. |
 | `risk/` | SL/TP geometry and stop-loss-distance validation; sizing suggestion only. |
 | `execution/` | Inert scaffolding for future MT5 integration — not reachable from any runtime path today. |
-| `monitoring/` | Historical trade-outcome statistics (win rate, strategy breakdown — `performance.py`'s `PerformanceTracker`), not wired into any live command yet. Distinct from `performance/` (Phase A19) — see that row. |
+| `monitoring/` | Historical trade-outcome statistics (win rate, strategy breakdown — `performance.py`'s `PerformanceTracker`), not wired into any live command yet. Distinct from `performance/` (Phase A19) — see that row. Also `provider_health.py` (Phase 59.2) — `ProviderHealthStatus`/`check_provider_health()`, a third, distinct kind of “performance” (a provider's own live availability/latency), not wired into any live command yet either. |
 | `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `monitoring/performance.py`'s trade-outcome statistics. |
 | `database/` | SQLite persistence — the only place SQL is written. |
 | `telegram/` | The Telegram product layer: routing, permissions, handlers, services. |
@@ -1034,7 +1091,14 @@ import sweep):
   or `telegram/`. `mt5_provider.py` imports only `base_provider.py`
   (same package) — no `MetaTrader5` package dependency. Not imported
   by `core/pipeline.py`, `data/market_data.py`, or any other existing
-  module in this phase.
+  module in this phase. Extended by Phase 59.2:
+  `binance_provider.py`/`fred_provider.py`/`fundamental_base.py`/
+  `registry.py` all import only other files within `data/providers/`
+  — no new external dependency (no exchange or FRED API package).
+  `monitoring/provider_health.py` (Phase 59.2) imports
+  `data.providers.base_provider`/`data.providers.registry` — a new,
+  one-directional `monitoring/` → `data/providers/` dependency, never
+  reversed.
 - `analytics/` (Phase 59 Preparation TASK 3) imports
   `lifecycle.paper_trade.PaperTrade` and `signals.schema.SignalSchema`
   (`TYPE_CHECKING`-only) plus, within the package,

@@ -89,6 +89,14 @@ def test_mt5_absence_never_crashes_the_system_when_disabled(monkeypatch):
     assert isinstance(provider, TwelveDataProvider)
 
 
+def test_mt5_provider_name_and_supported_timeframes_never_raise(monkeypatch):
+    monkeypatch.setattr(Config, "ENABLE_MT5", True)
+    provider = get_provider("mt5")
+
+    assert provider.get_provider_name() == "mt5"
+    assert provider.get_supported_timeframes() == ()  # honest "not implemented yet", never raises
+
+
 def test_default_config_values_are_twelvedata_live_mt5_disabled():
     """The real, unmocked Config defaults -- confirms production configuration matches this phase's intent."""
     assert Config.MARKET_DATA_PROVIDER == "twelvedata"

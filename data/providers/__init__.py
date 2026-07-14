@@ -1,26 +1,41 @@
 """
-Data Layer — Market Provider package (Phase 59.1). See
-docs/MARKET_PROVIDER.md for the full architecture. get_provider() is
-the one factory function a future caller would use to obtain a
-MarketDataProvider without hardcoding which one -- not called from
-core/pipeline.py or anywhere else in this phase (zero pipeline wiring,
-same posture as every other Phase A/AC/Phase-59-prep foundation
-module).
+Data Layer — Market Provider package (Phase 59.1; extended Phase
+59.2). See docs/MARKET_PROVIDER.md and docs/MARKET_DATA_ARCHITECTURE.md
+for the full architecture. get_provider() is the one factory function
+a future caller would use to obtain THE configured MarketDataProvider
+without hardcoding which one; ProviderRegistry (registry.py, Phase
+59.2) is the separate, broader catalog of every provider GoldBot has
+-- see registry.py's own docstring for how the two relate. Neither is
+called from core/pipeline.py or anywhere else in this phase (zero
+pipeline wiring, same posture as every other Phase A/AC/Phase-59
+foundation module).
 """
 
 from typing import Optional
 
 from config import Config
-from data.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
+from data.providers.base_provider import DataProvider, MarketCandle, MarketDataProvider, ProviderStatus
+from data.providers.binance_provider import BinanceProvider
+from data.providers.fred_provider import FredProvider
+from data.providers.fundamental_base import FundamentalDataPoint, FundamentalDataProvider, FundamentalSnapshot
 from data.providers.mt5_provider import MT5Provider
+from data.providers.registry import ProviderRegistry, build_default_registry
 from data.providers.twelve_data_provider import TwelveDataProvider
 
 __all__ = [
+    "DataProvider",
     "MarketCandle",
     "MarketDataProvider",
     "ProviderStatus",
     "TwelveDataProvider",
     "MT5Provider",
+    "BinanceProvider",
+    "FredProvider",
+    "FundamentalDataPoint",
+    "FundamentalDataProvider",
+    "FundamentalSnapshot",
+    "ProviderRegistry",
+    "build_default_registry",
     "get_provider",
 ]
 
