@@ -57,6 +57,12 @@ Signal Generation (signals/)     |  -- aggregates strategy output
       |     |          -- per-candidate A+/A/B/C grade (Phase A4;
       |     |          advisory only, see docs/SIGNAL_QUALITY.md;
       |     |          not consumed below in this phase)
+      |     |     |
+      |     |     '-- Explainability (signals/explainability.py)
+      |     |          -- reasons list from Signal Quality's
+      |     |          criteria_met + Wyckoff/Session/Regime
+      |     |          (Phase A9; advisory only, see
+      |     |          docs/EXPLAINABILITY.md)
       v     |
 AI Layer (ai/)                   |  -- advisory input only (currently a stub)
       |     |
@@ -263,6 +269,29 @@ same reasoning as Wyckoff's relationship to `amd.py`
 (`docs/WYCKOFF.md`). Independently implements its own checks instead;
 full detail and the exact penalty table: `docs/DATA_QUALITY.md`.
 
+### Explainability Layer (Phase A9)
+
+`signals/explainability.py`'s `explain_signal(signal, context,
+quality)` produces a `SignalExplanation` (`direction`, `reasons`,
+`quality`, `confidence`) — human-readable reasons for a signal, with
+zero new detection logic. Its primary reason source is Signal Quality
+Score's already-computed `criteria_met` (Phase A4), translated into
+direction-aware phrases (`"HTF bullish bias"`, `"HH/HL structure"`,
+etc.) — no alignment check is re-derived. Three additional reasons,
+each included only when directionally relevant, come from Wyckoff
+(Phase A5), Session (Phase A6), and Market Regime (Phase A7) — all
+already computed, none re-detected.
+
+New stage immediately after `signal_quality`; `"explanations"` is the
+only new key in `run()`'s result dict. `confidence` is
+`SignalCandidate.confidence * 100`, relayed exactly as generated —
+never recomputed, since Explainability runs before
+`DecisionEngine.evaluate()` and no blended/final confidence exists
+yet to report. Not consumed by `AIAnalyzer`, `DecisionEngine`,
+`RiskManager`, or `telegram/signal_formatter.py` in this phase — see
+`docs/EXPLAINABILITY.md`'s "How AI will use this in the future"
+section.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -276,7 +305,7 @@ exists in exactly the shape it does.
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology. |
-| `signals/` | The `SignalCandidate` data contract, strategy aggregation, and Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade. |
+| `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — and Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |
 | `decision/` | Blends signal confidence, HTF bias, (inverted) AI risk score, and AI confidence — weighted, Phase A3 — into APPROVE/REJECT/NO_TRADE. |
 | `risk/` | SL/TP geometry and stop-loss-distance validation; sizing suggestion only. |

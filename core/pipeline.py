@@ -7,6 +7,7 @@ from context.context_orchestrator import build_context_snapshot
 from context.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
 from signals.signal_engine import SignalEngine
 from signals.signal_quality import compute_signal_quality, SignalQualityResult
+from signals.explainability import explain_signal, SignalExplanation
 from ai.ai_analyzer import AIAnalyzer, AIAnalysisResult
 from decision.decision_engine import DecisionEngine
 from decision.models import TradeDecision, DecisionAction
@@ -31,8 +32,20 @@ SLOW_OPERATION_THRESHOLD_SECONDS = 2.0
 class TradingPipeline:
     """
     Wires Data -> Data Quality -> HTF Bias -> Context -> Signal ->
-    Signal Quality -> AI -> Decision -> Risk -> Signal Formatter ->
-    Telegram Delivery -> Persistence into a single, runnable flow.
+    Signal Quality -> Explainability -> AI -> Decision -> Risk ->
+    Signal Formatter -> Telegram Delivery -> Persistence into a
+    single, runnable flow.
+
+    Explainability (Phase A9, signals/explainability.py) turns each
+    signal candidate's already-computed context into human-readable
+    reasons -- reusing Signal Quality's criteria_met plus Wyckoff/
+    Session/Market Regime, no new detection logic, no new confidence
+    computation (SignalCandidate.confidence is relayed, not
+    recomputed). Purely advisory: not passed into AIAnalyzer,
+    DecisionEngine, or RiskManager in this phase, and never blocks or
+    alters any existing stage. Returned in run()'s result dict
+    ("explanations", one per candidate, same order as "signals") for
+    a future consumer (e.g. Telegram message enrichment) to use.
 
     Data Quality (Phase A8, data/data_quality.py) assesses the candle
     list get_candles() already returned -- missing candles, duplicate
@@ -230,6 +243,19 @@ class TradingPipeline:
                 f"{[q.grade.value for q in quality_results]}"
             )
 
+        # Explainability (Phase A9): per-candidate human-readable
+        # reasons, reusing Signal Quality's already-computed
+        # criteria_met plus Wyckoff/Session/Market Regime context --
+        # no new detection logic, no new confidence computation.
+        # Advisory only: not consumed by AIAnalyzer/DecisionEngine/
+        # RiskManager in this phase.
+        t0 = time.perf_counter()
+        explanations: List[SignalExplanation] = [
+            explain_signal(candidate, context, quality)
+            for candidate, quality in zip(signal_candidates, quality_results)
+        ]
+        self._log_stage("explainability", time.perf_counter() - t0)
+
         t0 = time.perf_counter()
         ai_results: List[AIAnalysisResult] = [
             self.ai_analyzer.analyze(candidate, context)
@@ -328,6 +354,7 @@ class TradingPipeline:
             "htf_bias": htf_bias,
             "signals": signal_candidates,
             "quality_results": quality_results,
+            "explanations": explanations,
             "ai_results": ai_results,
             "decisions": decisions,
             "risk_results": risk_results,
