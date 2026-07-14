@@ -35,6 +35,7 @@ def _empty_context(**overrides) -> ContextSnapshot:
         fair_value_gaps=(),
         amd_events=(),
         wyckoff_events=(),
+        session_events=(),
     )
     base.update(overrides)
     return ContextSnapshot(**base)

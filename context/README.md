@@ -3,9 +3,10 @@
 ## Purpose
 Pure Smart Money Concepts (SMC) market-structure detection for the
 execution timeframe (including Wyckoff Spring/Upthrust detection,
-`wyckoff.py`, Phase A5), plus HTF Bias (`htf_bias.py`, Phase A2) — a
-separate, higher-timeframe market-context classification. All
-stateless, read-only detection code; none makes a trading decision.
+`wyckoff.py`, Phase A5, and session classification, `session.py`,
+Phase A6), plus HTF Bias (`htf_bias.py`, Phase A2) — a separate,
+higher-timeframe market-context classification. All stateless,
+read-only detection code; none makes a trading decision.
 
 ## Flow
 ```
@@ -16,7 +17,7 @@ Market Data
       v         |                                             v
 Context Engine <-'                                       htf_bias.py
       |  swings, BOS/CHoCH, liquidity, OB, FVG,               |
-      |  AMD, Wyckoff (Phase A5, in ContextSnapshot)           |
+      |  AMD, Wyckoff (A5), Session (A6, in ContextSnapshot)   |
       v                                                        v
 Strategies                          TradingPipeline.run()'s result dict
                                      ("htf_bias") -> decision/'s
@@ -27,12 +28,13 @@ Strategies                          TradingPipeline.run()'s result dict
 ## Responsibilities
 Swing points, BOS/CHoCH, liquidity sweeps, order blocks, fair value
 gaps, AMD (Accumulation-Manipulation-Distribution) cycle detection,
-and Wyckoff Spring/Upthrust detection (`wyckoff.py`, Phase A5) — all
-as stateless functions over a candle sequence, all part of
-`ContextSnapshot`. `htf_bias.py` additionally classifies Daily/H4/H1
-direction using the same swing/structure functions, independently of
-`ContextSnapshot` (a different timeframe than everything else in this
-package operates on).
+Wyckoff Spring/Upthrust detection (`wyckoff.py`, Phase A5), and
+session classification (`session.py`, Phase A6) — all as stateless
+functions over a candle sequence, all part of `ContextSnapshot`.
+`htf_bias.py` additionally classifies Daily/H4/H1 direction using the
+same swing/structure functions, independently of `ContextSnapshot` (a
+different timeframe than everything else in this package operates
+on).
 
 ### Why Wyckoff exists
 Phase A1's architecture audit found zero Wyckoff code anywhere —
@@ -54,6 +56,34 @@ data source exists in this codebase).
   — only the Spring/Upthrust test events.
 - Does not modify `amd.py`, `order_block.py`, or any other existing
   detector.
+
+### Why Session Intelligence exists
+GoldBot already knew Structure, Liquidity, Wyckoff phase, and HTF
+trend, but nothing described which part of the trading day a candle
+belonged to. Phase A6 adds a five-way session classification
+(`ASIA`/`LONDON`/`LONDON_NEW_YORK_OVERLAP`/`NEW_YORK`/`OFF_HOURS`, by
+UTC hour) plus two real, data-backed statistics per session (average
+range, liquidity-sweep count) — not fabricated placeholders. See
+`docs/SESSION_INTELLIGENCE.md` for the full session-boundary table and
+an explicit account of what was named in the roadmap but deliberately
+NOT built ("liquidity probability" needs historical aggregation this
+phase doesn't have; "setup quality" per session is
+`signals/signal_quality.py`'s job, not wired here).
+
+### What Session Intelligence does NOT do
+- Does not generate a `BUY`/`SELL` signal, and is not itself a
+  strategy — no `strategies/*.py` file reads `Session`/`SessionEvent`.
+- Does not add a `SESSION_ALIGNED` criterion to
+  `signals/signal_quality.py` — a distinct, separate, not-yet-done
+  future step.
+- Does not read, call, or duplicate `data/session_filter.py`'s
+  `is_trading_time()` — different purpose (wall-clock trading-hours
+  gate vs. per-candle session classification), different time
+  convention (Tashkent vs. UTC).
+- Does not fabricate "liquidity probability" or cross-window
+  statistics — `compute_session_volatility()`/
+  `compute_session_liquidity_activity()` report only what the
+  provided candle window actually contains.
 
 ### Why HTF Bias exists
 Phase A1's architecture audit found `data/market_data.py`'s
@@ -88,8 +118,9 @@ detectors. `htf_bias.py`'s `compute_htf_bias()` takes a
 ## Output
 `ContextSnapshot` (`context_orchestrator.py`) — an immutable, fully
 resolved snapshot of every detector's output for one candle series,
-10 fields as of Phase A5 (`wyckoff_events` added; every pre-existing
-field's name and meaning is unchanged). `htf_bias.py`'s
+11 fields as of Phase A6 (`wyckoff_events` added in A5,
+`session_events` added in A6; every pre-existing field's name and
+meaning is unchanged). `htf_bias.py`'s
 `compute_htf_bias()` returns a separate `HTFBiasResult` (`bias`,
 `confidence`, `timeframes`, `quality_score`) — not part of
 `ContextSnapshot`, since it operates on different timeframes than
@@ -112,4 +143,8 @@ section — a `strategies/wyckoff_strategy.py`, real volume confirmation
 (once a volume data source exists), and a shared sweep-then-break
 helper (a minor, known duplication across `order_block.py`, `amd.py`,
 and `wyckoff.py`, deliberately not refactored in this foundation-only
-phase) all remain unimplemented.
+phase) all remain unimplemented. For Session Intelligence
+specifically, see `docs/SESSION_INTELLIGENCE.md`'s Future Expansion
+section — a `SESSION_ALIGNED` Signal Quality Score criterion,
+historical liquidity-probability aggregation, and DST-aware session
+boundaries all remain unimplemented.

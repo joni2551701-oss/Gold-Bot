@@ -22,6 +22,7 @@ from context.order_block import detect_order_blocks, OrderBlock
 from context.fvg import detect_fvg, FairValueGap
 from context.amd import detect_amd_events, AmdEvent
 from context.wyckoff import detect_wyckoff_events, WyckoffEvent
+from context.session import detect_session_events, SessionEvent
 from core.logger import setup_logger
 
 logger = setup_logger("ContextEngine")
@@ -37,8 +38,9 @@ class ContextSnapshot:
     engine that requires a complete Smart Money Concepts view of the
     market. Field names and their semantic meaning are a stable
     contract; downstream consumers depend on them remaining unchanged
-    -- Phase A5 adds a new field (wyckoff_events) but does not rename,
-    remove, or change the meaning of any of the original 9.
+    -- Phase A5 added wyckoff_events and Phase A6 adds session_events,
+    but neither renames, removes, or changes the meaning of any
+    earlier field.
 
     All fields are required (no defaults) by design -- every caller
     must supply every field explicitly, even as an empty sequence, so
@@ -57,6 +59,7 @@ class ContextSnapshot:
     fair_value_gaps: Sequence[FairValueGap]
     amd_events: Sequence[AmdEvent]
     wyckoff_events: Sequence[WyckoffEvent]
+    session_events: Sequence[SessionEvent]
 
 
 class ContextEngine:
@@ -74,6 +77,7 @@ class ContextEngine:
           -> Fair Value Gaps        (_build_footprints)
           -> AMD Events             (_build_amd)
           -> Wyckoff Events         (_build_wyckoff, Phase A5)
+          -> Session Events         (_build_session, Phase A6)
           -> ContextSnapshot        (build)
 
     The engine holds no mutable state between calls to build(): each
@@ -106,6 +110,7 @@ class ContextEngine:
             candles, liquidity_sweeps, bos, choch, order_blocks, fair_value_gaps
         )
         wyckoff_events = self._build_wyckoff(candles, liquidity_sweeps, bos, choch)
+        session_events = self._build_session(candles)
 
         return ContextSnapshot(
             candles=candles,
@@ -118,6 +123,7 @@ class ContextEngine:
             fair_value_gaps=fair_value_gaps,
             amd_events=amd_events,
             wyckoff_events=wyckoff_events,
+            session_events=session_events,
         )
 
     def _validate_candle_order(self, candles: Sequence[Candle]) -> None:
@@ -232,6 +238,16 @@ class ContextEngine:
         and docs/WYCKOFF.md.
         """
         return detect_wyckoff_events(candles, sweeps, bos, choch)
+
+    def _build_session(self, candles: Sequence[Candle]) -> List[SessionEvent]:
+        """
+        Stage 7 (Phase A6): classifies each candle's UTC hour into a
+        trading session (Asia/London/New York/Overlap/Off-hours),
+        emitting one SessionEvent per transition. Foundation only --
+        not consumed by any strategy. See context/session.py and
+        docs/SESSION_INTELLIGENCE.md.
+        """
+        return detect_session_events(candles)
 
 
 def build_context_snapshot(candles: Sequence[Candle]) -> ContextSnapshot:

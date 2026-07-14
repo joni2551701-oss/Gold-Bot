@@ -47,10 +47,12 @@ grading table and criteria definitions.
 - Does not block, filter, or reorder candidates — a `C`-graded
   candidate still reaches AI/Decision/Risk exactly as before this
   phase.
-- Does not include a Session or Volume criterion — neither exists in
-  this codebase yet (Session Intelligence is a later phase; there is
-  no volume data source anywhere in `data/`). Both are named, explicit
-  future-extension points in `docs/SIGNAL_QUALITY.md`, not faked.
+- Does not include a Session or Volume criterion. Session Intelligence
+  now exists (`context/session.py`, Phase A6) but wiring a
+  `SESSION_ALIGNED` criterion here is a distinct, not-yet-done future
+  step; Volume still has no data source anywhere in `data/`. Both
+  remain named, explicit future-extension points in
+  `docs/SIGNAL_QUALITY.md`, not faked.
 
 ## Input
 `ContextSnapshot` (from `context/`) for `signal_engine.py`.

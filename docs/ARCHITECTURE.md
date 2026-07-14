@@ -39,8 +39,8 @@ HTF Bias (context/htf_bias.py)   -- Daily/H4/H1 market-context only
       v     |
 Context Engine (context/)        |  -- SMC structure detection:
       |     |                       structure, BOS/CHoCH, liquidity,
-      |     |                       OB, FVG, AMD, Wyckoff (Phase A5,
-      |     |                       Spring/Upthrust -- see below)
+      |     |                       OB, FVG, AMD, Wyckoff (Phase A5),
+      |     |                       Session (Phase A6) -- see below
       v     |
 Strategies (strategies/)         |  -- 3 independent SMC methodologies
       |     |
@@ -181,6 +181,34 @@ returns `None` — this codebase has no volume data source at all
 never fabricates a `True`/`False` confirmation. Not consumed by any
 `strategies/*.py` file in this phase.
 
+### Session Intelligence (Phase A6)
+
+`context/session.py`'s `classify_session(timestamp)` classifies a
+candle's UTC hour into `ASIA` / `LONDON` /
+`LONDON_NEW_YORK_OVERLAP` / `NEW_YORK` / `OFF_HOURS`. Like Wyckoff,
+this needed no `core/pipeline.py` change — an 8th `ContextEngine.build()`
+detector, so `session_events` (sparse transitions) is simply an 11th
+field on `ContextSnapshot`.
+
+Two real, data-backed statistics — not fabricated — are also exposed
+as standalone functions (not `ContextSnapshot` fields, since their
+`Dict[Session, ...]` shape doesn't match the event-list convention):
+`compute_session_volatility()` (average `high - low` range per
+session) and `compute_session_liquidity_activity()` (count of
+already-detected `LiquiditySweepEvent`s per session, reused, not
+re-detected). "Liquidity probability" and "setup quality" per session
+were both named in the roadmap and both deliberately **not**
+fabricated this phase — see `docs/SESSION_INTELLIGENCE.md`'s "What was
+asked but is NOT included" section for why each needs a different,
+separate future step (historical aggregation for the former; a
+`SESSION_ALIGNED` criterion in `signals/signal_quality.py`, Phase A4's
+already-documented extension point, for the latter — neither wired in
+this phase).
+
+Distinct from `data/session_filter.py`'s `is_trading_time()` (a
+wall-clock, Tashkent-time, binary trading-hours gate for a different
+purpose) — not read, called, or duplicated by this module.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -192,7 +220,7 @@ exists in exactly the shape it does.
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets. |
 | `data/` | Market data fetch and normalization. |
-| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, and Wyckoff Spring/Upthrust — Phase A5, part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
+| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, and Session classification — Phase A6, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, and Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |

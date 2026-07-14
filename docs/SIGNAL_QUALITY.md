@@ -121,19 +121,25 @@ The Phase A4 roadmap sketch named **Session** and **Volume** as two
 additional inputs. Neither is included in this phase, by explicit
 Director decision when this ambiguity was raised before implementation:
 
-- **Session**: Session Intelligence is its own, later, separately-
-  approved phase — no session classification exists anywhere in this
-  codebase yet (only `data/session_filter.py`'s binary trading-hours
-  gate, which is not a session classifier and is still unwired into
-  the pipeline).
-- **Volume**: this codebase has **no volume data source at all** —
-  `data/twelve_data_client.py`'s `Candle` dataclass is OHLC-only
-  (confirmed by reading the fetch code this phase); Twelve Data's
-  response is never asked for volume.
+- **Session**: at the time of Phase A4, no session classification
+  existed anywhere in this codebase (only `data/session_filter.py`'s
+  binary trading-hours gate, not a session classifier). **Phase A6
+  built `context/session.py`'s `classify_session()`/`Session` enum**,
+  so a real session criterion is now buildable — but wiring it into
+  this module's `_CRITERIA` tuple was not part of Phase A6's scope
+  either (that phase built Session Intelligence standalone, the same
+  "compute now, connect later" posture HTF Bias had between Phase A2
+  and Phase A3). `criteria_total` is still `5` as of Phase A6; adding
+  `SESSION_ALIGNED` remains a distinct, not-yet-done future step (see
+  below), now unblocked rather than blocked on missing data.
+- **Volume**: this codebase still has **no volume data source at
+  all** — `data/twelve_data_client.py`'s `Candle` dataclass is
+  OHLC-only; Twelve Data's response is never asked for volume.
+  Unchanged since Phase A4.
 
-Both are named, explicit future-extension points (see below), not
-faked with a placeholder/neutral score — `criteria_total` stays `5`
-until a real Session or Volume criterion exists to add.
+Neither was faked with a placeholder/neutral score when this module
+was built — `criteria_total` stayed `5` until a real criterion exists
+to add, and still does.
 
 ## What this does NOT do
 
@@ -158,10 +164,12 @@ until a real Session or Volume criterion exists to add.
 
 ## Future expansion
 
-- **Session criterion**: once Session Intelligence exists, add a
-  `SESSION_ALIGNED` entry to `signals/signal_quality.py`'s `_CRITERIA`
-  tuple (the single place a new criterion needs to be registered) and
-  bump `criteria_total` accordingly — no other code needs to change.
+- **Session criterion**: Session Intelligence exists as of Phase A6
+  (`context/session.py`) — add a `SESSION_ALIGNED` entry to
+  `signals/signal_quality.py`'s `_CRITERIA` tuple (the single place a
+  new criterion needs to be registered) and bump `criteria_total`
+  accordingly. Still not done — a distinct future step, not implied by
+  Session Intelligence existing.
 - **Volume criterion**: same mechanism, once a volume data source
   exists in `data/`.
 - **Decision Engine v3**: a future, separately-approved phase could
