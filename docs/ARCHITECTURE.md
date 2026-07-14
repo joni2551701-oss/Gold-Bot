@@ -99,6 +99,15 @@ those stages, it is computed once, in parallel, right after Market
 Data), and, as of Phase A3, it is also passed directly into
 `DecisionEngine.evaluate()` as one of four weighted inputs.
 
+Strategy Lifecycle (`strategies/lifecycle/`, Phase A11) is
+deliberately **not** shown in the diagram above: unlike every other
+Phase A module, it is not wired into `core/pipeline.py` at all in
+this phase — `TradingPipeline.run()` never constructs or reads a
+`StrategyRegistry`. It exists alongside the `Strategies (strategies/)`
+node as a separate, standalone metadata layer over the same three
+strategies, for a future consumer (Phase 59, Analytics, AI Assistant)
+to query directly — see its own section below.
+
 ### Decision Engine v2 (Phase A3)
 
 `decision/decision_engine.py`'s `DecisionEngine.evaluate()` no longer
@@ -340,6 +349,33 @@ only exist per candidate); `"features"` is the only new key in
 this is nonetheless a natural, already-available input for a future
 real AI provider.
 
+### Strategy Lifecycle Management Foundation (Phase A11)
+
+`strategies/lifecycle/` adds `StrategyDefinition` (`id`, `name`,
+`version`, `status`, `supported_assets`, `supported_styles`,
+`supported_timeframes`, plus `performance`/`win_rate`/
+`last_validation` hooks), `StrategyStatus` (`TESTING`/`ACTIVE`/
+`DISABLED`/`DEPRECATED`), and `StrategyRegistry`
+(`register()`/`get()`/`list()`/`active()`) — a metadata layer, not a
+signal-generation layer. `build_default_registry()` registers the
+three strategies `strategies/strategy_manager.py`'s `StrategyManager`
+already runs (`LIQUIDITY_SWEEP_STRATEGY`/`FVG_STRATEGY`/
+`AMD_STRATEGY`, matched by their real `SignalCandidate.strategy_name`
+string literals) — no new strategy is introduced, and no existing
+`strategies/*.py` file is modified.
+
+Deliberately has **zero pipeline wiring** in this phase: unlike every
+other Phase A module, `core/pipeline.py` never constructs or reads a
+`StrategyRegistry`, and `strategies/lifecycle/` itself never imports
+`strategy_manager.py` or any strategy class — `StrategyStatus` does
+not gate which strategies actually run. `performance`/`win_rate`/
+`last_validation` are always `None`: this codebase computes no
+per-strategy performance or win rate anywhere today (unrelated to
+`monitoring/performance.py`'s database-driven, already-existing
+per-strategy aggregation) — explicit, honest hooks for Phase 59
+Validation to populate, never fabricated values. See
+`docs/STRATEGY_LIFECYCLE.md` for the full contract.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -352,7 +388,7 @@ exists in exactly the shape it does.
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
-| `strategies/` | Independent signal-candidate generation per SMC methodology. |
+| `strategies/` | Independent signal-candidate generation per SMC methodology, plus a Strategy Lifecycle metadata layer (`lifecycle/`, Phase A11) — `StrategyDefinition`/`StrategyRegistry`, storing status/version/supported-assets metadata only, never running a strategy or generating a signal. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — and Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria. |
 | `features/` | Feature Engineering foundation (Phase A10) — `MarketFeatures`, one standard snapshot per candidate for a future AI/backtester/ML/Failure-Analysis consumer. A standardization layer: relays `context/` and `signals/` (Signal Quality + Explainability) results as-is, computes nothing new. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |
@@ -381,6 +417,14 @@ import sweep):
   sitting downstream of both `context/` and `signals/` mirrors
   `decision/`'s own pre-existing pattern of depending on two adjacent
   below-layers at once (see the `decision/` rule below).
+- `strategies/lifecycle/` (Phase A11) imports nothing outside itself
+  — no dependency on `context/`, `signals/`, `ai/`, `decision/`,
+  `risk/`, `database/`, or `telegram/`, and, deliberately, no
+  dependency on `strategy_manager.py` or any `strategies/*.py`
+  strategy class either: `StrategyDefinition.id` matches each
+  strategy's real `SignalCandidate.strategy_name` string literal by
+  value, not by importing the strategy class itself, so the registry
+  never instantiates or runs a strategy.
 - `ai/` never imports `database/` or `telegram/`.
 - `decision/` imports `ai/` (for `AIAnalysisResult`), `signals/` (for
   `SignalCandidate`), and, as of Phase A3, `context/` (for `HTFBias` —
