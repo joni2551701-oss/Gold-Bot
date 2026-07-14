@@ -773,6 +773,85 @@ Neither `strategies/`, `signals/` (candidate generation), `risk/`, nor
 above is either read-only verification or an additive, advisory record
 built from already-computed values.
 
+### Phase 59 Preparation (TASK 1-6)
+
+Audit before Phase 59 Real Market Validation, closing the same kind of
+narrow, verified gaps as the Architecture Readiness Review above — no
+new trading logic, and none of `strategies/`, `signals/` (candidate
+generation), `decision/decision_engine.py`, `risk/risk_manager.py`, or
+`ai/` changed. Full detail: `docs/PHASE59_VALIDATION.md`.
+
+**Architecture Final Verification (TASK 6)**: the live pipeline stage
+order in `core/pipeline.py` is unchanged by this phase and confirmed
+to still exactly match the Data Flow diagram and stage-by-stage prose
+above (`market_data` → `data_quality` → `htf_bias` → `context` →
+`market_phase` → `signal` → `signal_quality` → `explainability` →
+`features` → `ai` → `decision` → `risk` → `signal_history` →
+`telegram_format` → `telegram_delivery` → `database`). Every module's
+Input/Output/Dependency contract is already documented in
+`contracts/*.md` (Phase A17) — verified current, not rewritten. Three
+new, standalone foundation packages were added; none is part of the
+pipeline sequence above:
+
+- **`data/market_data_snapshot.py`** (TASK 1) — `MarketDataSnapshot`,
+  a lightweight window-identity/fingerprint record (`symbol`,
+  `timeframe`, `candle_count`, `first_timestamp`, `last_timestamp`,
+  `candles_reference`), closing the audit finding that the `signals`
+  database table stores no candle data and its own `symbol` column is
+  never actually populated (`database/signal_repository.py`'s
+  `save_signal_record()` hardcodes `data["symbol"] = ""`) — so market
+  state at signal time could not be reconstructed before this phase.
+  Deliberately not a full candle store (no database migration, per
+  this task's own boundary) — `candles_reference` is a content
+  fingerprint for future re-fetch/verification, not a foreign key.
+  Distinct from the pre-existing `data.market_data.MarketSnapshot`
+  (live, multi-timeframe, never persisted) — see the module's own
+  naming note.
+- **`lifecycle/`** (TASK 2 + TASK 4, new top-level package) —
+  `paper_trade.py` (`PaperTrade`, `TradeState` CREATED/OPEN/CLOSED/
+  CANCELLED, and pure `create_`/`open_`/`close_`/`cancel_paper_trade()`
+  transition functions) simulates the `Signal → Decision APPROVED →
+  Paper Trade OPEN → Monitor → CLOSE → Result` flow with zero broker
+  calls, zero real orders, and zero risk-sizing change.
+  `signal_state.py` (`SignalLifecycleState` CREATED/QUALITY_CHECKED/
+  EXPLAINED/APPROVED/REJECTED/PAPER_OPEN/CLOSED, `transition_signal_state()`,
+  `derive_signal_lifecycle_state()`) names a signal's own progress
+  through the analysis pipeline for the first time. Not the same
+  concept as `strategies/lifecycle/` (per-strategy metadata, Phase
+  A11) or `execution/signal_lifecycle.py` (a pre-existing, still-inert
+  Telegram-delivery state machine, untouched — its own `SignalState`
+  enum is deliberately not reused, to avoid a same-name collision with
+  this module's differently-scoped `SignalLifecycleState`). No
+  database persistence, no pipeline wiring.
+- **`analytics/`** (TASK 3, new top-level package) —
+  `signal_performance.py` (`SignalPerformance`,
+  `compute_signal_performance()`) and `strategy_report.py`
+  (`StrategyPerformanceReport`, `build_strategy_report()`) — **trading**
+  performance (win/loss/R-multiple by strategy/session/market phase),
+  never to be confused with `performance/` (Phase A19, **system**
+  timing) — the exact distinction this task's own brief required.
+  Deliberately does not duplicate `monitoring/performance.py`'s
+  pre-existing `PerformanceTracker` (a real, working, database-driven
+  strategy win-rate calculator) — `strategy_report.py` reuses its
+  exact `WIN / (WIN + LOSS)` formula by convention, disclosed, not
+  hidden, rather than inventing a competing definition of "win rate."
+  `profit_loss` stays an honest `None` hook — no PnL/lot-value
+  computation exists anywhere in this codebase, and building one is
+  out of this task's "Risk o'zgarmaydi" boundary.
+
+**TASK 5** (`docs/PHASE59_VALIDATION.md`) is documentation only — no
+module. It fixes the 7-day validation report's exact metric
+definitions in advance, and honestly discloses which are computable
+today (Signal totals, per-strategy identifiers, Market Context) versus
+which need a still-unbuilt persistence/monitor step (Result, Risk) —
+see that document's own "Known gaps" section.
+
+None of `data/market_data_snapshot.py`, `lifecycle/`, or `analytics/`
+is imported by `core/pipeline.py`, `execution/`, or `database/` in
+this phase — each is a standalone, tested foundation, the same
+"foundation, not a rewrite" posture every Phase A/AC module has used,
+ready for a future, separately-approved wiring/persistence step.
+
 ## Module Responsibilities (summary — full detail in `docs/code_structure.md`)
 
 | Module | Responsibility |
@@ -780,7 +859,7 @@ built from already-computed values.
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
-| `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — and API error classification (`api_error_classifier.py`, AC-07) — maps a caught fetch exception to a structured `ExternalAPIError` for logging only, never changes control flow. |
+| `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07) — maps a caught fetch exception to a structured `ExternalAPIError` for logging only, never changes control flow — and Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation TASK 1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. `snapshot.py` (Phase A16) additionally standardizes a `ContextSnapshot` into a flat, JSON-serializable `ContextSnapshotSchema`, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) — a distinct type, not a replacement. `market_phase.py` (AC-02) adds a wired, advisory 5-state (+`UNKNOWN`) `MarketPhase` classification reusing already-detected Wyckoff/AMD/Market Regime data. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology, plus a Strategy Lifecycle metadata layer (`lifecycle/`, Phase A11) — `StrategyDefinition`/`StrategyRegistry`, storing status/version/supported-assets metadata only, never running a strategy or generating a signal. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria — and Signal Schema (`schema.py`/`adapter.py`, Phase A15) — one standard, JSON-serializable cross-module signal contract, computing nothing itself, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) with a new `decision_id` field. |
@@ -793,6 +872,8 @@ built from already-computed values.
 | `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `monitoring/performance.py`'s trade-outcome statistics. |
 | `database/` | SQLite persistence — the only place SQL is written. |
 | `telegram/` | The Telegram product layer: routing, permissions, handlers, services. |
+| `lifecycle/` | Phase 59 Preparation foundation — `PaperTrade`/`TradeState` (simulated, broker-free trade state machine) and `SignalLifecycleState` (a signal's own progress through the analysis pipeline). In-memory only: no database persistence, no pipeline wiring. Not the same as `strategies/lifecycle/` (per-strategy metadata) or `execution/signal_lifecycle.py` (a pre-existing, inert, Telegram-delivery state machine). |
+| `analytics/` | Phase 59 Preparation foundation — `SignalPerformance`/`StrategyPerformanceReport`, **trading** performance (win/loss/R-multiple by strategy). Not wired into `core/pipeline.py`; not the same concept as `performance/` (Phase A19, system timing) or a replacement for `monitoring/performance.py`'s pre-existing, database-driven `PerformanceTracker`. |
 
 ## Dependency Rules
 
@@ -904,6 +985,32 @@ import sweep):
   knows nothing about Telegram, permissions, or commands.
 - `core/pipeline.py` is the one file allowed to import from every
   layer — it is the orchestrator, not a layer itself.
+- `data/market_data_snapshot.py` (Phase 59 Preparation TASK 1) imports
+  only the standard library plus `data.twelve_data_client.Candle`
+  (same package) — no dependency on `context/`, `strategies/`,
+  `signals/`, `ai/`, `decision/`, `risk/`, `database/`, or `telegram/`.
+  Not called by `data/market_data.py` or any other existing module in
+  this phase.
+- `lifecycle/` (Phase 59 Preparation TASK 2 + TASK 4) imports
+  `signals.schema.SignalSchema` (`TYPE_CHECKING`-only, in both
+  `paper_trade.py` and `signal_state.py`) and, within the package,
+  `lifecycle.trade_state`/`lifecycle.paper_trade` — no dependency on
+  `context/`, `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`,
+  `database/`, or `telegram/`. Deliberately does **not** import
+  `execution/` — `lifecycle/`'s `PaperTrade` never calls a broker, and
+  does not make `execution/`'s own inert stubs any less inert (see
+  `lifecycle/README.md`'s "Not the same as `execution/`" section). Not
+  imported by `core/pipeline.py` or `execution/` in this phase.
+- `analytics/` (Phase 59 Preparation TASK 3) imports
+  `lifecycle.paper_trade.PaperTrade` and `signals.schema.SignalSchema`
+  (`TYPE_CHECKING`-only) plus, within the package,
+  `analytics.signal_performance` — no dependency on `context/`,
+  `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`,
+  `database/`, or `telegram/`. Does not import
+  `monitoring/performance.py` or `database/signal_repository.py` —
+  its input is an in-memory `List[SignalPerformance]`, not a database
+  read. Not imported by `core/pipeline.py` or `monitoring/` in this
+  phase.
 
 If a change requires violating one of these rules, that is a signal
 to stop and reconsider the design, not to add the import and move on

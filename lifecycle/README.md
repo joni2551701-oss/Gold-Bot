@@ -1,0 +1,93 @@
+# lifecycle/
+
+## Purpose
+Phase 59 Preparation foundation (TASK 2: Paper Trading Contract,
+TASK 4: Signal Lifecycle Audit). Standard, in-memory state machines
+for a simulated trade (`PaperTrade`, never a real broker order) and
+for a signal's own progress through the analysis pipeline
+(`SignalLifecycleState`). Neither is wired into `core/pipeline.py`,
+`execution/`, or the database in this phase — both are standalone
+foundations, matching every Phase A/AC module's own "foundation, not a
+rewrite" posture.
+
+## Not the same as `strategies/lifecycle/`
+`strategies/lifecycle/` (Phase A11) is a per-*strategy* metadata
+registry (`StrategyDefinition`/`StrategyRegistry` — status/version per
+SMC methodology). `lifecycle/` (this package) is a per-*trade*/
+per-*signal* runtime state machine. Unrelated concepts that happen to
+share the word "lifecycle" — neither package imports the other.
+
+## Not the same as `execution/`
+`execution/execution_engine.py` and `execution/signal_lifecycle.py`
+are pre-existing, deliberately inert stubs in the Trading-Safety-
+protected `execution/` package (`ExecutionEngine.dispatch()` and
+`SignalLifecycle.transition()` both always return "Not implemented").
+`execution/signal_lifecycle.py`'s own `SignalState` enum
+(`CREATED`/`SENT`/`ACKNOWLEDGED`/`CLOSED`) describes Telegram message
+delivery, not a signal's analysis-pipeline progress or a trade's own
+life. `lifecycle/` never imports from or calls `execution/`, and does
+not make `execution/`'s own stubs any less inert — this package adds
+no broker call, no real order, no MT5 integration. See
+`lifecycle/paper_trade.py`'s and `lifecycle/signal_state.py`'s own
+docstrings for the exact naming disambiguation
+(`PaperTrade`/`TradeState` vs. nothing pre-existing; `SignalLifecycleState`
+vs. `execution.signal_lifecycle.SignalState`).
+
+## Modules
+
+### `trade_state.py`
+`TradeState` — `CREATED`/`OPEN`/`CLOSED`/`CANCELLED`. The status
+vocabulary for a `PaperTrade`.
+
+### `paper_trade.py`
+`PaperTrade` (`trade_id`, `signal_id`, `symbol`, `direction`, `entry`,
+`stop_loss`, `take_profit`, `status`, `result`, `opened_at`,
+`closed_at`, `created_at`) plus:
+- `create_paper_trade(signal)` — builds a `CREATED` `PaperTrade` from
+  an already-`APPROVED` `SignalSchema`. Raises `ValueError` if the
+  signal isn't `APPROVED` or is missing a price field — a genuine
+  caller error, not a data-driven condition.
+- `open_paper_trade(trade)` / `close_paper_trade(trade, result)` /
+  `cancel_paper_trade(trade)` — pure transition functions, each
+  returning a `PaperTradeTransitionResult(trade, success, reason)`.
+  Never raise: an invalid transition (e.g. closing a trade that was
+  never opened) returns `success=False` with the original, unchanged
+  trade.
+- `ALLOWED_PAPER_TRADE_RESULTS = ("TP", "SL", "BE", "EXPIRED")` —
+  `docs/PHASE59_VALIDATION.md`'s own Result vocabulary, deliberately
+  distinct from `database/signal_repository.py`'s pre-existing
+  `{"WIN","LOSS","BE","CANCELLED"}` (that set belongs to the real,
+  persisted `signals` table, untouched by this phase, and already
+  uses `CANCELLED` as a result where `PaperTrade` uses it as a
+  status).
+
+### `signal_state.py`
+`SignalLifecycleState` — `CREATED`/`QUALITY_CHECKED`/`EXPLAINED`/
+`APPROVED`/`REJECTED`/`PAPER_OPEN`/`CLOSED`, plus:
+- `ALLOWED_TRANSITIONS` / `transition_signal_state(current, next)` —
+  a pure transition validator, `SignalStateTransitionResult(success,
+  reason)`, never raises.
+- `derive_signal_lifecycle_state(signal, paper_trade=None)` —
+  observational classification from already-computed
+  `SignalSchema`/`PaperTrade` fields (same priority-ordered,
+  read-only pattern `context/market_phase.py`'s
+  `compute_market_phase()` established). Documented limitation:
+  `EXPLAINED` cannot be reliably derived, since
+  `SignalSchema.explanation_id` is never populated anywhere in this
+  codebase today (see the function's own docstring).
+
+## Dependencies
+`paper_trade.py` imports `lifecycle.trade_state` (same package) plus,
+`TYPE_CHECKING`-only, `signals.schema.SignalSchema`. `signal_state.py`
+imports `lifecycle.trade_state` plus, `TYPE_CHECKING`-only,
+`lifecycle.paper_trade.PaperTrade` and `signals.schema.SignalSchema`.
+Neither imports `context/`, `strategies/`, `ai/`, `decision/`,
+`risk/`, `execution/`, `database/`, or `telegram/`.
+
+## Future Roadmap
+Persistence (a `paper_trades` table, a `PaperTradeRepository`),
+`core/pipeline.py` wiring (constructing a `PaperTrade` per `APPROVE`d
+decision automatically), and a live monitor loop (checking `OPEN`
+trades against fresh candles to decide `TP`/`SL`/`EXPIRED`) all remain
+unimplemented — each a separate, explicitly-approvable future step, in
+line with `docs/PHASE59_VALIDATION.md`'s own scope notes.
