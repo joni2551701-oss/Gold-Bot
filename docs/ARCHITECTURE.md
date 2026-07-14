@@ -584,6 +584,53 @@ identically-shaped `ValidationResult` exists instead of an import.
 phase — none is modified. See `docs/CONTEXT_SNAPSHOT.md` for the full
 contract.
 
+### Error Classification Foundation (Phase A18)
+
+`core/errors/` adds `GoldBotError` (`base.py`) — a base exception
+carrying `code`/`message`/`module`/`timestamp`/`details` and a
+`to_dict()` — plus nine category subclasses (`exceptions.py`:
+`ConfigurationError`, `ValidationError`, `DataError`,
+`ExternalAPIError`, `DatabaseError`, `PermissionError`,
+`StrategyError`, `DecisionError`, `ExecutionError`) and a standard
+error-code registry (`codes.py`: `CODE_REGISTRY`, `CODE_PATTERN`,
+e.g. `"DATA_001"`). Implements the hierarchy
+`contracts/error_contract.md` (Phase A17) specified but explicitly
+deferred as a future phase's job — this is that phase. Cross-cutting,
+like `core/logger.py`/`core/secrets.py`: every layer may import from
+it without creating a new architecture boundary.
+
+**A foundation, not a retrofit**: no existing raise site is migrated
+in this phase. `core/secrets.py`'s existing bare `ValueError`,
+`assets.asset_registry.DuplicateAssetSymbolError`, and
+`strategies.lifecycle.strategy_registry.DuplicateStrategyIdError` are
+all untouched — migrating them is a named, explicitly deferred future
+step (`docs/ERROR_HANDLING.md`'s "What this phase does NOT do").
+Existing "expected, data-driven" error reporting
+(`ValidationResult`/`RiskResult`/`TradeDecision`, never a raised
+exception) is unchanged — `GoldBotError` is for genuine programmer/
+integrity errors, not a replacement for that pattern.
+
+`PermissionError` (the class name) shadows Python's built-in
+`PermissionError` within any module that imports it directly —
+deliberate (it is Phase A17's own contract naming and this phase's
+own brief's exact hierarchy), documented in
+`core/errors/exceptions.py`'s own docstring, and safe (no code in
+this codebase relies on catching the built-in `PermissionError`
+anywhere near an import of this one).
+
+`core/errors/codes.py` adds three code prefixes
+(`STRATEGY_001`/`DECISION_001`/`EXECUTION_001`) the brief's own error-
+code section didn't name, despite naming all nine exception classes
+in its hierarchy — filling a real gap between the hierarchy and the
+code registry, disclosed in `docs/ERROR_HANDLING.md`'s "A completed
+gap" section, not left silent.
+
+Deliberately has **zero pipeline wiring** in this phase, same posture
+as every other Phase A foundation module: no existing `core/`,
+`data/`, `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`,
+`telegram/`, or `database/` file raises a `GoldBotError` subclass
+yet. See `docs/ERROR_HANDLING.md` for the full contract.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -593,7 +640,7 @@ exists in exactly the shape it does.
 
 | Module | Responsibility |
 |---|---|
-| `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets. |
+| `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering. |
@@ -618,6 +665,12 @@ implemented and enforced today (verified by the Phase 48 audit's
 circular-import check and re-verified every phase since via the CI
 import sweep):
 
+- `core/errors/` (Phase A18) imports only the standard library
+  (`datetime`, `typing`, `re`) — no dependency on `strategies/`,
+  `signals/`, `ai/`, `decision/`, `risk/`, `telegram/`, or
+  `database/`. Every layer may import from `core/errors/` (same
+  cross-cutting status as `core/logger.py`/`core/secrets.py`), but
+  none does yet in this phase — see `docs/ERROR_HANDLING.md`.
 - `context/`, `strategies/`, `signals/` never import `telegram/`,
   `database/`, or `ai/`.
 - `signals/schema.py` (Phase A15) imports only the standard library —

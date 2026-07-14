@@ -1,5 +1,17 @@
 # Error Contract
 
+> **Update (Phase A18)**: the hierarchy this document specifies is
+> now implemented — see `core/errors/` and `docs/ERROR_HANDLING.md`.
+> Phase A18 added `core/errors/base.py`'s `GoldBotError`,
+> `core/errors/exceptions.py`'s nine subclasses (four more than this
+> document originally proposed — `DatabaseError`, `StrategyError`,
+> `DecisionError`, `ExecutionError`, added for the categories
+> `contracts/*.md`'s own module contracts already needed), and
+> `core/errors/codes.py`'s code registry. This document's original
+> text below is kept as the historical specification — the "Current
+> state" section describing zero shared base class is now superseded
+> by A18's real implementation, not by a further edit here.
+
 ## Responsibility
 A standard exception hierarchy every module should raise from,
 instead of each module inventing its own ad-hoc exception shape. **Not

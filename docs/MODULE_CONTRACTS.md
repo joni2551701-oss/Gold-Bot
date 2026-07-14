@@ -96,7 +96,7 @@ NOT" section.
 
 ## The platform constitution
 
-After this phase, five foundation phases together form GoldBot's
+After this phase, six foundation phases together form GoldBot's
 platform constitution:
 
 - **A13 Configuration** (`configuration/`) — how the application is
@@ -111,6 +111,11 @@ platform constitution:
   shape market context is described in across modules.
 - **A17 Module Contracts** (this document, `contracts/`) — the
   precise input/output/dependency/error contract per module.
+- **A18 Error Classification** (`core/errors/`,
+  `docs/ERROR_HANDLING.md`) — the standard exception hierarchy and
+  error-code registry this document's own `contracts/error_contract.md`
+  specified but deferred; implemented, not yet wired into any
+  existing raise site.
 
 Together, they mean a future worker (human or AI agent) can pick up
 almost any task in this codebase, read the relevant `docs/`/
