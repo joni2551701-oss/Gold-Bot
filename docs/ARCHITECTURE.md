@@ -631,6 +631,45 @@ as every other Phase A foundation module: no existing `core/`,
 `telegram/`, or `database/` file raises a `GoldBotError` subclass
 yet. See `docs/ERROR_HANDLING.md` for the full contract.
 
+### Performance Metrics Foundation (Phase A19)
+
+`performance/` adds `PerformanceMetric` (`metrics.py`: `name`/
+`module`/`duration_ms` required, `metric_id`/`timestamp`/`status`/
+`metadata`/`error_code` defaulted — matching this phase's own brief's
+three-argument construction example), `PerformanceCollector`
+(`collector.py`: `record()`/`get_metrics()`/`get_by_module()`/
+`clear()`, not a singleton), and `PerformanceTimer`/
+`measure_performance()` (`timer.py`: a context manager and its
+decorator form, both using `time.perf_counter()` — the same primitive
+`core/pipeline.py`'s own `_log_stage()` already uses). Measures
+duration; computes nothing else, decides nothing, generates no
+signal.
+
+**Not what it sounds like**: `monitoring/performance.py`'s
+pre-existing `PerformanceTracker`/`PerformanceResult` compute
+historical *trade outcome* statistics (win rate, strategy breakdown)
+from the database — an unrelated question from "how long did this
+code take to run." `core/pipeline.py`'s own `_log_stage()` already
+logs each pipeline stage's duration today — `performance/` does not
+replace, wrap, or read from it. `docs/PERFORMANCE.md` (Phase 53) is a
+one-time benchmark *report*; `docs/PERFORMANCE_METRICS.md` (this
+phase) is the ongoing measurement *infrastructure*. All three
+distinctions are spelled out in `docs/PERFORMANCE_METRICS.md`'s own
+"Not what it sounds like" section.
+
+**Phase A18 integration** (the one explicit cross-wiring this phase's
+own brief requested): `PerformanceTimer.__exit__` does a real
+`isinstance(exc_val, GoldBotError)` check — if the exception raised
+inside a measured block is a `core.errors.base.GoldBotError`, its
+`.code` is captured as the metric's `error_code`; any other exception
+type leaves `error_code=None`, never guessed.
+
+Deliberately has **zero pipeline wiring** otherwise, same posture as
+every other Phase A foundation module: `core/pipeline.py` is entirely
+unmodified — no existing stage constructs a `PerformanceTimer` or
+`PerformanceCollector` in this phase. See
+`docs/PERFORMANCE_METRICS.md` for the full contract.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -652,7 +691,8 @@ exists in exactly the shape it does.
 | `decision/` | Blends signal confidence, HTF bias, (inverted) AI risk score, and AI confidence — weighted, Phase A3 — into APPROVE/REJECT/NO_TRADE. |
 | `risk/` | SL/TP geometry and stop-loss-distance validation; sizing suggestion only. |
 | `execution/` | Inert scaffolding for future MT5 integration — not reachable from any runtime path today. |
-| `monitoring/` | Performance/statistics reading, not wired into any live command yet. |
+| `monitoring/` | Historical trade-outcome statistics (win rate, strategy breakdown — `performance.py`'s `PerformanceTracker`), not wired into any live command yet. Distinct from `performance/` (Phase A19) — see that row. |
+| `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `monitoring/performance.py`'s trade-outcome statistics. |
 | `database/` | SQLite persistence — the only place SQL is written. |
 | `telegram/` | The Telegram product layer: routing, permissions, handlers, services. |
 
@@ -671,6 +711,13 @@ import sweep):
   `database/`. Every layer may import from `core/errors/` (same
   cross-cutting status as `core/logger.py`/`core/secrets.py`), but
   none does yet in this phase — see `docs/ERROR_HANDLING.md`.
+- `performance/` (Phase A19) imports `core/errors/` (for the optional
+  `GoldBotError` integration in `timer.py`) and `core/logger.py` (for
+  the `PERFORMANCE` log line) — both cross-cutting. No dependency on
+  `context/`, `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`,
+  `execution/`, `telegram/`, `database/`, `assets/`, or
+  `configuration/`. Not imported by `core/pipeline.py` or any other
+  existing module in this phase.
 - `context/`, `strategies/`, `signals/` never import `telegram/`,
   `database/`, or `ai/`.
 - `signals/schema.py` (Phase A15) imports only the standard library —

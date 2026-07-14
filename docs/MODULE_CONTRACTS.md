@@ -96,8 +96,8 @@ NOT" section.
 
 ## The platform constitution
 
-After this phase, six foundation phases together form GoldBot's
-platform constitution:
+After this phase, seven foundation phases together form GoldBot's
+platform constitution — the near-complete v0.3.5 Foundation:
 
 - **A13 Configuration** (`configuration/`) — how the application is
   configured and how future features are gated.
@@ -116,6 +116,14 @@ platform constitution:
   error-code registry this document's own `contracts/error_contract.md`
   specified but deferred; implemented, not yet wired into any
   existing raise site.
+- **A19 Performance Metrics** (`performance/`,
+  `docs/PERFORMANCE_METRICS.md`) — the standard timing/measurement
+  foundation, integrated with A18's error codes, not yet wired into
+  any existing module.
+
+After A19, v0.3.5 Foundation Completion is near its close — the next
+strategic phase is **Phase 59 — Real Market Validation** (see
+`docs/SYSTEM_OVERVIEW.md`'s version roadmap).
 
 Together, they mean a future worker (human or AI agent) can pick up
 almost any task in this codebase, read the relevant `docs/`/
