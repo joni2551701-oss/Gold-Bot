@@ -17,8 +17,9 @@ Context Engine <-'                                       htf_bias.py
       |  swings, BOS/CHoCH, liquidity, OB, FVG, AMD            |
       v                                                        v
 Strategies                          TradingPipeline.run()'s result dict
-                                     ("htf_bias" -- not yet consumed
-                                     downstream, see docs/HTF_BIAS.md)
+                                     ("htf_bias") -> decision/'s
+                                     DecisionEngine.evaluate() (Phase
+                                     A3, see docs/HTF_BIAS.md)
 ```
 
 ## Responsibilities
@@ -40,15 +41,18 @@ architecture and confidence-scoring explanation.
 
 ### What HTF Bias does NOT do
 - Does not generate a `BUY`/`SELL` signal, and is not itself a
-  strategy.
-- Is not a field on `ContextSnapshot` and is not passed into
-  `strategies/`, `signals/`, `ai/`, `decision/`, or `risk/` — it
-  travels only as far as `TradingPipeline.run()`'s result dict this
-  phase. A future, separately-approved Decision Engine v2 phase is
-  where a real consumer would be added.
+  strategy or a decision.
+- Is not a field on `ContextSnapshot`, and is not passed into
+  `strategies/`, `signals/`, `ai/`, or `risk/`. As of Phase A3, it
+  *is* passed into `decision.decision_engine.DecisionEngine.evaluate()`
+  as one weighted input among four (`decision/README.md`'s "Decision
+  v2" section) — it still never approves/rejects anything itself, and
+  `context/htf_bias.py` was not modified to make this connection (the
+  consuming code lives in `decision/`, not here).
 - Does not block or alter the execution-timeframe pipeline in any
   way — an HTF fetch/compute failure degrades to `HTFBias.UNKNOWN`
-  and is logged, never raised.
+  and is logged, never raised; Decision Engine v2 treats that as a
+  neutral contribution, not an error.
 
 ## Input
 `Sequence[Candle]` (from `data/`) for the execution-timeframe
@@ -72,5 +76,5 @@ package.
 The execution-timeframe SMC formulas remain stable and explicitly out
 of scope for casual change (see `CLAUDE.md`'s Trading Safety rules).
 For HTF Bias specifically, see `docs/HTF_BIAS.md`'s Future Expansion
-section (Decision Engine v2 consumption, optional persistence,
-per-timeframe weighting — none implemented in this phase).
+section — Decision Engine v2 consumption is done (Phase A3); optional
+persistence and per-timeframe weighting remain unimplemented.

@@ -34,25 +34,25 @@ Market Data (data/)
       |
       v
 HTF Bias (context/htf_bias.py)   -- Daily/H4/H1 market-context only
-      |                             (Phase A2; never a trade decision,
-      |                             see docs/HTF_BIAS.md; result is
-      |                             carried in the pipeline's return
-      |                             dict, not yet consumed downstream)
-      v
-Context Engine (context/)        -- SMC structure detection
-      |
-      v
-Strategies (strategies/)         -- 3 independent SMC methodologies
-      |
-      v
-Signal Generation (signals/)     -- aggregates strategy output
-      |
-      v
-AI Layer (ai/)                   -- advisory input only (currently a stub)
-      |
-      v
-Decision Engine (decision/)      -- APPROVE / REJECT / NO_TRADE
-      |
+      |     |                       (Phase A2; never itself a trade
+      |     |                       decision, see docs/HTF_BIAS.md)
+      v     |
+Context Engine (context/)        |  -- SMC structure detection
+      |     |
+      v     |
+Strategies (strategies/)         |  -- 3 independent SMC methodologies
+      |     |
+      v     |
+Signal Generation (signals/)     |  -- aggregates strategy output
+      |     |
+      v     |
+AI Layer (ai/)                   |  -- advisory input only (currently a stub)
+      |     |
+      v     v
+Decision Engine (decision/)      -- weighted signal+HTF+risk+AI blend
+      |                             -> APPROVE / REJECT / NO_TRADE
+      |                             (Phase A3: "Decision Engine v2",
+      |                             see below)
       v
 Risk Manager (risk/)             -- geometry + stop-loss validation
       |
@@ -64,6 +64,49 @@ Telegram Notification Filter     -- (inside core/pipeline.py)
       v
 Database (database/) <---------> Telegram Product Layer (telegram/)
 ```
+
+HTF Bias feeds two consumers of the same computed result: it is
+returned in `TradingPipeline.run()`'s result dict unconditionally
+(the vertical arrow through Context/Strategies/Signal/AI above is a
+diagram simplification — HTF Bias does not literally pass through
+those stages, it is computed once, in parallel, right after Market
+Data), and, as of Phase A3, it is also passed directly into
+`DecisionEngine.evaluate()` as one of four weighted inputs.
+
+### Decision Engine v2 (Phase A3)
+
+`decision/decision_engine.py`'s `DecisionEngine.evaluate()` no longer
+computes a flat `(signal.confidence + ai_analysis.confidence) / 2`
+average (the pre-A3 formula). It now blends four weighted components,
+all on the existing 0.0–1.0 confidence scale:
+
+```
+final_confidence = 0.40 * signal_score   (SignalCandidate.confidence)
+                  + 0.25 * htf_score      (HTFBiasResult.bias, quality-dampened)
+                  + 0.20 * risk_score     (1.0 - AIAnalysisResult.risk_score)
+                  + 0.15 * ai_score       (AIAnalysisResult.confidence)
+```
+
+The AI-approval hard gate (`if not ai_analysis.approved: REJECT`,
+checked before any threshold) and the `min_confidence`/
+`approve_confidence` three-branch threshold logic are unchanged —
+only what feeds into `final_confidence` changed. `TradeDecision` now
+also exposes each component individually
+(`signal_score`/`htf_score`/`risk_score`/`ai_score`/`final_score`) for
+explainability. Weights (`DecisionWeights`) and the `HTFBias`→score
+mapping (`HTF_BIAS_SCORE_MAP`) are named module-level constants, never
+hardcoded inline in `evaluate()`. Full detail, including the exact
+HTF-bias mapping table and the quality-dampening formula:
+`decision/README.md`.
+
+`risk.risk_manager.RiskResult` is **not** one of the four inputs —
+Risk Manager runs *after* Decision Engine in the pipeline (see the
+diagram above) and cannot supply an input to a decision that precedes
+it. The "Risk" component instead reads `AIAnalysisResult.risk_score`
+(already computed by the AI layer, before Decision Engine runs),
+inverted so higher always means better, consistent with the other
+three inputs. `risk/risk_manager.py` itself is entirely unmodified by
+Phase A3.
 
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
@@ -80,7 +123,7 @@ exists in exactly the shape it does.
 | `strategies/` | Independent signal-candidate generation per SMC methodology. |
 | `signals/` | The `SignalCandidate` data contract and strategy aggregation. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |
-| `decision/` | Blends signal + AI confidence into APPROVE/REJECT/NO_TRADE. |
+| `decision/` | Blends signal confidence, HTF bias, (inverted) AI risk score, and AI confidence — weighted, Phase A3 — into APPROVE/REJECT/NO_TRADE. |
 | `risk/` | SL/TP geometry and stop-loss-distance validation; sizing suggestion only. |
 | `execution/` | Inert scaffolding for future MT5 integration — not reachable from any runtime path today. |
 | `monitoring/` | Performance/statistics reading, not wired into any live command yet. |
@@ -99,8 +142,14 @@ import sweep):
 - `context/`, `strategies/`, `signals/` never import `telegram/`,
   `database/`, or `ai/`.
 - `ai/` never imports `database/` or `telegram/`.
-- `decision/` imports `ai/` (for `AIAnalysisResult`) and `signals/`,
-  never `database/` or `telegram/`.
+- `decision/` imports `ai/` (for `AIAnalysisResult`), `signals/` (for
+  `SignalCandidate`), and, as of Phase A3, `context/` (for `HTFBias` —
+  a real runtime import, since it's used as a dict key; `HTFBiasResult`
+  itself stays `TYPE_CHECKING`-only, same as `SignalCandidate`/
+  `AIAnalysisResult`). Still never `database/`, `telegram/`, or
+  `risk/`. `context/` appearing here is not a new kind of dependency —
+  `context/` is upstream of `decision/` in the Data Flow diagram above,
+  same direction as the pre-existing `ai/`/`signals/` dependencies.
 - `risk/` imports `decision/` and `signals/`, never `database/` or
   `telegram/`.
 - `telegram/handlers.py` never imports `database/*` or

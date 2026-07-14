@@ -36,9 +36,10 @@ Market Data (data/)
           TradingPipeline.run()'s result dict ("htf_bias")
                 |
                 v
-          (nothing consumes it yet -- Decision Engine v2, a future,
-           separately-approved phase, is where a real consumer
-           would be added)
+          DecisionEngine.evaluate()'s htf_bias parameter (Phase A3:
+          one of four weighted inputs to final_confidence -- see
+          decision/README.md's "Decision v2" section and
+          docs/ARCHITECTURE.md's "Decision Engine v2" section)
 ```
 
 HTF Bias is a **sibling** stage to the execution-timeframe fetch, not
@@ -113,11 +114,12 @@ The overall result:
   confidence `0.0`.
 
 This is a **timeframe-agreement score**, not a probability or a
-trade-quality signal — a future Decision Engine v2 that wants to use
-this as a weighted input is expected to define its own interpretation
-of what a given confidence level should mean to the final trade
-decision. This phase deliberately does not make that call (see
-`docs/v0.3.5_SPECIFICATION.md`'s Decision Engine v2 section).
+trade-quality signal. Note that Decision Engine v2 (Phase A3) does
+**not** read this field at all — it reads `HTFBiasResult.bias` (the
+category) and `.quality_score` only, mapping `bias` through its own,
+separately-defined `HTF_BIAS_SCORE_MAP` (decision/README.md). This
+field remains available for a future consumer that wants the raw
+timeframe-agreement number specifically.
 
 ## Supported timeframes
 
@@ -128,28 +130,37 @@ source of truth for this list.
 
 ## What this module does NOT do
 
-- Does not generate a `BUY`/`SELL` signal.
+- Does not generate a `BUY`/`SELL` signal, and is not itself a
+  strategy or a decision -- it describes market context only.
 - Does not call, modify, or receive input from `strategies/`,
-  `signals/`, `ai/`, `decision/`, or `risk/` — `HTFBiasResult` is
-  computed independently and is not passed into any of those layers'
-  functions.
-- Does not change `ContextSnapshot`'s fields, `SignalCandidate`,
-  `TradeDecision`, `RiskResult`, or any existing function signature.
+  `signals/`, `ai/`, or `risk/`. As of Phase A3, `HTFBiasResult` *is*
+  passed into `decision.decision_engine.DecisionEngine.evaluate()` as
+  one weighted input among four -- it still never itself
+  approves/rejects a trade; it only contributes a bounded score
+  component (see decision/README.md's "HTF integration" section for
+  exactly how). `context/htf_bias.py` itself was not modified to make
+  this connection -- the consuming code lives entirely in
+  `decision/decision_engine.py`.
+- Does not change `ContextSnapshot`'s fields, `SignalCandidate`, or
+  `RiskResult`. `TradeDecision` (Phase A3) gained new explainability
+  fields, but `DecisionEngine.evaluate()`'s pre-A2 two-argument call
+  shape still works via `htf_bias`'s default of `None`.
 - Does not block, delay-gate, or filter the existing pipeline in any
-  way — even a total HTF fetch failure only affects the `"htf_bias"`
-  key in `run()`'s result dict, never the signal/decision/risk/
-  telegram/database stages.
+  way — even a total HTF fetch failure only degrades to
+  `HTFBias.UNKNOWN`/`quality_score=0.0`, which Decision Engine v2
+  treats as a neutral, non-penalizing contribution, never an error.
 - Does not write to the database — no schema change, no new table, no
   persistence of `HTFBiasResult` anywhere (Task 8's explicit boundary
   for this phase).
 
 ## Future expansion
 
-- **Decision Engine v2** (a separate, future, explicitly-approved
-  phase — see `docs/v0.3.5_SPECIFICATION.md`) is where
-  `HTFBiasResult` would become a real input to the final trade
-  confidence, e.g. as an alignment bonus/penalty rather than a fourth
-  averaged term.
+- **Decision Engine v2 (Phase A3) is done** — `HTFBiasResult` is a
+  real, weighted input to `DecisionEngine.evaluate()`'s
+  `final_confidence` (see decision/README.md). Further tuning of the
+  weight values, the `HTFBias`→score mapping, or the quality-dampening
+  formula remains subject to `CLAUDE.md`'s Trading Safety approval
+  requirement, same as before.
 - **Persistence**: if HTF bias history becomes valuable for analytics
   or backtesting, persisting `HTFBiasResult` alongside a
   `SignalRecord` is a natural, separate schema-change proposal — not

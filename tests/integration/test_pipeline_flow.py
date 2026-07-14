@@ -62,9 +62,21 @@ def test_case3_risk_blocked_never_reaches_telegram(mock_pipeline, mock_signal_ca
 def test_case4_multiple_candidates_only_highest_confidence_selected(
     mock_pipeline, mock_signal_candidate, mock_ai_result
 ):
-    """Case 4: 3 candidates (2 valid APPROVE + 1 invalid-geometry) -> exactly 1 Telegram message, the highest-confidence valid one."""
+    """
+    Case 4: 3 candidates (2 valid APPROVE + 1 invalid-geometry) ->
+    exactly 1 Telegram message, the highest-confidence valid one.
+
+    Confidence values chosen against Phase A3's weighted formula
+    (mock_pipeline's stubbed get_snapshot() yields an UNKNOWN/neutral
+    HTF read, contributing a fixed 0.25*0.5=0.125): with ai
+    confidence=0.9 and the default ai risk_score=0.1 (risk component
+    0.9), final = 0.40*signal + 0.125 + 0.20*0.9 + 0.15*0.9 =
+    0.40*signal + 0.44, so signal_confidence must be >= 0.90 to clear
+    the 0.80 approve_confidence threshold (candidate A raised from the
+    pre-A3 value of 0.80 for exactly this reason).
+    """
     candidates = [
-        mock_signal_candidate(entry=4065.0, stop_loss=4060.0, take_profit=4075.0, confidence=0.80, strategy_name="A"),
+        mock_signal_candidate(entry=4065.0, stop_loss=4060.0, take_profit=4075.0, confidence=0.90, strategy_name="A"),
         mock_signal_candidate(entry=4065.0, stop_loss=4060.0, take_profit=4080.0, confidence=0.95, strategy_name="B"),
         mock_signal_candidate(
             signal_type=SignalType.SELL, entry=4111.40, stop_loss=4111.33, take_profit=4090.0,

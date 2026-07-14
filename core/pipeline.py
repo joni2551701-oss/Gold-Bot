@@ -34,12 +34,18 @@ class TradingPipeline:
 
     HTF Bias (Phase A2, context/htf_bias.py) describes the higher-
     timeframe (Daily/H4/H1) market state only -- it is never passed
-    into Strategies, the AI Analyzer, the Decision Engine, or the Risk
-    Manager, and it never blocks or alters any existing stage. It is
-    returned in run()'s result dict ("htf_bias") for a future,
-    separately-approved phase (Decision Engine v2) to consume. A
-    failure fetching HTF data degrades to HTFBias.UNKNOWN (logged),
-    never raises, and never affects the rest of the cycle.
+    into Strategies or the AI Analyzer, and it never blocks or alters
+    any existing stage. As of Phase A3 (Decision Engine v2), it is
+    passed into DecisionEngine.evaluate() as one of four weighted
+    inputs to the final confidence score (see
+    docs/ARCHITECTURE.md's Decision Engine v2 section) -- it still
+    never itself approves/rejects a trade; it only contributes a
+    bounded component to a score the existing threshold logic then
+    evaluates, same as before. It is also returned in run()'s result
+    dict ("htf_bias") in full. A failure fetching HTF data degrades to
+    HTFBias.UNKNOWN (logged), never raises, and never affects the rest
+    of the cycle -- the Decision Engine treats a missing/UNKNOWN HTF
+    read as a neutral (non-penalizing, non-rewarding) contribution.
 
     Execution and TP/SL Monitoring are intentionally not part of this
     pipeline (Phase 27.2+). Risk Layer output is a sizing suggestion
@@ -165,7 +171,7 @@ class TradingPipeline:
 
         t0 = time.perf_counter()
         decisions: List[TradeDecision] = [
-            self.decision_engine.evaluate(candidate, ai_result)
+            self.decision_engine.evaluate(candidate, ai_result, htf_bias)
             for candidate, ai_result in zip(signal_candidates, ai_results)
         ]
         self._log_stage("decision", time.perf_counter() - t0)
