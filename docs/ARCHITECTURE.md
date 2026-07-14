@@ -852,6 +852,31 @@ this phase — each is a standalone, tested foundation, the same
 "foundation, not a rewrite" posture every Phase A/AC module has used,
 ready for a future, separately-approved wiring/persistence step.
 
+### Phase 59.1 — Market Data Provider Abstraction & TwelveData Integration Foundation
+
+GoldBot needs to run without an always-on MT5 terminal (no owner PC
+available today). Full detail: `docs/MARKET_PROVIDER.md`. New,
+standalone package `data/providers/` (`base_provider.py`'s
+`MarketDataProvider` abstract contract + `MarketCandle`/`ProviderStatus`,
+`twelve_data_provider.py`'s `TwelveDataProvider` wrapping the existing,
+untouched `data.twelve_data_client.TwelveDataClient`,
+`mt5_provider.py`'s deliberately inert `MT5Provider` stub,
+`__init__.py`'s `get_provider()` factory) — not imported by
+`core/pipeline.py` or `data/market_data.py` in this phase; the live
+pipeline's data path is unaffected. A provider never generates a
+signal, never knows about a strategy or a decision — data only.
+
+`config.py` gained `MARKET_DATA_PROVIDER`/`ENABLE_MT5`/
+`ENABLE_TWELVEDATA` (additive, `Config.DEBUG`'s existing `os.getenv()`
+convention). `core/errors/codes.py`'s registry gained `API_003`
+(invalid symbol) and `API_004` (empty response); `data/api_error_classifier.py`
+gained `classify_empty_response()` and a disclosed message-heuristic
+for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
+(Phase 59 Preparation) gained two optional, additive fields
+(`provider`, `data_quality`), both defaulting `None`. None of
+`strategies/`, `signals/` (candidate generation), `decision/decision_engine.py`,
+`risk/risk_manager.py`, or `ai/` changed.
+
 ## Module Responsibilities (summary — full detail in `docs/code_structure.md`)
 
 | Module | Responsibility |
@@ -859,7 +884,7 @@ ready for a future, separately-approved wiring/persistence step.
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
-| `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07) — maps a caught fetch exception to a structured `ExternalAPIError` for logging only, never changes control flow — and Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation TASK 1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store. |
+| `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07/Phase 59.1 TASK 5) — maps a caught fetch exception (or a known empty-response condition) to a structured `ExternalAPIError` for logging only, never changes control flow — Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation/59.1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store — and Market Provider Abstraction (`providers/`, Phase 59.1) — `MarketDataProvider`/`TwelveDataProvider`/`MT5Provider`, data-only, not wired into the live pipeline. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. `snapshot.py` (Phase A16) additionally standardizes a `ContextSnapshot` into a flat, JSON-serializable `ContextSnapshotSchema`, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) — a distinct type, not a replacement. `market_phase.py` (AC-02) adds a wired, advisory 5-state (+`UNKNOWN`) `MarketPhase` classification reusing already-detected Wyckoff/AMD/Market Regime data. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology, plus a Strategy Lifecycle metadata layer (`lifecycle/`, Phase A11) — `StrategyDefinition`/`StrategyRegistry`, storing status/version/supported-assets metadata only, never running a strategy or generating a signal. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria — and Signal Schema (`schema.py`/`adapter.py`, Phase A15) — one standard, JSON-serializable cross-module signal contract, computing nothing itself, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) with a new `decision_id` field. |
@@ -1001,6 +1026,15 @@ import sweep):
   does not make `execution/`'s own inert stubs any less inert (see
   `lifecycle/README.md`'s "Not the same as `execution/`" section). Not
   imported by `core/pipeline.py` or `execution/` in this phase.
+- `data/providers/` (Phase 59.1) imports `data.twelve_data_client.TwelveDataClient`
+  and `data.api_error_classifier` (same top-level `data/` package)
+  plus `config.Config` (cross-cutting, in `__init__.py`'s
+  `get_provider()` only) — no dependency on `context/`, `strategies/`,
+  `signals/`, `ai/`, `decision/`, `risk/`, `execution/`, `database/`,
+  or `telegram/`. `mt5_provider.py` imports only `base_provider.py`
+  (same package) — no `MetaTrader5` package dependency. Not imported
+  by `core/pipeline.py`, `data/market_data.py`, or any other existing
+  module in this phase.
 - `analytics/` (Phase 59 Preparation TASK 3) imports
   `lifecycle.paper_trade.PaperTrade` and `signals.schema.SignalSchema`
   (`TYPE_CHECKING`-only) plus, within the package,

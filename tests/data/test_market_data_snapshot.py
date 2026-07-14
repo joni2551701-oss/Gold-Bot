@@ -110,3 +110,28 @@ def test_dataclass_is_frozen():
         assert False, "MarketDataSnapshot must be immutable"
     except AttributeError:
         pass
+
+
+# --- Phase 59.1 TASK 4: provider/data_quality extension ---
+
+def test_provider_and_data_quality_default_to_none():
+    snapshot = capture_market_data_snapshot([], "XAUUSD", "M15")
+    assert snapshot.provider is None
+    assert snapshot.data_quality is None
+
+
+def test_provider_and_data_quality_can_be_supplied():
+    snapshot = capture_market_data_snapshot(
+        [], "XAUUSD", "M15", provider="twelvedata", data_quality="OK"
+    )
+    assert snapshot.provider == "twelvedata"
+    assert snapshot.data_quality == "OK"
+
+
+def test_provider_and_data_quality_appear_in_to_dict():
+    snapshot = capture_market_data_snapshot(
+        [], "XAUUSD", "M15", provider="twelvedata", data_quality="WARNING_GAP"
+    )
+    data = snapshot.to_dict()
+    assert data["provider"] == "twelvedata"
+    assert data["data_quality"] == "WARNING_GAP"

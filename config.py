@@ -10,6 +10,18 @@ class Config:
     APP_ENV = os.getenv("APP_ENV", "development")
     DEBUG = os.getenv("DEBUG", "False") == "True"
 
+    # Market Data Provider selection (Phase 59.1: Market Data Provider
+    # Abstraction). "twelvedata" is the only implemented provider
+    # today -- data/providers/get_provider() reads this to pick which
+    # MarketDataProvider to construct. "mt5" is a reserved future
+    # value (data/providers/mt5_provider.py is an intentional stub,
+    # see docs/MARKET_PROVIDER.md) -- setting MARKET_DATA_PROVIDER=mt5
+    # without ENABLE_MT5=True is rejected by get_provider(), not
+    # silently accepted.
+    MARKET_DATA_PROVIDER = os.getenv("MARKET_DATA_PROVIDER", "twelvedata")
+    ENABLE_MT5 = os.getenv("ENABLE_MT5", "False") == "True"
+    ENABLE_TWELVEDATA = os.getenv("ENABLE_TWELVEDATA", "True") == "True"
+
     # Base paths
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 

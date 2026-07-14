@@ -1,11 +1,12 @@
 """
 Pre-Phase 59 Architecture Readiness Review, AC-07 -- API error
-classification tests (data/api_error_classifier.py).
+classification tests (data/api_error_classifier.py). Extended by
+Phase 59.1 TASK 5 (classify_empty_response(), API_003 heuristic).
 """
 
 import requests
 
-from data.api_error_classifier import classify_api_error
+from data.api_error_classifier import classify_api_error, classify_empty_response
 from core.errors.exceptions import ExternalAPIError
 from core.errors import codes
 
@@ -63,3 +64,41 @@ def test_result_is_json_serializable():
 
     result = classify_api_error(ValueError("x"))
     json.dumps(result.to_dict())  # must not raise (GoldBotError has to_dict(), no to_json())
+
+
+def test_invalid_symbol_style_value_error_maps_to_api_003():
+    result = classify_api_error(ValueError("Twelve Data API Error: **symbol** parameter is missing or invalid"))
+    assert result.code == codes.API_003
+
+
+def test_symbol_heuristic_is_case_insensitive():
+    result = classify_api_error(ValueError("Invalid SYMBOL requested"))
+    assert result.code == codes.API_003
+
+
+def test_rate_limit_message_without_symbol_still_maps_to_api_002():
+    """Regression guard: the new symbol heuristic must not shadow the pre-existing API_002 fallback."""
+    result = classify_api_error(ValueError("Twelve Data API Error: rate limit exceeded"))
+    assert result.code == codes.API_002
+
+
+def test_classify_empty_response_maps_to_api_004():
+    result = classify_empty_response("XAUUSD", "M15")
+    assert isinstance(result, ExternalAPIError)
+    assert result.code == codes.API_004
+
+
+def test_classify_empty_response_records_symbol_and_timeframe():
+    result = classify_empty_response("EURUSD", "H1")
+    assert result.details["symbol"] == "EURUSD"
+    assert result.details["timeframe"] == "H1"
+    assert "EURUSD" in result.message
+
+
+def test_classify_empty_response_module_can_be_overridden():
+    result = classify_empty_response("XAUUSD", "M15", module="CustomCaller")
+    assert result.module == "CustomCaller"
+
+
+def test_classify_empty_response_never_raises():
+    classify_empty_response("", "")  # must not raise even on empty strings

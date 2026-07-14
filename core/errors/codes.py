@@ -35,6 +35,14 @@ DATA_002 = "DATA_002"  # invalid OHLC values
 # External API
 API_001 = "API_001"  # request timeout
 API_002 = "API_002"  # rate limit exceeded
+# Added for Phase 59.1 (Market Data Provider Abstraction) TASK 5 --
+# data/api_error_classifier.py's classify_empty_response()/
+# classify_api_error() are the callers. The brief's own "API_TIMEOUT"/
+# "API_LIMIT" labels map onto the two pre-existing codes above
+# (already exactly "request timeout"/"rate limit exceeded") rather
+# than being duplicated as new codes.
+API_003 = "API_003"  # invalid or unsupported symbol requested
+API_004 = "API_004"  # empty response (provider returned no candle data)
 
 # Database
 DB_001 = "DB_001"  # connection failed
@@ -69,6 +77,8 @@ CODE_REGISTRY: Dict[str, str] = {
     DATA_002: "Invalid OHLC values",
     API_001: "External API request timeout",
     API_002: "External API rate limit exceeded",
+    API_003: "External API invalid or unsupported symbol requested",
+    API_004: "External API returned an empty response (no candle data)",
     DB_001: "Database connection failed",
     DB_002: "Database migration error",
     VALIDATION_001: "Required field missing",

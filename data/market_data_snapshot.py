@@ -22,6 +22,16 @@ wired into core/pipeline.py in this phase -- a future, separately-
 approved phase would be the one to call capture_market_data_snapshot()
 inside a live pipeline run and decide where its result travels.
 
+Extended by Phase 59.1 (Market Data Provider Abstraction, TASK 4):
+`provider` and `data_quality` were added as optional, additive fields
+-- `provider` names which MarketDataProvider (data/providers/,
+Phase 59.1) supplied the candles (e.g. "twelvedata"); `data_quality`
+carries an already-computed DataQualityResult.valid/score summary
+(Phase A8, data/data_quality.py) rather than recomputing anything.
+Both default to None, so the one existing call site inside
+capture_market_data_snapshot() (and any existing test) is unaffected
+unless it opts in.
+
 NAMING NOTE -- read before using this module: data/market_data.py
 already defines MarketSnapshot (a live, in-process, multi-timeframe
 container of candles + per-timeframe quality flags, returned by
@@ -67,6 +77,15 @@ class MarketDataSnapshot:
         (see this module's own docstring). Full raw-OHLC persistence
         remains a deliberately deferred, separately-approved future
         step.
+    provider: which MarketDataProvider (data/providers/, Phase 59.1)
+        supplied the candles this snapshot describes (e.g.
+        "twelvedata") -- None if the caller doesn't know/supply one
+        (e.g. an existing Phase 59 caller predating providers/).
+    data_quality: an already-computed quality summary string (e.g.
+        "OK"/"WARNING_GAP"/"ERROR_NO_DATA", the same vocabulary
+        data/market_data.py's MarketSnapshot.quality dict and
+        data/data_quality.py's DataQualityResult already use) -- never
+        recomputed here, None if the caller doesn't supply one.
     """
     market_snapshot_id: str
     created_at: datetime
@@ -76,6 +95,8 @@ class MarketDataSnapshot:
     first_timestamp: Optional[datetime]
     last_timestamp: Optional[datetime]
     candles_reference: str
+    provider: Optional[str] = None
+    data_quality: Optional[str] = None
 
     def to_dict(self) -> dict:
         """JSON-safe dict -- every datetime field rendered as an ISO-8601 string."""
@@ -114,6 +135,9 @@ def capture_market_data_snapshot(
     candles: Sequence[Candle],
     symbol: str,
     timeframe: str,
+    *,
+    provider: Optional[str] = None,
+    data_quality: Optional[str] = None,
 ) -> MarketDataSnapshot:
     """
     Builds a MarketDataSnapshot from an already-fetched candle list --
@@ -124,6 +148,8 @@ def capture_market_data_snapshot(
     market structure or quality -- data/data_quality.py (Phase A8)
     remains the one place candle quality is assessed; this module only
     records identity/window metadata for later reconstruction.
+    `provider`/`data_quality` (Phase 59.1, TASK 4) are optional,
+    keyword-only, and relayed as-is -- never computed here.
     """
     first_timestamp = candles[0].timestamp if candles else None
     last_timestamp = candles[-1].timestamp if candles else None
@@ -140,4 +166,6 @@ def capture_market_data_snapshot(
         candles_reference=compute_candles_reference(
             symbol, timeframe, candle_count, first_timestamp, last_timestamp
         ),
+        provider=provider,
+        data_quality=data_quality,
     )

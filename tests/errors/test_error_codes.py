@@ -18,7 +18,7 @@ def test_no_duplicate_codes():
     all_code_values = [
         codes.CONFIG_001, codes.CONFIG_002,
         codes.DATA_001, codes.DATA_002,
-        codes.API_001, codes.API_002,
+        codes.API_001, codes.API_002, codes.API_003, codes.API_004,
         codes.DB_001, codes.DB_002,
         codes.VALIDATION_001, codes.VALIDATION_002,
         codes.PERMISSION_001,
@@ -33,7 +33,7 @@ def test_every_module_level_code_is_registered():
     all_code_values = [
         codes.CONFIG_001, codes.CONFIG_002,
         codes.DATA_001, codes.DATA_002,
-        codes.API_001, codes.API_002,
+        codes.API_001, codes.API_002, codes.API_003, codes.API_004,
         codes.DB_001, codes.DB_002,
         codes.VALIDATION_001, codes.VALIDATION_002,
         codes.PERMISSION_001,
@@ -47,13 +47,13 @@ def test_every_module_level_code_is_registered():
 
 def test_registry_size_matches_defined_codes():
     """Guards against a code being added to the registry but not as a module-level name, or vice versa."""
-    assert len(codes.CODE_REGISTRY) == 14
+    assert len(codes.CODE_REGISTRY) == 16
 
 
 @pytest.mark.parametrize("prefix,expected_codes", [
     ("CONFIG", {"CONFIG_001", "CONFIG_002"}),
     ("DATA", {"DATA_001", "DATA_002"}),
-    ("API", {"API_001", "API_002"}),
+    ("API", {"API_001", "API_002", "API_003", "API_004"}),
     ("DB", {"DB_001", "DB_002"}),
     ("VALIDATION", {"VALIDATION_001", "VALIDATION_002"}),
     ("PERMISSION", {"PERMISSION_001"}),
