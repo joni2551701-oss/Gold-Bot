@@ -37,8 +37,10 @@ HTF Bias (context/htf_bias.py)   -- Daily/H4/H1 market-context only
       |     |                       (Phase A2; never itself a trade
       |     |                       decision, see docs/HTF_BIAS.md)
       v     |
-Context Engine (context/)        |  -- SMC structure detection
-      |     |
+Context Engine (context/)        |  -- SMC structure detection:
+      |     |                       structure, BOS/CHoCH, liquidity,
+      |     |                       OB, FVG, AMD, Wyckoff (Phase A5,
+      |     |                       Spring/Upthrust -- see below)
       v     |
 Strategies (strategies/)         |  -- 3 independent SMC methodologies
       |     |
@@ -151,6 +153,34 @@ so both `htf_bias.py` and `signal_quality.py` use the same definition
 instead of two copies of the same six lines — `context/htf_bias.py`'s
 own 9 tests were re-run after the extraction and confirmed unchanged.
 
+### Wyckoff Engine (Phase A5)
+
+`context/wyckoff.py`'s `detect_wyckoff_events()` correlates already-
+detected liquidity sweeps with the nearest subsequent same-direction
+structural break into Spring (`SSL` sweep -> bullish break,
+`phase=ACCUMULATION`) and Upthrust (`BSL` sweep -> bearish break,
+`phase=DISTRIBUTION`) events — the "test of support/resistance"
+patterns Wyckoff theory is most identified by. Unlike HTF Bias and
+Signal Quality Score, this required **no `core/pipeline.py` change**:
+it is a sixth `ContextEngine.build()` detector, following `amd_events`'s
+exact pattern, so its output (`wyckoff_events`) is simply a new field
+on `ContextSnapshot` (now 10 fields; every pre-existing field's name
+and meaning is unchanged).
+
+Deliberately does not reuse `context/amd.py`'s
+`detect_amd_events()` despite the vocabulary overlap (both correlate a
+sweep with a break) — `amd.py` already feeds a live, tested strategy,
+and sharing code with a brand-new, unwired module was judged higher
+risk than a small, independently-implemented, documented duplication
+(see `docs/WYCKOFF.md`'s "Relationship to AMD" section). "Manipulation"
+is not a third event type — it is each event's `sweep` field.
+
+Includes a volume-confirmation hook (`_volume_confirms()`) that always
+returns `None` — this codebase has no volume data source at all
+(`data/twelve_data_client.py`'s `Candle` is OHLC-only), so the hook
+never fabricates a `True`/`False` confirmation. Not consumed by any
+`strategies/*.py` file in this phase.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -162,7 +192,7 @@ exists in exactly the shape it does.
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets. |
 | `data/` | Market data fetch and normalization. |
-| `context/` | Pure SMC market-structure detection functions, plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
+| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, and Wyckoff Spring/Upthrust — Phase A5, part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, and Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |

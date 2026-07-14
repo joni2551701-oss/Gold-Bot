@@ -34,6 +34,7 @@ def _empty_context(**overrides) -> ContextSnapshot:
         order_blocks=(),
         fair_value_gaps=(),
         amd_events=(),
+        wyckoff_events=(),
     )
     base.update(overrides)
     return ContextSnapshot(**base)

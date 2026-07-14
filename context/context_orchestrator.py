@@ -21,6 +21,7 @@ from context.liquidity import (
 from context.order_block import detect_order_blocks, OrderBlock
 from context.fvg import detect_fvg, FairValueGap
 from context.amd import detect_amd_events, AmdEvent
+from context.wyckoff import detect_wyckoff_events, WyckoffEvent
 from core.logger import setup_logger
 
 logger = setup_logger("ContextEngine")
@@ -35,7 +36,16 @@ class ContextSnapshot:
     Consumed by the Strategy Layer, AI Layer, and any downstream
     engine that requires a complete Smart Money Concepts view of the
     market. Field names and their semantic meaning are a stable
-    contract; downstream consumers depend on them remaining unchanged.
+    contract; downstream consumers depend on them remaining unchanged
+    -- Phase A5 adds a new field (wyckoff_events) but does not rename,
+    remove, or change the meaning of any of the original 9.
+
+    All fields are required (no defaults) by design -- every caller
+    must supply every field explicitly, even as an empty sequence, so
+    a caller can never silently construct a snapshot with an
+    unintentionally-missing detector's output. See
+    tests/test_generate_signals.py's docstring for this convention
+    stated as an explicit contract.
     """
     candles: Sequence[Candle]
     structure: Sequence[StructurePoint]
@@ -46,6 +56,7 @@ class ContextSnapshot:
     order_blocks: Sequence[OrderBlock]
     fair_value_gaps: Sequence[FairValueGap]
     amd_events: Sequence[AmdEvent]
+    wyckoff_events: Sequence[WyckoffEvent]
 
 
 class ContextEngine:
@@ -62,6 +73,7 @@ class ContextEngine:
           -> Order Blocks           (_build_footprints)
           -> Fair Value Gaps        (_build_footprints)
           -> AMD Events             (_build_amd)
+          -> Wyckoff Events         (_build_wyckoff, Phase A5)
           -> ContextSnapshot        (build)
 
     The engine holds no mutable state between calls to build(): each
@@ -93,6 +105,7 @@ class ContextEngine:
         amd_events = self._build_amd(
             candles, liquidity_sweeps, bos, choch, order_blocks, fair_value_gaps
         )
+        wyckoff_events = self._build_wyckoff(candles, liquidity_sweeps, bos, choch)
 
         return ContextSnapshot(
             candles=candles,
@@ -104,6 +117,7 @@ class ContextEngine:
             order_blocks=order_blocks,
             fair_value_gaps=fair_value_gaps,
             amd_events=amd_events,
+            wyckoff_events=wyckoff_events,
         )
 
     def _validate_candle_order(self, candles: Sequence[Candle]) -> None:
@@ -202,6 +216,22 @@ class ContextEngine:
         return detect_amd_events(
             candles, sweeps, bos, choch, order_blocks, fair_value_gaps
         )
+
+    def _build_wyckoff(
+        self,
+        candles: Sequence[Candle],
+        sweeps: Sequence[LiquiditySweepEvent],
+        bos: Sequence[BosEvent],
+        choch: Sequence[ChochEvent],
+    ) -> List[WyckoffEvent]:
+        """
+        Stage 6 (Phase A5): correlates liquidity sweeps with the
+        nearest subsequent same-direction structural break into Spring
+        (Accumulation) / Upthrust (Distribution) events. Foundation
+        only -- not consumed by any strategy. See context/wyckoff.py
+        and docs/WYCKOFF.md.
+        """
+        return detect_wyckoff_events(candles, sweeps, bos, choch)
 
 
 def build_context_snapshot(candles: Sequence[Candle]) -> ContextSnapshot:

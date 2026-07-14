@@ -13,8 +13,8 @@ Scope (per Director specification):
   any) is a SignalCandidate. An empty list is a PASS.
 
 Contract source (context/context_orchestrator.py): ContextSnapshot's
-9 fields are all required (no defaults) -- every field must be
-supplied, even as an empty list.
+10 fields (Phase A5: added wyckoff_events) are all required (no
+defaults) -- every field must be supplied, even as an empty list.
 """
 
 from context.context_orchestrator import ContextSnapshot
@@ -33,6 +33,7 @@ def _empty_context() -> ContextSnapshot:
         order_blocks=[],
         fair_value_gaps=[],
         amd_events=[],
+        wyckoff_events=[],
     )
 
 
