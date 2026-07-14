@@ -5,6 +5,7 @@ from data.market_data import MarketDataNormalizer, MarketSnapshot
 from context.context_orchestrator import build_context_snapshot
 from context.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
 from signals.signal_engine import SignalEngine
+from signals.signal_quality import compute_signal_quality, SignalQualityResult
 from ai.ai_analyzer import AIAnalyzer, AIAnalysisResult
 from decision.decision_engine import DecisionEngine
 from decision.models import TradeDecision, DecisionAction
@@ -28,9 +29,19 @@ SLOW_OPERATION_THRESHOLD_SECONDS = 2.0
 
 class TradingPipeline:
     """
-    Wires Data -> HTF Bias -> Context -> Signal -> AI -> Decision ->
-    Risk -> Signal Formatter -> Telegram Delivery -> Persistence into
-    a single, runnable flow.
+    Wires Data -> HTF Bias -> Context -> Signal -> Signal Quality ->
+    AI -> Decision -> Risk -> Signal Formatter -> Telegram Delivery ->
+    Persistence into a single, runnable flow.
+
+    Signal Quality Score (Phase A4, signals/signal_quality.py) grades
+    each signal candidate's alignment with HTF Bias and existing
+    context (Structure, Liquidity, Order Blocks, FVG) into a letter
+    grade (A+/A/B/C). Purely advisory, like HTF Bias was before Phase
+    A3 -- it is not passed into AIAnalyzer, DecisionEngine, or
+    RiskManager in this phase, and never blocks or alters any existing
+    stage. It is returned in run()'s result dict ("quality_results",
+    one per candidate, same order as "signals") for a future,
+    separately-approved phase to consume.
 
     HTF Bias (Phase A2, context/htf_bias.py) describes the higher-
     timeframe (Daily/H4/H1) market state only -- it is never passed
@@ -162,6 +173,26 @@ class TradingPipeline:
         self._log_stage("signal", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Generated {len(signal_candidates)} signal candidate(s).")
 
+        # Signal Quality Score (Phase A4): per-candidate, independent of
+        # AI/Decision -- grades each candidate's alignment with HTF Bias
+        # and existing context (Structure, Liquidity, Order Blocks, FVG)
+        # into a letter grade. Advisory only: not consumed by
+        # AIAnalyzer/DecisionEngine/RiskManager in this phase, same
+        # "compute now, wire into Decision Engine in a later,
+        # separately-approved phase" posture Phase A2's HTF Bias used
+        # before Phase A3 connected it.
+        t0 = time.perf_counter()
+        quality_results: List[SignalQualityResult] = [
+            compute_signal_quality(candidate, context, htf_bias)
+            for candidate in signal_candidates
+        ]
+        self._log_stage("signal_quality", time.perf_counter() - t0)
+        if quality_results:
+            logger.info(
+                f"[{self.symbol}|{self.interval}] Signal quality grades: "
+                f"{[q.grade.value for q in quality_results]}"
+            )
+
         t0 = time.perf_counter()
         ai_results: List[AIAnalysisResult] = [
             self.ai_analyzer.analyze(candidate, context)
@@ -258,6 +289,7 @@ class TradingPipeline:
             "context": context,
             "htf_bias": htf_bias,
             "signals": signal_candidates,
+            "quality_results": quality_results,
             "ai_results": ai_results,
             "decisions": decisions,
             "risk_results": risk_results,

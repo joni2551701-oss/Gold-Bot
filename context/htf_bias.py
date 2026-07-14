@@ -27,7 +27,7 @@ from context.context_config import ContextConfig
 from context.market_structure import (
     detect_swing_points,
     classify_structure,
-    StructureType,
+    most_recent_bias,
 )
 from core.logger import setup_logger
 
@@ -70,22 +70,21 @@ class HTFBiasResult:
 def _classify_timeframe(candles: Sequence[Candle], config: ContextConfig) -> HTFBias:
     """
     Derives one timeframe's bias from its most recent classified
-    structure point: HH/HL -> BULLISH, LH/LL -> BEARISH. UNKNOWN if
-    there isn't yet enough data to confirm any structure (matches
-    classify_structure()'s own UNKNOWN semantics for a type's first
-    occurrence).
+    structure point via context.market_structure.most_recent_bias()
+    (Phase A4: extracted from this function's own former inline walk,
+    now shared with signals/signal_quality.py -- behavior unchanged).
+    UNKNOWN if there isn't yet enough data to confirm any structure.
     """
     swings = detect_swing_points(
         candles, config.swing_left_strength, config.swing_right_strength
     )
     structure = classify_structure(swings)
 
-    for point in reversed(structure):
-        if point.structure in (StructureType.HIGHER_HIGH, StructureType.HIGHER_LOW):
-            return HTFBias.BULLISH
-        if point.structure in (StructureType.LOWER_HIGH, StructureType.LOWER_LOW):
-            return HTFBias.BEARISH
-
+    bias = most_recent_bias(structure)
+    if bias == "BULLISH":
+        return HTFBias.BULLISH
+    if bias == "BEARISH":
+        return HTFBias.BEARISH
     return HTFBias.UNKNOWN
 
 

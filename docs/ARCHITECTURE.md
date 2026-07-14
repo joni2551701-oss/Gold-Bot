@@ -44,7 +44,11 @@ Strategies (strategies/)         |  -- 3 independent SMC methodologies
       |     |
       v     |
 Signal Generation (signals/)     |  -- aggregates strategy output
-      |     |
+      |     |     |
+      |     |     '-- Signal Quality Score (signals/signal_quality.py)
+      |     |          -- per-candidate A+/A/B/C grade (Phase A4;
+      |     |          advisory only, see docs/SIGNAL_QUALITY.md;
+      |     |          not consumed below in this phase)
       v     |
 AI Layer (ai/)                   |  -- advisory input only (currently a stub)
       |     |
@@ -108,6 +112,45 @@ inverted so higher always means better, consistent with the other
 three inputs. `risk/risk_manager.py` itself is entirely unmodified by
 Phase A3.
 
+### Signal Quality Score (Phase A4)
+
+`signals/signal_quality.py`'s `compute_signal_quality(signal, context,
+htf_bias)` grades each signal candidate's alignment with existing
+context into a letter grade — a **checklist model**, not a weighted
+average like Decision Engine v2's, since it answers a different
+question ("how clean is this setup?" vs. "how strong is this
+signal?"):
+
+```
+score = (criteria_met_count / 5) * 100
+5-4 met -> A+   3 met -> A   2 met -> B   0-1 met -> C
+```
+
+The 5 criteria (`HTF_ALIGNED`, `STRUCTURE_ALIGNED`, `LIQUIDITY_SWEPT`,
+`ORDER_BLOCK_ALIGNED`, `FVG_ALIGNED`) are each direction-specific
+booleans reusing already-detected context — no new detection logic.
+Full criteria definitions and the grading table: `docs/SIGNAL_QUALITY.md`.
+
+**Not included in this phase**: Session and Volume, both named in the
+original roadmap sketch. Session Intelligence doesn't exist yet
+(a later phase); this codebase has no volume data source at all. Both
+are documented, explicit future-extension points, not faked with a
+placeholder score — see `docs/SIGNAL_QUALITY.md`'s "Deliberately not
+included" section.
+
+**Not consumed downstream in this phase** — `SignalQualityResult` is
+returned in `run()`'s result dict (`"quality_results"`) only, the same
+"compute now, connect later" posture HTF Bias had between Phase A2 and
+Phase A3. `AIAnalyzer`, `DecisionEngine`, and `RiskManager` are all
+unmodified by Phase A4.
+
+One shared extraction, zero behavior change: `context/htf_bias.py`'s
+per-timeframe "most recent structure direction" walk (previously
+inline) was factored out to `context.market_structure.most_recent_bias()`
+so both `htf_bias.py` and `signal_quality.py` use the same definition
+instead of two copies of the same six lines — `context/htf_bias.py`'s
+own 9 tests were re-run after the extraction and confirmed unchanged.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -121,7 +164,7 @@ exists in exactly the shape it does.
 | `data/` | Market data fetch and normalization. |
 | `context/` | Pure SMC market-structure detection functions, plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology. |
-| `signals/` | The `SignalCandidate` data contract and strategy aggregation. |
+| `signals/` | The `SignalCandidate` data contract, strategy aggregation, and Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |
 | `decision/` | Blends signal confidence, HTF bias, (inverted) AI risk score, and AI confidence — weighted, Phase A3 — into APPROVE/REJECT/NO_TRADE. |
 | `risk/` | SL/TP geometry and stop-loss-distance validation; sizing suggestion only. |

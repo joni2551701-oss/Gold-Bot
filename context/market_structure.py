@@ -64,6 +64,29 @@ def detect_swing_points(candles: Sequence[Candle], left_strength: int, right_str
             
     return swings
 
+def most_recent_bias(structure: Sequence[StructurePoint]) -> Optional[str]:
+    """
+    Walks backward through already-classified structure points
+    (classify_structure()'s output) for the most recent confirmed
+    directional read: "BULLISH" for HH/HL, "BEARISH" for LH/LL. None
+    if no point has been classified yet (e.g. too few swings to
+    confirm any structure -- every point is still StructureType.UNKNOWN).
+
+    Extracted (Phase A4) from context/htf_bias.py's per-timeframe
+    classification, which had this exact walk-backward logic inline --
+    now the single, shared definition of "what does this structure
+    sequence's most recent point say about direction," reused by both
+    HTF Bias and Signal Quality Score (signals/signal_quality.py).
+    Behavior is unchanged from the pre-extraction inline version.
+    """
+    for point in reversed(structure):
+        if point.structure in (StructureType.HIGHER_HIGH, StructureType.HIGHER_LOW):
+            return "BULLISH"
+        if point.structure in (StructureType.LOWER_HIGH, StructureType.LOWER_LOW):
+            return "BEARISH"
+    return None
+
+
 def classify_structure(swings: Sequence[SwingPoint]) -> List[StructurePoint]:
     """
     Classifies swings as HH, HL, LH, LL based on previous swing of the same type.
