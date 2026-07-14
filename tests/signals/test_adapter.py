@@ -54,11 +54,12 @@ def test_adapter_defaults_decision_to_pending_when_none_supplied():
 
 
 def test_adapter_leaves_references_none_by_default():
-    """context_id/explanation_id/risk_id/strategy_version are honest hooks -- never fabricated."""
+    """context_id/explanation_id/risk_id/decision_id/strategy_version are honest hooks -- never fabricated."""
     schema = from_signal_candidate(_candidate())
     assert schema.context_id is None
     assert schema.explanation_id is None
     assert schema.risk_id is None
+    assert schema.decision_id is None
     assert schema.strategy_version is None
 
 
@@ -79,6 +80,7 @@ def test_adapter_accepts_explicit_references_and_overrides():
         context_id="CTX-001",
         strategy_version="1.0",
         explanation_id="EXP-00125",
+        decision_id="DEC-001",
         risk_id="RISK-001",
     )
 
@@ -86,7 +88,19 @@ def test_adapter_accepts_explicit_references_and_overrides():
     assert schema.context_id == "CTX-001"
     assert schema.strategy_version == "1.0"
     assert schema.explanation_id == "EXP-00125"
+    assert schema.decision_id == "DEC-001"
     assert schema.risk_id == "RISK-001"
+
+
+def test_adapter_strategy_name_doubles_as_strategy_id():
+    """
+    No separate strategy_id field was added -- strategy_name already
+    carries the real strategies.lifecycle.strategy_registry.StrategyDefinition.id
+    value (Phase A11), satisfying the Architecture Readiness Review's
+    AC-03 "strategy_id" reference under an existing, established name.
+    """
+    schema = from_signal_candidate(_candidate(strategy_name="AMD_STRATEGY"))
+    assert schema.strategy_name == "AMD_STRATEGY"
 
 
 def test_adapter_maps_decision_action_to_status_without_recomputing():

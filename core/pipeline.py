@@ -1,15 +1,20 @@
 import time
+import uuid
 from typing import List
 
 from data.market_data import MarketDataNormalizer, MarketSnapshot
 from data.data_quality import assess_data_quality, DataQualityResult
 from context.context_orchestrator import build_context_snapshot
 from context.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
+from context.market_phase import compute_market_phase, MarketPhaseResult
+from context.snapshot import from_context_snapshot, ContextSnapshotSchema
 from features.feature_engine import compute_market_features
 from features.feature_model import MarketFeatures
 from signals.signal_engine import SignalEngine
 from signals.signal_quality import compute_signal_quality, SignalQualityResult
 from signals.explainability import explain_signal, SignalExplanation
+from signals.adapter import from_signal_candidate
+from signals.schema import SignalSchema
 from ai.ai_analyzer import AIAnalyzer, AIAnalysisResult
 from decision.decision_engine import DecisionEngine
 from decision.models import TradeDecision, DecisionAction
@@ -33,10 +38,36 @@ SLOW_OPERATION_THRESHOLD_SECONDS = 2.0
 
 class TradingPipeline:
     """
-    Wires Data -> Data Quality -> HTF Bias -> Context -> Signal ->
-    Signal Quality -> Explainability -> Feature Engineering -> AI ->
-    Decision -> Risk -> Signal Formatter -> Telegram Delivery ->
-    Persistence into a single, runnable flow.
+    Wires Data -> Data Quality -> HTF Bias -> Context -> Market Phase ->
+    Signal -> Signal Quality -> Explainability -> Feature Engineering ->
+    AI -> Decision -> Risk -> Signal History -> Signal Formatter ->
+    Telegram Delivery -> Persistence into a single, runnable flow.
+
+    Market Phase (Pre-Phase 59 Architecture Readiness Review, AC-02,
+    context/market_phase.py) classifies the market into one of six
+    states (ACCUMULATION/MANIPULATION/DISTRIBUTION/MARKUP/MARKDOWN/
+    UNKNOWN) once per cycle, entirely from data already on
+    ContextSnapshot (wyckoff_events, amd_events, market_regime) -- no
+    new detection logic, context/wyckoff.py and context/amd.py are
+    unmodified. Purely advisory: not consumed by any strategy,
+    AIAnalyzer, DecisionEngine, or RiskManager. Returned in run()'s
+    result dict ("market_phase") for a future AI explanation or
+    Education consumer.
+
+    Signal History (Pre-Phase 59 Architecture Readiness Review, AC-03,
+    signals/adapter.py + context/snapshot.py) builds one
+    ContextSnapshotSchema per cycle and one SignalSchema per candidate,
+    with a real context_id (the cycle's ContextSnapshotSchema.snapshot_id)
+    and a real decision_id (freshly generated per TradeDecision) --
+    closing the "Signal + Context Historical Link" gap Phase A15/A16
+    deliberately left as an unwired hook. strategy_name already carries
+    the real strategy identifier (Phase A11's StrategyDefinition.id),
+    so no separate strategy_id field was added. Computes nothing new:
+    signal_quality/decision are relayed from the already-computed
+    SignalQualityResult/TradeDecision. Not written to the database in
+    this phase -- returned in run()'s result dict ("context_snapshot",
+    "signal_history") for a future, separately-approved persistence
+    phase to consume.
 
     Feature Engineering (Phase A10, features/feature_engine.py) is a
     standardization layer, not an analysis layer -- it does not
@@ -236,6 +267,22 @@ class TradingPipeline:
         context = build_context_snapshot(candles, htf_bias)
         self._log_stage("context", time.perf_counter() - t0)
 
+        # Market Phase (Pre-Phase 59 Architecture Readiness Review,
+        # AC-02): a 5-state (+ UNKNOWN) classification of where the
+        # market sits in the Accumulation-Manipulation-Distribution-
+        # Markup-Markdown cycle, computed entirely from data already on
+        # `context` (wyckoff_events, amd_events, market_regime) -- no
+        # new detection logic, context/wyckoff.py and context/amd.py
+        # are unmodified. Purely advisory: not consumed by any
+        # strategy, AIAnalyzer, DecisionEngine, or RiskManager.
+        t0 = time.perf_counter()
+        market_phase: MarketPhaseResult = compute_market_phase(context)
+        self._log_stage("market_phase", time.perf_counter() - t0)
+        logger.info(
+            f"[{self.symbol}|{self.interval}] Market phase: {market_phase.phase.value} "
+            f"({market_phase.reason})"
+        )
+
         # NOTE: SignalEngine.generate_signals() already runs StrategyManager
         # internally. StrategyManager must not be called separately here,
         # or every strategy would execute twice against the same context.
@@ -318,6 +365,44 @@ class TradingPipeline:
         self._log_stage("risk", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Produced {len(risk_results)} risk result(s).")
 
+        # Signal <-> Context Historical Link (Pre-Phase 59 Architecture
+        # Readiness Review, AC-03): builds one standard, portable
+        # SignalSchema per candidate (Phase A15), referencing the real
+        # ContextSnapshotSchema this cycle produced (Phase A16) via
+        # context_id, plus a freshly-generated decision_id for the real
+        # TradeDecision each candidate received. Computes nothing new --
+        # signal_quality/decision are relayed from the already-computed
+        # SignalQualityResult/TradeDecision, never recomputed.
+        # strategy_name already carries the real strategy identifier
+        # (matching strategies.lifecycle.strategy_registry.StrategyDefinition.id),
+        # so no separate "strategy_id" field was needed. Not written to
+        # the database in this phase -- the link now exists and is
+        # returned in run()'s result dict, ready for a future,
+        # separately-approved persistence phase.
+        t0 = time.perf_counter()
+        context_snapshot: ContextSnapshotSchema = from_context_snapshot(
+            context, symbol=self.symbol, timeframe=self.interval
+        )
+        signal_history: List[SignalSchema] = [
+            from_signal_candidate(
+                candidate,
+                symbol=self.symbol,
+                timeframe=self.interval,
+                session=context_snapshot.session.current_session,
+                context_id=context_snapshot.snapshot_id,
+                quality=quality,
+                decision=decision,
+                decision_id=str(uuid.uuid4()),
+            )
+            for candidate, quality, decision in zip(signal_candidates, quality_results, decisions)
+        ]
+        self._log_stage("signal_history", time.perf_counter() - t0)
+        if signal_history:
+            logger.info(
+                f"[{self.symbol}|{self.interval}] Signal history: {len(signal_history)} "
+                f"record(s) linked to context snapshot {context_snapshot.snapshot_id}."
+            )
+
         # Only a candidate the Decision Engine APPROVEd AND the Risk
         # Manager approved (valid geometry, valid stop-loss distance)
         # is eligible for Telegram. REJECT/NO_TRADE decisions and
@@ -391,10 +476,13 @@ class TradingPipeline:
             "context": context,
             "data_quality": data_quality,
             "htf_bias": htf_bias,
+            "market_phase": market_phase,
             "signals": signal_candidates,
             "quality_results": quality_results,
             "explanations": explanations,
             "features": features,
+            "context_snapshot": context_snapshot,
+            "signal_history": signal_history,
             "ai_results": ai_results,
             "decisions": decisions,
             "risk_results": risk_results,

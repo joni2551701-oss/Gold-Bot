@@ -1,5 +1,7 @@
 """
-Signal Layer — backward-compatibility adapter (Phase A15).
+Signal Layer — backward-compatibility adapter (Phase A15; wired into
+core/pipeline.py as of the Pre-Phase 59 Architecture Readiness
+Review's AC-03 task, "Signal + Context Historical Link").
 
 Bridges the existing pipeline objects (SignalCandidate, and
 optionally SignalQualityResult/TradeDecision) into a SignalSchema,
@@ -7,10 +9,14 @@ without changing any of them. Existing signal creation
 (strategies/*.py, signals/signal_engine.py) is entirely untouched --
 this module only reads what those already produce.
 
-Not wired into core/pipeline.py in this phase (per the roadmap's
-"Pipeline logikasi o'zgarmaydi" instruction) -- see
-docs/SIGNAL_SCHEMA.md's "Integration" section for the intended future
-call site.
+core/pipeline.py's "signal_history" stage now calls this once per
+candidate with a real context_id (the cycle's own ContextSnapshotSchema.snapshot_id,
+context/snapshot.py, Phase A16) and a real decision_id (a fresh id
+generated per TradeDecision) -- see docs/SIGNAL_SCHEMA.md's
+"Integration" section and docs/ARCHITECTURE_READINESS_REVIEW.md's
+AC-03 section for the full contract. The resulting SignalSchema list
+is returned in run()'s result dict ("signal_history") -- still not
+written to the database in this phase.
 """
 
 from datetime import datetime, timezone
@@ -58,6 +64,7 @@ def from_signal_candidate(
     quality: Optional['SignalQualityResult'] = None,
     explanation_id: Optional[str] = None,
     decision: Optional['TradeDecision'] = None,
+    decision_id: Optional[str] = None,
     risk_id: Optional[str] = None,
 ) -> SignalSchema:
     """
@@ -73,9 +80,17 @@ def from_signal_candidate(
 
     strategy_name is signal.strategy_name exactly (e.g.
     "LIQUIDITY_SWEEP_STRATEGY") -- the real value every
-    strategies/*.py file already produces, not a human-readable label.
-    strategy_version has no source on SignalCandidate today; None
-    unless the caller supplies one explicitly.
+    strategies/*.py file already produces, not a human-readable label,
+    and already the same value strategies.lifecycle.strategy_registry.StrategyDefinition.id
+    uses (Phase A11) -- this doubles as the "strategy_id" reference
+    the Architecture Readiness Review's AC-03 task asked for; no
+    separate field was added since one already existed under an
+    equivalent, established name. strategy_version has no source on
+    SignalCandidate today; None unless the caller supplies one
+    explicitly. decision_id has no source on TradeDecision either
+    (decision.models.TradeDecision has no id field of its own) --
+    None unless the caller supplies one explicitly (core/pipeline.py
+    generates a fresh one per TradeDecision).
     """
     entry_price = signal.entry
     stop_loss = signal.stop_loss
@@ -111,5 +126,6 @@ def from_signal_candidate(
         explanation_id=explanation_id,
         decision=decision_status,
         decision_score=decision_score,
+        decision_id=decision_id,
         risk_id=risk_id,
     )

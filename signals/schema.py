@@ -8,9 +8,12 @@ a future AI provider) re-deriving its own subset from
 SignalCandidate/SignalQualityResult/SignalExplanation/TradeDecision.
 It does NOT compute anything -- every field is either a direct copy of
 an already-computed value or an explicit None placeholder for a
-reference that doesn't exist yet (context_id/explanation_id/risk_id --
-see docs/SIGNAL_SCHEMA.md). See signals/adapter.py for how an existing
-SignalCandidate becomes a SignalSchema, and
+reference that doesn't exist yet (explanation_id/risk_id -- see
+docs/SIGNAL_SCHEMA.md). context_id and decision_id are real,
+generated references as of the Pre-Phase 59 Architecture Readiness
+Review's AC-03 task -- see signals/adapter.py and core/pipeline.py's
+"Signal <-> Context Historical Link" stage. See signals/adapter.py for
+how an existing SignalCandidate becomes a SignalSchema, and
 signals/README.md/docs/SIGNAL_SCHEMA.md for the full contract.
 
 Distinct from database/signal_record.py's SignalRecord (pre-existing,
@@ -77,7 +80,15 @@ class SignalSchema:
         so this stays None until a future phase adds one.
     Decision: decision (one of ALLOWED_DECISION_STATUSES, defaults to
         "PENDING" -- decision hasn't necessarily happened yet when a
-        SignalSchema is first built), decision_score.
+        SignalSchema is first built), decision_score, decision_id (a
+        real, generated identity for the specific TradeDecision this
+        record reflects -- added by the Pre-Phase 59 Architecture
+        Readiness Review's AC-03 task, "Signal + Context Historical
+        Link"; None until a TradeDecision actually exists, same
+        posture as decision/decision_score). decision.models.TradeDecision
+        itself has no id field of its own -- core/pipeline.py generates
+        this id at the point it builds the historical record, not
+        inside TradeDecision.
     Risk reference: risk_id -- a reference only. RiskResult has no id
         field of its own today, so this stays None until a future
         phase adds one. Risk is never computed by this model.
@@ -101,6 +112,7 @@ class SignalSchema:
     explanation_id: Optional[str] = None
     decision: str = "PENDING"
     decision_score: Optional[float] = None
+    decision_id: Optional[str] = None
     risk_id: Optional[str] = None
 
     def to_dict(self) -> dict:

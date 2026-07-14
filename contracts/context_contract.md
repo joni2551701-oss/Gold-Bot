@@ -26,13 +26,29 @@ neither writes to, mutates, or re-fetches its input.
 output, not part of `ContextSnapshot`.
 
 `context.snapshot.ContextSnapshotSchema` (Phase A16) is a distinct,
-optional, flat/JSON-serializable *standardized* representation of the
-same context, built via `from_context_snapshot()` — not what
-`core/pipeline.py` actually receives from Context Engine today (see
-`docs/CONTEXT_SNAPSHOT.md`'s naming note). Use `ContextSnapshot` when
-describing what the live pipeline passes downstream; use
-`ContextSnapshotSchema` when describing a serialized/historical
-record.
+flat/JSON-serializable *standardized* representation of the same
+context, built via `from_context_snapshot()` — still not what
+`strategies/`, Signal Quality Score, Explainability, or Feature
+Engineering receive from Context Engine (they all read the real
+`ContextSnapshot` directly, unaffected). As of the Pre-Phase 59
+Architecture Readiness Review (AC-03), `core/pipeline.py` does build
+one `ContextSnapshotSchema` per cycle (in its `signal_history` stage)
+to obtain a `snapshot_id` for linking `SignalSchema.context_id` — see
+`docs/CONTEXT_SNAPSHOT.md`'s naming note and
+`docs/SIGNAL_SCHEMA.md`'s "AC-03 update" section. Use `ContextSnapshot`
+when describing what the live pipeline passes to Strategy/Signal
+Quality/Explainability/Feature Engineering; use `ContextSnapshotSchema`
+when describing the serialized/historical record.
+
+`context.market_phase.MarketPhaseResult` (AC-02) is a separate,
+advisory output — `phase` (`ACCUMULATION`/`MANIPULATION`/
+`DISTRIBUTION`/`MARKUP`/`MARKDOWN`/`UNKNOWN`) and `reason` — built via
+`compute_market_phase(context)` from already-detected
+`wyckoff_events`/`amd_events`/`market_regime`; not a `ContextSnapshot`
+field. Computed once per cycle by `core/pipeline.py`'s new
+`market_phase` stage, logged, and returned in `run()`'s result dict
+only — not consumed by `strategies/`, `signals/`, `ai/`, `decision/`,
+or `risk/`.
 
 ## Allowed Dependencies
 ✅ `data/` (`Candle`, `MarketSnapshot`) — market data only.

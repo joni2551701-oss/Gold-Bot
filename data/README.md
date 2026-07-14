@@ -3,7 +3,9 @@
 ## Purpose
 Fetches and normalizes XAUUSD market data from Twelve Data, plus
 (Phase A8) assesses the resulting candle list's quality —
-observationally, never filtering further.
+observationally, never filtering further — and (AC-07, Pre-Phase 59
+Architecture Readiness Review) classifies any fetch exception into a
+structured `ExternalAPIError` for logging only.
 
 ## Flow
 ```
@@ -13,8 +15,10 @@ Twelve Data API
 data/   -- fetch + validate + de-duplicate
       |
       |-- get_candles()  (single timeframe)   -> data_quality.py
-      |                                           (Phase A8, NEW)
-      |                                           -> Context Engine
+      |         |                                 (Phase A8, NEW)
+      |         |                                 -> Context Engine
+      |         '-- on exception -> api_error_classifier.py (AC-07)
+      |                              -> structured log line only
       '-- get_snapshot() (Daily/H4/H1)        -> context/htf_bias.py
                                                   (Phase A2)
 ```
@@ -29,6 +33,12 @@ data/   -- fetch + validate + de-duplicate
   returns.
 - Session/cache foundations, not yet wired into the pipeline
   (`session_filter.py`, `data_cache.py`).
+- API error classification — `classify_api_error()`
+  (`api_error_classifier.py`, AC-07). Maps an already-caught fetch
+  exception to a structured `core.errors.exceptions.ExternalAPIError`
+  (`API_001` timeout/connection, `API_002` otherwise). Never raises;
+  called from `market_data.py`'s `get_candles()` `except` block for
+  logging only — does not change the existing degrade-to-`[]` return.
 
 ### Why Data Quality Engine exists
 Phase A1's audit found data quality as *input sanitization* (silent
@@ -66,13 +76,19 @@ ascending OHLC data for one timeframe. `MarketSnapshot`
 `quality: Dict[str, str]` (`"OK"`/`"WARNING_GAP"`/`"ERROR_NO_DATA"`)
 per timeframe. `DataQualityResult` (`assess_data_quality()`, Phase
 A8) — `valid`, `score` (0-100), `issues` (a tuple of issue-type
-names).
+names). `ExternalAPIError` (`classify_api_error()`, AC-07) — `code`
+(`API_001`/`API_002`), `message`, `module`, `details`; logged, never
+returned to a caller.
 
 ## Dependencies
 `core/secrets.py` (API key), `config.py` (timeframe sizes, including
 `"Daily"` as of Phase A2). No dependency on `context/`, `signals/`,
 `database/`, or `telegram/` — `data_quality.py` follows the same
 isolation as every other file in this package.
+`api_error_classifier.py` imports `requests` and `core.errors`
+(cross-cutting) only — same isolation, no dependency on `context/`,
+`strategies/`, `signals/`, `ai/`, `decision/`, `risk/`, `database/`,
+or `telegram/`.
 
 ## Future Roadmap
 Wire `SmartDataCache` in if the pipeline ever fetches more than one
@@ -81,4 +97,7 @@ symbol/interval per cycle (see `docs/PERFORMANCE.md`). Wire
 necessary beyond the GitHub Actions cron window. For Data Quality
 Engine specifically, see `docs/DATA_QUALITY.md`'s Future Usage
 section — a quality-gated cycle skip, persistence, and a future AI
-input all remain unimplemented.
+input all remain unimplemented. For API error classification, see
+`docs/ARCHITECTURE_READINESS_REVIEW.md`'s AC-07 section — migrating
+`twelve_data_client.py`'s own raises to `GoldBotError` subclasses
+directly remains an explicitly deferred, separate future step.

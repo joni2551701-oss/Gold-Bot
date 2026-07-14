@@ -40,8 +40,8 @@ to `strategies.StrategyManager`).
 `context_id` reference, strategy info (`strategy_name`,
 `strategy_version`), quality info (`quality_grade`,
 `confidence_score`), an `explanation_id` reference, decision info
-(`decision`, `decision_score`), and a `risk_id` reference. See
-`docs/SIGNAL_SCHEMA.md` for the full field table.
+(`decision`, `decision_score`, `decision_id`), and a `risk_id`
+reference. See `docs/SIGNAL_SCHEMA.md` for the full field table.
 
 ## Allowed Dependencies
 ✅ `context/` — the `ContextSnapshot` every function here reads.
@@ -75,9 +75,12 @@ the one legitimate raise-worthy case: a genuine programmer error,
 duplicate registration, not a data-quality issue).
 
 ## Future Extension
-`SignalSchema.context_id`/`explanation_id`/`risk_id` are `None` hooks
-today — Phase A16 (Context Snapshot) gives `context_id` a real
-addressable value once a future phase joins the two; Explainability
-and Risk have no id field of their own yet either. Not wired into
-`core/pipeline.py` in this phase (`docs/SIGNAL_SCHEMA.md`'s
-"Integration" section names the intended future call site).
+`SignalSchema.explanation_id`/`risk_id` remain `None` hooks —
+Explainability and Risk have no id field of their own yet.
+`context_id` and `decision_id` are **no longer hooks**: as of the
+Pre-Phase 59 Architecture Readiness Review (AC-03), `core/pipeline.py`
+calls `from_signal_candidate()` in its new `signal_history` stage,
+setting `context_id` to that cycle's real
+`ContextSnapshotSchema.snapshot_id` and `decision_id` to a freshly
+generated `str(uuid.uuid4())` per `TradeDecision` — see
+`docs/SIGNAL_SCHEMA.md`'s "AC-03 update" section for the exact wiring.

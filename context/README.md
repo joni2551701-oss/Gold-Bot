@@ -9,8 +9,12 @@ plus HTF Bias (`htf_bias.py`, Phase A2) — a separate, higher-timeframe
 market-context classification. All stateless, read-only detection
 code; none makes a trading decision. `snapshot.py` (Phase A16)
 additionally standardizes an already-built `ContextSnapshot` into a
-flat, JSON-serializable `ContextSnapshotSchema` for a future AI/
-Analytics/Replay/Education consumer.
+flat, JSON-serializable `ContextSnapshotSchema`, now wired into
+`core/pipeline.py`'s `signal_history` stage (Pre-Phase 59 Architecture
+Readiness Review, AC-03). `market_phase.py` (AC-02) adds a wired,
+advisory `MarketPhase` classification (`ACCUMULATION`/`MANIPULATION`/
+`DISTRIBUTION`/`MARKUP`/`MARKDOWN`/`UNKNOWN`) reusing already-detected
+Wyckoff/AMD/Market Regime data — no new detection.
 
 ## Flow
 ```
@@ -168,11 +172,38 @@ label instead of a new combined "last-high + last-low" walk).
   existing detector — `snapshot.py` only reads their already-computed
   output via `from_context_snapshot()`.
 - Does not write to the database — no schema change, no new table.
-- Is not consumed by `core/pipeline.py`, `strategies/`, `signals/`,
-  `ai/`, `decision/`, or `risk/` in this phase.
+- Was not consumed by `core/pipeline.py`, `strategies/`, `signals/`,
+  `ai/`, `decision/`, or `risk/` in Phase A16. **Update (AC-03)**:
+  `core/pipeline.py` now calls `from_context_snapshot()` once per
+  cycle in its `signal_history` stage, to obtain the `snapshot_id`
+  every `SignalSchema` links back to via `context_id` —
+  `strategies/`, `ai/`, `decision/`, and `risk/` still never import
+  `snapshot.py`.
 - Does not raise on an invalid snapshot — `validate_snapshot()`
   returns a structured `ValidationResult`, matching every other Phase
   A foundation module's fail-safe posture.
+
+### Why Market Phase exists (AC-02)
+A Pre-Phase 59 Architecture Readiness Review found `wyckoff.py`'s own
+2-state `WyckoffPhase` (`ACCUMULATION`/`DISTRIBUTION`) didn't cover the
+5-state Wyckoff/AMD cycle (`ACCUMULATION`/`MANIPULATION`/
+`DISTRIBUTION`/`MARKUP`/`MARKDOWN`) a signal explanation would ideally
+reference. `market_phase.py` adds `compute_market_phase(context)`,
+classifying by priority order (most recent Wyckoff Spring/Upthrust >
+most recent AMD event > confirmed `TRENDING` `MarketRegime` direction >
+`UNKNOWN`) — the same priority-order pattern `market_regime.py`
+already established. No new detection: reads only
+`context.wyckoff_events`, `context.amd_events`, and
+`context.market_regime`, all pre-existing `ContextSnapshot` fields.
+
+### What Market Phase does NOT do
+- Does not generate a `BUY`/`SELL` signal, and is not itself a
+  strategy — no `strategies/*.py` file reads `MarketPhaseResult`.
+- Does not add a new field to `ContextSnapshot` — all three inputs
+  already existed.
+- Is not consumed by `signals/`, `ai/`, `decision/`, or `risk/` — the
+  new `core/pipeline.py` `market_phase` stage only logs it and returns
+  it in `run()`'s result dict (`"market_phase"`), advisory only.
 
 ## Input
 `Sequence[Candle]` (from `data/`) for the execution-timeframe
@@ -182,7 +213,8 @@ detectors. `htf_bias.py`'s `compute_htf_bias()` takes a
 optional `HTFBiasResult` (defaults to `None`). `snapshot.py`'s
 `from_context_snapshot()` takes an already-built `ContextSnapshot`
 (required) plus optional `symbol`/`timeframe`/`engine_version`
-overrides.
+overrides. `market_phase.py`'s `compute_market_phase()` takes an
+already-built `ContextSnapshot` (required) only.
 
 ## Output
 `ContextSnapshot` (`context_orchestrator.py`) — an immutable, fully
@@ -199,6 +231,9 @@ the whole window, not a sparse event list. `htf_bias.py`'s
 everything else in this package. `snapshot.py`'s
 `from_context_snapshot()` returns a `ContextSnapshotSchema` — flat,
 JSON-serializable (`to_dict()`/`to_json()`), immutable.
+`market_phase.py`'s `compute_market_phase()` returns a
+`MarketPhaseResult` (`phase`, `reason`) — immutable, not part of
+`ContextSnapshot`.
 
 ## Dependencies
 `data/` (for the `Candle`/`MarketSnapshot` types) only. No dependency
@@ -211,7 +246,11 @@ imports only the standard library plus `context.context_orchestrator`
 and `context.market_structure` (same package) — deliberately does
 **not** import `signals/` (see `docs/CONTEXT_SNAPSHOT.md`'s "Why not
 import from signals/" section for why its `ValidationResult` is a
-separate, independent definition, not shared code).
+separate, independent definition, not shared code). `market_phase.py`
+imports `context.amd`, `context.market_regime`, and `context.wyckoff`
+(same package) plus, `TYPE_CHECKING`-only, `context.context_orchestrator`
+— no dependency on `strategies/`, `signals/`, `ai/`, `database/`, or
+`telegram/`.
 
 ## Future Roadmap
 The execution-timeframe SMC formulas remain stable and explicitly out
@@ -235,4 +274,7 @@ unimplemented. For Context Snapshot specifically, see
 `docs/CONTEXT_SNAPSHOT.md`'s "Future usage" section — AI (`Signal +
 ContextSnapshotSchema = Explanation`, joinable via `SignalSchema`'s
 `context_id` once a future phase wires the two together), Analytics,
-Replay, and Education all remain unimplemented.
+Replay, and Education all remain unimplemented. For Market Phase
+specifically, see `docs/ARCHITECTURE_READINESS_REVIEW.md`'s AC-02
+section — full Wyckoff phase theory boundaries (A/B/C/D/E) and any
+future consumer beyond logging remain unimplemented.

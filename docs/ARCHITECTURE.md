@@ -57,6 +57,15 @@ Context Engine (context/)        |  -- SMC structure detection:
       |     |                       Session (Phase A6), Market Regime
       |     |                       (Phase A7, reads htf_bias too --
       |     |                       see below) -- see below
+      |     |
+      v     |
+Market Phase (context/market_phase.py)  -- ACCUMULATION/MANIPULATION/
+      |     |                       DISTRIBUTION/MARKUP/MARKDOWN/UNKNOWN,
+      |     |                       classified from already-computed
+      |     |                       Wyckoff/AMD/Market Regime (Pre-Phase
+      |     |                       59 Architecture Readiness Review,
+      |     |                       AC-02; advisory only, logged, see
+      |     |                       below)
       v     |
 Strategies (strategies/)         |  -- 3 independent SMC methodologies
       |     |
@@ -92,6 +101,14 @@ Decision Engine (decision/)      -- weighted signal+HTF+risk+AI blend
       v
 Risk Manager (risk/)             -- geometry + stop-loss validation
       |
+      v
+Signal History (core/pipeline.py)  -- links every SignalSchema to the
+      |                             cycle's ContextSnapshotSchema via
+      |                             context_id/snapshot_id, plus a
+      |                             fresh decision_id per TradeDecision
+      |                             (Pre-Phase 59 Architecture Readiness
+      |                             Review, AC-03; advisory record-
+      |                             building only, see below)
       v
 Telegram Notification Filter     -- (inside core/pipeline.py)
       |                             APPROVE + risk-approved only,
@@ -134,24 +151,28 @@ same as `core/`), not inside the Data→...→Database flow, and
 see its own section below.
 
 Signal Schema (`signals/schema.py`/`signals/adapter.py`, Phase A15)
-is likewise **not** shown in the diagram above: `core/pipeline.py`
-does not call `from_signal_candidate()` anywhere in this phase — the
-`Signal Generation (signals/)` node above still produces
-`SignalCandidate`s exactly as before. `SignalSchema` exists as a
-standardization layer any of `Signal Generation`'s existing consumers
-(Decision, Risk, Telegram, Analytics, AI) could adopt in a future,
-separately-approved phase — see its own section below.
+was **not** shown in the diagram above through Phase A19 — but as of
+the Pre-Phase 59 Architecture Readiness Review (AC-03), `core/pipeline.py`
+now calls `from_signal_candidate()` once per candidate in the new
+**Signal History** stage (see the diagram above and its own section
+below) to build the historical link record. `Signal Generation
+(signals/)` itself is unchanged — it still produces `SignalCandidate`s
+exactly as before; `SignalSchema` is built downstream, after Risk, from
+already-computed values only.
 
-Context Snapshot (`context/snapshot.py`, Phase A16) is likewise
-**not** shown in the diagram above: `core/pipeline.py` does not call
-`from_context_snapshot()` anywhere in this phase — the
-`Context Engine (context/)` node above still produces the real,
-internal `ContextSnapshot` exactly as before, and every existing
-consumer (Strategies, Signal Quality Score, Explainability, Feature
-Engineering) keeps reading it directly, unaffected.
-`ContextSnapshotSchema` exists as a standardization layer for a
-future AI/Analytics/Replay/Education consumer — see its own section
-below.
+Context Snapshot (`context/snapshot.py`, Phase A16) was likewise
+**not** shown in the diagram above through Phase A19 — but as of the
+same Pre-Phase 59 Architecture Readiness Review (AC-03),
+`core/pipeline.py` now calls `from_context_snapshot()` once per cycle,
+also in the new **Signal History** stage, to obtain the
+`snapshot_id` every `SignalSchema` in that cycle links back to via
+`context_id`. The `Context Engine (context/)` node above is unchanged —
+it still produces the real, internal `ContextSnapshot` exactly as
+before, and every existing consumer (Strategies, Signal Quality Score,
+Explainability, Feature Engineering, and now Market Phase) keeps
+reading it directly, unaffected. See "Signal History Foundation
+(Pre-Phase 59 Architecture Readiness Review, AC-03)" below for the
+full linkage.
 
 ### Decision Engine v2 (Phase A3)
 
@@ -675,6 +696,83 @@ every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
 exists in exactly the shape it does.
 
+### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
+
+A Director-requested audit run after Phase A19, before Phase 59 Real
+Market Validation, checked nine previously-built foundation modules
+(HTF Bias, Wyckoff/AMD, Signal+Context linkage, Asset Abstraction,
+Strategy Lifecycle, Performance Analytics, Session Intelligence, Data
+Quality, Explainability) against the roadmap's original request. Full
+detail, including file:line evidence for every item: see
+`docs/ARCHITECTURE_READINESS_REVIEW.md`. Two outcomes:
+
+**Six items were already complete and correctly wired** (AC-01 HTF
+Bias, AC-04 Asset Abstraction, AC-05 Strategy Lifecycle, AC-06
+Performance Analytics being correctly kept distinct from A19, plus
+Session Intelligence and Explainability) — verified, not rebuilt, per
+this codebase's "No duplicate logic" rule. **Three items had a real,
+narrow gap**, closed in this review:
+
+**Market Phase Foundation (AC-02)** — `context/market_phase.py` adds
+`MarketPhase` (`ACCUMULATION`/`MANIPULATION`/`DISTRIBUTION`/`MARKUP`/
+`MARKDOWN`/`UNKNOWN`) and `compute_market_phase(context)`, extending
+the pre-existing 2-state `WyckoffPhase` into the Director's requested
+5-state model (plus `UNKNOWN`, a safe fallback added by direct analogy
+to every other classification enum in this codebase — e.g. `HTFBias`,
+`MarketRegime` — not one of the Director's own 5 listed values,
+disclosed explicitly). Priority order, mirroring
+`context/market_regime.py`'s own established pattern: most recent
+Wyckoff Spring/Upthrust event (most specific) → most recent AMD event
+→ confirmed `TRENDING` `MarketRegime` direction → `UNKNOWN`. Computes
+nothing new — reads only `context.wyckoff_events`, `context.amd_events`,
+and `context.market_regime`, all already fields on `ContextSnapshot`
+today. New `core/pipeline.py` stage immediately after `context`;
+`"market_phase"` is a new key in `run()`'s result dict, advisory only
+(not consumed by Decision Engine, Risk Manager, or any strategy).
+
+**Signal History Foundation (AC-03)** — the review's highest-priority
+item. `core/pipeline.py`'s new `signal_history` stage (immediately
+after `risk`, before candidate selection) is the first place in this
+codebase that connects `signals/schema.py` (Phase A15) and
+`context/snapshot.py` (Phase A16) — both previously built with "zero
+pipeline wiring" — into a live record. Per cycle: one
+`ContextSnapshotSchema` is built via `from_context_snapshot()`; then,
+per candidate, one `SignalSchema` is built via `from_signal_candidate()`
+with `context_id=context_snapshot.snapshot_id` (the two sides of the
+same link) and a freshly generated `decision_id=str(uuid.uuid4())`
+(mirroring `database/signal_record.py`'s own `signal_id` generation
+convention — `decision.models.TradeDecision`, a Trading-Safety-protected
+file, is deliberately left with no id field of its own). `strategy_id`
+needed no new field: `SignalSchema.strategy_name` (Phase A15) already
+carries the same value as `StrategyDefinition.id` (Phase A11, e.g.
+`"LIQUIDITY_SWEEP_STRATEGY"`). `SignalSchema` gained one genuinely new
+field, `decision_id: Optional[str] = None` (now 20 fields total).
+`"context_snapshot"` and `"signal_history"` (a `List[SignalSchema]`)
+are new keys in `run()`'s result dict — this review does **not** add a
+database table or migration; "written to history" is satisfied by
+these now-linked, `to_json()`-serializable records being available for
+a future persistence step, not by persisting them today (see
+`docs/ARCHITECTURE_READINESS_REVIEW.md`'s AC-03 section for the full
+scope decision).
+
+**API Error Classification (AC-07, part of Data Quality)** —
+`data/api_error_classifier.py` adds `classify_api_error(exception,
+module)`, mapping an already-caught data-fetch exception to a
+`core.errors.exceptions.ExternalAPIError` (Phase A18) — `API_001` for
+a timeout/connection failure, `API_002` for anything else (rate limit,
+malformed response, unrecognized type). Never raises; used for
+structured logging only. `data/market_data.py`'s `get_candles()`
+gained exactly one additional `logger.error(...)` call inside its
+pre-existing `except Exception as e:` block — the graceful
+degrade-to-`[]` return and all control flow are unchanged, verified by
+dedicated tests. `data/twelve_data_client.py`'s retry/backoff logic and
+raise behavior are untouched.
+
+Neither `strategies/`, `signals/` (candidate generation), `risk/`, nor
+`decision/decision_engine.py` changed in this review — every item
+above is either read-only verification or an additive, advisory record
+built from already-computed values.
+
 ## Module Responsibilities (summary — full detail in `docs/code_structure.md`)
 
 | Module | Responsibility |
@@ -682,10 +780,10 @@ exists in exactly the shape it does.
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
-| `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering. |
-| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. `snapshot.py` (Phase A16) additionally standardizes a `ContextSnapshot` into a flat, JSON-serializable `ContextSnapshotSchema` — a distinct type, not a replacement. |
+| `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — and API error classification (`api_error_classifier.py`, AC-07) — maps a caught fetch exception to a structured `ExternalAPIError` for logging only, never changes control flow. |
+| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. `snapshot.py` (Phase A16) additionally standardizes a `ContextSnapshot` into a flat, JSON-serializable `ContextSnapshotSchema`, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) — a distinct type, not a replacement. `market_phase.py` (AC-02) adds a wired, advisory 5-state (+`UNKNOWN`) `MarketPhase` classification reusing already-detected Wyckoff/AMD/Market Regime data. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology, plus a Strategy Lifecycle metadata layer (`lifecycle/`, Phase A11) — `StrategyDefinition`/`StrategyRegistry`, storing status/version/supported-assets metadata only, never running a strategy or generating a signal. |
-| `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria — and Signal Schema (`schema.py`/`adapter.py`, Phase A15) — one standard, JSON-serializable cross-module signal contract, computing nothing itself. |
+| `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria — and Signal Schema (`schema.py`/`adapter.py`, Phase A15) — one standard, JSON-serializable cross-module signal contract, computing nothing itself, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) with a new `decision_id` field. |
 | `features/` | Feature Engineering foundation (Phase A10) — `MarketFeatures`, one standard snapshot per candidate for a future AI/backtester/ML/Failure-Analysis consumer. A standardization layer: relays `context/` and `signals/` (Signal Quality + Explainability) results as-is, computes nothing new. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |
 | `decision/` | Blends signal confidence, HTF bias, (inverted) AI risk score, and AI confidence — weighted, Phase A3 — into APPROVE/REJECT/NO_TRADE. |
@@ -730,7 +828,13 @@ import sweep):
   `decision/`'s own `TYPE_CHECKING`-only imports already use. Neither
   file imports `ai/`, `risk/`, `database/`, `telegram/`, `execution/`,
   or `assets/` — `adapter.py`'s `asset_type` default is a literal
-  string, not an `assets/` import (see `docs/SIGNAL_SCHEMA.md`).
+  string, not an `assets/` import (see `docs/SIGNAL_SCHEMA.md`). As of
+  AC-03, `core/pipeline.py` imports and calls
+  `signals.adapter.from_signal_candidate()` at runtime — allowed,
+  since `core/pipeline.py` is the one file permitted to import from
+  every layer (see its own rule below); `signals/schema.py`'s and
+  `signals/adapter.py`'s own import lists above are otherwise
+  unchanged by this.
 - `context/snapshot.py` (Phase A16) imports only the standard library
   plus `context.context_orchestrator` and `context.market_structure`
   (same package) — no dependency on `strategies/`, `signals/`, `ai/`,
@@ -739,7 +843,22 @@ import sweep):
   despite the identical shape — `context/` must never depend on
   `signals/` (see `docs/ARCHITECTURE_RULES.md`'s Context Engine rule)
   — `context/snapshot.py` declares its own, independent
-  `ValidationResult` instead (see `docs/CONTEXT_SNAPSHOT.md`).
+  `ValidationResult` instead (see `docs/CONTEXT_SNAPSHOT.md`). As of
+  AC-03, `core/pipeline.py` imports and calls
+  `context.snapshot.from_context_snapshot()` at runtime, same allowed
+  pattern as `signals/adapter.py` above.
+- `context/market_phase.py` (AC-02) imports `context.amd`,
+  `context.market_regime`, and `context.wyckoff` (same package,
+  standard library `enum`/`dataclasses` otherwise) plus, `TYPE_CHECKING`-
+  only, `context.context_orchestrator.ContextSnapshot` — no dependency
+  on `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`,
+  `database/`, or `telegram/`. Called by `core/pipeline.py` as a new
+  stage immediately after `context`.
+- `data/api_error_classifier.py` (AC-07) imports `requests` and
+  `core.errors` (cross-cutting) only — no dependency on `context/`,
+  `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`, `database/`,
+  or `telegram/`. Called by `data/market_data.py`'s `get_candles()`
+  inside its existing `except` block, for logging only.
 - `configuration/` (Phase A13) imports only the root `config.Config`
   (cross-cutting, same as every layer's pre-existing `config.py`
   access) — no dependency on `data/`, `context/`, `strategies/`,
