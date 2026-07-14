@@ -133,6 +133,15 @@ same as `core/`), not inside the Data→...→Database flow, and
 `Environment`/`ApplicationSettings`/`FeatureFlags` in this phase —
 see its own section below.
 
+Signal Schema (`signals/schema.py`/`signals/adapter.py`, Phase A15)
+is likewise **not** shown in the diagram above: `core/pipeline.py`
+does not call `from_signal_candidate()` anywhere in this phase — the
+`Signal Generation (signals/)` node above still produces
+`SignalCandidate`s exactly as before. `SignalSchema` exists as a
+standardization layer any of `Signal Generation`'s existing consumers
+(Decision, Risk, Telegram, Analytics, AI) could adopt in a future,
+separately-approved phase — see its own section below.
+
 ### Decision Engine v2 (Phase A3)
 
 `decision/decision_engine.py`'s `DecisionEngine.evaluate()` no longer
@@ -466,6 +475,52 @@ dependency on `data/`, `context/`, `strategies/`, `signals/`, `ai/`,
 `decision/`, `risk/`, `assets/`, `database/`, or `telegram/`. See
 `docs/CONFIGURATION_MANAGEMENT.md` for the full contract.
 
+### Signal Schema Standard Foundation (Phase A15)
+
+`signals/schema.py` adds `SignalSchema` — one standard, cross-module
+signal contract (identity, market info, direction, price, a
+`context_id` reference, strategy info, quality info, an
+`explanation_id` reference, decision info, a `risk_id` reference) —
+and `validate_signal()`/`generate_signal_id()`.
+`signals/adapter.py` adds `from_signal_candidate()`, the one
+backward-compatibility bridge from an existing `SignalCandidate` to a
+`SignalSchema`. A standardization layer, not a new signal source:
+computes nothing, relays already-computed values
+(`SignalQualityResult`/`TradeDecision`, when supplied) or leaves an
+honest `None` reference (`context_id`/`explanation_id`/`risk_id`,
+none of which has a real id source anywhere in this codebase today).
+
+Distinct from `database/signal_record.py`'s pre-existing
+`SignalRecord` (untouched by this phase): `SignalRecord` is a
+persistence wrapper requiring a full `(SignalCandidate, TradeDecision,
+RiskResult)` triple; `SignalSchema` can exist earlier — right after
+Strategy Engine, before Decision Engine or Risk Manager have run
+(`decision` defaults `"PENDING"`) — and is never itself written to
+the database in this phase. Both independently reuse
+`database/signal_record.py`'s own `str(uuid.uuid4())`/
+`datetime.now(timezone.utc)` convention for identity/timestamp
+generation — not a new scheme.
+
+`SignalSchema.decision`'s vocabulary (`APPROVED`/`REJECTED`/
+`PENDING`) is deliberately distinct from `decision.models.DecisionAction`'s
+real values (`APPROVE`/`REJECT`/`NO_TRADE`) — `SignalSchema` can exist
+before a `TradeDecision` does at all, so `"PENDING"` is a real third
+state `DecisionAction` has no equivalent for.
+`signals/adapter.py`'s `_DECISION_ACTION_TO_STATUS` maps
+`APPROVE`→`"APPROVED"`, `REJECT`→`"REJECTED"`,
+`NO_TRADE`→`"REJECTED"` (collapsed — both mean no signal reaches the
+user) — the one place that translation happens.
+
+Deliberately has **zero pipeline wiring** in this phase, same posture
+as every other Phase A foundation module: `core/pipeline.py` never
+calls `from_signal_candidate()`. `signals/adapter.py` does not import
+`assets/` for its `asset_type` default either — `"GOLD"` is a literal
+matching `assets.asset_type.AssetType.GOLD.value`, documented, not a
+new cross-package dependency (Strategy Lifecycle, Asset Intelligence,
+and Configuration have each stayed similarly unwired from one another
+in their own phase). See `docs/SIGNAL_SCHEMA.md` for the full
+contract.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -481,7 +536,7 @@ exists in exactly the shape it does.
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology, plus a Strategy Lifecycle metadata layer (`lifecycle/`, Phase A11) — `StrategyDefinition`/`StrategyRegistry`, storing status/version/supported-assets metadata only, never running a strategy or generating a signal. |
-| `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — and Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria. |
+| `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria — and Signal Schema (`schema.py`/`adapter.py`, Phase A15) — one standard, JSON-serializable cross-module signal contract, computing nothing itself. |
 | `features/` | Feature Engineering foundation (Phase A10) — `MarketFeatures`, one standard snapshot per candidate for a future AI/backtester/ML/Failure-Analysis consumer. A standardization layer: relays `context/` and `signals/` (Signal Quality + Explainability) results as-is, computes nothing new. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |
 | `decision/` | Blends signal confidence, HTF bias, (inverted) AI risk score, and AI confidence — weighted, Phase A3 — into APPROVE/REJECT/NO_TRADE. |
@@ -502,6 +557,17 @@ import sweep):
 
 - `context/`, `strategies/`, `signals/` never import `telegram/`,
   `database/`, or `ai/`.
+- `signals/schema.py` (Phase A15) imports only the standard library —
+  no dependency on any other GoldBot package. `signals/adapter.py`
+  imports `signals.schema` (same package) plus, `TYPE_CHECKING`-only,
+  `signals.models`/`signals.signal_quality`/`decision.models` — this
+  is not a runtime `signals/` → `decision/` dependency (which would
+  invert `decision/`'s own existing `signals/` import below and
+  create a cycle); it exists purely for type hints, same pattern
+  `decision/`'s own `TYPE_CHECKING`-only imports already use. Neither
+  file imports `ai/`, `risk/`, `database/`, `telegram/`, `execution/`,
+  or `assets/` — `adapter.py`'s `asset_type` default is a literal
+  string, not an `assets/` import (see `docs/SIGNAL_SCHEMA.md`).
 - `configuration/` (Phase A13) imports only the root `config.Config`
   (cross-cutting, same as every layer's pre-existing `config.py`
   access) — no dependency on `data/`, `context/`, `strategies/`,
