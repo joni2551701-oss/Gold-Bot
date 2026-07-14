@@ -1,0 +1,83 @@
+# Signal Layer
+
+## Responsibility
+Defines the standard shape a signal is described in, at two levels:
+`SignalCandidate` (the live, in-pipeline proposal every strategy
+produces) and `SignalSchema` (Phase A15's standardized, cross-module,
+JSON-serializable record built from one). Grades a candidate's
+context alignment (Signal Quality Score) and turns that grade into
+human-readable reasons (Explainability) — computing nothing new
+itself in either case.
+
+```
+SignalCandidate
+        |
+        v
+   SignalSchema
+```
+
+## Input
+`signals.signal_engine.SignalEngine` takes a `ContextSnapshot` (routes
+to `strategies.StrategyManager`).
+`signals.signal_quality.compute_signal_quality()` takes a
+`SignalCandidate`, a `ContextSnapshot`, and an optional
+`HTFBiasResult`.
+`signals.explainability.explain_signal()` takes a `SignalCandidate`, a
+`ContextSnapshot`, and an already-computed `SignalQualityResult`.
+`signals.adapter.from_signal_candidate()` (Phase A15) takes a
+`SignalCandidate` (required) plus optional `SignalQualityResult`/
+`TradeDecision`/reference strings.
+
+## Output
+`List[SignalCandidate]` (`signal_engine.py`).
+`SignalQualityResult` (`grade`, `score`, `criteria_met`,
+`criteria_total`) — one per candidate.
+`SignalExplanation` (`direction`, `reasons`, `quality`, `confidence`)
+— one per candidate.
+`signals.schema.SignalSchema` — the standard record: identity
+(`signal_id`, `created_at`, `version`), `symbol`, `timeframe`,
+`direction`, price (`entry_price`, `stop_loss`, `take_profit`), a
+`context_id` reference, strategy info (`strategy_name`,
+`strategy_version`), quality info (`quality_grade`,
+`confidence_score`), an `explanation_id` reference, decision info
+(`decision`, `decision_score`), and a `risk_id` reference. See
+`docs/SIGNAL_SCHEMA.md` for the full field table.
+
+## Allowed Dependencies
+✅ `context/` — the `ContextSnapshot` every function here reads.
+✅ `strategies/` — `signal_engine.py` routes to `StrategyManager`.
+
+## Forbidden Dependencies
+❌ `ai/`, `decision/`, `risk/` — Signal Quality Score and
+Explainability are advisory only; neither is consumed by these layers
+in this phase (`"quality_results"`/`"explanations"` travel only as
+far as `TradingPipeline.run()`'s result dict).
+❌ `database/`, `telegram/` — `signals/schema.py` imports only the
+standard library; `signals/adapter.py` adds `TYPE_CHECKING`-only
+`decision.models` for a type hint, never a runtime dependency (would
+otherwise invert `decision/`'s own existing `signals/` import and
+create a cycle).
+
+## Error Contract
+`compute_signal_quality()`/`explain_signal()` never raise — a missing
+`HTFBiasResult`, an empty context, or a `SignalType.NONE` candidate
+all simply produce fewer criteria/reasons, never an exception.
+`validate_signal(schema)` (Phase A15) returns a structured
+`ValidationResult(valid, errors)` — never raises — for a malformed
+`SignalSchema` (missing required field, invalid direction, inverted
+BUY/SELL price ordering). Per `contracts/error_contract.md`, this is
+the model every module's own validation should follow: a
+`ValidationError` is a *result*, not a thrown exception, unless the
+caller explicitly needs a hard-fail lookup (see
+`assets.asset_registry.DuplicateAssetSymbolError`/
+`strategies.lifecycle.strategy_registry.DuplicateStrategyIdError` for
+the one legitimate raise-worthy case: a genuine programmer error,
+duplicate registration, not a data-quality issue).
+
+## Future Extension
+`SignalSchema.context_id`/`explanation_id`/`risk_id` are `None` hooks
+today — Phase A16 (Context Snapshot) gives `context_id` a real
+addressable value once a future phase joins the two; Explainability
+and Risk have no id field of their own yet either. Not wired into
+`core/pipeline.py` in this phase (`docs/SIGNAL_SCHEMA.md`'s
+"Integration" section names the intended future call site).
