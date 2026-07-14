@@ -33,6 +33,10 @@ They are never invoked from one another and share no in-memory state
 Market Data (data/)
       |
       v
+Data Quality (data/data_quality.py)  -- observational only, Phase A8
+      |                                  (never filters/blocks, see
+      |                                  docs/DATA_QUALITY.md)
+      v
 HTF Bias (context/htf_bias.py)   -- Daily/H4/H1 market-context only
       |     |                       (Phase A2; never itself a trade
       |     |                       decision, see docs/HTF_BIAS.md)
@@ -241,6 +245,24 @@ Not consumed by any strategy, `AIAnalyzer`, `DecisionEngine`, or
 "Significance for AI" section for why this is nonetheless a natural,
 already-available input for a future real AI provider.
 
+### Data Quality Engine (Phase A8)
+
+`data/data_quality.py`'s `assess_data_quality(candles, interval)`
+assesses the candle list `get_candles()` already returned — missing
+candles, duplicate timestamps, invalid OHLC, timeframe consistency —
+into a scored, structured `DataQualityResult`. Purely observational:
+never filters, blocks, or alters what `context/` receives, even when
+`valid` is `False`. New `core/pipeline.py` stage immediately after
+`market_data`; `"data_quality"` is the only new key in `run()`'s
+result dict.
+
+Deliberately does not reuse or modify `data/market_data.py`'s
+existing `_validate_and_clean()`/`_detect_missing_candles()` (private
+methods on a class that already feeds the live M15 pipeline path) —
+same reasoning as Wyckoff's relationship to `amd.py`
+(`docs/WYCKOFF.md`). Independently implements its own checks instead;
+full detail and the exact penalty table: `docs/DATA_QUALITY.md`.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -251,7 +273,7 @@ exists in exactly the shape it does.
 | Module | Responsibility |
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets. |
-| `data/` | Market data fetch and normalization. |
+| `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, and Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade. |

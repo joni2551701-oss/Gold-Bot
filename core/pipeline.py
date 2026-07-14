@@ -2,6 +2,7 @@ import time
 from typing import List
 
 from data.market_data import MarketDataNormalizer, MarketSnapshot
+from data.data_quality import assess_data_quality, DataQualityResult
 from context.context_orchestrator import build_context_snapshot
 from context.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
 from signals.signal_engine import SignalEngine
@@ -29,9 +30,19 @@ SLOW_OPERATION_THRESHOLD_SECONDS = 2.0
 
 class TradingPipeline:
     """
-    Wires Data -> HTF Bias -> Context -> Signal -> Signal Quality ->
-    AI -> Decision -> Risk -> Signal Formatter -> Telegram Delivery ->
-    Persistence into a single, runnable flow.
+    Wires Data -> Data Quality -> HTF Bias -> Context -> Signal ->
+    Signal Quality -> AI -> Decision -> Risk -> Signal Formatter ->
+    Telegram Delivery -> Persistence into a single, runnable flow.
+
+    Data Quality (Phase A8, data/data_quality.py) assesses the candle
+    list get_candles() already returned -- missing candles, duplicate
+    timestamps, invalid OHLC, timeframe consistency -- into a scored,
+    structured DataQualityResult. Purely observational: it never
+    filters, blocks, or alters the candles the rest of the cycle uses,
+    even when data_quality.valid is False. Returned in run()'s result
+    dict ("data_quality") for a future, separately-approved phase to
+    consume (e.g. skipping a cycle below some quality threshold -- not
+    implemented here).
 
     Signal Quality Score (Phase A4, signals/signal_quality.py) grades
     each signal candidate's alignment with HTF Bias and existing
@@ -151,6 +162,20 @@ class TradingPipeline:
         )
         self._log_stage("market_data", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Fetched {len(candles)} candles.")
+
+        # Data Quality (Phase A8): assesses the candle list
+        # get_candles() already returned -- reports (never filters
+        # further) missing candles, duplicates, invalid OHLC, and
+        # timeframe consistency. Purely observational: never blocks or
+        # alters the candles the rest of the cycle uses, even when
+        # data_quality.valid is False.
+        t0 = time.perf_counter()
+        data_quality: DataQualityResult = assess_data_quality(candles, self.interval)
+        self._log_stage("data_quality", time.perf_counter() - t0)
+        logger.info(
+            f"[{self.symbol}|{self.interval}] Data quality: valid={data_quality.valid} "
+            f"score={data_quality.score:.2f} issues={list(data_quality.issues)}"
+        )
 
         # HTF Bias (Phase A2): a separate, best-effort fetch of the
         # Daily/H4/H1 snapshot, independent of the execution-timeframe
@@ -299,6 +324,7 @@ class TradingPipeline:
 
         return {
             "context": context,
+            "data_quality": data_quality,
             "htf_bias": htf_bias,
             "signals": signal_candidates,
             "quality_results": quality_results,
