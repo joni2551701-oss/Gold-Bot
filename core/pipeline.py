@@ -1,8 +1,9 @@
 import time
 from typing import List
 
-from data.market_data import MarketDataNormalizer
+from data.market_data import MarketDataNormalizer, MarketSnapshot
 from context.context_orchestrator import build_context_snapshot
+from context.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
 from signals.signal_engine import SignalEngine
 from ai.ai_analyzer import AIAnalyzer, AIAnalysisResult
 from decision.decision_engine import DecisionEngine
@@ -27,9 +28,18 @@ SLOW_OPERATION_THRESHOLD_SECONDS = 2.0
 
 class TradingPipeline:
     """
-    Wires Data -> Context -> Signal -> AI -> Decision -> Risk ->
-    Signal Formatter -> Telegram Delivery -> Persistence into a
-    single, runnable flow.
+    Wires Data -> HTF Bias -> Context -> Signal -> AI -> Decision ->
+    Risk -> Signal Formatter -> Telegram Delivery -> Persistence into
+    a single, runnable flow.
+
+    HTF Bias (Phase A2, context/htf_bias.py) describes the higher-
+    timeframe (Daily/H4/H1) market state only -- it is never passed
+    into Strategies, the AI Analyzer, the Decision Engine, or the Risk
+    Manager, and it never blocks or alters any existing stage. It is
+    returned in run()'s result dict ("htf_bias") for a future,
+    separately-approved phase (Decision Engine v2) to consume. A
+    failure fetching HTF data degrades to HTFBias.UNKNOWN (logged),
+    never raises, and never affects the rest of the cycle.
 
     Execution and TP/SL Monitoring are intentionally not part of this
     pipeline (Phase 27.2+). Risk Layer output is a sizing suggestion
@@ -112,6 +122,27 @@ class TradingPipeline:
         )
         self._log_stage("market_data", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Fetched {len(candles)} candles.")
+
+        # HTF Bias (Phase A2): a separate, best-effort fetch of the
+        # Daily/H4/H1 snapshot, independent of the execution-timeframe
+        # candles fetched above. Never raises -- any fetch/compute
+        # failure here degrades to HTFBias.UNKNOWN rather than
+        # affecting the rest of the cycle, since HTF Bias is
+        # context-only and nothing downstream depends on it yet.
+        t0 = time.perf_counter()
+        try:
+            htf_snapshot = self.data_normalizer.get_snapshot(
+                self.symbol, list(SUPPORTED_HTF_TIMEFRAMES)
+            )
+            htf_bias: HTFBiasResult = compute_htf_bias(htf_snapshot)
+        except Exception as e:
+            logger.warning(f"[{self.symbol}|{self.interval}] HTF bias computation failed: {e}")
+            htf_bias = compute_htf_bias(MarketSnapshot(symbol=self.symbol))
+        self._log_stage("htf_bias", time.perf_counter() - t0)
+        logger.info(
+            f"[{self.symbol}|{self.interval}] HTF bias: {htf_bias.bias.value} "
+            f"confidence={htf_bias.confidence:.2f} quality_score={htf_bias.quality_score:.2f}"
+        )
 
         t0 = time.perf_counter()
         context = build_context_snapshot(candles)
@@ -219,6 +250,7 @@ class TradingPipeline:
 
         return {
             "context": context,
+            "htf_bias": htf_bias,
             "signals": signal_candidates,
             "ai_results": ai_results,
             "decisions": decisions,

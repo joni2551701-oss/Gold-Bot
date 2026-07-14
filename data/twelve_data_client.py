@@ -32,7 +32,10 @@ class TwelveDataClient:
         "M5": "5min",
         "M15": "15min",
         "H1": "1h",
-        "H4": "4h"
+        "H4": "4h",
+        # "Daily" added for the HTF Bias layer (Phase A2) -- context/htf_bias.py
+        # is the only caller of this interval today.
+        "Daily": "1day"
     }
 
     def __init__(self):

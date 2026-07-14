@@ -144,6 +144,7 @@ def mock_pipeline():
     `ai_results` is a same-length list[AIAnalysisResult].
     """
     from core.pipeline import TradingPipeline
+    from data.market_data import MarketSnapshot
 
     def _make(candidates, ai_results):
         pipeline = TradingPipeline(
@@ -152,6 +153,10 @@ def mock_pipeline():
         )
         pipeline.signal_engine.generate_signals = lambda context: candidates
         pipeline.data_normalizer.get_candles = lambda *a, **k: []
+        # Phase A2: run() also fetches an HTF (Daily/H4/H1) snapshot
+        # independently of get_candles() above -- stub it too so this
+        # fixture's "no live network calls" guarantee still holds.
+        pipeline.data_normalizer.get_snapshot = lambda *a, **k: MarketSnapshot(symbol="XAUUSD")
         results_iter = iter(ai_results)
         pipeline.ai_analyzer.analyze = lambda candidate, context: next(results_iter)
         return pipeline

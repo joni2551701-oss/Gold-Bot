@@ -28,7 +28,13 @@ class MarketDataNormalizer:
             "M5": timedelta(minutes=5),
             "M15": timedelta(minutes=15),
             "H1": timedelta(hours=1),
-            "H4": timedelta(hours=4)
+            "H4": timedelta(hours=4),
+            # "Daily" added for the HTF Bias layer (Phase A2) so
+            # get_snapshot()'s existing gap detection covers it too,
+            # instead of silently skipping it (the fallback for an
+            # interval missing from this dict is "no gap detection
+            # performed" -- see _detect_missing_candles()).
+            "Daily": timedelta(days=1)
         }
 
     def _validate_and_clean(self, candles: List[Candle], symbol: str, interval: str) -> List[Candle]:

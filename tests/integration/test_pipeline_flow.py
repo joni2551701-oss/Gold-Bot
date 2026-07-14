@@ -97,10 +97,12 @@ def test_no_candidates_produces_no_telegram_messages(mock_pipeline):
 def test_persist_signals_false_does_not_write_to_database(mock_signal_candidate, mock_ai_result):
     """send_notifications/persist_signals both default False -- no side effects unless explicitly enabled."""
     from core.pipeline import TradingPipeline
+    from data.market_data import MarketSnapshot
 
     pipeline = TradingPipeline(symbol="XAUUSD", interval="M15", outputsize=200)
     pipeline.signal_engine.generate_signals = lambda context: [mock_signal_candidate()]
     pipeline.data_normalizer.get_candles = lambda *a, **k: []
+    pipeline.data_normalizer.get_snapshot = lambda *a, **k: MarketSnapshot(symbol="XAUUSD")
     pipeline.ai_analyzer.analyze = lambda candidate, context: mock_ai_result(approved=True, confidence=0.95)
 
     result = pipeline.run()

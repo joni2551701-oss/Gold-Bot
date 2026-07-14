@@ -33,6 +33,12 @@ They are never invoked from one another and share no in-memory state
 Market Data (data/)
       |
       v
+HTF Bias (context/htf_bias.py)   -- Daily/H4/H1 market-context only
+      |                             (Phase A2; never a trade decision,
+      |                             see docs/HTF_BIAS.md; result is
+      |                             carried in the pipeline's return
+      |                             dict, not yet consumed downstream)
+      v
 Context Engine (context/)        -- SMC structure detection
       |
       v
@@ -70,7 +76,7 @@ exists in exactly the shape it does.
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets. |
 | `data/` | Market data fetch and normalization. |
-| `context/` | Pure SMC market-structure detection functions. |
+| `context/` | Pure SMC market-structure detection functions, plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology. |
 | `signals/` | The `SignalCandidate` data contract and strategy aggregation. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |
