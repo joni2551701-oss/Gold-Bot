@@ -47,6 +47,11 @@ Context Engine (context/)        |  -- SMC structure detection:
       |     |                       Session (Phase A6), Market Regime
       |     |                       (Phase A7, reads htf_bias too --
       |     |                       see below) -- see below
+      |     |
+      |     '-- Feature Engineering (features/feature_engine.py)
+      |          -- one MarketFeatures snapshot per cycle (Phase
+      |          A10; reused data only, see docs/FEATURE_ENGINEERING.md;
+      |          not consumed below in this phase)
       v     |
 Strategies (strategies/)         |  -- 3 independent SMC methodologies
       |     |
@@ -292,6 +297,33 @@ yet to report. Not consumed by `AIAnalyzer`, `DecisionEngine`,
 `docs/EXPLAINABILITY.md`'s "How AI will use this in the future"
 section.
 
+### Feature Engineering Foundation (Phase A10)
+
+`features/feature_engine.py`'s `compute_market_features(context,
+htf_bias)` builds one `MarketFeatures` snapshot per cycle (`atr`,
+`volatility`, `trend_strength`, `session`, `regime`, `htf_bias`,
+`liquidity_distance`, `volume`) — a standard, flat shape for a future
+AI Analyzer, backtester, or ML dataset exporter, entirely from data
+already computed elsewhere: `volatility`/`trend_strength`/`regime` are
+direct reads of Market Regime's own classification (Phase A7), `atr`
+reuses Session Intelligence's average-range statistic (Phase A6,
+explicitly documented as a range proxy, not a textbook Wilder ATR),
+`session` reuses the latest `SessionEvent`, and `liquidity_distance`
+is computed from already-detected `liquidity_zones` — no new
+indicator, no new detection logic. `volume` is always `None`: this
+codebase has no volume data source, and this field is an explicit,
+honest hook rather than a fabricated value, matching Wyckoff's
+(Phase A5) own `_volume_confirms()` hook.
+
+New stage immediately after `context`, computed once per cycle (like
+`htf_bias`/`market_regime`, not once per candidate like Signal Quality
+Score/Explainability); `"features"` is the only new key in `run()`'s
+result dict. Not consumed by any `strategies/*.py` file,
+`signals/signal_quality.py`'s scoring, `AIAnalyzer`, `DecisionEngine`,
+or `RiskManager` in this phase — see `docs/FEATURE_ENGINEERING.md`'s
+"Significance for AI" section for why this is nonetheless a natural,
+already-available input for a future real AI provider.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -304,6 +336,7 @@ exists in exactly the shape it does.
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
+| `features/` | Feature Engineering foundation (Phase A10) — `MarketFeatures`, one standard snapshot per cycle for a future AI/backtester/ML consumer, built entirely from already-computed `context/` data. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — and Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |
@@ -325,6 +358,10 @@ import sweep):
 
 - `context/`, `strategies/`, `signals/` never import `telegram/`,
   `database/`, or `ai/`.
+- `features/` imports only `context/` (`context.market_regime`,
+  `context.session`) and its own `features.feature_model` — never
+  `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`, `database/`,
+  or `telegram/`.
 - `ai/` never imports `database/` or `telegram/`.
 - `decision/` imports `ai/` (for `AIAnalysisResult`), `signals/` (for
   `SignalCandidate`), and, as of Phase A3, `context/` (for `HTFBias` —

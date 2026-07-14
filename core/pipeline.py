@@ -5,6 +5,8 @@ from data.market_data import MarketDataNormalizer, MarketSnapshot
 from data.data_quality import assess_data_quality, DataQualityResult
 from context.context_orchestrator import build_context_snapshot
 from context.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
+from features.feature_engine import compute_market_features
+from features.feature_model import MarketFeatures
 from signals.signal_engine import SignalEngine
 from signals.signal_quality import compute_signal_quality, SignalQualityResult
 from signals.explainability import explain_signal, SignalExplanation
@@ -31,10 +33,21 @@ SLOW_OPERATION_THRESHOLD_SECONDS = 2.0
 
 class TradingPipeline:
     """
-    Wires Data -> Data Quality -> HTF Bias -> Context -> Signal ->
-    Signal Quality -> Explainability -> AI -> Decision -> Risk ->
-    Signal Formatter -> Telegram Delivery -> Persistence into a
-    single, runnable flow.
+    Wires Data -> Data Quality -> HTF Bias -> Context -> Feature
+    Engineering -> Signal -> Signal Quality -> Explainability -> AI ->
+    Decision -> Risk -> Signal Formatter -> Telegram Delivery ->
+    Persistence into a single, runnable flow.
+
+    Feature Engineering (Phase A10, features/feature_engine.py) builds
+    one MarketFeatures snapshot per cycle (atr, volatility,
+    trend_strength, session, regime, htf_bias, liquidity_distance,
+    volume) entirely from already-computed data -- no new indicator.
+    volume is always None: this codebase has no volume data source,
+    and this field is an explicit, honest hook rather than a
+    fabricated value. Purely advisory: not passed into
+    SignalEngine/AIAnalyzer/DecisionEngine/RiskManager in this phase.
+    Returned in run()'s result dict ("features") for a future AI
+    Analyzer, backtester, or ML dataset exporter to consume.
 
     Explainability (Phase A9, signals/explainability.py) turns each
     signal candidate's already-computed context into human-readable
@@ -215,6 +228,21 @@ class TradingPipeline:
         context = build_context_snapshot(candles, htf_bias)
         self._log_stage("context", time.perf_counter() - t0)
 
+        # Feature Engineering (Phase A10): one MarketFeatures snapshot
+        # per cycle (not per-candidate, like htf_bias/market_regime --
+        # it describes the overall market context at this point, not
+        # a specific signal). Built entirely from already-computed
+        # data; no new indicator. volume is always None -- no data
+        # source exists, never fabricated.
+        t0 = time.perf_counter()
+        features: MarketFeatures = compute_market_features(context, htf_bias)
+        self._log_stage("features", time.perf_counter() - t0)
+        logger.info(
+            f"[{self.symbol}|{self.interval}] Features: regime={features.regime} "
+            f"session={features.session} volatility={features.volatility} "
+            f"trend_strength={features.trend_strength:.2f}"
+        )
+
         # NOTE: SignalEngine.generate_signals() already runs StrategyManager
         # internally. StrategyManager must not be called separately here,
         # or every strategy would execute twice against the same context.
@@ -350,6 +378,7 @@ class TradingPipeline:
 
         return {
             "context": context,
+            "features": features,
             "data_quality": data_quality,
             "htf_bias": htf_bias,
             "signals": signal_candidates,

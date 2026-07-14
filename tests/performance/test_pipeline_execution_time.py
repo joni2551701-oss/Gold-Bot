@@ -74,5 +74,5 @@ def test_pipeline_stage_timing_is_logged(mock_pipeline, mock_signal_candidate, m
     messages = "\n".join(caplog.messages)
     assert "pipeline_started" in messages
     assert "pipeline_finished" in messages
-    for stage in ("market_data", "data_quality", "htf_bias", "context", "signal", "signal_quality", "explainability", "ai", "decision", "risk", "telegram_format", "database"):
+    for stage in ("market_data", "data_quality", "htf_bias", "context", "features", "signal", "signal_quality", "explainability", "ai", "decision", "risk", "telegram_format", "database"):
         assert f"stage={stage}" in messages
