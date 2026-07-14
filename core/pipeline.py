@@ -33,21 +33,29 @@ SLOW_OPERATION_THRESHOLD_SECONDS = 2.0
 
 class TradingPipeline:
     """
-    Wires Data -> Data Quality -> HTF Bias -> Context -> Feature
-    Engineering -> Signal -> Signal Quality -> Explainability -> AI ->
+    Wires Data -> Data Quality -> HTF Bias -> Context -> Signal ->
+    Signal Quality -> Explainability -> Feature Engineering -> AI ->
     Decision -> Risk -> Signal Formatter -> Telegram Delivery ->
     Persistence into a single, runnable flow.
 
-    Feature Engineering (Phase A10, features/feature_engine.py) builds
-    one MarketFeatures snapshot per cycle (atr, volatility,
-    trend_strength, session, regime, htf_bias, liquidity_distance,
-    volume) entirely from already-computed data -- no new indicator.
-    volume is always None: this codebase has no volume data source,
-    and this field is an explicit, honest hook rather than a
-    fabricated value. Purely advisory: not passed into
+    Feature Engineering (Phase A10, features/feature_engine.py) is a
+    standardization layer, not an analysis layer -- it does not
+    analyze the market itself, it turns results already produced by
+    Context/Signal Quality/Explainability into one standard
+    MarketFeatures object per candidate (asset, timeframe, htf_bias,
+    market_regime, session, signal_quality, confidence, volatility,
+    trend_strength, liquidity_distance, volume, atr) for a future AI
+    Analyzer, backtester, or ML dataset exporter. Runs at the END of
+    the per-candidate analysis chain -- after Signal Quality Score and
+    Explainability, since signal_quality/confidence are relayed
+    directly from SignalExplanation, not recomputed. volume and atr
+    are always None: this codebase has no volume data source, and a
+    real ATR would be a new indicator, out of scope for a
+    standardization-only phase -- both are explicit, honest hooks
+    rather than fabricated values. Purely advisory: not passed into
     SignalEngine/AIAnalyzer/DecisionEngine/RiskManager in this phase.
-    Returned in run()'s result dict ("features") for a future AI
-    Analyzer, backtester, or ML dataset exporter to consume.
+    Returned in run()'s result dict ("features", one per candidate,
+    same order as "signals") for a future consumer to use.
 
     Explainability (Phase A9, signals/explainability.py) turns each
     signal candidate's already-computed context into human-readable
@@ -228,21 +236,6 @@ class TradingPipeline:
         context = build_context_snapshot(candles, htf_bias)
         self._log_stage("context", time.perf_counter() - t0)
 
-        # Feature Engineering (Phase A10): one MarketFeatures snapshot
-        # per cycle (not per-candidate, like htf_bias/market_regime --
-        # it describes the overall market context at this point, not
-        # a specific signal). Built entirely from already-computed
-        # data; no new indicator. volume is always None -- no data
-        # source exists, never fabricated.
-        t0 = time.perf_counter()
-        features: MarketFeatures = compute_market_features(context, htf_bias)
-        self._log_stage("features", time.perf_counter() - t0)
-        logger.info(
-            f"[{self.symbol}|{self.interval}] Features: regime={features.regime} "
-            f"session={features.session} volatility={features.volatility} "
-            f"trend_strength={features.trend_strength:.2f}"
-        )
-
         # NOTE: SignalEngine.generate_signals() already runs StrategyManager
         # internally. StrategyManager must not be called separately here,
         # or every strategy would execute twice against the same context.
@@ -283,6 +276,24 @@ class TradingPipeline:
             for candidate, quality in zip(signal_candidates, quality_results)
         ]
         self._log_stage("explainability", time.perf_counter() - t0)
+
+        # Feature Engineering (Phase A10, corrected): a standardization
+        # layer, not an analysis layer -- runs at the end of the
+        # per-candidate analysis chain (after Signal Quality Score and
+        # Explainability), turning their already-computed results into
+        # one MarketFeatures snapshot per candidate. atr/volume stay
+        # explicit None hooks -- no new indicator, no fabricated value.
+        t0 = time.perf_counter()
+        features: List[MarketFeatures] = [
+            compute_market_features(context, explanation, self.symbol, self.interval, htf_bias)
+            for explanation in explanations
+        ]
+        self._log_stage("features", time.perf_counter() - t0)
+        if features:
+            logger.info(
+                f"[{self.symbol}|{self.interval}] Features: "
+                f"{[(f.market_regime, f.session, f.signal_quality) for f in features]}"
+            )
 
         t0 = time.perf_counter()
         ai_results: List[AIAnalysisResult] = [
@@ -378,12 +389,12 @@ class TradingPipeline:
 
         return {
             "context": context,
-            "features": features,
             "data_quality": data_quality,
             "htf_bias": htf_bias,
             "signals": signal_candidates,
             "quality_results": quality_results,
             "explanations": explanations,
+            "features": features,
             "ai_results": ai_results,
             "decisions": decisions,
             "risk_results": risk_results,
