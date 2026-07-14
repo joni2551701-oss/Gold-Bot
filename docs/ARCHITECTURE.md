@@ -115,6 +115,14 @@ this phase. It exists as a standalone metadata layer alongside
 `Market Data (data/)` and `Strategies (strategies/)`, unconnected to
 either today — see its own section below.
 
+Configuration & Feature Flags (`configuration/`, Phase A13) is
+likewise **not** shown in the diagram above: it sits *above*
+`config.py` (a cross-cutting dependency every layer may already read,
+same as `core/`), not inside the Data→...→Database flow, and
+`core/pipeline.py` does not construct, read, or import
+`Environment`/`ApplicationSettings`/`FeatureFlags` in this phase —
+see its own section below.
+
 ### Decision Engine v2 (Phase A3)
 
 `decision/decision_engine.py`'s `DecisionEngine.evaluate()` no longer
@@ -416,6 +424,38 @@ intelligence is computed for any asset anywhere in this codebase
 today — explicit, honest placeholders, never fabricated values. See
 `docs/ASSET_INTELLIGENCE.md` for the full contract.
 
+### Configuration & Feature Flags Foundation (Phase A13)
+
+`configuration/` adds `Environment` (`DEVELOPMENT`/`TESTING`/
+`PRODUCTION`, plus `resolve_environment()`, a safe adapter that
+degrades a missing/unrecognized value to `DEVELOPMENT` rather than
+raising), `ApplicationSettings` (`environment`, `symbol`,
+`default_timeframe`, `timezone`, plus `build_settings_from_config()`,
+the minimal adapter from the existing `config.Config`), and
+`FeatureFlags` (`enable_ai`/`enable_crypto`/`enable_swing`/
+`enable_ai_memory`/`enable_replay`, every default `False`) — a
+foundation layer, not a rewrite of `config.py`.
+
+`config.py` is entirely untouched: `Config.APP_ENV`/`Config.TIMEZONE`
+are read (never written) by `build_settings_from_config()`;
+`Config.DB_PATH`/`Config.TIMEFRAME_HISTORY`/`Config.DEBUG`/
+`Config.BASE_DIR` are not read by `configuration/` at all. `symbol`/
+`default_timeframe` reuse the exact `"XAUUSD"`/`"M15"` literals
+`main.py`'s `TradingPipeline(...)` already uses (`config.py` has no
+constant of its own for either) — the same real-value-reuse pattern
+Phase A11/A12 followed. Every `FeatureFlags` default is `False`: none
+of the five reserved flags (AI, Crypto, Swing, AI Memory, Replay) is
+wired to an actual feature — `ai/ai_analyzer.py` stays a stub, no
+Crypto/swing capability exists, regardless of flag value.
+
+Deliberately has **zero pipeline wiring** in this phase, same posture
+as Strategy Lifecycle and Asset Intelligence: `core/pipeline.py` never
+constructs, reads, or imports `Environment`/`ApplicationSettings`/
+`FeatureFlags`. `configuration/` imports only `config.Config` — no
+dependency on `data/`, `context/`, `strategies/`, `signals/`, `ai/`,
+`decision/`, `risk/`, `assets/`, `database/`, or `telegram/`. See
+`docs/CONFIGURATION_MANAGEMENT.md` for the full contract.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -426,6 +466,7 @@ exists in exactly the shape it does.
 | Module | Responsibility |
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets. |
+| `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
@@ -451,6 +492,12 @@ import sweep):
 
 - `context/`, `strategies/`, `signals/` never import `telegram/`,
   `database/`, or `ai/`.
+- `configuration/` (Phase A13) imports only the root `config.Config`
+  (cross-cutting, same as every layer's pre-existing `config.py`
+  access) — no dependency on `data/`, `context/`, `strategies/`,
+  `signals/`, `ai/`, `decision/`, `risk/`, `assets/`, `database/`, or
+  `telegram/`. `config.py` itself has zero dependency on
+  `configuration/` — a one-directional relationship, never circular.
 - `assets/` (Phase A12) imports nothing outside itself — no
   dependency on `data/`, `context/`, `strategies/` (including
   `strategies/lifecycle/`), `signals/`, `ai/`, `decision/`, `risk/`,
