@@ -108,6 +108,13 @@ node as a separate, standalone metadata layer over the same three
 strategies, for a future consumer (Phase 59, Analytics, AI Assistant)
 to query directly — see its own section below.
 
+Asset Intelligence (`assets/`, Phase A12) is likewise **not** shown in
+the diagram above, for the same reason: `core/pipeline.py` never
+constructs, reads, or imports `AssetRegistry`/`AssetDefinition` in
+this phase. It exists as a standalone metadata layer alongside
+`Market Data (data/)` and `Strategies (strategies/)`, unconnected to
+either today — see its own section below.
+
 ### Decision Engine v2 (Phase A3)
 
 `decision/decision_engine.py`'s `DecisionEngine.evaluate()` no longer
@@ -376,6 +383,39 @@ per-strategy aggregation) — explicit, honest hooks for Phase 59
 Validation to populate, never fabricated values. See
 `docs/STRATEGY_LIFECYCLE.md` for the full contract.
 
+### Asset Intelligence Foundation (Phase A12)
+
+`assets/` adds `AssetDefinition` (`symbol`, `name`, `asset_type`,
+`market`, `base_currency`, `quote_currency`, plus seven `None` hooks
+— `trading_session`/`volatility_class`/`news_sensitivity`/
+`fundamental_profile`/`session_profile`/`risk_profile`/
+`news_profile`), `AssetType` (`GOLD`/`FOREX`/`CRYPTO`/`INDEX`/
+`STOCK`/`UNKNOWN`), and `AssetRegistry` (`register()`/`get()`/
+`list()`/`by_type()`) — a metadata layer, not a market integration.
+`build_default_registry()` registers `GOLD_ASSET`
+(`assets/profiles/gold.py`), the one asset this codebase actually
+trades today — no Forex/Crypto/Index/Stock data provider, API, or
+profile is added; those `AssetType` values are reserved, not
+implemented.
+
+Deliberately has **zero pipeline wiring** in this phase, same posture
+as Strategy Lifecycle: `core/pipeline.py` never constructs, reads, or
+imports `AssetRegistry`/`AssetDefinition`. `assets/` itself imports
+nothing outside itself (not even `data/`, `strategies/`, or
+`strategies/lifecycle/` — the Strategy↔Asset relationship is
+documentation-only in this phase, see `docs/ASSET_INTELLIGENCE.md`).
+`GOLD_ASSET.base_currency="XAU"`/`quote_currency="USD"` deliberately
+differs from the Director brief's own illustrative
+`base_currency="USD"` example — `data/twelve_data_client.py`'s
+`_format_symbol()` already splits `"XAUUSD"` into `"XAU/USD"`, so
+`"XAU"`/`"USD"` is the value already real in this codebase, not a new
+invention (the same kind of correction Phase A11 made for
+`supported_assets=["XAUUSD"]` over the brief's `["GOLD"]`). All seven
+`None` hooks stay `None`: no session/volatility/news/fundamental
+intelligence is computed for any asset anywhere in this codebase
+today — explicit, honest placeholders, never fabricated values. See
+`docs/ASSET_INTELLIGENCE.md` for the full contract.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -386,6 +426,7 @@ exists in exactly the shape it does.
 | Module | Responsibility |
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets. |
+| `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology, plus a Strategy Lifecycle metadata layer (`lifecycle/`, Phase A11) — `StrategyDefinition`/`StrategyRegistry`, storing status/version/supported-assets metadata only, never running a strategy or generating a signal. |
@@ -410,6 +451,11 @@ import sweep):
 
 - `context/`, `strategies/`, `signals/` never import `telegram/`,
   `database/`, or `ai/`.
+- `assets/` (Phase A12) imports nothing outside itself — no
+  dependency on `data/`, `context/`, `strategies/` (including
+  `strategies/lifecycle/`), `signals/`, `ai/`, `decision/`, `risk/`,
+  `execution/`, `database/`, or `telegram/`. `asset_registry.py`
+  imports `assets.profiles.gold` (same package) only.
 - `features/` imports `context/` (`context.market_regime`) and
   `signals/` (for `SignalExplanation`, `TYPE_CHECKING`-only) plus its
   own `features.feature_model` — never `strategies/`, `ai/`,
