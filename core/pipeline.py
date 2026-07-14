@@ -43,6 +43,18 @@ class TradingPipeline:
     one per candidate, same order as "signals") for a future,
     separately-approved phase to consume.
 
+    Market Regime (Phase A7, context/market_regime.py) classifies
+    overall market character (TRENDING/RANGE/ACCUMULATION/
+    DISTRIBUTION/HIGH_VOLATILITY/LOW_VOLATILITY/UNKNOWN) from
+    already-computed Structure, Wyckoff events, session/volatility
+    data, and (if available) HTF Bias -- htf_bias is passed into
+    build_context_snapshot() specifically so Market Regime can read it
+    (the only reason ContextSnapshot construction now takes htf_bias
+    at all; every other detector still only reads candles). Purely
+    advisory: `context.market_regime` is part of ContextSnapshot, not
+    consumed by any strategy, AIAnalyzer, DecisionEngine, or
+    RiskManager in this phase.
+
     HTF Bias (Phase A2, context/htf_bias.py) describes the higher-
     timeframe (Daily/H4/H1) market state only -- it is never passed
     into Strategies or the AI Analyzer, and it never blocks or alters
@@ -162,7 +174,7 @@ class TradingPipeline:
         )
 
         t0 = time.perf_counter()
-        context = build_context_snapshot(candles)
+        context = build_context_snapshot(candles, htf_bias)
         self._log_stage("context", time.perf_counter() - t0)
 
         # NOTE: SignalEngine.generate_signals() already runs StrategyManager

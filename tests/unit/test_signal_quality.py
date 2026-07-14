@@ -18,6 +18,7 @@ from context.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
 from context.order_block import OrderBlock, OrderBlockType
 from context.fvg import FairValueGap, FvgType
 from context.htf_bias import HTFBias, HTFBiasResult
+from context.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
 
 
 TS = datetime(2024, 1, 1, tzinfo=timezone.utc)
@@ -36,6 +37,9 @@ def _empty_context(**overrides) -> ContextSnapshot:
         amd_events=(),
         wyckoff_events=(),
         session_events=(),
+        market_regime=MarketRegimeResult(
+            regime=MarketRegime.UNKNOWN, direction=RegimeDirection.NEUTRAL, confidence=0.0, reasons=[],
+        ),
     )
     base.update(overrides)
     return ContextSnapshot(**base)

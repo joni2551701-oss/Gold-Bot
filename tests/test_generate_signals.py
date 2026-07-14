@@ -13,12 +13,13 @@ Scope (per Director specification):
   any) is a SignalCandidate. An empty list is a PASS.
 
 Contract source (context/context_orchestrator.py): ContextSnapshot's
-11 fields (Phase A5: added wyckoff_events; Phase A6: added
-session_events) are all required (no defaults) -- every field must be
-supplied, even as an empty list.
+12 fields (Phase A5: added wyckoff_events; Phase A6: added
+session_events; Phase A7: added market_regime) are all required (no
+defaults) -- every field must be supplied, even as an empty list.
 """
 
 from context.context_orchestrator import ContextSnapshot
+from context.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
 from signals.signal_engine import SignalEngine
 from signals.models import SignalCandidate
 
@@ -36,6 +37,9 @@ def _empty_context() -> ContextSnapshot:
         amd_events=[],
         wyckoff_events=[],
         session_events=[],
+        market_regime=MarketRegimeResult(
+            regime=MarketRegime.UNKNOWN, direction=RegimeDirection.NEUTRAL, confidence=0.0, reasons=[],
+        ),
     )
 
 

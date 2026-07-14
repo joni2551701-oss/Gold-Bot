@@ -3,10 +3,11 @@
 ## Purpose
 Pure Smart Money Concepts (SMC) market-structure detection for the
 execution timeframe (including Wyckoff Spring/Upthrust detection,
-`wyckoff.py`, Phase A5, and session classification, `session.py`,
-Phase A6), plus HTF Bias (`htf_bias.py`, Phase A2) — a separate,
-higher-timeframe market-context classification. All stateless,
-read-only detection code; none makes a trading decision.
+`wyckoff.py`, Phase A5; session classification, `session.py`, Phase
+A6; and market regime classification, `market_regime.py`, Phase A7),
+plus HTF Bias (`htf_bias.py`, Phase A2) — a separate, higher-timeframe
+market-context classification. All stateless, read-only detection
+code; none makes a trading decision.
 
 ## Flow
 ```
@@ -15,9 +16,12 @@ Market Data
       |-- get_candles() (execution timeframe)      -- get_snapshot() (Daily/H4/H1)
       |         |                                             |
       v         |                                             v
-Context Engine <-'                                       htf_bias.py
+Context Engine <-----------------------------------------htf_bias.py
       |  swings, BOS/CHoCH, liquidity, OB, FVG,               |
-      |  AMD, Wyckoff (A5), Session (A6, in ContextSnapshot)   |
+      |  AMD, Wyckoff (A5), Session (A6),                     |
+      |  Market Regime (A7 -- the only detector               |
+      |  that also reads htf_bias, passed into                |
+      |  build_context_snapshot()) -- all in ContextSnapshot   |
       v                                                        v
 Strategies                          TradingPipeline.run()'s result dict
                                      ("htf_bias") -> decision/'s
@@ -28,13 +32,15 @@ Strategies                          TradingPipeline.run()'s result dict
 ## Responsibilities
 Swing points, BOS/CHoCH, liquidity sweeps, order blocks, fair value
 gaps, AMD (Accumulation-Manipulation-Distribution) cycle detection,
-Wyckoff Spring/Upthrust detection (`wyckoff.py`, Phase A5), and
-session classification (`session.py`, Phase A6) — all as stateless
-functions over a candle sequence, all part of `ContextSnapshot`.
-`htf_bias.py` additionally classifies Daily/H4/H1 direction using the
-same swing/structure functions, independently of `ContextSnapshot` (a
-different timeframe than everything else in this package operates
-on).
+Wyckoff Spring/Upthrust detection (`wyckoff.py`, Phase A5), session
+classification (`session.py`, Phase A6), and market regime
+classification (`market_regime.py`, Phase A7) — all as stateless
+functions, all part of `ContextSnapshot`. `htf_bias.py` additionally
+classifies Daily/H4/H1 direction using the same swing/structure
+functions, independently of `ContextSnapshot` (a different timeframe
+than everything else in this package operates on) — `market_regime.py`
+is the one exception that reads both `ContextSnapshot`-shaped data
+*and* an externally-supplied `HTFBiasResult`, see below.
 
 ### Why Wyckoff exists
 Phase A1's architecture audit found zero Wyckoff code anywhere —
@@ -85,6 +91,30 @@ phase doesn't have; "setup quality" per session is
   `compute_session_liquidity_activity()` report only what the
   provided candle window actually contains.
 
+### Why Market Regime exists
+GoldBot already knew *where* price is (Structure), *when* it is
+(Session), and *what pattern* just happened (Wyckoff), but nothing
+summarized *what character* the market is currently in — a distinct,
+higher-level question. Phase A7 adds a 7-way classification
+(`TRENDING`/`RANGE`/`ACCUMULATION`/`DISTRIBUTION`/`HIGH_VOLATILITY`/
+`LOW_VOLATILITY`/`UNKNOWN`) with a clear priority order (Wyckoff
+Spring/Upthrust > confirmed HTF+structure trend > volatility extreme >
+default `RANGE` > `UNKNOWN` for no data) — no new indicator. See
+`docs/MARKET_REGIME.md` for the full priority table, the exact
+confidence values, and why this required a small, backward-compatible
+`build_context_snapshot()`/`ContextEngine.build()` signature extension
+(the only detector in this package that also needs `HTFBiasResult`,
+which lives outside `ContextSnapshot`'s own data).
+
+### What Market Regime does NOT do
+- Does not generate a `BUY`/`SELL` signal, and is not itself a
+  strategy — no `strategies/*.py` file reads `MarketRegimeResult`.
+- Does not switch or route between strategies ("Strategy Router" is
+  explicitly out of scope for this phase).
+- Does not change `AIAnalyzer`, `DecisionEngine`, or `RiskManager` —
+  all three are unmodified.
+- Does not persist regime history — no schema change, no new table.
+
 ### Why HTF Bias exists
 Phase A1's architecture audit found `data/market_data.py`'s
 `MarketDataNormalizer.get_snapshot()` — a fully-built multi-timeframe
@@ -114,13 +144,18 @@ architecture and confidence-scoring explanation.
 `Sequence[Candle]` (from `data/`) for the execution-timeframe
 detectors. `htf_bias.py`'s `compute_htf_bias()` takes a
 `data.market_data.MarketSnapshot` (from `get_snapshot()`) instead.
+`market_regime.py`'s `compute_market_regime()` additionally takes an
+optional `HTFBiasResult` (defaults to `None`).
 
 ## Output
 `ContextSnapshot` (`context_orchestrator.py`) — an immutable, fully
 resolved snapshot of every detector's output for one candle series,
-11 fields as of Phase A6 (`wyckoff_events` added in A5,
-`session_events` added in A6; every pre-existing field's name and
-meaning is unchanged). `htf_bias.py`'s
+12 fields as of Phase A7 (`wyckoff_events` added in A5,
+`session_events` added in A6, `market_regime` added in A7; every
+pre-existing field's name and meaning is unchanged).
+`market_regime: MarketRegimeResult` is the one field that is a single
+result object rather than a `Sequence[...]` — a regime is a state of
+the whole window, not a sparse event list. `htf_bias.py`'s
 `compute_htf_bias()` returns a separate `HTFBiasResult` (`bias`,
 `confidence`, `timeframes`, `quality_score`) — not part of
 `ContextSnapshot`, since it operates on different timeframes than
@@ -129,8 +164,10 @@ everything else in this package.
 ## Dependencies
 `data/` (for the `Candle`/`MarketSnapshot` types) only. No dependency
 on `strategies/`, `signals/`, `ai/`, `database/`, or `telegram/` —
-`htf_bias.py` follows the same isolation as every other file in this
-package.
+`htf_bias.py` and `market_regime.py` both follow the same isolation as
+every other file in this package (`market_regime.py`'s
+`HTFBiasResult` parameter is `TYPE_CHECKING`-only; `HTFBias` the enum
+is a real runtime import, used for equality comparison).
 
 ## Future Roadmap
 The execution-timeframe SMC formulas remain stable and explicitly out
@@ -147,4 +184,7 @@ phase) all remain unimplemented. For Session Intelligence
 specifically, see `docs/SESSION_INTELLIGENCE.md`'s Future Expansion
 section — a `SESSION_ALIGNED` Signal Quality Score criterion,
 historical liquidity-probability aggregation, and DST-aware session
-boundaries all remain unimplemented.
+boundaries all remain unimplemented. For Market Regime specifically,
+see `docs/MARKET_REGIME.md`'s Future Usage section — a Strategy Router
+and a Signal Quality Score / Decision Engine v3 input both remain
+unimplemented.

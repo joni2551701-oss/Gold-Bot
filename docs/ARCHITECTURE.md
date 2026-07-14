@@ -40,7 +40,9 @@ HTF Bias (context/htf_bias.py)   -- Daily/H4/H1 market-context only
 Context Engine (context/)        |  -- SMC structure detection:
       |     |                       structure, BOS/CHoCH, liquidity,
       |     |                       OB, FVG, AMD, Wyckoff (Phase A5),
-      |     |                       Session (Phase A6) -- see below
+      |     |                       Session (Phase A6), Market Regime
+      |     |                       (Phase A7, reads htf_bias too --
+      |     |                       see below) -- see below
       v     |
 Strategies (strategies/)         |  -- 3 independent SMC methodologies
       |     |
@@ -209,6 +211,36 @@ Distinct from `data/session_filter.py`'s `is_trading_time()` (a
 wall-clock, Tashkent-time, binary trading-hours gate for a different
 purpose) — not read, called, or duplicated by this module.
 
+### Market Regime Engine (Phase A7)
+
+`context/market_regime.py`'s `compute_market_regime()` classifies
+overall market character (`TRENDING`/`RANGE`/`ACCUMULATION`/
+`DISTRIBUTION`/`HIGH_VOLATILITY`/`LOW_VOLATILITY`/`UNKNOWN`) from
+already-computed structure, Wyckoff events, session volatility, and
+(if available) HTF Bias — no new indicator. Priority order when
+multiple signals could apply: a recent Wyckoff Spring/Upthrust first
+(most specific) → confirmed HTF+structure trend → a volatility extreme
+→ `RANGE` (default with data) → `UNKNOWN` (no data at all). Full
+detection rule and confidence table: `docs/MARKET_REGIME.md`.
+
+**The one field that needed a signature change**: unlike Wyckoff/
+Session, Market Regime needs `HTFBiasResult`, which is computed
+*outside* `ContextEngine.build()` (a separate multi-timeframe fetch).
+Since `core/pipeline.py` already computes `htf_bias` before building
+`context`, `build_context_snapshot()`/`ContextEngine.build()` gained
+an optional `htf_bias=None` parameter — backward compatible with
+every pre-Phase-A7 call site (both real code and every existing
+test), verified by re-running the full suite after the change.
+`context.market_regime` is `ContextSnapshot`'s 12th field, and the
+only one that is a single `MarketRegimeResult` rather than a
+`Sequence[...]` — a regime is a state of the whole window, not a
+sparse event list.
+
+Not consumed by any strategy, `AIAnalyzer`, `DecisionEngine`, or
+`RiskManager` in this phase — see `docs/MARKET_REGIME.md`'s
+"Significance for AI" section for why this is nonetheless a natural,
+already-available input for a future real AI provider.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -220,7 +252,7 @@ exists in exactly the shape it does.
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets. |
 | `data/` | Market data fetch and normalization. |
-| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, and Session classification — Phase A6, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
+| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, and Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade. |
 | `ai/` | Advisory-only AI evaluation layer (Phase 55: foundation for a future provider; production analyzer is still a heuristic stub). |
