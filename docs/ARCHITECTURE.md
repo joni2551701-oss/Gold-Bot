@@ -142,6 +142,17 @@ standardization layer any of `Signal Generation`'s existing consumers
 (Decision, Risk, Telegram, Analytics, AI) could adopt in a future,
 separately-approved phase — see its own section below.
 
+Context Snapshot (`context/snapshot.py`, Phase A16) is likewise
+**not** shown in the diagram above: `core/pipeline.py` does not call
+`from_context_snapshot()` anywhere in this phase — the
+`Context Engine (context/)` node above still produces the real,
+internal `ContextSnapshot` exactly as before, and every existing
+consumer (Strategies, Signal Quality Score, Explainability, Feature
+Engineering) keeps reading it directly, unaffected.
+`ContextSnapshotSchema` exists as a standardization layer for a
+future AI/Analytics/Replay/Education consumer — see its own section
+below.
+
 ### Decision Engine v2 (Phase A3)
 
 `decision/decision_engine.py`'s `DecisionEngine.evaluate()` no longer
@@ -521,6 +532,58 @@ and Configuration have each stayed similarly unwired from one another
 in their own phase). See `docs/SIGNAL_SCHEMA.md` for the full
 contract.
 
+### Context Snapshot Foundation (Phase A16)
+
+`context/snapshot.py` adds `ContextSnapshotSchema` — one standard,
+flat, JSON-serializable summary of market context (identity, market
+info, nested `structure`/`liquidity`/`zones`/`session` groups,
+`regime`, `metadata`) — plus `validate_snapshot()`,
+`generate_snapshot_id()`, and `from_context_snapshot()`, the one
+adapter from an existing, already-built
+`context.context_orchestrator.ContextSnapshot`. A standardization
+layer, not a new analysis: computes nothing, relays already-detected
+presence/values (`most_recent_bias()`, `StructureType`/`LiquidityType`/
+`Session`/`MarketRegime` values) or leaves an honest `None`/`False`
+default (`zones.premium_discount` — no detector for this exists
+anywhere in this codebase today).
+
+**Deliberately named `ContextSnapshotSchema`, not `ContextSnapshot`**:
+`context.context_orchestrator` already defines the real, internal,
+12-field `ContextSnapshot` every strategy/Signal Quality Score/
+Explainability/Feature Engineering module already consumes —
+untouched by this phase. A second class with the identical name in
+the same package would be a serious, ongoing ambiguity for any future
+reader or agent; `ContextSnapshotSchema` mirrors
+`signals/schema.py`'s own `SignalSchema` naming (Phase A15, distinct
+from `signals/models.py`'s real `SignalCandidate`) for the same
+reason. See `docs/CONTEXT_SNAPSHOT.md`'s "A critical naming note" for
+the full comparison table between the two types.
+
+`regime` relays the real 7-value `MarketRegime` vocabulary
+(`TRENDING`/`RANGE`/`ACCUMULATION`/`DISTRIBUTION`/`HIGH_VOLATILITY`/
+`LOW_VOLATILITY`/`UNKNOWN`) directly, not the roadmap's own
+illustrative 5-value list — collapsing the real 7 down to 5 would
+require inventing a new mapping rule, itself a form of new analysis
+logic this phase's scope forbids. `structure.swing_state` reads a
+single already-classified `StructureType` label rather than computing
+a new combined "last-high + last-low" pair the roadmap's own example
+showed — both deviations are disclosed in
+`docs/CONTEXT_SNAPSHOT.md`, the same real-value/simplification-
+disclosure pattern Phase A10-A15 each followed.
+
+Deliberately has **zero pipeline wiring** in this phase, same posture
+as every other Phase A foundation module: `core/pipeline.py` never
+calls `from_context_snapshot()`. `context/snapshot.py` does not import
+`signals/` for its own `ValidationResult` either — `context/` must
+never depend on `signals/` (see `docs/ARCHITECTURE_RULES.md`'s
+Context Engine rule), so a separate, independently-declared,
+identically-shaped `ValidationResult` exists instead of an import.
+`context/market_structure.py`, `context/liquidity.py`,
+`context/order_block.py`, `context/fvg.py`, and
+`context/context_orchestrator.py` are all read-only inputs to this
+phase — none is modified. See `docs/CONTEXT_SNAPSHOT.md` for the full
+contract.
+
 `core/pipeline.py`'s `TradingPipeline` is the only place that wires
 every layer above together end to end — see its own docstring and
 `docs/AUDIT_REPORT.md` for why the notification-eligibility filter
@@ -534,7 +597,7 @@ exists in exactly the shape it does.
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering. |
-| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. |
+| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. `snapshot.py` (Phase A16) additionally standardizes a `ContextSnapshot` into a flat, JSON-serializable `ContextSnapshotSchema` — a distinct type, not a replacement. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology, plus a Strategy Lifecycle metadata layer (`lifecycle/`, Phase A11) — `StrategyDefinition`/`StrategyRegistry`, storing status/version/supported-assets metadata only, never running a strategy or generating a signal. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria — and Signal Schema (`schema.py`/`adapter.py`, Phase A15) — one standard, JSON-serializable cross-module signal contract, computing nothing itself. |
 | `features/` | Feature Engineering foundation (Phase A10) — `MarketFeatures`, one standard snapshot per candidate for a future AI/backtester/ML/Failure-Analysis consumer. A standardization layer: relays `context/` and `signals/` (Signal Quality + Explainability) results as-is, computes nothing new. |
@@ -568,6 +631,15 @@ import sweep):
   file imports `ai/`, `risk/`, `database/`, `telegram/`, `execution/`,
   or `assets/` — `adapter.py`'s `asset_type` default is a literal
   string, not an `assets/` import (see `docs/SIGNAL_SCHEMA.md`).
+- `context/snapshot.py` (Phase A16) imports only the standard library
+  plus `context.context_orchestrator` and `context.market_structure`
+  (same package) — no dependency on `strategies/`, `signals/`, `ai/`,
+  `decision/`, `risk/`, `database/`, `telegram/`, or `assets/`.
+  Deliberately does not import `signals.schema.ValidationResult`
+  despite the identical shape — `context/` must never depend on
+  `signals/` (see `docs/ARCHITECTURE_RULES.md`'s Context Engine rule)
+  — `context/snapshot.py` declares its own, independent
+  `ValidationResult` instead (see `docs/CONTEXT_SNAPSHOT.md`).
 - `configuration/` (Phase A13) imports only the root `config.Config`
   (cross-cutting, same as every layer's pre-existing `config.py`
   access) — no dependency on `data/`, `context/`, `strategies/`,

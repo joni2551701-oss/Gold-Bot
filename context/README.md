@@ -7,7 +7,10 @@ execution timeframe (including Wyckoff Spring/Upthrust detection,
 A6; and market regime classification, `market_regime.py`, Phase A7),
 plus HTF Bias (`htf_bias.py`, Phase A2) — a separate, higher-timeframe
 market-context classification. All stateless, read-only detection
-code; none makes a trading decision.
+code; none makes a trading decision. `snapshot.py` (Phase A16)
+additionally standardizes an already-built `ContextSnapshot` into a
+flat, JSON-serializable `ContextSnapshotSchema` for a future AI/
+Analytics/Replay/Education consumer.
 
 ## Flow
 ```
@@ -140,12 +143,46 @@ architecture and confidence-scoring explanation.
   and is logged, never raised; Decision Engine v2 treats that as a
   neutral contribution, not an error.
 
+### Why Context Snapshot exists
+The real `ContextSnapshot` (`context_orchestrator.py`) is exactly
+what the live pipeline needs — every strategy and Signal Quality
+Score/Explainability/Feature Engineering module already consumes it
+directly — but it is not JSON-serializable, versioned, or
+identity-bearing in a way a future backtest replay, AI training
+export, or Analytics dataset could rely on. Phase A16 adds
+`ContextSnapshotSchema` — deliberately not named `ContextSnapshot`,
+to avoid a same-name collision with the real type in this same
+package; mirrors `signals/schema.py`'s `SignalSchema` naming for the
+identical reason. See `docs/CONTEXT_SNAPSHOT.md` for the full field
+table, the "critical naming note" explaining the two types' relationship in detail, and two deliberate, disclosed
+deviations from the roadmap's own illustrative example (`regime`
+using the real 7-value `MarketRegime` vocabulary instead of an
+invented 5-value one; `swing_state` reading a single already-classified
+label instead of a new combined "last-high + last-low" walk).
+
+### What Context Snapshot does NOT do
+- Does not generate a `BUY`/`SELL` signal, call a strategy, or call
+  the AI layer.
+- Does not modify `market_structure.py`, `liquidity.py`,
+  `order_block.py`, `fvg.py`, `context_orchestrator.py`, or any other
+  existing detector — `snapshot.py` only reads their already-computed
+  output via `from_context_snapshot()`.
+- Does not write to the database — no schema change, no new table.
+- Is not consumed by `core/pipeline.py`, `strategies/`, `signals/`,
+  `ai/`, `decision/`, or `risk/` in this phase.
+- Does not raise on an invalid snapshot — `validate_snapshot()`
+  returns a structured `ValidationResult`, matching every other Phase
+  A foundation module's fail-safe posture.
+
 ## Input
 `Sequence[Candle]` (from `data/`) for the execution-timeframe
 detectors. `htf_bias.py`'s `compute_htf_bias()` takes a
 `data.market_data.MarketSnapshot` (from `get_snapshot()`) instead.
 `market_regime.py`'s `compute_market_regime()` additionally takes an
-optional `HTFBiasResult` (defaults to `None`).
+optional `HTFBiasResult` (defaults to `None`). `snapshot.py`'s
+`from_context_snapshot()` takes an already-built `ContextSnapshot`
+(required) plus optional `symbol`/`timeframe`/`engine_version`
+overrides.
 
 ## Output
 `ContextSnapshot` (`context_orchestrator.py`) — an immutable, fully
@@ -159,7 +196,9 @@ the whole window, not a sparse event list. `htf_bias.py`'s
 `compute_htf_bias()` returns a separate `HTFBiasResult` (`bias`,
 `confidence`, `timeframes`, `quality_score`) — not part of
 `ContextSnapshot`, since it operates on different timeframes than
-everything else in this package.
+everything else in this package. `snapshot.py`'s
+`from_context_snapshot()` returns a `ContextSnapshotSchema` — flat,
+JSON-serializable (`to_dict()`/`to_json()`), immutable.
 
 ## Dependencies
 `data/` (for the `Candle`/`MarketSnapshot` types) only. No dependency
@@ -167,7 +206,12 @@ on `strategies/`, `signals/`, `ai/`, `database/`, or `telegram/` —
 `htf_bias.py` and `market_regime.py` both follow the same isolation as
 every other file in this package (`market_regime.py`'s
 `HTFBiasResult` parameter is `TYPE_CHECKING`-only; `HTFBias` the enum
-is a real runtime import, used for equality comparison).
+is a real runtime import, used for equality comparison). `snapshot.py`
+imports only the standard library plus `context.context_orchestrator`
+and `context.market_structure` (same package) — deliberately does
+**not** import `signals/` (see `docs/CONTEXT_SNAPSHOT.md`'s "Why not
+import from signals/" section for why its `ValidationResult` is a
+separate, independent definition, not shared code).
 
 ## Future Roadmap
 The execution-timeframe SMC formulas remain stable and explicitly out
@@ -187,4 +231,8 @@ historical liquidity-probability aggregation, and DST-aware session
 boundaries all remain unimplemented. For Market Regime specifically,
 see `docs/MARKET_REGIME.md`'s Future Usage section — a Strategy Router
 and a Signal Quality Score / Decision Engine v3 input both remain
-unimplemented.
+unimplemented. For Context Snapshot specifically, see
+`docs/CONTEXT_SNAPSHOT.md`'s "Future usage" section — AI (`Signal +
+ContextSnapshotSchema = Explanation`, joinable via `SignalSchema`'s
+`context_id` once a future phase wires the two together), Analytics,
+Replay, and Education all remain unimplemented.
