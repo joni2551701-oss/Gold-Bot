@@ -284,6 +284,44 @@ until MT5 order wiring is itself an explicitly-approved phase.
 Everything else audited (dependency graph, the `feature_registry`
 trio, all 12 database tables, the live pipeline's 16 real stages) is
 clean — no circular imports, no schema duplication, no accidental
-reimplementation. Phase 60.1+ work can begin once the Director
-decides how to resolve findings 1–2 (or explicitly defers them to the
-dashboard-consolidation wiring phase, per section 5's own plan).
+reimplementation.
+
+## Director decisions (post-audit, APPROVED)
+
+The audit itself was approved as-is. Six explicit decisions were made
+on top of it — recorded here as the resolution of record; **none is
+implemented yet**, each is a target shape for a future, separately-approved
+wiring/consolidation phase, not an instruction to refactor
+`telegram/owner/` in this pass:
+
+1. **Validation Report duplicate (finding 1)** — `report_commands.get_validation_summary()`
+   is kept; `validation_commands.get_validation_report()` is
+   deprecated in favor of it, because validation is a kind of report,
+   not a separate category. Target future shape for
+   `report_commands.py`: `get_validation_summary()`,
+   `get_strategy_report()`, `get_context_report()`,
+   `get_dataset_report()`, `get_daily_report()`, `get_weekly_report()`,
+   `get_monthly_report()` — one report module, not one module per
+   report type.
+2. **System Status duplicate (finding 2)** — `status_commands.get_system_status()`
+   is kept as the Owner Dashboard's primary Status module;
+   `system_commands.get_system_health()` folds into it as one section
+   among several. Target future shape for `status_commands.py`:
+   System, Database, Providers, Pipeline, Emergency, Features,
+   Validation, Performance, Health, Resources — all visible from one
+   place.
+3. **Dead code (section 2)** — untouched. Rule: never remove trading
+   code without a separate, dedicated audit.
+4. **AI module (`build_prompt()`/`evaluate_confidence()`)** — left as
+   is. Re-audit when v0.4 AI Intelligence work begins.
+5. **`SignalMonitor` placeholder** — kept; reserved for a future Live
+   Monitoring feature.
+6. **Module Reuse Principle** — promoted from this doc's companion
+   (`docs/PHASE59_ARCHITECTURE_FREEZE.md`'s "Design principle"
+   section) to a mandatory rule in `CLAUDE.md` itself (this repo's own
+   governance file), under "Restrictions." Applies to all new module
+   creation from this point forward.
+
+Phase 60.1+ implementation work should not start on findings 1–2 until
+a separately-approved wiring phase is assigned for each; this audit
+records the decision, not the change.

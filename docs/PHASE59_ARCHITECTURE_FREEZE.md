@@ -131,17 +131,44 @@ signal that reaches a user still passes through
 
 ## 5. v1.0 roadmap (Phase 60, Director's reordering)
 
-Per the Director's stated reasoning — the bot should prove itself
-against historical data before an AI/Fundamental layer is built on
-top of it:
+**Superseded by the post-Phase-60.0-audit reorder** — kept below for
+history, current sequence is:
 
 ```
 Phase 60
 │
+├── 60.1 Historical Replay Engine     <- moved to first: backtesting needs
+│                                        a working replay layer underneath
+│                                        it before it can be correct
+├── 60.2 Backtesting Engine
+├── 60.3 Execution Simulator
+├── 60.4 Performance Validation
+├── 60.5 Fundamental Intelligence
+└── 60.6 Learning Loop
+```
+
+A candidate new package for 60.1, proposed but **not yet a formal
+Worker Task** (no TASK 1-N brief delivered): `market/replay_clock.py`/
+`replay_engine.py`/`replay_controller.py`/`replay_session.py`/
+`replay_speed.py` — a single Replay Engine intended to sit underneath
+Backtesting, Paper Trading, AI Learning, and Strategy Testing alike,
+rather than each building its own replay mechanism. Per the Module
+Reuse Principle (`CLAUDE.md`), this is exactly the kind of proposal
+that should be checked against "can an existing module be extended"
+before creating a new top-level package — `lifecycle/paper_trade.py`
+and `data/historical_data_collector.py`/`RawCandleRepository` are the
+two closest existing pieces and should be the first thing a Worker
+Task brief for this phase checks.
+
+Original (pre-reorder) sequence and its own reasoning, for reference:
+
+```
+Phase 60 (original)
+│
 ├── 60.1 Multi-Provider Live Integration
 ├── 60.2 Backtesting Engine
 ├── 60.3 Market Replay
-├── 60.4 Historical Validation           <- reordered ahead of Fundamental
+├── 60.4 Historical Validation
 ├── 60.5 Fundamental Intelligence
 ├── 60.6 Economic Calendar
 ├── 60.7 News Engine

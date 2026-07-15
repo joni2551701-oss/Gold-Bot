@@ -73,6 +73,24 @@ bot — read this before making any change, not after.
   already exists (this codebase has caught and removed several
   duplicates across its Phase 49/50 cleanup passes — don't reintroduce
   the pattern).
+- **Module Reuse Principle** (mandatory, in force from the Phase 59
+  Architecture Freeze / Phase 60.0 Architecture Audit onward — see
+  `docs/PHASE59_ARCHITECTURE_FREEZE.md`'s "Design principle" section
+  and `docs/PHASE60_ARCHITECTURE_AUDIT.md` for the audit that
+  established it). Before creating any new module — a new file, a new
+  package/folder, or a new top-level class/function in an existing
+  file — answer these in order and stop at the first "yes":
+  1. Does this already exist somewhere in the repo?
+  2. Can an existing module be extended (a new method, a new optional
+     field, a new function in an existing file) without breaking its
+     current contract?
+  3. Only if both are "no": create a new module, and document in its
+     own docstring why steps 1 and 2 were both "no".
+  Reuse is the default outcome, not the exception. A new top-level
+  package is the highest-cost option and should be rare — most work
+  should land as a new file inside an *existing* package
+  (`telegram/owner/*.py`, `database/*_repository.py`-style), not a new
+  top-level folder.
 
 ## Trading Safety
 
