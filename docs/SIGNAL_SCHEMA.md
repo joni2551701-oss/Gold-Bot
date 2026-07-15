@@ -118,7 +118,7 @@ Review (AC-03) — see "AC-03 update" below.
 | Group | Fields | Notes |
 |---|---|---|
 | Identity | `signal_id`, `created_at`, `version` | `signal_id` via `generate_signal_id()` (`str(uuid.uuid4())`). `version` is the *schema* version (`"1.0"` today), not a strategy version. |
-| Market | `symbol`, `asset_type`, `timeframe`, `session` | `symbol`/`timeframe` required; `asset_type`/`session` optional (not every caller has this context yet). |
+| Market | `symbol`, `asset_type`, `timeframe`, `session`, `market_phase` | `symbol`/`timeframe` required; `asset_type`/`session`/`market_phase` optional. `market_phase` added Phase 59 Real Market Validation Foundation (TASK 2) — `core/pipeline.py`'s `signal_history` stage relays it from the same cycle's already-computed `MarketPhaseResult.phase.value` (AC-02); never recomputed here. |
 | Direction | `direction` | One of `"BUY"`/`"SELL"`/`"NONE"` — validated, not enum-typed (see below). |
 | Price | `entry_price`, `stop_loss`, `take_profit` | Required for `BUY`/`SELL` (validated), meaningless for `NONE`. |
 | Context reference | `context_id` | A reference only, never the `ContextSnapshot` itself. Phase A16 (Context Snapshot Foundation) is the named next phase. |

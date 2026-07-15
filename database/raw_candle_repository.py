@@ -5,13 +5,16 @@ business logic, idempotent schema init in __init__).
 """
 
 import sqlite3
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 from datetime import datetime
 
 from database.database import Database
 from database.models import init_raw_candle_schema
-from database.raw_candle_models import RawCandle
+from database.raw_candle_models import RawCandle, from_market_candle
 from core.logger import setup_logger
+
+if TYPE_CHECKING:
+    from data.providers.base_provider import MarketCandle
 
 logger = setup_logger("RawCandleRepository")
 
@@ -74,6 +77,24 @@ class RawCandleRepository:
     def save_candles(self, candles: List[RawCandle]) -> int:
         """Saves each candle via save_candle(); returns the count actually inserted (duplicates excluded). Never raises: an empty list saves 0."""
         return sum(1 for candle in candles if self.save_candle(candle))
+
+    def save_market_candles(self, candles: List['MarketCandle'], provider: Optional[str] = None) -> int:
+        """
+        Phase 59 Real Market Validation Foundation, TASK 3 -- adapts
+        each data/providers/base_provider.MarketCandle (e.g.
+        TwelveDataProvider.get_candles()'s real output) via
+        database.raw_candle_models.from_market_candle() and saves it,
+        closing the loop between the provider layer (Phase 59.1/59.2)
+        and this table (Phase 59.3) for the first time. `provider`
+        overrides each candle's own `.provider` when supplied. Returns
+        the count actually inserted (duplicates excluded), same
+        convention as save_candles(). Never raises for a duplicate;
+        DOES raise (via from_market_candle()) if a candle has no
+        provider at all and none was supplied -- a genuine data-
+        integrity gap, not silently skipped.
+        """
+        raw_candles = [from_market_candle(candle, provider=provider) for candle in candles]
+        return self.save_candles(raw_candles)
 
     def get_candles(
         self, symbol: str, timeframe: str, provider: Optional[str] = None, limit: int = 500

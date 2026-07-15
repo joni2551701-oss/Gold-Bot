@@ -22,6 +22,17 @@ class Config:
     ENABLE_MT5 = os.getenv("ENABLE_MT5", "False") == "True"
     ENABLE_TWELVEDATA = os.getenv("ENABLE_TWELVEDATA", "True") == "True"
 
+    # Real Market Validation mode (Phase 59: Real Market Validation
+    # Foundation, TASK 1). A foundation flag only -- reading it does
+    # not exist anywhere in core/pipeline.py yet, so setting it True
+    # or False changes nothing about production behavior today. It
+    # exists so a future, separately-approved wiring step (extra
+    # dataset-capture logging, gating an owner validation command,
+    # etc.) has a single, real switch to read instead of inventing its
+    # own. Defaults False -- production behavior is the default,
+    # unchanged behavior.
+    VALIDATION_MODE = os.getenv("VALIDATION_MODE", "False") == "True"
+
     # Base paths
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 

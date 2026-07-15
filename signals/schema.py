@@ -57,7 +57,11 @@ class SignalSchema:
     Market: symbol, timeframe (both required -- the real values this
         codebase runs, e.g. "XAUUSD"/"M15"), asset_type, session
         (both optional -- not every caller has this context available
-        yet).
+        yet), market_phase (Phase 59 Real Market Validation Foundation,
+        TASK 2 -- context.market_phase.MarketPhaseResult.phase.value,
+        e.g. "ACCUMULATION", relayed from the same cycle's
+        already-computed classification; None until a caller supplies
+        it -- this model never computes it).
     Direction: direction -- one of ALLOWED_DIRECTIONS, validated by
         validate_signal(), not by the dataclass itself (never raises
         at construction time -- see validate_signal()'s own docstring
@@ -101,6 +105,7 @@ class SignalSchema:
     version: str = "1.0"
     asset_type: Optional[str] = None
     session: Optional[str] = None
+    market_phase: Optional[str] = None
     entry_price: Optional[float] = None
     stop_loss: Optional[float] = None
     take_profit: Optional[float] = None

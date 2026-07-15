@@ -64,10 +64,13 @@ class TradingPipeline:
     the real strategy identifier (Phase A11's StrategyDefinition.id),
     so no separate strategy_id field was added. Computes nothing new:
     signal_quality/decision are relayed from the already-computed
-    SignalQualityResult/TradeDecision. Not written to the database in
-    this phase -- returned in run()'s result dict ("context_snapshot",
-    "signal_history") for a future, separately-approved persistence
-    phase to consume.
+    SignalQualityResult/TradeDecision; as of Phase 59 Real Market
+    Validation Foundation (TASK 2), each SignalSchema also carries
+    market_phase, relayed from the same cycle's already-computed
+    MarketPhaseResult (the market_phase stage above) -- still no new
+    computation. Not written to the database in this phase -- returned
+    in run()'s result dict ("context_snapshot", "signal_history") for
+    a future, separately-approved persistence phase to consume.
 
     Feature Engineering (Phase A10, features/feature_engine.py) is a
     standardization layer, not an analysis layer -- it does not
@@ -389,6 +392,7 @@ class TradingPipeline:
                 symbol=self.symbol,
                 timeframe=self.interval,
                 session=context_snapshot.session.current_session,
+                market_phase=market_phase.phase.value,
                 context_id=context_snapshot.snapshot_id,
                 quality=quality,
                 decision=decision,

@@ -59,6 +59,7 @@ def from_signal_candidate(
     timeframe: str = _DEFAULT_TIMEFRAME,
     asset_type: str = _DEFAULT_ASSET_TYPE,
     session: Optional[str] = None,
+    market_phase: Optional[str] = None,
     context_id: Optional[str] = None,
     strategy_version: Optional[str] = None,
     quality: Optional['SignalQualityResult'] = None,
@@ -90,7 +91,12 @@ def from_signal_candidate(
     explicitly. decision_id has no source on TradeDecision either
     (decision.models.TradeDecision has no id field of its own) --
     None unless the caller supplies one explicitly (core/pipeline.py
-    generates a fresh one per TradeDecision).
+    generates a fresh one per TradeDecision). market_phase (Phase 59
+    Real Market Validation Foundation, TASK 2) has no source on
+    SignalCandidate either -- None unless the caller supplies the
+    cycle's already-computed MarketPhaseResult.phase.value
+    (core/pipeline.py's signal_history stage does, from the same
+    market_phase stage that already runs earlier in the same cycle).
     """
     entry_price = signal.entry
     stop_loss = signal.stop_loss
@@ -115,6 +121,7 @@ def from_signal_candidate(
         direction=direction,
         asset_type=asset_type,
         session=session,
+        market_phase=market_phase,
         entry_price=entry_price,
         stop_loss=stop_loss,
         take_profit=take_profit,

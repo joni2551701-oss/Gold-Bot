@@ -54,13 +54,14 @@ def test_adapter_defaults_decision_to_pending_when_none_supplied():
 
 
 def test_adapter_leaves_references_none_by_default():
-    """context_id/explanation_id/risk_id/decision_id/strategy_version are honest hooks -- never fabricated."""
+    """context_id/explanation_id/risk_id/decision_id/strategy_version/market_phase are honest hooks -- never fabricated."""
     schema = from_signal_candidate(_candidate())
     assert schema.context_id is None
     assert schema.explanation_id is None
     assert schema.risk_id is None
     assert schema.decision_id is None
     assert schema.strategy_version is None
+    assert schema.market_phase is None
 
 
 def test_adapter_relays_quality_without_recomputing():
@@ -77,6 +78,7 @@ def test_adapter_accepts_explicit_references_and_overrides():
         symbol="XAUUSD",
         timeframe="M15",
         session="LONDON",
+        market_phase="ACCUMULATION",
         context_id="CTX-001",
         strategy_version="1.0",
         explanation_id="EXP-00125",
@@ -85,6 +87,7 @@ def test_adapter_accepts_explicit_references_and_overrides():
     )
 
     assert schema.session == "LONDON"
+    assert schema.market_phase == "ACCUMULATION"
     assert schema.context_id == "CTX-001"
     assert schema.strategy_version == "1.0"
     assert schema.explanation_id == "EXP-00125"

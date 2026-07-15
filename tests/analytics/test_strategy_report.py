@@ -5,16 +5,19 @@ Phase 59 Preparation, TASK 3 -- analytics/strategy_report.py tests.
 from datetime import datetime, timezone
 
 from analytics.signal_performance import SignalPerformance
-from analytics.strategy_report import build_strategy_report
+from analytics.strategy_report import build_strategy_report, filter_performances
 
 
-def _perf(strategy_id, result, r_multiple=None, signal_id="s"):
+def _perf(strategy_id, result, r_multiple=None, signal_id="s", session=None, market_phase=None, timeframe=None):
     return SignalPerformance(
         performance_id="p",
         signal_id=signal_id,
         strategy_id=strategy_id,
         result=result,
         r_multiple=r_multiple,
+        session=session,
+        market_phase=market_phase,
+        timeframe=timeframe,
         created_at=datetime.now(timezone.utc),
     )
 
@@ -157,3 +160,58 @@ def test_default_expired_and_cancelled_counts_are_zero():
 
     assert report["LIQUIDITY_SWEEP_STRATEGY"].expired_count == 0
     assert report["LIQUIDITY_SWEEP_STRATEGY"].cancelled_count == 0
+
+
+# --- Phase 59 Real Market Validation Foundation, TASK 6: filter_performances ---
+
+def test_filter_performances_empty_filters_returns_everything():
+    performances = [_perf("LIQUIDITY_SWEEP_STRATEGY", "TP", 2.0), _perf("FVG_STRATEGY", "SL", -1.0)]
+
+    result = filter_performances(performances)
+
+    assert result == performances
+
+
+def test_filter_performances_by_strategy_id():
+    performances = [_perf("LIQUIDITY_SWEEP_STRATEGY", "TP"), _perf("FVG_STRATEGY", "SL")]
+
+    result = filter_performances(performances, strategy_id="LIQUIDITY_SWEEP_STRATEGY")
+
+    assert len(result) == 1
+    assert result[0].strategy_id == "LIQUIDITY_SWEEP_STRATEGY"
+
+
+def test_filter_performances_combines_all_four_dimensions():
+    """The brief's own worked example shape: Liquidity Sweep / London / M15 winrate."""
+    matching = _perf("LIQUIDITY_SWEEP_STRATEGY", "TP", session="LONDON", market_phase="MARKUP", timeframe="M15")
+    wrong_session = _perf("LIQUIDITY_SWEEP_STRATEGY", "TP", session="ASIA", market_phase="MARKUP", timeframe="M15")
+    wrong_timeframe = _perf("LIQUIDITY_SWEEP_STRATEGY", "TP", session="LONDON", market_phase="MARKUP", timeframe="H1")
+    performances = [matching, wrong_session, wrong_timeframe]
+
+    result = filter_performances(
+        performances, strategy_id="LIQUIDITY_SWEEP_STRATEGY", session="LONDON", timeframe="M15"
+    )
+
+    assert result == [matching]
+
+
+def test_filter_performances_no_match_returns_empty_list():
+    performances = [_perf("LIQUIDITY_SWEEP_STRATEGY", "TP")]
+
+    result = filter_performances(performances, strategy_id="NONEXISTENT")
+
+    assert result == []
+
+
+def test_filter_performances_combines_with_build_strategy_report():
+    performances = (
+        [_perf("LIQUIDITY_SWEEP_STRATEGY", "TP", session="LONDON") for _ in range(6)]
+        + [_perf("LIQUIDITY_SWEEP_STRATEGY", "SL", session="LONDON") for _ in range(2)]
+        + [_perf("LIQUIDITY_SWEEP_STRATEGY", "SL", session="ASIA") for _ in range(5)]
+    )
+
+    filtered = filter_performances(performances, session="LONDON")
+    report = build_strategy_report(filtered)
+
+    assert report["LIQUIDITY_SWEEP_STRATEGY"].total_signals == 8
+    assert report["LIQUIDITY_SWEEP_STRATEGY"].win_rate == 0.75

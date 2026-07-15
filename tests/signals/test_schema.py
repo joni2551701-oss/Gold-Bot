@@ -123,7 +123,7 @@ def test_future_compatibility_field_shape_is_stable():
     field_names = {f.name for f in dataclasses.fields(SignalSchema)}
     assert field_names == {
         "signal_id", "created_at", "version", "symbol", "timeframe", "direction",
-        "asset_type", "session", "entry_price", "stop_loss", "take_profit",
+        "asset_type", "session", "market_phase", "entry_price", "stop_loss", "take_profit",
         "context_id", "strategy_name", "strategy_version", "quality_grade",
         "confidence_score", "explanation_id", "decision", "decision_score",
         "decision_id", "risk_id",

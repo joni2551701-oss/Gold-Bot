@@ -33,7 +33,10 @@ different providers is two distinct rows, never merged/overwritten).
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from data.providers.base_provider import MarketCandle
 
 
 @dataclass(frozen=True)
@@ -81,4 +84,43 @@ def create_raw_candle(
         volume=volume,
         provider=provider,
         created_at=datetime.now(timezone.utc),
+    )
+
+
+def from_market_candle(candle: 'MarketCandle', provider: Optional[str] = None) -> RawCandle:
+    """
+    Phase 59 Real Market Validation Foundation, TASK 3 -- the bridge
+    this codebase was missing between the provider layer's own
+    standard output (data/providers/base_provider.py's MarketCandle,
+    Phase 59.1/59.2) and this table's persisted row shape. A direct
+    field copy, computes nothing new -- the same "adapter, not a new
+    detector" posture data/market_data_snapshot.py's
+    capture_market_data_snapshot() and database/market_snapshot_models.py's
+    from_market_data_snapshot() already established.
+
+    `provider` here overrides `candle.provider` when supplied (for a
+    caller that already knows which provider it asked, e.g. before
+    Phase 59.3's provider-stamping reached every code path). Raises
+    ValueError if neither is available -- a genuine data-integrity gap
+    (a raw candle with no known source defeats the whole point of the
+    `provider` column and this table's own UNIQUE constraint), not a
+    data-driven condition this function should silently paper over.
+    """
+    resolved_provider = provider or candle.provider
+    if not resolved_provider:
+        raise ValueError(
+            "from_market_candle() requires a provider -- neither candle.provider "
+            "nor an explicit provider argument was supplied"
+        )
+
+    return create_raw_candle(
+        symbol=candle.symbol,
+        timeframe=candle.timeframe,
+        timestamp=candle.timestamp,
+        open=candle.open,
+        high=candle.high,
+        low=candle.low,
+        close=candle.close,
+        provider=resolved_provider,
+        volume=candle.volume,
     )

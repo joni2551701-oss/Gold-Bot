@@ -26,6 +26,17 @@ def test_pipeline_returns_a_context_snapshot_and_signal_history(mock_pipeline, m
     assert isinstance(result["signal_history"][0], SignalSchema)
 
 
+def test_signal_history_market_phase_matches_the_cycle_market_phase(mock_pipeline, mock_signal_candidate, mock_ai_result):
+    """Phase 59 Real Market Validation Foundation, TASK 2 -- market_phase must flow from the cycle's own MarketPhaseResult, never recomputed."""
+    candidate = mock_signal_candidate()
+    pipeline = mock_pipeline([candidate], [mock_ai_result(approved=True, confidence=0.95)])
+
+    result = pipeline.run()
+
+    record = result["signal_history"][0]
+    assert record.market_phase == result["market_phase"].phase.value
+
+
 def test_signal_history_context_id_matches_the_cycle_context_snapshot(mock_pipeline, mock_signal_candidate, mock_ai_result):
     candidate = mock_signal_candidate()
     pipeline = mock_pipeline([candidate], [mock_ai_result(approved=True, confidence=0.95)])

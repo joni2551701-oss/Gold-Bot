@@ -54,6 +54,18 @@ this codebase persists a day's worth of these anywhere yet (see
 `docs/PHASE59_VALIDATION.md`'s "Known gaps"), so a real `/stats`
 command needs that data source wired up first, a separate future step.
 
+### `validation_commands.py` (Phase 59 Real Market Validation
+Foundation, TASK 8)
+`get_validation_status()` — reports `config.Config.VALIDATION_MODE`'s
+current value (Phase 59 Real Market Validation Foundation, TASK 1).
+`get_today_signals(signals)` — total/BUY/SELL counts; `signals` must
+already be filtered to "today" by the caller, same posture as
+`report_commands.format_daily_stats()`. `get_validation_report(signals,
+performances, period_start, period_end)` — wraps
+`analytics.validation_report.build_validation_report()`/
+`format_validation_report()` (same phase, TASK 5) in a
+`ProviderCommandResult`, unmodified otherwise.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -63,6 +75,9 @@ imports `config.Config`, `configuration.feature_flags.DEFAULT_FLAGS`,
 and `provider_commands.ProviderCommandResult`. `report_commands.py`
 imports `analytics.strategy_report`, `analytics.signal_performance`,
 `signals.schema.SignalSchema`, and `provider_commands.ProviderCommandResult`.
+`validation_commands.py` imports `analytics.validation_report`,
+`analytics.signal_performance`, `config.Config`, `signals.schema.SignalSchema`,
+and `provider_commands.ProviderCommandResult`.
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the
 live routing surface.

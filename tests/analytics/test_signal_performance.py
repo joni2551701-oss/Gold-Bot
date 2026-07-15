@@ -191,6 +191,15 @@ def test_cancelled_trade_has_no_r_multiple():
     assert performance.r_multiple is None
 
 
+# --- Phase 59 Real Market Validation Foundation, TASK 6: timeframe field ---
+
+def test_timeframe_copied_from_signal():
+    signal = _signal(timeframe="H1")
+    performance = compute_signal_performance(signal)
+
+    assert performance.timeframe == "H1"
+
+
 def test_closed_trade_result_is_unaffected_by_the_cancelled_fix():
     """Regression guard: a normally CLOSED trade's real TP/SL/BE/EXPIRED result must not be shadowed by the new CANCELLED-detection branch."""
     signal = _signal()

@@ -76,6 +76,47 @@ def compute_win_rate(win_count: int, loss_count: int) -> float:
     return win_count / decided
 
 
+def filter_performances(
+    performances: Sequence[SignalPerformance],
+    strategy_id: Optional[str] = None,
+    market_phase: Optional[str] = None,
+    session: Optional[str] = None,
+    timeframe: Optional[str] = None,
+) -> List[SignalPerformance]:
+    """
+    Phase 59 Real Market Validation Foundation, TASK 6 -- a generic
+    AND-filter over the four dimensions this task's own brief names
+    (strategy_id, market_phase, session, timeframe), e.g. combined
+    with build_strategy_report() to answer "Liquidity Sweep / London /
+    M15 winrate?" without either function needing to know about the
+    other's job. Any argument left None is not filtered on. Never
+    raises: no matches returns an empty list.
+
+    Note: the brief's own worked example ("Liquidity Sweep / London /
+    M15 / BULLISH HTF") lists a fifth value, HTF bias, under this same
+    filter set -- but HTF bias (context/htf_bias.py's HTFBias enum:
+    BULLISH/BEARISH/NEUTRAL/UNKNOWN) is a different concept from
+    market_phase (MarketPhase: ACCUMULATION/MANIPULATION/
+    DISTRIBUTION/MARKUP/MARKDOWN), and SignalPerformance carries no
+    htf_bias field. This function implements exactly the four
+    dimensions the brief explicitly declares as the filter set;
+    htf_bias filtering is out of scope here, not silently folded into
+    market_phase.
+    """
+    def _matches(performance: SignalPerformance) -> bool:
+        if strategy_id is not None and performance.strategy_id != strategy_id:
+            return False
+        if market_phase is not None and performance.market_phase != market_phase:
+            return False
+        if session is not None and performance.session != session:
+            return False
+        if timeframe is not None and performance.timeframe != timeframe:
+            return False
+        return True
+
+    return [performance for performance in performances if _matches(performance)]
+
+
 def build_strategy_report(
     performances: Sequence[SignalPerformance],
 ) -> Dict[str, StrategyPerformanceReport]:

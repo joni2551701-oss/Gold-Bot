@@ -1,13 +1,21 @@
 """
 Phase 59.3, TASK 2 -- database/raw_candle_repository.py and
-raw_candle_models.py tests. Each test gets its own fresh, isolated
-SQLite file (tests/conftest.py's autouse fresh_database fixture).
+raw_candle_models.py tests. Extended by Phase 59 Real Market
+Validation Foundation, TASK 3 (from_market_candle()/
+save_market_candles() -- the MarketCandle bridge). Each test gets its
+own fresh, isolated SQLite file (tests/conftest.py's autouse
+fresh_database fixture).
 """
 
 from datetime import datetime, timezone
 
-from database.raw_candle_models import create_raw_candle
+import pytest
+
+from database.raw_candle_models import create_raw_candle, from_market_candle
 from database.raw_candle_repository import RawCandleRepository
+from data.providers.base_provider import MarketCandle
+from data.providers.twelve_data_provider import TwelveDataProvider
+from data.twelve_data_client import Candle
 
 
 def _candle(symbol="XAUUSD", timeframe="M15", ts=None, provider="twelvedata"):
@@ -115,3 +123,91 @@ def test_create_raw_candle_stamps_created_at():
     candle = _candle()
     assert isinstance(candle.created_at, datetime)
     assert candle.created_at.tzinfo is not None
+
+
+# --- Phase 59 Real Market Validation Foundation, TASK 3: MarketCandle bridge ---
+
+def _market_candle(provider="twelvedata", ts=None):
+    return MarketCandle(
+        symbol="XAUUSD", timeframe="M15",
+        open=2000.0, high=2005.0, low=1995.0, close=2001.0,
+        timestamp=ts or datetime(2026, 1, 1, tzinfo=timezone.utc),
+        volume=None, provider=provider,
+    )
+
+
+def test_from_market_candle_copies_every_field():
+    market_candle = _market_candle()
+
+    raw = from_market_candle(market_candle)
+
+    assert raw.symbol == "XAUUSD"
+    assert raw.timeframe == "M15"
+    assert raw.open == 2000.0
+    assert raw.provider == "twelvedata"
+    assert raw.volume is None
+
+
+def test_from_market_candle_override_provider_takes_precedence():
+    market_candle = _market_candle(provider="twelvedata")
+
+    raw = from_market_candle(market_candle, provider="override_provider")
+
+    assert raw.provider == "override_provider"
+
+
+def test_from_market_candle_raises_without_any_provider():
+    market_candle = _market_candle(provider=None)
+
+    with pytest.raises(ValueError):
+        from_market_candle(market_candle)
+
+
+def test_save_market_candles_round_trips_through_the_repository():
+    repo = RawCandleRepository()
+    candles = [_market_candle(ts=datetime(2026, 1, 1, tzinfo=timezone.utc))]
+
+    inserted = repo.save_market_candles(candles)
+
+    assert inserted == 1
+    saved = repo.get_candles("XAUUSD", "M15")
+    assert saved[0].provider == "twelvedata"
+
+
+def test_save_market_candles_deduplicates_like_save_candles():
+    repo = RawCandleRepository()
+    candles = [_market_candle(ts=datetime(2026, 1, 1, tzinfo=timezone.utc))]
+
+    repo.save_market_candles(candles)
+    inserted_again = repo.save_market_candles(candles)
+
+    assert inserted_again == 0
+
+
+def test_save_market_candles_accepts_a_provider_override():
+    repo = RawCandleRepository()
+    candles = [_market_candle(provider=None, ts=datetime(2026, 1, 1, tzinfo=timezone.utc))]
+
+    inserted = repo.save_market_candles(candles, provider="twelvedata")
+
+    assert inserted == 1
+
+
+def test_twelvedataprovider_output_round_trips_into_raw_candles(monkeypatch):
+    """End-to-end: TwelveDataProvider's real (mocked) get_candles() output saves cleanly -- MT5 is never touched anywhere in this path."""
+    provider = TwelveDataProvider()
+    monkeypatch.setattr(
+        provider.client, "fetch_candles",
+        lambda *a, **k: [Candle(timestamp=datetime(2026, 1, 1, tzinfo=timezone.utc), open=2000.0, high=2005.0, low=1995.0, close=2001.0)],
+    )
+
+    market_candles = provider.get_candles("XAUUSD", "M15", 10)
+    assert market_candles[0].provider == "twelvedata"  # Phase 59.3 TASK 1's own stamping
+
+    repo = RawCandleRepository()
+    inserted = repo.save_market_candles(market_candles)
+
+    assert inserted == 1
+    saved = repo.get_candles("XAUUSD", "M15", provider="twelvedata")
+    assert len(saved) == 1
+    assert saved[0].open == 2000.0

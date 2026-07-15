@@ -63,6 +63,13 @@ class SignalPerformance:
         of AC-03. session/market_phase -- read from a
         ContextSnapshotSchema/MarketPhaseResult when supplied by the
         caller, else None (this module never (re)computes context).
+    timeframe (Phase 59 Real Market Validation Foundation, TASK 6):
+        SignalSchema.timeframe's own value (e.g. "M15"), copied
+        directly -- not recomputed, not a new concept. Lets
+        strategy_report.filter_performances() slice a strategy's
+        results by timeframe, one of the four dimensions this task's
+        own brief names (strategy_id, market_phase, session,
+        timeframe).
     Result: result -- one of lifecycle.paper_trade.ALLOWED_PAPER_TRADE_RESULTS
         ("TP"/"SL"/"BE"/"EXPIRED"), read from a closed PaperTrade, OR
         "CANCELLED" (Phase 59.4, TASK 1 -- derived from
@@ -94,6 +101,7 @@ class SignalPerformance:
     duration: Optional[float] = None
     session: Optional[str] = None
     market_phase: Optional[str] = None
+    timeframe: Optional[str] = None
     created_at: Optional[datetime] = None
 
     def to_dict(self) -> dict:
@@ -214,5 +222,6 @@ def compute_signal_performance(
         duration=duration,
         session=session,
         market_phase=market_phase,
+        timeframe=signal.timeframe,
         created_at=datetime.now(timezone.utc),
     )

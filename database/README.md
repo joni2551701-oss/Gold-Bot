@@ -29,7 +29,14 @@ Phase-59 module — every prior raw-market-data foundation
 (`data/market_data_snapshot.py`) deliberately stayed in-memory-only.
 Both are fully isolated new tables (no relation to `signals` or any
 other existing table); see `docs/DATABASE.md`'s own entries for the
-full schema.
+full schema. `database/raw_candle_models.py`'s `from_market_candle()`
+(Phase 59 Real Market Validation Foundation, TASK 3) and
+`RawCandleRepository.save_market_candles()` are the bridge from the
+provider layer's own `MarketCandle` (`data/providers/`, Phase 59.1/
+59.2 — e.g. `TwelveDataProvider.get_candles()`'s real output) into a
+persisted `raw_candles` row — the first time those two pieces were
+connected. MT5 stays unconnected (`MT5Provider` remains an inert
+stub); nothing about the bridge itself is provider-specific.
 
 ## Input
 Typed values from a repository method's caller (a service, or
