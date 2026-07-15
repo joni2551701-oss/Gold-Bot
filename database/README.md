@@ -18,11 +18,23 @@ SQLite (database/goldbot.db)
 ## Responsibilities
 One repository/model pair per table (`users`, `signals`,
 `subscriptions`, `feedback`, `admins`, Phase 59.3's `raw_candles`/
-`market_snapshots`, and — Phase 59.5 — `sync_state`); idempotent
-`CREATE TABLE IF NOT EXISTS` + `PRAGMA table_info()`-guarded migrations
-+ `CREATE INDEX IF NOT EXISTS` (Phase 50), all in `models.py`.
-`database.py` owns connection lifecycle (`__enter__`/`__exit__`,
-commit-or-rollback, always closes).
+`market_snapshots`, Phase 59.5's `sync_state`, and — Phase 59.6 —
+`audit_log`/`config_snapshots`); idempotent `CREATE TABLE IF NOT
+EXISTS` + `PRAGMA table_info()`-guarded migrations + `CREATE INDEX IF
+NOT EXISTS` (Phase 50), all in `models.py`. `database.py` owns
+connection lifecycle (`__enter__`/`__exit__`, commit-or-rollback,
+always closes).
+
+`audit_log`/`config_snapshots` (Phase 59.6: Audit & Observability
+Foundation, TASK 2/6) are both append-only — neither repository
+exposes an update/delete method, matching an audit trail's own
+purpose (a record that can't be quietly edited after the fact).
+`audit_log_repository.py`'s `log_action()` records one owner/admin
+action; nothing calls it automatically yet — no owner command is wired
+to log itself in this phase. `config_snapshot_repository.py`'s
+`save_snapshot()` persists a `configuration.feature_registry.build_feature_registry()`
+capture for a future rollback; no apply/restore function exists yet.
+See `docs/AUDIT_SYSTEM.md`/`docs/CONFIG_SNAPSHOT.md`.
 
 `sync_state` (Phase 59.5: Historical Data Collection & Validation
 Foundation, TASK 2) is one row per `(provider, symbol, timeframe)`,

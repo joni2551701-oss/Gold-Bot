@@ -32,6 +32,19 @@ flags = FeatureFlags()  # every flag False -- the safe default
 - `feature_flags.py` — `FeatureFlags` (`enable_ai`, `enable_crypto`,
   `enable_swing`, `enable_ai_memory`, `enable_replay`, every default
   `False`) and `DEFAULT_FLAGS`.
+- `feature_registry.py` (Phase 59.6, TASK 4) — `FeatureDescriptor` +
+  `build_feature_registry()`, a structured catalog combining every
+  real flag above with `config.Config`'s `ENABLE_MT5`/
+  `ENABLE_TWELVEDATA`/`VALIDATION_MODE`, plus declared-only names
+  (`ENABLE_EXECUTION`, `ENABLE_NEWS`, etc.) that have no real backing
+  yet — always `enabled=False`, `implemented=False`. Not runtime: does
+  not gate anything. See `docs/FEATURE_REGISTRY.md`.
+- `feature_dependency_validator.py` (Phase 59.6, TASK 5) —
+  `DEPENDENCY_RULES` + `validate_feature_dependencies()`, checking a
+  feature registry for internally-consistent enable/disable
+  combinations (e.g. `ENABLE_EXECUTION` requires `ENABLE_RISK`/
+  `ENABLE_DECISION`). Read-only — never corrects a feature. See
+  `docs/FEATURE_REGISTRY.md`.
 
 ## What this does NOT do
 - Does not rewrite or replace `config.py` — `Config` is untouched and

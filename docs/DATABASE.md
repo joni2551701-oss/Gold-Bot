@@ -118,6 +118,25 @@ foreign key, linked only by convention (shared `provider`/`symbol`/
 Owned by `database/sync_state_repository.py` /
 `database/sync_state_models.py`.
 
+### `audit_log` (Phase 59.6)
+Append-only — no update/delete method exists on
+`AuditLogRepository`. One row per recorded owner/admin action
+(`actor`, `action`, `target`, `result` default `'SUCCESS'`,
+`details`, `created_at`). Independent of every other table, including
+`admins` — `actor` holds the same kind of identifier by convention,
+never enforced structurally. Nothing calls `log_action()`
+automatically yet. Owned by `database/audit_log_repository.py` /
+`database/audit_log_models.py`.
+
+### `config_snapshots` (Phase 59.6)
+Append-only, same posture as `audit_log`. One row per captured
+`configuration.feature_registry.build_feature_registry()` state
+(`snapshot_id UNIQUE NOT NULL`, `feature_state` — a JSON object string
+of `{feature_name: enabled}`, `taken_at`, `taken_by`, `reason`). No
+apply/restore function exists — capture and read only. Owned by
+`database/config_snapshot_repository.py` /
+`database/config_snapshot_models.py`.
+
 ---
 
 ## Phase 50 Audit Findings

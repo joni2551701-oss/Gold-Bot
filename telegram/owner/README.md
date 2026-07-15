@@ -86,6 +86,16 @@ persisted tables (Phase 59.3/Phase 59.5), the same "query the real
 backing store" posture `provider_commands.py`'s
 `list_providers()`/`get_data_status()` already uses.
 
+### `owner_roles.py` (Phase 59.6: Audit & Observability Foundation,
+TASK 3)
+`OwnerRole` (`OWNER`/`SUPER_ADMIN`/`ADMIN`/`VIEWER`) +
+`resolve_owner_role(telegram_id, admin_repository=None)`. A separate,
+finer-grained, **not-yet-wired** hierarchy for a future Owner
+Dashboard — never imports or modifies `telegram.permissions.PermissionLevel`
+(the live enum gating real commands today via
+`telegram/command_router.py`). See `docs/OWNER_PERMISSIONS.md` for the
+full contrast between the two.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -100,7 +110,10 @@ imports `analytics.strategy_report`, `analytics.signal_performance`,
 and `provider_commands.ProviderCommandResult`. `dataset_commands.py`
 imports `analytics.dataset_report`, `data.provider_comparison`,
 `database.raw_candle_repository`, `database.sync_state_repository`,
-and `provider_commands.ProviderCommandResult`.
+and `provider_commands.ProviderCommandResult`. `owner_roles.py`
+imports `telegram.permissions.is_owner` and, lazily (inside
+`resolve_owner_role()`, not at module import time),
+`database.admin_repository.AdminRepository`.
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the
 live routing surface.

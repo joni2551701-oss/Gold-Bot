@@ -901,6 +901,67 @@ trading (`lifecycle/`), any pre-existing `analytics/` module
 `validation_report.py`), or the pipeline's own stage order changed in
 this phase.
 
+### Phase 59.6 — Audit & Observability Foundation
+
+The last "observe only" layer the Director's own roadmap names before
+Runtime Feature Toggle (Phase 59.7), Owner Dashboard (Phase 59.8), and
+Emergency Layer (Phase 59.9 — the first phase where `SystemState`/
+`/panic`/`/maintenance` will actually control `Pipeline`/`Decision`/
+`Execution`). Full detail: `docs/AUDIT_SYSTEM.md`,
+`docs/OWNER_PERMISSIONS.md`, `docs/FEATURE_REGISTRY.md`,
+`docs/CONFIG_SNAPSHOT.md`.
+
+**TASK 1 (System State Manager)** — new `core/system_state.py`.
+`SystemState` enum (`RUNNING`/`VALIDATION`/`MAINTENANCE`/`PANIC`/
+`READ_ONLY`) + `SystemStateRecord` (one immutable transition record) +
+`create_system_state_record()`. Pure model — no mutable "current
+state" holder, nothing in `core/pipeline.py` reads it.
+
+**TASK 2 (Audit Log)** — new, isolated, append-only `audit_log` table
+(`database/audit_log_models.py`/`audit_log_repository.py`).
+`log_action(actor, action, target, result, details)` records one
+entry; no update/delete method exists. Nothing calls it automatically
+yet — no owner command is wired to log itself.
+
+**TASK 3 (Owner Permission System)** — new
+`telegram/owner/owner_roles.py`. `OwnerRole` (`OWNER`/`SUPER_ADMIN`/
+`ADMIN`/`VIEWER`) + `resolve_owner_role()`, reusing the existing
+`admins.role` column (previously only a label, now classified) and
+`telegram.permissions.is_owner()`. Deliberately separate from and
+never touching `telegram.permissions.PermissionLevel` — that enum is
+live-wired into `telegram/command_router.py`'s real permission gating
+today; `OwnerRole` is a foundation-only, not-yet-checked hierarchy for
+a future Owner Dashboard.
+
+**TASK 4 (Feature Registry)** — new `configuration/feature_registry.py`.
+`build_feature_registry()` unifies `config.Config`'s real
+`ENABLE_MT5`/`ENABLE_TWELVEDATA`/`VALIDATION_MODE` and
+`configuration.feature_flags.FeatureFlags`' 5 reserved fields with 13
+declared-only names from the brief (`ENABLE_EXECUTION`, `ENABLE_NEWS`,
+etc.) that have no real backing — always `enabled=False`,
+`implemented=False`, `source="declared"`. Not runtime: gates nothing.
+
+**TASK 5 (Feature Dependency Validator)** — new
+`configuration/feature_dependency_validator.py`. `DEPENDENCY_RULES`
+(`ENABLE_EXECUTION` requires `ENABLE_RISK`/`ENABLE_DECISION`) +
+`validate_feature_dependencies()`. Since all three names are
+declared-only today, no real configuration can violate this rule yet —
+the contract exists for whichever future phase makes one of these
+names real.
+
+**TASK 6 (Configuration Snapshot)** — new, isolated, append-only
+`config_snapshots` table (`database/config_snapshot_models.py`/
+`config_snapshot_repository.py`). `create_config_snapshot(registry)`
+serializes a feature registry's `{name: enabled}` state to JSON;
+`save_snapshot()`/`get_latest()`/`get_all()` persist and read it back.
+No apply/restore function exists — capture and read only.
+
+None of `core/pipeline.py`, `decision/`, `execution/`, `risk/`,
+`strategies/`, `context/`, `signals/`, any Telegram handler,
+`telegram.permissions.PermissionLevel`, `telegram/command_router.py`,
+or any pre-existing `analytics/`/`configuration/` module's behavior
+changed in this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real
@@ -1086,8 +1147,8 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 
 | Module | Responsibility |
 |---|---|
-| `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. |
-| `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. |
+| `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. |
+| `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. Phase 59.6 added `feature_registry.py` (`FeatureDescriptor`/`build_feature_registry()`, unifying real + declared-only flag names) and `feature_dependency_validator.py` (`validate_feature_dependencies()`) — still not runtime, gates nothing. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07/Phase 59.1 TASK 5) — maps a caught fetch exception (or a known empty-response condition) to a structured `ExternalAPIError` for logging only, never changes control flow — Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation/59.1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store — and Market Provider Abstraction (`providers/`, Phase 59.1) — `DataProvider`/`MarketDataProvider`/`FundamentalDataProvider`, `TwelveDataProvider`/`MT5Provider`/`BinanceProvider`/`FredProvider`, `ProviderRegistry`, data-only, not wired into the live pipeline — plus Provider Normalization (`normalization/`, Phase 59.3) — `symbol_mapper.py`/`timeframe_mapper.py`/`candle_normalizer.py`, centralized per-provider format tables, no new candle type. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. `snapshot.py` (Phase A16) additionally standardizes a `ContextSnapshot` into a flat, JSON-serializable `ContextSnapshotSchema`, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) — a distinct type, not a replacement. `market_phase.py` (AC-02) adds a wired, advisory 5-state (+`UNKNOWN`) `MarketPhase` classification reusing already-detected Wyckoff/AMD/Market Regime data. `fundamental_context.py` (Phase 59.3) adds `compute_fundamental_context()` — a pure adapter connecting `data/providers/fred_provider.py` (Phase 59.2) into a new `FundamentalContextSnapshot`; not called by anything in this phase. |
@@ -1100,7 +1161,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | `execution/` | Inert scaffolding for future MT5 integration — not reachable from any runtime path today. |
 | `monitoring/` | Historical trade-outcome statistics (win rate, strategy breakdown — `performance.py`'s `PerformanceTracker`), not wired into any live command yet. Distinct from `performance/` (Phase A19) — see that row. Also `provider_health.py` (Phase 59.2) — `ProviderHealthStatus`/`check_provider_health()`, a third, distinct kind of “performance” (a provider's own live availability/latency), not wired into any live command yet either. |
 | `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `monitoring/performance.py`'s trade-outcome statistics. |
-| `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. |
+| `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. Phase 59.6 added `audit_log`/`config_snapshots` (`audit_log_models.py`/`audit_log_repository.py`, `config_snapshot_models.py`/`config_snapshot_repository.py`) — both append-only, neither called automatically by any owner command yet. |
 | `telegram/` | The Telegram product layer: routing, permissions, handlers, services. `owner/` (Phase 59.3-59.5) — real, tested owner-command service functions (`provider_commands.py`/`system_commands.py`/`feature_commands.py`/`report_commands.py`/`validation_commands.py`/`dataset_commands.py`), not registered into `commands.py`/`command_router.py`/`handlers.py` — the live bot's command surface is unaffected. |
 | `lifecycle/` | Phase 59 Preparation foundation — `PaperTrade`/`TradeState` (simulated, broker-free trade state machine) and `SignalLifecycleState` (a signal's own progress through the analysis pipeline). In-memory only: no database persistence, no pipeline wiring. Not the same as `strategies/lifecycle/` (per-strategy metadata) or `execution/signal_lifecycle.py` (a pre-existing, inert, Telegram-delivery state machine). |
 | `analytics/` | Phase 59 Preparation foundation — `SignalPerformance`/`StrategyPerformanceReport`, **trading** performance (win/loss/R-multiple by strategy). Not wired into `core/pipeline.py`; not the same concept as `performance/` (Phase A19, system timing) or a replacement for `monitoring/performance.py`'s pre-existing, database-driven `PerformanceTracker`. |
@@ -1307,6 +1368,28 @@ import sweep):
   imported by `telegram/handlers.py`, `telegram/command_router.py`, or
   `telegram/commands.py`. None of the six new modules are imported by
   `core/pipeline.py`.
+- `core/system_state.py` (Phase 59.6) imports only the standard
+  library (`dataclasses`, `datetime`, `enum`) — no dependency on any
+  other package, not imported by `core/pipeline.py`.
+  `database/audit_log_models.py`/`audit_log_repository.py` and
+  `database/config_snapshot_models.py`/`config_snapshot_repository.py`
+  (Phase 59.6) follow the exact same shape as every other
+  `database/*_repository.py` pair — `config_snapshot_models.py`
+  additionally imports `configuration.feature_registry.FeatureDescriptor`
+  (`TYPE_CHECKING`-only), a new, one-directional `database/` →
+  `configuration/` dependency, never reversed.
+  `telegram/owner/owner_roles.py` (Phase 59.6) imports
+  `telegram.permissions.is_owner` and, lazily inside
+  `resolve_owner_role()` (not at module import time),
+  `database.admin_repository.AdminRepository` — never imports or
+  modifies `telegram.permissions.PermissionLevel` itself.
+  `configuration/feature_registry.py`/`feature_dependency_validator.py`
+  (Phase 59.6) import `config.Config` and
+  `configuration.feature_flags.DEFAULT_FLAGS` (same package) only — no
+  dependency on `database/`, `telegram/`, or any pipeline layer. None
+  of these six new modules are imported by `core/pipeline.py`,
+  `decision/`, `risk/`, `execution/`, `strategies/`, `context/`,
+  `signals/`, or `telegram/command_router.py`.
 
 If a change requires violating one of these rules, that is a signal
 to stop and reconsider the design, not to add the import and move on

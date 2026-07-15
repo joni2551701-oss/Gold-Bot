@@ -476,3 +476,89 @@ def init_sync_state_schema(connection: sqlite3.Connection):
     except sqlite3.Error as e:
         logger.error(f"Failed to initialize sync_state schema: {e}")
         raise
+
+
+def init_audit_log_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the audit_log table schema (Phase 59.6: Audit
+    & Observability Foundation, TASK 2). Independent of every other
+    table -- no foreign key, no relation to `admins`/`users` beyond
+    `actor` holding the same kind of identifier by convention, never
+    enforced structurally. Append-only by design: this repository
+    exposes no update/delete method, matching an audit log's own
+    purpose (a record that can't be quietly edited after the fact).
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS audit_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        actor TEXT NOT NULL,
+        action TEXT NOT NULL,
+        target TEXT,
+        result TEXT NOT NULL DEFAULT 'SUCCESS',
+        details TEXT,
+        created_at TEXT NOT NULL
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (audit_log table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize audit_log schema: {e}")
+        raise
+
+    _create_audit_log_indexes(connection)
+
+
+def _create_audit_log_indexes(connection: sqlite3.Connection):
+    """actor is the lookup pattern (a future "what did owner X do" query); created_at is sorted on for a recent-entries query. CREATE INDEX IF NOT EXISTS is idempotent."""
+    statements = [
+        "CREATE INDEX IF NOT EXISTS idx_audit_log_actor ON audit_log(actor)",
+        "CREATE INDEX IF NOT EXISTS idx_audit_log_created_at ON audit_log(created_at)",
+    ]
+    try:
+        for statement in statements:
+            connection.execute(statement)
+        connection.commit()
+    except sqlite3.Error as e:
+        logger.error(f"Failed to create audit_log indexes: {e}")
+        raise
+
+
+def init_config_snapshot_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the config_snapshots table schema (Phase 59.6:
+    Audit & Observability Foundation, TASK 6). Independent of every
+    other table -- no foreign key. Append-only, same posture as
+    audit_log: this repository exposes no update/delete, a snapshot is
+    a fixed point-in-time record.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS config_snapshots (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        snapshot_id TEXT UNIQUE NOT NULL,
+        feature_state TEXT NOT NULL,
+        taken_at TEXT NOT NULL,
+        taken_by TEXT,
+        reason TEXT
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (config_snapshots table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize config_snapshots schema: {e}")
+        raise
+
+    _create_config_snapshot_indexes(connection)
+
+
+def _create_config_snapshot_indexes(connection: sqlite3.Connection):
+    """taken_at is sorted on for a "most recent snapshot" query. snapshot_id already has an implicit index via its UNIQUE constraint."""
+    try:
+        connection.execute("CREATE INDEX IF NOT EXISTS idx_config_snapshots_taken_at ON config_snapshots(taken_at)")
+        connection.commit()
+    except sqlite3.Error as e:
+        logger.error(f"Failed to create config_snapshots indexes: {e}")
+        raise
