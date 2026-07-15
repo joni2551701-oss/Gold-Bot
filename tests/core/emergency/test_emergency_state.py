@@ -6,7 +6,6 @@ from datetime import datetime
 
 from core.emergency.emergency_state import (
     EmergencyState,
-    EmergencyStateRecord,
     create_emergency_state_record,
 )
 
