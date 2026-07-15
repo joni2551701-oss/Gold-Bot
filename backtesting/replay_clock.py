@@ -11,8 +11,6 @@ matching CLAUDE.md's "no unnecessary refactor" -- a real-time-paced
 player is not something any Phase 60.1 consumer needs yet.
 """
 
-from typing import Optional
-
 from backtesting.replay_models import ReplayState
 
 
