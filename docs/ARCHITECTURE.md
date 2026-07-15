@@ -1066,6 +1066,63 @@ None of `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
 `telegram/command_router.py`, or `telegram/commands.py` changed in
 this phase.
 
+### Phase 59.9 — Emergency Safety Layer Foundation
+
+New `core/emergency/` package — a finer-grained state vocabulary and
+runtime controller for the bot's emergency posture, still, per the
+Director's own roadmap, **not** wired into `core/pipeline.py`,
+`decision/`, `risk/risk_manager.py`, `execution/`, or any Telegram
+routing surface. Full detail: `docs/EMERGENCY_SYSTEM.md`.
+
+**`emergency_state.py`** — `EmergencyState` enum
+(`NORMAL`/`WARNING`/`PAUSED`/`KILLED`/`MAINTENANCE`) + immutable
+`EmergencyStateRecord`. Deliberately separate from
+`core.system_state.SystemState` (Phase 59.6) — same "two hierarchies
+for two granularities" precedent as `OwnerRole` vs `PermissionLevel` —
+because `SystemState` has no `WARNING`/`PAUSED` equivalent that
+`circuit_breaker.py` needs. `core/system_state.py` is unchanged.
+
+**`emergency_manager.py`** — `EmergencyManager`:
+`activate_pause()`/`activate_kill()`/`activate_maintenance()`/
+`restore_normal()`/`get_status()`. Every transition is persisted via
+`database.emergency_repository.EmergencyRepository` (append-only —
+history is never overwritten, unlike `runtime_features`' one-row-per-
+name upsert) and audited via `database.audit_log_repository.AuditLogRepository`
+(`KILL_ACTIVATED`/`PAUSE_ACTIVATED`/`MAINTENANCE_ENABLED`/
+`SYSTEM_RESTORED`) — the same one-directional `core/` → `database/`
+dependency `configuration/runtime_feature_manager.py` already
+established for `configuration/` → `database/` (Phase 59.7).
+
+**`circuit_breaker.py`** — pure, stateless `evaluate_circuit()`:
+`CircuitBreakerInput` (`loss_count`/`daily_drawdown`/`api_status`/
+`execution_error`) → `CircuitDecision` (`ALLOW`/`BLOCK`/`WARNING`) +
+reason. No database, no side effects, never called from
+`core/pipeline.py` or any pipeline stage in this phase — it returns a
+decision, it does not act on one.
+
+**`maintenance.py`** — `MaintenanceMode` (`enabled`/`reason`/
+`started_at`/`owner`), a finer-grained detail record for
+`EmergencyState.MAINTENANCE`, same "enum value vs. detail record"
+split as `FeatureDescriptor` vs `FeatureRuntimeState`.
+
+**`database/emergency_models.py`/`emergency_repository.py`** — new
+`emergency_states` table, append-only (mirrors `audit_log`'s own
+posture, not `runtime_features`' upsert). `EmergencyRepository.get_current_state()`
+derives "current" from the most recent row; `get_history()` returns
+the full, never-lost sequence.
+
+**`telegram/owner/emergency_commands.py`** — `kill_system()`/
+`pause_system()`/`maintenance_on()`/`restore_system()`/
+`get_emergency_status()`, thin wrappers over `EmergencyManager`. Not
+registered into `telegram/commands.py`/`command_router.py`/
+`handlers.py`, same posture as every Owner Mode module before it.
+
+None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
+`execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
+`telegram/handlers.py`, `telegram/command_router.py`, or
+`telegram/commands.py` changed in this phase. No real order or signal
+is blocked by any module in this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real
@@ -1251,7 +1308,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 
 | Module | Responsibility |
 |---|---|
-| `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. |
+| `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. Phase 59.9 added `emergency/` — `EmergencyState`/`EmergencyManager` (a runtime controller, persisted append-only via `database.emergency_repository`, audited via `AuditLogRepository`) and stateless `circuit_breaker.evaluate_circuit()`; still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. Phase 59.6 added `feature_registry.py` (`FeatureDescriptor`/`build_feature_registry()`, unifying real + declared-only flag names) and `feature_dependency_validator.py` (`validate_feature_dependencies()`) — still not runtime, gates nothing. Phase 59.7 added the first genuinely *runtime* control in this package — `runtime_state.py`/`runtime_feature_manager.py`/`runtime_api.py` (`RuntimeFeatureManager`: validated, persisted, audited, snapshotted enable/disable) — still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`, none of which import `configuration/`. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07/Phase 59.1 TASK 5) — maps a caught fetch exception (or a known empty-response condition) to a structured `ExternalAPIError` for logging only, never changes control flow — Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation/59.1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store — and Market Provider Abstraction (`providers/`, Phase 59.1) — `DataProvider`/`MarketDataProvider`/`FundamentalDataProvider`, `TwelveDataProvider`/`MT5Provider`/`BinanceProvider`/`FredProvider`, `ProviderRegistry`, data-only, not wired into the live pipeline — plus Provider Normalization (`normalization/`, Phase 59.3) — `symbol_mapper.py`/`timeframe_mapper.py`/`candle_normalizer.py`, centralized per-provider format tables, no new candle type. |
@@ -1265,7 +1322,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | `execution/` | Inert scaffolding for future MT5 integration — not reachable from any runtime path today. |
 | `monitoring/` | Historical trade-outcome statistics (win rate, strategy breakdown — `performance.py`'s `PerformanceTracker`), not wired into any live command yet. Distinct from `performance/` (Phase A19) — see that row. Also `provider_health.py` (Phase 59.2) — `ProviderHealthStatus`/`check_provider_health()`, a third, distinct kind of “performance” (a provider's own live availability/latency), not wired into any live command yet either. |
 | `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `monitoring/performance.py`'s trade-outcome statistics. |
-| `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. Phase 59.6 added `audit_log`/`config_snapshots` (`audit_log_models.py`/`audit_log_repository.py`, `config_snapshot_models.py`/`config_snapshot_repository.py`) — both append-only. Phase 59.7 added `runtime_features` (`runtime_feature_models.py`/`runtime_feature_repository.py`) — one row per feature name, `configuration.runtime_feature_manager.RuntimeFeatureManager`'s persistence layer; `audit_log`/`config_snapshots` are now actually written to on every successful runtime toggle, no longer purely a manual/future-command capture. |
+| `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. Phase 59.6 added `audit_log`/`config_snapshots` (`audit_log_models.py`/`audit_log_repository.py`, `config_snapshot_models.py`/`config_snapshot_repository.py`) — both append-only. Phase 59.7 added `runtime_features` (`runtime_feature_models.py`/`runtime_feature_repository.py`) — one row per feature name, `configuration.runtime_feature_manager.RuntimeFeatureManager`'s persistence layer; `audit_log`/`config_snapshots` are now actually written to on every successful runtime toggle, no longer purely a manual/future-command capture. Phase 59.9 added `emergency_states` (`emergency_models.py`/`emergency_repository.py`) — append-only (like `audit_log`, unlike `runtime_features`' upsert), `core.emergency.emergency_manager.EmergencyManager`'s persistence layer; every transition is also written to `audit_log`. |
 | `telegram/` | The Telegram product layer: routing, permissions, handlers, services. `owner/` (Phase 59.3-59.5) — real, tested owner-command service functions (`provider_commands.py`/`system_commands.py`/`feature_commands.py`/`report_commands.py`/`validation_commands.py`/`dataset_commands.py`), not registered into `commands.py`/`command_router.py`/`handlers.py` — the live bot's command surface is unaffected. |
 | `lifecycle/` | Phase 59 Preparation foundation — `PaperTrade`/`TradeState` (simulated, broker-free trade state machine) and `SignalLifecycleState` (a signal's own progress through the analysis pipeline). In-memory only: no database persistence, no pipeline wiring. Not the same as `strategies/lifecycle/` (per-strategy metadata) or `execution/signal_lifecycle.py` (a pre-existing, inert, Telegram-delivery state machine). |
 | `analytics/` | Phase 59 Preparation foundation — `SignalPerformance`/`StrategyPerformanceReport`, **trading** performance (win/loss/R-multiple by strategy). Not wired into `core/pipeline.py`; not the same concept as `performance/` (Phase A19, system timing) or a replacement for `monitoring/performance.py`'s pre-existing, database-driven `PerformanceTracker`. |
@@ -1512,6 +1569,22 @@ import sweep):
   `configuration.runtime_feature_manager` — no `telegram/` dependency,
   keeping the existing one-directional `telegram/` → `configuration/`
   relationship intact. None of the four new Phase 59.7 modules are
+  imported by `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
+  `strategies/`, `signals/`, `context/`, `ai/`, any Telegram handler,
+  or `telegram/command_router.py`.
+- `core/emergency/emergency_state.py`/`circuit_breaker.py`/
+  `maintenance.py` (Phase 59.9) import only the standard library.
+  `core/emergency/emergency_manager.py` (Phase 59.9) imports
+  `database.emergency_repository`, `database.audit_log_repository` —
+  a new, one-directional `core/` → `database/` dependency, the same
+  shape `configuration/runtime_feature_manager.py` already established
+  for `configuration/` → `database/` (Phase 59.7); never reversed,
+  `database/` does not import `core/emergency/`.
+  `telegram/owner/emergency_commands.py` (Phase 59.9) imports
+  `core.emergency.emergency_manager`/`emergency_state` and
+  `provider_commands.ProviderCommandResult` (same package) — not
+  imported by `telegram/handlers.py`, `telegram/command_router.py`, or
+  `telegram/commands.py`. None of the six new Phase 59.9 modules are
   imported by `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
   `strategies/`, `signals/`, `context/`, `ai/`, any Telegram handler,
   or `telegram/command_router.py`.

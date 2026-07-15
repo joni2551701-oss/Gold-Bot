@@ -155,6 +155,27 @@ are not called by any command in this package yet — the actual
 per-command minimum-role gate is part of the same future wiring step
 below.
 
+## Phase 59.9 update — Emergency Safety Layer
+
+Still not wired into the live bot — every rule above still holds. Five
+new emergency commands' worth of payload now exist:
+
+```
+/panic (kill)       → telegram/owner/emergency_commands.py's kill_system()
+/pause               → telegram/owner/emergency_commands.py's pause_system()
+/maintenance on      → telegram/owner/emergency_commands.py's maintenance_on()
+/restore             → telegram/owner/emergency_commands.py's restore_system()
+/emergency_status     → telegram/owner/emergency_commands.py's get_emergency_status()
+```
+
+Each is a thin wrapper over `core.emergency.emergency_manager.EmergencyManager`
+(Phase 59.9) — every call is persisted (append-only history, never
+overwritten) and audited (`KILL_ACTIVATED`/`PAUSE_ACTIVATED`/
+`MAINTENANCE_ENABLED`/`SYSTEM_RESTORED`). See `docs/EMERGENCY_SYSTEM.md`
+for the full state diagram, safety rules, and future wiring plan
+(including how this would eventually gate `core/pipeline.py`/
+`execution/` — not done in this phase).
+
 ## Roadmap
 
 ```

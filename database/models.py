@@ -592,3 +592,34 @@ def init_runtime_feature_schema(connection: sqlite3.Connection):
     except sqlite3.Error as e:
         logger.error(f"Failed to initialize runtime_features schema: {e}")
         raise
+
+
+def init_emergency_state_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the emergency_states table schema (Phase 59.9:
+    Emergency Safety Layer Foundation, TASK 2). Independent of every
+    other table -- no foreign key. Append-only: every transition is a
+    new row (no UNIQUE constraint on `state`), unlike runtime_features'
+    one-row-per-name upsert -- history must never be lost, per this
+    task's own brief. "Current state" is derived by the repository as
+    the most recent row (ORDER BY id DESC LIMIT 1), not a separate
+    column.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS emergency_states (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        state TEXT NOT NULL,
+        reason TEXT,
+        source TEXT NOT NULL DEFAULT 'system',
+        changed_by TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (emergency_states table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize emergency_states schema: {e}")
+        raise

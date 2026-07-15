@@ -19,11 +19,23 @@ SQLite (database/goldbot.db)
 One repository/model pair per table (`users`, `signals`,
 `subscriptions`, `feedback`, `admins`, Phase 59.3's `raw_candles`/
 `market_snapshots`, Phase 59.5's `sync_state`, Phase 59.6's
-`audit_log`/`config_snapshots`, and — Phase 59.7 —
-`runtime_features`); idempotent `CREATE TABLE IF NOT EXISTS` +
-`PRAGMA table_info()`-guarded migrations + `CREATE INDEX IF NOT
-EXISTS` (Phase 50), all in `models.py`. `database.py` owns connection
-lifecycle (`__enter__`/`__exit__`, commit-or-rollback, always closes).
+`audit_log`/`config_snapshots`, Phase 59.7's `runtime_features`, and —
+Phase 59.9 — `emergency_states`); idempotent `CREATE TABLE IF NOT
+EXISTS` + `PRAGMA table_info()`-guarded migrations + `CREATE INDEX IF
+NOT EXISTS` (Phase 50), all in `models.py`. `database.py` owns
+connection lifecycle (`__enter__`/`__exit__`, commit-or-rollback,
+always closes).
+
+`emergency_states` (Phase 59.9: Emergency Safety Layer Foundation,
+TASK 2) is append-only — `EmergencyRepository.record_transition()`
+always INSERTs a new row, never UPDATEs (unlike `runtime_features`'
+one-row-per-name upsert); "current state" is the most recent row
+(`ORDER BY id DESC LIMIT 1`), and full history is preserved forever.
+The persisted backing store for
+`core.emergency.emergency_manager.EmergencyManager` — same
+one-directional `core/` → `database/` dependency
+`configuration/runtime_feature_manager.py` already established for
+`configuration/` → `database/` (Phase 59.7).
 
 `runtime_features` (Phase 59.7: Runtime Feature Toggle Center, TASK 3)
 is one row per feature name — `RuntimeFeatureRepository.set_feature()`

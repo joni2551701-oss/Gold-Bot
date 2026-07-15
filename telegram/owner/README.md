@@ -143,6 +143,18 @@ performances, period_start, period_end)` in this phase — the future
 same win-rate formula every other figure in this codebase already
 uses.
 
+### `emergency_commands.py` (Phase 59.9: Emergency Safety Layer
+Foundation)
+`kill_system()`, `pause_system()`, `maintenance_on()`,
+`restore_system()`, `get_emergency_status()` — thin wrappers over
+`core.emergency.emergency_manager.EmergencyManager`, reformatted into
+this package's `ProviderCommandResult` shape. No new
+state/persistence/audit logic — every transition is validated,
+persisted, and audited entirely inside `core/emergency/`. See
+`docs/EMERGENCY_SYSTEM.md` for the full state diagram and safety
+rules. Not wired into the live bot, same as every module in this
+package.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -173,6 +185,9 @@ documents, never reversed. `security.py` imports
 `owner_roles.OwnerRole`/`resolve_owner_role`. `dashboard.py` imports
 only other modules within this package
 (`control_commands`/`provider_commands`/`status_commands`).
+`emergency_commands.py` imports `core.emergency.emergency_manager.EmergencyManager`,
+`core.emergency.emergency_state.EmergencyStateRecord`, and
+`provider_commands.ProviderCommandResult`.
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the
 live routing surface.
