@@ -1014,6 +1014,58 @@ None of `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
 import anything from `configuration/` — a runtime toggle changes only
 what `RuntimeFeatureManager`/`runtime_api.py` themselves report.
 
+### Phase 59.8 — Owner Control Center
+
+Consolidates `telegram/owner/`'s five prior modules (Phase 59.3-59.5's
+`provider_commands.py`/`system_commands.py`/`feature_commands.py`/
+`dataset_commands.py`, Phase 59.4's `report_commands.py`, Phase 59.6's
+`owner_roles.py`, Phase 59.7's `configuration/runtime_api.py`) into a
+control-center surface — still, per the Director's own roadmap,
+**not** registered into `telegram/commands.py`/`command_router.py`/
+`handlers.py`. Full detail: `docs/OWNER_COMMANDS.md`'s "Phase 59.8
+update" section.
+
+**`status_commands.py`** — new `get_system_status()`, composing
+`AdminService.get_system_status()`, `data.providers.registry`,
+`config.Config.MARKET_DATA_PROVIDER`/`VALIDATION_MODE`,
+`core.system_state.SystemState` (display label only — no instance
+held), and `SignalRepository.get_latest_signal()`. No new health-check
+logic — pure composition.
+
+**`control_commands.py`** — new `get_feature_states()`/
+`enable_feature()`/`disable_feature()`, thin wrappers over
+`configuration/runtime_api.py` (Phase 59.7). Deliberately not named
+`list_features()` — `feature_commands.py`'s existing function of that
+name reports the older *static* Config/FeatureFlags view; this reports
+the newer *runtime* view. Both now coexist, disclosed explicitly in
+`docs/OWNER_COMMANDS.md` since a future `/features` wiring step must
+pick exactly one.
+
+**`report_commands.py`** gained `get_validation_summary()` (additive,
+existing `format_daily_stats()`/`pick_best_strategy()` untouched) —
+reuses `build_strategy_report()`/`compute_win_rate()` for the
+`Signals`/`Win`/`Loss`/`Accuracy`/`Best Strategy` shape.
+
+**`security.py`** — new `require_role()` (ranks `owner_roles.OwnerRole`
+against a minimum) and `log_owner_action()` (a convenience
+`AuditLogRepository.log_action()` call-through). Foundation only: no
+command in this package calls either yet.
+
+**`dashboard.py`** — new `get_dashboard()`, one consolidated overview
+composing `status_commands`/`control_commands`/`provider_commands`'
+own functions. No new status/health/provider logic.
+
+The `/enable_provider`/`/disable_provider` gap `docs/OWNER_COMMANDS.md`
+already disclosed (Phase 59.1) remains open: `config.Config.ENABLE_MT5`/
+`ENABLE_TWELVEDATA` are still process-start, `os.getenv()`-read
+constants; Phase 59.7's runtime registry tracks a *separate* value
+under the same name, not a mutation of `Config` itself.
+
+None of `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
+`strategies/`, `signals/`, `context/`, `ai/`, `telegram/handlers.py`,
+`telegram/command_router.py`, or `telegram/commands.py` changed in
+this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

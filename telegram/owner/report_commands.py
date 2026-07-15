@@ -24,9 +24,10 @@ section) -- a real /stats command would need that data source wired
 up first, a separate, future step.
 """
 
+from datetime import datetime
 from typing import Dict, Optional, Sequence
 
-from analytics.strategy_report import StrategyPerformanceReport, build_strategy_report
+from analytics.strategy_report import StrategyPerformanceReport, build_strategy_report, compute_win_rate
 from analytics.signal_performance import SignalPerformance
 from signals.schema import SignalSchema
 from telegram.owner.provider_commands import ProviderCommandResult
@@ -90,4 +91,52 @@ def format_daily_stats(
         return ProviderCommandResult(success=True, message="\n".join(lines))
     except Exception as e:
         logger.warning(f"format_daily_stats failed: {e}")
+        return ProviderCommandResult(success=False, message=f"Error: {e}")
+
+
+def get_validation_summary(
+    signals: Sequence[SignalSchema],
+    performances: Sequence[SignalPerformance],
+    period_start: datetime,
+    period_end: datetime,
+) -> ProviderCommandResult:
+    """
+    Phase 59.8 (Owner Control Center) -- the future `/validation_report`
+    command's payload, matching this task's own worked example:
+
+        Last 7 days
+        Signals: 34
+        Win: 21
+        Loss: 13
+        Accuracy: 61.7%
+        Best Strategy: Liquidity Sweep
+
+    A thin, additive companion to format_daily_stats() (same module):
+    reuses build_strategy_report()/pick_best_strategy() (both above,
+    unmodified) for the best-strategy pick, and
+    analytics.strategy_report.compute_win_rate() (Phase 59 Preparation)
+    for "Accuracy" -- the same win/(win+loss) formula every other
+    win-rate figure in this codebase already uses, not a new one.
+    Never raises: empty inputs produce an all-zero, 0% report, not an
+    exception.
+    """
+    try:
+        days = max((period_end - period_start).days, 0)
+        win_count = sum(1 for p in performances if p.result == "TP")
+        loss_count = sum(1 for p in performances if p.result == "SL")
+        accuracy = compute_win_rate(win_count, loss_count) * 100
+
+        best = pick_best_strategy(build_strategy_report(performances))
+
+        lines = [
+            f"Last {days} days",
+            f"Signals: {len(signals)}",
+            f"Win: {win_count}",
+            f"Loss: {loss_count}",
+            f"Accuracy: {accuracy:.1f}%",
+            f"Best Strategy: {best.strategy_id if best else 'N/A'}",
+        ]
+        return ProviderCommandResult(success=True, message="\n".join(lines))
+    except Exception as e:
+        logger.warning(f"get_validation_summary failed: {e}")
         return ProviderCommandResult(success=False, message=f"Error: {e}")

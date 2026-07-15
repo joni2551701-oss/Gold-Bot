@@ -8,7 +8,10 @@ from analytics.signal_performance import SignalPerformance
 from analytics.strategy_report import build_strategy_report
 from signals.schema import SignalSchema
 from telegram.owner.provider_commands import ProviderCommandResult
-from telegram.owner.report_commands import format_daily_stats, pick_best_strategy
+from telegram.owner.report_commands import format_daily_stats, get_validation_summary, pick_best_strategy
+
+P0 = datetime(2026, 8, 1, tzinfo=timezone.utc)
+P1 = datetime(2026, 8, 8, tzinfo=timezone.utc)
 
 
 def _signal(signal_id, decision="APPROVED"):
@@ -109,3 +112,44 @@ def test_pick_best_strategy_returns_none_for_empty_reports():
 
 def test_pick_best_strategy_never_raises():
     pick_best_strategy({})
+
+
+# --- get_validation_summary ---
+
+def test_get_validation_summary_matches_the_briefs_own_worked_example():
+    signals = [_signal(f"s{i}") for i in range(34)]
+    performances = (
+        [_perf("LIQUIDITY_SWEEP_STRATEGY", "TP") for _ in range(21)]
+        + [_perf("LIQUIDITY_SWEEP_STRATEGY", "SL") for _ in range(13)]
+    )
+
+    result = get_validation_summary(signals, performances, P0, P1)
+
+    assert isinstance(result, ProviderCommandResult)
+    assert result.success is True
+    assert "Last 7 days" in result.message
+    assert "Signals: 34" in result.message
+    assert "Win: 21" in result.message
+    assert "Loss: 13" in result.message
+    assert "Accuracy: 61.8%" in result.message  # 21/34 = 0.6176...
+    assert "Best Strategy: LIQUIDITY_SWEEP_STRATEGY" in result.message
+
+
+def test_get_validation_summary_empty_input_never_raises():
+    result = get_validation_summary([], [], P0, P1)
+
+    assert result.success is True
+    assert "Signals: 0" in result.message
+    assert "Accuracy: 0.0%" in result.message
+    assert "Best Strategy: N/A" in result.message
+
+
+def test_get_validation_summary_accuracy_excludes_breakeven_and_expired():
+    performances = [
+        _perf("A", "TP"), _perf("A", "TP"), _perf("A", "SL"),
+        _perf("A", "BE"), _perf("A", "EXPIRED"),
+    ]
+
+    result = get_validation_summary([], performances, P0, P1)
+
+    assert "Accuracy: 66.7%" in result.message  # 2/(2+1), BE/EXPIRED excluded

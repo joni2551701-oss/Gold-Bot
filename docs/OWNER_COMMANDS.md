@@ -108,19 +108,75 @@ between the two shapes.
   `format_daily_stats()` (Phase 59.4) takes already-computed data as
   input; no accumulator or query exists yet.
 
+## Phase 59.8 update — Owner Control Center
+
+Still not wired into the live bot — every rule above still holds. Five
+new/extended commands' worth of payload now exist, per the Director's
+own "Owner Control Center" brief:
+
+```
+/system_status     → telegram/owner/status_commands.py's get_system_status()
+/features           → telegram/owner/control_commands.py's get_feature_states() -- NOTE: a different function from feature_commands.py's own list_features() (see below)
+/dashboard          → telegram/owner/dashboard.py's get_dashboard() -- one consolidated overview
+/validation_report  → telegram/owner/report_commands.py's get_validation_summary(signals, performances, period_start, period_end)
+/feature enable|disable <name>  → telegram/owner/control_commands.py's enable_feature()/disable_feature()
+```
+
+**`/features` now has two different real implementations in this
+package**, disclosed explicitly to avoid confusion:
+`feature_commands.list_features()` (Phase 59.3) reports the *static*
+`config.Config`/`configuration.feature_flags.FeatureFlags` view (what
+each flag's process-start value is). `control_commands.get_feature_states()`
+(Phase 59.8) reports the *runtime* view via
+`configuration/runtime_feature_manager.py` (Phase 59.7) — what an
+owner has actually toggled, validated/persisted/audited/snapshotted,
+surviving a restart. A future wiring step must pick exactly one of
+these two for the live `/features` command (the Director's own worked
+example — `ENABLE_AI ON` / `ENABLE_MT5 OFF` — matches
+`get_feature_states()`'s output shape, not `list_features()`'s).
+
+**The `/enable_provider`/`/disable_provider` gap above is still not
+closed** — `Config.ENABLE_MT5`/`ENABLE_TWELVEDATA` themselves remain
+os.getenv-read-once constants; Phase 59.7's runtime override is a
+*separate* tracked value (`configuration/runtime_feature_manager.py`'s
+own `"ENABLE_MT5"` registry entry), not a mutation of `Config.ENABLE_MT5`
+itself. `provider_commands.py`'s `enable_provider()`/`disable_provider()`
+still honestly report `success=False`, unchanged by this phase. A
+future implementer wiring live provider control would use
+`control_commands.enable_feature("ENABLE_MT5")`/`disable_feature()`
+(the real, working runtime toggle) rather than trying to make
+`provider_commands.py`'s own stubs work.
+
+**Owner Control Center's own foundation-only pieces**:
+`telegram/owner/security.py`'s `require_role()` (ranks the Phase 59.6
+`OwnerRole` hierarchy against a minimum) and `log_owner_action()` (a
+convenience `AuditLogRepository.log_action()` call-through) exist but
+are not called by any command in this package yet — the actual
+per-command minimum-role gate is part of the same future wiring step
+below.
+
 ## Roadmap
 
 ```
 docs/OWNER_COMMANDS.md (Phase 59.2 -- contract)
         |
         v
-telegram/owner/*.py (Phase 59.3 -- real logic, not wired)
+telegram/owner/*.py (Phase 59.3-59.8 -- real logic, not wired)
         |
         v
 A future, separately-approved phase:
-  - telegram/commands.py: five new command entries
-  - telegram/command_router.py: routing for the five new commands
-  - telegram/handlers.py: five new owner-only handler functions calling telegram/owner/*.py
-  - a runtime override mechanism for MARKET_DATA_PROVIDER/ENABLE_*
-    (needed for enable_provider()/disable_provider() to become real)
+  - telegram/commands.py: new command entries (including the five above)
+  - telegram/command_router.py: routing for the new commands, using
+    telegram/owner/security.py's require_role() for the per-command
+    minimum-OwnerRole gate
+  - telegram/handlers.py: new owner-only handler functions calling
+    telegram/owner/*.py, each logging via security.py's log_owner_action()
+  - a decision on /features: get_feature_states() (runtime) vs
+    list_features() (static) -- not both, to avoid two different
+    answers to the same command
+  - a runtime override mechanism for MARKET_DATA_PROVIDER/ENABLE_* at
+    the config.Config level itself (still needed for
+    enable_provider()/disable_provider() specifically to become real;
+    Phase 59.7's runtime registry is a parallel tracked value, not a
+    fix for this specific gap)
 ```

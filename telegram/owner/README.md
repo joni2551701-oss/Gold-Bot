@@ -96,6 +96,53 @@ Dashboard — never imports or modifies `telegram.permissions.PermissionLevel`
 `telegram/command_router.py`). See `docs/OWNER_PERMISSIONS.md` for the
 full contrast between the two.
 
+### `status_commands.py` (Phase 59.8: Owner Control Center)
+`get_system_status()` — the future `/system_status` command's payload
+(`System`/`Pipeline`/`Database`/`Provider`/`Mode`/`Last Signal`),
+composing `telegram.admin_service.AdminService.get_system_status()`,
+`data.providers.registry.build_default_registry()`,
+`config.Config.MARKET_DATA_PROVIDER`/`VALIDATION_MODE`,
+`core.system_state.SystemState` (used only as a display label — no
+`SystemState` instance is held or mutated anywhere), and
+`database.signal_repository.SignalRepository.get_latest_signal()`. No
+new health-check logic — every sub-check is an already-existing,
+already-tested call.
+
+### `control_commands.py` (Phase 59.8: Owner Control Center)
+`get_feature_states()`, `enable_feature()`, `disable_feature()` — thin
+wrappers over `configuration/runtime_api.py` (Phase 59.7), reformatted
+into this package's `ProviderCommandResult` shape and the `NAME
+ON/OFF` text a future `/features` command needs. Deliberately named
+`get_feature_states()`, not `list_features()` — `feature_commands.py`
+(Phase 59.3) already has a `list_features()` reporting the older,
+static `Config`/`FeatureFlags` view; this is the newer, Phase 59.7
+*runtime* view, not a same-named competing implementation.
+
+### `security.py` (Phase 59.8: Owner Control Center)
+`require_role(telegram_id, minimum_role)` — ranks the caller's
+`owner_roles.OwnerRole` against a minimum (`VIEWER` < `ADMIN` <
+`SUPER_ADMIN` < `OWNER`), returning a `SecurityCheckResult`.
+`log_owner_action()` — a convenience call-through to
+`AuditLogRepository.log_action()`. Foundation only: no command in this
+package calls `require_role()` to actually gate itself yet.
+
+### `dashboard.py` (Phase 59.8: Owner Control Center)
+`get_dashboard()` — the future `/dashboard` command's payload, one
+consolidated overview composing `status_commands.get_system_status()`
++ `control_commands.get_feature_states()` (rendered as an "N/M ON"
+count) + `provider_commands.list_providers()`. No new status/health/
+provider logic — pure composition of this package's own existing
+functions.
+
+`report_commands.py` also gained `get_validation_summary(signals,
+performances, period_start, period_end)` in this phase — the future
+`/validation_report` command's payload (`Signals`/`Win`/`Loss`/
+`Accuracy`/`Best Strategy`), reusing `build_strategy_report()`/
+`pick_best_strategy()` (both already in this file) and
+`analytics.strategy_report.compute_win_rate()` for `Accuracy` — the
+same win-rate formula every other figure in this codebase already
+uses.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -113,7 +160,19 @@ imports `analytics.dataset_report`, `data.provider_comparison`,
 and `provider_commands.ProviderCommandResult`. `owner_roles.py`
 imports `telegram.permissions.is_owner` and, lazily (inside
 `resolve_owner_role()`, not at module import time),
-`database.admin_repository.AdminRepository`.
+`database.admin_repository.AdminRepository`. `status_commands.py`
+imports `config.Config`, `core.system_state.SystemState`,
+`data.providers.registry`, `database.signal_repository.SignalRepository`,
+`telegram.admin_service.AdminService`, and
+`provider_commands.ProviderCommandResult`. `control_commands.py`
+imports `configuration.runtime_api` and
+`provider_commands.ProviderCommandResult` — the same one-directional
+`telegram/` → `configuration/` dependency `runtime_api.py` itself
+documents, never reversed. `security.py` imports
+`database.audit_log_repository`/`audit_log_models` and
+`owner_roles.OwnerRole`/`resolve_owner_role`. `dashboard.py` imports
+only other modules within this package
+(`control_commands`/`provider_commands`/`status_commands`).
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the
 live routing surface.
