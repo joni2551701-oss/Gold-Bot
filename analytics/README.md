@@ -54,6 +54,17 @@ illustrative third dimension ("+FVG") is deliberately substituted with
 `market_phase` — the real third dimension `SignalPerformance` actually
 carries, not a fabricated field.
 
+### `execution_report.py` (Phase 60.3: Execution Simulator Foundation, TASK 8)
+`ExecutionAnalyticsRecord`/`ExecutionAnalyticsSummary` plus
+`build_execution_record(result)`/`summarize_execution_records(records)`/
+`format_execution_record(record)` — packages an
+`execution.simulator.models.ExecutionSimulationResult` (requested
+price, fill price, slippage, spread, latency, rejection reason) for
+later comparison against real MT5 fills, per the Director's own
+brief. No new execution/slippage/spread/latency logic — reads an
+already-computed result only, same "adapter, not calculator" posture
+`signal_performance.py` already established for `SignalSchema`/`PaperTrade`.
+
 ## What this package does NOT do
 - Does not read or write the database — no new table, no migration,
   no dependency on `database/`.
@@ -76,6 +87,9 @@ carries, not a fabricated field.
 `strategy_report.py` imports `analytics.signal_performance` (same
 package) only. Neither imports `context/`, `strategies/`, `ai/`,
 `decision/`, `risk/`, `execution/`, `database/`, or `telegram/`.
+`execution_report.py` imports `execution.simulator.models.ExecutionSimulationResult`
+(`TYPE_CHECKING`-only) — the one exception to the "no `execution/`
+dependency" rule above, read-only and scoped to this single new file.
 
 ## Future Roadmap
 Persistence (a `signal_performance` table), `core/pipeline.py` wiring,

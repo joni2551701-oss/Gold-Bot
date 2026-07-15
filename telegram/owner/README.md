@@ -176,6 +176,14 @@ track. No new orchestration logic. See `docs/BACKTESTING_ENGINE.md`
 for the full chain and the reuse-audit findings. Not wired into the
 live bot, same as every module in this package.
 
+### `execution_commands.py` (Phase 60.3: Execution Simulator Foundation)
+`execution_status()`, `slippage_status()`, `set_simulation_mode()` —
+thin wrappers over `execution.simulator.simulator_engine.ExecutionSimulator`'s
+own config classes, reporting already-computed slippage/spread/latency
+settings and a selected session preset. No new simulation logic. See
+`docs/EXECUTION_SIMULATOR.md` for the full chain. Not wired into the
+live bot, same as every module in this package.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -215,6 +223,9 @@ imports `backtesting.replay_controller.ReplayController`,
 imports `backtesting.backtest_engine.BacktestEngine`,
 `backtesting.backtest_result.format_backtest_report()`,
 `backtesting.replay_models.ReplayConfig`, and
+`provider_commands.ProviderCommandResult`. `execution_commands.py`
+imports `execution.simulator.simulator_engine.ExecutionSimulator`,
+`execution.simulator.slippage.SlippageConfig`, and
 `provider_commands.ProviderCommandResult`.
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the

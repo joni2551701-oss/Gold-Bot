@@ -1277,6 +1277,59 @@ None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
 `telegram/handlers.py`, `telegram/command_router.py`, or
 `telegram/commands.py` changed in this phase.
 
+### Phase 60.3 — Execution Simulator Foundation
+
+New `execution/simulator/` subpackage — deliberately inside the
+*existing* `execution/` top-level package, not a new `simulation/`
+package. TASK 1's reuse audit read `execution/execution_engine.py`/
+`execution/signal_lifecycle.py` directly: both are still deliberately
+inert stubs, nothing to reuse, and extending either would blur the
+"intentionally inert, needs separate approval" line `CLAUDE.md` draws
+around live execution — so this phase leaves both files completely
+untouched. Full detail: `docs/EXECUTION_SIMULATOR.md`.
+
+**`models.py`** — `SimulatedOrder`/`SimulatedFill`/
+`ExecutionSimulationResult`. Deliberately not named `ExecutionResult`
+(that name already belongs to `execution_engine.py`'s own, unrelated,
+still-inert dispatch stub).
+
+**`slippage.py`**/**`spread.py`**/**`latency.py`** — deterministic
+(not stochastic) `SlippageConfig`/`SpreadConfig`/`LatencyConfig` +
+pure functions, matching the Director's own worked examples (BUY
+2350.00 → fill 2350.15; London 0.15 / NY news 0.80 spread; 2000ms
+latency). Deterministic so a `backtesting/` run stays reproducible.
+
+**`simulator_engine.py`** — `ExecutionSimulator.simulate(paper_trade,
+risk_result, session=None, signal_time=None)`: reads an already-OPEN
+`PaperTrade` + its `RiskResult` (Decision already APPROVEd, Risk
+already approved — this module re-checks neither), computes
+`fill_price = apply_slippage(requested_price, direction,
+slippage_points + spread_points)`, and rejects (no fill) when the
+session's spread is at or above the configured maximum. Never mutates
+the `PaperTrade` it reads; never calls `execution_engine.py`,
+`decision/`, or `risk/`.
+
+**`analytics/execution_report.py`** (TASK 8) — `ExecutionAnalyticsRecord`/
+`ExecutionAnalyticsSummary` + `build_execution_record()`/
+`summarize_execution_records()`/`format_execution_record()`. Packages
+an already-computed `ExecutionSimulationResult` (requested price, fill
+price, slippage, spread, latency, rejection reason) for later
+comparison against real MT5 fills, per the Director's own brief. No
+new execution logic.
+
+**`telegram/owner/execution_commands.py`** — `execution_status()`/
+`slippage_status()`/`set_simulation_mode()`, thin wrappers reporting
+already-computed config. `set_simulation_mode()` selects a named
+session preset (`DEFAULT`/`LONDON`/`NY_NEWS`) in an in-memory-only
+holder — not persisted, not wired into `telegram/commands.py`/
+`command_router.py`/`handlers.py`.
+
+None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
+`execution/execution_engine.py`, `execution/signal_lifecycle.py`,
+`strategies/`, `signals/`, `context/`, `ai/`, `lifecycle/paper_trade.py`,
+`telegram/handlers.py`, `telegram/command_router.py`, or
+`telegram/commands.py` changed in this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real
