@@ -158,3 +158,66 @@ def test_htf_bias_defaults_to_neutral_fallback():
     from context.htf_bias import HTFBias
     result = engine.htf_bias_provider("XAUUSD")
     assert result.bias == HTFBias.UNKNOWN
+
+
+def test_closed_paper_trade_is_bridged_into_learning_repository(mock_signal_candidate, mock_ai_result):
+    """
+    Phase 60.8 TASK 3: the same EXPIRED-resolution scenario as
+    test_approved_candidates_paper_trade_actually_resolves(), now
+    asserting the CLOSED trade was actually persisted via
+    bridge_closed_trade() -- the first real end-to-end proof of
+    "PaperTrade CLOSED -> LearningRepository.record()".
+    """
+    _, end = _seed_candles(250)
+    engine = BacktestEngine(_config(end))
+
+    candidate = mock_signal_candidate()
+    call_count = {"n": 0}
+
+    def _one_shot_signals(context):
+        call_count["n"] += 1
+        return [candidate] if call_count["n"] == 1 else []
+
+    engine.signal_engine.generate_signals = _one_shot_signals
+    engine.ai_analyzer.analyze = lambda c, ctx: mock_ai_result(approved=True, confidence=0.95, risk_score=0.05)
+
+    result = engine.run()
+
+    assert result.trades_opened == 1
+    records = engine.learning_repository.get_recent(limit=10)
+    assert len(records) == 1
+    assert records[0].result == "EXPIRED"
+    assert records[0].strategy_name == candidate.strategy_name
+    assert records[0].engine_version == "60.7"
+
+
+def test_default_learning_repository_is_the_real_class():
+    _, end = _seed_candles(30)
+    engine = BacktestEngine(_config(end))
+
+    from database.learning_repository import LearningRepository
+    assert isinstance(engine.learning_repository, LearningRepository)
+
+
+def test_a_learning_repository_failure_does_not_crash_the_backtest(mock_signal_candidate, mock_ai_result):
+    """Learning stays a non-critical observer -- a persistence error here must never fail the run."""
+    class _BrokenLearningRepository:
+        def record(self, *args, **kwargs):
+            raise RuntimeError("simulated database failure")
+
+    _, end = _seed_candles(250)
+    engine = BacktestEngine(_config(end), learning_repository=_BrokenLearningRepository())
+
+    candidate = mock_signal_candidate()
+    call_count = {"n": 0}
+
+    def _one_shot_signals(context):
+        call_count["n"] += 1
+        return [candidate] if call_count["n"] == 1 else []
+
+    engine.signal_engine.generate_signals = _one_shot_signals
+    engine.ai_analyzer.analyze = lambda c, ctx: mock_ai_result(approved=True, confidence=0.95, risk_score=0.05)
+
+    result = engine.run()  # must not raise
+
+    assert result.trades_opened == 1

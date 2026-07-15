@@ -133,9 +133,10 @@ second_manager.get_feature_state("ENABLE_EXECUTION")["state"]
 
 ## What this phase does NOT do
 
-- Does not read a runtime feature's state from `core/pipeline.py`,
-  `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
-  `context/`, or `ai/` — none of them import `configuration/` at all.
+- Does not read a runtime feature's state from `decision/`, `risk/`,
+  `execution/`, `strategies/`, `signals/`, `context/`, or `ai/` — none
+  of them import `configuration/` at all. (`core/pipeline.py` is no
+  longer in this list as of Phase 60.8 — see below.)
 - Does not block a signal, close a trade, or stop an order — that is
   Phase 59.9's job.
 - Does not register any Telegram command — that is Phase 59.8's job.
@@ -143,3 +144,29 @@ second_manager.get_feature_state("ENABLE_EXECUTION")["state"]
   rejection leaves the state exactly as it was.
 - Does not add a rollback/apply function for a saved config snapshot —
   still capture-and-read only (Phase 59.6's own boundary, unchanged).
+
+## Phase 60.8: Safe Integration Layer — first real reader
+
+`core/guards/pipeline_guard.py`'s `PipelineGuard` is the first real
+caller of `RuntimeFeatureManager.status()` (read-only, never
+`.enable()`/`.disable()`/`.toggle()`) — previously zero callers
+existed outside this module's own tests and `telegram/owner/*.py`.
+Three new, real, `config.Config`-backed registry entries were added
+for it: `ENABLE_SIGNALS`, `ENABLE_AI`, `ENABLE_DATABASE` (all default
+`True`). See `docs/PIPELINE_GUARD.md` for the full stage mapping.
+
+**`ENABLE_EXECUTION` was NOT promoted**, despite being the fourth name
+the Director's brief explicitly requested. Promoting it (implemented=
+True, enabled=True) was tried and reverted: this document's own
+worked example above already shows why —
+`configuration/feature_dependency_validator.py`'s `DEPENDENCY_RULES`
+declares `ENABLE_EXECUTION` requires `ENABLE_RISK` and
+`ENABLE_DECISION`, both still declared-only (always `False`). With
+`ENABLE_EXECUTION` real and `True`, `validate_feature_dependencies()`
+rejects *every* toggle to *any* feature (the dry-run's hypothetical
+snapshot always carries `ENABLE_EXECUTION`'s permanently-unmet
+dependency forward) — 26 tests failed, including 18 of this module's
+own `RuntimeFeatureManager` tests. `PipelineGuard.before_execution()`
+reads `EmergencyManager` only until the Director resolves this. Full
+account in `docs/PIPELINE_GUARD.md`'s "Disclosed Findings" (finding
+3).

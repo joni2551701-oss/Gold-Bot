@@ -50,6 +50,24 @@ from configuration.feature_flags import DEFAULT_FLAGS
 # a synonym for FeatureFlags.enable_replay (a real, already-named
 # field, Phase A13) -- the two are kept as distinct registry entries
 # rather than silently aliased.
+#
+# "ENABLE_EXECUTION" stays declared-only here, unlike the other three
+# Phase 60.8 (Safe Integration Layer, TASK 2) gate names below -- see
+# that section's own comment and docs/PIPELINE_GUARD.md's "Disclosed
+# Findings" for why: promoting it to implemented=True/enabled=True was
+# tried and reverted, since
+# configuration/feature_dependency_validator.py's DEPENDENCY_RULES
+# already declares "ENABLE_EXECUTION requires ENABLE_RISK,
+# ENABLE_DECISION" (both still declared-only, always False) -- and
+# `validate_feature_dependencies()` checks that rule against the
+# *entire* registry snapshot on every single toggle attempt to *any*
+# feature, not just to ENABLE_EXECUTION itself. With ENABLE_EXECUTION
+# enabled=True, every one of RuntimeFeatureManager's own toggle tests
+# (`tests/configuration/test_runtime_feature_manager.py`, 18 tests) and
+# `test_default_registry_has_no_violations` failed. Blocking, not
+# silently worked around: PipelineGuard.before_execution() reads only
+# EmergencyManager (PAUSED/MAINTENANCE/KILLED all still work) until the
+# Director resolves the naming conflict.
 _DECLARED_ONLY_FEATURES = (
     "ENABLE_NEWS",
     "ENABLE_PAPER",
@@ -126,6 +144,32 @@ def build_feature_registry() -> List[FeatureDescriptor]:
         FeatureDescriptor(
             name="enable_replay", enabled=DEFAULT_FLAGS.enable_replay, implemented=True,
             source="configuration.feature_flags.FeatureFlags", description="Reserved (Phase A13) -- no backtest/replay harness exists.",
+        ),
+        # Phase 60.8 (Safe Integration Layer, TASK 2): the four stage
+        # gates core/guards/pipeline_guard.py's PipelineGuard reads via
+        # RuntimeFeatureManager.status(). All default True (Config's
+        # own env-var default) -- a process with no override reproduces
+        # exactly today's pipeline behavior.
+        FeatureDescriptor(
+            name="ENABLE_SIGNALS", enabled=Config.ENABLE_SIGNALS, implemented=True,
+            source="config.Config", description="PipelineGuard.before_signal() gate -- disables core/pipeline.py's signal-generation stage only.",
+        ),
+        FeatureDescriptor(
+            name="ENABLE_AI", enabled=Config.ENABLE_AI, implemented=True,
+            source="config.Config", description="PipelineGuard.before_ai() gate -- disables core/pipeline.py's AI-analysis stage only; Decision Engine still runs against a neutral default. Distinct from the pre-existing lowercase 'enable_ai' above.",
+        ),
+        # ENABLE_EXECUTION is NOT promoted here -- see this file's own
+        # _DECLARED_ONLY_FEATURES comment. It stays declared-only
+        # (implemented=False, always False) below, same as before Phase
+        # 60.8. config.Config.ENABLE_EXECUTION still exists (Phase 60.8
+        # added it) but is not read by this registry yet -- it is
+        # PipelineGuard's own construction-time fallback only (see
+        # core/guards/pipeline_guard.py's before_execution() docstring),
+        # pending the Director's resolution of the DEPENDENCY_RULES
+        # conflict.
+        FeatureDescriptor(
+            name="ENABLE_DATABASE", enabled=Config.ENABLE_DATABASE, implemented=True,
+            source="config.Config", description="PipelineGuard.before_database() gate -- disables core/pipeline.py's signal-persistence stage only.",
         ),
     ]
 

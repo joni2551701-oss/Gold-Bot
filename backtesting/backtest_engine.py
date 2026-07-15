@@ -20,6 +20,22 @@ file:
     lifecycle.paper_trade_monitor.check_paper_trade_against_candles()  -- unmodified
     analytics.signal_performance.compute_signal_performance()  -- unmodified
     backtesting.backtest_result.build_backtest_result()          -- Phase 60.2, TASK 4
+    learning.trade_event_bridge.bridge_closed_trade()             -- Phase 60.8, TASK 3
+
+Phase 60.8 (Safe Integration Layer, TASK 3): every candidate whose
+paper trade reaches `TradeState.CLOSED` in `_process_candidate()` is
+now bridged into `LearningRepository.record()` via
+`bridge_closed_trade()` -- the first real caller of the bridge Phase
+60.7 built and left unwired. This is deliberately the ONLY place this
+phase wires it: `core/pipeline.py` never constructs a `PaperTrade`
+(confirmed by TASK 1's own audit, `docs/ADAPTIVE_INTELLIGENCE_AUDIT.md`),
+so live trading still records nothing to Learning -- live learning
+integration is deferred until a real MT5/broker execution lifecycle
+exists to produce a real CLOSED trade to observe. A `bridge_closed_trade()`
+failure (e.g. a database error) is caught and logged, never allowed to
+fail the backtest itself -- Learning stays a pure, non-critical
+observer, same posture the whole `learning/` package already commits
+to.
 
 Reused call sequence and gate condition (`decision.action == APPROVE
 and risk_result.approved`) copied verbatim from `core/pipeline.py`'s
@@ -84,10 +100,13 @@ from decision.decision_engine import DecisionEngine
 from decision.models import DecisionAction
 from lifecycle.paper_trade import create_paper_trade, open_paper_trade
 from lifecycle.paper_trade_monitor import check_paper_trade_against_candles
+from lifecycle.trade_state import TradeState
+from learning.trade_event_bridge import bridge_closed_trade
 from risk.risk_manager import RiskManager
 from signals.adapter import from_signal_candidate
 from signals.signal_engine import SignalEngine
 from signals.signal_quality import compute_signal_quality
+from database.learning_repository import LearningRepository
 from database.raw_candle_repository import RawCandleRepository
 from core.logger import setup_logger
 
@@ -120,6 +139,7 @@ class BacktestEngine:
         risk_manager: Optional[RiskManager] = None,
         context_window: int = _DEFAULT_CONTEXT_WINDOW,
         htf_bias_provider: Optional[Callable[[str], HTFBiasResult]] = None,
+        learning_repository: Optional[LearningRepository] = None,
     ):
         self.config = config
         self.replay_engine = ReplayEngine(config, raw_candle_repository)
@@ -130,6 +150,10 @@ class BacktestEngine:
         self.signal_engine = SignalEngine()
         self.context_window = context_window
         self.htf_bias_provider = htf_bias_provider or _neutral_htf_bias
+        # Phase 60.8 (Safe Integration Layer, TASK 3): the injected
+        # repository bridge_closed_trade() persists through. Eager,
+        # same posture as every other dependency above.
+        self.learning_repository = learning_repository or LearningRepository()
 
         self.signals_generated = 0
         self.trades_opened = 0
@@ -207,3 +231,18 @@ class BacktestEngine:
             market_phase=market_phase.phase.value,
         )
         self.performances.append(performance)
+
+        # Phase 60.8 (Safe Integration Layer, TASK 3): the one real
+        # observation point for Learning today -- see this module's own
+        # docstring. Never allowed to fail the backtest: a persistence
+        # error here is a Learning-layer concern, not a trading-logic
+        # one, and must not abort a run that has already correctly
+        # decided/priced/resolved this candidate.
+        if paper_trade is not None and paper_trade.status == TradeState.CLOSED:
+            try:
+                bridge_closed_trade(
+                    paper_trade, self.learning_repository,
+                    context=context, performance=performance, htf_bias=htf_bias,
+                )
+            except Exception as e:
+                logger.warning(f"bridge_closed_trade failed for trade_id={paper_trade.trade_id}: {e}")

@@ -1579,6 +1579,66 @@ step. None of `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
 `telegram/command_router.py`, or `telegram/commands.py` changed in
 this phase.
 
+### Phase 60.8 — Safe Integration Layer
+
+The Director's own "Official" TASK 2-5 Worker Brief: the first phase
+that actually calls into `core/pipeline.py`, per explicit, scoped
+approval (`RuntimeFeatureManager`/`EmergencyManager` reads only, at
+four named stage boundaries — never touching `decision/`, `risk/`,
+`strategies/`, `signals/`, `context/`, or `ai/`). Full detail:
+`docs/PIPELINE_GUARD.md`, `docs/PHASE60_8_INTEGRATION_AUDIT.md`.
+
+**`core/guards/pipeline_guard.py`'s `PipelineGuard`** (TASK 2/3) — a
+new top-level `core/guards/` package (per the Director's own explicit
+path), composing exactly `RuntimeFeatureManager.status()` and
+`EmergencyManager.get_status()` (both read-only). Four public methods
+(`before_signal()`/`before_ai()`/`before_execution()`/
+`before_database()`) each return a `GuardDecision(proceed, abort,
+reason)`. `core/pipeline.py`'s `run()` calls all four at their
+matching stage boundary; a skip either empties the downstream list
+(signal) or substitutes a neutral value (ai — `_neutral_ai_result()`,
+so Decision Engine still runs unobstructed, per this codebase's own
+"AI optional" architecture) or simply doesn't call the delivery/
+persistence step (execution/database). `EmergencyState.KILLED` aborts
+the run immediately via a new `TradingPipeline._aborted_result()`
+early-return path (same key set as a normal return, everything past
+the abort point empty/`None`).
+
+**A genuine, blocking finding discovered during implementation, not
+fully anticipated by TASK 1's own reuse audit**: promoting
+`ENABLE_EXECUTION` to a real registry entry (as the Director's brief
+explicitly named) collided with an existing
+`configuration/feature_dependency_validator.py` rule
+(`ENABLE_EXECUTION` requires `ENABLE_RISK`/`ENABLE_DECISION`, both
+still declared-only) in a way that broke 26 tests — not just toggles
+to `ENABLE_EXECUTION` itself, but *every* `RuntimeFeatureManager`
+toggle to *any* feature, since the dependency validator checks the
+entire registry snapshot on each dry run. Reverted;
+`before_execution()` reads `EmergencyManager` only until the Director
+resolves the naming conflict. Full account:
+`docs/PIPELINE_GUARD.md`'s "Disclosed Findings" (finding 3).
+
+**Learning Auto Hook** (TASK 3) — `backtesting/backtest_engine.py`'s
+`_process_candidate()` now calls `bridge_closed_trade()` for every
+`PaperTrade` that reaches `TradeState.CLOSED`, closing Phase 60.7's
+own disclosed gap. Live trading still records nothing to Learning —
+`core/pipeline.py` never constructs a `PaperTrade`; live learning
+integration is deferred until a real MT5/broker execution lifecycle
+exists.
+
+**IDataFeed confirmation** (TASK 4) — `backtesting/data_feed.py`'s
+`LiveDataFeed`/`ReplayDataFeed` both really implement `IDataFeed`
+(confirmed by test, not just by inspection); `core/pipeline.py`'s live
+`market_data` stage still calls `MarketDataNormalizer.get_candles()`
+directly, unchanged this phase — per the Director's own explicit TASK
+4 scope ("Pipeline o'zgarmaydi... Bu fazada faqat architecture
+confirmation").
+
+Owner Dashboard live-data wiring (originally proposed as a TASK 6 in
+an earlier, informal message) is **not** part of this phase — the
+Director's own later, formal "TASK 2-5 Worker Brief" superseded that
+earlier scope and does not include it; deferred to a future phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real
@@ -2045,6 +2105,20 @@ import sweep):
   imported by `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
   `strategies/`, `signals/`, `context/`, `ai/`, any Telegram handler,
   or `telegram/command_router.py`.
+- `core/guards/pipeline_guard.py` (Phase 60.8) imports
+  `configuration.runtime_feature_manager`,
+  `core.emergency.emergency_manager`/`emergency_state`, and
+  `core.logger` — no `decision/`, `risk/`, `strategies/`, `signals/`,
+  `context/`, `ai/`, or `execution/` import. `core/pipeline.py` (Phase
+  60.8) is the first and only importer of `core.guards.pipeline_guard`
+  — the first phase in this codebase where `core/pipeline.py` itself
+  gained a new import beyond its original Phase A1-A19 set. Never
+  reversed: nothing in `configuration/` or `core/emergency/` imports
+  `core/pipeline.py` or `core/guards/`.
+  `backtesting/backtest_engine.py` (Phase 60.8) gained
+  `learning.trade_event_bridge`, `lifecycle.trade_state`, and
+  `database.learning_repository` imports — confined to `backtesting/`,
+  not `core/pipeline.py`.
 
 If a change requires violating one of these rules, that is a signal
 to stop and reconsider the design, not to add the import and move on

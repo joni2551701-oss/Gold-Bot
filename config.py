@@ -33,6 +33,22 @@ class Config:
     # unchanged behavior.
     VALIDATION_MODE = os.getenv("VALIDATION_MODE", "False") == "True"
 
+    # Phase 60.8: Safe Integration Layer -- PipelineGuard stage gates
+    # (core/guards/pipeline_guard.py). Each defaults to True so a
+    # process with no explicit override reproduces exactly today's
+    # pipeline behavior; these are new, additive runtime toggles, not
+    # a change to any existing default. Distinct from the pre-existing
+    # lowercase `enable_ai` (configuration/feature_flags.py's
+    # FeatureFlags, reserved for a future real AI provider decision) --
+    # ENABLE_AI here gates whether core/pipeline.py's own `ai` stage
+    # runs at all, a different concept under a similar-looking name;
+    # see docs/PIPELINE_GUARD.md's "Disclosed Findings" for why both
+    # names exist rather than being merged.
+    ENABLE_SIGNALS = os.getenv("ENABLE_SIGNALS", "True") == "True"
+    ENABLE_AI = os.getenv("ENABLE_AI", "True") == "True"
+    ENABLE_EXECUTION = os.getenv("ENABLE_EXECUTION", "True") == "True"
+    ENABLE_DATABASE = os.getenv("ENABLE_DATABASE", "True") == "True"
+
     # Base paths
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 

@@ -112,9 +112,12 @@ core/emergency/*.py, database/emergency_*.py,
 telegram/owner/emergency_commands.py (Phase 59.9 -- real logic, not wired)
         |
         v
-A future, separately-approved phase:
-  - core/pipeline.py: check EmergencyManager.get_status() before a
-    stage runs (e.g. skip signal generation when PAUSED/KILLED)
+Phase 60.8 (Safe Integration Layer) closed the first bullet below —
+see its own section further down this document. The rest remain
+future, separately-approved steps:
+  - ~~core/pipeline.py: check EmergencyManager.get_status() before a
+    stage runs (e.g. skip signal generation when PAUSED/KILLED)~~ —
+    done, via `core/guards/pipeline_guard.py`'s `PipelineGuard`
   - risk/risk_manager.py or a stage ahead of it: feed live
     loss/drawdown/api/execution signals into
     circuit_breaker.evaluate_circuit(), and decide what a BLOCK/WARNING
@@ -130,3 +133,34 @@ A future, separately-approved phase:
   - a decision on how EmergencyState reconciles (or doesn't) with
     core.system_state.SystemState -- both exist independently today
 ```
+
+## Phase 60.8: Safe Integration Layer — Emergency Hook
+
+`core/guards/pipeline_guard.py`'s `PipelineGuard` is the first real
+caller of `EmergencyManager.get_status()` (previously zero callers
+outside this module's own tests and `telegram/owner/emergency_commands.py`,
+confirmed by `docs/PHASE60_8_INTEGRATION_AUDIT.md`'s TASK 1 audit).
+Read-only: `PipelineGuard` never calls `activate_pause()`/
+`activate_kill()`/`activate_maintenance()`/`restore_normal()` itself —
+only an owner (once a future, separately-approved phase wires a
+command) or the circuit breaker can actually transition
+`EmergencyState`.
+
+Mapping, checked at each of `core/pipeline.py`'s four guarded stage
+boundaries (`signal`, `ai`, `telegram_delivery`, `database` — see
+`docs/PIPELINE_GUARD.md` for the full stage diagram):
+
+| `EmergencyState` | Effect |
+|---|---|
+| `NORMAL` | every stage proceeds normally |
+| `WARNING` | every stage proceeds; one `logger.warning()` per guard check |
+| `PAUSED` | `telegram_delivery` is skipped; `signal`/`ai`/`database` proceed |
+| `MAINTENANCE` | all four stages skip (see `docs/PIPELINE_GUARD.md`'s Disclosed Finding 1 for the one honest gap — read-only context stages ahead of the first hook still run) |
+| `KILLED` | the pipeline run aborts immediately at the first hook checked |
+
+This is intentionally the minimum real behavior change this phase
+makes: `EmergencyManager`'s own state machine, persistence, and audit
+trail are entirely unmodified — `PipelineGuard` only reads the current
+state and translates it into a proceed/skip/abort decision for
+`core/pipeline.py` to act on. See `docs/PIPELINE_GUARD.md` for the
+full design rationale and disclosed findings.

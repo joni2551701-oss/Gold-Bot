@@ -43,3 +43,47 @@ def test_replay_data_feed_empty_before_any_advance():
     replay_feed = ReplayFeed([])
     feed = ReplayDataFeed(replay_feed)
     assert feed.get_candles(10) == []
+
+
+def test_live_and_replay_feeds_both_satisfy_idatafeed():
+    """
+    Phase 60.8 TASK 4 architecture confirmation: LiveDataFeed and
+    ReplayDataFeed both really implement the one common IDataFeed
+    contract -- BacktestEngine already only depends on ReplayDataFeed
+    through this interface (backtesting/backtest_engine.py's own
+    `self.data_feed: IDataFeed` field).
+    """
+    from backtesting.data_feed import IDataFeed
+
+    assert issubclass(LiveDataFeed, IDataFeed)
+    assert issubclass(ReplayDataFeed, IDataFeed)
+
+
+def test_live_data_feed_call_signature_matches_core_pipelines_own_market_data_stage():
+    """
+    Phase 60.8 TASK 4 architecture confirmation, not a pipeline.py
+    change: core/pipeline.py's live `market_data` stage still calls
+    `MarketDataNormalizer.get_candles(symbol, interval, outputsize)`
+    directly this phase (see docs/PIPELINE_GUARD.md's "Disclosed
+    Findings" for why TASK 4 stops at confirmation rather than swapping
+    that call site). This proves `LiveDataFeed(data_normalizer, symbol,
+    interval).get_candles(outputsize)` is a byte-for-byte equivalent
+    wrapper over that exact same call -- a future, separately-approved
+    phase could swap the pipeline's call site for LiveDataFeed with
+    zero behavior change.
+    """
+    calls = []
+
+    class _StubNormalizer:
+        def get_candles(self, symbol, interval, outputsize):
+            calls.append((symbol, interval, outputsize))
+            return ["candle-a", "candle-b"]
+
+    normalizer = _StubNormalizer()
+    direct_result = normalizer.get_candles("XAUUSD", "M15", 200)
+
+    feed = LiveDataFeed(normalizer, symbol="XAUUSD", interval="M15")
+    feed_result = feed.get_candles(200)
+
+    assert direct_result == feed_result
+    assert calls == [("XAUUSD", "M15", 200), ("XAUUSD", "M15", 200)]

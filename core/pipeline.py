@@ -1,6 +1,6 @@
 import time
 import uuid
-from typing import List
+from typing import List, Optional
 
 from data.market_data import MarketDataNormalizer, MarketSnapshot
 from data.data_quality import assess_data_quality, DataQualityResult
@@ -23,6 +23,7 @@ from telegram.signal_formatter import SignalFormatter
 from telegram.notifier import Notifier
 from database.signal_repository import SignalRepository
 from database.signal_record import SignalRecord, create_signal_record
+from core.guards.pipeline_guard import PipelineGuard
 from core.logger import setup_logger
 
 logger = setup_logger("TradingPipeline")
@@ -34,6 +35,27 @@ logger = setup_logger("TradingPipeline")
 # docs/PERFORMANCE.md) while still catching a slow network call
 # (Market Data fetch, Telegram delivery) worth knowing about.
 SLOW_OPERATION_THRESHOLD_SECONDS = 2.0
+
+
+def _neutral_ai_result(reason: str) -> AIAnalysisResult:
+    """
+    Phase 60.8 (Safe Integration Layer, TASK 2): the substitute
+    AIAnalysisResult used when PipelineGuard.before_ai() says the `ai`
+    stage should be skipped (ENABLE_AI=False). Neutral, never
+    blocking -- approved=True, confidence/risk_score at the exact
+    midpoint -- so DecisionEngine.evaluate() still runs its normal
+    weighted formula unobstructed, matching this codebase's own
+    "AI optional" architecture (AI absence must never be worse than
+    AI's own heuristic-stub verdict, and must never itself force a
+    reject). The same "degrade to a documented neutral value, never
+    raise, never block" posture already established for a missing HTF
+    read (`context.htf_bias.compute_htf_bias`'s own UNKNOWN fallback)
+    and `backtesting/backtest_engine.py`'s `_neutral_htf_bias()`.
+    """
+    return AIAnalysisResult(
+        approved=True, confidence=0.5, risk_score=0.5,
+        explanation=f"AI stage skipped: {reason}",
+    )
 
 
 class TradingPipeline:
@@ -176,6 +198,7 @@ class TradingPipeline:
         outputsize: int,
         send_notifications: bool = False,
         persist_signals: bool = False,
+        pipeline_guard: Optional[PipelineGuard] = None,
     ):
         self.symbol = symbol
         self.interval = interval
@@ -194,6 +217,13 @@ class TradingPipeline:
         # disk (creates the DB file/schema), which must not happen for a
         # default/backtesting run.
         self.signal_repository = SignalRepository() if persist_signals else None
+        # Phase 60.8 (Safe Integration Layer, TASK 2): eagerly
+        # constructed like every other dependency above -- unlike
+        # signal_repository, PipelineGuard's checks run on every cycle
+        # regardless of persist_signals, so there is no flag to make it
+        # conditional on. Injectable for tests (same convention as
+        # every other manager in this codebase).
+        self.pipeline_guard = pipeline_guard or PipelineGuard()
 
     def _log_stage(self, stage: str, duration: float) -> None:
         """
@@ -207,6 +237,43 @@ class TradingPipeline:
                 f"slow_operation module=TradingPipeline stage={stage} "
                 f"duration={duration:.3f}s threshold={SLOW_OPERATION_THRESHOLD_SECONDS}s"
             )
+
+    def _aborted_result(
+        self,
+        context,
+        data_quality: DataQualityResult,
+        htf_bias: HTFBiasResult,
+        market_phase: MarketPhaseResult,
+    ) -> dict:
+        """
+        Phase 60.8 (Safe Integration Layer, TASK 2/3): the early-return
+        shape used when PipelineGuard reports EmergencyState.KILLED.
+        Same key set as run()'s own normal return -- every downstream
+        consumer that already handles an empty-list stage (a
+        pre-existing, ordinary outcome whenever no strategy triggers)
+        handles this the same way. context_snapshot stays None (it is
+        normally built later, alongside signal_history, from data this
+        early-return path never reaches) rather than duplicating that
+        construction here.
+        """
+        return {
+            "context": context,
+            "data_quality": data_quality,
+            "htf_bias": htf_bias,
+            "market_phase": market_phase,
+            "signals": [],
+            "quality_results": [],
+            "explanations": [],
+            "features": [],
+            "context_snapshot": None,
+            "signal_history": [],
+            "ai_results": [],
+            "decisions": [],
+            "risk_results": [],
+            "telegram_messages": [],
+            "notification_results": [],
+            "signal_records": [],
+        }
 
     def run(self) -> dict:
         """
@@ -286,11 +353,27 @@ class TradingPipeline:
             f"({market_phase.reason})"
         )
 
+        # Phase 60.8 (Safe Integration Layer, TASK 2/3): the earliest of
+        # PipelineGuard's four hooks -- an abort here (EmergencyState.
+        # KILLED) stops the run before any signal is generated, any
+        # decision made, anything sent, or anything persisted. Nothing
+        # above this line (market_data/data_quality/htf_bias/context/
+        # market_phase) is gated -- see pipeline_guard.py's own
+        # "Disclosed Findings" for why.
+        signal_decision = self.pipeline_guard.before_signal()
+        if signal_decision.abort:
+            logger.warning(f"[{self.symbol}|{self.interval}] pipeline_aborted stage=signal reason={signal_decision.reason}")
+            return self._aborted_result(context, data_quality, htf_bias, market_phase)
+
         # NOTE: SignalEngine.generate_signals() already runs StrategyManager
         # internally. StrategyManager must not be called separately here,
         # or every strategy would execute twice against the same context.
         t0 = time.perf_counter()
-        signal_candidates = self.signal_engine.generate_signals(context)
+        if signal_decision.proceed:
+            signal_candidates = self.signal_engine.generate_signals(context)
+        else:
+            signal_candidates = []
+            logger.info(f"[{self.symbol}|{self.interval}] signal_stage_skipped reason={signal_decision.reason}")
         self._log_stage("signal", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Generated {len(signal_candidates)} signal candidate(s).")
 
@@ -345,11 +428,26 @@ class TradingPipeline:
                 f"{[(f.market_regime, f.session, f.signal_quality) for f in features]}"
             )
 
+        # Phase 60.8 (Safe Integration Layer, TASK 2/3): AI stage guard.
+        # A skip substitutes a neutral AIAnalysisResult per candidate
+        # (_neutral_ai_result()) rather than an empty list -- Decision
+        # Engine must still evaluate every candidate normally, matching
+        # this codebase's "AI optional" architecture (AI's absence must
+        # never itself force a reject).
+        ai_decision = self.pipeline_guard.before_ai()
+        if ai_decision.abort:
+            logger.warning(f"[{self.symbol}|{self.interval}] pipeline_aborted stage=ai reason={ai_decision.reason}")
+            return self._aborted_result(context, data_quality, htf_bias, market_phase)
+
         t0 = time.perf_counter()
-        ai_results: List[AIAnalysisResult] = [
-            self.ai_analyzer.analyze(candidate, context)
-            for candidate in signal_candidates
-        ]
+        if ai_decision.proceed:
+            ai_results: List[AIAnalysisResult] = [
+                self.ai_analyzer.analyze(candidate, context)
+                for candidate in signal_candidates
+            ]
+        else:
+            ai_results = [_neutral_ai_result(ai_decision.reason) for _ in signal_candidates]
+            logger.info(f"[{self.symbol}|{self.interval}] ai_stage_skipped reason={ai_decision.reason}")
         self._log_stage("ai", time.perf_counter() - t0)
 
         t0 = time.perf_counter()
@@ -445,9 +543,22 @@ class TradingPipeline:
         self._log_stage("telegram_format", time.perf_counter() - t0)
         logger.info(f"[{self.symbol}|{self.interval}] Produced {len(telegram_messages)} telegram message(s).")
 
+        # Phase 60.8 (Safe Integration Layer, TASK 2/3): before_execution()
+        # gates only the actual delivery call below -- telegram_format
+        # above stays unconditional, so result["telegram_messages"]
+        # still shows what would have been sent even when delivery
+        # itself is skipped (EmergencyState.PAUSED, or ENABLE_EXECUTION
+        # disabled). See pipeline_guard.py's own "Disclosed Findings"
+        # for why "execution" maps to Telegram delivery here, not to
+        # execution/execution_engine.py (untouched, still inert).
+        execution_decision = self.pipeline_guard.before_execution()
+        if execution_decision.abort:
+            logger.warning(f"[{self.symbol}|{self.interval}] pipeline_aborted stage=execution reason={execution_decision.reason}")
+            return self._aborted_result(context, data_quality, htf_bias, market_phase)
+
         t0 = time.perf_counter()
         notification_results: List[bool] = []
-        if self.send_notifications:
+        if self.send_notifications and execution_decision.proceed:
             # send_messages() delivers the whole batch through one
             # event loop / one aiohttp session (Phase 33.1) -- calling
             # send_message() once per message here previously opened a
@@ -458,11 +569,22 @@ class TradingPipeline:
                 f"[{self.symbol}|{self.interval}] Sent {sum(notification_results)}/"
                 f"{len(notification_results)} telegram notification(s)."
             )
+        elif self.send_notifications and not execution_decision.proceed:
+            logger.info(f"[{self.symbol}|{self.interval}] execution_stage_skipped reason={execution_decision.reason}")
         self._log_stage("telegram_delivery", time.perf_counter() - t0)
+
+        # Phase 60.8 (Safe Integration Layer, TASK 2/3): before_database()
+        # gates the persistence write only -- signal_records still ends
+        # up empty (same shape as any ordinary zero-candidate cycle)
+        # when skipped, never a partial/inconsistent write.
+        database_decision = self.pipeline_guard.before_database()
+        if database_decision.abort:
+            logger.warning(f"[{self.symbol}|{self.interval}] pipeline_aborted stage=database reason={database_decision.reason}")
+            return self._aborted_result(context, data_quality, htf_bias, market_phase)
 
         t0 = time.perf_counter()
         signal_records: List[SignalRecord] = []
-        if self.persist_signals:
+        if self.persist_signals and database_decision.proceed:
             for candidate, decision, risk_result in zip(signal_candidates, decisions, risk_results):
                 # timeframe has no source on SignalCandidate/TradeDecision/
                 # RiskResult -- the pipeline is the only thing that knows
@@ -471,6 +593,8 @@ class TradingPipeline:
                 self.signal_repository.save_signal_record(record)
                 signal_records.append(record)
             logger.info(f"[{self.symbol}|{self.interval}] Persisted {len(signal_records)} signal record(s).")
+        elif self.persist_signals and not database_decision.proceed:
+            logger.info(f"[{self.symbol}|{self.interval}] database_stage_skipped reason={database_decision.reason}")
         self._log_stage("database", time.perf_counter() - t0)
 
         total_duration = time.perf_counter() - pipeline_start

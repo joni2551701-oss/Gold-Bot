@@ -43,7 +43,7 @@ def test_declared_only_features_are_not_implemented_and_disabled():
     registry = build_feature_registry()
     by_name = {entry.name: entry for entry in registry}
 
-    for name in ("ENABLE_NEWS", "ENABLE_PAPER", "ENABLE_EXECUTION", "ENABLE_BACKTEST",
+    for name in ("ENABLE_NEWS", "ENABLE_PAPER", "ENABLE_BACKTEST",
                  "ENABLE_ANALYTICS", "ENABLE_OWNER", "ENABLE_DATASET_SYNC",
                  "ENABLE_MARKET_PHASE", "ENABLE_BITGET", "ENABLE_BINANCE", "ENABLE_FRED",
                  "ENABLE_RISK", "ENABLE_DECISION"):
@@ -51,6 +51,35 @@ def test_declared_only_features_are_not_implemented_and_disabled():
         assert entry.implemented is False
         assert entry.enabled is False
         assert entry.source == "declared"
+
+
+def test_phase_60_8_pipeline_guard_gates_are_real_and_default_true():
+    """
+    Phase 60.8 (Safe Integration Layer, TASK 2): ENABLE_SIGNALS/
+    ENABLE_AI/ENABLE_DATABASE are new real entries, all defaulting True
+    so PipelineGuard changes no existing pipeline behavior by default.
+
+    ENABLE_EXECUTION is deliberately NOT among them and stays
+    declared-only (covered by test_declared_only_features_are_not_implemented_and_disabled
+    above) -- promoting it was tried and reverted, since
+    configuration/feature_dependency_validator.py's DEPENDENCY_RULES
+    ("ENABLE_EXECUTION requires ENABLE_RISK, ENABLE_DECISION", both
+    still declared-only) rejects every RuntimeFeatureManager toggle to
+    ANY feature once ENABLE_EXECUTION reads enabled=True. See
+    core/guards/pipeline_guard.py's own "Disclosed Findings" (finding
+    3) for the full account -- before_execution() reads Emergency
+    state only until the Director resolves the naming conflict.
+    """
+    from config import Config
+
+    registry = build_feature_registry()
+    by_name = {entry.name: entry for entry in registry}
+
+    for name in ("ENABLE_SIGNALS", "ENABLE_AI", "ENABLE_DATABASE"):
+        entry = by_name[name]
+        assert entry.implemented is True
+        assert entry.source == "config.Config"
+        assert entry.enabled == getattr(Config, name)
 
 
 def test_build_feature_registry_never_raises():

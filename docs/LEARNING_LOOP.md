@@ -339,11 +339,6 @@ and TASK 7 without either module importing the other's internals.
 
 ## Known gaps (Phase 60.7, disclosed, not hidden)
 
-- Nothing in this codebase yet *calls* `bridge_closed_trade()` from a
-  real pipeline — `backtesting/backtest_engine.py` still does not
-  invoke the Learning Event Bridge itself; TASK 2 built the bridge and
-  proved it works end-to-end in tests, but wiring it into the backtest
-  engine's own loop is a separate, future, explicitly-approvable step.
 - `confidence_score`/`sample_size` on `LearningRecord` stay honest
   `None` hooks unless a caller explicitly populates them — no
   automatic per-record sample-size computation exists (see
@@ -352,3 +347,32 @@ and TASK 7 without either module importing the other's internals.
   process loses every observation; persistence is a separate, future
   step, same posture every other `learning/` module (besides
   `trade_event_bridge.py`'s own one exception) already discloses.
+
+## Phase 60.8: Safe Integration Layer, TASK 3 — Learning Auto Hook
+
+Closes the gap Phase 60.7 itself disclosed above ("nothing in this
+codebase yet calls `bridge_closed_trade()` from a real pipeline"):
+`backtesting/backtest_engine.py`'s `_process_candidate()` now calls
+`bridge_closed_trade()` for every `PaperTrade` that reaches
+`TradeState.CLOSED`, immediately after `compute_signal_performance()`
+so `context`/`performance`/`htf_bias` are all available to pass
+through. `BacktestEngine.__init__` gained an injectable
+`learning_repository: Optional[LearningRepository] = None` parameter
+(same DI convention as every other dependency), defaulting to a real
+`LearningRepository()`.
+
+A `bridge_closed_trade()` failure (e.g. a database error) is caught
+and logged (`logger.warning`), never allowed to fail the backtest
+itself — see `tests/backtesting/test_backtest_engine.py::test_a_learning_repository_failure_does_not_crash_the_backtest`.
+Learning stays a pure, non-critical observer: a persistence problem in
+`learning/`'s one disclosed exception must never break the thing it is
+observing.
+
+**Live trading still records nothing to Learning.** `core/pipeline.py`
+never constructs a `PaperTrade` (re-confirmed by Phase 60.8's own
+TASK 1 audit, `docs/PHASE60_8_INTEGRATION_AUDIT.md`) — the only real
+`CLOSED`-`PaperTrade` producer in this codebase remains
+`backtesting/backtest_engine.py`. Live learning integration is
+deferred until a real MT5/broker execution lifecycle exists to produce
+a real closed trade to observe — a separate, future, explicitly-
+approvable step, per the Director's own TASK 3 instruction.
