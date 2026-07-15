@@ -17,7 +17,14 @@ Foundation), see `docs/ARCHITECTURE_RULES.md` (module boundaries),
 `docs/SYSTEM_OVERVIEW.md` (a first-read map for a new developer or
 agent). `docs/DEVELOPMENT_GUIDE.md` states the workflow for changing
 this codebase; `docs/DOCUMENTATION_STANDARD.md` states the format
-every module's own documentation follows.
+every module's own documentation follows. For the Director-requested
+full-project re-audit taken after Phase 59.9 (redundant/parallel
+modules, duplicate-logic check, dependency-direction re-verification,
+a consolidated wiring plan, and the Phase 60 roadmap), see
+`docs/PHASE59_ARCHITECTURE_FREEZE.md` — it supersedes nothing (the
+Phase A1 `docs/ARCHITECTURE_AUDIT.md`/`DEPENDENCY_MAP.md` remain valid
+snapshots of that earlier state) but is the current, Phase-59-era
+freeze audit.
 
 ## System Overview
 
