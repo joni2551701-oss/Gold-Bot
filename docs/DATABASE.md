@@ -135,7 +135,19 @@ Append-only, same posture as `audit_log`. One row per captured
 of `{feature_name: enabled}`, `taken_at`, `taken_by`, `reason`). No
 apply/restore function exists — capture and read only. Owned by
 `database/config_snapshot_repository.py` /
-`database/config_snapshot_models.py`.
+`database/config_snapshot_models.py`. As of Phase 59.7, every
+successful `RuntimeFeatureManager` toggle also writes one of these
+rows — no longer purely a manual/future-command capture.
+
+### `runtime_features` (Phase 59.7)
+One row per feature name (`feature UNIQUE NOT NULL`, `enabled`,
+`created_at`, `updated_at`, `updated_by`, `reason`).
+`RuntimeFeatureRepository.set_feature()` upserts in place — `created_at`
+is stamped once on the first INSERT and never touched by any later
+UPDATE, so it always reflects when a feature was first toggled, not
+when it was most recently changed. Independent of every other table —
+no foreign key. Owned by `database/runtime_feature_repository.py` /
+`database/runtime_feature_models.py`.
 
 ---
 

@@ -77,10 +77,72 @@ build against, not a decision made from scratch under pressure.
 feature — it only reports whether the current registry state is
 internally consistent.
 
+## Runtime lifecycle (Phase 59.7: Runtime Feature Toggle Center)
+
+Phase 59.7 turns this static registry into an actual runtime toggle —
+`configuration/runtime_feature_manager.py`'s `RuntimeFeatureManager`.
+Every feature moves through the same lifecycle:
+
+```
+DEFAULT
+  |   (build_feature_registry()'s own static value -- never toggled)
+  v
+RUNTIME ENABLE  (RuntimeFeatureManager.enable()/enable_feature())
+  |
+  v
+ACTIVE   (source="runtime", enabled=True, persisted in `runtime_features`)
+  |
+  v
+RUNTIME DISABLE  (RuntimeFeatureManager.disable()/disable_feature())
+  |
+  v
+INACTIVE   (source="runtime", enabled=False, persisted in `runtime_features`)
+```
+
+A feature that has never been toggled stays at `DEFAULT` forever —
+`RuntimeFeatureManager.get_feature_state()` reports `source="default"`
+for it, `"state": "INACTIVE"` or `"ACTIVE"` matching whatever
+`build_feature_registry()` itself says (e.g. `ENABLE_TWELVEDATA`
+starts `ACTIVE` by default, since `config.Config.ENABLE_TWELVEDATA`
+defaults `True`). Once toggled even once, a feature is permanently
+`source="runtime"` from then on (moving between `ACTIVE`/`INACTIVE` on
+further toggles, never back to `"default"`) — `RuntimeFeatureRepository`
+never deletes a row.
+
+Every enable/disable is:
+1. **Validated** (dry run) — `configuration/feature_dependency_validator.py`'s
+   `DEPENDENCY_RULES` checked against the hypothetical post-toggle
+   state. An enable is rejected if a required dependency isn't
+   enabled; a disable is rejected if an already-enabled feature still
+   depends on it (this task's own worked example: `Cannot disable
+   ENABLE_RISK. Dependent features active: ENABLE_EXECUTION`).
+2. **Persisted** — `database/runtime_feature_repository.py`'s
+   `runtime_features` table, surviving a restart.
+3. **Audited** — `database/audit_log_repository.py`, action
+   `FEATURE_ENABLED`/`FEATURE_DISABLED` (`TOGGLE_FEATURE`/`REJECTED`
+   for a blocked attempt).
+4. **Snapshotted** — `database/config_snapshot_repository.py`, one
+   snapshot of the full runtime feature state after every successful
+   change, for a future rollback.
+
+A rejected toggle does none of the above except step 3 (a `REJECTED`
+audit entry is still written, so the attempt itself is never silently
+lost) — the underlying state is left completely unchanged.
+
+See `docs/RUNTIME_FEATURE_CONTROL.md` for the full module-by-module
+contract, and `telegram/owner/README.md`/`docs/OWNER_PERMISSIONS.md`
+for why no Telegram command calls any of this yet.
+
 ## What this phase does NOT do
 
-- Does not make any declared-only feature real or toggleable.
-- Does not add a `/feature enable`/`/feature disable` command (Phase
-  59.7, per the Director's own roadmap).
-- Does not call `validate_feature_dependencies()` from anywhere in the
-  live pipeline or Telegram routing.
+- Does not make signal generation, decision-making, risk, or execution
+  actually read a runtime feature's state — `core/pipeline.py`,
+  `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
+  `context/`, and `ai/` are all unmodified and import nothing from
+  `configuration/`.
+- Does not register a `/feature enable`/`/feature disable` Telegram
+  command (Phase 59.8, per the Director's own roadmap) —
+  `configuration/runtime_api.py` has no `telegram/` dependency.
+- Does not add cascading auto-disable — disabling a feature whose
+  dependent is still active is rejected outright, not applied with a
+  side effect on the dependent.

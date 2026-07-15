@@ -962,6 +962,58 @@ None of `core/pipeline.py`, `decision/`, `execution/`, `risk/`,
 or any pre-existing `analytics/`/`configuration/` module's behavior
 changed in this phase.
 
+### Phase 59.7 — Runtime Feature Toggle Center
+
+Turns the Phase 59.6 static feature registry into an actual runtime
+controller. Per the Director's own brief: *"Bu phase hali pipeline'ni
+o'zgartirmaydi. Faqat Runtime Controller quriladi."* Full detail:
+`docs/RUNTIME_FEATURE_CONTROL.md`, `docs/FEATURE_REGISTRY.md`'s own
+"Runtime lifecycle" section.
+
+**TASK 1-4 (Runtime Feature Manager, State Model, Persistent Storage,
+Feature Loader)** — new `configuration/runtime_state.py`
+(`FeatureRuntimeState` + `RuntimeStateCache`, in-memory only), new
+isolated `runtime_features` table
+(`database/runtime_feature_models.py`/`runtime_feature_repository.py`,
+one row per feature name, `created_at` preserved across every later
+upsert), and new `configuration/runtime_feature_manager.py`'s
+`RuntimeFeatureManager` — `load()`/`reload()` seed the in-memory cache
+from `build_feature_registry()`'s static defaults
+(`source="default"`) then overlay any persisted row
+(`source="runtime"`), auto-invoked from `__init__` so a fresh manager
+is immediately queryable. `status()`/`get_feature_state()` (a
+`{"feature","state","source","updated_at"}` dict view),
+`list_features()`.
+
+**TASK 5/6 (Dependency Safety, Dry Run)** — `enable()`/`disable()`/
+`toggle()` (+ `enable_feature()`/`disable_feature()` aliases) all run
+a dry-run `validate_feature_dependencies()` check (Phase 59.6, reused
+unmodified) against the hypothetical post-toggle state before applying
+anything. Symmetric: enabling a feature whose dependency isn't enabled
+is rejected, and — the task's own worked example — disabling a feature
+an already-enabled dependent still needs is *also* rejected ("Cannot
+disable ENABLE_RISK. Dependent features active: ENABLE_EXECUTION"),
+never silently applied or cascaded onto the dependent.
+
+**TASK 7/8 (Audit Integration, Snapshot Integration)** — every
+successful toggle writes an `AuditLogRepository.log_action()` entry
+(`FEATURE_ENABLED`/`FEATURE_DISABLED`) and a
+`ConfigSnapshotRepository.save_snapshot()` of the full runtime state
+(both Phase 59.6, reused unmodified); a rejected toggle still writes
+one `REJECTED` audit entry but no snapshot and no persisted change.
+
+**TASK 9 (Public API)** — new `configuration/runtime_api.py`
+(`enable_feature()`/`disable_feature()`/`feature_status()`/
+`list_runtime_features()`, each returning a `RuntimeApiResult`). No
+`telegram/` import — the existing one-directional `telegram/` →
+`configuration/` dependency stays intact, never reversed.
+
+None of `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
+`strategies/`, `signals/`, `context/`, `ai/`, any Telegram handler, or
+`telegram/command_router.py` changed in this phase, and none of them
+import anything from `configuration/` — a runtime toggle changes only
+what `RuntimeFeatureManager`/`runtime_api.py` themselves report.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real
@@ -1148,7 +1200,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | Module | Responsibility |
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. |
-| `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. Phase 59.6 added `feature_registry.py` (`FeatureDescriptor`/`build_feature_registry()`, unifying real + declared-only flag names) and `feature_dependency_validator.py` (`validate_feature_dependencies()`) — still not runtime, gates nothing. |
+| `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. Phase 59.6 added `feature_registry.py` (`FeatureDescriptor`/`build_feature_registry()`, unifying real + declared-only flag names) and `feature_dependency_validator.py` (`validate_feature_dependencies()`) — still not runtime, gates nothing. Phase 59.7 added the first genuinely *runtime* control in this package — `runtime_state.py`/`runtime_feature_manager.py`/`runtime_api.py` (`RuntimeFeatureManager`: validated, persisted, audited, snapshotted enable/disable) — still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`, none of which import `configuration/`. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07/Phase 59.1 TASK 5) — maps a caught fetch exception (or a known empty-response condition) to a structured `ExternalAPIError` for logging only, never changes control flow — Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation/59.1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store — and Market Provider Abstraction (`providers/`, Phase 59.1) — `DataProvider`/`MarketDataProvider`/`FundamentalDataProvider`, `TwelveDataProvider`/`MT5Provider`/`BinanceProvider`/`FredProvider`, `ProviderRegistry`, data-only, not wired into the live pipeline — plus Provider Normalization (`normalization/`, Phase 59.3) — `symbol_mapper.py`/`timeframe_mapper.py`/`candle_normalizer.py`, centralized per-provider format tables, no new candle type. |
 | `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. `snapshot.py` (Phase A16) additionally standardizes a `ContextSnapshot` into a flat, JSON-serializable `ContextSnapshotSchema`, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) — a distinct type, not a replacement. `market_phase.py` (AC-02) adds a wired, advisory 5-state (+`UNKNOWN`) `MarketPhase` classification reusing already-detected Wyckoff/AMD/Market Regime data. `fundamental_context.py` (Phase 59.3) adds `compute_fundamental_context()` — a pure adapter connecting `data/providers/fred_provider.py` (Phase 59.2) into a new `FundamentalContextSnapshot`; not called by anything in this phase. |
@@ -1161,7 +1213,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | `execution/` | Inert scaffolding for future MT5 integration — not reachable from any runtime path today. |
 | `monitoring/` | Historical trade-outcome statistics (win rate, strategy breakdown — `performance.py`'s `PerformanceTracker`), not wired into any live command yet. Distinct from `performance/` (Phase A19) — see that row. Also `provider_health.py` (Phase 59.2) — `ProviderHealthStatus`/`check_provider_health()`, a third, distinct kind of “performance” (a provider's own live availability/latency), not wired into any live command yet either. |
 | `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `monitoring/performance.py`'s trade-outcome statistics. |
-| `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. Phase 59.6 added `audit_log`/`config_snapshots` (`audit_log_models.py`/`audit_log_repository.py`, `config_snapshot_models.py`/`config_snapshot_repository.py`) — both append-only, neither called automatically by any owner command yet. |
+| `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. Phase 59.6 added `audit_log`/`config_snapshots` (`audit_log_models.py`/`audit_log_repository.py`, `config_snapshot_models.py`/`config_snapshot_repository.py`) — both append-only. Phase 59.7 added `runtime_features` (`runtime_feature_models.py`/`runtime_feature_repository.py`) — one row per feature name, `configuration.runtime_feature_manager.RuntimeFeatureManager`'s persistence layer; `audit_log`/`config_snapshots` are now actually written to on every successful runtime toggle, no longer purely a manual/future-command capture. |
 | `telegram/` | The Telegram product layer: routing, permissions, handlers, services. `owner/` (Phase 59.3-59.5) — real, tested owner-command service functions (`provider_commands.py`/`system_commands.py`/`feature_commands.py`/`report_commands.py`/`validation_commands.py`/`dataset_commands.py`), not registered into `commands.py`/`command_router.py`/`handlers.py` — the live bot's command surface is unaffected. |
 | `lifecycle/` | Phase 59 Preparation foundation — `PaperTrade`/`TradeState` (simulated, broker-free trade state machine) and `SignalLifecycleState` (a signal's own progress through the analysis pipeline). In-memory only: no database persistence, no pipeline wiring. Not the same as `strategies/lifecycle/` (per-strategy metadata) or `execution/signal_lifecycle.py` (a pre-existing, inert, Telegram-delivery state machine). |
 | `analytics/` | Phase 59 Preparation foundation — `SignalPerformance`/`StrategyPerformanceReport`, **trading** performance (win/loss/R-multiple by strategy). Not wired into `core/pipeline.py`; not the same concept as `performance/` (Phase A19, system timing) or a replacement for `monitoring/performance.py`'s pre-existing, database-driven `PerformanceTracker`. |
@@ -1390,6 +1442,27 @@ import sweep):
   of these six new modules are imported by `core/pipeline.py`,
   `decision/`, `risk/`, `execution/`, `strategies/`, `context/`,
   `signals/`, or `telegram/command_router.py`.
+- `configuration/runtime_state.py` (Phase 59.7) imports only the
+  standard library. `configuration/runtime_feature_manager.py` (Phase
+  59.7) imports `database.runtime_feature_repository`,
+  `database.audit_log_repository`,
+  `database.config_snapshot_repository`/`config_snapshot_models` — the
+  first *runtime* (not `TYPE_CHECKING`-only) `configuration/` →
+  `database/` dependency in this codebase. Combined with Phase 59.6's
+  `database/config_snapshot_models.py`'s own `TYPE_CHECKING`-only
+  `configuration.feature_registry.FeatureDescriptor` import, the two
+  packages now reference each other from different files — never a
+  circular import in practice (Python resolves each module
+  independently; the import sweep in every phase's own validation
+  pass confirms this), but worth naming explicitly so a future change
+  to either file checks both directions before adding a third.
+  `configuration/runtime_api.py` (Phase 59.7) imports only
+  `configuration.runtime_feature_manager` — no `telegram/` dependency,
+  keeping the existing one-directional `telegram/` → `configuration/`
+  relationship intact. None of the four new Phase 59.7 modules are
+  imported by `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
+  `strategies/`, `signals/`, `context/`, `ai/`, any Telegram handler,
+  or `telegram/command_router.py`.
 
 If a change requires violating one of these rules, that is a signal
 to stop and reconsider the design, not to add the import and move on

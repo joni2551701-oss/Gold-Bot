@@ -18,12 +18,24 @@ SQLite (database/goldbot.db)
 ## Responsibilities
 One repository/model pair per table (`users`, `signals`,
 `subscriptions`, `feedback`, `admins`, Phase 59.3's `raw_candles`/
-`market_snapshots`, Phase 59.5's `sync_state`, and — Phase 59.6 —
-`audit_log`/`config_snapshots`); idempotent `CREATE TABLE IF NOT
-EXISTS` + `PRAGMA table_info()`-guarded migrations + `CREATE INDEX IF
-NOT EXISTS` (Phase 50), all in `models.py`. `database.py` owns
-connection lifecycle (`__enter__`/`__exit__`, commit-or-rollback,
-always closes).
+`market_snapshots`, Phase 59.5's `sync_state`, Phase 59.6's
+`audit_log`/`config_snapshots`, and — Phase 59.7 —
+`runtime_features`); idempotent `CREATE TABLE IF NOT EXISTS` +
+`PRAGMA table_info()`-guarded migrations + `CREATE INDEX IF NOT
+EXISTS` (Phase 50), all in `models.py`. `database.py` owns connection
+lifecycle (`__enter__`/`__exit__`, commit-or-rollback, always closes).
+
+`runtime_features` (Phase 59.7: Runtime Feature Toggle Center, TASK 3)
+is one row per feature name — `RuntimeFeatureRepository.set_feature()`
+upserts it (same convention as `sync_state`'s
+`update_sync_state()`), preserving `created_at` across every later
+update while `updated_at`/`enabled`/`updated_by`/`reason` change. The
+persisted backing store for
+`configuration.runtime_feature_manager.RuntimeFeatureManager` —
+`database/` itself knows nothing about dependency validation, audit
+logging, or snapshotting; those live entirely in `configuration/`
+(a new, one-directional `configuration/` → `database/` dependency, see
+`configuration/README.md`).
 
 `audit_log`/`config_snapshots` (Phase 59.6: Audit & Observability
 Foundation, TASK 2/6) are both append-only — neither repository

@@ -562,3 +562,33 @@ def _create_config_snapshot_indexes(connection: sqlite3.Connection):
     except sqlite3.Error as e:
         logger.error(f"Failed to create config_snapshots indexes: {e}")
         raise
+
+
+def init_runtime_feature_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the runtime_features table schema (Phase 59.7:
+    Runtime Feature Toggle Center, TASK 3). Independent of every other
+    table, including config_snapshots -- no foreign key. One row per
+    feature name (`feature UNIQUE NOT NULL`) --
+    RuntimeFeatureRepository.set_feature() upserts this row rather than
+    appending a new one per toggle, same convention as
+    database/sync_state_repository.py's update_sync_state().
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS runtime_features (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        feature TEXT UNIQUE NOT NULL,
+        enabled INTEGER NOT NULL,
+        created_at TEXT,
+        updated_at TEXT NOT NULL,
+        updated_by TEXT,
+        reason TEXT
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (runtime_features table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize runtime_features schema: {e}")
+        raise
