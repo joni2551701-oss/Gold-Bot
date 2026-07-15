@@ -1,0 +1,192 @@
+"""
+Backtesting Layer — Backtest Engine (Phase 60.2: Backtesting Engine,
+TASK 3).
+
+The full chain the Director asked for, built entirely by composing
+already-existing, unmodified functions -- no trading logic (Strategy/
+Signal/Decision/Risk) is reimplemented or altered anywhere in this
+file:
+
+    ReplayEngine (Phase 60.1)              -- candle source, via ReplayDataFeed/IDataFeed (TASK 2)
+    context.context_orchestrator.build_context_snapshot()  -- unmodified
+    context.market_phase.compute_market_phase()             -- unmodified
+    signals.signal_engine.SignalEngine().generate_signals()  -- unmodified (runs strategies/ internally)
+    signals.signal_quality.compute_signal_quality()          -- unmodified
+    ai.ai_analyzer.AIAnalyzer().analyze()                    -- unmodified
+    decision.decision_engine.DecisionEngine().evaluate()      -- unmodified
+    risk.risk_manager.RiskManager().evaluate()                 -- unmodified
+    signals.adapter.from_signal_candidate()                    -- unmodified
+    lifecycle.paper_trade.create_paper_trade()/open_paper_trade()  -- unmodified
+    lifecycle.paper_trade_monitor.check_paper_trade_against_candles()  -- unmodified
+    analytics.signal_performance.compute_signal_performance()  -- unmodified
+    backtesting.backtest_result.build_backtest_result()          -- Phase 60.2, TASK 4
+
+Reused call sequence and gate condition (`decision.action == APPROVE
+and risk_result.approved`) copied verbatim from `core/pipeline.py`'s
+own `run()` -- read directly this phase (TASK 1) to guarantee this
+engine reaches the same APPROVE/REJECT/NO_TRADE outcome a live cycle
+would for the same inputs.
+
+Deliberate difference from live (documented, not a trading-logic
+change): `core/pipeline.py` sends at most one Telegram message per
+cycle (the single highest-confidence approved candidate); this engine
+opens a `PaperTrade` for *every* approved+risk-approved candidate at
+each step, since a backtest's purpose is measuring every strategy's
+own performance, not simulating "what would have been sent to a
+user." Neither `DecisionEngine` nor `RiskManager` themselves are
+altered -- only what a caller does with their already-unchanged output
+differs.
+
+Scope boundary (documented, not silently skipped): HTF Bias needs a
+real multi-timeframe (Daily/H4/H1) historical replay, which this phase
+does not build (a single-timeframe `ReplayConfig` only). This engine
+defaults every step's HTF bias to the same neutral fallback
+`core/pipeline.py` itself already falls back to on a live HTF fetch
+failure (`compute_htf_bias(MarketSnapshot(symbol=...))` ->
+`HTFBias.UNKNOWN`) -- reusing an existing degrade path, not inventing
+a new one. A caller may override this via `htf_bias_provider` for a
+future phase that replays multiple timeframes together.
+"""
+
+from datetime import datetime, timezone
+from typing import Callable, Optional
+from uuid import uuid4
+
+from ai.ai_analyzer import AIAnalyzer
+from analytics.signal_performance import compute_signal_performance
+from backtesting.backtest_result import BacktestResult, build_backtest_result
+from backtesting.data_feed import ReplayDataFeed
+from backtesting.replay_engine import ReplayEngine
+from backtesting.replay_models import ReplayConfig
+from context.context_orchestrator import build_context_snapshot
+from context.htf_bias import HTFBiasResult, compute_htf_bias
+from context.market_phase import compute_market_phase
+from context.snapshot import from_context_snapshot
+from data.market_data import MarketSnapshot
+from decision.decision_engine import DecisionEngine
+from decision.models import DecisionAction
+from lifecycle.paper_trade import create_paper_trade, open_paper_trade
+from lifecycle.paper_trade_monitor import check_paper_trade_against_candles
+from risk.risk_manager import RiskManager
+from signals.adapter import from_signal_candidate
+from signals.signal_engine import SignalEngine
+from signals.signal_quality import compute_signal_quality
+from database.raw_candle_repository import RawCandleRepository
+from core.logger import setup_logger
+
+logger = setup_logger("BacktestEngine")
+
+_DEFAULT_CONTEXT_WINDOW = 200
+_MIN_CANDLES_FOR_CONTEXT = 20
+
+
+def _neutral_htf_bias(symbol: str) -> HTFBiasResult:
+    """The same graceful-degradation fallback core/pipeline.py's own live run() uses on an HTF fetch failure -- reused, not reinvented."""
+    return compute_htf_bias(MarketSnapshot(symbol=symbol))
+
+
+class BacktestEngine:
+    """
+    One engine per backtest run. Every dependency is injectable (same
+    optional-dependency convention as every Phase 59.x/60.x manager in
+    this codebase) and defaults to the real, unmodified class --
+    running with all defaults reproduces exactly what a live cycle
+    would decide for the same candle window.
+    """
+
+    def __init__(
+        self,
+        config: ReplayConfig,
+        raw_candle_repository: Optional[RawCandleRepository] = None,
+        ai_analyzer: Optional[AIAnalyzer] = None,
+        decision_engine: Optional[DecisionEngine] = None,
+        risk_manager: Optional[RiskManager] = None,
+        context_window: int = _DEFAULT_CONTEXT_WINDOW,
+        htf_bias_provider: Optional[Callable[[str], HTFBiasResult]] = None,
+    ):
+        self.config = config
+        self.replay_engine = ReplayEngine(config, raw_candle_repository)
+        self.data_feed = ReplayDataFeed(self.replay_engine.feed)
+        self.ai_analyzer = ai_analyzer or AIAnalyzer()
+        self.decision_engine = decision_engine or DecisionEngine()
+        self.risk_manager = risk_manager or RiskManager()
+        self.signal_engine = SignalEngine()
+        self.context_window = context_window
+        self.htf_bias_provider = htf_bias_provider or _neutral_htf_bias
+
+        self.signals_generated = 0
+        self.trades_opened = 0
+        self.performances = []
+
+    def run(self) -> BacktestResult:
+        """Replays the full configured window step by step, running the real chain at every step that has enough candles for context."""
+        started_at = datetime.now(timezone.utc)
+        self.replay_engine.clock.play()
+
+        while not self.replay_engine.is_finished:
+            self.replay_engine.step()
+            self._process_step()
+
+        finished_at = datetime.now(timezone.utc)
+        return build_backtest_result(
+            symbol=self.config.symbol,
+            timeframe=self.config.timeframe,
+            candles_processed=self.replay_engine.candles_replayed,
+            signals_generated=self.signals_generated,
+            trades_opened=self.trades_opened,
+            performances=self.performances,
+            started_at=started_at,
+            finished_at=finished_at,
+        )
+
+    def _process_step(self) -> None:
+        candles = self.data_feed.get_candles(self.context_window)
+        if len(candles) < _MIN_CANDLES_FOR_CONTEXT:
+            return
+
+        htf_bias = self.htf_bias_provider(self.config.symbol)
+        context = build_context_snapshot(candles, htf_bias)
+        market_phase = compute_market_phase(context)
+        candidates = self.signal_engine.generate_signals(context)
+        self.signals_generated += len(candidates)
+        if not candidates:
+            return
+
+        context_snapshot_schema = from_context_snapshot(context, symbol=self.config.symbol, timeframe=self.config.timeframe)
+        forward_candles = self.replay_engine.feed.candles[self.replay_engine.feed.cursor + 1:]
+
+        for candidate in candidates:
+            self._process_candidate(candidate, context, market_phase, htf_bias, context_snapshot_schema, forward_candles)
+
+    def _process_candidate(self, candidate, context, market_phase, htf_bias, context_snapshot_schema, forward_candles) -> None:
+        quality = compute_signal_quality(candidate, context, htf_bias)
+        ai_result = self.ai_analyzer.analyze(candidate, context)
+        decision = self.decision_engine.evaluate(candidate, ai_result, htf_bias)
+        risk_result = self.risk_manager.evaluate(decision)
+
+        signal_schema = from_signal_candidate(
+            candidate,
+            symbol=self.config.symbol,
+            timeframe=self.config.timeframe,
+            session=context_snapshot_schema.session.current_session,
+            market_phase=market_phase.phase.value,
+            context_id=context_snapshot_schema.snapshot_id,
+            quality=quality,
+            decision=decision,
+            decision_id=str(uuid4()),
+        )
+
+        paper_trade = None
+        # Same eligibility gate core/pipeline.py's own run() uses for Telegram delivery.
+        if decision.action == DecisionAction.APPROVE and risk_result.approved:
+            paper_trade = create_paper_trade(signal_schema)
+            open_paper_trade(paper_trade)
+            check_paper_trade_against_candles(paper_trade, forward_candles)
+            self.trades_opened += 1
+
+        performance = compute_signal_performance(
+            signal_schema, paper_trade=paper_trade,
+            session=context_snapshot_schema.session.current_session,
+            market_phase=market_phase.phase.value,
+        )
+        self.performances.append(performance)

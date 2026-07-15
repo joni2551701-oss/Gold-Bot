@@ -90,6 +90,20 @@ def test_is_finished_true_after_consuming_all_candles():
     assert engine.is_finished is True
 
 
+def test_is_finished_true_immediately_for_an_empty_candle_range():
+    """Regression test (Phase 60.2): a zero-candle dataset (e.g. an unknown symbol) must be immediately finished, never an infinite loop -- see is_finished's own docstring for the bug this guards against."""
+    engine = ReplayEngine(_config())  # no candles seeded at all
+    assert engine.candles_total == 0
+    assert engine.is_finished is True
+
+    engine.clock.play()
+    steps = 0
+    while not engine.is_finished and steps < 5:
+        engine.step()
+        steps += 1
+    assert engine.is_finished is True
+
+
 def test_engine_marks_clock_finished_when_exhausted():
     from backtesting.replay_models import ReplayState
     _seed_candles(1)

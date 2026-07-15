@@ -56,7 +56,22 @@ class ReplayEngine:
 
     @property
     def is_finished(self) -> bool:
-        return self.feed.is_exhausted and self.feed.cursor >= 0
+        """
+        `ReplayFeed.is_exhausted` alone is already correct for both
+        cases: False before any step on a non-empty feed (cursor=-1,
+        total>0 -> -1 >= total-1 is False), True once every candle is
+        consumed, and True immediately for a genuinely empty candle
+        list (cursor=-1, total=0 -> -1 >= -1). A previous extra `and
+        self.feed.cursor >= 0` guard here made an empty-dataset replay
+        infinite-loop forever instead: with zero candles,
+        `ReplayFeed.jump()` always clamps back to cursor=-1 (there is
+        no valid index >= 0 to reach), so that extra condition could
+        never become True and BacktestEngine.run() (Phase 60.2) would
+        spin forever on any symbol/timeframe with no stored candles.
+        Found via Phase 60.2's own test suite, fixed here rather than
+        worked around in the caller.
+        """
+        return self.feed.is_exhausted
 
     def step(self) -> Optional[Candle]:
         """

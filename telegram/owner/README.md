@@ -165,6 +165,17 @@ holds every session in-memory for this process's lifetime. See
 `docs/REPLAY_ENGINE.md` for the full architecture and state diagram.
 Not wired into the live bot, same as every module in this package.
 
+### `backtest_commands.py` (Phase 60.2: Backtesting Engine)
+`backtest_run()` — a thin wrapper running a full
+`backtesting.backtest_engine.BacktestEngine` pass synchronously and
+reformatting its `BacktestResult` via
+`backtesting.backtest_result.format_backtest_report()`. Unlike
+`replay_commands.py`'s session-based start/pause/stop/status API, a
+backtest runs to completion in one call — no in-progress state to
+track. No new orchestration logic. See `docs/BACKTESTING_ENGINE.md`
+for the full chain and the reuse-audit findings. Not wired into the
+live bot, same as every module in this package.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -200,6 +211,10 @@ only other modules within this package
 `provider_commands.ProviderCommandResult`. `replay_commands.py`
 imports `backtesting.replay_controller.ReplayController`,
 `backtesting.replay_models.ReplayConfig`/`format_replay_report()`, and
+`provider_commands.ProviderCommandResult`. `backtest_commands.py`
+imports `backtesting.backtest_engine.BacktestEngine`,
+`backtesting.backtest_result.format_backtest_report()`,
+`backtesting.replay_models.ReplayConfig`, and
 `provider_commands.ProviderCommandResult`.
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the

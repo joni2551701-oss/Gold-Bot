@@ -1214,6 +1214,69 @@ None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
 `telegram/handlers.py`, `telegram/command_router.py`, or
 `telegram/commands.py` changed in this phase.
 
+### Phase 60.2 — Backtesting Engine
+
+The full Replay → Strategy → Signal → Decision → Risk → Paper Trade →
+Analytics chain, built entirely by composing already-existing,
+unmodified functions — no Strategy/Signal/Decision/Risk logic is
+reimplemented anywhere. Still, per the Director's own explicit rule,
+**not** wired into `core/pipeline.py` or any live routing surface.
+Full detail: `docs/BACKTESTING_ENGINE.md`.
+
+**`backtesting/data_feed.py`** — `IDataFeed` (ABC) + `LiveDataFeed`/
+`ReplayDataFeed`. Per the Director's own rule ("no `if backtest: ...
+else: ...`"): TASK 1's reuse audit found `strategies/`/
+`signals/signal_engine.py` were already source-agnostic (they consume
+`ContextSnapshot`, never a candle source directly) — the real seam is
+one level up, between the live `market_data` stage
+(`MarketDataNormalizer.get_candles()`) and Phase 60.1's `ReplayFeed`.
+`IDataFeed` unifies exactly those two.
+
+**`backtesting/backtest_engine.py`** — `BacktestEngine`: composes
+`ReplayEngine` (Phase 60.1), `build_context_snapshot()`,
+`compute_market_phase()`, `SignalEngine().generate_signals()`,
+`compute_signal_quality()`, `AIAnalyzer().analyze()`,
+`DecisionEngine().evaluate()`, `RiskManager().evaluate()`,
+`from_signal_candidate()`, `create_paper_trade()`/`open_paper_trade()`,
+`check_paper_trade_against_candles()`, and
+`compute_signal_performance()` — every one read directly from source
+this phase and left unmodified. The APPROVE+risk-approved gate for
+opening a `PaperTrade` was copied verbatim from `core/pipeline.py`'s
+own `run()`. Two documented, deliberate differences from live (not
+trading-logic changes): every approved+risk-approved candidate opens a
+trade (not just the single highest-confidence one per cycle, since
+live's "one Telegram message per cycle" constraint doesn't apply to
+measuring strategy performance), and HTF Bias defaults to a neutral
+fallback (`compute_htf_bias(MarketSnapshot(symbol=...))`, the same
+degrade path `core/pipeline.py` itself already uses on a live HTF
+fetch failure) since true multi-timeframe HTF replay is out of scope
+for this phase.
+
+**`backtesting/backtest_result.py`** — `BacktestResult` + `build_backtest_result()`
+(wraps `analytics.strategy_report.build_strategy_report()`, unmodified)
++ `format_backtest_report()`.
+
+**`telegram/owner/backtest_commands.py`** — `backtest_run()`, a thin
+wrapper running a full `BacktestEngine` pass synchronously. Not
+registered into `telegram/commands.py`/`command_router.py`/
+`handlers.py`.
+
+**A genuine Phase 60.1 bug found and fixed during this phase's own
+validation**: `ReplayEngine.is_finished`'s `self.feed.is_exhausted and
+self.feed.cursor >= 0` condition infinite-looped for a zero-candle
+dataset — `ReplayFeed.jump()` always clamps the cursor back to `-1`
+when there are no candles at all, so the `cursor >= 0` half could
+never become `True`. Fixed to just `self.feed.is_exhausted` (already
+correct for every case on its own); a regression test now covers the
+empty-dataset edge case, bounded so a future regression fails fast
+instead of hanging CI. See `docs/BACKTESTING_ENGINE.md`'s own section
+on this for the full root-cause writeup.
+
+None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
+`execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
+`telegram/handlers.py`, `telegram/command_router.py`, or
+`telegram/commands.py` changed in this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real
@@ -1400,7 +1463,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | Module | Responsibility |
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. Phase 59.9 added `emergency/` — `EmergencyState`/`EmergencyManager` (a runtime controller, persisted append-only via `database.emergency_repository`, audited via `AuditLogRepository`) and stateless `circuit_breaker.evaluate_circuit()`; still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`. |
-| `backtesting/` | New in Phase 60.1 (Historical Replay Engine) — `replay_models.py`/`replay_session.py`/`replay_clock.py`/`replay_feed.py`/`replay_engine.py`/`replay_controller.py`. A service over existing Historical Data (`database.raw_candle_repository.RawCandleRepository`), not a new business domain — deliberately not a `market/` top-level package, per the Module Reuse Principle. `ReplayFeed` hands out `data.twelve_data_client.Candle`, the same type the live pipeline already uses, so a future Strategy consumer needs no shape change. Never calls `strategies/`/`signals/`/`decision/`/`risk/`; nothing in `core/pipeline.py` constructs anything here. |
+| `backtesting/` | New in Phase 60.1 (Historical Replay Engine) — `replay_models.py`/`replay_session.py`/`replay_clock.py`/`replay_feed.py`/`replay_engine.py`/`replay_controller.py`. A service over existing Historical Data (`database.raw_candle_repository.RawCandleRepository`), not a new business domain — deliberately not a `market/` top-level package, per the Module Reuse Principle. `ReplayFeed` hands out `data.twelve_data_client.Candle`, the same type the live pipeline already uses, so a future Strategy consumer needs no shape change. Phase 60.2 (Backtesting Engine) added `data_feed.py` (`IDataFeed`/`LiveDataFeed`/`ReplayDataFeed`), `backtest_engine.py` (`BacktestEngine`, composing `strategies/`/`signals/`/`ai/`/`decision/`/`risk/`/`lifecycle/`/`analytics/` unmodified), and `backtest_result.py`. Still never *modifies* `strategies/`/`signals/`/`decision/`/`risk/`; nothing in `core/pipeline.py` constructs anything here. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. Phase 59.6 added `feature_registry.py` (`FeatureDescriptor`/`build_feature_registry()`, unifying real + declared-only flag names) and `feature_dependency_validator.py` (`validate_feature_dependencies()`) — still not runtime, gates nothing. Phase 59.7 added the first genuinely *runtime* control in this package — `runtime_state.py`/`runtime_feature_manager.py`/`runtime_api.py` (`RuntimeFeatureManager`: validated, persisted, audited, snapshotted enable/disable) — still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`, none of which import `configuration/`. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07/Phase 59.1 TASK 5) — maps a caught fetch exception (or a known empty-response condition) to a structured `ExternalAPIError` for logging only, never changes control flow — Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation/59.1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store — and Market Provider Abstraction (`providers/`, Phase 59.1) — `DataProvider`/`MarketDataProvider`/`FundamentalDataProvider`, `TwelveDataProvider`/`MT5Provider`/`BinanceProvider`/`FredProvider`, `ProviderRegistry`, data-only, not wired into the live pipeline — plus Provider Normalization (`normalization/`, Phase 59.3) — `symbol_mapper.py`/`timeframe_mapper.py`/`candle_normalizer.py`, centralized per-provider format tables, no new candle type. |
