@@ -66,6 +66,26 @@ performances, period_start, period_end)` — wraps
 `format_validation_report()` (same phase, TASK 5) in a
 `ProviderCommandResult`, unmodified otherwise.
 
+### `dataset_commands.py` (Phase 59.5: Historical Data Collection &
+Validation Foundation, TASK 7)
+`get_dataset_status(symbol, timeframe)` — every stored candle for that
+key across all providers, summarized via
+`analytics.dataset_report.build_dataset_report()`/`format_dataset_report()`
+(same phase, TASK 5). `get_history_status(symbol, timeframe)` — a
+lighter-weight candle count + oldest/newest timestamp view.
+`get_sync_status(provider, symbol, timeframe)` — the current
+incremental-sync watermark, via `SyncStateRepository` (same phase,
+TASK 2). `get_provider_compare(symbol, timeframe, provider_a,
+provider_b)` — a summary of
+`data.provider_comparison.compare_providers()` (same phase, TASK 6)
+run against each provider's own stored candles. Unlike
+`report_commands.py`/`validation_commands.py`, these four call the
+real `RawCandleRepository`/`SyncStateRepository` directly rather than
+taking caller-supplied data — `raw_candles`/`sync_state` are real,
+persisted tables (Phase 59.3/Phase 59.5), the same "query the real
+backing store" posture `provider_commands.py`'s
+`list_providers()`/`get_data_status()` already uses.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -77,6 +97,9 @@ imports `analytics.strategy_report`, `analytics.signal_performance`,
 `signals.schema.SignalSchema`, and `provider_commands.ProviderCommandResult`.
 `validation_commands.py` imports `analytics.validation_report`,
 `analytics.signal_performance`, `config.Config`, `signals.schema.SignalSchema`,
+and `provider_commands.ProviderCommandResult`. `dataset_commands.py`
+imports `analytics.dataset_report`, `data.provider_comparison`,
+`database.raw_candle_repository`, `database.sync_state_repository`,
 and `provider_commands.ProviderCommandResult`.
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the

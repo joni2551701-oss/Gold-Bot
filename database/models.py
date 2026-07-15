@@ -443,3 +443,36 @@ def _create_market_snapshot_indexes(connection: sqlite3.Connection):
     except sqlite3.Error as e:
         logger.error(f"Failed to create market_snapshots indexes: {e}")
         raise
+
+
+def init_sync_state_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the sync_state table schema (Phase 59.5:
+    Historical Data Collection & Validation Foundation, TASK 2).
+    Independent of every other table, including raw_candles -- one row
+    per (provider, symbol, timeframe), tracking the incremental
+    collector's own watermark. See database/sync_state_models.py's own
+    module docstring.
+
+    UNIQUE(provider, symbol, timeframe): exactly one current sync state
+    per key -- SyncStateRepository.update_sync_state() upserts this row
+    rather than appending a new one per sync.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS sync_state (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        provider TEXT NOT NULL,
+        symbol TEXT NOT NULL,
+        timeframe TEXT NOT NULL,
+        last_timestamp TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(provider, symbol, timeframe)
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (sync_state table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize sync_state schema: {e}")
+        raise

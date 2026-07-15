@@ -105,6 +105,19 @@ either, and nothing in `core/pipeline.py` writes to it in this phase.
 Owned by `database/market_snapshot_repository.py` /
 `database/market_snapshot_models.py`.
 
+### `sync_state` (Phase 59.5)
+One row per `(provider, symbol, timeframe)` — that three-part tuple is
+`UNIQUE`, so `SyncStateRepository.update_sync_state()` upserts in
+place rather than appending a new row per sync. Tracks
+`data/historical_data_collector.py`'s `sync_historical_candles()` own
+incremental watermark (`last_timestamp`), letting a repeated sync call
+resume forward instead of re-fetching a large window every time.
+Independent of every other table, including `raw_candles` — no
+foreign key, linked only by convention (shared `provider`/`symbol`/
+`timeframe` values), nothing in `core/pipeline.py` writes to it.
+Owned by `database/sync_state_repository.py` /
+`database/sync_state_models.py`.
+
 ---
 
 ## Phase 50 Audit Findings

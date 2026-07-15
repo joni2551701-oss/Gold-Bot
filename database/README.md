@@ -17,11 +17,23 @@ SQLite (database/goldbot.db)
 
 ## Responsibilities
 One repository/model pair per table (`users`, `signals`,
-`subscriptions`, `feedback`, `admins`, and — Phase 59.3 — `raw_candles`/
-`market_snapshots`); idempotent `CREATE TABLE IF NOT EXISTS` +
-`PRAGMA table_info()`-guarded migrations + `CREATE INDEX IF NOT
-EXISTS` (Phase 50), all in `models.py`. `database.py` owns connection
-lifecycle (`__enter__`/`__exit__`, commit-or-rollback, always closes).
+`subscriptions`, `feedback`, `admins`, Phase 59.3's `raw_candles`/
+`market_snapshots`, and — Phase 59.5 — `sync_state`); idempotent
+`CREATE TABLE IF NOT EXISTS` + `PRAGMA table_info()`-guarded migrations
++ `CREATE INDEX IF NOT EXISTS` (Phase 50), all in `models.py`.
+`database.py` owns connection lifecycle (`__enter__`/`__exit__`,
+commit-or-rollback, always closes).
+
+`sync_state` (Phase 59.5: Historical Data Collection & Validation
+Foundation, TASK 2) is one row per `(provider, symbol, timeframe)`,
+tracking `data/historical_data_collector.py`'s
+`sync_historical_candles()` own incremental watermark
+(`last_timestamp`) so a repeated sync call resumes forward instead of
+re-fetching a large window. Fully isolated, no SQL foreign key to
+`raw_candles` (same no-foreign-key convention every table pair here
+already follows) -- `sync_state_repository.py`'s
+`update_sync_state()` upserts the row (check-then-branch UPDATE/INSERT,
+same idiom as `SubscriptionRepository._update()`/`create_subscription()`).
 
 `raw_candles`/`market_snapshots` (Phase 59.3, TASK 2: Raw Market
 Storage Foundation) are the first tables added by any Phase A/AC/

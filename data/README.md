@@ -90,6 +90,22 @@ isolation as every other file in this package.
 `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`, `database/`,
 or `telegram/`.
 
+### Historical Data Collection & Validation (Phase 59.5)
+Three additional, standalone modules -- none called from
+`core/pipeline.py`, none touching `market_data.py`/`data_quality.py`:
+`historical_data_collector.py` (`collect_historical_candles()`/
+`sync_historical_candles()` -- fetches via an existing
+`data/providers/` `MarketDataProvider` and persists via
+`database/raw_candle_repository.py`, with incremental resume backed by
+the new `database/sync_state_repository.py`), `historical_validator.py`
+(`validate_historical_candles()` -- missing/duplicate/ordering/future-
+timestamp/timezone/invalid-OHLC/provider-mismatch checks over a
+persisted `List[RawCandle]`, producing a `ValidationReport`; see
+`docs/DATA_VALIDATION.md`), and `provider_comparison.py`
+(`compare_providers()` -- foundation-only cross-provider candle diffing,
+no auto-correction). See `docs/DATASET_COLLECTION.md` and
+`docs/HISTORICAL_SYNC.md` for the full contract.
+
 ## Future Roadmap
 Wire `SmartDataCache` in if the pipeline ever fetches more than one
 symbol/interval per cycle (see `docs/PERFORMANCE.md`). Wire

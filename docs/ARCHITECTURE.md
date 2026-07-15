@@ -823,6 +823,84 @@ None of `data/market_data.py`, `core/pipeline.py`, `strategies/`,
 `telegram/command_router.py`, or `telegram/commands.py` changed in
 this phase.
 
+### Phase 59.5 — Historical Data Collection & Validation Foundation
+
+Audit found no historical collector, incremental sync, integrity
+validator, gap/dataset report, provider comparison, or dataset owner
+command anywhere in the repo — every module below is genuinely new,
+built additively on the Phase 59.1-59.3/Real Market Validation
+Foundation layers rather than replacing any of them. Full detail:
+`docs/DATASET_COLLECTION.md`, `docs/DATA_VALIDATION.md`,
+`docs/HISTORICAL_SYNC.md`.
+
+**TASK 1 (Historical Data Collector)** — new `data/historical_data_collector.py`.
+`collect_historical_candles(provider, symbol, timeframe, start, end)`
+fetches via an existing `data/providers/` `MarketDataProvider` and
+saves via `database/raw_candle_repository.py`'s
+`save_market_candles()` — no new fetch/storage logic, only composition
+of the two. Disclosed gap: neither `TwelveDataClient.fetch_candles()`
+nor `MarketDataProvider.get_candles()` accepts a real date range (both
+are "most recent N" calls only), so this function requests the
+largest single window a provider call can serve (capped at
+`MAX_FETCH_LIMIT = 5000`) and filters client-side —
+`CollectionResult.actual_start`/`actual_end` let a caller detect a
+partial result rather than silently trusting a complete one.
+
+**TASK 2 (Incremental Sync)** — new, fully isolated `sync_state` table
+(`database/sync_state_models.py`/`sync_state_repository.py`, one row
+per `(provider, symbol, timeframe)`, no foreign key to any other
+table) plus `historical_data_collector.py`'s `sync_historical_candles()`,
+which resumes from the stored `last_timestamp` instead of re-fetching
+a wide window every call.
+
+**TASK 3 (Data Integrity Validator)** — new `data/historical_validator.py`.
+`validate_historical_candles()` checks a persisted
+`List[RawCandle]` for missing/duplicate/out-of-order/future-timestamp/
+timezone-naive/invalid-OHLC/provider-mismatch conditions, producing a
+`ValidationReport`. Reuses `data.data_quality.INTERVAL_DELTAS` (a
+public, same-package constant); independently re-implements the
+OHLC/gap checks themselves rather than depending on
+`data_quality.py`'s different-shaped, different-purpose
+`assess_data_quality()` — the same disclosed-duplication precedent
+that module's own docstring already established for `market_data.py`.
+
+**TASK 4 (Gap Detector)** — new `analytics/gap_report.py`.
+`build_gap_report()` enumerates every individual missing/duplicated
+timestamp (capped at `MAX_GAP_ENTRIES = 1000`), where TASK 3's
+validator only counts gap *events*. `format_gap_report()` renders the
+brief's own worked `SYMBOL / TIMEFRAME / DATE / "HH:MM missing"` shape.
+
+**TASK 5 (Dataset Statistics)** — new `analytics/dataset_report.py`.
+`build_dataset_report()` groups a mixed `List[RawCandle]` by
+`(symbol, timeframe)`, reuses TASK 3's validator per group for
+duplicate/missing/invalid counts (summed across groups, not
+reimplemented), and computes `coverage_pct` as an unweighted mean
+across groups — disclosed, not hidden.
+
+**TASK 6 (Multi Provider Validation)** — new `data/provider_comparison.py`.
+`compare_providers()` matches two providers' candle lists by
+timestamp and reports close/high/low/spread differences. Foundation
+only: never merges, corrects, or picks a "winning" provider.
+
+**TASK 7 (Owner Service Foundation)** — new
+`telegram/owner/dataset_commands.py` (`get_dataset_status()`,
+`get_history_status()`, `get_sync_status()`, `get_provider_compare()`).
+Unlike `report_commands.py`/`validation_commands.py` (Phase 59.4/Real
+Market Validation Foundation, which take caller-supplied data since
+nothing persists signal/performance history yet), these four query the
+real `RawCandleRepository`/`SyncStateRepository` directly — the same
+"query the real backing store" posture `provider_commands.py`'s
+`list_providers()` already uses. **Not** registered into
+`telegram/commands.py`/`command_router.py`/`handlers.py` — the live
+bot's command surface is unaffected.
+
+None of `core/pipeline.py`, `decision/`, `execution/`, `risk/`,
+`strategies/`, `context/`, `signals/`, any Telegram handler, paper
+trading (`lifecycle/`), any pre-existing `analytics/` module
+(`signal_performance.py`/`strategy_report.py`/`context_report.py`/
+`validation_report.py`), or the pipeline's own stage order changed in
+this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real
@@ -1022,8 +1100,8 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | `execution/` | Inert scaffolding for future MT5 integration — not reachable from any runtime path today. |
 | `monitoring/` | Historical trade-outcome statistics (win rate, strategy breakdown — `performance.py`'s `PerformanceTracker`), not wired into any live command yet. Distinct from `performance/` (Phase A19) — see that row. Also `provider_health.py` (Phase 59.2) — `ProviderHealthStatus`/`check_provider_health()`, a third, distinct kind of “performance” (a provider's own live availability/latency), not wired into any live command yet either. |
 | `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `monitoring/performance.py`'s trade-outcome statistics. |
-| `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. |
-| `telegram/` | The Telegram product layer: routing, permissions, handlers, services. `owner/` (Phase 59.3) — real, tested owner-command service functions (`provider_commands.py`/`system_commands.py`/`feature_commands.py`), not registered into `commands.py`/`command_router.py`/`handlers.py` — the live bot's command surface is unaffected. |
+| `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. |
+| `telegram/` | The Telegram product layer: routing, permissions, handlers, services. `owner/` (Phase 59.3-59.5) — real, tested owner-command service functions (`provider_commands.py`/`system_commands.py`/`feature_commands.py`/`report_commands.py`/`validation_commands.py`/`dataset_commands.py`), not registered into `commands.py`/`command_router.py`/`handlers.py` — the live bot's command surface is unaffected. |
 | `lifecycle/` | Phase 59 Preparation foundation — `PaperTrade`/`TradeState` (simulated, broker-free trade state machine) and `SignalLifecycleState` (a signal's own progress through the analysis pipeline). In-memory only: no database persistence, no pipeline wiring. Not the same as `strategies/lifecycle/` (per-strategy metadata) or `execution/signal_lifecycle.py` (a pre-existing, inert, Telegram-delivery state machine). |
 | `analytics/` | Phase 59 Preparation foundation — `SignalPerformance`/`StrategyPerformanceReport`, **trading** performance (win/loss/R-multiple by strategy). Not wired into `core/pipeline.py`; not the same concept as `performance/` (Phase A19, system timing) or a replacement for `monitoring/performance.py`'s pre-existing, database-driven `PerformanceTracker`. |
 
@@ -1208,6 +1286,27 @@ import sweep):
   its input is an in-memory `List[SignalPerformance]`, not a database
   read. Not imported by `core/pipeline.py` or `monitoring/` in this
   phase.
+- `data/historical_data_collector.py`/`historical_validator.py`/
+  `provider_comparison.py` (Phase 59.5) import `data.providers.base_provider`,
+  `data.data_quality.INTERVAL_DELTAS` (same top-level `data/` package),
+  `database.raw_candle_repository`/`database.sync_state_repository`
+  (a new, one-directional `data/` → `database/` dependency — the first
+  time anything in `data/` has depended on `database/`, since a
+  collector's whole job is persisting what it fetches; never reversed,
+  and no other `data/` module gained this dependency). No dependency on
+  `context/`, `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`,
+  `execution/`, or `telegram/`. `analytics/gap_report.py`/
+  `dataset_report.py` (Phase 59.5) import `data.data_quality.INTERVAL_DELTAS`
+  and, within `analytics/`, `dataset_report.py` imports
+  `data.historical_validator` — no dependency on `context/`,
+  `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`, or
+  `telegram/`. `telegram/owner/dataset_commands.py` (Phase 59.5)
+  imports `analytics.dataset_report`, `data.provider_comparison`,
+  `database.raw_candle_repository`, `database.sync_state_repository`,
+  and `provider_commands.ProviderCommandResult` (same package) — not
+  imported by `telegram/handlers.py`, `telegram/command_router.py`, or
+  `telegram/commands.py`. None of the six new modules are imported by
+  `core/pipeline.py`.
 
 If a change requires violating one of these rules, that is a signal
 to stop and reconsider the design, not to add the import and move on
