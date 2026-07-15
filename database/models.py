@@ -326,3 +326,120 @@ def init_admin_schema(connection: sqlite3.Connection):
     except sqlite3.Error as e:
         logger.error(f"Failed to initialize admins schema: {e}")
         raise
+
+
+def init_raw_candle_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the raw_candles table schema (Phase 59.3, TASK
+    2: Raw Market Storage Foundation -- the first real database
+    migration added by any Phase A/AC/Phase-59 foundation module; see
+    database/raw_candle_models.py's own module docstring). Independent
+    of every other table -- no ALTER, no shared column, no foreign
+    key (same no-SQL-foreign-key convention every other table in this
+    schema already follows).
+
+    UNIQUE(symbol, timeframe, timestamp, provider): the same candle
+    window from two different providers is two distinct rows, never
+    merged or overwritten -- a duplicate insert from the SAME provider
+    for the SAME window is what this constraint actually prevents (see
+    database/raw_candle_repository.py's own IntegrityError handling).
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS raw_candles (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        symbol TEXT NOT NULL,
+        timeframe TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+        open REAL NOT NULL,
+        high REAL NOT NULL,
+        low REAL NOT NULL,
+        close REAL NOT NULL,
+        volume REAL,
+        provider TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(symbol, timeframe, timestamp, provider)
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (raw_candles table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize raw_candles schema: {e}")
+        raise
+
+    _create_raw_candle_indexes(connection)
+
+
+def _create_raw_candle_indexes(connection: sqlite3.Connection):
+    """
+    (symbol, timeframe) is the primary lookup pattern (a backtest
+    reconstructing one symbol/timeframe's history); timestamp is
+    filtered/sorted on for a date-range query. The UNIQUE constraint
+    above already gives (symbol, timeframe, timestamp, provider) an
+    implicit index, so it is not duplicated here. CREATE INDEX IF NOT
+    EXISTS is idempotent, same pattern as every other table's own
+    index-creation function in this file.
+    """
+    statements = [
+        "CREATE INDEX IF NOT EXISTS idx_raw_candles_symbol_timeframe ON raw_candles(symbol, timeframe)",
+        "CREATE INDEX IF NOT EXISTS idx_raw_candles_timestamp ON raw_candles(timestamp)",
+    ]
+    try:
+        for statement in statements:
+            connection.execute(statement)
+        connection.commit()
+    except sqlite3.Error as e:
+        logger.error(f"Failed to create raw_candles indexes: {e}")
+        raise
+
+
+def init_market_snapshot_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the market_snapshots table schema (Phase 59.3,
+    TASK 2). Independent of every other table, including raw_candles
+    (no SQL foreign key -- linked only by shared symbol/timeframe/
+    provider values, same convention as every other table pair in this
+    schema). The persisted counterpart to data.market_data_snapshot.MarketDataSnapshot
+    (Phase 59 Preparation/59.1, in-memory only) -- see
+    database/market_snapshot_models.py's own module docstring.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS market_snapshots (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        market_snapshot_id TEXT UNIQUE NOT NULL,
+        symbol TEXT NOT NULL,
+        timeframe TEXT NOT NULL,
+        provider TEXT,
+        candle_count INTEGER NOT NULL,
+        first_timestamp TEXT,
+        last_timestamp TEXT,
+        candles_reference TEXT NOT NULL,
+        data_quality TEXT,
+        created_at TEXT NOT NULL
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (market_snapshots table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize market_snapshots schema: {e}")
+        raise
+
+    _create_market_snapshot_indexes(connection)
+
+
+def _create_market_snapshot_indexes(connection: sqlite3.Connection):
+    """(symbol, timeframe) is the lookup pattern; created_at is sorted on for a recent-snapshots query. market_snapshot_id already has an implicit index via its UNIQUE constraint."""
+    statements = [
+        "CREATE INDEX IF NOT EXISTS idx_market_snapshots_symbol_timeframe ON market_snapshots(symbol, timeframe)",
+        "CREATE INDEX IF NOT EXISTS idx_market_snapshots_created_at ON market_snapshots(created_at)",
+    ]
+    try:
+        for statement in statements:
+            connection.execute(statement)
+        connection.commit()
+    except sqlite3.Error as e:
+        logger.error(f"Failed to create market_snapshots indexes: {e}")
+        raise

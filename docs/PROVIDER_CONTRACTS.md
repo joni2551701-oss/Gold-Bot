@@ -118,6 +118,36 @@ None of `data/providers/*.py` imports `context/`, `strategies/`,
 one-directional `monitoring/` → `data/providers/` dependency, not
 reversed (no file in `data/providers/` imports `monitoring/`).
 
+## Phase 59.3 additions
+
+### `MarketCandle.provider` (TASK 1)
+Additive field, defaults `None`. `TwelveDataProvider.get_candles()`
+now sets it to `self.get_provider_name()` on every candle it returns.
+`data/normalization/candle_normalizer.py`'s `stamp_provider()` is the
+reusable helper (`dataclasses.replace()`, since `MarketCandle` is
+frozen) for any other caller that needs to stamp an older candle.
+
+### `data/data_cache.py`'s `SmartDataCache` (TASK 3) — Already implemented, verified
+Audited against this task's own two goals: duplicate-API-call
+reduction (per-symbol/interval caching, expiring at the next candle's
+scheduled open time) and rate-limit protection (`request_count` vs.
+`DAILY_WARNING_LIMIT`). Both already real and correct. Gaps closed
+this phase: zero test coverage before (now `tests/data/test_data_cache.py`,
+12 tests) — no code change to `SmartDataCache` itself. Remains unwired
+into `core/pipeline.py`/`data/providers/` — a real future integration
+point, not built in this phase.
+
+### `ProviderHealthReport.checked_at` (TASK 4)
+Additive field, defaults `None`, always set to
+`datetime.now(timezone.utc)` by `check_provider_health()` — the
+brief's own "Last Update: 10:30:00" example.
+
+### `raw_candles`/`market_snapshots` tables (TASK 2)
+See `docs/DATABASE.md`'s own entries for the full schema — summarized
+here as: the first real database migration from any Phase A/AC/
+Phase-59 foundation module, two fully isolated new tables, never
+touching `signals`/`users`/`subscriptions`/`feedback`/`admins`.
+
 ## Sources (FRED series verification)
 
 - [Consumer Price Index for All Urban Consumers (CPIAUCSL) — FRED](https://fred.stlouisfed.org/series/CPIAUCSL)

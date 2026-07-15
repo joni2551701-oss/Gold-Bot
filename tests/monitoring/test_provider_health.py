@@ -1,6 +1,9 @@
 """
-Phase 59.2, TASK 6/9 -- monitoring/provider_health.py tests.
+Phase 59.2, TASK 6/9 -- monitoring/provider_health.py tests. Extended
+by Phase 59.3 TASK 4 (checked_at field).
 """
+
+from datetime import datetime, timezone
 
 from data.providers.base_provider import DataProvider, ProviderStatus
 from data.providers.registry import build_default_registry
@@ -99,6 +102,17 @@ def test_reason_reflects_disabled_status_matching_the_briefs_own_example():
 
     assert mt5_report.status == ProviderHealthStatus.OFFLINE
     assert "not implemented" in mt5_report.reason.lower()
+
+
+def test_checked_at_is_a_real_recent_utc_timestamp():
+    provider = _FakeProvider("test_checked_at", available=True)
+    before = datetime.now(timezone.utc)
+
+    report = check_provider_health(provider)
+
+    after = datetime.now(timezone.utc)
+    assert report.checked_at is not None
+    assert before <= report.checked_at <= after
 
 
 def test_check_registry_health_never_raises_on_empty_registry():

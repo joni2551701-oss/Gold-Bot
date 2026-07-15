@@ -81,6 +81,30 @@ ADMIN-tier Telegram users, `telegram_id UNIQUE NOT NULL`, `role`
 `TELEGRAM_OWNER_ID` and never gets a row here). Owned by
 `database/admin_repository.py` / `database/admin_models.py`.
 
+### `raw_candles` (Phase 59.3)
+The first table added by any Phase A/AC/Phase-59 foundation module —
+every prior one deliberately stayed in-memory-only. One row per
+`(symbol, timeframe, timestamp, provider)` — that four-part tuple is
+`UNIQUE`, so the same window from two different providers is two
+distinct rows, never merged. `volume` stays nullable — never coerced
+to `0.0` when a provider doesn't supply it. Independent of every other
+table, including `signals` — no relation, no foreign key, nothing in
+`core/pipeline.py` writes to it in this phase (see
+`docs/MARKET_DATA_ARCHITECTURE.md`'s "As implemented today" section
+for the same disclosed non-wiring already true of the provider layer
+itself). Owned by `database/raw_candle_repository.py` /
+`database/raw_candle_models.py`.
+
+### `market_snapshots` (Phase 59.3)
+The persisted counterpart to `data.market_data_snapshot.MarketDataSnapshot`
+(Phase 59 Preparation/59.1, which stays in-memory-only itself —
+`database/market_snapshot_models.py`'s `from_market_data_snapshot()`
+is the one bridge between the two). `market_snapshot_id UNIQUE NOT
+NULL`. Same isolation as `raw_candles` — no relation to `signals`
+either, and nothing in `core/pipeline.py` writes to it in this phase.
+Owned by `database/market_snapshot_repository.py` /
+`database/market_snapshot_models.py`.
+
 ---
 
 ## Phase 50 Audit Findings

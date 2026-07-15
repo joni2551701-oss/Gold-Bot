@@ -25,8 +25,9 @@ the pipeline's or a trade's.
 
 import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 from data.providers.base_provider import DataProvider
 from data.providers.registry import ProviderRegistry
@@ -63,11 +64,17 @@ class ProviderHealthReport:
         never estimated.
     reason: relayed directly from the provider's own
         ProviderStatus.reason -- empty string when status is ONLINE.
+    checked_at (Phase 59.3, TASK 4: Provider Health Integration): when
+        this health check itself ran -- the brief's own "Last Update:
+        10:30:00" example. Always datetime.now(timezone.utc) at the
+        moment check_provider_health() ran, never estimated or
+        inherited from the provider.
     """
     provider_name: str
     status: ProviderHealthStatus
     latency_ms: float
     reason: str = ""
+    checked_at: Optional[datetime] = None
 
 
 def check_provider_health(
@@ -99,6 +106,7 @@ def check_provider_health(
         status=status,
         latency_ms=latency_ms,
         reason=provider_status.reason,
+        checked_at=datetime.now(timezone.utc),
     )
 
 

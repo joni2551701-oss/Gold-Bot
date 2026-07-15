@@ -89,6 +89,14 @@ class MarketCandle:
     is not implemented yet (mt5_provider.py); a future MT5 provider
     that has a real tick-volume source may populate this field, but
     nothing in this codebase does today.
+
+    provider (Phase 59.2, TASK 1: Provider Normalization): which
+    provider's get_provider_name() supplied this candle, e.g.
+    "twelvedata" -- optional, additive, defaults None for backward
+    compatibility. TwelveDataProvider.get_candles() stamps it on every
+    candle it returns; a future real BinanceProvider would do the
+    same. See data/normalization/candle_normalizer.py's
+    stamp_provider() for the reusable helper.
     """
     symbol: str
     timeframe: str
@@ -98,6 +106,7 @@ class MarketCandle:
     close: float
     timestamp: datetime
     volume: Optional[float] = None
+    provider: Optional[str] = None
 
     def to_dict(self) -> dict:
         data = asdict(self)

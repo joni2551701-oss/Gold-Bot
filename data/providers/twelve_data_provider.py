@@ -96,6 +96,7 @@ class TwelveDataProvider(MarketDataProvider):
                 close=candle.close,
                 timestamp=candle.timestamp,
                 volume=None,
+                provider=self.get_provider_name(),
             )
             for candle in raw_candles
         ]

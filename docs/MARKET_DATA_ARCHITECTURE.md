@@ -95,24 +95,28 @@ Fundamental Context   (does not exist yet)
 AI Analyzer            (ai/ai_analyzer.py, still a heuristic stub)
 ```
 
-`FundamentalDataProvider`/`FredProvider` (this phase) are the
-foundation for the first box only — `Fundamental Context` and any
-`AI Analyzer` consumption remain future, separately-approved work
-(named as `Phase 59.3 — Fundamental Intelligence Layer` in this
-phase's own roadmap, see below).
+`FundamentalDataProvider`/`FredProvider` (Phase 59.2) were the
+foundation for the first box only. Phase 59.3 (TASK 6) built the
+second box — `context/fundamental_context.py`'s
+`compute_fundamental_context()` — but `AI Analyzer` consumption
+remains future, separately-approved work; `ai/ai_analyzer.py` reads
+nothing from `FundamentalContextSnapshot` in this phase.
 
-## What this phase does NOT do
+## What Phase 59.2/59.3 do NOT do
 
 - Does not wire `data/market_data.py`'s `MarketDataNormalizer` to use
   `data/providers/` — the live pipeline's data path is unchanged (see
   "As implemented today" above).
-- Does not change `context/`, `strategies/`, `signals/` (candidate
-  generation), `decision/decision_engine.py`, `risk/risk_manager.py`,
-  `ai/`, `execution/`, or any Telegram code.
+- Does not change `strategies/`, `signals/` (candidate generation),
+  `decision/decision_engine.py`, `risk/risk_manager.py`, `ai/`,
+  `execution/`, `telegram/handlers.py`, `telegram/command_router.py`,
+  or `telegram/commands.py`.
 - Does not implement a real Binance/FRED connection, or a
   TradingView `MarketDataProvider`.
-- Does not implement any Owner Mode command (`docs/OWNER_COMMANDS.md`
-  — contract only).
+- Does not register any Owner Mode command into the live bot
+  (`docs/OWNER_COMMANDS.md`/`telegram/owner/` — real functions as of
+  Phase 59.3, still not wired into `telegram/commands.py`/
+  `command_router.py`/`handlers.py`).
 
 ## Roadmap
 
@@ -120,13 +124,19 @@ phase's own roadmap, see below).
 Phase 59.1 — Market Provider Foundation (TwelveData real, MT5 stub)
         |
         v
-Phase 59.2 — Market Data Intelligence Layer (this phase: provider
-              contract hardening, Binance/FRED foundations, registry,
-              health monitoring, TradingView design audit)
+Phase 59.2 — Market Data Intelligence Layer (provider contract
+              hardening, Binance/FRED foundations, registry, health
+              monitoring, TradingView design audit)
         |
         v
-Phase 59.3 — Fundamental Intelligence Layer (Economic Calendar, DXY,
-              Fed Events, CPI, NFP, FOMC, News Impact Score)
+Phase 59.3 — Data Intelligence Foundation (provider normalization,
+              raw market storage -- first real DB migration, cache
+              verification, health checked_at, owner command
+              foundation, Fundamental Context connected to FRED)
+        |
+        v
+Phase 59.4 — Real Market Validation (7-30 day: Signal -> Paper Trade
+              -> Analytics -> Strategy Report)
         |
         v
 Phase 59 Validation — 7 Day Real Market Test

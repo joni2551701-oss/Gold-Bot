@@ -17,11 +17,19 @@ SQLite (database/goldbot.db)
 
 ## Responsibilities
 One repository/model pair per table (`users`, `signals`,
-`subscriptions`, `feedback`, `admins`); idempotent
-`CREATE TABLE IF NOT EXISTS` + `PRAGMA table_info()`-guarded
-migrations + `CREATE INDEX IF NOT EXISTS` (Phase 50), all in
-`models.py`. `database.py` owns connection lifecycle
-(`__enter__`/`__exit__`, commit-or-rollback, always closes).
+`subscriptions`, `feedback`, `admins`, and — Phase 59.3 — `raw_candles`/
+`market_snapshots`); idempotent `CREATE TABLE IF NOT EXISTS` +
+`PRAGMA table_info()`-guarded migrations + `CREATE INDEX IF NOT
+EXISTS` (Phase 50), all in `models.py`. `database.py` owns connection
+lifecycle (`__enter__`/`__exit__`, commit-or-rollback, always closes).
+
+`raw_candles`/`market_snapshots` (Phase 59.3, TASK 2: Raw Market
+Storage Foundation) are the first tables added by any Phase A/AC/
+Phase-59 module — every prior raw-market-data foundation
+(`data/market_data_snapshot.py`) deliberately stayed in-memory-only.
+Both are fully isolated new tables (no relation to `signals` or any
+other existing table); see `docs/DATABASE.md`'s own entries for the
+full schema.
 
 ## Input
 Typed values from a repository method's caller (a service, or

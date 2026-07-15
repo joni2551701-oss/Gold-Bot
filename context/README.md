@@ -278,3 +278,33 @@ Replay, and Education all remain unimplemented. For Market Phase
 specifically, see `docs/ARCHITECTURE_READINESS_REVIEW.md`'s AC-02
 section — full Wyckoff phase theory boundaries (A/B/C/D/E) and any
 future consumer beyond logging remain unimplemented.
+
+### Why Fundamental Context exists (Phase 59.3)
+`data/providers/fred_provider.py` (Phase 59.2) existed but was never
+connected to `context/` — `fundamental_context.py` adds that
+connection point: `compute_fundamental_context(interest_rate=,
+inflation=)` builds a `FundamentalContextSnapshot` (`fed_rate`,
+`inflation`, `dollar_strength`, `risk_level`) from already-fetched
+`FundamentalDataPoint` values, the same "pure adapter over
+already-computed data" pattern `context/market_phase.py` and
+`context/snapshot.py` already established. Does not call
+`FredProvider` itself — that provider's own data-fetch methods always
+raise `NotImplementedError` today (Phase 59.2's honest stub); a future
+real implementation is the one that would supply real values here.
+Deliberately named `FundamentalContextSnapshot`, not
+`FundamentalSnapshot` — `data.providers.fundamental_base.FundamentalSnapshot`
+(Phase 59.2) already exists as a different, generic provider-layer
+bundle type; see `fundamental_context.py`'s own "NAMING NOTE" for the
+full comparison.
+
+### What Fundamental Context does NOT do
+- Does not generate a `BUY`/`SELL` signal, and is not itself a
+  strategy or a decision — no `strategies/*.py`, `decision/`, or `ai/`
+  file reads `FundamentalContextSnapshot` in this phase.
+- Does not call `FredProvider` — inputs are supplied by the caller,
+  never fetched internally.
+- Does not classify `dollar_strength`/`risk_level` — both stay honest
+  `None` hooks; no historical baseline/threshold model exists in this
+  codebase to calibrate a real classification against yet, and none
+  is fabricated (same "never fabricate" convention as `zones.premium_discount`
+  in `context/snapshot.py`).
