@@ -10,7 +10,7 @@ from analytics.signal_performance import (
     compute_signal_performance,
     generate_performance_id,
 )
-from lifecycle.paper_trade import create_paper_trade, open_paper_trade, close_paper_trade
+from lifecycle.paper_trade import cancel_paper_trade, create_paper_trade, open_paper_trade, close_paper_trade
 from signals.schema import SignalSchema
 
 
@@ -156,3 +156,48 @@ def test_generate_performance_id_returns_uuid_shaped_string():
     value = generate_performance_id()
     assert isinstance(value, str)
     assert len(value) == 36
+
+
+# --- Phase 59.4 TASK 1: CANCELLED result derivation ---
+
+def test_cancelled_trade_from_created_produces_cancelled_result():
+    signal = _signal()
+    trade = create_paper_trade(signal)
+    cancelled = cancel_paper_trade(trade).trade
+
+    performance = compute_signal_performance(signal, paper_trade=cancelled)
+
+    assert performance.result == "CANCELLED"
+
+
+def test_cancelled_trade_from_open_produces_cancelled_result():
+    signal = _signal()
+    trade = create_paper_trade(signal)
+    opened = open_paper_trade(trade).trade
+    cancelled = cancel_paper_trade(opened).trade
+
+    performance = compute_signal_performance(signal, paper_trade=cancelled)
+
+    assert performance.result == "CANCELLED"
+
+
+def test_cancelled_trade_has_no_r_multiple():
+    signal = _signal()
+    trade = create_paper_trade(signal)
+    cancelled = cancel_paper_trade(trade).trade
+
+    performance = compute_signal_performance(signal, paper_trade=cancelled)
+
+    assert performance.r_multiple is None
+
+
+def test_closed_trade_result_is_unaffected_by_the_cancelled_fix():
+    """Regression guard: a normally CLOSED trade's real TP/SL/BE/EXPIRED result must not be shadowed by the new CANCELLED-detection branch."""
+    signal = _signal()
+    trade = create_paper_trade(signal)
+    opened = open_paper_trade(trade).trade
+    closed = close_paper_trade(opened, "TP").trade
+
+    performance = compute_signal_performance(signal, paper_trade=closed)
+
+    assert performance.result == "TP"

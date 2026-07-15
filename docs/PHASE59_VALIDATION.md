@@ -116,11 +116,15 @@ would build.
    separately-approved persistence phase.
 2. **No automatic paper-trade lifecycle.** `lifecycle/paper_trade.py`
    provides `create_paper_trade()`/`open_paper_trade()`/
-   `close_paper_trade()`/`cancel_paper_trade()` as pure, callable
-   functions — nothing in `core/pipeline.py` calls them yet. Opening a
-   trade on every `APPROVE`d decision and monitoring it against future
-   candles to auto-close is explicitly out of this phase's scope (see
-   `lifecycle/README.md`'s "Future Roadmap").
+   `close_paper_trade()`/`cancel_paper_trade()`, and (Phase 59.4)
+   `lifecycle/paper_trade_monitor.py`'s `check_paper_trade_against_candles()`
+   can now decide TP/SL/EXPIRED given a candle window — all still pure,
+   callable functions. Nothing in `core/pipeline.py` calls any of them
+   yet: opening a trade on every `APPROVE`d decision automatically, and
+   calling the monitor each cycle with accumulated candle history
+   (`database/raw_candle_repository.py`, Phase 59.3, would supply that
+   history), is explicitly out of scope — see `lifecycle/README.md`'s
+   "Future Roadmap".
 3. **No PnL / drawdown simulation.** `SignalPerformance.profit_loss` is
    always `None` — an honest hook, not a fabricated number (see
    `analytics/signal_performance.py`'s own docstring for why: it would

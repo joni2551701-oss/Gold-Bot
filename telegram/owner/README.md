@@ -42,15 +42,30 @@ simpler view) — a superset, not a replacement.
 `ENABLE_TWELVEDATA` (Phase 59.1) are read together. Reports only —
 changes neither flag system.
 
+### `report_commands.py` (Phase 59.4, TASK 5)
+`format_daily_stats(signals, performances)` — the future `/stats`
+command's payload (Signals/Approved/TP/SL/Expired/Cancelled/Best
+Strategy), reusing `analytics/strategy_report.py`'s
+`build_strategy_report()` rather than reimplementing the counting.
+`pick_best_strategy(reports, minimum_signals=1)` — highest `win_rate`,
+ties broken by more `total_signals`. Both take already-computed data
+as input (`List[SignalSchema]`/`List[SignalPerformance]`) — nothing in
+this codebase persists a day's worth of these anywhere yet (see
+`docs/PHASE59_VALIDATION.md`'s "Known gaps"), so a real `/stats`
+command needs that data source wired up first, a separate future step.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
 imports `telegram.admin_service.AdminService` and
 `provider_commands.ProviderCommandResult`. `feature_commands.py`
 imports `config.Config`, `configuration.feature_flags.DEFAULT_FLAGS`,
-and `provider_commands.ProviderCommandResult`. None imports
-`telegram.handlers`, `telegram.command_router`, or `telegram.commands`
-— this package is never itself imported by the live routing surface.
+and `provider_commands.ProviderCommandResult`. `report_commands.py`
+imports `analytics.strategy_report`, `analytics.signal_performance`,
+`signals.schema.SignalSchema`, and `provider_commands.ProviderCommandResult`.
+None imports `telegram.handlers`, `telegram.command_router`, or
+`telegram.commands` — this package is never itself imported by the
+live routing surface.
 
 ## Future Roadmap
 See `docs/OWNER_COMMANDS.md`'s own "Roadmap" section — command

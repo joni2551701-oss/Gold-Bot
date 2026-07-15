@@ -1,13 +1,14 @@
-# Owner Commands — Contract (Phase 59.2, TASK 7; partially implemented Phase 59.3, TASK 5)
+# Owner Commands — Contract (Phase 59.2, TASK 7; partially implemented Phase 59.3 TASK 5 / 59.4 TASK 5)
 
 **Still not wired into the live bot.** Phase 59.2 kept this
 documentation-only, per the Director's prior agreement ("Oldingi
 kelishuv bo'yicha: Owner uchun alohida. Hozir faqat contract."). Phase
-59.3's own brief asked for real code this time
+59.3 and 59.4 both asked for real code
 (`telegram/owner/provider_commands.py`/`system_commands.py`/
-`feature_commands.py`) — those now exist as real, tested,
-**standalone** functions (`list_providers()`, `get_data_status()`,
-`get_system_health()`, `list_features()`, plus honestly-non-working
+`feature_commands.py`/`report_commands.py`) — those now exist as real,
+tested, **standalone** functions (`list_providers()`,
+`get_data_status()`, `get_system_health()`, `list_features()`,
+`format_daily_stats()`, plus honestly-non-working
 `enable_provider()`/`disable_provider()` stubs — see
 `telegram/owner/README.md`), but are **not** registered into
 `telegram/commands.py`'s `OWNER_COMMANDS`/`ADMIN_COMMANDS` dicts, and
@@ -24,6 +25,9 @@ code, not yet by a live command.
 /provider_status          → a full monitoring/provider_health.py report for every registered provider (status, latency, reason) -- the Telegram-facing view of check_registry_health()
 /enable_provider <name>   → sets ENABLE_<NAME>=True (owner-only)
 /disable_provider <name>  → sets ENABLE_<NAME>=False (owner-only)
+/system_health             → telegram/owner/system_commands.py's get_system_health()
+/features                  → telegram/owner/feature_commands.py's list_features()
+/stats                     → telegram/owner/report_commands.py's format_daily_stats() (Phase 59.4) -- needs a real data source (today's SignalSchema/SignalPerformance records) wired up first; nothing persists these yet, see "Contract" below
 ```
 
 `/provider <name>` (Phase 59.1's original two-argument form, e.g.
@@ -67,6 +71,17 @@ between the two shapes.
   `success=False` today (see next bullet) — a future implementer
   building the runtime-override mechanism below would update these two
   functions themselves, not just add a handler on top.
+- **`/stats`** (Phase 59.4) — `telegram/owner/report_commands.py`'s
+  `format_daily_stats(signals, performances)` already does the
+  Signals/Approved/TP/SL/Expired/Cancelled/Best-Strategy formatting,
+  reusing `analytics/strategy_report.py` — but needs a real *data
+  source* wired up first, not just a handler: nothing in this codebase
+  persists a day's worth of `SignalSchema`/`SignalPerformance` records
+  anywhere yet. A future implementer would need to decide where
+  "today's signals" comes from (a new query over
+  `database/raw_candle_repository.py`-adjacent persistence, or a fresh
+  in-memory accumulator process-lifetime-scoped) before a handler can
+  call this function meaningfully.
 - **Does not change `MARKET_DATA_PROVIDER`/`ENABLE_*` at the process
   level** the way `config.py` reads them today: `os.getenv()` is read
   once, at `config.py` import time. A real implementation needs either
@@ -79,7 +94,7 @@ between the two shapes.
   is sufficient (it would not affect a value `config.py` already read
   at import time).
 
-## What Phase 59.3 does NOT do
+## What Phase 59.3/59.4 do NOT do
 
 - Does not register any command into `telegram/commands.py`'s
   `OWNER_COMMANDS`/`ADMIN_COMMANDS` dicts.
@@ -89,6 +104,9 @@ between the two shapes.
 - Does not implement a runtime config-override mechanism —
   `enable_provider()`/`disable_provider()` (`telegram/owner/provider_commands.py`)
   honestly report `success=False` rather than pretending to work.
+- Does not persist a day's worth of signals/performance anywhere —
+  `format_daily_stats()` (Phase 59.4) takes already-computed data as
+  input; no accumulator or query exists yet.
 
 ## Roadmap
 

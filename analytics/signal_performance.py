@@ -42,6 +42,8 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
 
+from lifecycle.trade_state import TradeState
+
 if TYPE_CHECKING:
     from lifecycle.paper_trade import PaperTrade
     from signals.schema import SignalSchema
@@ -62,8 +64,12 @@ class SignalPerformance:
         ContextSnapshotSchema/MarketPhaseResult when supplied by the
         caller, else None (this module never (re)computes context).
     Result: result -- one of lifecycle.paper_trade.ALLOWED_PAPER_TRADE_RESULTS
-        ("TP"/"SL"/"BE"/"EXPIRED"), read from a closed PaperTrade; None
-        if the trade hasn't closed (or no PaperTrade was supplied).
+        ("TP"/"SL"/"BE"/"EXPIRED"), read from a closed PaperTrade, OR
+        "CANCELLED" (Phase 59.4, TASK 1 -- derived from
+        PaperTrade.status == TradeState.CANCELLED, since a cancelled
+        trade never gets a result via close_paper_trade()). None if
+        the trade hasn't closed/cancelled (or no PaperTrade was
+        supplied).
     profit_loss: always None in this phase -- an honest hook, no PnL
         computation exists anywhere in this codebase (see module
         docstring).
@@ -164,8 +170,23 @@ def compute_signal_performance(
     plus optional already-computed PaperTrade/session/market_phase.
     Never raises: a signal with no linked PaperTrade produces a record
     with result/r_multiple/duration all None, not an exception.
+
+    Phase 59.4 (TASK 1) fix: a CANCELLED PaperTrade previously produced
+    result=None here (PaperTrade.result stays unset by
+    cancel_paper_trade() -- CANCELLED is a status, not one of
+    ALLOWED_PAPER_TRADE_RESULTS). This left "Cancelled" invisible to
+    any report built from SignalPerformance, even though this task's
+    own brief explicitly lists it as a displayable Result value
+    alongside TP/SL/Expired. result now reads "CANCELLED" directly off
+    trade.status for that one case -- still never fabricated, since
+    CANCELLED is the trade's own real, already-set status.
     """
-    result = paper_trade.result if paper_trade is not None else None
+    result = None
+    if paper_trade is not None:
+        if paper_trade.status == TradeState.CANCELLED:
+            result = "CANCELLED"
+        else:
+            result = paper_trade.result
 
     duration = None
     if paper_trade is not None and paper_trade.opened_at is not None and paper_trade.closed_at is not None:

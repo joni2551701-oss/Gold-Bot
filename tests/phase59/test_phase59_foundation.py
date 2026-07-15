@@ -226,7 +226,7 @@ def test_signal_to_result_chain_end_to_end():
 
 
 def test_signal_to_result_chain_expired_never_opened():
-    """A signal whose paper trade is cancelled before ever opening -- no result, no r_multiple, but the chain still completes without error."""
+    """A signal whose paper trade is cancelled before ever opening -- result reflects CANCELLED (Phase 59.4 TASK 1), no r_multiple, chain completes without error."""
     signal = _approved_signal()
     trade = create_paper_trade(signal)
     cancelled = cancel_paper_trade(trade).trade
@@ -234,6 +234,7 @@ def test_signal_to_result_chain_expired_never_opened():
     performance = compute_signal_performance(signal, paper_trade=cancelled)
     report = build_strategy_report([performance])
 
-    assert performance.result is None
+    assert performance.result == "CANCELLED"
+    assert performance.r_multiple is None
     assert report["LIQUIDITY_SWEEP_STRATEGY"].total_signals == 1
     assert report["LIQUIDITY_SWEEP_STRATEGY"].win_count == 0

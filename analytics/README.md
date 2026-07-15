@@ -33,10 +33,26 @@ scope — `risk/risk_manager.py` is untouched).
 ### `strategy_report.py`
 `StrategyPerformanceReport` plus `build_strategy_report(performances)`
 — groups `SignalPerformance` records by `strategy_id`, computing
-`win_count`/`loss_count`/`breakeven_count`/`win_rate`/
+`win_count`/`loss_count`/`breakeven_count`/`expired_count`/
+`cancelled_count` (the latter two added Phase 59.4, TASK 3)/`win_rate`/
 `average_r_multiple`. `win_rate` deliberately reuses
 `monitoring/performance.py`'s own `WIN / (WIN + LOSS)` formula and
 zero-division guard — the same convention, not a competing one.
+`compute_win_rate()` (renamed from a private `_win_rate()` in Phase
+59.4 once `context_report.py` became a second real caller — no
+behavior change).
+
+### `context_report.py` (Phase 59.4, TASK 4)
+`ContextPerformanceReport` plus `build_context_report(performances,
+include_market_phase=False)` — the same counting/`win_rate` logic as
+`strategy_report.py` (a small, disclosed duplication, not a shared
+abstraction forced onto two callers), grouped by `(session,
+strategy_id)` by default, or `(session, strategy_id, market_phase)`
+when `include_market_phase=True`. Matches this task's own worked
+example ("London + Liquidity Sweep → Winrate 71%"); the brief's own
+illustrative third dimension ("+FVG") is deliberately substituted with
+`market_phase` — the real third dimension `SignalPerformance` actually
+carries, not a fabricated field.
 
 ## What this package does NOT do
 - Does not read or write the database — no new table, no migration,
@@ -53,12 +69,13 @@ zero-division guard — the same convention, not a competing one.
   phase's other two tasks).
 
 ## Dependencies
-`signal_performance.py` imports only the standard library at runtime,
-plus `lifecycle.paper_trade.PaperTrade` and `signals.schema.SignalSchema`
-(`TYPE_CHECKING`-only). `strategy_report.py` imports
-`analytics.signal_performance` (same package) only. Neither imports
-`context/`, `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`,
-`database/`, or `telegram/`.
+`signal_performance.py` imports `lifecycle.trade_state.TradeState`
+(Phase 59.4, TASK 1 — a real runtime import, needed to detect a
+`CANCELLED` `PaperTrade`) plus, `TYPE_CHECKING`-only,
+`lifecycle.paper_trade.PaperTrade` and `signals.schema.SignalSchema`.
+`strategy_report.py` imports `analytics.signal_performance` (same
+package) only. Neither imports `context/`, `strategies/`, `ai/`,
+`decision/`, `risk/`, `execution/`, `database/`, or `telegram/`.
 
 ## Future Roadmap
 Persistence (a `signal_performance` table), `core/pipeline.py` wiring,

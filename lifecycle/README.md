@@ -84,10 +84,23 @@ imports `lifecycle.trade_state` plus, `TYPE_CHECKING`-only,
 Neither imports `context/`, `strategies/`, `ai/`, `decision/`,
 `risk/`, `execution/`, `database/`, or `telegram/`.
 
+### `paper_trade_monitor.py` (Phase 59.4, TASK 2)
+`check_paper_trade_against_candles(trade, candles)` — the monitor loop
+named as unimplemented below, now built: walks a caller-supplied
+candle list looking for entry, then TP/SL, closing the trade via
+`close_paper_trade()` (reused, not duplicated) with `"TP"`/`"SL"`, or
+`"EXPIRED"` if entry is never touched across the whole window. Stateless
+per call — the caller must supply the full candle history since
+`trade.opened_at`, not just new candles each cycle (see the module's
+own docstring for why). Ambiguity rule: SL wins if a single candle's
+range covers both TP and SL (the conservative backtesting convention).
+
 ## Future Roadmap
-Persistence (a `paper_trades` table, a `PaperTradeRepository`),
-`core/pipeline.py` wiring (constructing a `PaperTrade` per `APPROVE`d
-decision automatically), and a live monitor loop (checking `OPEN`
-trades against fresh candles to decide `TP`/`SL`/`EXPIRED`) all remain
+Persistence (a `paper_trades` table, a `PaperTradeRepository` — note
+`database/raw_candle_repository.py`/`market_snapshot_repository.py`,
+Phase 59.3, already provide the raw candle history a real monitor loop
+would feed into `paper_trade_monitor.py`) and `core/pipeline.py`
+wiring (constructing a `PaperTrade` per `APPROVE`d decision
+automatically, and calling the new monitor each cycle) both remain
 unimplemented — each a separate, explicitly-approvable future step, in
 line with `docs/PHASE59_VALIDATION.md`'s own scope notes.

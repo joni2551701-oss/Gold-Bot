@@ -100,3 +100,60 @@ def test_never_raises_on_mixed_valid_and_incomplete_records():
     ]
 
     build_strategy_report(performances)  # must not raise
+
+
+# --- Phase 59.4 TASK 3: expired/cancelled counts ---
+
+def test_expired_count_matches_the_briefs_own_example():
+    """Liquidity Sweep: 100 trades, Win 62, Loss 28, Expired 10 -- the exact scenario this task's brief names."""
+    performances = (
+        [_perf("LIQUIDITY_SWEEP_STRATEGY", "TP", 2.0) for _ in range(62)]
+        + [_perf("LIQUIDITY_SWEEP_STRATEGY", "SL", -1.0) for _ in range(28)]
+        + [_perf("LIQUIDITY_SWEEP_STRATEGY", "EXPIRED", None) for _ in range(10)]
+    )
+
+    report = build_strategy_report(performances)
+    stats = report["LIQUIDITY_SWEEP_STRATEGY"]
+
+    assert stats.total_signals == 100
+    assert stats.win_count == 62
+    assert stats.loss_count == 28
+    assert stats.expired_count == 10
+    assert stats.win_rate == 62 / 90
+
+
+def test_cancelled_count_is_tracked_separately_from_expired():
+    performances = [
+        _perf("AMD_STRATEGY", "CANCELLED", None),
+        _perf("AMD_STRATEGY", "EXPIRED", None),
+        _perf("AMD_STRATEGY", "TP", 2.0),
+    ]
+
+    report = build_strategy_report(performances)
+    stats = report["AMD_STRATEGY"]
+
+    assert stats.cancelled_count == 1
+    assert stats.expired_count == 1
+    assert stats.total_signals == 3
+
+
+def test_expired_and_cancelled_excluded_from_win_rate():
+    performances = [
+        _perf("FVG_STRATEGY", "TP", 2.0),
+        _perf("FVG_STRATEGY", "EXPIRED", None),
+        _perf("FVG_STRATEGY", "CANCELLED", None),
+    ]
+
+    report = build_strategy_report(performances)
+    stats = report["FVG_STRATEGY"]
+
+    assert stats.win_rate == 1.0  # 1 win / (1 win + 0 loss) -- expired/cancelled don't count as decided
+
+
+def test_default_expired_and_cancelled_counts_are_zero():
+    performances = [_perf("LIQUIDITY_SWEEP_STRATEGY", "TP", 2.0)]
+
+    report = build_strategy_report(performances)
+
+    assert report["LIQUIDITY_SWEEP_STRATEGY"].expired_count == 0
+    assert report["LIQUIDITY_SWEEP_STRATEGY"].cancelled_count == 0
