@@ -19,12 +19,24 @@ SQLite (database/goldbot.db)
 One repository/model pair per table (`users`, `signals`,
 `subscriptions`, `feedback`, `admins`, Phase 59.3's `raw_candles`/
 `market_snapshots`, Phase 59.5's `sync_state`, Phase 59.6's
-`audit_log`/`config_snapshots`, Phase 59.7's `runtime_features`, and —
-Phase 59.9 — `emergency_states`); idempotent `CREATE TABLE IF NOT
-EXISTS` + `PRAGMA table_info()`-guarded migrations + `CREATE INDEX IF
-NOT EXISTS` (Phase 50), all in `models.py`. `database.py` owns
-connection lifecycle (`__enter__`/`__exit__`, commit-or-rollback,
-always closes).
+`audit_log`/`config_snapshots`, Phase 59.7's `runtime_features`, Phase
+59.9's `emergency_states`, and — Phase 60.6 — `learning_records`);
+idempotent `CREATE TABLE IF NOT EXISTS` + `PRAGMA table_info()`-guarded
+migrations + `CREATE INDEX IF NOT EXISTS` (Phase 50), all in
+`models.py`. `database.py` owns connection lifecycle (`__enter__`/
+`__exit__`, commit-or-rollback, always closes).
+
+`learning_records` (Phase 60.6: Learning Loop Foundation, TASK 5) is
+append-only — `LearningRepository` exposes no update/delete method,
+same "history must never be lost" posture `emergency_states`/
+`audit_log` already established. `LearningRecordRow`
+(`database/learning_models.py`) deliberately does not reuse
+`learning.models.LearningRecord` directly — same disambiguation-by-
+naming discipline every other database-layer model in this codebase
+follows (`RawCandle` vs. `Candle`, `SignalRecord` vs. `SignalSchema`).
+Nothing calls `LearningRepository.record()` automatically yet — no
+`core/pipeline.py` stage or owner command is wired to persist a
+`LearningRecord` in this phase. See `docs/LEARNING_LOOP.md`.
 
 `emergency_states` (Phase 59.9: Emergency Safety Layer Foundation,
 TASK 2) is append-only — `EmergencyRepository.record_transition()`

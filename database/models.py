@@ -623,3 +623,59 @@ def init_emergency_state_schema(connection: sqlite3.Connection):
     except sqlite3.Error as e:
         logger.error(f"Failed to initialize emergency_states schema: {e}")
         raise
+
+
+def init_learning_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the learning_records table schema (Phase 60.6:
+    Learning Loop Foundation, TASK 5). Independent of every other
+    table -- no foreign key, `trade_id`/`signal_id` hold the same kind
+    of identifier as `lifecycle.paper_trade.PaperTrade`/`SignalSchema`
+    by convention, never enforced structurally (same posture
+    `audit_log`'s own `actor` column already established). Append-only
+    by design, same "history must never be lost" rule
+    `emergency_states`'s own docstring states: this repository exposes
+    no update/delete method.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS learning_records (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        record_id TEXT UNIQUE NOT NULL,
+        trade_id TEXT NOT NULL,
+        signal_id TEXT NOT NULL,
+        strategy_name TEXT,
+        market_phase TEXT,
+        session TEXT,
+        timeframe TEXT,
+        result TEXT,
+        r_multiple REAL,
+        failure_type TEXT,
+        success_pattern TEXT,
+        created_at TEXT NOT NULL
+    );
+    """
+    try:
+        connection.execute(query)
+        connection.commit()
+        logger.info("Database schema (learning_records table) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize learning_records schema: {e}")
+        raise
+
+    _create_learning_records_indexes(connection)
+
+
+def _create_learning_records_indexes(connection: sqlite3.Connection):
+    """strategy_name/session are the group-by dimensions learning.pattern_detector.detect_patterns() uses; trade_id is the lookup pattern for a single trade's record."""
+    statements = [
+        "CREATE INDEX IF NOT EXISTS idx_learning_records_strategy_name ON learning_records(strategy_name)",
+        "CREATE INDEX IF NOT EXISTS idx_learning_records_session ON learning_records(session)",
+        "CREATE INDEX IF NOT EXISTS idx_learning_records_trade_id ON learning_records(trade_id)",
+    ]
+    try:
+        for statement in statements:
+            connection.execute(statement)
+        connection.commit()
+    except sqlite3.Error as e:
+        logger.error(f"Failed to create learning_records indexes: {e}")
+        raise

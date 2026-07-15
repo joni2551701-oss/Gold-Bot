@@ -28,20 +28,34 @@ Decision Engine
   Phase 55 foundation subpackages (memory, prompt templates, user
   profile model, trade journal, and a re-export of the canonical
   analyzer respectively). None are wired into the production pipeline.
+- `learning_context.py` (Phase 60.6: Learning Loop Foundation, TASK 7)
+  — `LearningContext` + `build_learning_context()`: bundles
+  already-computed `learning/` data (`recent_failures`/
+  `successful_patterns`/`strategy_stats`) into the Director's own
+  AI-facing JSON shape. Generates no explanation/recommendation text
+  itself — that is left to a future AI consumer, still bound by
+  `AIAnalyzerInterface`'s advisory-only contract. See
+  `docs/LEARNING_LOOP.md`.
 
 ## Input
 `SignalCandidate` + `ContextSnapshot` (production `AIAnalyzer`); the
 new foundation types (`MarketContext`/`UserContext`) for anything
-built against `interfaces.py` in a future phase.
+built against `interfaces.py` in a future phase; an already-built
+`Sequence[learning.models.LearningRecord]` for `learning_context.py`.
 
 ## Output
 `AIAnalysisResult` (production); `AIResponse` (future interface
-shape).
+shape); `LearningContext` (`learning_context.py`).
 
 ## Dependencies
-`context/` and `signals/` only. No dependency on `database/` or
-`telegram/` — an AI provider must never reach either directly (see
-`CLAUDE.md`'s Trading Safety rules).
+`context/` and `signals/` for the production/interface path. No
+dependency on `database/` or `telegram/` — an AI provider must never
+reach either directly (see `CLAUDE.md`'s Trading Safety rules).
+`learning_context.py` (Phase 60.6) additionally imports
+`analytics.strategy_report.compute_win_rate` and
+`learning.models`/`learning.pattern_detector` — read-only, no
+trading-decision logic, and still no `database/`/`telegram/`
+dependency.
 
 ## Future Roadmap
 Full audit and folder-structure rationale in `docs/AI_ARCHITECTURE.md`.

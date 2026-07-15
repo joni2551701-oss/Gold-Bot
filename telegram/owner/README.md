@@ -205,6 +205,16 @@ its own. Never returns "BUY"/"SELL" or approves/rejects anything — see
 phase. Not wired into the live bot, same as every module in this
 package.
 
+### `learning_commands.py` (Phase 60.6: Learning Loop Foundation)
+`get_learning_status()`, `get_patterns_report()`,
+`get_failures_report()`, `get_best_conditions_report()` — thin
+wrappers over `analytics.learning_report`/`learning.pattern_detector`'s
+own `compute_*()`/`format_*()` functions. No new pattern-detection
+logic of its own. Never mutates a strategy parameter, confidence
+threshold, or risk value — see `docs/LEARNING_LOOP.md`'s own hard rule
+for this whole phase. Not wired into the live bot, same as every
+module in this package.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -253,7 +263,10 @@ imports `analytics.performance_metrics`, `analytics.equity_curve`,
 and `provider_commands.ProviderCommandResult`. `fundamental_commands.py`
 imports `context.fundamental_context.FundamentalContextSnapshot`,
 `context.fundamental_scoring.FundamentalScoreResult`/`format_fundamental_score()`,
-and `provider_commands.ProviderCommandResult`.
+and `provider_commands.ProviderCommandResult`. `learning_commands.py`
+imports `analytics.learning_report`, `learning.pattern_detector`,
+`learning.models.LearningRecord`, and
+`provider_commands.ProviderCommandResult`.
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the
 live routing surface.

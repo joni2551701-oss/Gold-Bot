@@ -1439,6 +1439,78 @@ foundation phase). None of `core/pipeline.py`, `decision/`, `risk/`,
 `telegram/command_router.py`, or `telegram/commands.py` changed in
 this phase.
 
+### Phase 60.6 — Learning Loop Foundation
+
+A learning *foundation*, not an autonomous learner, per the
+Director's own hard rule: `observe -> analyze -> report`, never
+`observe -> mutate`. Nothing in this phase reads a `LearningRecord`/
+`PatternInsight` back into `strategies/`, `decision/`, or `risk/` to
+change behavior, and nothing here changes a strategy parameter,
+confidence threshold, or risk value. Full detail:
+`docs/LEARNING_LOOP.md` (architecture diagram, safety rules, future
+AI training plan) and `docs/LEARNING_LOOP_AUDIT.md` (TASK 1's reuse
+findings).
+
+New top-level `learning/` package — TASK 1's reuse audit found no
+existing pattern-detection or persisted-learning-memory module
+anywhere in this codebase; `analytics/signal_performance.py`'s
+`SignalPerformance` shares 7 of `LearningRecord`'s 11 fields but is an
+in-memory, computed-on-demand analytics type with no persistence
+story, a different lifecycle from an append-only learning memory.
+
+**`learning/models.py`** (TASK 2) — `LearningRecord` (`record_id`,
+`trade_id`, `signal_id`, `strategy_name`, `market_phase`, `session`,
+`timeframe`, `result`, `r_multiple`, `failure_type`,
+`success_pattern`, `created_at`). `id` deliberately excluded — same
+convention `AuditLogEntry` already established.
+
+**`learning/outcome_analyzer.py`** (TASK 3) — `TradeAnalysis` +
+`analyze_trade_result(paper_trade, context=None, performance=None,
+htf_bias=None)`. Purely observational: reads only already-detected
+structural facts (BOS/CHoCH/liquidity sweep/order block/FVG presence,
+HTF-direction alignment) — no new detection logic anywhere.
+
+**`learning/pattern_detector.py`** (TASK 4) — `PatternInsight` +
+`detect_patterns()`/`filter_high_failure_patterns()`/
+`filter_high_success_patterns()`/`format_pattern_insight()`. Groups by
+`(strategy_name, session, market_phase)`, reusing
+`analytics.strategy_report.compute_win_rate()` directly. Does not
+parse `failure_type`/`success_pattern` free text into structured
+sub-conditions — a most-common-string example only, never a
+generalized rule.
+
+**`database/learning_models.py` + `learning_repository.py`** (TASK 5)
+— `LearningRecordRow` + `LearningRepository`, mirroring
+`database/audit_log_repository.py`'s structure exactly. Append-only:
+**no `update()`/`delete()` method exists**. New `learning_records`
+table (`init_learning_schema()` in `database/models.py`).
+
+**`analytics/learning_report.py`** (TASK 6) — `LearningReport` +
+`build_learning_report()`/`format_learning_report()`, reusing
+`detect_patterns()` directly to pick the best/worst condition —
+matches the Director's own "Last 100 trades / Best condition / Worst
+condition" worked example shape.
+
+**`ai/learning_context.py`** (TASK 7) — `LearningContext` +
+`build_learning_context()`, matching the Director's own
+`{recent_failures, successful_patterns, strategy_stats}` JSON shape.
+Generates no explanation/recommendation text itself — left to a
+future AI consumer, still bound by `AIAnalyzerInterface`'s
+advisory-only contract.
+
+**`telegram/owner/learning_commands.py`** (TASK 8) —
+`get_learning_status()`/`get_patterns_report()`/`get_failures_report()`/
+`get_best_conditions_report()`, thin wrappers over the modules above.
+Not wired into the live bot.
+
+No wiring exists yet from a real closed `PaperTrade` to
+`LearningRepository.record()` — a separate, future, explicitly-
+approvable step, same "foundation, not observed yet" gap every module
+in this phase discloses. None of `core/pipeline.py`, `decision/`,
+`risk/`, `execution/`, `strategies/`, `signals/`, `telegram/handlers.py`,
+`telegram/command_router.py`, or `telegram/commands.py` changed in
+this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

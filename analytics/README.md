@@ -94,6 +94,15 @@ matching the Director's own worked example ("Gold +5%, Strategy +18%
 -> Alpha: +13%"). Does not read candles itself — the caller supplies
 both benchmark prices. See `docs/PERFORMANCE_VALIDATION.md`.
 
+### `learning_report.py` (Phase 60.6: Learning Loop Foundation, TASK 6)
+`LearningReport` plus `build_learning_report(records,
+min_occurrences=3)`/`format_learning_report(report)` — reuses
+`learning.pattern_detector.detect_patterns()` directly, picking the
+highest-/lowest-win-rate `PatternInsight` as `best_condition`/
+`worst_condition`. Matches the Director's own "Last 100 trades / Best
+condition / Worst condition" worked example shape. See
+`docs/LEARNING_LOOP.md`.
+
 ## What this package does NOT do
 - Does not read or write the database — no new table, no migration,
   no dependency on `database/`.
@@ -125,8 +134,11 @@ dependency" rule above, read-only and scoped to this single new file.
 `compute_performance_metrics()`, only when a curve is supplied).
 `equity_curve.py` imports `analytics.signal_performance`
 (`TYPE_CHECKING`-only). `benchmark.py` imports `analytics.equity_curve`
-(`TYPE_CHECKING`-only). None of the three import `database/`, `risk/`,
-`decision/`, `ai/`, `strategies/`, `signals/`, or `execution/`.
+(`TYPE_CHECKING`-only). `learning_report.py` imports
+`learning.models`/`learning.pattern_detector` (real, runtime imports
+-- both read-only, no trading-decision logic). None of the four import
+`database/`, `risk/`, `decision/`, `ai/`, `strategies/`, `signals/`,
+or `execution/`.
 
 ## Future Roadmap
 Persistence (a `signal_performance` table), `core/pipeline.py` wiring,
