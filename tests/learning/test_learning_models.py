@@ -5,7 +5,7 @@ tests.
 
 from datetime import datetime, timezone
 
-from learning.models import LearningRecord, create_learning_record, generate_learning_record_id
+from learning.models import LEARNING_ENGINE_VERSION, LearningRecord, create_learning_record, generate_learning_record_id
 
 
 def test_create_learning_record_stamps_identity_and_timestamp():
@@ -92,6 +92,50 @@ def test_manual_construction_with_explicit_timestamp():
     record = LearningRecord(record_id="r1", trade_id="t1", signal_id="s1", created_at=ts)
 
     assert record.created_at == ts
+
+
+# --- Phase 60.7 TASK 3: Enhanced Learning Schema (additive) ---
+
+def test_engine_version_defaults_to_the_current_version():
+    record = create_learning_record(trade_id="t1", signal_id="s1")
+
+    assert record.engine_version == LEARNING_ENGINE_VERSION
+
+
+def test_new_phase_607_fields_default_to_none_except_engine_version():
+    record = create_learning_record(trade_id="t1", signal_id="s1")
+
+    assert record.htf_bias is None
+    assert record.volatility_state is None
+    assert record.fundamental_bias is None
+    assert record.confidence_score is None
+    assert record.sample_size is None
+
+
+def test_new_phase_607_fields_can_be_set_explicitly():
+    record = create_learning_record(
+        trade_id="t1", signal_id="s1", htf_bias="BULLISH", volatility_state="LOW_VOLATILITY",
+        fundamental_bias="BULLISH GOLD", confidence_score=0.78, engine_version="60.8", sample_size=42,
+    )
+
+    assert record.htf_bias == "BULLISH"
+    assert record.volatility_state == "LOW_VOLATILITY"
+    assert record.fundamental_bias == "BULLISH GOLD"
+    assert record.confidence_score == 0.78
+    assert record.engine_version == "60.8"
+    assert record.sample_size == 42
+
+
+def test_phase_606_callers_are_unaffected_by_the_extension():
+    """A Phase 60.6-shaped call (no new kwargs) must still work identically."""
+    record = create_learning_record(
+        trade_id="t1", signal_id="s1", strategy_name="A", result="TP", r_multiple=1.5,
+    )
+
+    assert record.strategy_name == "A"
+    assert record.result == "TP"
+    assert record.r_multiple == 1.5
+    assert record.engine_version == LEARNING_ENGINE_VERSION
 
 
 def test_never_generates_a_signal_or_decision():

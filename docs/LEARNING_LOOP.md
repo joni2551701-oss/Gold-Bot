@@ -211,12 +211,6 @@ work to read from.
 
 ## Known gaps (disclosed, not hidden)
 
-- Nothing in this codebase yet calls `LearningRepository.record()` —
-  no `core/pipeline.py` stage, no `backtesting/` hook, and no owner
-  command builds a `LearningRecord` from a real closed `PaperTrade`
-  today. Wiring that observation point is a separate, future,
-  explicitly-approvable step (the same "foundation, not wired" gap
-  every module in this phase discloses).
 - `failure_type`/`success_pattern` remain free text with no fixed
   taxonomy — same disclosed gap `ai.journal.failure_analysis.FailureAnalysisEntry.reason`
   already carries.
@@ -224,3 +218,137 @@ work to read from.
   depend on the caller supplying a real `ContextSnapshot`/
   `HTFBiasResult` — with neither supplied, `analyze_trade_result()`
   still returns a valid `TradeAnalysis`, just with empty `reasons`.
+
+---
+
+# Phase 60.7 — Adaptive Intelligence Layer Foundation
+
+Full reuse-audit findings: `docs/ADAPTIVE_INTELLIGENCE_AUDIT.md`. This
+section documents what TASK 1-7 actually built on top of Phase 60.6.
+
+**The one hard rule** (unchanged, restated): still
+`observe -> analyze -> report`. No file in this phase changes a
+strategy parameter, a confidence threshold, or a risk value, and none
+of `core/pipeline.py`/`strategies/`/`signals/`/`decision/`/`risk/` was
+touched.
+
+## TASK 1: Learning Integration Audit — and a real bug fixed
+
+The audit found `core/pipeline.py` never constructs a `PaperTrade` at
+all (no live execution is wired) — the *only* real closed-trade
+producer in this codebase is `backtesting/backtest_engine.py`. Reading
+it line by line surfaced a genuine Phase 60.2 defect:
+`_process_candidate()` called `open_paper_trade()`/
+`check_paper_trade_against_candles()` without capturing either
+function's returned (new, since `PaperTrade` is frozen) `.trade` — so
+every backtest's `PaperTrade` stayed at `TradeState.CREATED` forever,
+and `SignalPerformance.result` was silently `None` for every trade,
+every run, since Phase 60.2 shipped. **Fixed** (three lines, confined
+to `backtesting/backtest_engine.py`, no change to `strategies/`,
+`decision/`, or `risk/`): both calls' returned `.trade` are now
+threaded through. A regression test
+(`test_approved_candidates_paper_trade_actually_resolves`) proves a
+trade now actually resolves to a real result. Disclosed prominently
+here and in `backtest_engine.py`'s own module docstring, per the
+Director's standing "never hide a fundamental problem found during
+validation" instruction.
+
+## TASK 2: `learning/trade_event_bridge.py`
+
+`build_learning_record_from_trade()` + `bridge_closed_trade()` — the
+first real caller of `LearningRepository.record()`, closing Phase
+60.6's own disclosed gap. Reuses `analyze_trade_result()` directly;
+`bridge_closed_trade()` is this package's one disclosed exception to
+"does not persist anything itself" (dependency injection of an
+already-built `LearningRepository`, the same posture
+`telegram/*_service.py` already uses).
+
+## TASK 3: Enhanced Learning Schema (additive)
+
+`LearningRecord`/`LearningRecordRow`/the `learning_records` table all
+gained six new fields (`htf_bias`, `volatility_state`,
+`fundamental_bias`, `confidence_score`, `engine_version`,
+`sample_size`) — every one `Optional`, defaulting `None` (except
+`engine_version`, which defaults to the new `LEARNING_ENGINE_VERSION =
+"60.7"` constant). The table migration is `PRAGMA table_info()`-guarded
+(`_migrate_learning_records_schema()`), the same pattern
+`signals`/`users` already established — purely additive, every Phase
+60.6 caller/test keeps working unmodified (verified: the full Phase
+60.6 test suite passes unchanged against the extended schema).
+
+## TASK 4: Advanced Pattern Detector
+
+`detect_patterns()`'s grouping key extended from `(strategy_name,
+session, market_phase)` to a 5-tuple including `htf_bias`/
+`volatility_state` — purely additive, since every Phase 60.6 record
+has both new fields `None`, producing identical groups for any
+pre-existing record set. A new `MIN_PATTERN_SAMPLE = 20` constant is
+exported for `learning.confidence` (TASK 5) to consume — `detect_patterns()`'s
+own `min_occurrences` exclusion gate is deliberately left at its
+original default of 3 (the Director's "Samples: 5 -> LOW /Samples: 100
+-> HIGH" example is about a confidence *label*, not an exclusion
+threshold — see TASK 5). The grouping logic itself was extracted into
+a new, separately-exposed `group_records_for_patterns()` helper
+(a behavior-preserving refactor, verified against the full existing
+test suite) so TASK 6 could reuse it without duplicating the grouping.
+
+## TASK 5: `learning/confidence.py`
+
+`PatternConfidence` + `compute_pattern_confidence()` — LOW/MEDIUM/HIGH
+from four disclosed 0.0-1.0 sub-scores (sample size, consistency,
+recency, performance). Sample size is a **multiplicative gate**
+(`overall_score = sample_size_score * mean(consistency, recency,
+performance)`), not a fourth additive term — a plain four-way average
+would let a tiny, otherwise-perfect pattern reach HIGH, which
+contradicts the Director's own worked example directly. This was
+caught by writing the worked-example test *before* trusting the first
+draft's formula — the initial additive design produced HIGH for a
+5-sample pattern, failing the test, and was corrected before this
+phase closed.
+
+## TASK 6: AI Memory Adapter (`ai/learning_context.py`)
+
+`LearningContext` gained four new fields (`patterns`, `failures`,
+`regimes`, `confidence`) alongside the unchanged Phase 60.6 three
+(`recent_failures`, `successful_patterns`, `strategy_stats`).
+`patterns`/`failures` reuse `detect_patterns()`/
+`filter_high_failure_patterns()`/`format_pattern_insight()` directly;
+`confidence` reuses `group_records_for_patterns()` (TASK 4) +
+`compute_pattern_confidence()` (TASK 5); `regimes` is relayed as a
+caller-supplied `Sequence[str]` (e.g. from
+`learning.regime_memory.format_regime_summary()`, TASK 7) rather than
+this module importing `learning.regime_memory` directly — loose
+coupling, so `ai/learning_context.py`'s own dependency set didn't need
+to grow again once that module existed. Still context only: none of
+the four new fields is itself an explanation/conclusion/recommendation.
+
+## TASK 7: `learning/regime_memory.py`
+
+`RegimeObservation` + `RegimeMemory` + `record_from_context()` +
+`format_regime_summary()` — an in-memory, per-process log of the
+Director's own five named regimes. Four (`TRENDING`/`RANGE`/
+`HIGH_VOLATILITY`/`LOW_VOLATILITY`) map directly onto
+`context.market_regime.MarketRegime`'s real enum values via
+`record_from_context()`; `NEWS_EVENT` has no detector behind it
+anywhere in this codebase (same disclosed gap
+`context/economic_events.py` already carries) and is only recorded
+when a caller supplies it explicitly — never fabricated.
+`format_regime_summary()` produces exactly the `Sequence[str]` shape
+TASK 6's `regimes=` parameter expects, closing the loop between TASK 6
+and TASK 7 without either module importing the other's internals.
+
+## Known gaps (Phase 60.7, disclosed, not hidden)
+
+- Nothing in this codebase yet *calls* `bridge_closed_trade()` from a
+  real pipeline — `backtesting/backtest_engine.py` still does not
+  invoke the Learning Event Bridge itself; TASK 2 built the bridge and
+  proved it works end-to-end in tests, but wiring it into the backtest
+  engine's own loop is a separate, future, explicitly-approvable step.
+- `confidence_score`/`sample_size` on `LearningRecord` stay honest
+  `None` hooks unless a caller explicitly populates them — no
+  automatic per-record sample-size computation exists (see
+  `LearningRecord`'s own docstring for why).
+- `RegimeMemory` is in-memory only, per-process — restarting the
+  process loses every observation; persistence is a separate, future
+  step, same posture every other `learning/` module (besides
+  `trade_event_bridge.py`'s own one exception) already discloses.

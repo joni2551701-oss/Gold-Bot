@@ -58,6 +58,43 @@ high_threshold=0.65)` + `filter_high_failure_patterns()`/
 classifies each group's win rate, reusing
 `analytics.strategy_report.compute_win_rate()` directly.
 
+### `confidence.py` (Phase 60.7: Adaptive Intelligence Layer Foundation, TASK 5)
+`PatternConfidence` + `compute_pattern_confidence(insight, records,
+now=None)` — classifies a `PatternInsight` LOW/MEDIUM/HIGH from four
+disclosed 0.0-1.0 sub-scores (sample size, consistency, recency,
+performance). Sample size **gates** the other three
+(`overall_score = sample_size_score * mean(consistency, recency,
+performance)`), not a plain four-way average — a tiny, otherwise-
+perfect pattern still can't reach HIGH, matching the Director's own
+worked example. See `docs/LEARNING_LOOP.md`'s Phase 60.7 section for
+the full formula writeup.
+
+### `regime_memory.py` (Phase 60.7: Adaptive Intelligence Layer Foundation, TASK 7)
+`RegimeObservation` + `RegimeMemory` + `record_from_context()` +
+`format_regime_summary()` — an in-memory, per-process observation log
+of the Director's own five named regimes ("Trending, Range, High
+volatility, Low volatility, News event"). Four map directly onto
+`context.market_regime.MarketRegime`'s own real enum values via
+`record_from_context()`; `"NEWS_EVENT"` has no detector behind it in
+this codebase (`context/economic_events.py` still has "no
+economic-calendar provider exists") and is recorded only when a caller
+supplies it explicitly. `format_regime_summary()` produces the exact
+`Sequence[str]` shape `ai.learning_context.build_learning_context()`'s
+own `regimes=` parameter expects.
+
+### `trade_event_bridge.py` (Phase 60.7: Adaptive Intelligence Layer Foundation, TASK 2)
+`build_learning_record_from_trade()` + `bridge_closed_trade()` — the
+first real caller of `database.learning_repository.LearningRepository.record()`,
+closing the gap Phase 60.6 itself disclosed ("no observation point yet
+calls `LearningRepository.record()`"). Bridges an already-`CLOSED`
+`lifecycle.paper_trade.PaperTrade` into a persisted `LearningRecord`,
+reusing `outcome_analyzer.analyze_trade_result()` directly for the
+`failure_type`/`success_pattern` text. See
+`docs/ADAPTIVE_INTELLIGENCE_AUDIT.md` for TASK 1's finding that the
+only real `CLOSED` `PaperTrade` producer in this codebase is
+`backtesting/backtest_engine.py` (and the genuine Phase 60.2 bug fixed
+there so a trade could actually reach `CLOSED` at all).
+
 ## What this package does NOT do
 - Does not generate a `BUY`/`SELL` signal, and is not itself a
   strategy or a decision.
@@ -66,9 +103,13 @@ classifies each group's win rate, reusing
   package.
 - Does not mutate a strategy parameter, confidence threshold, or risk
   value — every function here is a pure, read-only observer.
-- Does not persist anything itself — `database/learning_repository.py`
-  (a separate package) owns persistence; `learning/` stays in-memory
-  only.
+- Does not persist anything itself, with **one disclosed exception**:
+  `trade_event_bridge.bridge_closed_trade()` accepts an
+  already-constructed `LearningRepository` and calls its own
+  `record()` method (dependency injection, the same posture
+  `telegram/*_service.py` already uses for its repository calls) —
+  every other file in this package still imports nothing from
+  `database/`.
 - Is not wired into `core/pipeline.py` — a foundation package only,
   same posture as `backtesting/`/`execution/simulator/` before it.
 
@@ -92,9 +133,24 @@ runtime import, needed for enum comparison) plus, `TYPE_CHECKING`-only,
 `lifecycle.paper_trade.PaperTrade`. `pattern_detector.py` imports
 `analytics.strategy_report.compute_win_rate` (real, runtime import,
 reused directly) and `learning.models` (same package). `models.py`
-imports nothing beyond stdlib. None of the three import `database/`,
-`telegram/`, `decision/`, `risk/`, `execution/`, `strategies/`, or
-`signals/`.
+imports nothing beyond stdlib. `trade_event_bridge.py` imports
+`lifecycle.trade_state.TradeState` (real, runtime import, needed for
+enum comparison), `learning.models`/`learning.outcome_analyzer` (same
+package), and — its one disclosed exception —
+`database.learning_repository.LearningRepository`/
+`database.learning_models.LearningRecordRow` (`TYPE_CHECKING`-only for
+the type hints; the real call happens through an injected instance,
+not an import-time dependency). `trade_event_bridge.py` also imports
+`context.market_regime.MarketRegime` (real, runtime import, needed for
+enum comparison) and, `TYPE_CHECKING`-only,
+`context.fundamental_context.FundamentalContextSnapshot`. `confidence.py`
+imports `learning.pattern_detector.MIN_PATTERN_SAMPLE`/`PatternInsight`
+and `learning.models.LearningRecord` (same package) only.
+`regime_memory.py` imports `context.market_regime.MarketRegime` (real,
+runtime import) and, `TYPE_CHECKING`-only,
+`context.context_orchestrator.ContextSnapshot`. None of the six import
+`database/`, `telegram/`, `decision/`, `risk/`, `execution/`,
+`strategies/`, or `signals/`.
 
 ## Future Roadmap
 Per the Director's own roadmap, this is the last foundation piece

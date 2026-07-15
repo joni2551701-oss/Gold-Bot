@@ -1511,6 +1511,74 @@ in this phase discloses. None of `core/pipeline.py`, `decision/`,
 `telegram/command_router.py`, or `telegram/commands.py` changed in
 this phase.
 
+### Phase 60.7 — Adaptive Intelligence Layer Foundation
+
+Closes Phase 60.6's own disclosed gap and extends every module built
+there — still `observe -> analyze -> report`, never
+`observe -> mutate`. Full detail: `docs/LEARNING_LOOP.md`'s Phase 60.7
+section, `docs/ADAPTIVE_INTELLIGENCE_AUDIT.md`.
+
+**A genuine Phase 60.2 bug found and fixed during TASK 1's own
+audit** — `backtesting/backtest_engine.py`'s `_process_candidate()`
+never captured `open_paper_trade()`/`check_paper_trade_against_candles()`'s
+returned trade (both pure, frozen-dataclass functions), so every
+backtest's `PaperTrade` stayed `CREATED` forever and
+`SignalPerformance.result` was silently `None` for every trade since
+Phase 60.2 shipped. Fixed (three lines, confined to that one file);
+see `backtest_engine.py`'s own module docstring for the full writeup.
+
+**`learning/trade_event_bridge.py`** (TASK 2) —
+`build_learning_record_from_trade()`/`bridge_closed_trade()`, the
+first real caller of `LearningRepository.record()`. This package's one
+disclosed exception to "does not persist anything itself"
+(dependency-injected `LearningRepository`, same posture
+`telegram/*_service.py` already uses).
+
+**Enhanced Learning Schema** (TASK 3) — `LearningRecord`/
+`LearningRecordRow`/`learning_records` all gained six additive fields
+(`htf_bias`/`volatility_state`/`fundamental_bias`/`confidence_score`/
+`engine_version`/`sample_size`), migrated via a `PRAGMA table_info()`-
+guarded `ALTER TABLE`, same pattern `signals`/`users` already
+established. Every Phase 60.6 caller/test keeps working unmodified.
+
+**Advanced Pattern Detector** (TASK 4) — `detect_patterns()`'s
+grouping key extended to a 5-tuple (`+ htf_bias, volatility_state`) —
+additive, identical groups for any pre-existing record set. New
+`MIN_PATTERN_SAMPLE = 20` constant (consumed by TASK 5, not by
+`detect_patterns()`'s own unchanged `min_occurrences=3` exclusion
+gate). Grouping logic extracted into a reusable
+`group_records_for_patterns()` helper (behavior-preserving refactor).
+
+**`learning/confidence.py`** (TASK 5) — `PatternConfidence` +
+`compute_pattern_confidence()`: LOW/MEDIUM/HIGH from four 0.0-1.0
+sub-scores, with sample size as a **multiplicative gate**
+(`sample_size_score * mean(consistency, recency, performance)`) rather
+than a fourth additive term — a plain average would let a tiny,
+perfect-looking pattern reach HIGH, contradicting the Director's own
+worked example directly (caught by the worked-example test itself
+during this phase).
+
+**AI Memory Adapter** (TASK 6) — `ai/learning_context.py`'s
+`LearningContext` gained `patterns`/`failures`/`regimes`/`confidence`
+alongside the unchanged Phase 60.6 three. `regimes` is a
+caller-supplied `Sequence[str]`, not an import of
+`learning.regime_memory` — loose coupling between TASK 6 and TASK 7.
+
+**`learning/regime_memory.py`** (TASK 7) — `RegimeMemory` +
+`record_from_context()` + `format_regime_summary()`, an in-memory,
+per-process log of the Director's own five named regimes. Four map
+onto `context.market_regime.MarketRegime` directly; `NEWS_EVENT` has
+no detector anywhere in this codebase and is only recorded when a
+caller supplies it explicitly.
+
+Nothing in this phase calls `bridge_closed_trade()` from
+`backtesting/backtest_engine.py`'s own loop — the bridge exists and is
+tested end-to-end, but wiring it into a real run is a separate, future
+step. None of `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
+`strategies/`, `signals/`, `telegram/handlers.py`,
+`telegram/command_router.py`, or `telegram/commands.py` changed in
+this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

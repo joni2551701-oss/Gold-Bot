@@ -14,6 +14,13 @@ type from a non-`database/` package directly. `LearningRecordRow`
 mirrors `learning.models.LearningRecord`'s fields exactly, plus the one
 field that domain type intentionally excludes: a real database `id`
 (see `LearningRecord`'s own docstring for why).
+
+Phase 60.7 (Adaptive Intelligence Layer Foundation, TASK 3) extends
+this same `LearningRecordRow` with the same six additional fields
+`learning.models.LearningRecord` gained in lockstep
+(`htf_bias`/`volatility_state`/`fundamental_bias`/`confidence_score`/
+`engine_version`/`sample_size`) — see that module's own docstring for
+each field's meaning.
 """
 
 from dataclasses import asdict, dataclass
@@ -49,6 +56,12 @@ class LearningRecordRow:
     r_multiple: Optional[float] = None
     failure_type: Optional[str] = None
     success_pattern: Optional[str] = None
+    htf_bias: Optional[str] = None
+    volatility_state: Optional[str] = None
+    fundamental_bias: Optional[str] = None
+    confidence_score: Optional[float] = None
+    engine_version: Optional[str] = None
+    sample_size: Optional[int] = None
     created_at: Optional[datetime] = None
     id: Optional[int] = None
 
@@ -70,6 +83,12 @@ def create_learning_record_row(
     r_multiple: Optional[float] = None,
     failure_type: Optional[str] = None,
     success_pattern: Optional[str] = None,
+    htf_bias: Optional[str] = None,
+    volatility_state: Optional[str] = None,
+    fundamental_bias: Optional[str] = None,
+    confidence_score: Optional[float] = None,
+    engine_version: Optional[str] = None,
+    sample_size: Optional[int] = None,
 ) -> LearningRecordRow:
     """Pure, deterministic factory -- stamps created_at, same convention as every other create_X() factory in this codebase. `id` stays None until the repository inserts and re-reads it."""
     return LearningRecordRow(
@@ -84,5 +103,11 @@ def create_learning_record_row(
         r_multiple=r_multiple,
         failure_type=failure_type,
         success_pattern=success_pattern,
+        htf_bias=htf_bias,
+        volatility_state=volatility_state,
+        fundamental_bias=fundamental_bias,
+        confidence_score=confidence_score,
+        engine_version=engine_version,
+        sample_size=sample_size,
         created_at=datetime.now(timezone.utc),
     )

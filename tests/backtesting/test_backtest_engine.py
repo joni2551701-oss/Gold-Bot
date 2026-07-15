@@ -87,6 +87,35 @@ def test_approved_candidate_opens_a_paper_trade(mock_signal_candidate, mock_ai_r
     assert result.performances[0].strategy_id == candidate.strategy_name
 
 
+def test_approved_candidates_paper_trade_actually_resolves(mock_signal_candidate, mock_ai_result):
+    """
+    Phase 60.7 TASK 1 regression: _process_candidate() previously
+    discarded open_paper_trade()/check_paper_trade_against_candles()'s
+    returned trade, so paper_trade stayed at TradeState.CREATED
+    forever and every SignalPerformance.result was silently None. The
+    fixture's default entry (4065.0) is far outside the seeded
+    candles' 1995-2005 range, so entry is never touched -- the trade
+    must resolve to EXPIRED, proving the transition is now captured.
+    """
+    _, end = _seed_candles(250)
+    engine = BacktestEngine(_config(end))
+
+    candidate = mock_signal_candidate()
+    call_count = {"n": 0}
+
+    def _one_shot_signals(context):
+        call_count["n"] += 1
+        return [candidate] if call_count["n"] == 1 else []
+
+    engine.signal_engine.generate_signals = _one_shot_signals
+    engine.ai_analyzer.analyze = lambda c, ctx: mock_ai_result(approved=True, confidence=0.95, risk_score=0.05)
+
+    result = engine.run()
+
+    assert result.trades_opened == 1
+    assert result.performances[0].result == "EXPIRED"
+
+
 def test_rejected_candidate_does_not_open_a_trade_but_is_still_tracked(mock_signal_candidate, mock_ai_result):
     _, end = _seed_candles(250)
     engine = BacktestEngine(_config(end))

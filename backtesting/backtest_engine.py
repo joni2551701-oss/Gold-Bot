@@ -46,6 +46,23 @@ failure (`compute_htf_bias(MarketSnapshot(symbol=...))` ->
 `HTFBias.UNKNOWN`) -- reusing an existing degrade path, not inventing
 a new one. A caller may override this via `htf_bias_provider` for a
 future phase that replays multiple timeframes together.
+
+**A genuine Phase 60.2 bug found and fixed during Phase 60.7's own
+TASK 1 reuse audit**: `_process_candidate()` originally called
+`open_paper_trade(paper_trade)` and
+`check_paper_trade_against_candles(paper_trade, forward_candles)`
+without capturing either call's returned `.trade` -- both functions
+are pure (return a *new* frozen `PaperTrade`, never mutate their
+argument), so the local `paper_trade` variable silently stayed at
+`TradeState.CREATED` forever, `check_paper_trade_against_candles()`
+immediately no-opped on every call (its own status guard: "Cannot
+monitor a trade that is not OPEN"), and every `SignalPerformance`
+built downstream had `result=None` regardless of what the candle
+window actually showed -- a backtest could open trades but never
+actually resolve a single one to TP/SL/EXPIRED. Fixed by reassigning
+`paper_trade` to each call's `.trade` (both never raise, so `.trade`
+is always safe to read). See `docs/LEARNING_LOOP.md`'s Phase 60.7
+section for the regression test.
 """
 
 from datetime import datetime, timezone
@@ -180,8 +197,8 @@ class BacktestEngine:
         # Same eligibility gate core/pipeline.py's own run() uses for Telegram delivery.
         if decision.action == DecisionAction.APPROVE and risk_result.approved:
             paper_trade = create_paper_trade(signal_schema)
-            open_paper_trade(paper_trade)
-            check_paper_trade_against_candles(paper_trade, forward_candles)
+            paper_trade = open_paper_trade(paper_trade).trade
+            paper_trade = check_paper_trade_against_candles(paper_trade, forward_candles).trade
             self.trades_opened += 1
 
         performance = compute_signal_performance(

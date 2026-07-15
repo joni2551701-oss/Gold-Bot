@@ -28,10 +28,12 @@ Decision Engine
   Phase 55 foundation subpackages (memory, prompt templates, user
   profile model, trade journal, and a re-export of the canonical
   analyzer respectively). None are wired into the production pipeline.
-- `learning_context.py` (Phase 60.6: Learning Loop Foundation, TASK 7)
+- `learning_context.py` (Phase 60.6: Learning Loop Foundation, TASK 7;
+  extended Phase 60.7: Adaptive Intelligence Layer Foundation, TASK 6)
   — `LearningContext` + `build_learning_context()`: bundles
   already-computed `learning/` data (`recent_failures`/
-  `successful_patterns`/`strategy_stats`) into the Director's own
+  `successful_patterns`/`strategy_stats`, plus Phase 60.7's
+  `patterns`/`failures`/`regimes`/`confidence`) into the Director's own
   AI-facing JSON shape. Generates no explanation/recommendation text
   itself — that is left to a future AI consumer, still bound by
   `AIAnalyzerInterface`'s advisory-only contract. See
@@ -51,9 +53,10 @@ shape); `LearningContext` (`learning_context.py`).
 `context/` and `signals/` for the production/interface path. No
 dependency on `database/` or `telegram/` — an AI provider must never
 reach either directly (see `CLAUDE.md`'s Trading Safety rules).
-`learning_context.py` (Phase 60.6) additionally imports
-`analytics.strategy_report.compute_win_rate` and
-`learning.models`/`learning.pattern_detector` — read-only, no
+`learning_context.py` (Phase 60.6, extended 60.7) additionally imports
+`analytics.strategy_report.compute_win_rate`,
+`learning.models`/`learning.pattern_detector`, and
+`learning.confidence.compute_pattern_confidence` — read-only, no
 trading-decision logic, and still no `database/`/`telegram/`
 dependency.
 

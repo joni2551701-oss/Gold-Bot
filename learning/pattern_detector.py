@@ -23,6 +23,23 @@ supporting example, never as a parsed, generalized rule.
 Per this whole phase's hard boundary: `detect_patterns()` returns data
 only. Nothing reads a `PatternInsight` back into `strategies/`,
 `decision/`, or `risk/` to change behavior.
+
+Phase 60.7 (Adaptive Intelligence Layer Foundation, TASK 4) extends
+the grouping key with the two new condition dimensions
+`learning.models.LearningRecord` gained in TASK 3 (`htf_bias`/
+`volatility_state`) — purely additive: every Phase 60.6 record has
+both fields `None`, so grouping by the extended 5-tuple key produces
+the exact same groups as before for any pre-existing record set, and
+every existing test/caller keeps working unmodified.
+
+`MIN_PATTERN_SAMPLE = 20` is a new named constant for the Director's
+own worked example ("Samples: 5 -> Confidence: LOW, Samples: 100 ->
+Confidence: HIGH"). That example is about a *confidence label*, not an
+exclusion threshold, so `detect_patterns()`'s own `min_occurrences`
+gate (still defaulting to 3 -- unchanged, to avoid a silent behavior
+change for every existing caller) is left as-is; `MIN_PATTERN_SAMPLE`
+is exported here for `learning.confidence` (TASK 5) to import and use
+for its own sample-size scoring, not consumed by this module itself.
 """
 
 from collections import Counter
@@ -36,15 +53,19 @@ HIGH_SUCCESS = "HIGH_SUCCESS"
 HIGH_FAILURE = "HIGH_FAILURE"
 MIXED = "MIXED"
 
-PatternKey = Tuple[str, Optional[str], Optional[str]]  # (strategy_name, session, market_phase)
+MIN_PATTERN_SAMPLE = 20
+
+# (strategy_name, session, market_phase, htf_bias, volatility_state)
+PatternKey = Tuple[str, Optional[str], Optional[str], Optional[str], Optional[str]]
 
 
 @dataclass(frozen=True)
 class PatternInsight:
     """
-    strategy_name/session/market_phase: the condition combination this
-        insight describes -- session/market_phase may be None (no
-        condition on that dimension among the grouped records).
+    strategy_name/session/market_phase/htf_bias/volatility_state: the
+        condition combination this insight describes -- every field
+        but `strategy_name` may be None (no condition on that
+        dimension among the grouped records).
     occurrences: total records in this group, regardless of result.
     win_count/loss_count: "TP"/"SL" counts specifically -- same
         vocabulary `strategy_report.StrategyPerformanceReport` uses.
@@ -65,6 +86,8 @@ class PatternInsight:
     loss_count: int
     win_rate: float
     classification: str
+    htf_bias: Optional[str] = None
+    volatility_state: Optional[str] = None
     example_failure_type: Optional[str] = None
     example_success_pattern: Optional[str] = None
 
@@ -74,6 +97,35 @@ def _most_common(values: Sequence[Optional[str]]) -> Optional[str]:
     if not present:
         return None
     return Counter(present).most_common(1)[0][0]
+
+
+def group_records_for_patterns(
+    records: Sequence[LearningRecord],
+    min_occurrences: int = 3,
+) -> Dict[PatternKey, List[LearningRecord]]:
+    """
+    The same grouping `detect_patterns()` itself performs (Phase 60.7,
+    TASK 6), exposed directly so a caller (e.g. `ai/learning_context.py`)
+    can look up the raw records behind one `PatternInsight` -- e.g. for
+    `learning.confidence.compute_pattern_confidence()`, which needs the
+    group's own records, not just the aggregate `PatternInsight` --
+    without duplicating this grouping logic. Skips any record with
+    `strategy_name is None`, same posture
+    `strategy_report.build_strategy_report()` already uses. A group
+    with fewer than `min_occurrences` records is dropped, same
+    threshold `detect_patterns()` applies.
+    """
+    grouped: Dict[PatternKey, List[LearningRecord]] = {}
+    for record in records:
+        if record.strategy_name is None:
+            continue
+        key: PatternKey = (
+            record.strategy_name, record.session, record.market_phase,
+            record.htf_bias, record.volatility_state,
+        )
+        grouped.setdefault(key, []).append(record)
+
+    return {key: group for key, group in grouped.items() if len(group) >= min_occurrences}
 
 
 def detect_patterns(
@@ -89,18 +141,10 @@ def detect_patterns(
     a "pattern," not statistically meaningful. Never raises: an empty
     or all-below-threshold input produces an empty list.
     """
-    grouped: Dict[PatternKey, List[LearningRecord]] = {}
-    for record in records:
-        if record.strategy_name is None:
-            continue
-        key: PatternKey = (record.strategy_name, record.session, record.market_phase)
-        grouped.setdefault(key, []).append(record)
+    grouped = group_records_for_patterns(records, min_occurrences)
 
     insights: List[PatternInsight] = []
-    for (strategy_name, session, market_phase), group in grouped.items():
-        if len(group) < min_occurrences:
-            continue
-
+    for (strategy_name, session, market_phase, htf_bias, volatility_state), group in grouped.items():
         win_count = sum(1 for r in group if r.result == "TP")
         loss_count = sum(1 for r in group if r.result == "SL")
         win_rate = compute_win_rate(win_count, loss_count)
@@ -121,6 +165,8 @@ def detect_patterns(
             loss_count=loss_count,
             win_rate=win_rate,
             classification=classification,
+            htf_bias=htf_bias,
+            volatility_state=volatility_state,
             example_failure_type=_most_common([r.failure_type for r in group]),
             example_success_pattern=_most_common([r.success_pattern for r in group]),
         ))
@@ -140,7 +186,10 @@ def filter_high_success_patterns(insights: Sequence[PatternInsight]) -> List[Pat
 def format_pattern_insight(insight: PatternInsight) -> str:
     """Matches the Director's own worked example shape: 'Liquidity Sweep + NY session -> High failure probability'."""
     condition = " + ".join(
-        part for part in (insight.strategy_name, insight.session, insight.market_phase) if part is not None
+        part for part in (
+            insight.strategy_name, insight.session, insight.market_phase,
+            insight.htf_bias, insight.volatility_state,
+        ) if part is not None
     )
     label = {
         HIGH_FAILURE: "High failure probability",

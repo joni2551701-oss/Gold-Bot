@@ -109,3 +109,60 @@ def test_learning_record_row_to_dict_is_json_safe():
 
     json.dumps(data)  # must not raise
     assert data["r_multiple"] == 1.5
+
+
+# --- Phase 60.7 TASK 3: Enhanced Learning Schema (additive) ---
+
+def test_record_persists_and_returns_the_new_phase_607_fields():
+    repo = LearningRepository()
+
+    row = repo.record(
+        "rec-1", "trade-1", "signal-1", htf_bias="BULLISH", volatility_state="LOW_VOLATILITY",
+        fundamental_bias="BULLISH GOLD", confidence_score=0.78, engine_version="60.7", sample_size=42,
+    )
+
+    assert row.htf_bias == "BULLISH"
+    assert row.volatility_state == "LOW_VOLATILITY"
+    assert row.fundamental_bias == "BULLISH GOLD"
+    assert row.confidence_score == 0.78
+    assert row.engine_version == "60.7"
+    assert row.sample_size == 42
+
+
+def test_new_phase_607_fields_default_to_none():
+    repo = LearningRepository()
+
+    row = repo.record("rec-1", "t1", "s1")
+
+    assert row.htf_bias is None
+    assert row.volatility_state is None
+    assert row.fundamental_bias is None
+    assert row.confidence_score is None
+    assert row.engine_version is None
+    assert row.sample_size is None
+
+
+def test_get_recent_round_trips_the_new_phase_607_fields():
+    repo = LearningRepository()
+    repo.record("rec-1", "t1", "s1", htf_bias="BEARISH", confidence_score=0.5, sample_size=10)
+
+    recent = repo.get_recent()
+
+    assert recent[0].htf_bias == "BEARISH"
+    assert recent[0].confidence_score == 0.5
+    assert recent[0].sample_size == 10
+
+
+def test_phase_606_calls_are_unaffected_by_the_extension():
+    """A Phase 60.6-shaped call (no new kwargs) must still work identically."""
+    repo = LearningRepository()
+
+    row = repo.record(
+        "rec-1", "trade-1", "signal-1", strategy_name="Liquidity Sweep",
+        market_phase="DISTRIBUTION", session="London", result="SL", r_multiple=-1.0,
+        failure_type="No HTF confirmation",
+    )
+
+    assert row.record_id == "rec-1"
+    assert row.failure_type == "No HTF confirmation"
+    assert repo.count() == 1

@@ -1,6 +1,7 @@
 """
 Database Layer — Learning Record repository (Phase 60.6: Learning
-Loop Foundation, TASK 5). Mirrors `database/audit_log_repository.py`'s
+Loop Foundation, TASK 5; extended Phase 60.7: Adaptive Intelligence
+Layer Foundation, TASK 3). Mirrors `database/audit_log_repository.py`'s
 own structure (CRUD-ish only, no business logic, idempotent schema
 init in `__init__`) -- this repository also exposes no update/delete:
 a learning record is append-only by design, per the Director's own
@@ -19,7 +20,8 @@ logger = setup_logger("LearningRepository")
 
 _LEARNING_SELECT_COLUMNS = (
     "SELECT id, record_id, trade_id, signal_id, strategy_name, market_phase, "
-    "session, timeframe, result, r_multiple, failure_type, success_pattern, created_at"
+    "session, timeframe, result, r_multiple, failure_type, success_pattern, "
+    "htf_bias, volatility_state, fundamental_bias, confidence_score, engine_version, sample_size, created_at"
 )
 
 
@@ -37,6 +39,12 @@ def _row_to_record(row) -> LearningRecordRow:
         r_multiple=row["r_multiple"],
         failure_type=row["failure_type"],
         success_pattern=row["success_pattern"],
+        htf_bias=row["htf_bias"],
+        volatility_state=row["volatility_state"],
+        fundamental_bias=row["fundamental_bias"],
+        confidence_score=row["confidence_score"],
+        engine_version=row["engine_version"],
+        sample_size=row["sample_size"],
         created_at=datetime.fromisoformat(row["created_at"]),
     )
 
@@ -62,22 +70,32 @@ class LearningRepository:
         r_multiple: Optional[float] = None,
         failure_type: Optional[str] = None,
         success_pattern: Optional[str] = None,
+        htf_bias: Optional[str] = None,
+        volatility_state: Optional[str] = None,
+        fundamental_bias: Optional[str] = None,
+        confidence_score: Optional[float] = None,
+        engine_version: Optional[str] = None,
+        sample_size: Optional[int] = None,
     ) -> LearningRecordRow:
         """Builds (via create_learning_record_row()) and persists one row. Never raises for a normal insert -- record_id is caller-supplied and unique per learning.models.generate_learning_record_id(), no uniqueness collision expected."""
         entry = create_learning_record_row(
             record_id, trade_id, signal_id, strategy_name=strategy_name, market_phase=market_phase,
             session=session, timeframe=timeframe, result=result, r_multiple=r_multiple,
             failure_type=failure_type, success_pattern=success_pattern,
+            htf_bias=htf_bias, volatility_state=volatility_state, fundamental_bias=fundamental_bias,
+            confidence_score=confidence_score, engine_version=engine_version, sample_size=sample_size,
         )
         query = (
             "INSERT INTO learning_records (record_id, trade_id, signal_id, strategy_name, market_phase, "
-            "session, timeframe, result, r_multiple, failure_type, success_pattern, created_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            "session, timeframe, result, r_multiple, failure_type, success_pattern, "
+            "htf_bias, volatility_state, fundamental_bias, confidence_score, engine_version, sample_size, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         )
         params = (
             entry.record_id, entry.trade_id, entry.signal_id, entry.strategy_name, entry.market_phase,
             entry.session, entry.timeframe, entry.result, entry.r_multiple, entry.failure_type,
-            entry.success_pattern, entry.created_at.isoformat(),
+            entry.success_pattern, entry.htf_bias, entry.volatility_state, entry.fundamental_bias,
+            entry.confidence_score, entry.engine_version, entry.sample_size, entry.created_at.isoformat(),
         )
 
         with self.db as conn:

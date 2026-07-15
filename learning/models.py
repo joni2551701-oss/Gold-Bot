@@ -16,12 +16,26 @@ in this package (or this whole phase) reads `LearningRecord.failure_type`/
 change behavior. The model exists to observe and record only —
 `observe -> analyze -> report`, per the Director's own hard boundary
 for this phase.
+
+Phase 60.7 (Adaptive Intelligence Layer Foundation, TASK 3) extends
+this same `LearningRecord` with six additional `Optional` fields
+(`htf_bias`/`volatility_state`/`fundamental_bias`/`confidence_score`/
+`sample_size`, all default `None`, plus `engine_version` defaulting to
+`LEARNING_ENGINE_VERSION`) rather than creating a second, competing
+model — purely additive, so every Phase 60.6 caller/test keeps working
+unmodified. `database/learning_models.py`'s `LearningRecordRow` and
+the `learning_records` table (`database/models.py`) were extended in
+lockstep, via an additive `ALTER TABLE` migration (`PRAGMA table_info()`-
+guarded, same pattern `signals`/`users` already established) — no
+existing row's meaning changes.
 """
 
 import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from typing import Optional
+
+LEARNING_ENGINE_VERSION = "60.7"
 
 
 @dataclass(frozen=True)
@@ -67,6 +81,46 @@ class LearningRecord:
         — None for a losing/breakeven/undecided trade. The Director's
         own worked example's mirror-image field; no prior module in
         this codebase has anything like it.
+    htf_bias (Phase 60.7): the `context.htf_bias.HTFBiasResult.bias`
+        value active at analysis time (e.g. "BULLISH"/"BEARISH"), as a
+        plain string — relayed, not recomputed. None if no HTF bias
+        was supplied.
+    volatility_state (Phase 60.7): the `context.market_regime.MarketRegime`
+        value, but ONLY when it is one of the two volatility-shaped
+        regimes (`"HIGH_VOLATILITY"`/`"LOW_VOLATILITY"`) — every other
+        regime (`TRENDING`/`RANGE`/etc.) says nothing about volatility
+        specifically, so this stays None rather than reporting a
+        misleading label for a non-volatility regime. Relayed, not
+        recomputed.
+    fundamental_bias (Phase 60.7): the
+        `context.fundamental_context.FundamentalContextSnapshot.gold_bias`
+        value active at analysis time (e.g. "BULLISH GOLD" per
+        `context.fundamental_scoring.format_fundamental_score()`'s own
+        convention, or the raw "BULLISH"/"BEARISH"/"NEUTRAL" value) —
+        relayed, not recomputed.
+    confidence_score (Phase 60.7): whatever single confidence measure
+        the caller supplies at analysis time — deliberately not tied
+        to one fixed source, since this codebase has several honest
+        confidence values (signal quality score, AI confidence,
+        `FundamentalScoreResult.confidence`) and none is "the"
+        confidence for a trade. None if the caller supplies none. Not
+        to be confused with `learning.confidence.compute_pattern_confidence()`
+        (TASK 5) — that is a LOW/MEDIUM/HIGH classification over a
+        *group* of records (sample size, consistency, recency,
+        performance), a different, pattern-level question this
+        per-record field does not answer.
+    engine_version (Phase 60.7): which version of this learning
+        pipeline produced the record — defaults to
+        `LEARNING_ENGINE_VERSION` (`create_learning_record()`), so a
+        future schema change can distinguish old records from new ones
+        without guessing.
+    sample_size (Phase 60.7): an honest hook, always None unless a
+        caller explicitly annotates it — pattern-level sample counts
+        live on `learning.pattern_detector.PatternInsight.occurrences`
+        (computed across the whole dataset), not here; auto-computing
+        a per-record sample size would need a full-table query at
+        record-creation time, out of this task's own additive-schema
+        scope.
     created_at: when this record was built.
     """
     record_id: str
@@ -80,6 +134,12 @@ class LearningRecord:
     r_multiple: Optional[float] = None
     failure_type: Optional[str] = None
     success_pattern: Optional[str] = None
+    htf_bias: Optional[str] = None
+    volatility_state: Optional[str] = None
+    fundamental_bias: Optional[str] = None
+    confidence_score: Optional[float] = None
+    engine_version: Optional[str] = None
+    sample_size: Optional[int] = None
     created_at: Optional[datetime] = None
 
     def to_dict(self) -> dict:
@@ -105,6 +165,12 @@ def create_learning_record(
     r_multiple: Optional[float] = None,
     failure_type: Optional[str] = None,
     success_pattern: Optional[str] = None,
+    htf_bias: Optional[str] = None,
+    volatility_state: Optional[str] = None,
+    fundamental_bias: Optional[str] = None,
+    confidence_score: Optional[float] = None,
+    engine_version: Optional[str] = LEARNING_ENGINE_VERSION,
+    sample_size: Optional[int] = None,
 ) -> LearningRecord:
     """Pure, deterministic factory -- stamps created_at, same convention as every other create_X() factory in this codebase."""
     return LearningRecord(
@@ -119,5 +185,11 @@ def create_learning_record(
         r_multiple=r_multiple,
         failure_type=failure_type,
         success_pattern=success_pattern,
+        htf_bias=htf_bias,
+        volatility_state=volatility_state,
+        fundamental_bias=fundamental_bias,
+        confidence_score=confidence_score,
+        engine_version=engine_version,
+        sample_size=sample_size,
         created_at=datetime.now(timezone.utc),
     )

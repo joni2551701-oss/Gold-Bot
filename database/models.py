@@ -628,7 +628,8 @@ def init_emergency_state_schema(connection: sqlite3.Connection):
 def init_learning_schema(connection: sqlite3.Connection):
     """
     Defines and creates the learning_records table schema (Phase 60.6:
-    Learning Loop Foundation, TASK 5). Independent of every other
+    Learning Loop Foundation, TASK 5; extended Phase 60.7: Adaptive
+    Intelligence Layer Foundation, TASK 3). Independent of every other
     table -- no foreign key, `trade_id`/`signal_id` hold the same kind
     of identifier as `lifecycle.paper_trade.PaperTrade`/`SignalSchema`
     by convention, never enforced structurally (same posture
@@ -651,6 +652,12 @@ def init_learning_schema(connection: sqlite3.Connection):
         r_multiple REAL,
         failure_type TEXT,
         success_pattern TEXT,
+        htf_bias TEXT,
+        volatility_state TEXT,
+        fundamental_bias TEXT,
+        confidence_score REAL,
+        engine_version TEXT,
+        sample_size INTEGER,
         created_at TEXT NOT NULL
     );
     """
@@ -663,6 +670,51 @@ def init_learning_schema(connection: sqlite3.Connection):
         raise
 
     _create_learning_records_indexes(connection)
+    _migrate_learning_records_schema(connection)
+
+
+def _migrate_learning_records_schema(connection: sqlite3.Connection):
+    """
+    Adds the Phase 60.7 columns (`htf_bias`/`volatility_state`/
+    `fundamental_bias`/`confidence_score`/`engine_version`/
+    `sample_size`) to a `learning_records` table created before this
+    phase. SQLite has no "ADD COLUMN IF NOT EXISTS", so each column's
+    presence is checked via PRAGMA table_info first -- on a fresh
+    table (already created with all columns above) every column is
+    already present and this is a no-op. Every new column is
+    `NULL`-default -- purely additive, no existing row's meaning
+    changes.
+    """
+    new_columns = [
+        ("htf_bias", "TEXT"),
+        ("volatility_state", "TEXT"),
+        ("fundamental_bias", "TEXT"),
+        ("confidence_score", "REAL"),
+        ("engine_version", "TEXT"),
+        ("sample_size", "INTEGER"),
+    ]
+
+    try:
+        cursor = connection.execute("PRAGMA table_info(learning_records)")
+        existing_columns = {row[1] for row in cursor.fetchall()}
+    except sqlite3.Error as e:
+        logger.error(f"Failed to inspect learning_records table for migration: {e}")
+        raise
+
+    migrated = False
+    for column_name, column_def in new_columns:
+        if column_name in existing_columns:
+            continue
+        try:
+            connection.execute(f"ALTER TABLE learning_records ADD COLUMN {column_name} {column_def}")
+            logger.info(f"Migrated learning_records table: added column '{column_name}'.")
+            migrated = True
+        except sqlite3.Error as e:
+            logger.error(f"Failed to add column '{column_name}' to learning_records table: {e}")
+            raise
+
+    if migrated:
+        connection.commit()
 
 
 def _create_learning_records_indexes(connection: sqlite3.Connection):
