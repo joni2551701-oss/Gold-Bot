@@ -184,6 +184,17 @@ settings and a selected session preset. No new simulation logic. See
 `docs/EXECUTION_SIMULATOR.md` for the full chain. Not wired into the
 live bot, same as every module in this package.
 
+### `performance_commands.py` (Phase 60.4: Performance Validation Foundation)
+`get_performance_report()`, `get_equity_curve_report()`,
+`get_backtest_performance_report()` — thin wrappers over
+`analytics.performance_metrics`/`analytics.equity_curve`/
+`analytics.benchmark`'s own `compute_*()`/`format_*()` functions. No
+new metric/curve/comparison computation of its own. Same "compute from
+supplied data, don't fetch" posture as `validation_commands.py` — the
+caller supplies an already-built `Sequence[SignalPerformance]`. See
+`docs/PERFORMANCE_VALIDATION.md` for the full chain. Not wired into
+the live bot, same as every module in this package.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -226,7 +237,10 @@ imports `backtesting.backtest_engine.BacktestEngine`,
 `provider_commands.ProviderCommandResult`. `execution_commands.py`
 imports `execution.simulator.simulator_engine.ExecutionSimulator`,
 `execution.simulator.slippage.SlippageConfig`, and
-`provider_commands.ProviderCommandResult`.
+`provider_commands.ProviderCommandResult`. `performance_commands.py`
+imports `analytics.performance_metrics`, `analytics.equity_curve`,
+`analytics.benchmark`, `analytics.signal_performance.SignalPerformance`,
+and `provider_commands.ProviderCommandResult`.
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the
 live routing surface.

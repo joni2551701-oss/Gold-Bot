@@ -1317,6 +1317,45 @@ price, slippage, spread, latency, rejection reason) for later
 comparison against real MT5 fills, per the Director's own brief. No
 new execution logic.
 
+### Phase 60.4 — Performance Validation Foundation
+
+Three new `analytics/` modules, all in-memory-only (no new database
+table — TASK 6's own decision, matching every prior analytics module).
+Full detail: `docs/PERFORMANCE_VALIDATION.md`.
+
+**`performance_metrics.py`** — `PerformanceMetrics` +
+`compute_performance_metrics(performances, equity_curve=None)`.
+Portfolio-wide expectancy/profit-factor/risk-adjusted-return, all
+R-based (no PnL model exists anywhere in this codebase). Max
+Drawdown/Recovery Factor stay `None` unless an already-built equity
+curve is supplied.
+
+**`equity_curve.py`** — `EquityCurveConfig`/`EquityPoint` +
+`build_equity_curve()`/`max_drawdown()`. One disclosed,
+visualization-only assumption (`unit_risk_amount`, a configurable
+dollar-per-1R) bridges the "no PnL model exists" gap to match the
+Director's own worked example (`1000$ -> +30 -> 1030$`).
+`risk/risk_manager.py` is untouched.
+
+**`benchmark.py`** — `BenchmarkComparison` +
+`compute_benchmark_comparison(equity_curve, benchmark_start_price,
+benchmark_end_price)`, matching the Director's own worked example
+(`Gold +5%, Strategy +18% -> Alpha: +13%`). Does not read candles
+itself — the caller supplies both benchmark prices.
+
+**`telegram/owner/performance_commands.py`** (TASK 7) —
+`get_performance_report()`/`get_equity_curve_report()`/
+`get_backtest_performance_report()`, thin wrappers over the three
+modules above. Not wired into the live bot.
+
+**TASK 5 (Validation Report duplicate)** — re-audited, not touched:
+`docs/PHASE60_ARCHITECTURE_AUDIT.md`'s own finding 1 / Director
+decision 1 already recorded the resolution (`get_validation_summary()`
+kept, `get_validation_report()` deprecated) as a future,
+separately-approved step, not an instruction to refactor
+`telegram/owner/` in this pass — this phase confirms the finding still
+holds and leaves both functions unchanged.
+
 **`telegram/owner/execution_commands.py`** — `execution_status()`/
 `slippage_status()`/`set_simulation_mode()`, thin wrappers reporting
 already-computed config. `set_simulation_mode()` selects a named

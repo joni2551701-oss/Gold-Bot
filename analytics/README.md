@@ -65,6 +65,35 @@ brief. No new execution/slippage/spread/latency logic — reads an
 already-computed result only, same "adapter, not calculator" posture
 `signal_performance.py` already established for `SignalSchema`/`PaperTrade`.
 
+### `performance_metrics.py` (Phase 60.4: Performance Validation Foundation, TASK 2)
+`PerformanceMetrics` plus `compute_performance_metrics(performances,
+equity_curve=None)`/`format_performance_metrics(metrics)` — portfolio-
+wide (ungrouped) expectancy, profit factor, and a risk-adjusted return,
+all R-based (no PnL model exists — see `signal_performance.py`'s own
+docstring). Reuses `strategy_report.compute_win_rate()` directly, not
+reimplemented. Max Drawdown/Recovery Factor stay `None` unless the
+caller supplies an `equity_curve.py`-built curve. See
+`docs/PERFORMANCE_VALIDATION.md`.
+
+### `equity_curve.py` (Phase 60.4: Performance Validation Foundation, TASK 3)
+`EquityCurveConfig`/`EquityPoint` plus `build_equity_curve(performances,
+config=None)`/`max_drawdown(points)`/`format_equity_curve_summary(points)`
+— walks a chronologically-sorted, resolved-only (`r_multiple is not
+None`) sequence of `SignalPerformance` into a running balance/drawdown
+curve. Makes one disclosed, visualization-only assumption
+(`EquityCurveConfig.unit_risk_amount`, a configurable dollar-per-1R) to
+bridge the same "no PnL model exists" gap `performance_metrics.py`
+also discloses — `risk/risk_manager.py` is untouched. See
+`docs/PERFORMANCE_VALIDATION.md`.
+
+### `benchmark.py` (Phase 60.4: Performance Validation Foundation, TASK 4)
+`BenchmarkComparison` plus `compute_benchmark_comparison(equity_curve,
+benchmark_start_price, benchmark_end_price)`/`format_benchmark_comparison(comparison)`
+— strategy return vs. buy-and-hold XAUUSD over the same period,
+matching the Director's own worked example ("Gold +5%, Strategy +18%
+-> Alpha: +13%"). Does not read candles itself — the caller supplies
+both benchmark prices. See `docs/PERFORMANCE_VALIDATION.md`.
+
 ## What this package does NOT do
 - Does not read or write the database — no new table, no migration,
   no dependency on `database/`.
@@ -90,6 +119,14 @@ package) only. Neither imports `context/`, `strategies/`, `ai/`,
 `execution_report.py` imports `execution.simulator.models.ExecutionSimulationResult`
 (`TYPE_CHECKING`-only) — the one exception to the "no `execution/`
 dependency" rule above, read-only and scoped to this single new file.
+`performance_metrics.py` imports `analytics.signal_performance` and
+`analytics.strategy_report.compute_win_rate` at module level, plus
+`analytics.equity_curve.max_drawdown` locally (inside
+`compute_performance_metrics()`, only when a curve is supplied).
+`equity_curve.py` imports `analytics.signal_performance`
+(`TYPE_CHECKING`-only). `benchmark.py` imports `analytics.equity_curve`
+(`TYPE_CHECKING`-only). None of the three import `database/`, `risk/`,
+`decision/`, `ai/`, `strategies/`, `signals/`, or `execution/`.
 
 ## Future Roadmap
 Persistence (a `signal_performance` table), `core/pipeline.py` wiring,
