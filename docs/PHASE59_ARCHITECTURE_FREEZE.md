@@ -180,3 +180,39 @@ today. The architecture is safe to freeze as-is. Backtesting (60.2)
 is the natural first consumer of the Historical Dataset work
 (Phase 59.5) already built, and should not require touching any
 Phase 59 foundation module to get started.
+
+## Design principle (in force from this freeze forward)
+
+Before any new module (new file, new package, or a new top-level
+class/function in an existing file) is written, its author must
+answer, in order, and stop at the first "yes":
+
+```
+1. Does this already exist somewhere in the repo?
+       |
+       v (no)
+2. Can an existing module be extended to cover this
+   (a new method, a new optional field, a new function
+   in an existing file) without breaking its current
+   contract?
+       |
+       v (no)
+3. Is a genuinely new module required?
+       |
+       v (yes)
+   Create it — and document, in the new module's own
+   docstring, why steps 1 and 2 were both "no".
+```
+
+"Reuse" (step 1 or 2) is the default outcome, not the exception —
+every parallel hierarchy in section 1 above exists because a real,
+narrow difference in *meaning* justified a new name (a static default
+vs. a runtime value; a coarse display label vs. an audited, persisted
+state machine), never because reuse was merely inconvenient. A new
+top-level package (`core/emergency/`, `configuration/`, `lifecycle/`,
+etc.) is the highest-cost option on this list and should be rare —
+Phase 59's own history shows most work landed as a new file inside an
+*existing* package (`telegram/owner/*.py`, `database/*_repository.py`)
+rather than a new package, and that ratio should hold going forward.
+This rule governs Phase 60 onward; it does not require revisiting any
+already-shipped Phase 59.x decision.

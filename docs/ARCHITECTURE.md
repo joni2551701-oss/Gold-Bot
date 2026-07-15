@@ -24,7 +24,11 @@ a consolidated wiring plan, and the Phase 60 roadmap), see
 `docs/PHASE59_ARCHITECTURE_FREEZE.md` — it supersedes nothing (the
 Phase A1 `docs/ARCHITECTURE_AUDIT.md`/`DEPENDENCY_MAP.md` remain valid
 snapshots of that earlier state) but is the current, Phase-59-era
-freeze audit.
+freeze audit. For the formal Phase 60.0 six-part audit that followed
+it (module dependency graph, dead code, duplicate logic, database
+audit, owner audit, pipeline audit — including two real duplicate
+findings the freeze audit didn't surface), see
+`docs/PHASE60_ARCHITECTURE_AUDIT.md`.
 
 ## System Overview
 
