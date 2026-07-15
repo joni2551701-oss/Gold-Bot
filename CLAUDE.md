@@ -47,17 +47,76 @@ bot — read this before making any change, not after.
 5. Run validation — see "After Code Changes" below; do this before
    reporting a change as done, not after.
 
-## After Code Changes
+## After Code Changes — Commit Protocol (mandatory)
 
-1. Run `python -m compileall .` — must pass.
-2. Run `python -m pytest tests/` — must pass, including whatever you
-   just touched.
-3. Check imports — `python -m pyflakes $(git ls-files '*.py')` must
-   report nothing; also worth a full module import sweep (see
-   `.github/workflows/ci.yml` for the exact command) to catch a
-   circular import.
-4. Report changed files — every response should end with an explicit
-   list of what changed and why, not just "done."
+In force from this rule's own introduction onward — added after two
+separate incidents (Phase 59.9, Phase 60.0/60.1) where a post-staging
+edit (fixing a `pyflakes` finding) was never re-staged before the
+commit, so a commit that looked locally clean actually still failed
+CI. The root cause both times was the same: `pyflakes`/tests were run
+against a state that didn't match what `git commit` actually captured.
+This exact order closes that gap — do not skip or reorder these
+steps:
+
+1. `git add -A` — stage everything first, before any validation.
+2. `python -m pyflakes $(git ls-files '*.py')` — must report nothing.
+   Run this *after* `git add -A` (step 1), not before — `git ls-files`
+   only lists tracked files, so pyflakes run too early silently skips
+   anything not yet staged.
+3. **If step 2 changed even one line** (a lint fix, or any other
+   edit) — go back to step 1 (`git add -A` again) before continuing.
+   This is the loop that closes the actual bug behind both prior
+   incidents: a fix made after staging is invisible to everything
+   downstream until it is re-staged. Do not proceed past this step
+   with any unstaged change outstanding.
+4. `python -m compileall .` — must pass.
+5. `python -m pytest tests/` — must pass, including whatever you just
+   touched.
+6. `python main.py` (or the project's own smoke-run equivalent) —
+   confirm no new runtime error; compare log output shape against the
+   pre-change baseline when touching anything pipeline-adjacent.
+7. `git status` — **must be clean** (no unstaged/untracked changes
+   remaining outside what's staged). **If it is not clean, committing
+   is forbidden** — return to step 1.
+8. `git diff --cached` — review exactly what is about to be
+   committed, one last time.
+9. Commit.
+10. Push.
+11. Confirm GitHub Actions reports `success` for the pushed commit
+    before reporting the phase as done — see "Reporting language"
+    below.
+
+### Reporting language (mandatory)
+
+Do not use the words **"Complete"**, **"Validated"**, **"Production
+Ready"**, or **"All checks passed"** until GitHub Actions has actually
+returned `success` for the exact commit being reported on. Before that
+confirmation arrives, say exactly:
+
+    Local validation passed. Waiting for GitHub Actions confirmation.
+
+Only after CI confirms:
+
+    GitHub Actions: SUCCESS. Phase complete.
+
+### Pre-Commit Verification checklist (mandatory report section)
+
+Every response that commits and pushes a change must include this
+checklist, unskipped, reflecting what was actually done for that
+specific commit:
+
+    Pre-Commit Verification
+    ✓ git add -A
+    ✓ pyflakes
+    ✓ compileall
+    ✓ pytest
+    ✓ python main.py
+    ✓ git status clean
+    ✓ git diff --cached reviewed
+    ✓ GitHub Actions SUCCESS
+
+Report changed files — every response should end with an explicit
+list of what changed and why, not just "done."
 
 ## Restrictions
 
