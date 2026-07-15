@@ -1134,6 +1134,86 @@ None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
 `telegram/commands.py` changed in this phase. No real order or signal
 is blocked by any module in this phase.
 
+### Phase 60.0 — Architecture Audit (no code)
+
+A six-part audit (module dependency graph, dead code, duplicate
+logic, database audit, owner audit, pipeline audit) run before any
+Phase 60.1+ code, per the Director's explicit "stop coding, audit
+first" instruction. Design/documentation only. Full detail:
+`docs/PHASE60_ARCHITECTURE_AUDIT.md`. Found and the Director resolved
+two real duplicates (`telegram/owner/validation_commands.py`'s
+`get_validation_report()` vs `report_commands.py`'s
+`get_validation_summary()`; `status_commands.get_system_status()` vs
+`system_commands.get_system_health()`) — both decisions recorded, not
+yet implemented (a future, separately-approved consolidation phase).
+Added the mandatory Module Reuse Principle to `CLAUDE.md` itself.
+
+### Phase 60.1 — Historical Replay Engine
+
+New `backtesting/` package — deliberately not a new `market/`
+top-level package (the Director's own Module-Reuse-Principle-guided
+decision): Replay is a service over existing Historical Data
+(`database.raw_candle_repository.RawCandleRepository`, Phase
+59.3/59.5), not a new business domain. Still, per the Director's own
+explicit rule, **not** wired into `core/pipeline.py`, `strategies/`,
+`signals/`, `decision/`, `risk/`, or `execution/` — Replay replaces
+only the data source, never the trading algorithms. Full detail:
+`docs/REPLAY_ENGINE.md`.
+
+**`replay_models.py`** — `ReplayState` enum
+(`PENDING`/`RUNNING`/`PAUSED`/`STOPPED`/`FINISHED`), frozen
+`ReplayConfig`/`ReplayResult`, and `format_replay_report()` (folds
+TASK 7 into this file rather than a 7th module — the Module Reuse
+Principle applied at the package's own internal scope).
+
+**`replay_session.py`** — `ReplaySession`: one replay run's identity
+and progress bookkeeping only, no candle traversal or timing logic of
+its own (that's `replay_feed.py`'s/`replay_clock.py`'s job).
+
+**`replay_clock.py`** — `ReplayClock`: a pure play/pause/resume/stop/
+speed/seek state machine over an integer position, no candle-data
+knowledge. Position starts at `-1` (matching `ReplayFeed.cursor`'s own
+convention) so `replay_engine.py` can keep the two in lockstep without
+an off-by-one.
+
+**`replay_feed.py`** — `ReplayFeed`: cursor-based `next`/`previous`/
+`jump`/`window`/`current` access over an already-loaded candle list.
+Hands out `data.twelve_data_client.Candle` — the exact type
+`data.market_data.MarketDataNormalizer.get_candles()` already returns
+to the live pipeline, so a future Strategy consumer needs no shape
+change to accept replayed data instead of live data.
+
+**`replay_engine.py`** — `ReplayEngine`: composes
+`RawCandleRepository` (loads the configured window once, via this
+phase's own additive `get_candles_range()`), `ReplayClock`, and
+`ReplayFeed`. `step()` advances both together and returns the new
+current `Candle`; never calls `strategies/`/`signals/`/`decision/`/
+`risk/`.
+
+**`replay_controller.py`** — `ReplayController`: the public
+session-management API (`start()`/`pause()`/`resume()`/`stop()`/
+`restart()`/`step()`/`get_status()`), one process-local
+`{session_id: (ReplaySession, ReplayEngine)}` map — no database table,
+same "in-memory holder" convention as
+`configuration.runtime_state.RuntimeStateCache`.
+
+**`telegram/owner/replay_commands.py`** — `replay_start()`/
+`replay_pause()`/`replay_stop()`/`replay_status()`, thin wrappers over
+`ReplayController`. Not registered into `telegram/commands.py`/
+`command_router.py`/`handlers.py`, same posture as every Owner Mode
+module before it.
+
+**`database/raw_candle_repository.py`** gained one additive method,
+`get_candles_range(symbol, timeframe, start, end, provider=None)` —
+TASK 1's own reuse-audit finding: the existing `get_candles()` only
+supports "most recent N rows," no date bound, which a fixed
+historical replay window needs. `get_candles()` itself is unchanged.
+
+None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
+`execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
+`telegram/handlers.py`, `telegram/command_router.py`, or
+`telegram/commands.py` changed in this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real
@@ -1320,6 +1400,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | Module | Responsibility |
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. Phase 59.9 added `emergency/` — `EmergencyState`/`EmergencyManager` (a runtime controller, persisted append-only via `database.emergency_repository`, audited via `AuditLogRepository`) and stateless `circuit_breaker.evaluate_circuit()`; still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`. |
+| `backtesting/` | New in Phase 60.1 (Historical Replay Engine) — `replay_models.py`/`replay_session.py`/`replay_clock.py`/`replay_feed.py`/`replay_engine.py`/`replay_controller.py`. A service over existing Historical Data (`database.raw_candle_repository.RawCandleRepository`), not a new business domain — deliberately not a `market/` top-level package, per the Module Reuse Principle. `ReplayFeed` hands out `data.twelve_data_client.Candle`, the same type the live pipeline already uses, so a future Strategy consumer needs no shape change. Never calls `strategies/`/`signals/`/`decision/`/`risk/`; nothing in `core/pipeline.py` constructs anything here. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. Phase 59.6 added `feature_registry.py` (`FeatureDescriptor`/`build_feature_registry()`, unifying real + declared-only flag names) and `feature_dependency_validator.py` (`validate_feature_dependencies()`) — still not runtime, gates nothing. Phase 59.7 added the first genuinely *runtime* control in this package — `runtime_state.py`/`runtime_feature_manager.py`/`runtime_api.py` (`RuntimeFeatureManager`: validated, persisted, audited, snapshotted enable/disable) — still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`, none of which import `configuration/`. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07/Phase 59.1 TASK 5) — maps a caught fetch exception (or a known empty-response condition) to a structured `ExternalAPIError` for logging only, never changes control flow — Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation/59.1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store — and Market Provider Abstraction (`providers/`, Phase 59.1) — `DataProvider`/`MarketDataProvider`/`FundamentalDataProvider`, `TwelveDataProvider`/`MT5Provider`/`BinanceProvider`/`FredProvider`, `ProviderRegistry`, data-only, not wired into the live pipeline — plus Provider Normalization (`normalization/`, Phase 59.3) — `symbol_mapper.py`/`timeframe_mapper.py`/`candle_normalizer.py`, centralized per-provider format tables, no new candle type. |

@@ -155,6 +155,16 @@ persisted, and audited entirely inside `core/emergency/`. See
 rules. Not wired into the live bot, same as every module in this
 package.
 
+### `replay_commands.py` (Phase 60.1: Historical Replay Engine)
+`replay_start()`, `replay_pause()`, `replay_stop()`, `replay_status()`
+— thin wrappers over `backtesting.replay_controller.ReplayController`,
+reformatted into this package's `ProviderCommandResult` shape (via
+`backtesting.replay_models.format_replay_report()`). No new
+session/engine logic — one module-level default `ReplayController`
+holds every session in-memory for this process's lifetime. See
+`docs/REPLAY_ENGINE.md` for the full architecture and state diagram.
+Not wired into the live bot, same as every module in this package.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -187,6 +197,9 @@ only other modules within this package
 (`control_commands`/`provider_commands`/`status_commands`).
 `emergency_commands.py` imports `core.emergency.emergency_manager.EmergencyManager`,
 `core.emergency.emergency_state.EmergencyStateRecord`, and
+`provider_commands.ProviderCommandResult`. `replay_commands.py`
+imports `backtesting.replay_controller.ReplayController`,
+`backtesting.replay_models.ReplayConfig`/`format_replay_report()`, and
 `provider_commands.ProviderCommandResult`.
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the

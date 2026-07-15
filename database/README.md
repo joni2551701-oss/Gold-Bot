@@ -86,6 +86,13 @@ persisted `raw_candles` row — the first time those two pieces were
 connected. MT5 stays unconnected (`MT5Provider` remains an inert
 stub); nothing about the bridge itself is provider-specific.
 
+`RawCandleRepository` gained one additive method in Phase 60.1
+(Historical Replay Engine): `get_candles_range(symbol, timeframe,
+start, end, provider=None)` — the existing `get_candles()` only
+supports "most recent N rows," no date bound, which
+`backtesting/replay_engine.py`'s fixed historical replay window
+needs. `get_candles()` itself is unchanged.
+
 ## Input
 Typed values from a repository method's caller (a service, or
 `core/pipeline.py`'s `save_signal_record()`).

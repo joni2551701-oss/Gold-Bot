@@ -193,6 +193,67 @@ def test_save_market_candles_accepts_a_provider_override():
     assert inserted == 1
 
 
+# --- Phase 60.1 (Historical Replay Engine, TASK 1 reuse audit): get_candles_range() ---
+
+def test_get_candles_range_filters_by_date_bounds():
+    repo = RawCandleRepository()
+    t1 = datetime(2026, 1, 1, 0, 0, tzinfo=timezone.utc)
+    t2 = datetime(2026, 1, 2, 0, 0, tzinfo=timezone.utc)
+    t3 = datetime(2026, 1, 3, 0, 0, tzinfo=timezone.utc)
+    repo.save_candle(_candle(ts=t1))
+    repo.save_candle(_candle(ts=t2))
+    repo.save_candle(_candle(ts=t3))
+
+    result = repo.get_candles_range("XAUUSD", "M15", start=t1, end=t2)
+
+    assert [c.timestamp for c in result] == [t1, t2]
+
+
+def test_get_candles_range_is_chronologically_ascending():
+    repo = RawCandleRepository()
+    t1 = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    t2 = datetime(2026, 1, 2, tzinfo=timezone.utc)
+    repo.save_candle(_candle(ts=t2))
+    repo.save_candle(_candle(ts=t1))
+
+    result = repo.get_candles_range("XAUUSD", "M15", start=t1, end=t2)
+
+    assert [c.timestamp for c in result] == [t1, t2]
+
+
+def test_get_candles_range_filters_by_provider_when_specified():
+    repo = RawCandleRepository()
+    ts = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    repo.save_candle(_candle(ts=ts, provider="twelvedata"))
+    repo.save_candle(_candle(ts=ts, provider="binance"))
+
+    result = repo.get_candles_range("XAUUSD", "M15", start=ts, end=ts, provider="binance")
+
+    assert len(result) == 1
+    assert result[0].provider == "binance"
+
+
+def test_get_candles_range_empty_result_returns_empty_list_not_none():
+    t1 = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    t2 = datetime(2026, 1, 2, tzinfo=timezone.utc)
+    repo = RawCandleRepository()
+    assert repo.get_candles_range("NONEXISTENT", "M15", start=t1, end=t2) == []
+
+
+def test_get_candles_range_excludes_candles_outside_the_window():
+    repo = RawCandleRepository()
+    before = datetime(2025, 12, 31, tzinfo=timezone.utc)
+    inside = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    after = datetime(2026, 1, 5, tzinfo=timezone.utc)
+    repo.save_candle(_candle(ts=before))
+    repo.save_candle(_candle(ts=inside))
+    repo.save_candle(_candle(ts=after))
+
+    result = repo.get_candles_range("XAUUSD", "M15", start=datetime(2026, 1, 1, tzinfo=timezone.utc), end=datetime(2026, 1, 2, tzinfo=timezone.utc))
+
+    assert [c.timestamp for c in result] == [inside]
+
+
 def test_twelvedataprovider_output_round_trips_into_raw_candles(monkeypatch):
     """End-to-end: TwelveDataProvider's real (mocked) get_candles() output saves cleanly -- MT5 is never touched anywhere in this path."""
     provider = TwelveDataProvider()

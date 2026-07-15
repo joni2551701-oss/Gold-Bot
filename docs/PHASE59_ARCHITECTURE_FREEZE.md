@@ -147,18 +147,14 @@ Phase 60
 └── 60.6 Learning Loop
 ```
 
-A candidate new package for 60.1, proposed but **not yet a formal
-Worker Task** (no TASK 1-N brief delivered): `market/replay_clock.py`/
-`replay_engine.py`/`replay_controller.py`/`replay_session.py`/
-`replay_speed.py` — a single Replay Engine intended to sit underneath
-Backtesting, Paper Trading, AI Learning, and Strategy Testing alike,
-rather than each building its own replay mechanism. Per the Module
-Reuse Principle (`CLAUDE.md`), this is exactly the kind of proposal
-that should be checked against "can an existing module be extended"
-before creating a new top-level package — `lifecycle/paper_trade.py`
-and `data/historical_data_collector.py`/`RawCandleRepository` are the
-two closest existing pieces and should be the first thing a Worker
-Task brief for this phase checks.
+**60.1 status: ✅ delivered** (see `docs/REPLAY_ENGINE.md`). After the
+Director's own review of the `market/replay_*.py` candidate above
+against the Module Reuse Principle, the decision was to build it as
+`backtesting/replay_*.py` instead — no new top-level package, since
+Replay is a service over existing Historical Data
+(`database.raw_candle_repository.RawCandleRepository`), not a new
+business domain, and `backtesting/` is where its first real consumer
+(60.2) lives anyway.
 
 Original (pre-reorder) sequence and its own reasoning, for reference:
 

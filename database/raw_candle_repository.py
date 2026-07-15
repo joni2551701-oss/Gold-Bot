@@ -118,6 +118,36 @@ class RawCandleRepository:
             rows = cursor.fetchall()
             return [_row_to_record(row) for row in reversed(rows)]
 
+    def get_candles_range(
+        self, symbol: str, timeframe: str, start: datetime, end: datetime, provider: Optional[str] = None
+    ) -> List[RawCandle]:
+        """
+        Phase 60.1 (Historical Replay Engine, TASK 1 reuse audit) --
+        get_candles() only supports "most recent N rows" (no date
+        bound), which a Replay session over a fixed historical window
+        needs. Additive: a new method, existing get_candles()
+        untouched. Chronologically ascending (oldest first), same
+        ordering convention as get_candles().
+        """
+        with self.db as conn:
+            if provider is not None:
+                cursor = conn.execute(
+                    _CANDLE_SELECT_COLUMNS + " FROM raw_candles "
+                    "WHERE symbol = ? AND timeframe = ? AND provider = ? "
+                    "AND timestamp >= ? AND timestamp <= ? "
+                    "ORDER BY timestamp ASC",
+                    (symbol, timeframe, provider, start.isoformat(), end.isoformat()),
+                )
+            else:
+                cursor = conn.execute(
+                    _CANDLE_SELECT_COLUMNS + " FROM raw_candles "
+                    "WHERE symbol = ? AND timeframe = ? "
+                    "AND timestamp >= ? AND timestamp <= ? "
+                    "ORDER BY timestamp ASC",
+                    (symbol, timeframe, start.isoformat(), end.isoformat()),
+                )
+            return [_row_to_record(row) for row in cursor.fetchall()]
+
     def count_candles(self, symbol: str, timeframe: str) -> int:
         with self.db as conn:
             cursor = conn.execute(
