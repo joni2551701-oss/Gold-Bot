@@ -195,6 +195,16 @@ caller supplies an already-built `Sequence[SignalPerformance]`. See
 `docs/PERFORMANCE_VALIDATION.md` for the full chain. Not wired into
 the live bot, same as every module in this package.
 
+### `fundamental_commands.py` (Phase 60.5: Fundamental Intelligence Foundation)
+`get_macro_status()`, `get_fundamental_score_report()`,
+`get_fed_status()` — thin wrappers over
+`context.fundamental_context`/`context.fundamental_scoring`'s own
+data/format functions. No new macro classification/scoring logic of
+its own. Never returns "BUY"/"SELL" or approves/rejects anything — see
+`docs/FUNDAMENTAL_INTELLIGENCE.md`'s own hard rule for this whole
+phase. Not wired into the live bot, same as every module in this
+package.
+
 ## Dependencies
 `provider_commands.py` imports `data.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
@@ -240,6 +250,9 @@ imports `execution.simulator.simulator_engine.ExecutionSimulator`,
 `provider_commands.ProviderCommandResult`. `performance_commands.py`
 imports `analytics.performance_metrics`, `analytics.equity_curve`,
 `analytics.benchmark`, `analytics.signal_performance.SignalPerformance`,
+and `provider_commands.ProviderCommandResult`. `fundamental_commands.py`
+imports `context.fundamental_context.FundamentalContextSnapshot`,
+`context.fundamental_scoring.FundamentalScoreResult`/`format_fundamental_score()`,
 and `provider_commands.ProviderCommandResult`.
 None imports `telegram.handlers`, `telegram.command_router`, or
 `telegram.commands` — this package is never itself imported by the

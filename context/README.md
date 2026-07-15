@@ -250,7 +250,12 @@ separate, independent definition, not shared code). `market_phase.py`
 imports `context.amd`, `context.market_regime`, and `context.wyckoff`
 (same package) plus, `TYPE_CHECKING`-only, `context.context_orchestrator`
 — no dependency on `strategies/`, `signals/`, `ai/`, `database/`, or
-`telegram/`.
+`telegram/`. `fundamental_context.py` (Phase 60.5) imports
+`context.fundamental_scoring.FundamentalScoreResult` and
+`context.context_orchestrator.ContextSnapshot` (both
+`TYPE_CHECKING`-only, same-layer sibling imports — `context_orchestrator.py`
+does not import `fundamental_context.py`, no cycle). `fundamental_scoring.py`
+and `economic_events.py` import nothing beyond stdlib.
 
 ## Future Roadmap
 The execution-timeframe SMC formulas remain stable and explicitly out
@@ -308,3 +313,38 @@ full comparison.
   codebase to calibrate a real classification against yet, and none
   is fabricated (same "never fabricate" convention as `zones.premium_discount`
   in `context/snapshot.py`).
+
+### `economic_events.py` (Phase 60.5: Fundamental Intelligence Foundation, TASK 4)
+`EventImpact` (`HIGH`/`MEDIUM`/`LOW`) + `EconomicEvent` (`name`,
+`date`, `impact`, `currency`, `expected`, `actual`, plus a computed
+`surprise` property). A calendar-entry data model only — nothing in
+this codebase populates one yet (no economic-calendar provider
+exists). See `docs/FUNDAMENTAL_INTELLIGENCE.md`.
+
+### `fundamental_scoring.py` (Phase 60.5: Fundamental Intelligence Foundation, TASK 5)
+`FundamentalScoreWeights`/`FundamentalScoreResult` +
+`compute_fundamental_score()`/`explain_fundamental_score()`/
+`format_fundamental_score()` — aggregates already-classified
+per-indicator biases (`dxy_bias`/`rates_bias`/`inflation_bias`/
+`risk_sentiment`, each already `"BULLISH"`/`"BEARISH"`/`"NEUTRAL"` for
+gold, supplied by the caller) into one `gold_bias`/`confidence`/
+`macro_score`, matching the Director's own "Macro Bias / Confidence /
+Reasons" worked example shape. Does not classify a raw macro number
+into a bias itself — same disclosed gap `fundamental_context.py`'s own
+`dollar_strength`/`risk_level` already carry. See
+`docs/FUNDAMENTAL_INTELLIGENCE.md`.
+
+### `fundamental_context.py` extensions (Phase 60.5, TASK 2/6)
+`FundamentalContextSnapshot` gained eight new `Optional` fields
+(`dxy_bias`/`rates_bias`/`inflation_bias`/`fed_expectation`/
+`risk_sentiment`/`gold_bias`/`confidence`/`macro_score`, all defaulting
+to `None`) plus `merge_fundamental_score(snapshot, score)` to fill them
+in from a `fundamental_scoring.FundamentalScoreResult`.
+`compute_fundamental_context()` itself is unchanged. A new
+`EnrichedContextSnapshot` (`context: ContextSnapshot`, `fundamental:
+FundamentalContextSnapshot`) + `attach_fundamental_context()` pairs a
+real `ContextSnapshot` with a `FundamentalContextSnapshot` by
+composition — `ContextSnapshot` itself was deliberately not touched
+(its own docstring states "no defaults by design," a stable contract
+every existing caller depends on). See
+`docs/FUNDAMENTAL_INTELLIGENCE.md` for the full reuse-audit reasoning.

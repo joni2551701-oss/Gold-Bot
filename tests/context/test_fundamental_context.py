@@ -4,12 +4,29 @@ Phase 59.3, TASK 6 -- context/fundamental_context.py tests.
 
 from datetime import datetime, timezone
 
+from context.context_orchestrator import ContextSnapshot
 from context.fundamental_context import (
+    EnrichedContextSnapshot,
     FundamentalContextSnapshot,
+    attach_fundamental_context,
     compute_fundamental_context,
     generate_fundamental_snapshot_id,
+    merge_fundamental_score,
 )
+from context.fundamental_scoring import compute_fundamental_score
+from context.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
 from data.providers.fundamental_base import FundamentalDataPoint
+
+
+def _empty_context(**overrides) -> ContextSnapshot:
+    base = dict(
+        candles=(), structure=(), bos_events=(), choch_events=(),
+        liquidity_zones=(), liquidity_sweeps=(), order_blocks=(), fair_value_gaps=(),
+        amd_events=(), wyckoff_events=(), session_events=(),
+        market_regime=MarketRegimeResult(regime=MarketRegime.UNKNOWN, direction=RegimeDirection.NEUTRAL, confidence=0.0, reasons=[]),
+    )
+    base.update(overrides)
+    return ContextSnapshot(**base)
 
 
 def _point(series_id, value):
@@ -80,6 +97,97 @@ def test_snapshot_is_frozen():
     try:
         snapshot.fed_rate = 999.0
         assert False, "FundamentalContextSnapshot must be immutable"
+    except AttributeError:
+        pass
+
+
+# --- Phase 60.5 TASK 2: scoring-field extension + merge_fundamental_score() ---
+
+def test_new_scoring_fields_default_to_none():
+    snapshot = compute_fundamental_context()
+
+    assert snapshot.dxy_bias is None
+    assert snapshot.rates_bias is None
+    assert snapshot.inflation_bias is None
+    assert snapshot.fed_expectation is None
+    assert snapshot.risk_sentiment is None
+    assert snapshot.gold_bias is None
+    assert snapshot.confidence is None
+    assert snapshot.macro_score is None
+
+
+def test_merge_fundamental_score_fills_in_the_new_fields():
+    snapshot = compute_fundamental_context(interest_rate=_point("FEDFUNDS", 5.25))
+    score = compute_fundamental_score(dxy_bias="BULLISH", rates_bias="BEARISH")
+
+    merged = merge_fundamental_score(snapshot, score)
+
+    assert merged.dxy_bias == "BULLISH"
+    assert merged.rates_bias == "BEARISH"
+    assert merged.gold_bias == score.gold_bias
+    assert merged.confidence == score.confidence
+    assert merged.macro_score == score.macro_score
+
+
+def test_merge_fundamental_score_preserves_original_fields():
+    snapshot = compute_fundamental_context(interest_rate=_point("FEDFUNDS", 5.25))
+    score = compute_fundamental_score()
+
+    merged = merge_fundamental_score(snapshot, score)
+
+    assert merged.snapshot_id == snapshot.snapshot_id
+    assert merged.created_at == snapshot.created_at
+    assert merged.fed_rate == 5.25
+
+
+def test_merge_fundamental_score_returns_a_new_instance():
+    snapshot = compute_fundamental_context()
+    score = compute_fundamental_score()
+
+    merged = merge_fundamental_score(snapshot, score)
+
+    assert merged is not snapshot
+    assert snapshot.gold_bias is None  # original untouched
+
+
+def test_merged_snapshot_to_dict_is_json_safe():
+    import json
+
+    snapshot = compute_fundamental_context()
+    score = compute_fundamental_score(dxy_bias="BULLISH")
+    merged = merge_fundamental_score(snapshot, score)
+
+    json.dumps(merged.to_dict())  # must not raise
+
+
+# --- Phase 60.5 TASK 6: EnrichedContextSnapshot / attach_fundamental_context() ---
+
+def test_attach_fundamental_context_returns_an_enriched_snapshot():
+    context = _empty_context()
+    fundamental = compute_fundamental_context()
+
+    enriched = attach_fundamental_context(context, fundamental)
+
+    assert isinstance(enriched, EnrichedContextSnapshot)
+    assert enriched.context is context
+    assert enriched.fundamental is fundamental
+
+
+def test_attach_fundamental_context_never_mutates_either_input():
+    context = _empty_context()
+    fundamental = compute_fundamental_context()
+
+    attach_fundamental_context(context, fundamental)
+
+    assert context == _empty_context()  # unchanged
+    assert fundamental.gold_bias is None  # unchanged
+
+
+def test_enriched_context_snapshot_is_frozen():
+    enriched = attach_fundamental_context(_empty_context(), compute_fundamental_context())
+    try:
+        enriched.fundamental = compute_fundamental_context()
+        assert False, "EnrichedContextSnapshot must be immutable"
     except AttributeError:
         pass
 

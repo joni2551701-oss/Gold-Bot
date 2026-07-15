@@ -67,12 +67,16 @@ Binance's own format, deliberately different from TwelveData's. Unlike
 an unsupported one) before raising `NotImplementedError` for a
 supported-but-unimplemented one — a genuine, testable distinction.
 
-### `fred_provider.py` (Phase 59.2, TASK 4)
+### `fred_provider.py` (Phase 59.2, TASK 4; extended Phase 60.5, TASK 3)
 `FredProvider` — a deliberate, inert stub for Gold's macro drivers
 (interest rates, inflation, dollar index). Verified real FRED series
 IDs (`FEDFUNDS`, `CPIAUCSL`, `DTWEXBGS` — the closest free public
 proxy for "DXY", not identical to it, disclosed in the module's own
-docstring), no live `api.stlouisfed.org` connection.
+docstring), no live `api.stlouisfed.org` connection. Phase 60.5 added
+`collect_snapshot()` — composes the three fetch methods into one
+`FundamentalSnapshot`, catching each `NotImplementedError`
+individually so it returns a real (today, all-empty) snapshot rather
+than raising. See `docs/FUNDAMENTAL_INTELLIGENCE.md`.
 
 ### `registry.py` (Phase 59.2, TASK 5)
 `ProviderRegistry` (`register()`/`get()`/`available()`/`all_names()`)

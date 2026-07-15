@@ -1369,6 +1369,76 @@ None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
 `telegram/handlers.py`, `telegram/command_router.py`, or
 `telegram/commands.py` changed in this phase.
 
+### Phase 60.5 — Fundamental Intelligence Foundation
+
+A **Macro Context Engine**, not a signal generator, per the Director's
+own hard rule: this layer never returns "BUY"/"SELL" and never opens a
+trade — only a macro bias (`BULLISH GOLD`/`BEARISH GOLD`/`NEUTRAL`), a
+confidence, and reasons. `decision/decision_engine.py` is unchanged;
+this phase adds no connection to it. Full detail:
+`docs/FUNDAMENTAL_INTELLIGENCE.md`.
+
+TASK 1's reuse audit found two of the Director's own brief's suggested
+new paths already had a better home and were not created: a new
+`context/fundamental/` subpackage (this phase extends the existing
+`context/fundamental_context.py` instead, plus two flat sibling files
+— `context/` has no subpackages today, and Module Reuse Principle
+counsels against introducing the first one for this alone) and a new
+`ai/fundamental_prompt.py` (this phase adds one method to the existing
+`ai/prompts/prompt_manager.py`'s `PromptManager` instead).
+
+**`context/fundamental_context.py` extensions (TASK 2/6)** —
+`FundamentalContextSnapshot` gained eight new `Optional` fields
+(`dxy_bias`/`rates_bias`/`inflation_bias`/`fed_expectation`/
+`risk_sentiment`/`gold_bias`/`confidence`/`macro_score`, all default
+`None`) plus `merge_fundamental_score()`. `compute_fundamental_context()`
+itself is unchanged. New `EnrichedContextSnapshot` +
+`attach_fundamental_context()` pair a real `ContextSnapshot` with a
+`FundamentalContextSnapshot` by composition — `ContextSnapshot` itself
+was deliberately not touched, since its own docstring states "no
+defaults by design," a stable contract every existing caller
+(`core/pipeline.py`, `backtesting/backtest_engine.py`) depends on.
+
+**`data/providers/fred_provider.py` extension (TASK 3)** —
+`FredProvider.collect_snapshot()`, a new method (not a new file)
+composing the three fetch methods into one `FundamentalSnapshot`,
+catching each `NotImplementedError` individually. Still no real
+`api.stlouisfed.org` connection — that needs an API key and is a
+separate, explicitly-approvable future step.
+
+**`context/economic_events.py`** (TASK 4) — `EventImpact` +
+`EconomicEvent` (`name`/`date`/`impact`/`currency`/`expected`/`actual`
++ a computed `surprise` property). Data model only, no provider yet.
+
+**`context/fundamental_scoring.py`** (TASK 5) —
+`FundamentalScoreWeights`/`FundamentalScoreResult` +
+`compute_fundamental_score()`/`explain_fundamental_score()`/
+`format_fundamental_score()`. Aggregates already-classified
+per-indicator biases (supplied by a future analyst/AI layer, not
+computed here — no threshold/calibration model exists) into one
+`gold_bias`/`confidence`/`macro_score`, matching the Director's own
+"Macro Bias / Confidence / Reasons" worked example shape. The
+Director's own illustrative numbers (`DXY: -20, Rates: -15,
+Inflation: +10, Risk: +15 -> Gold Score: +70`) do not arithmetically
+sum to +70, so this module reproduces the shape, not the literal
+numbers.
+
+**`ai/prompts/prompt_manager.py` extension (TASK 7)** —
+`PromptManager.get_fundamental_analysis_prompt()`, one new method
+combining technical + fundamental context into an explanation-only
+template. No LLM call, no network access, same posture as every other
+method on this class.
+
+**`telegram/owner/fundamental_commands.py`** (TASK 8) —
+`get_macro_status()`/`get_fundamental_score_report()`/`get_fed_status()`,
+thin wrappers over the modules above. Not wired into the live bot.
+
+No new database table (TASK 9's own decision, matching every prior
+foundation phase). None of `core/pipeline.py`, `decision/`, `risk/`,
+`execution/`, `strategies/`, `signals/`, `telegram/handlers.py`,
+`telegram/command_router.py`, or `telegram/commands.py` changed in
+this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

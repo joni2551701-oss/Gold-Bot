@@ -98,6 +98,41 @@ def test_fundamental_snapshot_to_dict_serializes_nested_points():
     assert data["indicators"]["cpi"]["series_id"] == "CPIAUCSL"
 
 
+# --- Phase 60.5 TASK 3: collect_snapshot() ---
+
+def test_collect_snapshot_returns_a_real_snapshot_never_raises():
+    provider = FredProvider()
+
+    snapshot = provider.collect_snapshot()  # must not raise, even though every fetch is NotImplementedError today
+
+    assert isinstance(snapshot, FundamentalSnapshot)
+    assert snapshot.indicators == {}
+    assert snapshot.snapshot_id
+    assert snapshot.created_at is not None
+
+
+def test_collect_snapshot_only_includes_successfully_fetched_indicators(monkeypatch):
+    provider = FredProvider()
+    point = FundamentalDataPoint(
+        series_id="FEDFUNDS", value=5.25, unit="percent",
+        as_of=datetime(2026, 1, 1, tzinfo=timezone.utc), source="fred",
+    )
+    monkeypatch.setattr(provider, "get_interest_rate", lambda: point)
+
+    snapshot = provider.collect_snapshot()
+
+    assert snapshot.indicators == {"interest_rate": point}
+
+
+def test_collect_snapshot_keys_are_logical_names_not_series_ids():
+    provider = FredProvider()
+
+    snapshot = provider.collect_snapshot()
+
+    for key in snapshot.indicators:
+        assert key in ("interest_rate", "inflation", "dollar_index")
+
+
 def test_fred_provider_never_generates_a_signal_or_knows_strategy():
     provider = FredProvider()
     forbidden_terms = ("signal", "strategy", "decision")
