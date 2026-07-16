@@ -109,56 +109,82 @@ from configuration.runtime_feature_manager import RuntimeFeatureManager
 
 manager = RuntimeFeatureManager()
 
-manager.enable("ENABLE_EXECUTION", changed_by="owner")
+manager.enable("ENABLE_BACKTEST", changed_by="owner")
 # -> ToggleResult(success=False, reason="Invalid configuration:\n"
-#                  "  ENABLE_EXECUTION requires ENABLE_RISK\n"
-#                  "  ENABLE_EXECUTION requires ENABLE_DECISION")
+#                  "  ENABLE_BACKTEST requires ENABLE_DATASET_SYNC\n"
+#                  "  ENABLE_BACKTEST requires ENABLE_ANALYTICS")
 
-manager.enable("ENABLE_RISK")
-manager.enable("ENABLE_DECISION")
-manager.enable("ENABLE_EXECUTION", changed_by="owner")
-# -> ToggleResult(success=True, feature="ENABLE_EXECUTION", enabled=True)
+manager.enable("ENABLE_DATASET_SYNC")
+manager.enable("ENABLE_ANALYTICS")
+manager.enable("ENABLE_BACKTEST", changed_by="owner")
+# -> ToggleResult(success=True, feature="ENABLE_BACKTEST", enabled=True)
 
-manager.disable("ENABLE_RISK")
+manager.disable("ENABLE_DATASET_SYNC")
 # -> ToggleResult(success=False,
-#                  reason="Cannot disable ENABLE_RISK. Dependent features active: ENABLE_EXECUTION")
+#                  reason="Cannot disable ENABLE_DATASET_SYNC. Dependent features active: ENABLE_BACKTEST")
 
-manager.get_feature_state("ENABLE_EXECUTION")
-# -> {"feature": "ENABLE_EXECUTION", "state": "ACTIVE", "source": "runtime", "updated_at": "..."}
+manager.get_feature_state("ENABLE_BACKTEST")
+# -> {"feature": "ENABLE_BACKTEST", "state": "ACTIVE", "source": "runtime", "updated_at": "..."}
 
 second_manager = RuntimeFeatureManager()  # a fresh process/restart
-second_manager.get_feature_state("ENABLE_EXECUTION")["state"]
+second_manager.get_feature_state("ENABLE_BACKTEST")["state"]
 # -> "ACTIVE" -- survived the restart
 ```
 
+(Phase 60.9: re-anchored from the original `ENABLE_EXECUTION`/
+`ENABLE_RISK`/`ENABLE_DECISION` worked example — see the Phase 60.9
+section below for why.)
+
 ## What this phase does NOT do
 
-- Does not read a runtime feature's state from `decision/`, `risk/`,
-  `execution/`, `strategies/`, `signals/`, `context/`, or `ai/` — none
-  of them import `configuration/` at all. (`core/pipeline.py` is no
-  longer in this list as of Phase 60.8 — see below.)
+- Does not read a runtime feature's state from `core/pipeline.py`,
+  `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
+  `context/`, or `ai/` — none of them import `configuration/` at all.
+  (`core/pipeline.py` briefly did, via `PipelineGuard`, during Phase
+  60.8; Phase 60.9 removed that dependency entirely — see below.)
 - Does not block a signal, close a trade, or stop an order — that is
-  Phase 59.9's job.
+  `EmergencyManager`'s job (Phase 59.9, wired into the pipeline in
+  Phase 60.8).
 - Does not register any Telegram command — that is Phase 59.8's job.
 - Does not cascade a toggle onto a dependency or dependent — every
   rejection leaves the state exactly as it was.
 - Does not add a rollback/apply function for a saved config snapshot —
   still capture-and-read only (Phase 59.6's own boundary, unchanged).
 
-## Phase 60.8: Safe Integration Layer — first real reader
+## Phase 60.9: Runtime Registry Separation — RuntimeFeatureManager fully removed from the pipeline
 
-`core/guards/pipeline_guard.py`'s `PipelineGuard` is the first real
+Phase 60.8 briefly made `core/guards/pipeline_guard.py`'s
+`PipelineGuard` the first real caller of `RuntimeFeatureManager.status()`,
+gating three pipeline stages by three new registry entries
+(`ENABLE_SIGNALS`/`ENABLE_AI`/`ENABLE_DATABASE`) and leaving a fourth
+(`ENABLE_EXECUTION`) unpromoted after it collided with
+`DEPENDENCY_RULES` and broke 26 tests. Phase 60.9 resolved this at the
+root: **all four names were removed from the registry**, and
+`PipelineGuard` no longer imports or constructs a
+`RuntimeFeatureManager` at all — every one of its four hooks
+(`before_signal`/`before_ai`/`before_execution`/`before_database`) now
+reads exclusively from `EmergencyManager`. `RuntimeFeatureManager` is,
+once again, read only by its own tests, `telegram/owner/*.py`, and
+`configuration/runtime_api.py` — never by `core/pipeline.py`. See
+`docs/FEATURE_REGISTRY_SEPARATION.md` for the full audit and
+`docs/PIPELINE_GUARD.md` for the current, EmergencyManager-only
+pipeline-stage mapping.
+
+## Phase 60.8: Safe Integration Layer — first real reader (superseded by Phase 60.9 above)
+
+`core/guards/pipeline_guard.py`'s `PipelineGuard` was the first real
 caller of `RuntimeFeatureManager.status()` (read-only, never
 `.enable()`/`.disable()`/`.toggle()`) — previously zero callers
 existed outside this module's own tests and `telegram/owner/*.py`.
 Three new, real, `config.Config`-backed registry entries were added
 for it: `ENABLE_SIGNALS`, `ENABLE_AI`, `ENABLE_DATABASE` (all default
-`True`). See `docs/PIPELINE_GUARD.md` for the full stage mapping.
+`True`). This entire arrangement was removed in Phase 60.9 above — kept
+here for historical record only.
 
 **`ENABLE_EXECUTION` was NOT promoted**, despite being the fourth name
 the Director's brief explicitly requested. Promoting it (implemented=
 True, enabled=True) was tried and reverted: this document's own
-worked example above already shows why —
+former worked example already showed why —
 `configuration/feature_dependency_validator.py`'s `DEPENDENCY_RULES`
 declares `ENABLE_EXECUTION` requires `ENABLE_RISK` and
 `ENABLE_DECISION`, both still declared-only (always `False`). With

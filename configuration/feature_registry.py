@@ -1,6 +1,7 @@
 """
 Configuration Layer — Feature Registry (Phase 59.6: Audit &
-Observability Foundation, TASK 4).
+Observability Foundation, TASK 4; separated from Trading concerns in
+Phase 60.9: Runtime Registry Separation).
 
 One structured catalog of every feature name this codebase knows
 about -- real, backed flags and reserved, declared-only names alike --
@@ -11,6 +12,19 @@ configuration.feature_flags.DEFAULT_FLAGS) and reports declared-only
 names as a fixed, safe False -- it does not gate, enable, or disable
 anything, and nothing in core/pipeline.py, decision/, risk/, or
 execution/ reads this module.
+
+**Infrastructure only, as of Phase 60.9** (see
+docs/FEATURE_REGISTRY_SEPARATION.md for the full audit): every name in
+this registry is a provider/data-source/observation-mode/reserved
+concern, never a live-trading-pipeline stage gate. Phase 60.8 briefly
+added three Trading-pipeline gates here (ENABLE_SIGNALS/ENABLE_AI/
+ENABLE_DATABASE) and found a fourth (ENABLE_EXECUTION) collided with
+configuration/feature_dependency_validator.py's own dependency rules;
+this phase removes all four (plus the already-declared-only
+ENABLE_RISK/ENABLE_DECISION) from this registry entirely --
+core/guards/pipeline_guard.py's PipelineGuard now reads exclusively
+from core.emergency.emergency_manager.EmergencyManager for every
+pipeline-stage decision, never from this module.
 
 Relationship to telegram/owner/feature_commands.py's list_features()
 (Phase 59.3, TASK 5, unmodified by this phase): that function already
@@ -51,27 +65,19 @@ from configuration.feature_flags import DEFAULT_FLAGS
 # field, Phase A13) -- the two are kept as distinct registry entries
 # rather than silently aliased.
 #
-# "ENABLE_EXECUTION" stays declared-only here, unlike the other three
-# Phase 60.8 (Safe Integration Layer, TASK 2) gate names below -- see
-# that section's own comment and docs/PIPELINE_GUARD.md's "Disclosed
-# Findings" for why: promoting it to implemented=True/enabled=True was
-# tried and reverted, since
-# configuration/feature_dependency_validator.py's DEPENDENCY_RULES
-# already declares "ENABLE_EXECUTION requires ENABLE_RISK,
-# ENABLE_DECISION" (both still declared-only, always False) -- and
-# `validate_feature_dependencies()` checks that rule against the
-# *entire* registry snapshot on every single toggle attempt to *any*
-# feature, not just to ENABLE_EXECUTION itself. With ENABLE_EXECUTION
-# enabled=True, every one of RuntimeFeatureManager's own toggle tests
-# (`tests/configuration/test_runtime_feature_manager.py`, 18 tests) and
-# `test_default_registry_has_no_violations` failed. Blocking, not
-# silently worked around: PipelineGuard.before_execution() reads only
-# EmergencyManager (PAUSED/MAINTENANCE/KILLED all still work) until the
-# Director resolves the naming conflict.
+# Phase 60.9 (Runtime Registry Separation): "ENABLE_EXECUTION",
+# "ENABLE_RISK", "ENABLE_DECISION" were removed from this tuple
+# entirely -- all three are Trading-pipeline concerns (see
+# docs/FEATURE_REGISTRY_SEPARATION.md's audit table), not
+# Infrastructure, and do not belong in this registry's namespace even
+# as safe, always-False placeholders. This is the root-cause fix for
+# the Phase 60.8 finding: ENABLE_EXECUTION's mere presence here (even
+# declared-only) kept configuration/feature_dependency_validator.py's
+# DEPENDENCY_RULES anchored to a Trading name, which is exactly the
+# coupling this phase removes.
 _DECLARED_ONLY_FEATURES = (
     "ENABLE_NEWS",
     "ENABLE_PAPER",
-    "ENABLE_EXECUTION",
     "ENABLE_BACKTEST",
     "ENABLE_ANALYTICS",
     "ENABLE_OWNER",
@@ -80,8 +86,6 @@ _DECLARED_ONLY_FEATURES = (
     "ENABLE_BITGET",
     "ENABLE_BINANCE",
     "ENABLE_FRED",
-    "ENABLE_RISK",
-    "ENABLE_DECISION",
 )
 
 
@@ -145,32 +149,12 @@ def build_feature_registry() -> List[FeatureDescriptor]:
             name="enable_replay", enabled=DEFAULT_FLAGS.enable_replay, implemented=True,
             source="configuration.feature_flags.FeatureFlags", description="Reserved (Phase A13) -- no backtest/replay harness exists.",
         ),
-        # Phase 60.8 (Safe Integration Layer, TASK 2): the four stage
-        # gates core/guards/pipeline_guard.py's PipelineGuard reads via
-        # RuntimeFeatureManager.status(). All default True (Config's
-        # own env-var default) -- a process with no override reproduces
-        # exactly today's pipeline behavior.
-        FeatureDescriptor(
-            name="ENABLE_SIGNALS", enabled=Config.ENABLE_SIGNALS, implemented=True,
-            source="config.Config", description="PipelineGuard.before_signal() gate -- disables core/pipeline.py's signal-generation stage only.",
-        ),
-        FeatureDescriptor(
-            name="ENABLE_AI", enabled=Config.ENABLE_AI, implemented=True,
-            source="config.Config", description="PipelineGuard.before_ai() gate -- disables core/pipeline.py's AI-analysis stage only; Decision Engine still runs against a neutral default. Distinct from the pre-existing lowercase 'enable_ai' above.",
-        ),
-        # ENABLE_EXECUTION is NOT promoted here -- see this file's own
-        # _DECLARED_ONLY_FEATURES comment. It stays declared-only
-        # (implemented=False, always False) below, same as before Phase
-        # 60.8. config.Config.ENABLE_EXECUTION still exists (Phase 60.8
-        # added it) but is not read by this registry yet -- it is
-        # PipelineGuard's own construction-time fallback only (see
-        # core/guards/pipeline_guard.py's before_execution() docstring),
-        # pending the Director's resolution of the DEPENDENCY_RULES
-        # conflict.
-        FeatureDescriptor(
-            name="ENABLE_DATABASE", enabled=Config.ENABLE_DATABASE, implemented=True,
-            source="config.Config", description="PipelineGuard.before_database() gate -- disables core/pipeline.py's signal-persistence stage only.",
-        ),
+        # Phase 60.8 briefly added ENABLE_SIGNALS/ENABLE_AI/ENABLE_DATABASE
+        # here as PipelineGuard's own runtime-feature gates. Phase 60.9
+        # (Runtime Registry Separation) removed all three -- they are
+        # Trading-pipeline stage gates, not Infrastructure, and
+        # PipelineGuard now reads exclusively from EmergencyManager for
+        # every stage decision. See docs/FEATURE_REGISTRY_SEPARATION.md.
     ]
 
     for name in _DECLARED_ONLY_FEATURES:

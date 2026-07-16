@@ -44,10 +44,10 @@ def test_disable_feature_reflects_in_get_feature_states():
 
 
 def test_enable_feature_reports_dependency_rejection():
-    result = enable_feature("ENABLE_EXECUTION", actor="owner")
+    result = enable_feature("ENABLE_BACKTEST", actor="owner")
 
     assert result.success is False
-    assert "ENABLE_RISK" in result.message
+    assert "ENABLE_DATASET_SYNC" in result.message
 
 
 def test_enable_feature_returns_provider_command_result():

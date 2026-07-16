@@ -1639,6 +1639,85 @@ an earlier, informal message) is **not** part of this phase — the
 Director's own later, formal "TASK 2-5 Worker Brief" superseded that
 earlier scope and does not include it; deferred to a future phase.
 
+### Phase 60.9 — Runtime Registry Separation
+
+Architecture cleanup, no new trading functionality: resolves the exact
+conflict Phase 60.8 disclosed (`docs/PIPELINE_GUARD.md`'s former
+Disclosed Finding 3) at its root. Full detail:
+`docs/FEATURE_REGISTRY_SEPARATION.md`, `docs/PIPELINE_GUARD.md`'s own
+Phase 60.9 section.
+
+Two owner-facing control surfaces now have a strictly separated
+vocabulary — Infrastructure vs. Trading:
+
+```
+                    OWNER
+                      |
+        +-------------+-------------+
+        |                           |
+  Runtime Feature Manager    Emergency Manager
+  (configuration/)           (core/emergency/)
+        |                           |
+  Infrastructure              Trading Control
+    ENABLE_MT5                  NORMAL
+    ENABLE_TWELVEDATA           WARNING
+    enable_ai (reserved)        PAUSED
+    ENABLE_NEWS                 MAINTENANCE
+    ENABLE_BACKTEST             KILLED
+    ENABLE_DATASET_SYNC              |
+    ENABLE_ANALYTICS                 v
+    ...                    core/guards/pipeline_guard.py
+        |                  PipelineGuard (Phase 60.8)
+        v                           |
+  never read by                     v
+  core/pipeline.py          core/pipeline.py's four
+  (confirmed again           stage boundaries
+  this phase)                (signal/ai/execution/database)
+```
+
+**TASK 1 (audit)**: every name in `configuration/feature_registry.py`
+classified Infrastructure vs. Trading. `ENABLE_SIGNALS`/`ENABLE_AI`
+(uppercase)/`ENABLE_DATABASE` (Phase 60.8) and the never-promoted
+`ENABLE_EXECUTION`/`ENABLE_RISK`/`ENABLE_DECISION` are all Trading —
+none belong in an Infrastructure-only registry.
+
+**TASK 2 (registry cleanup)**: all six removed from
+`configuration/feature_registry.py` — the three Phase 60.8 additions
+demoted out of `implemented=True`, the other three removed even as
+declared-only placeholders. `config.Config`'s four Phase 60.8
+constants (`ENABLE_SIGNALS`/`ENABLE_AI`/`ENABLE_EXECUTION`/
+`ENABLE_DATABASE`) removed from `config.py` — no longer read anywhere.
+
+**TASK 3 (dependency cleanup)**:
+`configuration/feature_dependency_validator.py`'s `DEPENDENCY_RULES`
+re-anchored from `ENABLE_EXECUTION`/`ENABLE_RISK`/`ENABLE_DECISION` to
+`ENABLE_BACKTEST`/`ENABLE_DATASET_SYNC`/`ENABLE_ANALYTICS` (all
+Infrastructure) — permanently removes the possibility of a
+Trading-pipeline name tripping every unrelated `RuntimeFeatureManager`
+toggle, which is exactly what happened in Phase 60.8. ~17 pre-existing
+tests rewritten to the new names, same mechanism coverage, zero test
+deleted.
+
+**TASK 4 (Pipeline Guard simplification)**:
+`core/guards/pipeline_guard.py`'s `PipelineGuard` no longer imports or
+constructs `RuntimeFeatureManager` — every one of its four hooks
+(`before_signal`/`before_ai`/`before_execution`/`before_database`) is
+now purely a function of `EmergencyManager.get_status()`.
+`core/pipeline.py` itself required zero changes — the
+Emergency-state → proceed/skip/abort mapping and every downstream
+cascade are byte-for-byte unchanged from Phase 60.8.
+
+**TASK 5/6 (Runtime API / Owner Command audit)**: both
+`configuration/runtime_api.py` and `telegram/owner/control_commands.py`
+were already fully generic and name-driven (`enable_feature(name)`,
+never `enable_execution()`) — confirmed clean, nothing to remove. No
+`/enable_execution`-style Telegram command was ever registered
+anywhere in this codebase.
+
+None of `decision/`, `risk/`, `strategies/`, `signals/`, `context/`,
+`ai/`, or `execution/execution_engine.py` changed in this phase. No
+new trading functionality — a registry/wiring cleanup only.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

@@ -11,8 +11,14 @@ and renders the ON/OFF text this task's own worked example names:
 
     ENABLE_AI       ON
     ENABLE_MT5      OFF
-    ENABLE_EXECUTION ON
+    ENABLE_BACKTEST ON
     ENABLE_NEWS     ON
+
+Infrastructure names only, as of Phase 60.9 (Runtime Registry
+Separation) -- Trading-pipeline gates (formerly ENABLE_SIGNALS/
+ENABLE_AI-uppercase/ENABLE_EXECUTION/ENABLE_DATABASE/ENABLE_RISK/
+ENABLE_DECISION) no longer exist in the registry this function reads;
+see docs/FEATURE_REGISTRY_SEPARATION.md.
 
 Deliberately named get_feature_states() here, not list_features() --
 telegram/owner/feature_commands.py (Phase 59.3) already has a

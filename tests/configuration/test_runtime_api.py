@@ -26,10 +26,10 @@ def test_enable_feature_succeeds():
 
 def test_enable_feature_reports_dependency_rejection():
     manager = RuntimeFeatureManager()
-    result = enable_feature("ENABLE_EXECUTION", actor="owner", manager=manager)
+    result = enable_feature("ENABLE_BACKTEST", actor="owner", manager=manager)
 
     assert result.success is False
-    assert "ENABLE_RISK" in result.message
+    assert "ENABLE_DATASET_SYNC" in result.message
 
 
 def test_disable_feature_succeeds():

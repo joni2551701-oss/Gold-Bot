@@ -1,14 +1,19 @@
 # Pipeline Guard
 
-Phase 60.8: Safe Integration Layer (the Director's "Official" TASK 2-5
-Worker Brief). `core/guards/pipeline_guard.py`'s `PipelineGuard` is the
-first real, wired connection between two foundation-only managers
-built in earlier phases —
-`configuration.runtime_feature_manager.RuntimeFeatureManager`
-(Phase 59.7) and `core.emergency.emergency_manager.EmergencyManager`
-(Phase 59.9) — and the live `core/pipeline.py`. Both managers had zero
-real callers before this phase (confirmed in `docs/PHASE60_8_INTEGRATION_AUDIT.md`,
-TASK 1's own reuse audit).
+Built in Phase 60.8: Safe Integration Layer (the Director's "Official"
+TASK 2-5 Worker Brief); simplified in Phase 60.9: Runtime Registry
+Separation. `core/guards/pipeline_guard.py`'s `PipelineGuard` is the
+real, wired connection between `core.emergency.emergency_manager.EmergencyManager`
+(Phase 59.9, zero real callers before Phase 60.8, confirmed in
+`docs/PHASE60_8_INTEGRATION_AUDIT.md`'s TASK 1 audit) and the live
+`core/pipeline.py`.
+
+**As of Phase 60.9, `PipelineGuard` reads exclusively from
+`EmergencyManager`.** Phase 60.8 originally also read
+`configuration.runtime_feature_manager.RuntimeFeatureManager` for three
+of its four hooks; Phase 60.9 removed that dependency entirely — see
+"Phase 60.9: Runtime Registry Separation" below and
+`docs/FEATURE_REGISTRY_SEPARATION.md` for why.
 
 This is deliberately a **controlled wiring** phase, not a new-feature
 phase: no business logic in `decision/`, `risk/`, `strategies/`,
@@ -66,19 +71,16 @@ immediately via `TradingPipeline._aborted_result()`, a dict with the
 exact same key set as a normal return (empty lists / `None`
 `context_snapshot` for everything the abort short-circuits).
 
-## Runtime mapping
+## Runtime mapping (removed in Phase 60.9)
 
-`configuration/feature_registry.py` (Phase 60.8 additions):
-
-| Registry name | Gates | Default | Real? |
-|---|---|---|---|
-| `ENABLE_SIGNALS` | `before_signal()` -> `signal` stage | `True` | Yes, `config.Config`-backed |
-| `ENABLE_AI` | `before_ai()` -> `ai` stage | `True` | Yes, `config.Config`-backed |
-| `ENABLE_EXECUTION` | `before_execution()` -> `telegram_delivery` stage | n/a | **No** — see Disclosed Findings |
-| `ENABLE_DATABASE` | `before_database()` -> `database` stage | `True` | Yes, `config.Config`-backed |
-
-All real gates default `True` so a process with no explicit override
-reproduces exactly the pre-Phase-60.8 pipeline behavior.
+Phase 60.8 originally gated three of the four hooks
+(`before_signal()`/`before_ai()`/`before_database()`) by three
+`configuration/feature_registry.py` entries (`ENABLE_SIGNALS`/
+`ENABLE_AI`/`ENABLE_DATABASE`), all defaulting `True`. Phase 60.9
+(Runtime Registry Separation) removed this mapping entirely — those
+three registry entries no longer exist, and none of the four hooks
+consults `RuntimeFeatureManager` anymore. See "Phase 60.9: Runtime
+Registry Separation" below.
 
 ## Emergency mapping
 
@@ -96,8 +98,8 @@ reproduces exactly the pre-Phase-60.8 pipeline behavior.
 
 One `PipelineGuard` per `TradingPipeline` instance, constructed eagerly
 in `__init__` (same convention as every other pipeline dependency).
-Both `RuntimeFeatureManager`/`EmergencyManager` are injectable — a test
-supplies stub managers (`tests/core/guards/test_pipeline_guard.py`,
+`EmergencyManager` is injectable — a test supplies a stub manager
+(`tests/core/guards/test_pipeline_guard.py`,
 `tests/integration/test_pipeline_guard_wiring.py`) instead of touching
 the real database. `TradingPipeline.__init__` also accepts an optional
 `pipeline_guard=` override for the same reason — a new, backward-
@@ -156,12 +158,13 @@ by the very next one.
    is the only point where an actual outward effect happens, so it is
    the practical stand-in for "execution" in a bot with no live broker
    connection.
-3. **Blocking, discovered during implementation — `ENABLE_EXECUTION`
-   could not be promoted to a real registry entry.** This was
-   attempted exactly as the brief named it, then reverted. Root cause:
+3. **RESOLVED in Phase 60.9 — see below.** (Phase 60.8 finding, kept
+   for historical record.) `ENABLE_EXECUTION` could not be promoted to
+   a real registry entry: it was attempted exactly as the Phase 60.8
+   brief named it, then reverted. Root cause:
    `configuration/feature_dependency_validator.py`'s `DEPENDENCY_RULES`
-   already declares `"ENABLE_EXECUTION": ("ENABLE_RISK",
-   "ENABLE_DECISION")` (Phase 59.6) — both of which are still
+   already declared `"ENABLE_EXECUTION": ("ENABLE_RISK",
+   "ENABLE_DECISION")` (Phase 59.6) — both of which were still
    declared-only (`implemented=False`, always `enabled=False`).
    `validate_feature_dependencies()` checks that rule against the
    *entire* registry snapshot on *every* `RuntimeFeatureManager`
@@ -173,22 +176,10 @@ by the very next one.
    `telegram/owner/` tests — because toggling even an unrelated
    feature like `ENABLE_NEWS` was rejected: the dry-run's hypothetical
    snapshot still carried `ENABLE_EXECUTION=True` forward against its
-   permanently-unmet dependencies. The alternative (`ENABLE_EXECUTION`
-   defaulting `False` instead) was rejected too — that would silently
-   disable live Telegram delivery by default, a severe undisclosed
-   behavior change this phase's own Acceptance Criteria explicitly
-   forbid ("python main.py logi funksional jihatdan o'zgarmagan").
-   **Resolution applied**: `ENABLE_EXECUTION` stays declared-only
-   (unchanged from before this phase); `before_execution()` reads
-   `EmergencyManager` only (`PAUSED`/`MAINTENANCE`/`KILLED` all still
-   work correctly) and does not consult any runtime feature flag. The
-   owner-toggleable-at-runtime half of TASK 2's brief for this one gate
-   is blocked pending the Director's choice between: (a) renaming this
-   gate to a name that doesn't collide with `DEPENDENCY_RULES`, (b)
-   also promoting `ENABLE_RISK`/`ENABLE_DECISION` to real flags (out of
-   this phase's scope), or (c) amending `DEPENDENCY_RULES` itself (also
-   out of scope, and a `configuration/` semantic change, not a minimal
-   diff).
+   permanently-unmet dependencies. The Phase 60.8 mitigation was
+   `before_execution()` reading `EmergencyManager` only, leaving the
+   owner-toggleable-at-runtime half of the gate blocked. **Phase 60.9
+   removed the root cause instead**: see below.
 4. **Constructing `PipelineGuard()` changes `main.py`'s log output
    shape.** `TradingPipeline.__init__` now always constructs a real
    `RuntimeFeatureManager` + `EmergencyManager`, each of which touches
@@ -208,6 +199,35 @@ by the very next one.
    remains the one real `CLOSED`-`PaperTrade` producer in this
    codebase (`core/pipeline.py` still never constructs a `PaperTrade`).
 
+## Phase 60.9: Runtime Registry Separation
+
+Resolves Disclosed Finding 3 at the root instead of working around it.
+`configuration/feature_registry.py`'s three Phase 60.8 Trading gates
+(`ENABLE_SIGNALS`/`ENABLE_AI`/`ENABLE_DATABASE`) and the never-promoted
+`ENABLE_EXECUTION`/`ENABLE_RISK`/`ENABLE_DECISION` are all removed from
+the registry entirely (`docs/FEATURE_REGISTRY_SEPARATION.md`'s audit:
+none of the six are Infrastructure concerns). `PipelineGuard`'s
+constructor dropped its `runtime_feature_manager` parameter; `_check()`
+dropped its `feature_name` parameter. Every one of the four hooks is
+now purely a function of `EmergencyManager.get_status()`.
+
+`core/pipeline.py` required **zero changes** for this simplification —
+it already only calls `self.pipeline_guard.before_X()` and interprets
+the returned `GuardDecision`; the Emergency-state → proceed/skip/abort
+mapping (the table above) and every downstream cascade (empty
+candidate list, neutral AI substitution via `_neutral_ai_result()`,
+gated delivery/persistence) are byte-for-byte unchanged from Phase
+60.8. `main.py`'s log output shape is unaffected beyond what Phase
+60.8's Disclosed Finding 4 already covers.
+
+`configuration/feature_dependency_validator.py`'s `DEPENDENCY_RULES`
+was re-anchored from the three Trading names to an Infrastructure-only
+example (`ENABLE_BACKTEST` requires `ENABLE_DATASET_SYNC`/
+`ENABLE_ANALYTICS`) — see `docs/FEATURE_REGISTRY.md` for the updated
+worked example. This permanently removes the possibility of a
+Trading-pipeline name ever again tripping every unrelated
+`RuntimeFeatureManager` toggle.
+
 ## What this phase does NOT do
 
 - Does not change any `decision/`, `risk/`, `strategies/`, `signals/`,
@@ -218,5 +238,8 @@ by the very next one.
   etc.) — no `telegram/command_router.py`/`telegram/handlers.py`
   change.
 - Does not add owner-toggle capability for the `before_execution()`
-  gate (see Disclosed Finding 3) — Emergency-state gating for that hook
-  works today; runtime-feature gating for it does not yet.
+  gate, or for any other hook — as of Phase 60.9, none of the four
+  hooks reads a runtime feature flag at all; every stage decision comes
+  from `EmergencyManager` exclusively. Trading-pipeline control is not,
+  and will not be, owner-toggleable via `RuntimeFeatureManager` — only
+  via `EmergencyManager`'s own Pause/Kill/Maintenance/Resume actions.

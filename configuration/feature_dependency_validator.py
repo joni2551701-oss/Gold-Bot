@@ -1,16 +1,34 @@
 """
 Configuration Layer — Feature Dependency Validator (Phase 59.6: Audit
-& Observability Foundation, TASK 5).
+& Observability Foundation, TASK 5; re-anchored to an Infrastructure-
+only example in Phase 60.9: Runtime Registry Separation).
 
 Checks a feature registry (configuration/feature_registry.py, same
 phase, TASK 4) against a small set of declared dependency rules --
-this task's own worked example: ENABLE_EXECUTION requires ENABLE_RISK
-and ENABLE_DECISION. Read-only: this module never enables, disables,
-or corrects a feature -- it only reports whether the CURRENT registry
-state is internally consistent.
+this task's own worked example, now: ENABLE_BACKTEST requires
+ENABLE_DATASET_SYNC and ENABLE_ANALYTICS (a full backtest report needs
+both historical data synced and analytics enabled). Read-only: this
+module never enables, disables, or corrects a feature -- it only
+reports whether the CURRENT registry state is internally consistent.
 
-Every name referenced in DEPENDENCY_RULES below (ENABLE_EXECUTION,
-ENABLE_RISK, ENABLE_DECISION) is one of
+**Phase 60.9 change**: the original worked example (`ENABLE_EXECUTION`
+requires `ENABLE_RISK`/`ENABLE_DECISION`) anchored this validator to
+three Trading-pipeline names -- exactly the coupling
+`docs/FEATURE_REGISTRY_SEPARATION.md` removes. Once
+`configuration/feature_registry.py`'s Phase 60.8 addition briefly made
+`ENABLE_EXECUTION` real (`enabled=True`), this rule rejected *every*
+`RuntimeFeatureManager` toggle to *any* feature (the dry-run's
+hypothetical snapshot always carried `ENABLE_EXECUTION`'s permanently-
+unmet dependency forward), breaking 26 tests -- see
+`docs/PIPELINE_GUARD.md`'s Disclosed Finding 3 for the full account.
+Re-anchoring the example to two Infrastructure names removes this
+coupling permanently: neither `ENABLE_BACKTEST` nor
+`ENABLE_DATASET_SYNC`/`ENABLE_ANALYTICS` will ever be promoted to gate
+a live pipeline stage (that role belongs to `EmergencyManager` now),
+so this validator's own mechanism can never again be tripped by a
+Trading-pipeline concern.
+
+Every name referenced in DEPENDENCY_RULES below is one of
 feature_registry.py's own declared-only entries (implemented=False,
 always disabled) -- so with today's registry, no dependency rule is
 ever violated (a disabled feature has nothing to require). This
@@ -29,7 +47,7 @@ from configuration.feature_registry import FeatureDescriptor
 # well; a dict is used since every name in this codebase's registry is
 # unique (see feature_registry.py's own test_registry_names_are_unique).
 DEPENDENCY_RULES: Dict[str, Tuple[str, ...]] = {
-    "ENABLE_EXECUTION": ("ENABLE_RISK", "ENABLE_DECISION"),
+    "ENABLE_BACKTEST": ("ENABLE_DATASET_SYNC", "ENABLE_ANALYTICS"),
 }
 
 

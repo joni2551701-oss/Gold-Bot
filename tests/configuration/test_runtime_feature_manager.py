@@ -30,7 +30,7 @@ def test_list_features_returns_every_registry_entry():
     manager = RuntimeFeatureManager()
     names = {state.name for state in manager.list_features()}
     assert "ENABLE_MT5" in names
-    assert "ENABLE_EXECUTION" in names
+    assert "ENABLE_BACKTEST" in names
 
 
 def test_reload_reflects_a_persisted_change_made_outside_the_cache():
@@ -104,49 +104,55 @@ def test_persisted_row_actually_exists_in_the_repository():
 
 
 # --- TASK 5/6: dependency validation / dry run ---
+# Phase 60.9 (Runtime Registry Separation): re-anchored to the
+# Infrastructure-only DEPENDENCY_RULES example (ENABLE_BACKTEST
+# requires ENABLE_DATASET_SYNC/ENABLE_ANALYTICS) -- see
+# configuration/feature_dependency_validator.py's own docstring for why
+# the original ENABLE_EXECUTION/ENABLE_RISK/ENABLE_DECISION example was
+# replaced.
 
 def test_enabling_a_feature_with_unmet_dependency_is_rejected():
     manager = RuntimeFeatureManager()
 
-    result = manager.enable("ENABLE_EXECUTION", changed_by="owner")
+    result = manager.enable("ENABLE_BACKTEST", changed_by="owner")
 
     assert result.success is False
-    assert "ENABLE_RISK" in result.reason
-    assert manager.status("ENABLE_EXECUTION").enabled is False
+    assert "ENABLE_DATASET_SYNC" in result.reason
+    assert manager.status("ENABLE_BACKTEST").enabled is False
 
 
 def test_rejected_toggle_does_not_persist_anything():
     manager = RuntimeFeatureManager()
-    manager.enable("ENABLE_EXECUTION", changed_by="owner")
+    manager.enable("ENABLE_BACKTEST", changed_by="owner")
 
-    record = RuntimeFeatureRepository().get_feature("ENABLE_EXECUTION")
+    record = RuntimeFeatureRepository().get_feature("ENABLE_BACKTEST")
 
     assert record is None
 
 
 def test_enabling_with_dependencies_already_satisfied_succeeds():
     manager = RuntimeFeatureManager()
-    manager.enable("ENABLE_RISK")
-    manager.enable("ENABLE_DECISION")
+    manager.enable("ENABLE_DATASET_SYNC")
+    manager.enable("ENABLE_ANALYTICS")
 
-    result = manager.enable("ENABLE_EXECUTION", changed_by="owner")
+    result = manager.enable("ENABLE_BACKTEST", changed_by="owner")
 
     assert result.success is True
-    assert manager.status("ENABLE_EXECUTION").enabled is True
+    assert manager.status("ENABLE_BACKTEST").enabled is True
 
 
 def test_disabling_a_dependency_still_needed_by_an_enabled_dependent_is_rejected():
-    """The dry run is symmetric: it rejects ANY toggle (enable or disable) that would leave the overall state invalid -- disabling ENABLE_RISK while ENABLE_EXECUTION (already on) still needs it is refused, not silently allowed to create an inconsistent state. No cascading auto-disable of ENABLE_EXECUTION happens either -- the toggle is rejected outright, state stays exactly as it was."""
+    """The dry run is symmetric: it rejects ANY toggle (enable or disable) that would leave the overall state invalid -- disabling ENABLE_DATASET_SYNC while ENABLE_BACKTEST (already on) still needs it is refused, not silently allowed to create an inconsistent state. No cascading auto-disable of ENABLE_BACKTEST happens either -- the toggle is rejected outright, state stays exactly as it was."""
     manager = RuntimeFeatureManager()
-    manager.enable("ENABLE_RISK")
-    manager.enable("ENABLE_DECISION")
-    manager.enable("ENABLE_EXECUTION")
+    manager.enable("ENABLE_DATASET_SYNC")
+    manager.enable("ENABLE_ANALYTICS")
+    manager.enable("ENABLE_BACKTEST")
 
-    result = manager.disable("ENABLE_RISK")
+    result = manager.disable("ENABLE_DATASET_SYNC")
 
     assert result.success is False
-    assert manager.status("ENABLE_RISK").enabled is True  # unchanged
-    assert manager.status("ENABLE_EXECUTION").enabled is True  # unaffected
+    assert manager.status("ENABLE_DATASET_SYNC").enabled is True  # unchanged
+    assert manager.status("ENABLE_BACKTEST").enabled is True  # unaffected
 
 
 # --- TASK 7: audit integration ---
@@ -177,7 +183,7 @@ def test_successful_disable_writes_a_feature_disabled_audit_entry():
 
 def test_rejected_toggle_writes_a_rejected_audit_entry():
     manager = RuntimeFeatureManager()
-    manager.enable("ENABLE_EXECUTION", changed_by="owner")
+    manager.enable("ENABLE_BACKTEST", changed_by="owner")
 
     entries = AuditLogRepository().get_recent()
 
@@ -209,7 +215,7 @@ def test_successful_toggle_creates_a_config_snapshot():
 
 def test_rejected_toggle_creates_no_snapshot():
     manager = RuntimeFeatureManager()
-    manager.enable("ENABLE_EXECUTION", changed_by="owner")
+    manager.enable("ENABLE_BACKTEST", changed_by="owner")
 
     assert ConfigSnapshotRepository().get_all() == []
 
@@ -313,27 +319,27 @@ def test_validate_dependencies_with_no_args_checks_current_state():
 
 def test_validate_dependencies_with_name_checks_the_hypothetical_toggle():
     manager = RuntimeFeatureManager()
-    result = manager.validate_dependencies("ENABLE_EXECUTION", new_enabled=True)
+    result = manager.validate_dependencies("ENABLE_BACKTEST", new_enabled=True)
     assert result.valid is False
 
 
 def test_validate_dependencies_matches_the_actual_toggle_outcome():
     manager = RuntimeFeatureManager()
-    manager.enable("ENABLE_RISK")
-    manager.enable("ENABLE_DECISION")
+    manager.enable("ENABLE_DATASET_SYNC")
+    manager.enable("ENABLE_ANALYTICS")
 
-    assert manager.validate_dependencies("ENABLE_EXECUTION", new_enabled=True).valid is True
+    assert manager.validate_dependencies("ENABLE_BACKTEST", new_enabled=True).valid is True
 
 
 # --- TASK 6's own worked example: friendlier disable-rejection message ---
 
 def test_disable_rejection_message_names_the_active_dependent():
     manager = RuntimeFeatureManager()
-    manager.enable("ENABLE_RISK")
-    manager.enable("ENABLE_DECISION")
-    manager.enable("ENABLE_EXECUTION")
+    manager.enable("ENABLE_DATASET_SYNC")
+    manager.enable("ENABLE_ANALYTICS")
+    manager.enable("ENABLE_BACKTEST")
 
-    result = manager.disable("ENABLE_RISK")
+    result = manager.disable("ENABLE_DATASET_SYNC")
 
     assert result.success is False
-    assert result.reason == "Cannot disable ENABLE_RISK. Dependent features active: ENABLE_EXECUTION"
+    assert result.reason == "Cannot disable ENABLE_DATASET_SYNC. Dependent features active: ENABLE_BACKTEST"

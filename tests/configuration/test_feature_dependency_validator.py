@@ -1,5 +1,10 @@
 """
-Phase 59.6, TASK 5 -- configuration/feature_dependency_validator.py tests.
+Phase 59.6, TASK 5 -- configuration/feature_dependency_validator.py
+tests. Re-anchored to the Infrastructure-only DEPENDENCY_RULES example
+(ENABLE_BACKTEST requires ENABLE_DATASET_SYNC/ENABLE_ANALYTICS) in
+Phase 60.9: Runtime Registry Separation -- see that module's own
+docstring for why the original ENABLE_EXECUTION/ENABLE_RISK/
+ENABLE_DECISION example was replaced.
 """
 
 from configuration.feature_dependency_validator import (
@@ -15,7 +20,7 @@ def _descriptor(name, enabled):
 
 
 def test_default_registry_has_no_violations():
-    """ENABLE_EXECUTION is disabled by default in build_feature_registry() -- nothing to require."""
+    """ENABLE_BACKTEST is disabled by default in build_feature_registry() -- nothing to require."""
     registry = build_feature_registry()
 
     result = validate_feature_dependencies(registry)
@@ -27,9 +32,9 @@ def test_default_registry_has_no_violations():
 
 def test_enabled_feature_with_satisfied_dependencies_is_valid():
     registry = [
-        _descriptor("ENABLE_EXECUTION", True),
-        _descriptor("ENABLE_RISK", True),
-        _descriptor("ENABLE_DECISION", True),
+        _descriptor("ENABLE_BACKTEST", True),
+        _descriptor("ENABLE_DATASET_SYNC", True),
+        _descriptor("ENABLE_ANALYTICS", True),
     ]
 
     result = validate_feature_dependencies(registry)
@@ -39,21 +44,21 @@ def test_enabled_feature_with_satisfied_dependencies_is_valid():
 
 def test_enabled_feature_missing_one_dependency_is_invalid():
     registry = [
-        _descriptor("ENABLE_EXECUTION", True),
-        _descriptor("ENABLE_RISK", True),
-        _descriptor("ENABLE_DECISION", False),
+        _descriptor("ENABLE_BACKTEST", True),
+        _descriptor("ENABLE_DATASET_SYNC", True),
+        _descriptor("ENABLE_ANALYTICS", False),
     ]
 
     result = validate_feature_dependencies(registry)
 
     assert result.valid is False
     assert len(result.violations) == 1
-    assert result.violations[0].feature == "ENABLE_EXECUTION"
-    assert result.violations[0].missing_dependency == "ENABLE_DECISION"
+    assert result.violations[0].feature == "ENABLE_BACKTEST"
+    assert result.violations[0].missing_dependency == "ENABLE_ANALYTICS"
 
 
 def test_enabled_feature_missing_both_dependencies_reports_both():
-    registry = [_descriptor("ENABLE_EXECUTION", True)]
+    registry = [_descriptor("ENABLE_BACKTEST", True)]
 
     result = validate_feature_dependencies(registry)
 
@@ -62,7 +67,7 @@ def test_enabled_feature_missing_both_dependencies_reports_both():
 
 
 def test_disabled_feature_never_produces_a_violation():
-    registry = [_descriptor("ENABLE_EXECUTION", False)]
+    registry = [_descriptor("ENABLE_BACKTEST", False)]
 
     result = validate_feature_dependencies(registry)
 
@@ -70,7 +75,7 @@ def test_disabled_feature_never_produces_a_violation():
 
 
 def test_missing_dependency_entirely_absent_from_registry_is_a_violation():
-    registry = [_descriptor("ENABLE_EXECUTION", True)]  # ENABLE_RISK/ENABLE_DECISION not in registry at all
+    registry = [_descriptor("ENABLE_BACKTEST", True)]  # ENABLE_DATASET_SYNC/ENABLE_ANALYTICS not in registry at all
 
     result = validate_feature_dependencies(registry)
 
@@ -99,11 +104,11 @@ def test_format_dependency_violations_valid_case():
 
 
 def test_format_dependency_violations_invalid_case():
-    registry = [_descriptor("ENABLE_EXECUTION", True)]
+    registry = [_descriptor("ENABLE_BACKTEST", True)]
     result = validate_feature_dependencies(registry)
 
     text = format_dependency_violations(result)
 
     assert "Invalid configuration" in text
-    assert "ENABLE_EXECUTION requires ENABLE_RISK" in text
-    assert "ENABLE_EXECUTION requires ENABLE_DECISION" in text
+    assert "ENABLE_BACKTEST requires ENABLE_DATASET_SYNC" in text
+    assert "ENABLE_BACKTEST requires ENABLE_ANALYTICS" in text

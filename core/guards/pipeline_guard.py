@@ -1,30 +1,44 @@
 """
 Core Layer — Pipeline Guard (Phase 60.8: Safe Integration Layer,
-TASK 2/3, per the Director's own "Official" Worker Brief).
+TASK 2/3; simplified in Phase 60.9: Runtime Registry Separation,
+TASK 4).
 
 PipelineGuard is the one seam `core/pipeline.py` calls at its own
 stage boundaries to ask "should this stage run right now" -- it never
 computes a trading decision itself, never touches `decision/`,
 `risk/`, `strategies/`, `signals/`, `context/`, `ai/`, or
-`execution/`. It composes exactly two already-built managers, per the
-brief's own "Boshqa modul chaqirilmaydi" rule:
+`execution/`.
 
-    configuration.runtime_feature_manager.RuntimeFeatureManager  -- read-only .status() lookups
-    core.emergency.emergency_manager.EmergencyManager             -- read-only .get_status() lookups
+**As of Phase 60.9, this module composes exactly one manager**:
 
-`core.logger` (used by literally every module in this codebase,
-including both managers above) and `core.emergency.emergency_state.EmergencyState`
-(the enum PipelineGuard compares against, not a business module) are
-treated as cross-cutting infrastructure, not "another module" in the
-brief's forbidden sense -- the same posture `EmergencyManager` itself
-already takes toward `core.logger`.
+    core.emergency.emergency_manager.EmergencyManager  -- read-only .get_status() lookups
+
+Phase 60.8 originally also composed
+`configuration.runtime_feature_manager.RuntimeFeatureManager`, gating
+`before_signal()`/`before_ai()`/`before_database()` by three registry
+names (`ENABLE_SIGNALS`/`ENABLE_AI`/`ENABLE_DATABASE`). Phase 60.9
+removed that dependency entirely: those three names were Trading-
+pipeline concerns that never belonged in the Infrastructure-only
+Runtime Registry (see `docs/FEATURE_REGISTRY_SEPARATION.md`'s audit),
+and a fourth Trading name (`ENABLE_EXECUTION`) had already collided
+with `configuration/feature_dependency_validator.py`'s
+`DEPENDENCY_RULES` and broken 26 tests when Phase 60.8 tried to
+promote it (see this module's own git history / `docs/PIPELINE_GUARD.md`'s
+former "Disclosed Findings" for the full account, now resolved).
+**Trading control is now exclusively `EmergencyManager`'s
+responsibility; `RuntimeFeatureManager` never influences a pipeline
+stage decision.**
+
+`core.logger` and `core.emergency.emergency_state.EmergencyState` (the
+enum PipelineGuard compares against) are cross-cutting infrastructure,
+not a second "business module."
 
 Four public methods, one per named pipeline stage boundary:
 
     before_signal()     -- gates core/pipeline.py's `signal` stage (SignalEngine.generate_signals())
     before_ai()          -- gates the `ai` stage (AIAnalyzer.analyze())
     before_execution()   -- gates the `telegram_delivery` stage (Notifier.send_messages()) -- see
-                             "Disclosed Findings" below for why "execution" maps here, not to
+                             "Design notes" below for why "execution" maps here, not to
                              execution/execution_engine.py
     before_database()    -- gates the `database` stage (SignalRepository.save_signal_record())
 
@@ -36,77 +50,48 @@ each stage's own output (an empty list, a neutral substitute value, an
 early return) is entirely `core/pipeline.py`'s own decision -- this
 module only classifies the situation, never the response.
 
-Runtime mapping (registry names, `configuration/feature_registry.py`,
-Phase 60.8 TASK 2): `ENABLE_SIGNALS`, `ENABLE_AI`, `ENABLE_DATABASE` are
-real, implemented=True, `config.Config`-backed entries -- named
-directly per the Director's own brief. All three default to `True`
-(`config.Config`'s own env-var default), so a process with no explicit
-override reproduces exactly today's pipeline behavior.
-`before_execution()` does NOT read a runtime feature flag -- see
-"Disclosed Findings" (finding 3) for the blocking reason.
-
 Emergency mapping (`core.emergency.emergency_state.EmergencyState`,
-five real values):
+five real values) -- identical to Phase 60.8, unchanged by this
+simplification:
 
-    NORMAL       -- proceed (subject to the stage's own feature flag, where one exists)
-    WARNING      -- proceed (subject to the stage's own feature flag) + one logger.warning() per check
-    PAUSED       -- `before_execution()` -> skip; the other three stages proceed (subject to their own flags)
-    MAINTENANCE  -- all four stages -> skip (see "Disclosed Findings" below for the one honest gap this leaves)
+    NORMAL       -- proceed
+    WARNING      -- proceed + one logger.warning() per check
+    PAUSED       -- `before_execution()` -> skip; the other three stages proceed
+    MAINTENANCE  -- all four stages -> skip (see "Design notes" for the one honest gap this leaves)
     KILLED       -- abort, on whichever hook is checked first
 
-Disclosed Findings
--------------------
+Design notes
+------------
 1. There is no `before_market_data()` hook in this module's API (the
-   Director's brief names exactly four methods) -- `market_data`,
-   `data_quality`, `htf_bias`, `context`, and `market_phase` all run
-   regardless of Emergency state, including under `MAINTENANCE`/
-   `KILLED`. All five are pure, read-only computations with no trade,
-   Telegram, or database side effect, so this does not violate the
-   safety intent behind either state, but it does mean `MAINTENANCE`'s
-   own "Faqat Market Data ... ishga ruxsat" is not literally true --
-   several read-only context stages also still run. Not silently
-   assumed away: flagged here and in `docs/PIPELINE_GUARD.md`.
+   Director's own Phase 60.8 brief named exactly four methods) --
+   `market_data`, `data_quality`, `htf_bias`, `context`, and
+   `market_phase` all run regardless of Emergency state, including
+   under `MAINTENANCE`/`KILLED`. All five are pure, read-only
+   computations with no trade, Telegram, or database side effect, so
+   this does not violate the safety intent behind either state, but it
+   does mean `MAINTENANCE`'s own "only Market Data" is not literally
+   true -- several read-only context stages also still run.
 2. `before_execution()` maps to `core/pipeline.py`'s `telegram_delivery`
    stage, not to `execution/execution_engine.py` (which stays
-   untouched and inert, per the brief's own prohibited-modules list).
-   The pipeline has no real "execution" stage today -- Telegram
-   delivery is the only point where an actual outward effect happens,
-   so it is the practical stand-in for "execution" in a bot with no
-   live broker connection.
-3. **Blocking, discovered during implementation, not fully anticipated
-   by TASK 1's own audit**: `ENABLE_EXECUTION` (the registry name the
-   brief explicitly names) was promoted to a real, `enabled=True`
-   registry entry and then reverted. Reason:
-   `configuration/feature_dependency_validator.py`'s DEPENDENCY_RULES
-   already declares "ENABLE_EXECUTION requires ENABLE_RISK,
-   ENABLE_DECISION" (both still declared-only/always-False), and
-   `validate_feature_dependencies()` checks that rule against the
-   *entire* registry snapshot on *every* toggle attempt to *any*
-   feature -- not just to `ENABLE_EXECUTION` itself. With
-   `ENABLE_EXECUTION` real and `enabled=True`, all 18 tests in
-   `tests/configuration/test_runtime_feature_manager.py` plus
-   `test_default_registry_has_no_violations` and three
-   `telegram/owner/` tests failed (26 total) -- toggling even an
-   unrelated feature like `ENABLE_NEWS` was rejected, because the
-   dry-run's hypothetical snapshot still carried `ENABLE_EXECUTION`
-   forward as `True` against its permanently-unmet dependencies. The
-   alternative (defaulting `ENABLE_EXECUTION` to `False` instead) was
-   rejected too: that would silently disable live Telegram delivery by
-   default, a severe undisclosed behavior change this phase's own
-   Acceptance Criteria forbid. `before_execution()` therefore reads
-   Emergency state only (`PAUSED`/`MAINTENANCE`/`KILLED` all still work
-   correctly) until the Director decides between (a) renaming this
-   gate to something that doesn't collide with DEPENDENCY_RULES,
-   (b) also promoting `ENABLE_RISK`/`ENABLE_DECISION` (out of this
-   phase's scope), or (c) amending DEPENDENCY_RULES itself (also out of
-   scope). See `configuration/feature_registry.py`'s own comment for
-   the same disclosure.
+   untouched and inert). The pipeline has no real "execution" stage
+   today -- Telegram delivery is the only point where an actual
+   outward effect happens, so it is the practical stand-in for
+   "execution" in a bot with no live broker connection.
+3. `_neutral_ai_result()` (`core/pipeline.py`)'s substitution branch --
+   used when `before_ai()` skips but `before_signal()` did not -- is
+   not reachable through any real `EmergencyState` combination today:
+   the only state that skips `ai` (`MAINTENANCE`) also skips `signal`
+   (leaving `signal_candidates` already empty, so there is nothing to
+   substitute). The code path stays, correctly implemented and unit-
+   tested via a directly-constructed `GuardDecision`/stub guard --
+   forward-compatible with a future Emergency state or MAINTENANCE
+   refinement that skips AI specifically while still generating
+   signals, not dead code to be deleted speculatively.
 """
 
 from dataclasses import dataclass
 from typing import Optional
 
-from configuration.runtime_feature_manager import RuntimeFeatureManager
 from core.emergency.emergency_manager import EmergencyManager
 from core.emergency.emergency_state import EmergencyState
 from core.logger import setup_logger
@@ -133,55 +118,32 @@ class PipelineGuard:
     """
     One guard per `TradingPipeline` instance (constructed once in
     `__init__`, same eager-construction convention every other
-    pipeline dependency already uses). Both managers are injectable
+    pipeline dependency already uses). `EmergencyManager` is injectable
     (same optional-dependency convention as every Phase 59.x/60.x
-    manager in this codebase) -- a test can supply stub managers
-    instead of touching the real database/emergency state.
+    manager in this codebase) -- a test can supply a stub manager
+    instead of touching the real database.
     """
 
-    def __init__(
-        self,
-        runtime_feature_manager: Optional[RuntimeFeatureManager] = None,
-        emergency_manager: Optional[EmergencyManager] = None,
-    ):
-        self.runtime_feature_manager = runtime_feature_manager or RuntimeFeatureManager()
+    def __init__(self, emergency_manager: Optional[EmergencyManager] = None):
         self.emergency_manager = emergency_manager or EmergencyManager()
 
     def before_signal(self) -> GuardDecision:
-        return self._check("signal", "ENABLE_SIGNALS")
+        return self._check("signal")
 
     def before_ai(self) -> GuardDecision:
-        return self._check("ai", "ENABLE_AI")
+        return self._check("ai")
 
     def before_execution(self) -> GuardDecision:
-        """
-        Emergency-only for now: `feature_name=None`, since
-        `ENABLE_EXECUTION` is not a real registry entry -- see this
-        module's own "Disclosed Findings" (finding 3) and
-        `configuration/feature_registry.py`'s own comment. Promoting it
-        was tried and reverted: `configuration/feature_dependency_validator.py`'s
-        DEPENDENCY_RULES rejects *every* toggle attempt on *any*
-        feature once `ENABLE_EXECUTION` reads `enabled=True` there
-        (its declared `ENABLE_RISK`/`ENABLE_DECISION` dependencies stay
-        permanently unmet). `EmergencyState.PAUSED`/`.MAINTENANCE`/
-        `.KILLED` still gate this stage correctly; only the
-        owner-toggleable-at-runtime half of TASK 2's brief is blocked
-        on the Director's resolution.
-        """
-        return self._check("execution", None)
+        return self._check("execution")
 
     def before_database(self) -> GuardDecision:
-        return self._check("database", "ENABLE_DATABASE")
+        return self._check("database")
 
-    def _check(self, stage_name: str, feature_name: Optional[str]) -> GuardDecision:
+    def _check(self, stage_name: str) -> GuardDecision:
         """
-        Emergency state is checked first (it can force a skip/abort
-        regardless of any feature flag); the stage's own runtime
-        feature flag (when `feature_name` is not None -- see
-        `before_execution()`) is checked only once Emergency state
-        allows the stage to be considered at all. Never raises: any
-        exception from either manager would be a genuine bug in that
-        manager, not something this thin composition layer should mask.
+        Never raises: any exception from EmergencyManager would be a
+        genuine bug in that manager, not something this thin
+        composition layer should mask.
         """
         status = self.emergency_manager.get_status()
         state = status.state
@@ -199,10 +161,5 @@ class PipelineGuard:
             logger.warning(
                 f"pipeline_guard_warning stage={stage_name} emergency_state=WARNING reason={status.reason}"
             )
-
-        if feature_name is not None:
-            feature_state = self.runtime_feature_manager.status(feature_name)
-            if feature_state is not None and not feature_state.enabled:
-                return GuardDecision(proceed=False, reason=f"{feature_name} disabled")
 
         return GuardDecision(proceed=True, reason="OK")

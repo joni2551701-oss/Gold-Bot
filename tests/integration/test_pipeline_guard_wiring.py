@@ -3,27 +3,28 @@ Phase 60.8 (Safe Integration Layer, TASK 2/3/5) -- end-to-end
 PipelineGuard wiring tests through the real TradingPipeline.run().
 Builds a real TradingPipeline (same stubbing posture as
 tests/conftest.py's mock_pipeline fixture: only the data-fetch layer
-is stubbed) with an injected PipelineGuard backed by stub managers, so
-every Emergency/Runtime combination is deterministic and never touches
-the real database's runtime_features/emergency_states tables.
+is stubbed) with an injected PipelineGuard backed by a stub
+EmergencyManager, so every Emergency combination is deterministic and
+never touches the real database's emergency_states table.
+
+Phase 60.9 (Runtime Registry Separation, TASK 4): PipelineGuard no
+longer reads RuntimeFeatureManager at all -- the former "ENABLE_SIGNALS
+OFF"/"ENABLE_AI OFF" runtime-feature scenarios no longer apply (those
+names were removed from the registry entirely, see
+docs/FEATURE_REGISTRY_SEPARATION.md). The AI-stage neutral-substitution
+mechanism (core/pipeline.py's _neutral_ai_result()) is still real,
+tested code -- exercised below via a duck-typed stub guard, since no
+real EmergencyState combination triggers before_ai() skipping alone
+(see core/guards/pipeline_guard.py's own "Design notes" for why).
 """
 
-from datetime import datetime, timezone
+from dataclasses import dataclass
 
 from core.pipeline import TradingPipeline
 from core.emergency.emergency_state import EmergencyState, create_emergency_state_record
-from core.guards.pipeline_guard import PipelineGuard
+from core.guards.pipeline_guard import GuardDecision, PipelineGuard
 from data.market_data import MarketSnapshot
-from configuration.runtime_state import FeatureRuntimeState
 from decision.models import DecisionAction
-
-
-class _StubRuntimeFeatureManager:
-    def __init__(self, states=None):
-        self._states = states or {}
-
-    def status(self, name):
-        return self._states.get(name)
 
 
 class _StubEmergencyManager:
@@ -34,18 +35,25 @@ class _StubEmergencyManager:
         return self._record
 
 
-def _feature_states(**overrides):
-    return {
-        name: FeatureRuntimeState(name=name, enabled=enabled, last_changed=datetime.now(timezone.utc))
-        for name, enabled in overrides.items()
-    }
+@dataclass
+class _AiOnlySkipGuard:
+    """Duck-typed stub: before_ai() skips, the other three hooks always proceed -- a combination no real EmergencyState produces (see module docstring), used to directly test core/pipeline.py's neutral-substitution handling."""
+
+    def before_signal(self):
+        return GuardDecision(proceed=True)
+
+    def before_ai(self):
+        return GuardDecision(proceed=False, reason="test: ai stage forced off")
+
+    def before_execution(self):
+        return GuardDecision(proceed=True)
+
+    def before_database(self):
+        return GuardDecision(proceed=True)
 
 
-def _pipeline(candidates, ai_results, emergency_state=EmergencyState.NORMAL, feature_overrides=None):
-    guard = PipelineGuard(
-        runtime_feature_manager=_StubRuntimeFeatureManager(_feature_states(**(feature_overrides or {}))),
-        emergency_manager=_StubEmergencyManager(emergency_state),
-    )
+def _pipeline(candidates, ai_results, emergency_state=EmergencyState.NORMAL, pipeline_guard=None):
+    guard = pipeline_guard or PipelineGuard(emergency_manager=_StubEmergencyManager(emergency_state))
     pipeline = TradingPipeline(
         symbol="XAUUSD", interval="M15", outputsize=200,
         send_notifications=True, persist_signals=True, pipeline_guard=guard,
@@ -58,23 +66,9 @@ def _pipeline(candidates, ai_results, emergency_state=EmergencyState.NORMAL, fea
     return pipeline
 
 
-def test_enable_signals_off_skips_signal_generation(mock_signal_candidate, mock_ai_result):
-    candidate = mock_signal_candidate()
-    pipeline = _pipeline([candidate], [mock_ai_result()], feature_overrides={"ENABLE_SIGNALS": False})
-    calls = []
-    pipeline.signal_engine.generate_signals = lambda context: (calls.append(1) or [candidate])
-
-    result = pipeline.run()
-
-    assert calls == []  # generate_signals() was never actually invoked
-    assert result["signals"] == []
-    assert result["decisions"] == []
-    assert result["telegram_messages"] == []
-
-
-def test_enable_ai_off_ai_skipped_but_decision_still_runs(mock_signal_candidate):
+def test_ai_stage_skip_substitutes_a_neutral_result_and_decision_still_runs(mock_signal_candidate):
     candidate = mock_signal_candidate(entry=4065.0, stop_loss=4060.0, take_profit=4080.0, confidence=0.95)
-    pipeline = _pipeline([candidate], [], feature_overrides={"ENABLE_AI": False})
+    pipeline = _pipeline([candidate], [], pipeline_guard=_AiOnlySkipGuard())
     calls = []
     pipeline.ai_analyzer.analyze = lambda c, ctx: (calls.append(1), None)[1]
 

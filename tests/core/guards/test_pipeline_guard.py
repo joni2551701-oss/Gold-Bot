@@ -1,23 +1,14 @@
 """
 Phase 60.8 (Safe Integration Layer, TASK 2/3/5) --
-core/guards/pipeline_guard.py tests. Uses lightweight stub managers
-(never touches the real database) so every Emergency/Runtime
-combination is deterministic and fast.
+core/guards/pipeline_guard.py tests. Simplified in Phase 60.9 (Runtime
+Registry Separation, TASK 4): PipelineGuard no longer reads
+RuntimeFeatureManager at all -- every hook is Emergency-only. Uses a
+lightweight stub EmergencyManager (never touches the real database) so
+every Emergency combination is deterministic and fast.
 """
 
-from datetime import datetime, timezone
-
-from configuration.runtime_state import FeatureRuntimeState
 from core.emergency.emergency_state import EmergencyState, create_emergency_state_record
 from core.guards.pipeline_guard import GuardDecision, PipelineGuard
-
-
-class _StubRuntimeFeatureManager:
-    def __init__(self, states=None):
-        self._states = states or {}
-
-    def status(self, name):
-        return self._states.get(name)
 
 
 class _StubEmergencyManager:
@@ -28,20 +19,13 @@ class _StubEmergencyManager:
         return self._record
 
 
-def _guard(emergency_state=EmergencyState.NORMAL, feature_states=None):
-    return PipelineGuard(
-        runtime_feature_manager=_StubRuntimeFeatureManager(feature_states),
-        emergency_manager=_StubEmergencyManager(emergency_state),
-    )
-
-
-def _enabled(name, value):
-    return {name: FeatureRuntimeState(name=name, enabled=value, last_changed=datetime.now(timezone.utc))}
+def _guard(emergency_state=EmergencyState.NORMAL):
+    return PipelineGuard(emergency_manager=_StubEmergencyManager(emergency_state))
 
 
 # --- NORMAL -----------------------------------------------------------------
 
-def test_normal_state_all_four_hooks_proceed_with_no_feature_states():
+def test_normal_state_all_four_hooks_proceed():
     guard = _guard(EmergencyState.NORMAL)
 
     for method in (guard.before_signal, guard.before_ai, guard.before_execution, guard.before_database):
@@ -49,54 +33,6 @@ def test_normal_state_all_four_hooks_proceed_with_no_feature_states():
         assert isinstance(decision, GuardDecision)
         assert decision.proceed is True
         assert decision.abort is False
-
-
-def test_enable_signals_off_skips_signal_stage():
-    guard = _guard(EmergencyState.NORMAL, _enabled("ENABLE_SIGNALS", False))
-
-    decision = guard.before_signal()
-
-    assert decision.proceed is False
-    assert decision.abort is False
-
-
-def test_enable_ai_off_skips_ai_stage():
-    guard = _guard(EmergencyState.NORMAL, _enabled("ENABLE_AI", False))
-
-    decision = guard.before_ai()
-
-    assert decision.proceed is False
-
-
-def test_enable_database_off_skips_database_stage():
-    guard = _guard(EmergencyState.NORMAL, _enabled("ENABLE_DATABASE", False))
-
-    decision = guard.before_database()
-
-    assert decision.proceed is False
-
-
-def test_before_execution_ignores_runtime_feature_state():
-    """
-    Disclosed in pipeline_guard.py's own module docstring: before_execution()
-    does not consult any runtime feature flag (ENABLE_EXECUTION stays
-    declared-only, see configuration/feature_registry.py) -- only
-    Emergency state gates this hook.
-    """
-    guard = _guard(EmergencyState.NORMAL, _enabled("ENABLE_EXECUTION", False))
-
-    decision = guard.before_execution()
-
-    assert decision.proceed is True
-
-
-def test_missing_feature_state_defaults_to_proceed():
-    """A feature name never seen by the runtime manager (status() -> None) fails open, not closed."""
-    guard = _guard(EmergencyState.NORMAL, feature_states={})
-
-    assert guard.before_signal().proceed is True
-    assert guard.before_ai().proceed is True
-    assert guard.before_database().proceed is True
 
 
 # --- WARNING ------------------------------------------------------------
@@ -174,7 +110,7 @@ def test_killed_state_reason_names_the_stage():
 
 # --- Real manager construction (no stubs) -----------------------------------
 
-def test_pipeline_guard_constructs_real_managers_by_default():
+def test_pipeline_guard_constructs_real_manager_by_default():
     """Never raises: default construction touches the (test-isolated) database but must not error."""
     guard = PipelineGuard()
 
