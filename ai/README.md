@@ -87,9 +87,39 @@ reuse audit that justified each one:
 - `audit/` — `RequestLog`/`ResponseLog`/`provider_stats`: in-memory AI
   call audit trail (provider/latency/token/cost/status/capability).
 
+## AI Provider Reliability Foundation (Phase 61.1)
+
+A narrower "Provider Foundation" pass over five Phase 61.0 packages,
+plus a new `ai/cache/` package — see `docs/AI_PROVIDER_FOUNDATION.md`
+and `docs/PHASE61_1_PROVIDER_AUDIT.md` (reuse audit):
+
+- `providers/provider_health.py` + `provider_status.py` +
+  `provider_failover.py` — observed health (ONLINE/DEGRADED/
+  RATE_LIMITED/OFFLINE/DISABLED), separate from `ProviderManager`'s
+  owner-intent status; `select_available()` picks the first healthy
+  candidate.
+- `providers/provider_capabilities.py` — which `Capability` each
+  provider actually declares support for; the router now checks this
+  before selecting.
+- `router/router.py` — extended selection order (capability matrix ->
+  provider status -> health) + read-only `provider_metrics()` reusing
+  `audit/provider_stats.py` (no new metrics module).
+- `prompts/prompt_registry.py` — Version/Active/Rollback over
+  `PromptManager`'s existing templates; `PromptManager` itself
+  unmodified.
+- `access/tool_permissions.py` — Role x Tool matrix, a second axis
+  beside the existing Role x Capability matrix.
+- `context/context_snapshot.py` — `+schema_version`/`context_version`,
+  additive, backwards compatible.
+- `cache/` (new) — `response_cache.py` + `cache_policy.py`: a TTL
+  cache whose key structurally requires Capability + Context Version +
+  Provider + Prompt Version + Context Hash (never bare prompt text).
+
 ## Future Roadmap
 Full audit and folder-structure rationale in `docs/AI_ARCHITECTURE.md`.
 The real work — replacing the permanent-reject stub with actual
 heuristic/model scoring, and wiring a real provider into `ai/providers/` —
-is explicitly out of Phase 61.0's scope and is the natural next v0.4 AI
-Core task (Phase 61.1+).
+is explicitly out of Phase 61.0/61.1's scope. Phase 61.2 (deferred by
+Phase 61.1's own brief) covers the Workflow Engine, real Provider API
+integration, streaming, Conversation Engine, AI Explanation Runtime,
+and traffic-based provider auto-selection.

@@ -1843,6 +1843,36 @@ never imports a `data/` type — the raw-market-data boundary is enforced
 structurally by `context_adapter.sanitize_market_context()`, not just
 by convention.
 
+### Phase 61.1 — AI Provider Reliability Foundation
+
+A narrower "Provider Foundation" pass over five Phase 61.0 packages,
+plus one new package. Full detail: `docs/AI_PROVIDER_FOUNDATION.md`,
+`docs/PHASE61_1_PROVIDER_AUDIT.md` (TASK 1's reuse audit).
+
+```
+ai/providers/provider_status.py       (HealthStatus: ONLINE/DEGRADED/RATE_LIMITED/OFFLINE/DISABLED)
+ai/providers/provider_health.py       (ProviderHealthTracker -- observed reality, separate from owner-intent ProviderStatus)
+ai/providers/provider_failover.py     (select_available() -- first healthy candidate)
+ai/providers/provider_capabilities.py (PROVIDER_CAPABILITIES -- which Capability each provider declares)
+        |
+        v
+ai/router/router.py  (extended: capability-matrix support -> ProviderManager status -> health, then provider_metrics() read-only via ai/audit/provider_stats.py)
+        |
+ai/prompts/prompt_registry.py   (Version/Active/Rollback over PromptManager's existing templates -- PromptManager unmodified)
+ai/access/tool_permissions.py   (Role x Tool matrix, second axis beside the existing Role x Capability matrix)
+ai/context/context_snapshot.py  (+ schema_version/context_version, additive)
+        |
+        v
+ai/cache/response_cache.py, ai/cache/cache_policy.py  (TTL cache, key = Capability + Context Version + Provider + Prompt Version + Context Hash -- never bare prompt text)
+```
+
+No real AI/LLM API call anywhere. `core/pipeline.py`, `strategies/`,
+`signals/`, `decision/`, `risk/`, `execution/` unchanged.
+`AIRouter.route()`'s existing behavior is preserved exactly when no
+`health_tracker`/`response_log` is supplied — every Phase 61.1 addition
+is optional-input, additive, or a new sibling module beside an existing
+one, never a replacement.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

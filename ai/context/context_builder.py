@@ -27,8 +27,9 @@ def build_ai_context(
     user_profile: Optional[AIUserProfile] = None,
     trade_history: Optional[List[TradeJournalEntry]] = None,
     learning_context: Optional[LearningContext] = None,
+    context_version: str = "1.0",
 ) -> AIContext:
-    """Never raises: every input is optional, an all-None call returns an AIContext with every field empty/None except built_at."""
+    """Never raises: every input is optional, an all-None call returns an AIContext with every field empty/None except built_at/schema_version/context_version. `schema_version` is not a parameter -- it names this function's own AIContext shape, not something a caller chooses per call (Phase 61.1 TASK 7)."""
     return AIContext(
         market_context=sanitize_market_context(market_context),
         signal=signal,
@@ -36,4 +37,5 @@ def build_ai_context(
         trade_history=list(trade_history) if trade_history is not None else [],
         learning_context=learning_context,
         built_at=datetime.now(timezone.utc),
+        context_version=context_version,
     )
