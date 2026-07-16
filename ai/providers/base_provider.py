@@ -1,6 +1,6 @@
 """
 AI Layer — Provider Interface Foundation (Phase 61.0: AI Infrastructure
-Foundation, TASK 3).
+Foundation, TASK 3; extended Phase 61.2: AI Runtime Foundation, TASK 3).
 
 Defines the *shape* every future AI vendor integration must satisfy,
 across every capability `ai/capabilities/capability.py` names an AI
@@ -17,11 +17,18 @@ Same advisory-only boundary as `ai/interfaces.py`'s
 approve/reject a trade, call `risk.risk_manager.RiskManager`, or
 trigger execution/Telegram delivery. It answers a question; it never
 acts on the answer.
+
+Phase 61.2 TASK 3 adds `health_check()`/`capabilities()` as *concrete*
+(non-abstract) methods with safe defaults -- every existing placeholder
+provider (`ai/providers/placeholder_providers.py`) inherits them
+unchanged, no per-class override needed. `capabilities()` reuses
+`ai.providers.provider_capabilities.capabilities_of()` directly rather
+than re-declaring per-provider capability lists a second time.
 """
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Dict, FrozenSet, Optional
 
 
 @dataclass(frozen=True)
@@ -79,3 +86,12 @@ class BaseAIProvider(ABC):
     @abstractmethod
     def voice(self, prompt: str) -> ProviderResult:
         raise NotImplementedError
+
+    def health_check(self) -> bool:
+        """Default: always healthy -- correct for every placeholder provider (which never actually fails). A real provider (e.g. `ai/providers/gemini_provider.py`, Phase 61.2) overrides this to report whether it currently has a usable API key/connection, without needing an actual network call."""
+        return True
+
+    def capabilities(self) -> FrozenSet[Any]:
+        """Reuses `ai.providers.provider_capabilities.capabilities_of(self.name)` directly -- no per-provider override needed unless a provider's real, implemented support differs from the declared matrix (see `ai/providers/gemini_provider.py`'s own docstring for that exact case)."""
+        from ai.providers.provider_capabilities import capabilities_of
+        return capabilities_of(self.name)

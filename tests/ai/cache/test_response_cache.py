@@ -13,7 +13,7 @@ def _make_key(**overrides):
     defaults = dict(
         capability=Capability.CHAT, context_version="1.0", provider_name="gemini",
         prompt_version="v1", context_hash=compute_context_hash({"symbol": "XAUUSD"}),
-        snapshot_id=compute_context_hash({"snapshot": "snapshot-1"}),
+        snapshot_id=compute_context_hash({"snapshot": "snapshot-1"}), user_role="FREE",
     )
     defaults.update(overrides)
     return CacheKey(**defaults)

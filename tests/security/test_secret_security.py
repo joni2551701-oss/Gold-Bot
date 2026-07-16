@@ -31,12 +31,19 @@ def test_config_class_has_no_hardcoded_secret_looking_values():
 
 
 def test_secrets_class_exposes_only_named_properties_not_a_bulk_dump():
-    """No .get_all()/.__dict__ style bulk-export exists on Secrets that could leak everything at once."""
+    """
+    No .get_all()/.__dict__ style bulk-export exists on Secrets that
+    could leak everything at once. `get_optional` (Phase 61.2 TASK 2)
+    is allowed alongside `get` -- both take one explicit key argument
+    and return exactly that one value; neither can be called with no
+    argument to dump every secret at once, which is the property this
+    test actually guards.
+    """
     public_callables = [
         name for name in dir(Secrets)
         if not name.startswith("_") and callable(getattr(Secrets, name, None))
     ]
-    assert public_callables == ["get"], (
+    assert set(public_callables) == {"get", "get_optional"}, (
         f"Secrets exposes unexpected bulk/dump-style methods: {public_callables}"
     )
 

@@ -1900,6 +1900,43 @@ documentation-only "Provider Preference vs Provider Health" section
 (no code change). `core/`, `decision/`, `risk/`, `execution/`,
 `strategies/`, `signals/`, `learning/` unchanged.
 
+### Phase 61.2 — AI Runtime Foundation
+
+The first real, end-to-end AI request lifecycle. Full detail:
+`docs/AI_RUNTIME_FOUNDATION.md`, `docs/PHASE61_2_RUNTIME_AUDIT.md`
+(TASK 1's AI Isolation Audit — zero `ai/` -> `decision/`/`risk/`/
+`execution/`/`strategies/` imports, re-confirmed after TASK 2-9).
+
+```
+Telegram/Web/API (future caller, not wired this phase)
+        |
+        v
+ai/runtime/ai_service.py  (AIService.ask() -- the first real orchestration)
+        |
+        +--> ai/access/access_control.py       (Access)
+        +--> ai/capabilities/capability_manager.py (Capability)
+        +--> ai/prompts/prompt_manager.py       (Prompt, reused)
+        +--> ai/router/router.py                (Router, unchanged)
+        +--> ai/providers/gemini_provider.py    (real Provider call)
+        +--> ai/providers/runtime_errors.py     (failure -> ProviderHealthTracker -> re-route)
+        +--> ai/validation/response_validator.py (Validator)
+        +--> ai/cache/                          (Cache, +user_role in CacheKey)
+        +--> ai/audit/                          (RequestLog/ResponseLog, no API key ever recorded)
+        |
+        v
+RuntimeResponse (never a raised exception)
+```
+
+`core/secrets.py` gained optional `OPENAI_API_KEY`/`CLAUDE_API_KEY`/
+`GROK_API_KEY`/`LOCAL_LLM_CONFIG` (TASK 2) — `GEMINI_API_KEY`'s
+existing required behavior unchanged. Zero `os.getenv()` calls
+anywhere in `ai/` -- every key access goes through `core/secrets.py`
+(Rule 1). The Gemini API key travels only in a request header, never
+a URL (Rule 2, verified by test). `core/pipeline.py`, `decision/`,
+`risk/`, `execution/`, `strategies/`, `signals/` unchanged; `ai/runtime/`
+and the real `GeminiProvider` are not called from any live caller this
+phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

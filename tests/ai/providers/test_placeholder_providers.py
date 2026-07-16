@@ -1,12 +1,12 @@
-"""Phase 61.0 TASK 3 — every placeholder provider stubs every method, no real API call."""
+"""Phase 61.0 TASK 3 — every placeholder provider stubs every method, no real API call. Gemini moved to tests/ai/providers/test_gemini_provider.py (Phase 61.2, real implementation, no longer a placeholder)."""
 
 import pytest
 
 from ai.providers.placeholder_providers import (
-    ClaudeProvider, GeminiProvider, GrokProvider, LocalLLMProvider, OpenAIProvider,
+    ClaudeProvider, GrokProvider, LocalLLMProvider, OpenAIProvider,
 )
 
-ALL_PROVIDERS = [OpenAIProvider, GeminiProvider, ClaudeProvider, GrokProvider, LocalLLMProvider]
+ALL_PROVIDERS = [OpenAIProvider, ClaudeProvider, GrokProvider, LocalLLMProvider]
 
 
 @pytest.mark.parametrize("provider_cls", ALL_PROVIDERS)

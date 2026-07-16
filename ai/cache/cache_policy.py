@@ -1,17 +1,25 @@
 """
 AI Layer — AI Response Cache Policy (Phase 61.1: AI Provider
 Reliability Foundation, TASK 9; extended Phase 61.1.1: AI Foundation
-Corrections, TASK 2).
+Corrections, TASK 2; extended Phase 61.2: AI Runtime Foundation,
+TASK 7).
 
 Defines the cache key shape and TTL policy for `response_cache.py`.
 The key is structurally forbidden from being bare prompt text --
-`CacheKey` is now a six-field dataclass (Capability + Context Version
-+ Provider + Prompt Version + Context Hash + Snapshot ID), the same
-"enforce the rule in the type, not just the docstring" posture
-`ai/context/context_adapter.py`'s `sanitize_market_context()` already
-uses for the raw-market-data boundary. A market-context-dependent
-answer (e.g. "Gold trend?") must never be served from a cache entry
-built against a stale context.
+`CacheKey` is now a seven-field dataclass (Capability + Context
+Version + Provider + Prompt Version + Context Hash + Snapshot ID +
+User Role), the same "enforce the rule in the type, not just the
+docstring" posture `ai/context/context_adapter.py`'s
+`sanitize_market_context()` already uses for the raw-market-data
+boundary. A market-context-dependent answer (e.g. "Gold trend?") must
+never be served from a cache entry built against a stale context.
+
+Phase 61.2 TASK 7 adds `user_role` -- a lower-privileged role's cache
+lookup must never return an entry a higher-privileged role's call
+produced (or vice versa), even for an identical snapshot/capability/
+provider. This is a privilege-boundary concern layered on top of the
+freshness concern `snapshot_id` already solves -- the two are
+independent axes, both required.
 
 Freshness chain (Phase 61.1.1 TASK 2, documented per the Director's
 own required order): **Snapshot identity -> Cache freshness -> TTL**.
@@ -48,12 +56,13 @@ class CacheKey:
     prompt_version: str
     context_hash: str
     snapshot_id: str
+    user_role: str
 
     def as_string(self) -> str:
         """Deterministic, human-inspectable serialization -- used as the actual dict key inside ResponseCache."""
         return "|".join([
             self.capability.value, self.context_version, self.provider_name,
-            self.prompt_version, self.context_hash, self.snapshot_id,
+            self.prompt_version, self.context_hash, self.snapshot_id, self.user_role,
         ])
 
 
@@ -71,7 +80,7 @@ def compute_context_hash(context_payload: dict) -> str:
 
 def build_cache_key_from_context(
     ai_context: "AIContext", capability: Capability, provider_name: str, prompt_version: str,
-    context_hash: Optional[str] = None,
+    user_role: str, context_hash: Optional[str] = None,
 ) -> CacheKey:
     """
     The blessed way to construct a `CacheKey` (Phase 61.1.1 TASK 2) --
@@ -105,6 +114,7 @@ def build_cache_key_from_context(
     return CacheKey(
         capability=capability, context_version=ai_context.context_version, provider_name=provider_name,
         prompt_version=prompt_version, context_hash=resolved_context_hash, snapshot_id=ai_context.snapshot_id,
+        user_role=user_role,
     )
 
 

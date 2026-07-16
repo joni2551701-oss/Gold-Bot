@@ -133,11 +133,41 @@ Small, corrections-only pass, no new package — see
 - `docs/AI_PROVIDER_FOUNDATION.md` — documentation-only "Provider
   Preference vs Provider Health" correction, no code change.
 
+## AI Runtime Foundation (Phase 61.2)
+
+The first real, end-to-end AI request lifecycle — see
+`docs/AI_RUNTIME_FOUNDATION.md` and `docs/PHASE61_2_RUNTIME_AUDIT.md`
+(AI Isolation Audit):
+
+- `providers/gemini_provider.py` — the first non-placeholder
+  `BaseAIProvider`; real Gemini REST calls via `requests`, key read
+  only through `core/secrets.py`, never in a URL. Replaced the
+  placeholder Gemini entry in `placeholder_providers.py`/
+  `provider_registry.py`.
+- `providers/runtime_errors.py` — `ProviderRuntimeError` hierarchy +
+  `record_provider_failure()` (error -> `ProviderHealthTracker` ->
+  router fallback).
+- `validation/` (new) — `response_validator.py`/`schemas.py`/
+  `safety.py`: format/confidence/safety checks on every real
+  provider response before it is cached or returned.
+- `runtime/` (new) — `ai_service.py`'s `AIService.ask()`: the first
+  real orchestration (Access -> Capability -> Router -> Provider ->
+  Validator -> Cache -> Audit -> Response). Never imports `decision/`,
+  `risk/`, `execution/`, `strategies/`, or `signals/`.
+- `cache/cache_policy.py` — `CacheKey` gained a seventh field,
+  `user_role` (a privilege-boundary concern independent of
+  `snapshot_id`'s freshness concern).
+- `audit/provider_stats.py` — `ProviderStats.failure_count` added;
+  now fed by real `AIService` calls, still observability-only (the
+  router never reads it back).
+- `core/secrets.py` — `OPENAI_API_KEY`/`CLAUDE_API_KEY`/
+  `GROK_API_KEY`/`LOCAL_LLM_CONFIG`, all optional.
+
 ## Future Roadmap
 Full audit and folder-structure rationale in `docs/AI_ARCHITECTURE.md`.
 The real work — replacing the permanent-reject stub with actual
-heuristic/model scoring, and wiring a real provider into `ai/providers/` —
-is explicitly out of Phase 61.0/61.1/61.1.1's scope. Phase 61.2
-(deferred by Phase 61.1's own brief) covers the Workflow Engine, real
-Provider API integration, streaming, Conversation Engine, AI
-Explanation Runtime, and traffic-based provider auto-selection.
+heuristic/model scoring — is still out of scope (`ai/ai_analyzer.py`
+is a separate, live production module this phase does not touch).
+Phase 61.3 (per the Director's own brief) covers AI Memory Runtime,
+Knowledge Base, real Tool Calling integration, and an AI Assistant
+Layer.

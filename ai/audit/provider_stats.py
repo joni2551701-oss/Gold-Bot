@@ -1,11 +1,24 @@
 """
 AI Layer — Provider Stats (Phase 61.0: AI Infrastructure Foundation,
+TASK 9; wired to real runtime data Phase 61.2: AI Runtime Foundation,
 TASK 9).
 
 Pure aggregation over an already-recorded `response_log.py` history --
 never fetches or computes latency/cost itself, matching every other
 `ai/` foundation module's "reuse the already-computed record, don't
 re-derive it" convention.
+
+Phase 61.2 TASK 9: no new metrics module was created -- this file is
+extended in place, per the brief's own instruction ("Yangi emas.
+Mavjud... kengaytiriladi"). `ai/runtime/ai_service.py` is now this
+module's real data source (`ResponseLog.record()` on every provider
+call attempt, success or failure) -- `compute_provider_stats()`'s
+logic itself is unchanged. **Observability only**: neither
+`ai/runtime/ai_service.py` nor `ai/router/router.py` reads
+`ProviderStats` to influence provider selection -- `AIRouter.route()`
+has no import of this module at all, and `AIService.ask()`'s only use
+of `ai/audit/` is to *write* `RequestLog`/`ResponseLog` entries, never
+to read `ProviderStats` back.
 """
 
 from collections import defaultdict
@@ -27,6 +40,11 @@ class ProviderStats:
     @property
     def success_rate(self) -> float:
         return self.success_count / self.total_calls if self.total_calls else 0.0
+
+    @property
+    def failure_count(self) -> int:
+        """Derived, not separately tracked -- every non-SUCCESS status (FAILED/REJECTED/NOT_IMPLEMENTED, from ai/runtime/ai_service.py's own recorded statuses) counts as a failure here."""
+        return self.total_calls - self.success_count
 
 
 def compute_provider_stats(entries: List[AIResponseLogEntry]) -> Dict[str, ProviderStats]:

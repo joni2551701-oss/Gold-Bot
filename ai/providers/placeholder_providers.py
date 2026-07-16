@@ -1,21 +1,24 @@
 """
 AI Layer — Placeholder Providers (Phase 61.0: AI Infrastructure
+Foundation, TASK 3; Gemini placeholder removed Phase 61.2: AI Runtime
 Foundation, TASK 3).
 
-Five stub `BaseAIProvider` implementations, one per named vendor
-(OpenAI/Gemini/Claude/Grok) plus a Local LLM placeholder. None make a
-real network call -- every method returns a fixed `ProviderResult`
-whose `content` says so explicitly. Grouped in one file rather than
-five top-level modules since the Phase 61.0 brief names only
-`base_provider.py`/`provider_manager.py`/`provider_registry.py` as
-required files and each class here is a handful of identical-shaped
-lines -- five near-empty files would not add clarity.
+Four stub `BaseAIProvider` implementations (OpenAI/Claude/Grok/Local
+LLM). None make a real network call -- every method returns a fixed
+`ProviderResult` whose `content` says so explicitly. Grouped in one
+file rather than separate top-level modules since each class here is a
+handful of identical-shaped lines -- near-empty files would not add
+clarity.
 
-`core/secrets.py` already carries `GEMINI_API_KEY` (Phase 55) and is
-ready for a real provider to read it -- these placeholders deliberately
-do not read it, since TASK 3's brief says "Real API YO'Q. Faqat
-interface." A future Phase 61.1+ replaces one or more of these classes
-with a real implementation; this phase only fixes the shape.
+Gemini's placeholder was removed from this file (Phase 61.2) once
+`ai/providers/gemini_provider.py`'s real implementation replaced it in
+`provider_registry.py` -- keeping both would have meant two classes
+with the same conceptual identity, one live one dead
+(CLAUDE.md's "No duplicate logic"). `core/secrets.py` also now carries
+`OPENAI_API_KEY`/`CLAUDE_API_KEY`/`GROK_API_KEY`/`LOCAL_LLM_CONFIG`
+(Phase 61.2 TASK 2) -- these four placeholders deliberately still do
+not read them; a future phase replaces one or more of these classes
+with a real implementation the same way Gemini's was.
 """
 
 from ai.providers.base_provider import BaseAIProvider, ProviderResult
@@ -57,10 +60,6 @@ class _StubProviderMixin:
 
 class OpenAIProvider(_StubProviderMixin, BaseAIProvider):
     _NAME = "openai"
-
-
-class GeminiProvider(_StubProviderMixin, BaseAIProvider):
-    _NAME = "gemini"
 
 
 class ClaudeProvider(_StubProviderMixin, BaseAIProvider):
