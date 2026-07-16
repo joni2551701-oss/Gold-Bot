@@ -68,3 +68,8 @@ class Secrets:
         permission layer must fail closed (nobody is OWNER), not crash.
         """
         return self.get("TELEGRAM_OWNER_ID", default="")
+
+    @property
+    def PHONE_HASH_SALT(self) -> Optional[str]:
+        """Phase 61.4 TASK 4 -- optional pepper for core.phone_hash.hash_phone_number(); None means the built-in default pepper is used (see that module's own docstring for why a deployment should set this in production)."""
+        return self.get_optional("PHONE_HASH_SALT")

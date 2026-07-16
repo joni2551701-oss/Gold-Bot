@@ -51,3 +51,22 @@ def test_check_does_not_increment_usage():
     limiter.check("user_1", AIRole.FREE, Capability.CHAT)
     limiter.check("user_1", AIRole.FREE, Capability.CHAT)
     assert limiter.check("user_1", AIRole.FREE, Capability.CHAT).used == 0
+
+
+def test_set_limit_changes_this_instances_ceiling():
+    limiter = UsageLimiter()
+    limiter.set_limit(AIRole.PREMIUM, 1000)
+    for _ in range(50):
+        limiter.record("premium_user", Capability.CHAT)
+    result = limiter.check("premium_user", AIRole.PREMIUM, Capability.CHAT)
+    assert result.allowed is True
+    assert result.limit == 1000
+
+
+def test_set_limit_on_one_instance_never_leaks_into_a_fresh_instance():
+    """Phase 61.4 TASK 3 fix: __init__ now always copies _DEFAULT_DAILY_LIMITS instead of aliasing it, so set_limit() can never mutate the shared default for other instances."""
+    first = UsageLimiter()
+    first.set_limit(AIRole.FREE, 9999)
+
+    second = UsageLimiter()
+    assert second.check("someone", AIRole.FREE, Capability.CHAT).limit == 10

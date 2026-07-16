@@ -1,6 +1,6 @@
 """
 AI Layer — AI Usage Limits (Phase 61.0: AI Infrastructure Foundation,
-TASK 6).
+TASK 6; extended Phase 61.4: AI Product & Control Layer, TASK 3).
 
 In-memory, per-(telegram_id, capability) call counter with a
 role-based daily ceiling -- foundation only, no persistence, no timer/
@@ -38,11 +38,21 @@ class UsageLimiter:
     """`limit=0` means unlimited (OWNER/ADMIN's default) -- never counted against."""
 
     def __init__(self, daily_limits: Dict[AIRole, int] = None) -> None:
-        self._limits = daily_limits if daily_limits is not None else _DEFAULT_DAILY_LIMITS
+        # Always a copy, never an alias to _DEFAULT_DAILY_LIMITS -- a
+        # bare UsageLimiter() previously assigned the module-level dict
+        # directly, so a future set_limit() call on one instance would
+        # silently mutate the shared default for every other instance
+        # in the same process. Fixed as part of adding set_limit()
+        # (Phase 61.4 TASK 3) rather than shipping that hazard.
+        self._limits: Dict[AIRole, int] = dict(daily_limits) if daily_limits is not None else dict(_DEFAULT_DAILY_LIMITS)
         self._counts: Dict[Tuple[str, Capability], int] = {}
 
     def _limit_for(self, role: AIRole) -> int:
         return self._limits.get(role, 0)
+
+    def set_limit(self, role: AIRole, limit: int) -> None:
+        """Sets this instance's own daily ceiling for `role` -- `limit=0` means unlimited, same convention as the constructor's default. Never affects any other UsageLimiter instance."""
+        self._limits[role] = limit
 
     def check(self, telegram_id: str, role: AIRole, capability: Capability) -> UsageCheckResult:
         """Read-only check -- does not increment. A caller calls record() separately after a successful call, so a rejected/failed call is never counted."""

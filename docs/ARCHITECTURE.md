@@ -1971,6 +1971,41 @@ accepts an already-built input object instead. `core/pipeline.py`,
 `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`
 unchanged; nothing built this phase is called from any live caller.
 
+### Phase 61.4 — AI Product & Control Layer
+
+The real access-control and owner-control layer around the AI Core.
+Full detail: `docs/AI_PRODUCT_CONTROL_LAYER.md`,
+`docs/PHASE61_4_PRODUCT_CONTROL_AUDIT.md` (TASK 1 reuse audit),
+`docs/PHASE61_4_PRODUCT_CONTROL_FREEZE.md` (closing freeze
+declaration).
+
+```
+ai/access/permission_service.py         (resolve_ai_role(is_owner, is_admin, plan) -- real telegram_id -> AIRole)
+ai/access/subscription_policy.py        (plan_to_ai_role() -- pure SubscriptionRecord.plan -> AIRole)
+ai/access/user_capability.py            (UserCapabilityService -- one lookup over Access/Tool/Usage)
+ai/access/identity_checker.py           (is_phone_reused_by_another_account() -- pure)
+ai/access/trial_manager.py              (TrialManager -- 7-day FREE trial, "1 phone = 1 trial")
+ai/audit/usage_accounting.py            (compute_user_usage() -- generalizes trace.py's request_id join)
+
+core/phone_hash.py                      (hash_phone_number() -- HMAC-SHA256 salted; raw phone never stored)
+database/user_models.py                 (+phone_hash field, additive)
+database/user_repository.py             (+set_phone_hash()/get_users_by_phone_hash())
+
+telegram/owner/ai_commands.py           (new -- /ai_status /ai_provider /ai_disable /ai_enable /ai_limit /ai_cost /ai_usage)
+```
+
+Three role concepts (`telegram/permissions.py`'s `PermissionLevel`,
+`telegram/owner/owner_roles.py`'s `OwnerRole`,
+`ai/access/permissions.py`'s `AIRole`) already existed by deliberate
+design — this phase adds the missing resolver between them, not a
+fourth enum. Two in-place corrections to prior-phase code:
+`ai/access/tool_permissions.py`'s matrix was missing `"learning_tool"`
+(added Phase 61.3); `ai/access/usage_limits.py`'s `UsageLimiter.__init__`
+previously aliased its default limits dict rather than copying it (a
+real mutation-leak bug, fixed while adding `set_limit()`). `core/pipeline.py`,
+`decision/`, `risk/`, `execution/`, `strategies/`, `signals/`
+unchanged; nothing built this phase is called from any live caller.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

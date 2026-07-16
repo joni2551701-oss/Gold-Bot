@@ -17,6 +17,15 @@ class UserRecord:
     dataclass keeps working. An old row with no status column yet
     reads back as "NEW" (the schema default applied by the Phase 45
     migration), never a missing/None value.
+
+    phone_hash (Phase 61.4 TASK 4): a deterministic, salted hash of
+    the user's Telegram-contact-shared phone number
+    (core.phone_hash.hash_phone_number()) -- the raw phone number is
+    never stored anywhere in this codebase. None for a user who has
+    not shared their contact yet (every user before this phase, and
+    any user who declines to). Used by ai/access/trial_manager.py
+    (TASK 5) to detect the same phone re-registering under a new
+    telegram_id for repeated free trials.
     """
     telegram_id: str
     username: Optional[str]
@@ -29,3 +38,4 @@ class UserRecord:
     notifications_enabled: bool = True
     status: str = "NEW"
     last_activity: Optional[str] = None
+    phone_hash: Optional[str] = None

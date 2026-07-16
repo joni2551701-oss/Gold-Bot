@@ -16,7 +16,7 @@ logger = setup_logger("UserRepository")
 # column name (sqlite3.Row), so column order here is irrelevant.
 _USER_SELECT_COLUMNS = (
     "SELECT telegram_id, username, language, trading_style, risk_percent, "
-    "timeframe, created_at, strategy, notifications_enabled, status, last_activity"
+    "timeframe, created_at, strategy, notifications_enabled, status, last_activity, phone_hash"
 )
 
 
@@ -33,6 +33,7 @@ def _row_to_record(row) -> UserRecord:
         notifications_enabled=bool(row["notifications_enabled"]),
         status=row["status"],
         last_activity=row["last_activity"],
+        phone_hash=row["phone_hash"],
     )
 
 
@@ -151,7 +152,7 @@ class UserRepository:
         allowed = {
             "username", "language", "trading_style", "risk_percent",
             "timeframe", "strategy", "notifications_enabled",
-            "status", "last_activity",
+            "status", "last_activity", "phone_hash",
         }
         updates = {k: v for k, v in fields.items() if k in allowed}
         if not updates:
@@ -231,3 +232,26 @@ class UserRepository:
 
     def activate_user(self, telegram_id) -> bool:
         return self.update_user(telegram_id, status="ACTIVE")
+
+    def set_phone_hash(self, telegram_id, phone_hash: str) -> bool:
+        """
+        Records an already-hashed phone number (Phase 61.4 TASK 4) --
+        this repository never receives or stores a raw phone number;
+        hashing happens in core.phone_hash.hash_phone_number() before
+        this method is ever called.
+        """
+        return self.update_user(telegram_id, phone_hash=phone_hash)
+
+    def get_users_by_phone_hash(self, phone_hash: str) -> List[UserRecord]:
+        """
+        Every user row sharing this phone_hash -- used by
+        ai/access/trial_manager.py (TASK 5) to detect the same phone
+        number re-registering under a different telegram_id for
+        repeated free trials. Ordinarily 0 or 1 rows; more than 1
+        means exactly the abuse pattern that lookup exists to catch.
+        """
+        with self.db as conn:
+            cursor = conn.execute(
+                _USER_SELECT_COLUMNS + " FROM users WHERE phone_hash = ?", (phone_hash,)
+            )
+            return [_row_to_record(row) for row in cursor.fetchall()]

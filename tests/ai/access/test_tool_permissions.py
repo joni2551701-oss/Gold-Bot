@@ -41,3 +41,11 @@ def test_custom_matrix_overrides_default():
 def test_unknown_tool_name_is_never_allowed():
     permissions = ToolPermissions()
     assert permissions.is_tool_allowed(AIRole.OWNER, "nonexistent_tool") is False
+
+
+def test_learning_tool_is_included_per_phase_61_4_task_2_correction():
+    """docs/PHASE61_4_PRODUCT_CONTROL_AUDIT.md found this matrix had drifted -- learning_tool (Phase 61.3 TASK 4) was missing from every role."""
+    permissions = ToolPermissions()
+    for role in (AIRole.OWNER, AIRole.ADMIN, AIRole.VIP, AIRole.PREMIUM):
+        assert permissions.is_tool_allowed(role, "learning_tool") is True
+    assert permissions.is_tool_allowed(AIRole.FREE, "learning_tool") is False

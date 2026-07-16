@@ -189,12 +189,41 @@ Makes the Phase 61.2 runtime lifecycle usable — see
   `ResponseLog`.
 - `audit/provider_stats.py` — `rank_providers()`, extended in place.
 
+## AI Product & Control Layer (Phase 61.4)
+
+The real access-control and owner-control layer around the AI Core —
+see `docs/AI_PRODUCT_CONTROL_LAYER.md` and
+`docs/PHASE61_4_PRODUCT_CONTROL_AUDIT.md` (reuse audit):
+
+- `access/permission_service.py`/`subscription_policy.py`/
+  `user_capability.py` — the real `telegram_id -> AIRole` resolver.
+  Accepts already-resolved identity facts (`is_owner`/`is_admin`/
+  `plan`) from the caller; never imports `telegram/`/`database/`
+  itself.
+- `access/tool_permissions.py` — corrected in place (`"learning_tool"`
+  was missing from every role's set).
+- `access/usage_limits.py` — `set_limit()` added; `__init__` now
+  copies its default limits dict instead of aliasing it (a real bug
+  fix — the alias could have let one instance's `set_limit()` mutate
+  every other instance's defaults).
+- `access/identity_checker.py`/`trial_manager.py` — "1 phone = 1
+  trial" enforcement; a pure phone-reuse check plus an in-memory
+  7-day trial window.
+- `audit/usage_accounting.py` — `compute_user_usage()`, a per-user
+  cost/token aggregation generalizing `audit/trace.py`'s existing
+  join.
+- `core/phone_hash.py` (outside `ai/`) — salted phone-number hashing;
+  the raw phone number is never stored.
+- `telegram/owner/ai_commands.py` (outside `ai/`) — `/ai_status`,
+  `/ai_provider`, `/ai_disable`, `/ai_enable`, `/ai_limit`,
+  `/ai_cost`, `/ai_usage`, foundation only.
+
 ## Future Roadmap
 Full audit and folder-structure rationale in `docs/AI_ARCHITECTURE.md`.
 The real work — replacing the permanent-reject stub with actual
 heuristic/model scoring — is still out of scope (`ai/ai_analyzer.py`
 is a separate, live production module this phase does not touch). No
-module built across Phase 61.0-61.3 is live-wired into
+module built across Phase 61.0-61.4 is live-wired into
 `core/pipeline.py` or `telegram/command_router.py` yet — see
-`docs/PHASE61_3_INTELLIGENCE_FREEZE.md`'s "Remaining" section for what
-comes next.
+`docs/PHASE61_4_PRODUCT_CONTROL_FREEZE.md`'s "Remaining" section for
+what comes next.
