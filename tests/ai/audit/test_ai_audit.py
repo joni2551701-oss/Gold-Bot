@@ -56,3 +56,52 @@ def test_success_rate_is_zero_when_no_calls():
     from ai.audit.provider_stats import ProviderStats
     stats = ProviderStats(provider_name="x", total_calls=0, success_count=0, avg_latency_ms=0.0, total_tokens=0, total_cost=0.0)
     assert stats.success_rate == 0.0
+
+
+def test_rank_providers_orders_by_success_rate_first():
+    from ai.audit.provider_stats import ProviderStats, rank_providers
+
+    stats = {
+        "slow_reliable": ProviderStats(provider_name="slow_reliable", total_calls=10, success_count=10, avg_latency_ms=500.0, total_tokens=0, total_cost=0.0),
+        "fast_unreliable": ProviderStats(provider_name="fast_unreliable", total_calls=10, success_count=2, avg_latency_ms=50.0, total_tokens=0, total_cost=0.0),
+    }
+    ranked = rank_providers(stats)
+    assert [s.provider_name for s in ranked] == ["slow_reliable", "fast_unreliable"]
+
+
+def test_rank_providers_breaks_success_rate_ties_by_latency():
+    from ai.audit.provider_stats import ProviderStats, rank_providers
+
+    stats = {
+        "slower": ProviderStats(provider_name="slower", total_calls=10, success_count=10, avg_latency_ms=300.0, total_tokens=0, total_cost=0.0),
+        "faster": ProviderStats(provider_name="faster", total_calls=10, success_count=10, avg_latency_ms=100.0, total_tokens=0, total_cost=0.0),
+    }
+    ranked = rank_providers(stats)
+    assert [s.provider_name for s in ranked] == ["faster", "slower"]
+
+
+def test_rank_providers_breaks_remaining_ties_by_cost():
+    from ai.audit.provider_stats import ProviderStats, rank_providers
+
+    stats = {
+        "expensive": ProviderStats(provider_name="expensive", total_calls=10, success_count=10, avg_latency_ms=100.0, total_tokens=0, total_cost=1.0),
+        "cheap": ProviderStats(provider_name="cheap", total_calls=10, success_count=10, avg_latency_ms=100.0, total_tokens=0, total_cost=0.1),
+    }
+    ranked = rank_providers(stats)
+    assert [s.provider_name for s in ranked] == ["cheap", "expensive"]
+
+
+def test_rank_providers_on_empty_stats_returns_empty_list():
+    from ai.audit.provider_stats import rank_providers
+    assert rank_providers({}) == []
+
+
+def test_rank_providers_end_to_end_from_response_log():
+    from ai.audit.provider_stats import compute_provider_stats, rank_providers
+
+    log = ResponseLog()
+    log.record(request_id="r1", capability=Capability.CHAT, provider_name="gemini", latency_ms=100.0, tokens=10, cost=0.01, status="SUCCESS")
+    log.record(request_id="r2", capability=Capability.CHAT, provider_name="openai", latency_ms=50.0, tokens=5, cost=0.005, status="FAILED")
+
+    ranked = rank_providers(compute_provider_stats(log.all()))
+    assert ranked[0].provider_name == "gemini"

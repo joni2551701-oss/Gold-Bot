@@ -1,7 +1,7 @@
 """
 AI Layer — Provider Stats (Phase 61.0: AI Infrastructure Foundation,
 TASK 9; wired to real runtime data Phase 61.2: AI Runtime Foundation,
-TASK 9).
+TASK 9; ranking added Phase 61.3: AI Intelligence Layer, TASK 9).
 
 Pure aggregation over an already-recorded `response_log.py` history --
 never fetches or computes latency/cost itself, matching every other
@@ -19,6 +19,12 @@ logic itself is unchanged. **Observability only**: neither
 has no import of this module at all, and `AIService.ask()`'s only use
 of `ai/audit/` is to *write* `RequestLog`/`ResponseLog` entries, never
 to read `ProviderStats` back.
+
+Phase 61.3 TASK 9: `rank_providers()` is a ranking function over this
+same, unmodified `ProviderStats` shape -- again extended in place, no
+new metrics module and no new field. Still observability only: nothing
+in `ai/router/` or `ai/runtime/` calls this function; it exists for a
+future owner-facing report/command to read.
 """
 
 from collections import defaultdict
@@ -66,3 +72,17 @@ def compute_provider_stats(entries: List[AIResponseLogEntry]) -> Dict[str, Provi
             avg_latency_ms=avg_latency, total_tokens=total_tokens, total_cost=total_cost,
         )
     return stats
+
+
+def rank_providers(stats: Dict[str, ProviderStats]) -> List[ProviderStats]:
+    """
+    Best-first ranking over `compute_provider_stats()`'s own output --
+    no new metric, no re-fetch. Primary key: `success_rate` descending
+    (a provider that answers reliably ranks above one that doesn't,
+    regardless of speed). Tiebreaker 1: `avg_latency_ms` ascending
+    (faster wins among equally reliable providers). Tiebreaker 2:
+    `total_cost` ascending (cheaper wins among equally reliable,
+    equally fast providers). Never raises: an empty `stats` dict
+    returns an empty list.
+    """
+    return sorted(stats.values(), key=lambda s: (-s.success_rate, s.avg_latency_ms, s.total_cost))

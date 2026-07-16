@@ -1937,6 +1937,40 @@ a URL (Rule 2, verified by test). `core/pipeline.py`, `decision/`,
 and the real `GeminiProvider` are not called from any live caller this
 phase.
 
+### Phase 61.3 — AI Intelligence Layer
+
+Makes the Phase 61.2 lifecycle usable. Full detail:
+`docs/AI_INTELLIGENCE_LAYER.md`, `docs/PHASE61_3_INTELLIGENCE_AUDIT.md`
+(TASK 1 reuse audit), `docs/PHASE61_3_INTELLIGENCE_FREEZE.md` (closing
+freeze declaration).
+
+```
+knowledge/                              (new top-level package, zero dependencies)
+  models.py, smc.py, wyckoff.py, risk.py, psychology.py, examples.py, faq.py
+  registry.py     (get_entry / entries_by_category / search / all_entries)
+
+ai/context/context_adapter.py           (+market_context_from_snapshot(), TYPE_CHECKING-only)
+ai/tools/*.py                           (real read-only logic, replacing all 5 placeholder stubs)
+ai/conversation/conversation_engine.py  (ConversationEngine -- first real caller of ai/session/)
+ai/memory/memory_runtime.py             (MemoryRuntime -- 5-layer facade over ContextMemory)
+ai/explanation/explanation_engine.py    (ExplanationEngine -- wraps AIService)
+ai/runtime/runtime_response.py          (+request_id)
+ai/audit/trace.py                       (trace_request() -- RequestLog/ResponseLog join)
+ai/audit/provider_stats.py              (+rank_providers())
+```
+
+One non-additive change to Phase 61.2 code: `ai/runtime/ai_service.py`'s
+cache-key `context_hash` now hashes the resolved prompt text (via the
+existing `context_hash` override parameter) instead of defaulting to
+`ai_context.snapshot_id` alone — necessary once `ConversationEngine`
+became the first caller supplying distinct explicit prompts against
+the same `AIContext`; every pre-existing cache-hit test still passes.
+`ai/tools/*.py` never reads `database/` directly (an architecture
+correction from this phase's own initial audit plan) — every tool
+accepts an already-built input object instead. `core/pipeline.py`,
+`decision/`, `risk/`, `execution/`, `strategies/`, `signals/`
+unchanged; nothing built this phase is called from any live caller.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

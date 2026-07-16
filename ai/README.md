@@ -163,11 +163,38 @@ The first real, end-to-end AI request lifecycle — see
 - `core/secrets.py` — `OPENAI_API_KEY`/`CLAUDE_API_KEY`/
   `GROK_API_KEY`/`LOCAL_LLM_CONFIG`, all optional.
 
+## AI Intelligence Layer (Phase 61.3)
+
+Makes the Phase 61.2 runtime lifecycle usable — see
+`docs/AI_INTELLIGENCE_LAYER.md` and
+`docs/PHASE61_3_INTELLIGENCE_AUDIT.md` (reuse audit):
+
+- `context/context_adapter.py` — `market_context_from_snapshot()`, the
+  `ContextSnapshotSchema -> MarketContext` adapter, `TYPE_CHECKING`-only.
+- `knowledge/` (new top-level package, sibling to `ai/`, zero
+  dependencies) — static SMC/Wyckoff/Risk/Psychology/Examples/FAQ
+  entries + `registry.py` lookup.
+- `tools/*.py` — all five tools (`market_tool`/`news_tool`/
+  `analytics_tool`/`education_tool`/`learning_tool`, new) given real,
+  read-only logic over already-built input objects (never a direct
+  `database/` read).
+- `conversation/conversation_engine.py` — `ConversationEngine`, the
+  first real caller of `session/` and `runtime/ai_service.py`.
+- `memory/memory_runtime.py` — `MemoryRuntime`, a 5-layer facade over
+  `memory/context_memory.py`'s `ContextMemory` (unmodified).
+- `explanation/explanation_engine.py` — `ExplanationEngine`, wraps
+  `AIService` for EXPLANATION/SUMMARY/EDUCATION/ANALYSIS.
+- `runtime/runtime_response.py` — `RuntimeResponse.request_id`;
+  `audit/trace.py` (new) — `trace_request()` joins `RequestLog`/
+  `ResponseLog`.
+- `audit/provider_stats.py` — `rank_providers()`, extended in place.
+
 ## Future Roadmap
 Full audit and folder-structure rationale in `docs/AI_ARCHITECTURE.md`.
 The real work — replacing the permanent-reject stub with actual
 heuristic/model scoring — is still out of scope (`ai/ai_analyzer.py`
-is a separate, live production module this phase does not touch).
-Phase 61.3 (per the Director's own brief) covers AI Memory Runtime,
-Knowledge Base, real Tool Calling integration, and an AI Assistant
-Layer.
+is a separate, live production module this phase does not touch). No
+module built across Phase 61.0-61.3 is live-wired into
+`core/pipeline.py` or `telegram/command_router.py` yet — see
+`docs/PHASE61_3_INTELLIGENCE_FREEZE.md`'s "Remaining" section for what
+comes next.

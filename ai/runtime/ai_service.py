@@ -32,8 +32,28 @@ real error) and re-routes -- `AIRouter.route()` naturally skips a
 provider `ProviderHealthTracker` now reports unavailable. Bounded to
 one attempt per registered provider so a request can never loop
 forever.
+
+Cache key correction (Phase 61.3: AI Intelligence Layer, TASK 5): the
+cache key's `context_hash` is now the resolved prompt's own SHA-256,
+passed via `build_cache_key_from_context()`'s existing (Phase 61.1.1)
+`context_hash` override parameter -- not a new parameter, not a new
+`CacheKey` field. Necessary once `ai/conversation/conversation_engine.py`
+became the first real caller supplying distinct explicit `request.prompt`
+values (different user chat messages) against the *same* `AIContext`:
+`context_hash` previously defaulted to `ai_context.snapshot_id` alone,
+so two different questions about the same market snapshot would have
+collided on one cache entry and returned the first question's answer
+to the second question. Hashing the resolved prompt instead still
+produces an identical key across two calls with identical resolved
+prompts (the market-analysis-template path, where `PromptManager`
+templates are a pure deterministic function of `MarketContext` -- no
+timestamp interpolation), so every pre-existing cache-hit test keeps
+passing; it additionally now distinguishes any two calls whose
+resolved prompt text actually differs, which `ai_context.snapshot_id`
+alone could never do.
 """
 
+import hashlib
 import time
 from typing import Dict, Optional
 
@@ -151,6 +171,7 @@ class AIService:
 
             cache_key = build_cache_key_from_context(
                 request.ai_context, request.capability, provider_name, _PROMPT_VERSION, request.role.value,
+                context_hash=hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
             )
             cached_entry = self._response_cache.get(cache_key)
             if cached_entry is not None:
@@ -195,6 +216,7 @@ class AIService:
                 return RuntimeResponse(
                     accepted=False, content=None, provider_name=provider_name,
                     reason="response failed validation", errors=validation.errors,
+                    request_id=request_record.request_id,
                 )
 
             self._response_log.record(
@@ -206,6 +228,7 @@ class AIService:
             return RuntimeResponse(
                 accepted=True, content=result.content, provider_name=provider_name,
                 reason="provider call succeeded", metadata=result.metadata,
+                request_id=request_record.request_id,
             )
 
         return RuntimeResponse(
