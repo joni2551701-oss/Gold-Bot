@@ -115,11 +115,29 @@ and `docs/PHASE61_1_PROVIDER_AUDIT.md` (reuse audit):
   cache whose key structurally requires Capability + Context Version +
   Provider + Prompt Version + Context Hash (never bare prompt text).
 
+## AI Foundation Corrections (Phase 61.1.1)
+
+Small, corrections-only pass, no new package — see
+`docs/PHASE61_1_1_FOUNDATION_CORRECTIONS.md`:
+
+- `context/context_builder.py` + `context/context_snapshot.py` —
+  `AIContext.snapshot_id`, a deterministic, content-derived identity
+  (never time/random-derived), computed only by `build_ai_context()`.
+- `cache/cache_policy.py` — `CacheKey` gained `snapshot_id` as a sixth,
+  required field; `build_cache_key_from_context()` is the blessed
+  constructor, pulling it from an `AIContext` rather than letting a
+  caller invent one.
+- `prompts/prompt_registry.py` — `PromptLifecycleState`
+  (ACTIVE/DEPRECATED/ARCHIVED); `set_active()`/`rollback()` refuse to
+  select a non-ACTIVE version.
+- `docs/AI_PROVIDER_FOUNDATION.md` — documentation-only "Provider
+  Preference vs Provider Health" correction, no code change.
+
 ## Future Roadmap
 Full audit and folder-structure rationale in `docs/AI_ARCHITECTURE.md`.
 The real work — replacing the permanent-reject stub with actual
 heuristic/model scoring, and wiring a real provider into `ai/providers/` —
-is explicitly out of Phase 61.0/61.1's scope. Phase 61.2 (deferred by
-Phase 61.1's own brief) covers the Workflow Engine, real Provider API
-integration, streaming, Conversation Engine, AI Explanation Runtime,
-and traffic-based provider auto-selection.
+is explicitly out of Phase 61.0/61.1/61.1.1's scope. Phase 61.2
+(deferred by Phase 61.1's own brief) covers the Workflow Engine, real
+Provider API integration, streaming, Conversation Engine, AI
+Explanation Runtime, and traffic-based provider auto-selection.

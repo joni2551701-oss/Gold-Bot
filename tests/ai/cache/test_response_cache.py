@@ -13,6 +13,7 @@ def _make_key(**overrides):
     defaults = dict(
         capability=Capability.CHAT, context_version="1.0", provider_name="gemini",
         prompt_version="v1", context_hash=compute_context_hash({"symbol": "XAUUSD"}),
+        snapshot_id=compute_context_hash({"snapshot": "snapshot-1"}),
     )
     defaults.update(overrides)
     return CacheKey(**defaults)
@@ -28,7 +29,7 @@ def test_compute_context_hash_differs_for_different_payloads():
     assert compute_context_hash({"a": 1}) != compute_context_hash({"a": 2})
 
 
-def test_cache_key_requires_all_five_fields():
+def test_cache_key_requires_all_six_fields():
     with pytest.raises(TypeError):
         CacheKey(capability=Capability.CHAT)
 

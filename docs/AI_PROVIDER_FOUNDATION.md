@@ -29,6 +29,43 @@ candidate lists, so it narrows nothing Phase 61.0 already routed.
 `supports(provider_name, capability)` lets the router reject a
 candidate the routing table names but the provider never declared.
 
+### Provider Preference vs Provider Health (Phase 61.1.1 TASK 4 correction)
+
+Two independent concepts, easy to conflate, so stated explicitly here:
+
+- **`ProviderStatus`** (`provider_manager.py`) = **owner intent** —
+  PREFERRED/FALLBACK/DISABLED, set only by an explicit `set_status()`
+  call. Nothing in this codebase changes it automatically.
+- **`ProviderHealth`** (`provider_status.py`/`provider_health.py`) =
+  **observed runtime reality** — ONLINE/DEGRADED/RATE_LIMITED/OFFLINE/
+  DISABLED, set only by an explicit `record()`/`mark_recovered()` call
+  (no real health check exists yet — that is future, out-of-scope
+  work).
+
+Worked example, the exact sequence a real outage/recovery would
+produce:
+
+```
+gemini: ProviderStatus.PREFERRED, HealthStatus.ONLINE
+  -> gemini goes down; caller records HealthStatus.OFFLINE
+gemini: ProviderStatus.PREFERRED (unchanged), HealthStatus.OFFLINE
+  -> router.route() skips gemini (unhealthy), selects openai instead
+  -> caller later calls tracker.mark_recovered("gemini")
+gemini: ProviderStatus.PREFERRED (still unchanged), HealthStatus.ONLINE
+  -> router.route() selects gemini again -- automatically, because
+     ProviderStatus was never touched during the outage
+```
+
+**No demotion happens.** `ProviderStatus` is never automatically
+changed by a health observation, in either direction — an owner's
+PREFERRED/FALLBACK/DISABLED configuration survives an outage exactly
+as it was set. This is why recovery-to-PREFERRED looks automatic: it
+is automatic only in the sense that nothing ever took PREFERRED away.
+If a real outage-response policy ever needs actual demotion (e.g.
+auto-DISABLE after N consecutive OFFLINE observations), that is new
+behavior for a future phase to add explicitly, not something either
+class does today.
+
 ### `ai/router/` — Router Safety + Metrics (TASK 4/8)
 
 `AIRouter.route()`'s selection walk now checks, per candidate, in
@@ -44,13 +81,21 @@ metrics module, per TASK 8's own instruction) over an optional
 `response_log`. `route()` never calls or is influenced by this method
 — no automatic optimization.
 
-### `ai/prompts/` — Prompt Registry (TASK 5)
+### `ai/prompts/` — Prompt Registry + Lifecycle (TASK 5; lifecycle added Phase 61.1.1 TASK 3)
 
 `prompt_registry.PromptRegistry` adds version/active/rollback
 bookkeeping (`register()`, `set_active()`, `rollback()`,
 `list_versions()`) for named prompts (e.g. `"market_analysis"` v1/v2/
 v3). `PromptManager` itself is unmodified — this is a new sibling
 module inside the same package, not a replacement.
+
+Phase 61.1.1 adds `PromptLifecycleState` (ACTIVE/DEPRECATED/ARCHIVED)
+on `PromptVersionRecord`, defaulting to ACTIVE at registration.
+`deprecate()`/`archive()` change a version's state without touching
+which version is currently active. `set_active()` and `rollback()`
+both refuse to select a DEPRECATED or ARCHIVED version — it stays
+visible in `list_versions()` (history is never deleted) but can never
+again become the active one through either path.
 
 ### `ai/access/` — Tool Permission Matrix (TASK 6)
 
@@ -66,18 +111,36 @@ existing Role × Capability matrix — same package, new file, same
 `build_ai_context()` keeps working unchanged. `built_at` already
 served the brief's "created_at" purpose and was not duplicated.
 
-### `ai/cache/` — Response Cache Foundation (TASK 9, new package)
+### `ai/cache/` — Response Cache Foundation (TASK 9; freshness corrected Phase 61.1.1 TASK 2)
 
-`cache_policy.CacheKey` is a five-field dataclass (Capability +
-Context Version + Provider + Prompt Version + Context Hash) —
-structurally forbidding a bare-prompt-text cache key, the same
+`cache_policy.CacheKey` is a six-field dataclass (Capability + Context
+Version + Provider + Prompt Version + Context Hash + **Snapshot ID**)
+— structurally forbidding a bare-prompt-text cache key, the same
 "enforce the rule in the type" posture `ai/context/context_adapter.py`
-already uses. `compute_context_hash()` is a deterministic SHA-256 over
-a JSON-serializable payload (e.g. `AIContext.to_dict()`).
-`response_cache.ResponseCache` is a TTL-bound, in-memory store
-(`CachePolicy.default_ttl_seconds`, 300s default) — an expired entry
-is evicted on the next `get()`. Not wired into any provider call this
-phase.
+already uses.
+
+**Freshness chain: Snapshot identity -> Cache freshness -> TTL.**
+`snapshot_id` is produced exclusively by
+`ai.context.context_builder.build_ai_context()` — never by a caller,
+never via `datetime.now()`/`uuid.uuid4()` at cache-key-construction
+time. It is a deterministic SHA-256 (via `compute_context_hash()`)
+over the built `AIContext`'s own content with `built_at` excluded:
+identical inputs always produce the identical `snapshot_id` (a
+legitimate cache hit is possible), different inputs always produce a
+different one (a stale answer can never be served for genuinely
+different content). `build_cache_key_from_context(ai_context, ...)`
+is the blessed way to build a `CacheKey` — it pulls `snapshot_id`
+straight off an already-built `AIContext` and raises `ValueError` if
+that `AIContext` was never built through `build_ai_context()` (i.e.
+`snapshot_id` is `None`), rather than silently falling back to a
+caller-invented value.
+
+`CachePolicy.default_ttl_seconds` (300s default) is the second,
+independent layer: even a snapshot whose content hasn't changed (a
+quiet market between provider polls) stops being served from cache
+once the TTL elapses — content-identity alone never grants permanent
+freshness. `response_cache.ResponseCache` evicts an expired entry on
+the next `get()`. Not wired into any provider call this phase.
 
 ## Not wired
 
@@ -88,7 +151,7 @@ Every module in this document is foundation only — none is imported by
 
 ## Tests
 
-`tests/ai/providers/test_provider_health.py`,
+`tests/ai/providers/test_ai_provider_health.py`,
 `tests/ai/providers/test_provider_capabilities.py`,
 `tests/ai/router/test_router_reliability.py`,
 `tests/ai/test_prompt_registry.py`,
@@ -99,7 +162,9 @@ transitions, failover selection, capability-matrix gating, router
 backward-compatibility (Phase 61.0 behavior unchanged when no health
 tracker is supplied), read-only metrics (never influencing selection),
 prompt version/rollback, tool permission matrix, additive context
-versioning, and cache key/TTL/expiry behavior.
+versioning, and cache key/TTL/expiry behavior. Phase 61.1.1 adds
+snapshot-identity cache hit/miss tests and prompt-lifecycle selection
+tests — see `docs/PHASE61_1_1_FOUNDATION_CORRECTIONS.md`.
 
 ## Deferred to Phase 61.2
 

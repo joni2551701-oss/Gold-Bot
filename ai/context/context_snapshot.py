@@ -15,6 +15,15 @@ additive with safe defaults so every Phase 61.0 caller of
 serves the brief's own "created_at" purpose (Phase 61.0) -- not
 duplicated under a second field name, per the Module Reuse Principle
 applied within this dataclass itself.
+
+Phase 61.1.1 TASK 2 adds `snapshot_id` -- a deterministic, content-derived
+identity for this specific snapshot, set exclusively by
+`build_ai_context()` (never by direct `AIContext(...)` construction,
+never `datetime.now()`/`uuid.uuid4()`). See
+`ai/context/context_builder.py`'s docstring for how it is computed and
+`docs/PHASE61_1_1_FOUNDATION_CORRECTIONS_AUDIT.md` for why `built_at`
+itself cannot serve this purpose (it changes on every call even for
+byte-identical inputs).
 """
 
 from dataclasses import dataclass, field
@@ -45,6 +54,11 @@ class AIContext:
         `schema_version`, which never changes just because the inputs
         did. Both default to "1.0", the shape/inputs Phase 61.0
         shipped.
+    snapshot_id: None until `build_ai_context()` sets it -- a plain
+        `AIContext(...)` construction (e.g. in a test) leaving this
+        `None` is a deliberate signal that this instance was not built
+        through the canonical path; `ai.cache.cache_policy.build_cache_key_from_context()`
+        refuses to build a cache key from such an instance.
     """
     market_context: Optional[MarketContext] = None
     signal: Optional[SignalSchema] = None
@@ -54,6 +68,7 @@ class AIContext:
     built_at: Optional[datetime] = None
     schema_version: str = "1.0"
     context_version: str = "1.0"
+    snapshot_id: Optional[str] = None
 
     def to_dict(self) -> dict:
         """JSON-safe dict for logging/inspection -- not itself a prompt or an API payload (that is a future phase's job, e.g. ai/prompts/)."""
@@ -76,4 +91,5 @@ class AIContext:
             "built_at": self.built_at.isoformat() if self.built_at else None,
             "schema_version": self.schema_version,
             "context_version": self.context_version,
+            "snapshot_id": self.snapshot_id,
         }

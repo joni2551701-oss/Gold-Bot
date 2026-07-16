@@ -1873,6 +1873,33 @@ No real AI/LLM API call anywhere. `core/pipeline.py`, `strategies/`,
 is optional-input, additive, or a new sibling module beside an existing
 one, never a replacement.
 
+### Phase 61.1.1 — AI Foundation Corrections
+
+A small, corrections-only phase, no new package. Full detail:
+`docs/PHASE61_1_1_FOUNDATION_CORRECTIONS.md`,
+`docs/PHASE61_1_1_FOUNDATION_CORRECTIONS_AUDIT.md`.
+
+```
+ai/context/context_builder.py  (build_ai_context() now also computes AIContext.snapshot_id -- content-derived, never time/random-derived)
+        |
+        v
+ai/cache/cache_policy.py       (CacheKey +snapshot_id (6th field); build_cache_key_from_context() is the blessed constructor)
+        |
+        v
+ai/cache/response_cache.py     (unchanged -- transparently keys off the now-6-field CacheKey)
+
+ai/prompts/prompt_registry.py  (+PromptLifecycleState: ACTIVE/DEPRECATED/ARCHIVED; set_active()/rollback() refuse non-ACTIVE)
+```
+
+Freshness chain: **Snapshot identity -> Cache freshness -> TTL** — a
+cache hit requires matching `snapshot_id` (content-derived, so
+identical inputs always match and different inputs never do) *and*
+being within `CachePolicy.default_ttl_seconds`. `ai/router/router.py`
+is untouched this phase; `docs/AI_PROVIDER_FOUNDATION.md` gained a
+documentation-only "Provider Preference vs Provider Health" section
+(no code change). `core/`, `decision/`, `risk/`, `execution/`,
+`strategies/`, `signals/`, `learning/` unchanged.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real
