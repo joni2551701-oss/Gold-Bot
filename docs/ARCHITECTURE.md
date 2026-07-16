@@ -1718,6 +1718,90 @@ None of `decision/`, `risk/`, `strategies/`, `signals/`, `context/`,
 `ai/`, or `execution/execution_engine.py` changed in this phase. No
 new trading functionality — a registry/wiring cleanup only.
 
+### Phase 60.10 — v0.4 Foundation Freeze & Final Architecture Audit
+
+Audit-only, no code changed anywhere. Full detail:
+`docs/PHASE60_10_FOUNDATION_AUDIT.md` (module inventory, dependency
+graph, dead-code and duplicate findings), `docs/FOUNDATION_FREEZE_v0.4.md`
+(the freeze declaration itself).
+
+**Full platform diagram** — every module name below is real and
+already exists in this repository as of this phase:
+
+```
+User
+  |
+  v
+telegram/handlers.py, telegram/command_router.py  (live product commands)
+telegram/owner/*.py  (18 modules -- real, tested, not yet registered here)
+  |
+  v
+core/pipeline.py (TradingPipeline.run())
+  |
+  +--> core/guards/pipeline_guard.py (PipelineGuard, Emergency-gated: Phase 60.8/60.9)
+  |
+  v
+data/market_data.py, data/providers/*, data/data_quality.py        (Market Data + Data Quality)
+  |
+  v
+context/context_orchestrator.py, context/htf_bias.py,
+context/market_regime.py, context/market_phase.py,
+context/fundamental_context.py                                      (Context)
+  |
+  v
+strategies/strategy_manager.py                                      (Strategy)
+  |
+  v
+signals/signal_engine.py, signals/signal_quality.py,
+signals/explainability.py                                           (Signal)
+  |
+  v
+features/feature_engine.py                                          (Features)
+  |
+  v
+ai/ai_analyzer.py (heuristic stub), ai/prompts/prompt_manager.py    (AI -- advisory only)
+  |
+  v
+decision/decision_engine.py                                         (Decision)
+  |
+  v
+risk/risk_manager.py                                                (Risk -- the one hard gate)
+  |
+  v
+lifecycle/paper_trade.py                                            (Paper Trade)
+  |
+  v
+execution/simulator/simulator_engine.py                             (Execution Simulator -- foundation)
+execution/execution_engine.py                                       (Execution -- deliberately inert, v0.5 MT5)
+  |
+  v
+learning/trade_event_bridge.py, learning/outcome_analyzer.py,
+learning/pattern_detector.py, learning/confidence.py,
+learning/regime_memory.py                                            (Learning -- observe/analyze/report only)
+  |
+  v
+ai/learning_context.py                                               (Adaptive -- AI memory adapter, read-only)
+  |
+  v
+analytics/*_report.py, analytics/performance_metrics.py,
+analytics/equity_curve.py, analytics/benchmark.py                    (Analytics)
+  |
+  v
+database/*_repository.py                                             (Database)
+```
+
+Parallel, not sequential: `backtesting/backtest_engine.py` composes
+the exact same Context->Strategy->Signal->AI->Decision->Risk->Paper
+Trade->Learning chain above, off `backtesting/replay_engine.py`'s
+`IDataFeed` instead of live market data (Phase 60.1/60.2/60.8).
+`core/emergency/emergency_manager.py` sits beside `core/pipeline.py`,
+read by `PipelineGuard` only — never itself in the data-flow chain.
+
+**Version roadmap**: see `docs/SYSTEM_OVERVIEW.md`'s own "Version
+roadmap" section (updated this phase) for the full v0.1 through v1.0
+table, including planned-but-unbuilt components (MT5/Bitget/BingX/MEXC
+providers, Admin Panel live commands, AI Avatar/Voice/Hologram layers).
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

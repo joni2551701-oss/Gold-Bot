@@ -8,22 +8,35 @@ GoldBot analyzes XAUUSD price action using Smart Money Concepts (market structur
 
 ## Architecture
 
-GoldBot v0.2 is two separate processes sharing one SQLite database:
+As of Phase 60.10 (v0.4 Foundation Freeze), GoldBot is two live
+processes sharing one SQLite database, plus a large, tested foundation
+layer not yet live-wired (see `docs/FOUNDATION_FREEZE_v0.4.md` for the
+full inventory):
 
 - **Trading pipeline** (`main.py`, scheduled via `.github/workflows/trading_bot.yml`):
-  Market Data → Context → Strategy → Signal → AI → Decision → Risk →
-  Signal Formatter → Telegram Delivery → Persistence. One run per
-  invocation; exits when done.
+  Market Data → Data Quality → HTF Bias → Context → Market Phase →
+  Signal → Signal Quality → Explainability → Features → AI → Decision
+  → Risk → Signal History → Telegram Format → Telegram Delivery →
+  Persistence, gated at four points by `core/guards/pipeline_guard.py`'s
+  `PipelineGuard` (Emergency-controlled: Pause/Kill/Maintenance/Resume,
+  Phase 60.8/60.9). One run per invocation; exits when done.
 - **Telegram product layer** (`telegram/polling.py`, run as a
   long-lived process): user registration, settings, subscription
   (`FREE`/`PREMIUM`/`VIP`), signal access control, an admin panel, and
   a feedback system — built entirely on top of the pipeline's output,
   without modifying pipeline/strategy/AI/risk logic.
+- **Foundation layer** (not live-wired, real and tested):
+  Backtesting/Replay, Execution Simulator, Learning Loop, Adaptive
+  Intelligence, Fundamental Intelligence, Performance Validation, and
+  18 Owner Command modules — see `docs/ARCHITECTURE.md`'s per-phase
+  sections and `docs/FOUNDATION_FREEZE_v0.4.md` for what's built and
+  what's deliberately still unwired.
 
 See `docs/telegram_layer.md` for the full service/permission map,
 `docs/database_schema.md` for the table-by-table schema, and
 `docs/commands_reference.md` for every Telegram command. Release-level
-notes live in `docs/v0.2_release_notes.md`.
+notes live in `docs/v0.2_release_notes.md`; the current version
+roadmap is in `docs/SYSTEM_OVERVIEW.md`.
 
 ## Documentation
 
@@ -38,6 +51,8 @@ GoldBot is and where to go next. The full documentation set:
 | `docs/DECISION_PRINCIPLES.md` | Decision ownership — which module has final say over what. |
 | `docs/DEVELOPMENT_GUIDE.md` | Development rules — the workflow for any code change, and what's forbidden without explicit approval. |
 | `docs/DOCUMENTATION_STANDARD.md` | The format every module's own documentation follows. |
+| `docs/FOUNDATION_FREEZE_v0.4.md` | What's complete, what's remaining, and the Foundation Principles GoldBot's architecture commits to before the v0.4 AI phase begins. |
+| `docs/PHASE60_10_FOUNDATION_AUDIT.md` | The full module inventory, dependency graph, dead-code findings, and duplicate-code findings behind the freeze declaration. |
 | `CLAUDE.md` | The enforced, checked-in version of the same architecture and Trading Safety rules, for any AI agent working in this repository. |
 
 Every other `docs/*.md` file is a phase- or topic-specific deep dive

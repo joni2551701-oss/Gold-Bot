@@ -64,20 +64,35 @@ The exact, implementation-accurate `core/pipeline.py` stage order
 
 ## Version roadmap
 
+**Foundation (complete as of Phase 60.10 — see `docs/FOUNDATION_FREEZE_v0.4.md`):**
+
 | Version | Theme |
 |---|---|
 | v0.1 | Trading Engine — the original SMC strategy/signal/AI/decision/risk pipeline. |
 | v0.2 | Telegram Product — user registration, subscriptions, admin panel, feedback, built on top of v0.1's pipeline output. |
 | v0.3 | Foundation Hardening & Optimization — a professionalization pass over v0.2, no new user-facing feature. |
-| v0.3.5 | Architecture Completion — foundation layers for future AI/Research/Multi-Asset work: HTF Bias, Decision Engine v2, Signal Quality Score, Wyckoff, Session Intelligence, Market Regime, Data Quality, Explainability, Feature Engineering, Strategy Lifecycle, Asset Intelligence, Configuration & Feature Flags, and this Documentation Architecture (Phases A1 through A14, this document's own phase). |
-| v0.4 | AI Assistant — a real AI provider replacing `ai/ai_analyzer.py`'s current heuristic stub; not started. |
+| v0.3.5 | Architecture Completion — foundation layers for future AI/Research/Multi-Asset work: HTF Bias, Decision Engine v2, Signal Quality Score, Wyckoff, Session Intelligence, Market Regime, Data Quality, Explainability, Feature Engineering, Strategy Lifecycle, Asset Intelligence, Configuration & Feature Flags, and this Documentation Architecture (Phases A1 through A14). |
+| **v0.4 Foundation** | Real-market validation, provider abstraction, replay/backtesting, execution simulation, performance validation, fundamental intelligence, the Learning Loop, Adaptive Intelligence, and Safe Integration (Pipeline Guard + Emergency Manager wiring, Runtime Registry separation) — Phases 59.0 through 60.9. **Frozen** as of Phase 60.10: no further foundation work is planned before v0.4 AI begins. |
 
-Every v0.3.5 phase followed the same rule: foundation only, no signal
-logic, no AI behavior, no decision-threshold change, unless a task
-explicitly asked for one and the Trading Safety rules in `CLAUDE.md`
-were followed. See each phase's own `docs/*.md` (`docs/HTF_BIAS.md`
-through `docs/CONFIGURATION_MANAGEMENT.md`) for what was built and
-why.
+**Future:**
+
+| Version | Theme |
+|---|---|
+| v0.4 AI | A real AI provider replacing `ai/ai_analyzer.py`'s current heuristic stub — not started. |
+| v0.5 MT5 | Live MT5 broker integration — `execution/execution_engine.py` (currently, deliberately, inert) gets wired to a real order path. |
+| v0.6 Portfolio | Multi-position/portfolio-level risk and performance tracking. |
+| v0.7 Cloud | Cloud-hosted deployment and scaling. |
+| v0.8 Mini App | Telegram Mini App interface. |
+| v0.9 Multi-Broker | Additional providers beyond MT5 — Bitget, BingX, MEXC (optional) — plus an Admin Panel with live Telegram commands (today's `telegram/owner/*.py` modules registered into `command_router.py`). |
+| v1.0 Senior AI Trading Ecosystem | AI Avatar Layer, Voice Interface, Hologram Display Layer — a new Presentation Layer only; GoldBot Core stays unchanged underneath (see `docs/FOUNDATION_FREEZE_v0.4.md`'s Foundation Principles for why this is architecturally safe to plan for now). |
+
+Every v0.3.5-v0.4 Foundation phase followed the same rule: foundation
+only, no signal logic, no AI behavior, no decision-threshold change,
+unless a task explicitly asked for one and the Trading Safety rules in
+`CLAUDE.md` were followed. See each phase's own `docs/*.md`
+(`docs/HTF_BIAS.md` through `docs/PIPELINE_GUARD.md`) for what was
+built and why, and `docs/FOUNDATION_FREEZE_v0.4.md` for the complete
+list.
 
 ## Where to go next
 
