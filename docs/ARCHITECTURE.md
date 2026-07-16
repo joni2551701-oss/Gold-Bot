@@ -1802,6 +1802,47 @@ roadmap" section (updated this phase) for the full v0.1 through v1.0
 table, including planned-but-unbuilt components (MT5/Bitget/BingX/MEXC
 providers, Admin Panel live commands, AI Avatar/Voice/Hologram layers).
 
+### Phase 61.0 — AI Infrastructure Foundation
+
+The first v0.4 AI Core phase, built on top of the Phase 60.10 Frozen
+Foundation. Eight new `ai/` subpackages, all provider-agnostic and
+capability-agnostic, none wired into `core/pipeline.py` or any live
+Telegram handler. Full detail: `docs/AI_INFRASTRUCTURE.md`,
+`docs/PHASE61_AI_FOUNDATION_AUDIT.md` (TASK 1's reuse audit).
+
+```
+ai/capabilities/   (Capability enum + CapabilityManager -- what, never provider-aware)
+        |
+        v
+ai/providers/      (BaseAIProvider + 5 placeholder vendors + ProviderManager: Preferred/Fallback/Disabled)
+        |
+        v
+ai/router/         (AIRouter: Capability -> Provider -> Return, data-driven routing_rules.py)
+        |
+        v
+ai/context/        (AIContext: Market Context + Signal Schema + User Profile + Trade History + Learning Context)
+        |
+        v
+ai/access/         (AIRole x Capability permission matrix + UsageLimiter)
+        |
+        v
+ai/session/        (SessionManager/ConversationState/ContextWindow -- temporary, distinct from ai/memory/)
+        |
+        v
+ai/tools/          (BaseAITool + 4 placeholder tools -- interface only, no database/pipeline call)
+        |
+        v
+ai/audit/          (RequestLog/ResponseLog/provider_stats -- in-memory AI call audit trail)
+```
+
+No real AI/LLM API call anywhere in this phase (five placeholder
+providers, each method returning a fixed stub `ProviderResult`).
+`core/pipeline.py`, `strategies/`, `signals/`, `decision/`, `risk/`,
+`execution/`, and `lifecycle/` are byte-for-byte unchanged. `ai/context/`
+never imports a `data/` type — the raw-market-data boundary is enforced
+structurally by `context_adapter.sanitize_market_context()`, not just
+by convention.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

@@ -60,8 +60,36 @@ reach either directly (see `CLAUDE.md`'s Trading Safety rules).
 trading-decision logic, and still no `database/`/`telegram/`
 dependency.
 
+## AI Infrastructure Foundation (Phase 61.0)
+
+Eight new subpackages, built on top of the frozen Foundation Layer,
+none wired into the production pipeline — see `docs/AI_INFRASTRUCTURE.md`
+for the full picture and `docs/PHASE61_AI_FOUNDATION_AUDIT.md` for the
+reuse audit that justified each one:
+
+- `capabilities/` — `Capability` enum + `CapabilityManager`: what the
+  AI layer can be asked to do, independently toggleable, never
+  provider-aware.
+- `providers/` — `BaseAIProvider` contract + five placeholder vendor
+  stubs (OpenAI/Gemini/Claude/Grok/Local LLM, no real API call) +
+  `ProviderManager`'s Preferred/Fallback/Disabled selection.
+- `router/` — `AIRouter`: Capability -> Provider -> Return, via a
+  data-driven `routing_rules.py` table, never a hardcoded branch.
+- `context/` — `AIContext` + `build_ai_context()`: composes Market
+  Context/Signal Schema/User Profile/Trade History/Learning Context
+  into one bundle; AI never receives raw market data.
+- `access/` — `AIRole` (OWNER/ADMIN/VIP/PREMIUM/FREE) x `Capability`
+  permission matrix (`AccessControl`) + `UsageLimiter` daily ceilings.
+- `session/` — `SessionManager`/`ConversationState`/`ContextWindow`: a
+  temporary conversation, distinct from `memory/`'s longer-lived store.
+- `tools/` — `BaseAITool` + four placeholder tools (market/news/
+  analytics/education), interface only, no database/pipeline call.
+- `audit/` — `RequestLog`/`ResponseLog`/`provider_stats`: in-memory AI
+  call audit trail (provider/latency/token/cost/status/capability).
+
 ## Future Roadmap
 Full audit and folder-structure rationale in `docs/AI_ARCHITECTURE.md`.
 The real work — replacing the permanent-reject stub with actual
-heuristic/model scoring — is explicitly out of this phase's scope and
-is the natural first v0.4 AI Assistant Core task.
+heuristic/model scoring, and wiring a real provider into `ai/providers/` —
+is explicitly out of Phase 61.0's scope and is the natural next v0.4 AI
+Core task (Phase 61.1+).

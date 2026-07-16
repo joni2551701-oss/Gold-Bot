@@ -31,6 +31,11 @@ full inventory):
   18 Owner Command modules — see `docs/ARCHITECTURE.md`'s per-phase
   sections and `docs/FOUNDATION_FREEZE_v0.4.md` for what's built and
   what's deliberately still unwired.
+- **AI Infrastructure** (Phase 61.0, not live-wired): eight
+  provider-agnostic/capability-agnostic `ai/` subpackages
+  (`capabilities/`, `providers/`, `router/`, `context/`, `access/`,
+  `session/`, `tools/`, `audit/`) — no real AI/LLM API call yet. See
+  `docs/AI_INFRASTRUCTURE.md`.
 
 See `docs/telegram_layer.md` for the full service/permission map,
 `docs/database_schema.md` for the table-by-table schema, and
@@ -53,6 +58,8 @@ GoldBot is and where to go next. The full documentation set:
 | `docs/DOCUMENTATION_STANDARD.md` | The format every module's own documentation follows. |
 | `docs/FOUNDATION_FREEZE_v0.4.md` | What's complete, what's remaining, and the Foundation Principles GoldBot's architecture commits to before the v0.4 AI phase begins. |
 | `docs/PHASE60_10_FOUNDATION_AUDIT.md` | The full module inventory, dependency graph, dead-code findings, and duplicate-code findings behind the freeze declaration. |
+| `docs/AI_INFRASTRUCTURE.md` | Phase 61.0's AI Infrastructure Foundation — capability/provider/router/context/access/session/tools/audit, none live-wired yet. |
+| `docs/PHASE61_AI_FOUNDATION_AUDIT.md` | The reuse audit behind Phase 61.0's eight new `ai/` subpackages. |
 | `CLAUDE.md` | The enforced, checked-in version of the same architecture and Trading Safety rules, for any AI agent working in this repository. |
 
 Every other `docs/*.md` file is a phase- or topic-specific deep dive
