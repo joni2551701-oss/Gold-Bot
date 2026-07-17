@@ -41,6 +41,17 @@ ROUTING_RULES: Dict[Capability, Tuple[str, ...]] = {
     Capability.AI_WEEKLY_OUTLOOK: ("gemini", "claude", "openai"),
     Capability.AI_NEWS_ANALYSIS: ("gemini", "claude", "openai"),
     Capability.AI_SCRIPT_GENERATION: ("openai", "gemini"),
+    # Phase 63.0 TASK 8 -- same reasoning as the four Phase 61.5 AI_*
+    # entries above: a data-only entry (this file's own "one-line data
+    # edit" convention, never a router.py selection-logic change,
+    # per Rule 9), required by tests/ai/router/test_router.py's own
+    # "every Capability has a routing rule" invariant. Still cleanly
+    # rejected by ai/runtime/ai_service.py's _CAPABILITY_METHOD until a
+    # future phase adds a runtime mapping.
+    Capability.AI_CONTENT: ("gemini", "claude", "openai"),
+    Capability.AI_MEDIA: ("openai", "gemini"),
+    Capability.AI_TRANSLATION: ("gemini", "openai"),
+    Capability.AI_BROADCAST: ("gemini", "claude", "openai"),
 }
 
 

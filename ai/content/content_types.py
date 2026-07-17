@@ -1,6 +1,7 @@
 """
 AI Layer — AI Content Types (Phase 61.5: AI Production Integration
-Foundation, TASK 5).
+Foundation, TASK 5; extended Phase 63.0: Senior Trading AI Foundation,
+TASK 2).
 
 `ai/capabilities/capability.py`'s four new `AI_*` members (Phase 61.5
 TASK 5) are already the vocabulary for "what content can AI be asked
@@ -9,8 +10,27 @@ It is the one place that knows *which* `Capability` values are
 content-generation-shaped (`CONTENT_CAPABILITIES`) and their
 human-readable display title, so `ai/content/content_adapter.py`
 doesn't hardcode either.
+
+Phase 63.0 TASK 2: per the Director's own brief this phase, GoldBot
+needs a `ContentType` vocabulary of the *kinds* of content the future
+Senior Trading AI platform produces (`WEEKLY_OUTLOOK`, `DAILY_BRIEF`,
+`NEWS_ANALYSIS`, `MARKET_UPDATE`, `PERFORMANCE_REVIEW`, `EDUCATION`,
+`EXPLANATION`) -- a foundation-only content package, per Module Reuse
+Principle (`docs/PHASE63_0_FOUNDATION_AUDIT.md`), extends this
+existing file in place rather than a new top-level `content/` package
+duplicating `ContentRequest`/`ContentResult`. This is deliberately a
+*type* taxonomy, narrower than `Capability`: some values already
+overlap conceptually with an existing `Capability`
+(`WEEKLY_OUTLOOK`≈`AI_WEEKLY_OUTLOOK`, `NEWS_ANALYSIS`≈`AI_NEWS_ANALYSIS`)
+while others (`DAILY_BRIEF`, `MARKET_UPDATE`, `PERFORMANCE_REVIEW`) have
+no `Capability` of their own yet -- a future phase may generate any of
+them through the single new `Capability.AI_CONTENT` (TASK 8) plus this
+`ContentType` as a parameter, rather than growing the `Capability` enum
+one-for-one with every content type. No generation logic here (Rule 6
+-- "Content Generate qilmaydi. Faqat contract.").
 """
 
+from enum import Enum
 from typing import Dict, FrozenSet
 
 from ai.capabilities.capability import Capability
@@ -21,6 +41,17 @@ CONTENT_CAPABILITIES: FrozenSet[Capability] = frozenset({
     Capability.AI_NEWS_ANALYSIS,
     Capability.AI_SCRIPT_GENERATION,
 })
+
+
+class ContentType(Enum):
+    """The kinds of content the future Senior Trading AI platform can produce -- pure vocabulary, no generation logic (Phase 63.0 TASK 2)."""
+    WEEKLY_OUTLOOK = "WEEKLY_OUTLOOK"
+    DAILY_BRIEF = "DAILY_BRIEF"
+    NEWS_ANALYSIS = "NEWS_ANALYSIS"
+    MARKET_UPDATE = "MARKET_UPDATE"
+    PERFORMANCE_REVIEW = "PERFORMANCE_REVIEW"
+    EDUCATION = "EDUCATION"
+    EXPLANATION = "EXPLANATION"
 
 _CONTENT_TITLES: Dict[Capability, str] = {
     Capability.AI_MARKET_REPORT: "Market Report",

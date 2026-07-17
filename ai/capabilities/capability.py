@@ -1,7 +1,7 @@
 """
 AI Layer — Capability model (Phase 61.0: AI Infrastructure Foundation,
 TASK 2; extended Phase 61.5: AI Production Integration Foundation,
-TASK 5).
+TASK 5; extended Phase 63.0: Senior Trading AI Foundation, TASK 8).
 
 Capability names *what* the AI layer can be asked to do, never *how*
 or *which vendor* answers it. Per the Phase 61.0 brief: "Capability
@@ -31,6 +31,16 @@ provider-side mapping. Adding these is additive and safe:
 gain access automatically; `VIP`/`PREMIUM`/`FREE` list members
 explicitly, so they do not gain these four until a future phase
 opts them in.
+
+Phase 63.0 TASK 8: four more `AI_*` members, one per new Senior
+Trading AI Foundation package this same phase built --
+`AI_CONTENT`/`AI_MEDIA`/`AI_TRANSLATION`/`AI_BROADCAST`. Purely
+additive, identical reasoning to the four content members above: no
+`ai/router/` dispatch entry, no `ai/runtime/ai_service.py`
+`_CAPABILITY_METHOD` mapping added for any of them this phase (Rule 9
+-- "Router o'zgarmaydi"). `AccessControl`'s `OWNER`/`ADMIN` gain access
+automatically (evaluated at import time); `VIP`/`PREMIUM`/`FREE` do
+not until a future phase opts them in.
 """
 
 from enum import Enum
@@ -61,3 +71,7 @@ class Capability(Enum):
     AI_WEEKLY_OUTLOOK = "AI_WEEKLY_OUTLOOK"
     AI_NEWS_ANALYSIS = "AI_NEWS_ANALYSIS"
     AI_SCRIPT_GENERATION = "AI_SCRIPT_GENERATION"
+    AI_CONTENT = "AI_CONTENT"
+    AI_MEDIA = "AI_MEDIA"
+    AI_TRANSLATION = "AI_TRANSLATION"
+    AI_BROADCAST = "AI_BROADCAST"

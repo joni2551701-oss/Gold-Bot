@@ -41,7 +41,7 @@ Real modules behind each box:
 | AI Runtime          | `ai/runtime/` (`AIService`, `RuntimeManager`, `EventBus`) |
 | AI Intelligence     | `ai/analyzer/` / `ai/ai_analyzer.py`, `ai/context/`, `ai/explanation/` |
 | AI Product          | `ai/session/`, `ai/conversation/`, `ai/prompts/` |
-| AI Broadcast        | `telegram/owner/runtime_commands.py` and related Owner-facing AI surfacing (delivery not yet wired to a live process loop — see `docs/PHASE61_7_FREEZE.md`) |
+| AI Broadcast        | `broadcast/`, `media/`, `translation/`, `ai/persona/` (Phase 63.0 — foundation/contract only, no real channel/media/translation call; see `docs/AI_BROADCAST_FOUNDATION.md`), plus `telegram/owner/runtime_commands.py`/`broadcast_commands.py` for Owner-facing surfacing (not wired to a live process loop) |
 
 ## Per-Layer Responsibility
 
@@ -134,6 +134,22 @@ depends-on.
   pieces. See `docs/PHASE62_2_RUNTIME_FREEZE.md` for the full flow and
   what remains explicitly out of scope (streaming, voice, broadcast,
   autonomous trading decisions, memory learning).
+
+### Senior Trading AI Foundation (`ai/persona/`, `broadcast/`, `media/`, `translation/`) — Phase 63.0
+- **CAN**: hold identity data (`Persona`), hold channel/media-type/
+  language *intent* (Owner-set ENABLED/DISABLED/armed flags), build a
+  `BroadcastRequest`/`ExplanationOutput` *value* — pure data, never
+  sent or generated.
+- **CANNOT**: build a prompt, call `AIService` or any provider, call a
+  YouTube/OBS/RTMP/Twitch/Kick client, synthesize voice/image/video,
+  call a translation backend, or touch `decision/`/`risk/`/
+  `execution/`/`database/`/`telegram.handlers` directly. Every one of
+  these packages is contract-first — see `docs/PHASE63_0_FREEZE.md`.
+- **Depends on**: `core/`, `ai/content/` (for `BroadcastReadyContent`/
+  `ContentType`) — `broadcast/`/`media/`/`translation/` are top-level
+  packages (not under `ai/`), the same reasoning that keeps
+  `execution/` separate from `decision/` (see
+  `docs/PHASE63_0_FOUNDATION_AUDIT.md`).
 
 ## Related documents
 

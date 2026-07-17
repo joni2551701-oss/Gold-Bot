@@ -1,7 +1,7 @@
 """Phase 61.5 TASK 5 — AI Content Types. No duplicate enum -- CONTENT_CAPABILITIES is a subset marker over the real ai.capabilities.capability.Capability enum."""
 
 from ai.capabilities.capability import Capability
-from ai.content.content_types import CONTENT_CAPABILITIES, content_title, is_content_capability
+from ai.content.content_types import CONTENT_CAPABILITIES, ContentType, content_title, is_content_capability
 
 
 def test_all_four_content_capabilities_are_marked():
@@ -25,3 +25,15 @@ def test_content_title_is_human_readable():
 
 def test_content_title_falls_back_to_value_for_a_non_content_capability():
     assert content_title(Capability.CHAT) == "CHAT"
+
+
+# ---------------------------------------------------------------------------
+# Phase 63.0 TASK 2 — ContentType vocabulary (foundation only, no generation)
+# ---------------------------------------------------------------------------
+
+def test_content_type_has_all_seven_director_named_members():
+    expected = {
+        "WEEKLY_OUTLOOK", "DAILY_BRIEF", "NEWS_ANALYSIS", "MARKET_UPDATE",
+        "PERFORMANCE_REVIEW", "EDUCATION", "EXPLANATION",
+    }
+    assert {member.value for member in ContentType} == expected
