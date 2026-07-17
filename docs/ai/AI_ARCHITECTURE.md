@@ -11,7 +11,7 @@ phase, not transcribed from assumption.
 ai/
   access/          capability/permission gating for AI requests
   analyzer/        Phase 55 compat entry point -> re-exports ai/ai_analyzer.py
-  audit/           provider_stats.py - call/provider auditing
+  audit/           provider_stats.py - call/provider auditing, DailyUsage/AI Cost Protection (Phase 62.2)
   cache/           response caching (ResponseCache, cache policy)
   capabilities/    Capability enum + permission matrix
   content/         content assembly helpers
@@ -24,7 +24,7 @@ ai/
   prompts/         prompt templates
   providers/       BaseAIProvider, vendor implementations, circuit_breaker.py
   router/          AIRouter, routing_rules.py
-  runtime/         AIService, RuntimeManager, EventBus, self_check.py - orchestration point
+  runtime/         AIService, RuntimeManager, EventBus, self_check.py - production-wired orchestration point (Phase 62.2)
   session/         session/user context for AI product surfaces
   tools/           AI-callable tool definitions (advisory only)
   validation/      response validation, safety.py
@@ -59,13 +59,21 @@ applies to this identical discrepancy.
 ## Orchestration entry point
 
 `ai/runtime/ai_service.py`'s `AIService.ask()` is the single real
-control-flow entry point as of Phase 61.7: it gates on
-`RuntimeManager.is_healthy()`, routes through `AIRouter`
+control-flow entry point, production-wired as of Phase 62.2: it gates
+on `RuntimeManager.is_healthy()`, routes through `AIRouter`
 (`ai/router/`), attempts a provider (`ai/providers/`) guarded by
-`ProviderCircuitBreaker`, validates the result
-(`ai/validation/`), reads/writes `ai/cache/`, records to
-`ai/audit/`, and publishes to `ai/runtime/event_bus.py`'s `EventBus`.
-The full sequence diagram lives in `docs/AI_RUNTIME_FLOW.md`.
+`ProviderCircuitBreaker` (with an exponential-backoff wait between
+retry attempts — `2 ** attempt` seconds, injectable `sleep_fn`),
+validates the result (`ai/validation/`), reads/writes `ai/cache/`,
+records to `ai/audit/` (including the previously-unaudited
+runtime-unhealthy rejection path), checks AI Cost Protection
+(`ai/audit/provider_stats.py`'s `compute_daily_usage()`/
+`evaluate_cost_protection()` against an optional
+`daily_cost_limit`/`daily_token_limit`), and publishes to
+`ai/runtime/event_bus.py`'s `EventBus`. The full sequence diagram
+lives in `docs/AI_RUNTIME_FLOW.md`; the Phase 62.2 production-wiring
+detail lives in `docs/PHASE62_2_RUNTIME_AUDIT.md` and
+`docs/PHASE62_2_RUNTIME_FREEZE.md`.
 
 ## Isolation boundary (Constitution Article 3)
 

@@ -105,3 +105,65 @@ def test_rank_providers_end_to_end_from_response_log():
 
     ranked = rank_providers(compute_provider_stats(log.all()))
     assert ranked[0].provider_name == "gemini"
+
+
+# ---------------------------------------------------------------------------
+# Phase 62.2 TASK 8 — AI Cost Protection: compute_daily_usage / evaluate_cost_protection
+# ---------------------------------------------------------------------------
+
+def test_compute_daily_usage_sums_cost_and_tokens_across_providers():
+    from datetime import datetime, timezone
+    from ai.audit.provider_stats import compute_daily_usage
+
+    log = ResponseLog()
+    log.record(request_id="r1", capability=Capability.CHAT, provider_name="gemini", latency_ms=100.0, tokens=100, cost=1.50, status="SUCCESS")
+    log.record(request_id="r2", capability=Capability.CHAT, provider_name="openai", latency_ms=50.0, tokens=50, cost=0.75, status="SUCCESS")
+
+    usage = compute_daily_usage(log.all(), now=datetime.now(timezone.utc))
+
+    assert usage.total_cost == 2.25
+    assert usage.total_tokens == 150
+
+
+def test_compute_daily_usage_excludes_entries_older_than_24h():
+    from datetime import datetime, timedelta, timezone
+    from ai.audit.provider_stats import compute_daily_usage
+
+    log = ResponseLog()
+    log.record(request_id="r1", capability=Capability.CHAT, provider_name="gemini", latency_ms=100.0, tokens=100, cost=5.00, status="SUCCESS")
+
+    now = datetime.now(timezone.utc) + timedelta(hours=25)  # the recorded entry is now >24h in the past
+    usage = compute_daily_usage(log.all(), now=now)
+
+    assert usage.total_cost == 0.0
+    assert usage.total_tokens == 0
+
+
+def test_evaluate_cost_protection_no_limits_configured_never_breaches():
+    from ai.audit.provider_stats import DailyUsage, evaluate_cost_protection
+
+    assert evaluate_cost_protection(DailyUsage(total_cost=1000.0, total_tokens=999999), None, None) is None
+
+
+def test_evaluate_cost_protection_reports_a_cost_breach():
+    from ai.audit.provider_stats import DailyUsage, evaluate_cost_protection
+
+    reason = evaluate_cost_protection(DailyUsage(total_cost=15.0, total_tokens=0), cost_limit=10.0, token_limit=None)
+
+    assert reason is not None
+    assert "daily cost" in reason
+
+
+def test_evaluate_cost_protection_reports_a_token_breach():
+    from ai.audit.provider_stats import DailyUsage, evaluate_cost_protection
+
+    reason = evaluate_cost_protection(DailyUsage(total_cost=0.0, total_tokens=50000), cost_limit=None, token_limit=10000)
+
+    assert reason is not None
+    assert "daily tokens" in reason
+
+
+def test_evaluate_cost_protection_under_both_limits_is_none():
+    from ai.audit.provider_stats import DailyUsage, evaluate_cost_protection
+
+    assert evaluate_cost_protection(DailyUsage(total_cost=1.0, total_tokens=100), cost_limit=10.0, token_limit=10000) is None

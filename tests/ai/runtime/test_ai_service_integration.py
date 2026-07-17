@@ -103,6 +103,33 @@ def test_degraded_runtime_still_serves_requests():
     assert response.accepted is True
 
 
+def test_unhealthy_runtime_rejection_writes_an_audit_trail():
+    """Phase 62.2 TASK 3: previously the one _execute() rejection path with zero audit trail -- every other rejection/success path already called request_log/response_log.record()."""
+    from ai.audit.request_log import RequestLog
+    from ai.audit.response_log import ResponseLog
+
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
+    runtime_manager = RuntimeManager(initial_state=RuntimeState.FAILED)
+    request_log = RequestLog()
+    response_log = ResponseLog()
+    service = AIService(
+        provider_manager=provider_manager, runtime_manager=runtime_manager,
+        request_log=request_log, response_log=response_log,
+    )
+
+    response = service.ask(_request())
+
+    assert response.accepted is False
+    assert response.request_id is not None
+    logged_requests = request_log.all()
+    assert len(logged_requests) == 1
+    assert logged_requests[0].provider_name is None
+    logged_responses = response_log.all()
+    assert len(logged_responses) == 1
+    assert logged_responses[0].status == "RUNTIME_UNAVAILABLE"
+    assert logged_responses[0].request_id == response.request_id
+
+
 # ---------------------------------------------------------------------------
 # TASK 3 — Circuit Breaker integration (real, across multiple .ask() calls
 # on the SAME AIService/breaker instance -- the only way the breaker's
@@ -119,7 +146,7 @@ def test_five_consecutive_failures_trip_the_circuit_and_it_stops_being_offered()
     })
     health_tracker = ProviderHealthTracker()
     breaker = ProviderCircuitBreaker(health_tracker=health_tracker, config=CircuitBreakerConfig(failure_threshold=5))
-    service = AIService(provider_manager=provider_manager, health_tracker=health_tracker, circuit_breaker=breaker)
+    service = AIService(provider_manager=provider_manager, health_tracker=health_tracker, circuit_breaker=breaker, sleep_fn=lambda s: None)
 
     for _ in range(5):
         response = service.ask(_request())
@@ -220,7 +247,7 @@ def test_production_profile_max_retries_limits_attempts_even_with_more_providers
     two_attempt_profile = RuntimeProfile(
         name="two-attempts", max_retries=2, timeout_seconds=5, cache_ttl_seconds=60, validation_schema=DEFAULT_SCHEMA,
     )
-    service = AIService(provider_manager=provider_manager, runtime_profile=two_attempt_profile)
+    service = AIService(provider_manager=provider_manager, runtime_profile=two_attempt_profile, sleep_fn=lambda s: None)
 
     response = service.ask(_request())
 
@@ -265,7 +292,7 @@ def test_failover_publishes_retry_started_and_retry_completed():
         "openai": _FakeProvider("openai"),
     })
     bus = EventBus()
-    service = AIService(provider_manager=provider_manager, event_bus=bus)
+    service = AIService(provider_manager=provider_manager, event_bus=bus, sleep_fn=lambda s: None)
 
     response = service.ask(_request())
 
@@ -274,6 +301,54 @@ def test_failover_publishes_retry_started_and_retry_completed():
     completed = bus.history(EventType.RETRY_COMPLETED)
     assert len(completed) == 1
     assert completed[0].payload["success"] is True
+
+
+def test_retry_waits_via_the_injectable_sleep_fn_with_exponential_backoff():
+    """Phase 62.2 TASK 5: 2 ** attempt formula, same one data/twelve_data_client.py already uses -- reused, not reinvented."""
+    def _fail(prompt):
+        raise ProviderTimeoutError("gemini", "timed out")
+
+    provider_manager = _FakeProviderManager({
+        "gemini": _FakeProvider("gemini", behavior=_fail),
+        "openai": _FakeProvider("openai", behavior=_fail),
+        "claude": _FakeProvider("claude"),
+    })
+    sleeps = []
+    service = AIService(provider_manager=provider_manager, sleep_fn=sleeps.append)
+
+    response = service.ask(_request())
+
+    assert response.accepted is True
+    assert sleeps == [1, 2]  # 2**0 before the 2nd attempt, 2**1 before the 3rd
+
+
+def test_single_provider_success_never_sleeps():
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
+    sleeps = []
+    service = AIService(provider_manager=provider_manager, sleep_fn=sleeps.append)
+
+    service.ask(_request())
+
+    assert sleeps == []
+
+
+def test_provider_failed_event_carries_a_structured_error_type():
+    """Phase 62.2 TASK 6: PROVIDER_TIMEOUT resolved the same way ProviderDown already was -- payload key, not a new EventType."""
+    def _fail(prompt):
+        raise ProviderTimeoutError("gemini", "timed out")
+
+    provider_manager = _FakeProviderManager({
+        "gemini": _FakeProvider("gemini", behavior=_fail),
+        "openai": _FakeProvider("openai"),
+    })
+    bus = EventBus()
+    service = AIService(provider_manager=provider_manager, event_bus=bus, sleep_fn=lambda s: None)
+
+    service.ask(_request())
+
+    failed_events = bus.history(EventType.PROVIDER_FAILED)
+    assert len(failed_events) == 1
+    assert failed_events[0].payload["error_type"] == "TIMEOUT"
 
 
 def test_single_provider_success_never_publishes_a_retry_event():
@@ -305,7 +380,7 @@ def test_runtime_notifier_receives_a_real_provider_down_alert_from_a_tripped_cir
     notifier = RuntimeNotifier(bus)
     health_tracker = ProviderHealthTracker()
     breaker = ProviderCircuitBreaker(health_tracker=health_tracker, event_bus=bus, config=CircuitBreakerConfig(failure_threshold=5))
-    service = AIService(provider_manager=provider_manager, health_tracker=health_tracker, circuit_breaker=breaker, event_bus=bus)
+    service = AIService(provider_manager=provider_manager, health_tracker=health_tracker, circuit_breaker=breaker, event_bus=bus, sleep_fn=lambda s: None)
 
     for _ in range(5):
         service.ask(_request())
@@ -361,8 +436,255 @@ def test_runtime_notifier_never_alerts_on_a_single_ai_service_level_failure():
     })
     bus = EventBus()
     notifier = RuntimeNotifier(bus)
-    service = AIService(provider_manager=provider_manager, event_bus=bus)
+    service = AIService(provider_manager=provider_manager, event_bus=bus, sleep_fn=lambda s: None)
 
     service.ask(_request())  # gemini fails once, falls over to openai -- circuit never trips
 
     assert notifier.drain() == []
+
+
+# ---------------------------------------------------------------------------
+# Phase 62.2 TASK 8 — AI Cost Protection
+# ---------------------------------------------------------------------------
+
+def test_no_configured_limits_never_degrades_the_runtime():
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
+    runtime_manager = RuntimeManager()
+    service = AIService(provider_manager=provider_manager, runtime_manager=runtime_manager)
+
+    service.ask(_request())
+
+    assert runtime_manager.current_state() == RuntimeState.READY
+
+
+def test_a_breached_cost_limit_degrades_the_runtime():
+    """Real response_log entries always log cost=0.0 today (no provider reports usage yet -- see ai_service.py's own docstring), so this pre-seeds the log with a breaching entry the same way a future real-cost-reporting phase would."""
+    from ai.audit.response_log import ResponseLog
+
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
+    runtime_manager = RuntimeManager()
+    response_log = ResponseLog()
+    response_log.record(request_id="pre-existing", capability=Capability.CHAT, provider_name="gemini", latency_ms=0.0, tokens=0, cost=999.0, status="SUCCESS")
+    service = AIService(
+        provider_manager=provider_manager, runtime_manager=runtime_manager,
+        response_log=response_log, daily_cost_limit=10.0,
+    )
+
+    response = service.ask(_request())
+
+    assert response.accepted is True  # the request itself still succeeds
+    assert runtime_manager.current_state() == RuntimeState.DEGRADED
+    assert "cost protection" in runtime_manager.history()[-1].reason
+
+
+def test_a_breached_token_limit_degrades_the_runtime():
+    from ai.audit.response_log import ResponseLog
+
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
+    runtime_manager = RuntimeManager()
+    response_log = ResponseLog()
+    response_log.record(request_id="pre-existing", capability=Capability.CHAT, provider_name="gemini", latency_ms=0.0, tokens=999999, cost=0.0, status="SUCCESS")
+    service = AIService(
+        provider_manager=provider_manager, runtime_manager=runtime_manager,
+        response_log=response_log, daily_token_limit=1000,
+    )
+
+    service.ask(_request())
+
+    assert runtime_manager.current_state() == RuntimeState.DEGRADED
+
+
+def test_cost_protection_notifies_the_owner():
+    from ai.audit.response_log import ResponseLog
+
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
+    bus = EventBus()
+    runtime_manager = RuntimeManager(event_bus=bus)
+    notifier = RuntimeNotifier(bus)
+    response_log = ResponseLog()
+    response_log.record(request_id="pre-existing", capability=Capability.CHAT, provider_name="gemini", latency_ms=0.0, tokens=0, cost=999.0, status="SUCCESS")
+    service = AIService(
+        provider_manager=provider_manager, runtime_manager=runtime_manager,
+        response_log=response_log, event_bus=bus, daily_cost_limit=10.0,
+    )
+
+    service.ask(_request())
+
+    alerts = notifier.drain()
+    assert any("Cost Protection" in a.title for a in alerts)
+
+
+def test_cost_protection_does_not_re_trigger_once_already_degraded():
+    from ai.audit.response_log import ResponseLog
+
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
+    runtime_manager = RuntimeManager()
+    response_log = ResponseLog()
+    response_log.record(request_id="pre-existing", capability=Capability.CHAT, provider_name="gemini", latency_ms=0.0, tokens=0, cost=999.0, status="SUCCESS")
+    service = AIService(
+        provider_manager=provider_manager, runtime_manager=runtime_manager,
+        response_log=response_log, daily_cost_limit=10.0,
+    )
+
+    service.ask(_request())
+    transitions_after_first = len(runtime_manager.history())
+    service.ask(_request())  # runtime is already DEGRADED -- is_healthy() still True, but _check_cost_protection() should not spam a redundant transition
+
+    assert len(runtime_manager.history()) == transitions_after_first
+
+
+def test_cost_protection_under_the_limit_never_degrades():
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
+    runtime_manager = RuntimeManager()
+    service = AIService(provider_manager=provider_manager, runtime_manager=runtime_manager, daily_cost_limit=1000.0, daily_token_limit=1000000)
+
+    service.ask(_request())
+
+    assert runtime_manager.current_state() == RuntimeState.READY
+
+
+# ---------------------------------------------------------------------------
+# Phase 62.2 TASK 9 — Full Integration Test Matrix (Director's own 4 scenarios)
+# ---------------------------------------------------------------------------
+
+def test_scenario_1_full_provider_failure_flow_timeout_retry_breaker_fallback_audit_event():
+    """AI Request -> Provider Timeout -> Retry -> Circuit Breaker -> Fallback -> Audit -> Owner Event, in one real end-to-end call sequence."""
+    from ai.audit.request_log import RequestLog
+    from ai.audit.response_log import ResponseLog
+
+    def _fail(prompt):
+        raise ProviderTimeoutError("gemini", "timed out")
+
+    provider_manager = _FakeProviderManager({
+        "gemini": _FakeProvider("gemini", behavior=_fail),
+        "openai": _FakeProvider("openai"),
+    })
+    bus = EventBus()
+    notifier = RuntimeNotifier(bus)
+    health_tracker = ProviderHealthTracker()
+    breaker = ProviderCircuitBreaker(health_tracker=health_tracker, event_bus=bus, config=CircuitBreakerConfig(failure_threshold=5))
+    request_log = RequestLog()
+    response_log = ResponseLog()
+    service = AIService(
+        provider_manager=provider_manager, health_tracker=health_tracker, circuit_breaker=breaker,
+        event_bus=bus, request_log=request_log, response_log=response_log, sleep_fn=lambda s: None,
+    )
+
+    # 5 real calls with distinct prompts (avoids a cache hit masking a real
+    # attempt -- the response cache is keyed per-provider, so an identical
+    # repeated prompt would let the earlier openai success serve later
+    # calls from cache instead of exercising a fresh fallback each time).
+    for i in range(5):
+        response = service.ask(_request(prompt=f"question {i}"))
+        assert response.accepted is True  # no crash, always recovers via fallback
+        assert response.provider_name == "openai"
+
+    # Circuit Breaker: 5 consecutive gemini failures trip it.
+    assert breaker.state_of("gemini") == CircuitState.OPEN
+    assert health_tracker.is_available("gemini") is False
+
+    # Audit: every attempt (both the failed gemini attempt and the successful openai attempt) is logged.
+    assert len(request_log.all()) == 10  # 2 attempts per call x 5 calls
+    statuses = [e.status for e in response_log.all()]
+    assert statuses.count("FAILED") == 5
+    assert statuses.count("SUCCESS") == 5
+
+    # Owner Event: the tripped circuit produced a real "Provider DOWN" alert.
+    alerts = notifier.drain()
+    assert any("DOWN" in a.title and "gemini" in a.message for a in alerts)
+
+
+def test_scenario_2_runtime_failed_rejects_with_audit_and_event():
+    from ai.audit.request_log import RequestLog
+    from ai.audit.response_log import ResponseLog
+
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
+    bus = EventBus()
+    runtime_manager = RuntimeManager(initial_state=RuntimeState.FAILED, event_bus=bus)
+    request_log = RequestLog()
+    response_log = ResponseLog()
+    service = AIService(
+        provider_manager=provider_manager, runtime_manager=runtime_manager, event_bus=bus,
+        request_log=request_log, response_log=response_log,
+    )
+
+    response = service.ask(_request())
+
+    # Rejected.
+    assert response.accepted is False
+    assert "FAILED" in response.reason
+
+    # Audit.
+    assert len(request_log.all()) == 1
+    assert response_log.all()[0].status == "RUNTIME_UNAVAILABLE"
+
+    # Event.
+    assert len(bus.history(EventType.REQUEST_FAILED)) == 1
+
+
+def test_scenario_3_cost_limit_breach_degrades_notifies_without_false_metrics():
+    from ai.audit.response_log import ResponseLog
+
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
+    bus = EventBus()
+    runtime_manager = RuntimeManager(event_bus=bus)
+    notifier = RuntimeNotifier(bus)
+    response_log = ResponseLog()
+    response_log.record(request_id="pre-existing", capability=Capability.CHAT, provider_name="gemini", latency_ms=0.0, tokens=0, cost=999.0, status="SUCCESS")
+    service = AIService(
+        provider_manager=provider_manager, runtime_manager=runtime_manager, event_bus=bus,
+        response_log=response_log, daily_cost_limit=10.0,
+    )
+
+    service.ask(_request())
+
+    # Runtime DEGRADED.
+    assert runtime_manager.current_state() == RuntimeState.DEGRADED
+    # Owner notification.
+    assert any("Cost Protection" in a.title for a in notifier.drain())
+    # No false metrics: the breach reason reflects the real, injected total, not a fabricated number.
+    from ai.audit.provider_stats import compute_daily_usage
+    usage = compute_daily_usage(response_log.all())
+    assert usage.total_cost == 999.0  # the real pre-seeded cost, not made up
+
+
+def test_scenario_4_cache_behavior_hit_miss_stale_and_prompt_collision():
+    from ai.runtime.runtime_profiles import RuntimeProfile
+    from ai.validation.schemas import DEFAULT_SCHEMA
+
+    call_count = {"n": 0}
+
+    def _counting(prompt):
+        call_count["n"] += 1
+        return ProviderResult(content=f"answer-{call_count['n']}", metadata={})
+
+    provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini", behavior=_counting)})
+    bus = EventBus()
+
+    # (a) cache miss then (b) cache hit on an identical repeated call.
+    service = AIService(provider_manager=provider_manager, event_bus=bus)
+    first = service.ask(_request(prompt="what is the trend?"))
+    second = service.ask(_request(prompt="what is the trend?"))
+
+    assert first.from_cache is False
+    assert second.from_cache is True
+    assert second.content == first.content
+    assert len(bus.history(EventType.CACHE_MISS)) == 1
+    assert len(bus.history(EventType.CACHE_HIT)) == 1
+
+    # (c) stale snapshot: a 0-second TTL profile means the cached entry is
+    # already expired by the time the very next call checks it.
+    zero_ttl_profile = RuntimeProfile(name="zero-ttl", max_retries=1, timeout_seconds=5, cache_ttl_seconds=0, validation_schema=DEFAULT_SCHEMA)
+    stale_service = AIService(provider_manager=provider_manager, runtime_profile=zero_ttl_profile)
+    stale_first = stale_service.ask(_request(prompt="stale test"))
+    stale_second = stale_service.ask(_request(prompt="stale test"))
+    assert stale_first.from_cache is False
+    assert stale_second.from_cache is False  # expired, not served from a stale entry
+
+    # (d) different prompt, same market context -> no collision (Phase 61.3's own cache-key fix).
+    collision_service = AIService(provider_manager=provider_manager, event_bus=EventBus())
+    answer_a = collision_service.ask(_request(prompt="question A"))
+    answer_b = collision_service.ask(_request(prompt="question B"))
+    assert answer_a.from_cache is False
+    assert answer_b.from_cache is False  # a different prompt must never be served question A's cached answer
+    assert answer_a.content != answer_b.content

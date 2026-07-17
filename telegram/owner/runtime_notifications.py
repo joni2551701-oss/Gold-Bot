@@ -36,6 +36,18 @@ sourcing strategies depending on what already exists to trigger them:
   task's one, in-place `EventType` addition -- see `event_bus.py`'s
   own docstring) on any transition into `RuntimeState.FAILED`.
 
+  Cost Protection DEGRADED (Phase 62.2 TASK 8) -- `ai.runtime.
+  ai_service.AIService._check_cost_protection()` transitions into
+  `RuntimeState.DEGRADED` with a reason prefixed `"cost protection: "`
+  on a daily cost/token breach. Every valid `RuntimeManager.transition()`
+  already publishes the generic `EventType.RUNTIME_STATE_CHANGED` --
+  reused here with a `to_state == "DEGRADED"` and reason-prefix filter
+  (same "reuse the existing event, filter on payload" pattern as
+  `PROVIDER_FAILED`'s `circuit_state` check above) rather than a new
+  EventType. Any other `DEGRADED` transition (there is no other real
+  trigger for one yet) is intentionally not alerted on here -- only a
+  cost-protection-caused one is.
+
   High Cost / Cache Disabled -- neither has a real, already-firing
   control-flow point anywhere in this codebase yet (no code path
   currently crosses a cost threshold or flips a cache on/off flag), so
@@ -84,6 +96,7 @@ class RuntimeNotifier:
         self._event_bus.subscribe(EventType.PROVIDER_FAILED, self._on_provider_failed)
         self._event_bus.subscribe(EventType.PROVIDER_RECOVERED, self._on_provider_recovered)
         self._event_bus.subscribe(EventType.RUNTIME_FAILED, self._on_runtime_failed)
+        self._event_bus.subscribe(EventType.RUNTIME_STATE_CHANGED, self._on_runtime_state_changed)
 
     def _on_provider_failed(self, event: RuntimeEvent) -> None:
         if event.payload.get("circuit_state") != "OPEN":
@@ -106,6 +119,15 @@ class RuntimeNotifier:
         self._pending.append(RuntimeAlert(
             title="🔴 Runtime FAILED",
             message=f"AI runtime entered FAILED state: {reason}",
+        ))
+
+    def _on_runtime_state_changed(self, event: RuntimeEvent) -> None:
+        reason = event.payload.get("reason") or ""
+        if event.payload.get("to_state") != "DEGRADED" or not reason.startswith("cost protection: "):
+            return  # not alert-worthy -- every other transition already has its own specific event above
+        self._pending.append(RuntimeAlert(
+            title="💰 AI Runtime DEGRADED (Cost Protection)",
+            message=reason[len("cost protection: "):],
         ))
 
     def drain(self) -> List[RuntimeAlert]:

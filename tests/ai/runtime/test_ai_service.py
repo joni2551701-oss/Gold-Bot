@@ -143,7 +143,7 @@ def test_provider_runtime_error_falls_back_to_next_candidate():
         "gemini": _FakeProvider("gemini", behavior=_fail),
         "openai": _FakeProvider("openai"),
     })
-    service = AIService(provider_manager=provider_manager)
+    service = AIService(provider_manager=provider_manager, sleep_fn=lambda s: None)
     request = RuntimeRequest(capability=Capability.CHAT, ai_context=_context(), role=AIRole.OWNER, prompt="hi")
 
     response = service.ask(request)
@@ -170,7 +170,7 @@ def test_a_single_provider_timeout_no_longer_immediately_marks_it_offline():
         "gemini": _FakeProvider("gemini", behavior=_fail),
         "openai": _FakeProvider("openai"),
     })
-    service = AIService(provider_manager=provider_manager, health_tracker=health_tracker)
+    service = AIService(provider_manager=provider_manager, health_tracker=health_tracker, sleep_fn=lambda s: None)
     request = RuntimeRequest(capability=Capability.CHAT, ai_context=_context(), role=AIRole.OWNER, prompt="hi")
 
     service.ask(request)
@@ -187,7 +187,7 @@ def test_five_consecutive_timeouts_across_separate_calls_do_mark_it_offline_via_
         "gemini": _FakeProvider("gemini", behavior=_fail),
         "openai": _FakeProvider("openai"),
     })
-    service = AIService(provider_manager=provider_manager, health_tracker=health_tracker)
+    service = AIService(provider_manager=provider_manager, health_tracker=health_tracker, sleep_fn=lambda s: None)
     request = RuntimeRequest(capability=Capability.CHAT, ai_context=_context(), role=AIRole.OWNER, prompt="hi")
 
     for _ in range(5):

@@ -171,7 +171,15 @@ from telegram.feedback_service import FeedbackService
 from telegram.permissions import is_owner
 from telegram.owner.ai_commands import ai_cost, ai_health, ai_provider, ai_status, ai_usage, resolve_capability
 from telegram.owner.dashboard import get_doctor_report, get_owner_summary
-from telegram.owner.runtime_commands import runtime_check, runtime_events, runtime_full_status, runtime_metrics, runtime_status
+from telegram.owner.runtime_commands import (
+    runtime_check,
+    runtime_events,
+    runtime_full_status,
+    runtime_metrics,
+    runtime_provider,
+    runtime_restart,
+    runtime_status,
+)
 from core.logger import setup_logger
 
 logger = setup_logger("Handlers")
@@ -1025,6 +1033,20 @@ async def runtime_status_handler() -> str:
 async def runtime_check_handler() -> str:
     """/runtime_check -> telegram.owner.runtime_commands.runtime_check(). OWNER only. Never raises."""
     return runtime_check().message
+
+
+async def runtime_restart_handler(telegram_id) -> str:
+    """/runtime_restart -> telegram.owner.runtime_commands.runtime_restart(). OWNER only (checked again inside runtime_restart itself via require_role). Never raises."""
+    return runtime_restart(telegram_id).message
+
+
+async def runtime_provider_handler(args=None) -> str:
+    """/runtime_provider PROVIDER -> telegram.owner.runtime_commands.runtime_provider(). OWNER only. Never raises."""
+    provider_name = _first_arg(args)
+    if provider_name is None:
+        return "Usage: /runtime_provider PROVIDER"
+
+    return runtime_provider(provider_name).message
 
 
 async def contact_handler(telegram_id, phone_number: str) -> str:

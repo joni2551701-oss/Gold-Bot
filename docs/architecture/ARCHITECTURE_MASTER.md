@@ -124,6 +124,16 @@ depends-on.
 - **Depends on**: `core/` only, plus the narrow, audited
   `signals/`/`context/` type-only import exception listed in
   Constitution Article 3.
+- **Production status** (Phase 62.2): the AI Runtime track
+  (`ai/runtime/ai_service.py`) is now the real, production-wired
+  orchestration point — runtime lifecycle gating, circuit breaker
+  failover with backoff, response validation, audit logging (including
+  the runtime-unhealthy path), and AI Cost Protection (daily cost/token
+  ceiling → `RuntimeState.DEGRADED` + Owner alert) all run for real on
+  every `AIService.ask()` call, not standalone-but-unused foundation
+  pieces. See `docs/PHASE62_2_RUNTIME_FREEZE.md` for the full flow and
+  what remains explicitly out of scope (streaming, voice, broadcast,
+  autonomous trading decisions, memory learning).
 
 ## Related documents
 

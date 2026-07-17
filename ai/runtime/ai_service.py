@@ -70,6 +70,29 @@ piece Phase 61.6 built real-but-standalone now actually drives this
 method. Full detail: `docs/PHASE61_7_INTEGRATION_AUDIT.md`,
 `docs/AI_PLATFORM_STABILIZATION.md`.
 
+Production Wiring (Phase 62.2): three real gaps found by re-auditing
+this already-integrated flow against `docs/PHASE62_2_RUNTIME_AUDIT.md`'s
+own TASK 0/1 (the flow itself needed no rebuild -- Phase 61.7 already
+built it). (1) The runtime-unhealthy rejection (`is_healthy()` gate)
+now writes a `request_log`/`response_log` entry (`status=
+"RUNTIME_UNAVAILABLE"`) -- previously the one `_execute()` rejection
+path with zero audit trail. (2) A retry attempt (`is_retry`) now waits
+`2 ** (len(attempted) - 2)` seconds via the injectable `sleep_fn`
+(defaults to `time.sleep`) before the next attempt -- the same
+exponential-backoff formula `data/twelve_data_client.py` already uses,
+reused rather than reinvented; tests inject a no-op `sleep_fn` so the
+suite never blocks. (3) `PROVIDER_FAILED`'s payload now carries a
+structured `error_type` (`TIMEOUT`/`RATE_LIMIT`/`INVALID_RESPONSE`/
+`UNAVAILABLE`) -- see `event_bus.py`'s own docstring for why this is
+not a new event type. (4) AI Cost Protection (TASK 8):
+`daily_cost_limit`/`daily_token_limit` (both optional, default `None`
+= disabled) gate a check run after every successful response -- see
+`_check_cost_protection()`'s own docstring for the full design,
+including its one honest limitation (every real `response_log` entry
+currently logs `cost=0.0, tokens=0`, so this only actually trips today
+against injected test data, not live traffic, exactly like
+`ai_cost_handler()`'s own "$0.00").
+
 - **`runtime_manager`** (TASK 2, optional, defaults to a fresh
   `RuntimeManager(event_bus=self._event_bus)`): `ask()`'s very first
   check is `runtime_manager.is_healthy()` -- the Director's own
@@ -130,9 +153,10 @@ method. Full detail: `docs/PHASE61_7_INTEGRATION_AUDIT.md`,
 
 import hashlib
 import time
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional
 
 from ai.access.access_control import AccessControl
+from ai.audit.provider_stats import compute_daily_usage, evaluate_cost_protection
 from ai.audit.request_log import RequestLog
 from ai.audit.response_log import ResponseLog
 from ai.cache.cache_policy import build_cache_key_from_context
@@ -144,6 +168,8 @@ from ai.providers.circuit_breaker import ProviderCircuitBreaker
 from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_manager import ProviderManager
 from ai.providers.runtime_errors import (
+    ProviderInvalidResponseError,
+    ProviderRateLimitError,
     ProviderRuntimeError,
     ProviderTimeoutError,
     ProviderUnavailableError,
@@ -152,6 +178,7 @@ from ai.providers.runtime_errors import (
 from ai.router.router import AIRouter
 from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent
 from ai.runtime.runtime_manager import RuntimeManager
+from ai.runtime.runtime_state import RuntimeState
 from ai.runtime.runtime_profiles import RuntimeProfile
 from ai.runtime.runtime_request import RuntimeRequest
 from ai.runtime.runtime_response import RuntimeResponse
@@ -175,6 +202,19 @@ _CAPABILITY_METHOD: Dict[Capability, str] = {
     Capability.VISION: "vision",
     Capability.IMAGE: "image",
     Capability.VOICE: "voice",
+}
+
+# Phase 62.2 TASK 6: PROVIDER_FAILED's payload now carries a structured
+# error_type label -- the Director's own "PROVIDER_TIMEOUT" resolved
+# the same way ai/providers/circuit_breaker.py already resolved
+# "ProviderDown" (see that module's docstring): reuse the existing
+# EventType, add a distinguishing payload key, not a fourth near-
+# duplicate "provider went wrong" event type.
+_ERROR_TYPE_LABEL: Dict[type, str] = {
+    ProviderTimeoutError: "TIMEOUT",
+    ProviderRateLimitError: "RATE_LIMIT",
+    ProviderInvalidResponseError: "INVALID_RESPONSE",
+    ProviderUnavailableError: "UNAVAILABLE",
 }
 
 
@@ -225,6 +265,9 @@ class AIService:
         runtime_manager: Optional[RuntimeManager] = None,
         circuit_breaker: Optional[ProviderCircuitBreaker] = None,
         runtime_profile: Optional[RuntimeProfile] = None,
+        sleep_fn: Optional[Callable[[float], None]] = None,
+        daily_cost_limit: Optional[float] = None,
+        daily_token_limit: Optional[int] = None,
     ) -> None:
         self._capability_manager = capability_manager or CapabilityManager()
         self._access_control = access_control or AccessControl()
@@ -248,6 +291,48 @@ class AIService:
         self._circuit_breaker = circuit_breaker or ProviderCircuitBreaker(
             health_tracker=self._health_tracker, event_bus=self._event_bus,
         )
+        self._sleep_fn = sleep_fn or time.sleep
+        self._daily_cost_limit = daily_cost_limit
+        self._daily_token_limit = daily_token_limit
+
+    def _check_cost_protection(self) -> None:
+        """
+        Phase 62.2 TASK 8. No-op when neither `daily_cost_limit` nor
+        `daily_token_limit` was configured (both default `None`) --
+        same "off unless a caller explicitly asks" posture every other
+        optional knob in this class already uses. When configured,
+        compares `compute_daily_usage(self._response_log.all())`
+        against the limit(s); a breach transitions the runtime to
+        `RuntimeState.DEGRADED` (never FAILED -- a cost breach means
+        "slow down," not "stop entirely") with a reason string prefixed
+        `"cost protection: "` so `telegram/owner/runtime_notifications.py`'s
+        `RuntimeNotifier` can distinguish this cause from any other
+        `DEGRADED` transition without a new EventType (Rule 5).
+        A runtime already DEGRADED/FAILED/SHUTDOWN is left alone --
+        `RuntimeManager.transition()` itself would reject a redundant
+        or invalid transition anyway, this just avoids the noise of
+        calling it every single successful request once already tripped.
+
+        Honest limitation: every `response_log.record()` call in this
+        class today logs `tokens=0, cost=0.0` (no real provider reports
+        usage back via `ProviderResult.metadata` yet -- the same gap
+        `telegram/owner/ai_commands.py`'s `ai_cost_handler()` already
+        documents with its own honest "$0.00"). This check is real,
+        wired, and provably correct against injected data with nonzero
+        cost/tokens (see `tests/ai/runtime/test_ai_service_integration.py`);
+        it will not actually trip from live traffic until a future,
+        separately-scoped phase makes a real provider report token/cost
+        usage.
+        """
+        if self._daily_cost_limit is None and self._daily_token_limit is None:
+            return
+        if not self._runtime_manager.is_healthy():
+            return
+
+        usage = compute_daily_usage(self._response_log.all())
+        breach_reason = evaluate_cost_protection(usage, self._daily_cost_limit, self._daily_token_limit)
+        if breach_reason is not None:
+            self._runtime_manager.transition(RuntimeState.DEGRADED, reason=f"cost protection: {breach_reason}")
 
     def _sync_circuit_breakers(self) -> None:
         """Ticks allow_request() for every registered provider -- the only code path that ever moves a tripped breaker OPEN -> HALF_OPEN once its recovery timeout elapses. Without this, AIRouter.route() would never re-offer a still-OFFLINE-per-tracker provider as a candidate, so ask() would never get a chance to call allow_request() on it again -- a permanent deadlock this tick breaks. Idempotent and side-effect-free for CLOSED/HALF_OPEN providers."""
@@ -308,9 +393,18 @@ class AIService:
     def _execute(self, request: RuntimeRequest) -> RuntimeResponse:
         """Never raises: every rejection path (runtime/access/capability/prompt/provider/validation) returns an unaccepted RuntimeResponse instead."""
         if not self._runtime_manager.is_healthy():
+            reason = f"runtime unavailable: state={self._runtime_manager.current_state().value}"
+            # Phase 62.2 TASK 3: the one _execute() rejection path with no
+            # audit trail before this phase -- every other rejection/
+            # success path already calls request_log/response_log.record().
+            request_record = self._request_log.record(request.capability, None, telegram_id=request.telegram_id)
+            self._response_log.record(
+                request_id=request_record.request_id, capability=request.capability, provider_name=None,
+                latency_ms=0.0, tokens=0, cost=0.0, status="RUNTIME_UNAVAILABLE",
+            )
             return RuntimeResponse(
                 accepted=False, content=None, provider_name=None,
-                reason=f"runtime unavailable: state={self._runtime_manager.current_state().value}",
+                reason=reason, request_id=request_record.request_id,
             )
 
         if not self._access_control.is_allowed(request.role, request.capability):
@@ -357,6 +451,14 @@ class AIService:
             attempted.add(provider_name)
             is_retry = len(attempted) > 1
             if is_retry:
+                # Phase 62.2 TASK 5: exponential backoff before a retry
+                # attempt, same 2 ** attempt formula data/twelve_data_client.py's
+                # fetch_candles() already uses for the identical "wait
+                # before trying again" purpose (Reuse Principle: reuse the
+                # existing formula). len(attempted) - 2 is 0 for the first
+                # retry (second overall attempt), 1 for the second retry,
+                # etc. sleep_fn is injectable so tests never actually block.
+                self._sleep_fn(2 ** (len(attempted) - 2))
                 self._event_bus.publish(RuntimeEvent(
                     event_type=EventType.RETRY_STARTED,
                     payload={"attempt_number": len(attempted), "provider_name": provider_name},
@@ -423,7 +525,13 @@ class AIService:
                     request_id=request_record.request_id, capability=request.capability, provider_name=provider_name,
                     latency_ms=(time.monotonic() - started_at) * 1000, tokens=0, cost=0.0, status="FAILED",
                 )
-                self._event_bus.publish(RuntimeEvent(event_type=EventType.PROVIDER_FAILED, payload={"provider_name": provider_name, "reason": e.reason}))
+                self._event_bus.publish(RuntimeEvent(
+                    event_type=EventType.PROVIDER_FAILED,
+                    payload={
+                        "provider_name": provider_name, "reason": e.reason,
+                        "error_type": _ERROR_TYPE_LABEL.get(type(e), "UNKNOWN"),
+                    },
+                ))
                 if is_retry:
                     self._event_bus.publish(RuntimeEvent(
                         event_type=EventType.RETRY_COMPLETED,
@@ -453,13 +561,14 @@ class AIService:
                     request_id=request_record.request_id,
                 )
 
-            # Provider -> Circuit Breaker -> Provider call -> Validation are all above; from here: Cache -> Audit -> (Events published by ask()'s own wrapper) -> Response.
+            # Provider -> Circuit Breaker -> Provider call -> Validation are all above; from here: Cache -> Audit -> Cost Protection -> (Events published by ask()'s own wrapper) -> Response.
             self._response_cache.put(cache_key, result.content, metadata=result.metadata)
             self._response_log.record(
                 request_id=request_record.request_id, capability=request.capability, provider_name=provider_name,
                 latency_ms=latency_ms, tokens=0, cost=0.0, status="SUCCESS",
             )
             self._circuit_breaker.record_success(provider_name)
+            self._check_cost_protection()
             if is_retry:
                 self._event_bus.publish(RuntimeEvent(
                     event_type=EventType.RETRY_COMPLETED,

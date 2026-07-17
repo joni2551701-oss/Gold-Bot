@@ -123,6 +123,44 @@ def compute_requests_per_minute(requests: List[AIRequestLogEntry], now: Optional
 
 
 @dataclass(frozen=True)
+class DailyUsage:
+    """Platform-wide (every provider, every user) cost/token total over the trailing 24h -- the Phase 62.2 TASK 8 AI Cost Protection input. Distinct from ai.access.usage_limits.UsageLimiter (a per-(telegram_id, capability) daily call quota, a different concern: one user's abuse vs. the whole platform's spend)."""
+    total_cost: float
+    total_tokens: int
+
+
+def compute_daily_usage(responses: List[AIResponseLogEntry], now: Optional[datetime] = None) -> DailyUsage:
+    """
+    Sums cost/tokens across every provider for entries within the last
+    24h of `now` (defaults to the real current time) -- same trailing-
+    window convention `compute_requests_per_minute()` already uses,
+    scaled from 60 seconds to 24 hours. Never raises: an empty
+    `responses` list returns a zeroed DailyUsage.
+    """
+    now = now if now is not None else datetime.now(timezone.utc)
+    window_start = now - timedelta(hours=24)
+    windowed = [e for e in responses if window_start <= e.created_at <= now]
+    return DailyUsage(total_cost=sum(e.cost for e in windowed), total_tokens=sum(e.tokens for e in windowed))
+
+
+def evaluate_cost_protection(
+    usage: DailyUsage, cost_limit: Optional[float], token_limit: Optional[int],
+) -> Optional[str]:
+    """
+    Returns a human-readable breach reason if `usage` exceeds either
+    configured limit, else None. `cost_limit`/`token_limit` of `None`
+    means "no limit configured" for that dimension -- never
+    fabricates a default ceiling nobody configured. Cost is checked
+    before tokens; a caller only needs the first breach reason to act.
+    """
+    if cost_limit is not None and usage.total_cost > cost_limit:
+        return f"daily cost ${usage.total_cost:.2f} exceeds ${cost_limit:.2f} limit"
+    if token_limit is not None and usage.total_tokens > token_limit:
+        return f"daily tokens {usage.total_tokens} exceeds {token_limit} limit"
+    return None
+
+
+@dataclass(frozen=True)
 class RuntimeMetrics:
     requests_per_minute: float
     cache_hits: int

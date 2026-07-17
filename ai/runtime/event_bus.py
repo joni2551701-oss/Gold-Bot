@@ -67,6 +67,16 @@ member would break already-tested, already-relied-upon code across
 three modules for a cosmetic difference -- Rule 5 (backward
 compatibility) settles this in favor of the existing name plus a
 documented mapping, not a rename.
+
+Phase 62.2 TASK 6: "PROVIDER_TIMEOUT" (the Director's own name) is
+resolved the identical way -- `PROVIDER_FAILED` with
+`payload["error_type"] = "TIMEOUT"` (`ai/runtime/ai_service.py`'s own
+`_ERROR_TYPE_LABEL` mapping, derived from the exception class
+`ai/providers/runtime_errors.py` already raises), not a fifth event
+type. A subscriber that only cares about timeouts specifically
+filters `PROVIDER_FAILED` events on this payload key, same pattern
+`telegram/owner/runtime_notifications.py` already uses for
+`circuit_state`.
 """
 
 from dataclasses import dataclass, field
