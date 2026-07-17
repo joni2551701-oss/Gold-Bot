@@ -218,12 +218,58 @@ see `docs/AI_PRODUCT_CONTROL_LAYER.md` and
   `/ai_provider`, `/ai_disable`, `/ai_enable`, `/ai_limit`,
   `/ai_cost`, `/ai_usage`, foundation only.
 
+## AI Production Integration Foundation (Phase 61.5)
+
+The first phase in the entire 61.x arc with real live-wiring — see
+`docs/AI_PRODUCTION_INTEGRATION.md` and
+`docs/PHASE61_5_PRODUCTION_INTEGRATION_AUDIT.md` (reuse audit):
+
+- `providers/openai_provider.py`/`claude_provider.py`/`grok_provider.py`
+  — real, non-placeholder `BaseAIProvider` implementations, replacing
+  the corresponding placeholders in `provider_registry.py`, exact same
+  pattern as `providers/gemini_provider.py` (Phase 61.2). `local_llm`
+  stays the one remaining placeholder.
+- `router/provider_score.py` — `ProviderScore`/`score_providers()`,
+  recommendation/analytics only. `AIRouter.route()` is unmodified and
+  does not consume this — no auto-switching, per the Director's own
+  explicit constraint this phase.
+- `telegram/owner/ai_commands.py` (outside `ai/`) — **live-wired**:
+  `/ai_status`, `/ai_provider`, `/ai_cost`, `/ai_usage`, and the new
+  `/ai_health` are now real OWNER-only Telegram commands
+  (`telegram/commands.py`'s `OWNER_COMMANDS`, `telegram/handlers.py`'s
+  `{command}_handler` functions) — the first live callers this module
+  has ever had.
+- `telegram/user_service.py`'s `register_phone()` (outside `ai/`) —
+  **live-wired**: the real `/start` → Phone Share Button → Phone Hash
+  → `UserRecord` → Trial Check → FREE account flow.
+  `access/identity_checker.py`/`trial_manager.py` (Phase 61.4) are now
+  real callers' dependencies rather than untested foundation.
+  `trial_manager.py` gained `trial_status_from_started_at()`, a
+  stateless extraction of `TrialManager.status_of()`'s own math so a
+  database-persisted caller (`UserRecord.trial_started_at`, a new
+  additive column) can share it instead of duplicating it.
+- `capabilities/capability.py` gained four content capabilities
+  (`AI_MARKET_REPORT`/`AI_WEEKLY_OUTLOOK`/`AI_NEWS_ANALYSIS`/
+  `AI_SCRIPT_GENERATION`) — extended in place, not a duplicate
+  "ContentType" enum.
+- `content/` (new) — `content_schema.py`/`content_types.py`/
+  `content_adapter.py`/`broadcast_output.py`: `ContentEngine` wraps
+  `runtime/ai_service.py`'s `AIService.ask()` unmodified, same pattern
+  as `explanation/explanation_engine.py`. Foundation only: none of the
+  four content capabilities has a runtime method mapping in
+  `ai_service.py`'s `_CAPABILITY_METHOD` yet, so every `generate()`
+  call is cleanly rejected today, same "correctly-shaped, not yet
+  wired" posture `SUMMARY`/`EDUCATION` have had since Phase 61.3.
+  `broadcast_output.py` is a contract-only adapter
+  (`ContentResult` → `BroadcastReadyContent`) — no real
+  streaming/voice/video/scheduling/send logic.
+
 ## Future Roadmap
 Full audit and folder-structure rationale in `docs/AI_ARCHITECTURE.md`.
 The real work — replacing the permanent-reject stub with actual
 heuristic/model scoring — is still out of scope (`ai/ai_analyzer.py`
-is a separate, live production module this phase does not touch). No
-module built across Phase 61.0-61.4 is live-wired into
-`core/pipeline.py` or `telegram/command_router.py` yet — see
-`docs/PHASE61_4_PRODUCT_CONTROL_FREEZE.md`'s "Remaining" section for
-what comes next.
+is a separate, live production module this phase does not touch).
+Real content generation (a runtime method mapping for the four
+`AI_*` capabilities), real Router Intelligence auto-switching, and
+real Broadcast delivery are all still out of scope — see
+`docs/PHASE61_5_FREEZE.md`'s "Remaining" section for what comes next.

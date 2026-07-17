@@ -16,7 +16,7 @@ logger = setup_logger("UserRepository")
 # column name (sqlite3.Row), so column order here is irrelevant.
 _USER_SELECT_COLUMNS = (
     "SELECT telegram_id, username, language, trading_style, risk_percent, "
-    "timeframe, created_at, strategy, notifications_enabled, status, last_activity, phone_hash"
+    "timeframe, created_at, strategy, notifications_enabled, status, last_activity, phone_hash, trial_started_at"
 )
 
 
@@ -34,6 +34,7 @@ def _row_to_record(row) -> UserRecord:
         status=row["status"],
         last_activity=row["last_activity"],
         phone_hash=row["phone_hash"],
+        trial_started_at=row["trial_started_at"],
     )
 
 
@@ -152,7 +153,7 @@ class UserRepository:
         allowed = {
             "username", "language", "trading_style", "risk_percent",
             "timeframe", "strategy", "notifications_enabled",
-            "status", "last_activity", "phone_hash",
+            "status", "last_activity", "phone_hash", "trial_started_at",
         }
         updates = {k: v for k, v in fields.items() if k in allowed}
         if not updates:
@@ -245,9 +246,9 @@ class UserRepository:
     def get_users_by_phone_hash(self, phone_hash: str) -> List[UserRecord]:
         """
         Every user row sharing this phone_hash -- used by
-        ai/access/trial_manager.py (TASK 5) to detect the same phone
-        number re-registering under a different telegram_id for
-        repeated free trials. Ordinarily 0 or 1 rows; more than 1
+        ai/access/identity_checker.py (Phase 61.4 TASK 5) to detect the
+        same phone number re-registering under a different telegram_id
+        for repeated free trials. Ordinarily 0 or 1 rows; more than 1
         means exactly the abuse pattern that lookup exists to catch.
         """
         with self.db as conn:
@@ -255,3 +256,15 @@ class UserRepository:
                 _USER_SELECT_COLUMNS + " FROM users WHERE phone_hash = ?", (phone_hash,)
             )
             return [_row_to_record(row) for row in cursor.fetchall()]
+
+    def set_trial_started_at(self, telegram_id, started_at_iso: str) -> bool:
+        """
+        Records the ISO-8601 timestamp this user's free trial started
+        (Phase 61.5 TASK 4) -- same one-shot-set convention as
+        `set_phone_hash()`. A caller (telegram/user_service.py) is
+        responsible for only calling this once per user (a second call
+        would silently reset the trial window, which is
+        `telegram/user_service.py`'s job to prevent, not this
+        repository's).
+        """
+        return self.update_user(telegram_id, trial_started_at=started_at_iso)

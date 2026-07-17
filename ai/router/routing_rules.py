@@ -33,6 +33,14 @@ ROUTING_RULES: Dict[Capability, Tuple[str, ...]] = {
     Capability.VIDEO: ("gemini",),
     Capability.VOICE: ("openai", "local_llm"),
     Capability.DOCUMENT: ("claude", "gemini"),
+    # Phase 61.5 TASK 5 -- same candidate shape as ANALYSIS/EXPLANATION
+    # (broad text-generation providers); still cleanly rejected by
+    # ai/runtime/ai_service.py's _CAPABILITY_METHOD until a future
+    # phase adds a runtime mapping, same as SUMMARY/EDUCATION today.
+    Capability.AI_MARKET_REPORT: ("gemini", "claude", "openai"),
+    Capability.AI_WEEKLY_OUTLOOK: ("gemini", "claude", "openai"),
+    Capability.AI_NEWS_ANALYSIS: ("gemini", "claude", "openai"),
+    Capability.AI_SCRIPT_GENERATION: ("openai", "gemini"),
 }
 
 

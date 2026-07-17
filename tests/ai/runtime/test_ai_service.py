@@ -204,9 +204,18 @@ def test_not_implemented_method_falls_back_to_next_provider():
 
 
 def test_real_provider_manager_default_never_crashes_without_any_api_key():
-    """Integration-shaped: the real ProviderManager (real GeminiProvider, no key in this sandbox) must fail over cleanly to a placeholder, never raise."""
+    """
+    Integration-shaped: the real ProviderManager (real Gemini/OpenAI/Claude
+    providers, Phase 61.5 TASK 1 -- no key configured for any of them in
+    this sandbox) must fail over through every candidate cleanly and
+    report a clean rejection, never raise and never fabricate a
+    successful answer. Before Phase 61.5 TASK 1, openai/claude were
+    placeholder stubs that always "succeeded" with a fake response --
+    this test's own premise (fails over to a placeholder) no longer
+    applies now that every EXPLANATION-capable provider is real.
+    """
     service = AIService()
     request = RuntimeRequest(capability=Capability.EXPLANATION, ai_context=_context(), role=AIRole.OWNER)
     response = service.ask(request)
-    assert response.accepted is True
-    assert response.provider_name != "gemini"
+    assert response.accepted is False
+    assert response.content is None

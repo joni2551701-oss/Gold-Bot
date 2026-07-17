@@ -1,18 +1,13 @@
 """
 Telegram Layer — Owner AI Commands (Phase 61.4: AI Product & Control
-Layer, TASK 3; extended TASK 6).
+Layer, TASK 3; extended TASK 6; extended Phase 61.5: AI Production
+Integration Foundation, TASK 2/3 -- `ai_health()` added, and this
+module is now REGISTERED into `telegram/commands.py`'s
+`OWNER_COMMANDS` and called from real `telegram/handlers.py` handler
+functions).
 
-Real, tested, standalone service-shaped functions -- NOT registered
-into telegram/commands.py's OWNER_COMMANDS/ADMIN_COMMANDS dicts, NOT
-wired into telegram/command_router.py's routing or telegram/handlers.py.
-The live, running Telegram bot's actual command surface is completely
-unaffected by this file existing -- same "foundation, not yet
-live-wired" posture every other telegram/owner/*.py module uses
-(confirmed by `docs/PHASE61_4_PRODUCT_CONTROL_AUDIT.md`'s own
-`telegram/` finding: none of the 18 existing modules are registered
-yet).
-
-Mirrors `telegram/owner/provider_commands.py`'s own shape (standalone
+Real, tested, standalone service-shaped functions. Mirrors
+`telegram/owner/provider_commands.py`'s own shape (standalone
 functions returning a small "never raises" result object) rather than
 inventing a new pattern. Every `ai/` object is injectable -- this
 module never constructs a live `AIService` or reaches into its
@@ -31,6 +26,7 @@ from ai.capabilities.capability import Capability
 from ai.capabilities.capability_manager import CapabilityManager
 from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_manager import ProviderManager
+from ai.router.provider_score import score_providers
 from ai.router.routing_rules import get_candidate_providers
 from core.logger import setup_logger
 
@@ -54,7 +50,8 @@ def _resolve_role(name: str) -> Optional[AIRole]:
     return _ROLE_ALIASES.get(name.strip().lower())
 
 
-def _resolve_capability(name: str) -> Optional[Capability]:
+def resolve_capability(name: str) -> Optional[Capability]:
+    """Public (Phase 61.5 TASK 3): the future /ai_provider handler needs the same string->Capability resolution ai_disable()/ai_enable() already use -- reused, not re-implemented."""
     normalized = name.strip().upper()
     try:
         return Capability(normalized)
@@ -155,7 +152,7 @@ def ai_disable(
     """The future /ai_disable <capability> command. Unknown capability names are rejected, never silently ignored."""
     capability_manager = capability_manager or CapabilityManager()
 
-    capability = _resolve_capability(capability_name)
+    capability = resolve_capability(capability_name)
     if capability is None:
         return AICommandResult(success=False, message=f"Unknown capability: {capability_name}")
 
@@ -174,7 +171,7 @@ def ai_enable(
     """The future /ai_enable <capability> command -- the reverse of ai_disable(), same validation."""
     capability_manager = capability_manager or CapabilityManager()
 
-    capability = _resolve_capability(capability_name)
+    capability = resolve_capability(capability_name)
     if capability is None:
         return AICommandResult(success=False, message=f"Unknown capability: {capability_name}")
 
@@ -251,4 +248,35 @@ def ai_usage(telegram_id: str, user_usage: Dict[str, UserUsageStats]) -> AIComma
         return AICommandResult(success=True, message=message)
     except Exception as e:
         logger.warning(f"ai_usage failed for {telegram_id}: {e}")
+        return AICommandResult(success=False, message=f"Error: {e}")
+
+
+def ai_health(
+    provider_manager: Optional[ProviderManager] = None,
+    provider_stats: Optional[Dict[str, ProviderStats]] = None,
+    health_tracker: Optional[ProviderHealthTracker] = None,
+) -> AICommandResult:
+    """
+    The /ai_health command's payload (Phase 61.5 TASK 2/3). Best-first
+    ranking via `ai.router.provider_score.score_providers()` --
+    recommendation/analytics only, matching that module's own
+    docstring: `AIRouter.route()` is never called or influenced by
+    this. `provider_names` comes from `provider_manager.list_providers()`
+    so a provider with zero call history still appears in the ranking.
+    """
+    provider_manager = provider_manager or ProviderManager()
+    health_tracker = health_tracker or ProviderHealthTracker()
+    provider_stats = provider_stats or {}
+
+    try:
+        names = provider_manager.list_providers()
+        ranked = score_providers(names, provider_stats, health_tracker)
+        lines = [
+            f"{s.provider_name.title()}: {s.score:.2f} ({s.health_status.value if s.health_status else 'UNKNOWN'})"
+            for s in ranked
+        ]
+        message = "AI Provider Health Ranking:\n" + ("\n".join(lines) if lines else "No providers registered.")
+        return AICommandResult(success=True, message=message)
+    except Exception as e:
+        logger.warning(f"ai_health failed: {e}")
         return AICommandResult(success=False, message=f"Error: {e}")

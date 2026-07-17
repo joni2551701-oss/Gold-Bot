@@ -2006,6 +2006,48 @@ real mutation-leak bug, fixed while adding `set_limit()`). `core/pipeline.py`,
 `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`
 unchanged; nothing built this phase is called from any live caller.
 
+### Phase 61.5 — AI Production Integration Foundation
+
+The first phase in the entire 61.x arc with real live-wiring. Full
+detail: `docs/AI_PRODUCTION_INTEGRATION.md`,
+`docs/PHASE61_5_PRODUCTION_INTEGRATION_AUDIT.md` (TASK 0/1 reuse
+audit), `docs/PHASE61_5_FREEZE.md` (closing freeze declaration).
+
+```
+ai/providers/openai_provider.py         (real, replaces placeholder)
+ai/providers/claude_provider.py         (real, replaces placeholder)
+ai/providers/grok_provider.py           (real, replaces placeholder)
+ai/router/provider_score.py             (ProviderScore/score_providers() -- analytics only, route() unmodified)
+ai/capabilities/capability.py           (+4 AI_* content capabilities, extended in place)
+ai/content/content_types.py             (CONTENT_CAPABILITIES + content_title())
+ai/content/content_schema.py            (ContentRequest/ContentResult)
+ai/content/content_adapter.py           (ContentEngine -- wraps AIService.ask(), foundation only)
+ai/content/broadcast_output.py          (BroadcastReadyContent/prepare_broadcast() -- contract only)
+
+telegram/commands.py                    (+ai_status/ai_provider/ai_cost/ai_usage/ai_health in OWNER_COMMANDS)
+telegram/handlers.py                    (+5 ai_*_handler + contact_handler -- LIVE)
+telegram/owner/ai_commands.py           (+ai_health(); now called from live handlers)
+telegram/command_router.py              (+route_contact(); "start" keyboard -> phone_share_keyboard)
+telegram/polling.py                     (+contact-message dispatch conditional)
+telegram/keyboards.py                   (+phone_share_keyboard() -- first ReplyKeyboardMarkup)
+telegram/user_service.py                (+register_phone() -- LIVE registration flow)
+
+database/user_models.py                 (+trial_started_at field, additive)
+database/user_repository.py             (+set_trial_started_at())
+ai/access/trial_manager.py              (+trial_status_from_started_at(), stateless, shared with status_of())
+```
+
+Two real live-wiring surfaces this phase: the Owner AI Dashboard
+(TASK 3) and User Registration (TASK 4) — every prior Phase 61.x
+module stayed foundation-only. `AIRouter.route()` is unmodified by
+design (TASK 2's explicit "no auto-switch" constraint). `ai/content/`
+is foundation only — no `AIService` runtime mapping exists yet for any
+of the four new content capabilities, so `ContentEngine.generate()` is
+always cleanly rejected today. The raw phone number is still never
+persisted. `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
+`strategies/`, `signals/` unchanged; closing AST sweep confirms zero
+new `ai/` → those layers' imports, including `ai/content/`.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

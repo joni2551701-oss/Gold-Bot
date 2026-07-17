@@ -15,7 +15,7 @@ stays a placeholder -- no admin panel UI exists yet, only text (Phase
 37's /admin).
 """
 
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup
 
 
 def language_keyboard():
@@ -111,4 +111,27 @@ def notifications_keyboard():
             [InlineKeyboardButton(text="Enable Notifications", callback_data="notifications_on")],
             [InlineKeyboardButton(text="Disable Notifications", callback_data="notifications_off")],
         ]
+    )
+
+
+def phone_share_keyboard():
+    """
+    /start hint keyboard (Phase 61.5: AI Production Integration
+    Foundation, TASK 4). The first `ReplyKeyboardMarkup` in this
+    codebase -- every keyboard above is `InlineKeyboardMarkup`, which
+    cannot request a user's contact; only a `ReplyKeyboardMarkup` with
+    `KeyboardButton(request_contact=True)` can. Real interaction, not a
+    display hint: tapping this button makes aiogram send a Message with
+    `.contact` populated, which `telegram/polling.py`'s dispatcher
+    routes to `telegram.command_router.route_contact()` ->
+    `telegram.handlers.contact_handler()` ->
+    `telegram.user_service.UserService.register_phone()`.
+    `one_time_keyboard=True` -- the keyboard hides itself after one tap,
+    same "don't linger" convention a Telegram contact-request button
+    normally uses.
+    """
+    return ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text="📱 Share Phone Number", request_contact=True)]],
+        resize_keyboard=True,
+        one_time_keyboard=True,
     )

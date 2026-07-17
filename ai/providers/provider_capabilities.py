@@ -25,15 +25,21 @@ PROVIDER_CAPABILITIES: Dict[str, FrozenSet[Capability]] = {
         Capability.CHAT, Capability.ANALYSIS, Capability.EXPLANATION,
         Capability.SUMMARY, Capability.MEMORY, Capability.EDUCATION,
         Capability.VISION, Capability.VIDEO, Capability.DOCUMENT,
+        Capability.AI_MARKET_REPORT, Capability.AI_WEEKLY_OUTLOOK,
+        Capability.AI_NEWS_ANALYSIS, Capability.AI_SCRIPT_GENERATION,
     }),
     "openai": frozenset({
         Capability.CHAT, Capability.ANALYSIS, Capability.EXPLANATION,
         Capability.SUMMARY, Capability.EDUCATION, Capability.TOOL_CALLING,
         Capability.VISION, Capability.IMAGE, Capability.VOICE,
+        Capability.AI_MARKET_REPORT, Capability.AI_WEEKLY_OUTLOOK,
+        Capability.AI_NEWS_ANALYSIS, Capability.AI_SCRIPT_GENERATION,
     }),
     "claude": frozenset({
         Capability.CHAT, Capability.ANALYSIS, Capability.EXPLANATION,
         Capability.TOOL_CALLING, Capability.DOCUMENT,
+        Capability.AI_MARKET_REPORT, Capability.AI_WEEKLY_OUTLOOK,
+        Capability.AI_NEWS_ANALYSIS,
     }),
     "grok": frozenset({
         Capability.CHAT,

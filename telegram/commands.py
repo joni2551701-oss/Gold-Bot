@@ -33,6 +33,11 @@ OWNER_COMMANDS = {
     "removeadmin": "Remove an admin",
     "system": "Show system status",
     "broadcast": "Broadcast a message to all users",
+    "ai_status": "Show AI Core status",
+    "ai_provider": "Show current/fallback provider for a capability",
+    "ai_cost": "Show today's AI cost by provider",
+    "ai_usage": "Show a user's AI usage",
+    "ai_health": "Show AI provider health ranking",
 }
 
 ADMIN_COMMANDS = {

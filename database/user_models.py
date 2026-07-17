@@ -23,9 +23,18 @@ class UserRecord:
     (core.phone_hash.hash_phone_number()) -- the raw phone number is
     never stored anywhere in this codebase. None for a user who has
     not shared their contact yet (every user before this phase, and
-    any user who declines to). Used by ai/access/trial_manager.py
-    (TASK 5) to detect the same phone re-registering under a new
-    telegram_id for repeated free trials.
+    any user who declines to). Used by ai/access/identity_checker.py
+    (Phase 61.4 TASK 5) to detect the same phone re-registering under
+    a new telegram_id for repeated free trials.
+
+    trial_started_at (Phase 61.5 TASK 4): an ISO-8601 timestamp string,
+    same storage convention as `last_activity` -- set once, the first
+    time this user's shared phone passes
+    `ai.access.identity_checker.is_phone_reused_by_another_account()`.
+    None for a user who has not started a trial yet. Paired with
+    `ai.access.trial_manager.trial_status_from_started_at()` to
+    compute active/expires_at without a second, database-specific
+    reimplementation of that math.
     """
     telegram_id: str
     username: Optional[str]
@@ -39,3 +48,4 @@ class UserRecord:
     status: str = "NEW"
     last_activity: Optional[str] = None
     phone_hash: Optional[str] = None
+    trial_started_at: Optional[str] = None

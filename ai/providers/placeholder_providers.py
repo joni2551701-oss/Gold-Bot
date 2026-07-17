@@ -1,24 +1,23 @@
 """
 AI Layer — Placeholder Providers (Phase 61.0: AI Infrastructure
 Foundation, TASK 3; Gemini placeholder removed Phase 61.2: AI Runtime
-Foundation, TASK 3).
+Foundation, TASK 3; OpenAI/Claude/Grok placeholders removed Phase
+61.5: AI Production Integration Foundation, TASK 1).
 
-Four stub `BaseAIProvider` implementations (OpenAI/Claude/Grok/Local
-LLM). None make a real network call -- every method returns a fixed
-`ProviderResult` whose `content` says so explicitly. Grouped in one
-file rather than separate top-level modules since each class here is a
-handful of identical-shaped lines -- near-empty files would not add
-clarity.
+One remaining stub `BaseAIProvider` implementation (Local LLM). It
+makes no real network call -- its methods return a fixed
+`ProviderResult` whose `content` says so explicitly.
 
-Gemini's placeholder was removed from this file (Phase 61.2) once
-`ai/providers/gemini_provider.py`'s real implementation replaced it in
+OpenAI/Claude/Grok's placeholders were removed from this file (Phase
+61.5) once `ai/providers/openai_provider.py`/`claude_provider.py`/
+`grok_provider.py`'s real implementations replaced them in
 `provider_registry.py` -- keeping both would have meant two classes
-with the same conceptual identity, one live one dead
-(CLAUDE.md's "No duplicate logic"). `core/secrets.py` also now carries
-`OPENAI_API_KEY`/`CLAUDE_API_KEY`/`GROK_API_KEY`/`LOCAL_LLM_CONFIG`
-(Phase 61.2 TASK 2) -- these four placeholders deliberately still do
-not read them; a future phase replaces one or more of these classes
-with a real implementation the same way Gemini's was.
+with the same conceptual identity, one live one dead (CLAUDE.md's "No
+duplicate logic"), same precedent as Gemini's Phase 61.2 removal.
+`core/secrets.py` still carries `LOCAL_LLM_CONFIG` (Phase 61.2 TASK 2)
+-- this placeholder deliberately still does not read it; a future
+phase replaces it with a real implementation the same way the other
+four were.
 """
 
 from ai.providers.base_provider import BaseAIProvider, ProviderResult
@@ -56,18 +55,6 @@ class _StubProviderMixin:
 
     def voice(self, prompt: str) -> ProviderResult:
         return self._stub("voice")
-
-
-class OpenAIProvider(_StubProviderMixin, BaseAIProvider):
-    _NAME = "openai"
-
-
-class ClaudeProvider(_StubProviderMixin, BaseAIProvider):
-    _NAME = "claude"
-
-
-class GrokProvider(_StubProviderMixin, BaseAIProvider):
-    _NAME = "grok"
 
 
 class LocalLLMProvider(_StubProviderMixin, BaseAIProvider):

@@ -8,14 +8,31 @@ read/update, safe defaults, and exception handling so a database
 failure never propagates up to a command handler.
 
     Telegram Handler -> UserService -> UserRepository -> Database
+
+register_phone() (Phase 61.5: AI Production Integration Foundation,
+TASK 4) is the real Phone Share Button flow's service-layer step:
+Phone Hash -> UserRecord -> Trial Check -> FREE account. It imports
+`core.phone_hash`/`ai.access.identity_checker`/`ai.access.trial_manager`
+directly -- the same "telegram/ may consume already-built ai/ output"
+relationship `telegram/owner/ai_commands.py` already established (this
+codebase's pipeline layering is data -> ... -> ai -> decision -> ...
+-> telegram, so telegram consuming ai/'s already-computed facts is
+downstream consumption, not a reversed dependency). The raw phone
+number is never retained beyond this method's own local variable --
+only `core.phone_hash.hash_phone_number()`'s output is ever passed to
+the repository.
 """
 
+from datetime import datetime, timezone
 from typing import Optional
 from dataclasses import dataclass
 
 from database.user_repository import UserRepository
 from database.user_models import UserRecord
 from core.logger import setup_logger
+from core.phone_hash import hash_phone_number
+from ai.access.identity_checker import is_phone_reused_by_another_account
+from ai.access.trial_manager import DEFAULT_TRIAL_DURATION, trial_status_from_started_at
 
 logger = setup_logger("UserService")
 
@@ -25,6 +42,14 @@ class UserServiceResult:
     success: bool
     reason: str
     profile: Optional[UserRecord] = None
+
+
+@dataclass(frozen=True)
+class PhoneRegistrationResult:
+    success: bool
+    reason: str
+    trial_active: bool = False
+    trial_expires_at: Optional[datetime] = None
 
 
 class UserService:
@@ -164,3 +189,54 @@ class UserService:
         except Exception as e:
             logger.warning(f"update_settings failed for telegram_id={telegram_id}: {e}")
             return UserServiceResult(success=False, reason=f"Database error: {e}")
+
+    def register_phone(self, telegram_id, phone_number: str) -> PhoneRegistrationResult:
+        """
+        Real Phone Share Button flow (Phase 61.5 TASK 4): Phone Hash ->
+        UserRecord -> Trial Check -> FREE account. `phone_number` (the
+        raw Telegram-contact-shared string) is hashed immediately via
+        `core.phone_hash.hash_phone_number()` and never stored, logged,
+        or returned by this method -- only the hash reaches
+        `UserRepository`. Never raises: any failure is reported as
+        success=False, not an exception.
+
+        "1 phone = 1 trial": a phone_hash already used by a *different*
+        telegram_id blocks a new trial outright (the phone_hash is
+        still recorded on this account -- storage is unconditional, only
+        the trial start is gated) -- see
+        `ai.access.identity_checker.is_phone_reused_by_another_account()`.
+        A telegram_id that already has `trial_started_at` set keeps its
+        original start time; this method never resets an existing
+        trial window.
+        """
+        try:
+            repository = self._get_repository()
+            user = repository.get_user(telegram_id)
+            if user is None:
+                return PhoneRegistrationResult(success=False, reason="User not found -- send /start first")
+
+            phone_hash = hash_phone_number(phone_number)
+            sharing_users = repository.get_users_by_phone_hash(phone_hash)
+            phone_reused = is_phone_reused_by_another_account(
+                str(telegram_id), [str(u.telegram_id) for u in sharing_users]
+            )
+            repository.set_phone_hash(telegram_id, phone_hash)
+
+            if phone_reused:
+                return PhoneRegistrationResult(
+                    success=False, reason="This phone number is already registered on another account.",
+                )
+
+            if user.trial_started_at is None:
+                started_at = datetime.now(timezone.utc)
+                repository.set_trial_started_at(telegram_id, started_at.isoformat())
+            else:
+                started_at = datetime.fromisoformat(user.trial_started_at)
+
+            status = trial_status_from_started_at(started_at, DEFAULT_TRIAL_DURATION)
+            return PhoneRegistrationResult(
+                success=True, reason="", trial_active=status.active, trial_expires_at=status.expires_at,
+            )
+        except Exception as e:
+            logger.warning(f"register_phone failed for telegram_id={telegram_id}: {e}")
+            return PhoneRegistrationResult(success=False, reason=f"Database error: {e}")

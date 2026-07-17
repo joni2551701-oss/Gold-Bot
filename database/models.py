@@ -140,7 +140,8 @@ def init_user_schema(connection: sqlite3.Connection):
         notifications_enabled INTEGER DEFAULT 1,
         status TEXT DEFAULT 'NEW',
         last_activity TIMESTAMP,
-        phone_hash TEXT
+        phone_hash TEXT,
+        trial_started_at TEXT
     );
     """
     try:
@@ -182,11 +183,12 @@ def _create_users_indexes(connection: sqlite3.Connection):
 def _migrate_users_schema(connection: sqlite3.Connection):
     """
     Adds the Phase 40 settings columns, Phase 45 lifecycle columns
-    (status, last_activity), and Phase 61.4 TASK 4's phone_hash column
-    to a 'users' table created before those phases. SQLite has no "ADD
-    COLUMN IF NOT EXISTS", so each column's presence is checked via
-    PRAGMA table_info first -- on a fresh table (already created with
-    all columns above) every column is already present and this is a
+    (status, last_activity), Phase 61.4 TASK 4's phone_hash column, and
+    Phase 61.5 TASK 4's trial_started_at column to a 'users' table
+    created before those phases. SQLite has no "ADD COLUMN IF NOT
+    EXISTS", so each column's presence is checked via PRAGMA
+    table_info first -- on a fresh table (already created with all
+    columns above) every column is already present and this is a
     no-op. Idempotent: safe to call every time a UserRepository is
     constructed, including a second run against an already-migrated
     table (no duplicate-column error).
@@ -197,6 +199,7 @@ def _migrate_users_schema(connection: sqlite3.Connection):
         ("status", "TEXT DEFAULT 'NEW'"),
         ("last_activity", "TIMESTAMP"),
         ("phone_hash", "TEXT"),
+        ("trial_started_at", "TEXT"),
     ]
 
     try:

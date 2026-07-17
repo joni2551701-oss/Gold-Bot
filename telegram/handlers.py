@@ -88,6 +88,38 @@ and users_handler show both, never conflated. No command blocks a
 BANNED user yet (ban_user()/activate_user() exist on UserService for
 a future phase's enforcement).
 
+ai_status_handler, ai_provider_handler, ai_cost_handler,
+ai_usage_handler, and ai_health_handler (Phase 61.5: AI Production
+Integration Foundation, TASK 3) are real: they call
+telegram.owner.ai_commands's own functions (built Phase 61.4 TASK 3,
+extended 61.5 TASK 2/3), the first live callers those functions have
+ever had. OWNER only. Every one of them relies on
+telegram.owner.ai_commands's own `Optional[...] = None` defaults to
+construct its `ai/` objects (ProviderManager/ProviderHealthTracker/
+CapabilityManager) -- these handlers hold no `ai/` import of their
+own beyond the `telegram.owner.ai_commands` functions themselves, same
+"Handler -> Service" shape as every other owner command here.
+ai_cost_handler/ai_usage_handler pass an empty provider_stats/
+user_usage dict -- no live `ai/audit/` data source is wired into the
+running bot yet (no live AIService call happens anywhere in this
+phase either), so these report zero/"no usage" honestly rather than
+fabricating history, exactly as their own docstrings already promise
+for that input shape.
+
+contact_handler (Phase 61.5 TASK 4) is real: it calls
+telegram.user_service.UserService.register_phone() -- the Phone Hash
+-> UserRecord -> Trial Check -> FREE account flow. Unlike every other
+handler above, it is never reached through telegram.command_router's
+normal `/command` dispatch table -- a Telegram contact-share message
+has `message.contact` populated and `message.text is None`, so
+telegram.command_router.route_contact() (a new, separate entry point,
+mirroring route_message()'s shape) calls it directly.
+telegram/keyboards.py's new phone_share_keyboard() (attached to
+/start's reply as of this phase -- see command_router.py's
+_KEYBOARD_BY_COMMAND) is what makes the Telegram client show the
+"Share Phone Number" button that produces this contact message in the
+first place.
+
 A handler must never import database.* or core.pipeline directly --
 only Handler -> Service. telegram.command_router routes incoming
 commands to these functions and is the only place a keyboard
@@ -112,6 +144,7 @@ from telegram.notification_service import NotificationService
 from telegram.signal_access_service import SignalAccessService
 from telegram.feedback_service import FeedbackService
 from telegram.permissions import is_owner
+from telegram.owner.ai_commands import ai_cost, ai_health, ai_provider, ai_status, ai_usage, resolve_capability
 from core.logger import setup_logger
 
 logger = setup_logger("Handlers")
@@ -893,3 +926,65 @@ async def feedbacks_handler() -> str:
             f"{item.created_at}"
         )
     return "\n".join(lines)
+
+
+async def ai_status_handler() -> str:
+    """/ai_status -> telegram.owner.ai_commands.ai_status(). OWNER only. Never raises (ai_status() itself never raises)."""
+    return ai_status().message
+
+
+async def ai_provider_handler(args=None) -> str:
+    """/ai_provider CAPABILITY -> telegram.owner.ai_commands.ai_provider(). OWNER only. Never raises."""
+    capability_name = _first_arg(args)
+    if capability_name is None:
+        return "Usage: /ai_provider CAPABILITY"
+
+    capability = resolve_capability(capability_name)
+    if capability is None:
+        return f"Unknown capability: {capability_name}"
+
+    return ai_provider(capability).message
+
+
+async def ai_cost_handler() -> str:
+    """/ai_cost -> telegram.owner.ai_commands.ai_cost(). OWNER only. Never raises."""
+    return ai_cost({}).message
+
+
+async def ai_usage_handler(args=None) -> str:
+    """/ai_usage TELEGRAM_ID -> telegram.owner.ai_commands.ai_usage(). OWNER only. Never raises."""
+    target_id = _first_arg(args)
+    if target_id is None:
+        return "Usage: /ai_usage TELEGRAM_ID"
+
+    return ai_usage(target_id, {}).message
+
+
+async def ai_health_handler() -> str:
+    """/ai_health -> telegram.owner.ai_commands.ai_health(). OWNER only. Never raises."""
+    return ai_health().message
+
+
+async def contact_handler(telegram_id, phone_number: str) -> str:
+    """
+    Phone Share Button reply -> UserService.register_phone() (Phase
+    61.5 TASK 4). Called from telegram.command_router.route_contact(),
+    not from the normal /command dispatch table (a contact message has
+    no `.text`, so it never reaches route_command()/_ALL_COMMANDS at
+    all). USER-level, no permission tier -- never raises.
+    """
+    try:
+        result = UserService().register_phone(telegram_id, phone_number)
+    except Exception as e:
+        logger.warning(f"contact_handler: register_phone failed for telegram_id={telegram_id}: {e}")
+        return "Could not process your phone number."
+
+    if not result.success:
+        return result.reason
+
+    if result.trial_active:
+        return (
+            "✅ Phone verified. Your FREE trial is active.\n"
+            f"Trial expires: {result.trial_expires_at}"
+        )
+    return "✅ Phone verified. Your FREE trial has ended."

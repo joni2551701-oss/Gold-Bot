@@ -3,13 +3,23 @@ Telegram Layer — live polling entry point (Phase 36).
 
 Responsibility: create the aiogram Bot used to RECEIVE updates, wire
 an aiogram Dispatcher to it, and start long-polling. Every incoming
-message is handed to telegram.command_router.route_message(), which
-does the actual command -> handler -> service -> database work. No
-business logic lives here -- this module only starts the listener and
-forwards updates.
+text message is handed to telegram.command_router.route_message(),
+which does the actual command -> handler -> service -> database work.
+No business logic lives here -- this module only starts the listener
+and forwards updates.
+
+A contact-share message (Phase 61.5: AI Production Integration
+Foundation, TASK 4 -- the Phone Share Button reply) is structurally
+different: `message.contact` is populated and `message.text is None`,
+so `route_message()` (which only reads `.text`) would silently
+resolve it to "Unknown command." `_on_message` below checks
+`message.contact` first and routes it to the new, separate
+`command_router.route_contact()` instead -- the one new conditional
+this phase adds to this file.
 
     Telegram User -> Aiogram Dispatcher -> polling.py
         -> command_router.route_message() -> handlers.py -> services -> database
+        -> command_router.route_contact() -> handlers.py -> services -> database (contact messages)
 
 This is a separate, standalone entry point from main.py. main.py
 (GoldBot) is a scheduled, one-shot pipeline run (Data -> ... ->
@@ -33,7 +43,7 @@ from aiogram.types import Message
 
 from core.secrets import Secrets
 from core.logger import setup_logger
-from telegram.command_router import route_message
+from telegram.command_router import route_contact, route_message
 
 logger = setup_logger("TelegramPolling")
 
@@ -51,12 +61,15 @@ def create_dispatcher() -> Dispatcher:
     @dispatcher.message()
     async def _on_message(message: Message) -> None:
         try:
-            result = await route_message(message)
+            if message.contact is not None:
+                result = await route_contact(message)
+            else:
+                result = await route_message(message)
         except Exception as e:
-            # Defense in depth: route_message() already catches handler
-            # errors internally, but a malformed update (e.g. missing
-            # from_user) must not crash the polling loop either.
-            logger.warning(f"route_message failed: {e}")
+            # Defense in depth: route_message()/route_contact() already
+            # catch handler errors internally, but a malformed update
+            # (e.g. missing from_user) must not crash the polling loop.
+            logger.warning(f"message routing failed: {e}")
             await message.answer("Service temporarily unavailable.")
             return
 

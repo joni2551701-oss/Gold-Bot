@@ -38,6 +38,7 @@ from telegram.keyboards import (
     strategy_keyboard,
     settings_keyboard,
     admin_panel_keyboard,
+    phone_share_keyboard,
 )
 from telegram.permissions import PermissionLevel, get_permission_level
 from core.logger import setup_logger
@@ -58,7 +59,11 @@ _ALL_COMMANDS = {**COMMANDS, **OWNER_COMMANDS, **ADMIN_COMMANDS}
 # handler, so telegram.handlers documents the real interaction as a
 # command argument (e.g. "/risk 5").
 _KEYBOARD_BY_COMMAND = {
-    "start": language_keyboard,
+    # "start" was language_keyboard through Phase 60; repurposed to
+    # phone_share_keyboard in Phase 61.5 TASK 4 for the real Phone
+    # Share Button flow -- language selection is unaffected, still
+    # fully available via its own "language" mapping below.
+    "start": phone_share_keyboard,
     "settings": settings_keyboard,
     "language": language_keyboard,
     "risk": risk_keyboard,
@@ -167,3 +172,28 @@ async def route_message(message) -> RouterResult:
     telegram_id = message.from_user.id
     username = message.from_user.username
     return await route_command(message.text, telegram_id=telegram_id, username=username)
+
+
+async def route_contact(message) -> RouterResult:
+    """
+    Routes an aiogram Message-like object whose `.contact` is populated
+    (Phase 61.5 TASK 4) -- the Phone Share Button's reply, a
+    structurally different message shape than a text command
+    (`message.text` is `None` here). Mirrors `route_message()`'s own
+    shape: resolve identity, delegate to a handler, never raise.
+
+    Never raises: a handler failure becomes SERVICE_UNAVAILABLE_TEXT,
+    same posture as `route_command()`. No permission tier is checked --
+    sharing your own contact is a USER-level action, available to
+    anyone `/start` already let in.
+    """
+    telegram_id = message.from_user.id
+    phone_number = message.contact.phone_number
+
+    try:
+        text = await handlers.contact_handler(telegram_id=telegram_id, phone_number=phone_number)
+    except Exception as e:
+        logger.warning(f"contact_handler failed for telegram_id={telegram_id}: {e}")
+        return RouterResult(text=SERVICE_UNAVAILABLE_TEXT)
+
+    return RouterResult(text=text)

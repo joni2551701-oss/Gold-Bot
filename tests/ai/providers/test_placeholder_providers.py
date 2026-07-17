@@ -1,12 +1,10 @@
-"""Phase 61.0 TASK 3 — every placeholder provider stubs every method, no real API call. Gemini moved to tests/ai/providers/test_gemini_provider.py (Phase 61.2, real implementation, no longer a placeholder)."""
+"""Phase 61.0 TASK 3 — every placeholder provider stubs every method, no real API call. Gemini moved to tests/ai/providers/test_gemini_provider.py (Phase 61.2, real implementation, no longer a placeholder). OpenAI/Claude/Grok moved to their own real-implementation test files (Phase 61.5 TASK 1) -- LocalLLM is the one placeholder remaining."""
 
 import pytest
 
-from ai.providers.placeholder_providers import (
-    ClaudeProvider, GrokProvider, LocalLLMProvider, OpenAIProvider,
-)
+from ai.providers.placeholder_providers import LocalLLMProvider
 
-ALL_PROVIDERS = [OpenAIProvider, ClaudeProvider, GrokProvider, LocalLLMProvider]
+ALL_PROVIDERS = [LocalLLMProvider]
 
 
 @pytest.mark.parametrize("provider_cls", ALL_PROVIDERS)
