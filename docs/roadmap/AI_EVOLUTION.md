@@ -51,6 +51,51 @@ evolution of this timeline — it is a Constitutional Amendment, and
 requires the explicit, dedicated Director process Article 1 and the
 Amendment section describe.
 
+## AI Media Intelligence Platform (roadmap vision, Phase 62.1b)
+
+Recorded here as Director-approved roadmap vision only — **no code,
+no new module, no new capability**. This section names a future
+direction on top of the Phase 63.0 Senior Trading AI Foundation
+(`ai/persona/`, `ai/content/`, `broadcast/`, `media/`, `translation/`),
+not a phase in progress. Every item below still operates inside
+Article 1's permanent boundary: explaining and educating, never
+deciding or executing.
+
+```
+Education Content → Weekly Outlook → Market Room → Trade Replay → (future) Voice/Video/Avatar/Multi-channel
+```
+
+**Education Content** — SMC (Smart Money Concepts) education, XAUUSD
+analysis walkthroughs, general market lessons. Maps to
+`ContentType.EDUCATION` (already defined, Phase 63.0).
+
+**Weekly Outlook** — macro view, technical view, scenario planning,
+risk framing for the coming week. Maps to `ContentType.WEEKLY_OUTLOOK`
+(already defined, Phase 63.0).
+
+**Market Room** — live-session-style analysis and setup explanation,
+read-only over already-decided pipeline output, same as every other
+AI surface (Constitution Article 1).
+
+**Trade Replay** — a specific content flow over a trade's own
+lifecycle:
+
+```
+Before trade → Decision → Execution → Result → AI Review
+```
+
+`AI Review` here means an `ExplanationOutput` built from a *closed*
+trade's own history (`lifecycle/`, `analytics/`) — never a live signal
+the AI could influence before it resolves.
+
+**Future (unscoped, no target phase)** — voice, video, an AI avatar,
+and delivery to YouTube/TikTok/Telegram Video. Every one of these
+requires its own separately-approved phase and its own Foundation
+Reuse Audit (Constitution Article 11) before a single line of code —
+none of them exist today, and `broadcast/`'s `BroadcastProviderType`
+enum vocabulary (Phase 63.0) is not itself a connection to any of
+these platforms (`docs/policies/BROADCAST_POLICY.md`).
+
 ## Related documents
 
 - `docs/roadmap/VERSIONS.md` — where each AI stage lands in the
@@ -59,3 +104,5 @@ Amendment section describe.
   boundary every stage above operates inside.
 - `docs/ai/AI_ARCHITECTURE.md` — the real package structure the
   Intelligence/Assistant/Analyst stages will extend.
+- `docs/AI_CONTENT_FOUNDATION.md`, `docs/AI_BROADCAST_FOUNDATION.md` —
+  the real Phase 63.0 foundation this vision section builds on top of.

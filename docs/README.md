@@ -43,6 +43,24 @@
 | [`policies/AI_POLICY.md`](policies/AI_POLICY.md) | AI assists-never-decides, provider isolation, Capability addition |
 | [`policies/BROADCAST_POLICY.md`](policies/BROADCAST_POLICY.md) | Broadcast/media/translation default-off, no real integration |
 
+## Architecture flow diagrams & Standards (Phase 62.1b)
+
+| Document | What it covers |
+|---|---|
+| [`architecture/SYSTEM_LAYERS.md`](architecture/SYSTEM_LAYERS.md) | Seven-layer responsibility-cluster view (Foundation → Media Intelligence) |
+| [`architecture/DATA_FLOW.md`](architecture/DATA_FLOW.md) | Real, grep-verified 16-stage `core/pipeline.py` order |
+| [`architecture/AI_FLOW.md`](architecture/AI_FLOW.md) | AI Intelligence-layer composition order (Persona → Media) |
+| [`architecture/TELEGRAM_FLOW.md`](architecture/TELEGRAM_FLOW.md) | Short flow summary — see `telegram/TELEGRAM_ARCHITECTURE.md` for full detail |
+| [`architecture/OWNER_FLOW.md`](architecture/OWNER_FLOW.md) | Owner Permission → Audit → Execution → Notification sequence |
+| [`architecture/DESIGN_PATTERNS.md`](architecture/DESIGN_PATTERNS.md) | The 8 patterns this codebase actually uses |
+| [`architecture/NAMING_CONVENTIONS.md`](architecture/NAMING_CONVENTIONS.md) | File suffix and package naming conventions |
+| [`standards/CODE_STANDARD.md`](standards/CODE_STANDARD.md) | Constructor injection, comments, error-handling-at-boundaries |
+| [`standards/TEST_STANDARD.md`](standards/TEST_STANDARD.md) | Test file layout and coverage expectations |
+| [`standards/DOCUMENTATION_STANDARD.md`](standards/DOCUMENTATION_STANDARD.md) | Doc shape, honesty-over-completeness rule |
+| [`standards/COMMIT_STANDARD.md`](standards/COMMIT_STANDARD.md) | The Commit Protocol sequence, restated |
+| [`standards/REVIEW_STANDARD.md`](standards/REVIEW_STANDARD.md) | What a phase review actually checks |
+| [`standards/RELEASE_STANDARD.md`](standards/RELEASE_STANDARD.md) | Release readiness checklist |
+
 ## Trading Pipeline & Architecture (general)
 
 | Document | What it covers |
@@ -171,7 +189,8 @@ audit (historical; superseded as the canonical map by
 [`PHASE62_2_RUNTIME_FREEZE.md`](PHASE62_2_RUNTIME_FREEZE.md) ·
 [`PHASE63_0_FOUNDATION_AUDIT.md`](PHASE63_0_FOUNDATION_AUDIT.md) ·
 [`PHASE63_0_FREEZE.md`](PHASE63_0_FREEZE.md) ·
-[`PHASE62_1A_GOVERNANCE_FREEZE.md`](PHASE62_1A_GOVERNANCE_FREEZE.md) — most recent freeze before this document
+[`PHASE62_1A_GOVERNANCE_FREEZE.md`](PHASE62_1A_GOVERNANCE_FREEZE.md) ·
+[`PHASE62_1B_ARCHITECTURE_FREEZE.md`](PHASE62_1B_ARCHITECTURE_FREEZE.md) — most recent freeze before this document
 
 ## Release Notes & Specifications
 
@@ -192,6 +211,6 @@ they live with their code, not under `docs/`: `data/README.md`,
 ---
 
 *This index reflects the real file listing under `docs/` as of Phase
-62.1a. When adding a new document, add it here in the same pass
+62.1b. When adding a new document, add it here in the same pass
 (Constitution Article 6 applies to documentation completeness the
 same way it applies to test completeness).*
