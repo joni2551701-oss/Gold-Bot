@@ -24,11 +24,13 @@ from ai.audit.provider_stats import ProviderStats
 from ai.audit.usage_accounting import UserUsageStats
 from ai.capabilities.capability import Capability
 from ai.capabilities.capability_manager import CapabilityManager
+from ai.persona.persona_manager import PersonaManager
 from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_manager import ProviderManager
 from ai.router.provider_score import score_providers
 from ai.router.routing_rules import get_candidate_providers
 from core.logger import setup_logger
+from translation.language_registry import build_language_registry
 
 logger = setup_logger("AICommands")
 
@@ -337,4 +339,31 @@ def ai_health(
         return AICommandResult(success=True, message=message)
     except Exception as e:
         logger.warning(f"ai_health failed: {e}")
+        return AICommandResult(success=False, message=f"Error: {e}")
+
+
+def ai_explanation_status(persona_manager: Optional[PersonaManager] = None) -> AICommandResult:
+    """
+    /ai_explanation_status payload (Phase 63.1, TASK 7). Reports the
+    AI Explanation Intelligence Layer's own composition -- template
+    count is the fixed number `ai.explanation.explanation_templates.py`
+    ships (3: Trade/No-Trade/Education), never a live count of
+    anything that could drift; persona/language counts are read from
+    the real registries, never hardcoded.
+    """
+    persona_manager = persona_manager or PersonaManager()
+
+    try:
+        persona_count = len(persona_manager.all())
+        language_count = len(build_language_registry())
+        message = (
+            "AI EXPLANATION STATUS\n"
+            "Explanation Engine:\nACTIVE\n"
+            "Templates:\n3\n"
+            f"Personas:\n{persona_count}\n"
+            f"Languages:\n{language_count}"
+        )
+        return AICommandResult(success=True, message=message)
+    except Exception as e:
+        logger.warning(f"ai_explanation_status failed: {e}")
         return AICommandResult(success=False, message=f"Error: {e}")

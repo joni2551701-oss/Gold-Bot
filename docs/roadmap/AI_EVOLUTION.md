@@ -34,6 +34,16 @@ advisory-only tools), `ai/explanation/` (`ExplanationEngine`). See
 `docs/ai/AI_KNOWLEDGE.md`, `docs/ai/AI_MEMORY.md`, `docs/ai/AI_TOOLS.md`,
 `docs/ai/AI_PIPELINE.md` for each piece's current real detail.
 
+Phase 63.1 added a second, complementary explanation path inside the
+same package: `ExplanationBuilder` (`ai/explanation/explanation_builder.py`)
+is deterministic and template-based — no `AIService`/provider call at
+all — turning already-extracted primitive values
+(`ExplanationInput`) into a structured `ExplanationOutput` (WHY/WHAT/
+WHERE/RISK/INVALIDATION for trades, plus No-Trade and Education
+templates). It never imports `decision/`/`risk/`; a caller such as
+`core/pipeline.py` extracts the primitives first. See
+`docs/PHASE63_1_FREEZE.md`.
+
 ### Stage 2 — AI Runtime Intelligence — DONE
 `RuntimeManager`, `ProviderCircuitBreaker`, `RuntimeProfile`,
 `EventBus` built (61.6) and wired into `AIService.ask()`'s real

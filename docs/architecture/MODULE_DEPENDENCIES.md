@@ -57,7 +57,7 @@ above; it depends on nothing in this diagram.
 |---|---|
 | `database/*_repository.py` (19 repositories) | `database/*_models.py`, `database/database.py` — SQL only, no business logic |
 
-### AI layer — 19 real subpackages under `ai/`
+### AI layer — 20 real subpackages under `ai/`
 
 | Subpackage | Real responsibility | Depends on |
 |---|---|---|
@@ -69,9 +69,10 @@ above; it depends on nothing in this diagram.
 | `ai/content/` | content assembly helpers | `core/` |
 | `ai/context/` | `context_snapshot.py`/`context_builder.py` — reads `signals/`/`context/` types only | `signals/` (type-only), `context/` (type-only), `core/` |
 | `ai/conversation/` | multi-turn conversation state | `ai/session/`, `core/` |
-| `ai/explanation/` | `explanation_engine.py` — reads `signals/` types only | `signals/` (type-only), `core/` |
+| `ai/explanation/` | `explanation_engine.py` — reads `signals/` types only; Phase 63.1 added `explanation_input.py`/`explanation_output.py`/`explanation_templates.py`/`explanation_builder.py`/`explanation_content_adapter.py` — deterministic, template-based, primitive-values-only (`ExplanationInput`), never imports `decision/`/`risk/` | `signals/` (type-only), `ai/persona/` (`PersonaManager`, Phase 63.1), `ai/content/` (`BroadcastReadyContent`, Phase 63.1 adapter only), `core/` |
 | `ai/journal/` | `trade_journal.py` (canonical) — reads `signals/` types only | `signals/` (type-only), `core/` |
 | `ai/memory/` | long-term AI memory storage | `core/` |
+| `ai/persona/` | `Persona`, `PersonaManager`, `persona_registry.py` (Phase 63.0; only `SENIOR_TRADING_AI` registered as of Phase 63.1) | `core/` |
 | `ai/profiles/` | `RuntimeProfile` definitions | `core/` |
 | `ai/prompts/` | prompt templates | `core/` |
 | `ai/providers/` | `BaseAIProvider`, vendor implementations, `circuit_breaker.py` | `core/` only — no vendor name leaks above this package |

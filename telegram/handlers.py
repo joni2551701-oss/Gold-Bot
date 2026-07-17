@@ -169,7 +169,7 @@ from telegram.notification_service import NotificationService
 from telegram.signal_access_service import SignalAccessService
 from telegram.feedback_service import FeedbackService
 from telegram.permissions import is_owner
-from telegram.owner.ai_commands import ai_cost, ai_health, ai_provider, ai_status, ai_usage, resolve_capability
+from telegram.owner.ai_commands import ai_cost, ai_explanation_status, ai_health, ai_provider, ai_status, ai_usage, resolve_capability
 from telegram.owner.dashboard import get_doctor_report, get_owner_summary
 from telegram.owner.runtime_commands import (
     runtime_check,
@@ -998,6 +998,11 @@ async def ai_usage_handler(args=None) -> str:
 async def ai_health_handler() -> str:
     """/ai_health -> telegram.owner.ai_commands.ai_health(). OWNER only. Never raises."""
     return ai_health().message
+
+
+async def ai_explanation_status_handler() -> str:
+    """/ai_explanation_status -> telegram.owner.ai_commands.ai_explanation_status() (Phase 63.1 TASK 7). OWNER only. Never raises."""
+    return ai_explanation_status().message
 
 
 async def owner_handler() -> str:

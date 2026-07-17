@@ -5,7 +5,7 @@ This document maps the real `ai/` package as it exists in the
 repository today — verified directly via directory listing for this
 phase, not transcribed from assumption.
 
-## Real package tree — 19 subpackages under `ai/`
+## Real package tree — 20 subpackages under `ai/`
 
 ```
 ai/
@@ -17,7 +17,10 @@ ai/
   content/         content assembly helpers
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    multi-turn conversation state
-  explanation/     explanation_engine.py (signals type-only imports)
+  explanation/     explanation_engine.py (signals type-only imports, real AIService.ask() path);
+                   explanation_input.py/explanation_output.py/explanation_templates.py/
+                   explanation_builder.py/explanation_content_adapter.py (Phase 63.1 -
+                   deterministic, template-based, no AI/provider call, no decision/risk import)
   journal/         trade_journal.py (canonical) - AI-side trade journaling
   memory/          long-term AI memory storage
   profiles/        RuntimeProfile definitions (DEVELOPMENT/TESTING/PRODUCTION)

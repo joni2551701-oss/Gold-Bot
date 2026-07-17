@@ -264,3 +264,16 @@ def test_ai_health_with_no_providers_registered():
     result = ai_health(provider_manager=_FakeProviderManager([]), provider_stats={}, health_tracker=ProviderHealthTracker())
     assert result.success is True
     assert "No providers registered." in result.message
+
+
+def test_ai_explanation_status_reports_real_counts():
+    """Phase 63.1 TASK 7 -- Templates is a fixed 3, Personas/Languages come from the real registries, never hardcoded."""
+    from telegram.owner.ai_commands import ai_explanation_status
+
+    result = ai_explanation_status()
+
+    assert result.success is True
+    assert "ACTIVE" in result.message
+    assert "Templates:\n3" in result.message
+    assert "Personas:\n1" in result.message
+    assert "Languages:\n3" in result.message

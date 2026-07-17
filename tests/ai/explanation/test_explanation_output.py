@@ -30,3 +30,33 @@ def test_explanation_output_accepts_metadata():
         confidence=0.5, language="en", metadata={"provider_name": "gemini"},
     )
     assert output.metadata == {"provider_name": "gemini"}
+
+
+def test_explanation_output_phase_63_1_fields_default_to_none():
+    """Phase 63.1 TASK 1 extension: six new optional fields, all default None -- additive, not breaking."""
+    output = ExplanationOutput(
+        title="t", summary="s", body="b", risk_note="r", invalidation="i",
+        confidence=0.5, language="en",
+    )
+    assert output.market_context is None
+    assert output.technical_reasoning is None
+    assert output.fundamental_reasoning is None
+    assert output.risk_reasoning is None
+    assert output.educational_note is None
+    assert output.persona is None
+
+
+def test_explanation_output_accepts_phase_63_1_fields():
+    output = ExplanationOutput(
+        title="t", summary="s", body="b", risk_note="r", invalidation="i",
+        confidence=0.5, language="en",
+        market_context="Gold remains bullish on H1.",
+        technical_reasoning="Liquidity sweep confirmed near demand zone.",
+        fundamental_reasoning="US CPI beat expectations.",
+        risk_reasoning="Invalidation below previous liquidity low.",
+        educational_note="A liquidity sweep is a stop-hunt pattern.",
+        persona="Senior Trading AI",
+    )
+    assert output.market_context == "Gold remains bullish on H1."
+    assert output.risk_reasoning == "Invalidation below previous liquidity low."
+    assert output.persona == "Senior Trading AI"

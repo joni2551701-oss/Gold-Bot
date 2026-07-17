@@ -63,6 +63,7 @@ OWNER_COMMANDS = {
     "runtime_check": "Run the AI runtime self-check",
     "runtime_restart": "Restart the AI runtime back to READY",
     "runtime_provider": "Show one provider's Health/Circuit/Latency/Requests panel",
+    "ai_explanation_status": "Show the AI Explanation Intelligence Layer's status",
 }
 
 ADMIN_COMMANDS = {
