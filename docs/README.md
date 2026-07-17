@@ -3,12 +3,16 @@
 **Start here, always, in this order:**
 
 1. [`constitution/CONSTITUTION.md`](constitution/CONSTITUTION.md) —
-   the supreme governance document (Phase 62.0). Read this before any
-   other document or task brief.
+   the supreme governance document (Phase 62.0, extended Phase 62.1a).
+   Read this before any other document or task brief.
 2. [`/CLAUDE.md`](../CLAUDE.md) — Engineering Governance: architecture
    layering, the mandatory Commit Protocol, Trading Safety hard rules.
 3. The four `architecture/` documents below — the practical,
    checkable expression of the Constitution's Articles.
+4. [`roadmap/VERSIONS.md`](roadmap/VERSIONS.md) — Actual Development
+   Status. [`VISION.md`](VISION.md) and
+   [`roadmap/AI_EVOLUTION.md`](roadmap/AI_EVOLUTION.md) are Future
+   Vision — never confuse the two (Phase 62.1c/d ruling).
 
 ## Foundation (Phase 62.0 — the "Foundation Lock" — Articles 1–7; Phase 62.1a adds Articles 8–12)
 
@@ -79,6 +83,15 @@
 | [`trading/DECISION_ENGINE.md`](trading/DECISION_ENGINE.md) | The real 4-factor weighted confidence blend |
 | [`trading/RISK_SYSTEM.md`](trading/RISK_SYSTEM.md) | Position sizing, risk %, drawdown |
 | [`trading/EXECUTION_SYSTEM.md`](trading/EXECUTION_SYSTEM.md) | `execution/` (inert) vs. `lifecycle/` (real) |
+
+## Vision & Changelog (Phase 62.1d)
+
+| Document | What it covers |
+|---|---|
+| [`VISION.md`](VISION.md) | The 3-platform destination (Trading / AI Core / Market Media / User Platform Intelligence) — Future Vision, not status |
+| [`changelog/CHANGELOG.md`](changelog/CHANGELOG.md) | Per-version Changes + Architecture Impact |
+| [`changelog/PHASE_HISTORY.md`](changelog/PHASE_HISTORY.md) | The flat, complete phase-by-phase list |
+| [`changelog/DECISION_LOG.md`](changelog/DECISION_LOG.md) | Load-bearing architectural/governance decisions, with reasoning |
 
 ## Trading Pipeline & Architecture (general)
 
@@ -210,7 +223,8 @@ audit (historical; superseded as the canonical map by
 [`PHASE63_0_FREEZE.md`](PHASE63_0_FREEZE.md) ·
 [`PHASE62_1A_GOVERNANCE_FREEZE.md`](PHASE62_1A_GOVERNANCE_FREEZE.md) ·
 [`PHASE62_1B_ARCHITECTURE_FREEZE.md`](PHASE62_1B_ARCHITECTURE_FREEZE.md) ·
-[`PHASE62_1C_AI_TELEGRAM_TRADING_FREEZE.md`](PHASE62_1C_AI_TELEGRAM_TRADING_FREEZE.md) — most recent freeze before this document
+[`PHASE62_1C_AI_TELEGRAM_TRADING_FREEZE.md`](PHASE62_1C_AI_TELEGRAM_TRADING_FREEZE.md) ·
+[`PHASE62_1D_ROADMAP_VISION_FREEZE.md`](PHASE62_1D_ROADMAP_VISION_FREEZE.md) — most recent freeze before this document, closes Phase 62.1 in full
 
 ## Release Notes & Specifications
 
@@ -231,6 +245,6 @@ they live with their code, not under `docs/`: `data/README.md`,
 ---
 
 *This index reflects the real file listing under `docs/` as of Phase
-62.1c. When adding a new document, add it here in the same pass
-(Constitution Article 6 applies to documentation completeness the
-same way it applies to test completeness).*
+62.1d (Phase 62.1 closed in full). When adding a new document, add it
+here in the same pass (Constitution Article 6 applies to documentation
+completeness the same way it applies to test completeness).*

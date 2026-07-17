@@ -3,46 +3,62 @@
 Governed by `docs/constitution/CONSTITUTION.md` Article 1. At every
 stage on this timeline, the AI layer's role stays advisory-only — the
 timeline describes how much the AI can *explain*, never a step toward
-the AI *deciding*.
+the AI *deciding*. Per the Phase 62.1c ruling, this document is
+**Future Vision** — real, current build status lives in
+`docs/roadmap/VERSIONS.md` and each phase's own Freeze document, not
+here.
+
+**Restructured Phase 62.1d** (Director-instructed, TASK 3) into five
+named stages, replacing the prior six-stage list. This restructure
+also resolves the Phase 62.1b audit finding that flagged the old
+"AI Intelligence"/"AI Assistant" stages as possibly stale: their real
+content (Phase 61.3's `knowledge/`, `ai/conversation/`, `ai/memory/`,
+`ai/tools/`, `ai/explanation/` work) is now correctly folded into
+Stage 1 below as DONE.
 
 ```
-AI Foundation → AI Runtime → AI Intelligence → AI Assistant
-     → AI Analyst → Senior Trading AI
+Stage 1: AI Assistant Foundation → Stage 2: AI Runtime Intelligence
+   → Stage 3: AI Market Analyst → Stage 4: AI Media Intelligence
+   → Stage 5: Senior Trading AI Ecosystem
 ```
 
 ## Stage definitions
 
-### AI Foundation (Phases 59–61.5) — Done
+### Stage 1 — AI Assistant Foundation — DONE
 Providers (`ai/providers/`), router (`ai/router/`), capability model
-(`ai/capabilities/`), basic caching and auditing. The AI could answer
-isolated requests but had no unified reliability layer.
+(`ai/capabilities/`), caching and auditing (Phases 59–61.2), plus the
+real Intelligence-layer components Phase 61.3 built on top of that
+foundation: `knowledge/` (6-category static catalog), `ai/conversation/`
+(multi-turn state), `ai/memory/` (`MemoryRuntime`), `ai/tools/` (5
+advisory-only tools), `ai/explanation/` (`ExplanationEngine`). See
+`docs/ai/AI_KNOWLEDGE.md`, `docs/ai/AI_MEMORY.md`, `docs/ai/AI_TOOLS.md`,
+`docs/ai/AI_PIPELINE.md` for each piece's current real detail.
 
-### AI Runtime (Phase 61.6–61.7) — Done
+### Stage 2 — AI Runtime Intelligence — DONE
 `RuntimeManager`, `ProviderCircuitBreaker`, `RuntimeProfile`,
-`EventBus` built (61.6) and then wired into `AIService.ask()`'s real
-control flow (61.7), making `AIService` the single orchestration
-point: runtime health gating, circuit-breaker failover, profile-driven
-validation/cache/retry policy, and event publication all real and
-tested. See `docs/AI_RUNTIME_FLOW.md` for the full request sequence.
+`EventBus` built (61.6) and wired into `AIService.ask()`'s real
+control flow (61.7), then production-hardened with retry backoff,
+cost protection, and full Owner runtime control (62.2). See
+`docs/ai/AI_RUNTIME.md` and `docs/AI_RUNTIME_FLOW.md`.
 
-### AI Intelligence — Not started
-Deeper context reasoning over `ai/context/`, `ai/memory/`, richer
-`ai/explanation/` output — the AI explains *why* a signal looks the
-way it does with more of the pipeline's own context available to it,
-still strictly read-only over pipeline output.
-
-### AI Assistant — Not started
-Multi-turn conversational continuity (`ai/conversation/`,
-`ai/session/`) — a user can ask follow-up questions about a signal or
-their own trade history and get consistent, context-aware answers
-across turns.
-
-### AI Analyst — Not started
+### Stage 3 — AI Market Analyst — PLANNED
 Broader analytical surfaces — trend/performance summaries over
 history the AI reads but never acts on, feeding the Owner-facing
-`docs/owner/OWNER_PANEL.md` analytics section.
+`docs/owner/OWNER_PANEL.md` analytics section. No dedicated module
+exists yet; this is a planned extension of Stage 1's Explanation
+Engine, not a new architectural layer.
 
-### Senior Trading AI — Not started
+### Stage 4 — AI Media Intelligence — PLANNED
+Weekly Outlook, Education, Market Room, Trade Replay — see this
+document's own "AI Media Intelligence Platform" section below for the
+detailed vision. Phase 63.0 already built the **foundation/contract**
+layer (`ai/persona/`, `ai/content/`'s `ContentType`,
+`ai/explanation/explanation_output.py`, `broadcast/`, `media/`,
+`translation/`) — PLANNED here refers to the real generation/delivery
+logic on top of that foundation, which does not exist yet
+(`docs/policies/BROADCAST_POLICY.md`).
+
+### Stage 5 — Senior Trading AI Ecosystem — FUTURE
 The most capable stage on this timeline, and still bound by
 Constitution Article 1: even at this stage, the AI layer's ceiling is
 explaining a decision with full context and history, not making one.
