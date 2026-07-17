@@ -83,6 +83,24 @@ pre-existing `signals/`/`context/` type-only import sites are the one
 standing, audited exception (see
 `docs/architecture/IMPORT_RULES.md`).
 
+## Deeper detail per subsystem (Phase 62.1c)
+
+This document maps the package tree; each of these covers one
+subsystem's real behavior in depth rather than repeating the tree
+above:
+
+- `docs/ai/AI_PIPELINE.md` — the Intelligence-layer composition order
+  (Persona → Context → Knowledge → Tools → Conversation → Memory →
+  Explanation → Content → Media) and where a request's market context
+  actually enters it.
+- `docs/ai/AI_MEMORY.md` — `ai/memory/`'s `MemoryRuntime` facade.
+- `docs/ai/AI_KNOWLEDGE.md` — `knowledge/`'s 6-category static catalog.
+- `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
+- `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
+  Circuit Breaker, Event Bus, Metrics, Cost Protection).
+- `docs/ai/AI_PROVIDER_SYSTEM.md` — the real provider roster and the
+  `BaseAIProvider` contract they all implement.
+
 ## Related documents
 
 - `docs/constitution/CONSTITUTION.md` — Articles 1/3/5 this structure

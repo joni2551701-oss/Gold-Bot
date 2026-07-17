@@ -61,6 +61,25 @@
 | [`standards/REVIEW_STANDARD.md`](standards/REVIEW_STANDARD.md) | What a phase review actually checks |
 | [`standards/RELEASE_STANDARD.md`](standards/RELEASE_STANDARD.md) | Release readiness checklist |
 
+## AI / Telegram / Trading Documentation (Phase 62.1c)
+
+| Document | What it covers |
+|---|---|
+| [`ai/AI_PIPELINE.md`](ai/AI_PIPELINE.md) | Where market context enters the Intelligence-layer composition chain |
+| [`ai/AI_MEMORY.md`](ai/AI_MEMORY.md) | `MemoryRuntime`'s 5-layer facade over `ContextMemory` |
+| [`ai/AI_KNOWLEDGE.md`](ai/AI_KNOWLEDGE.md) | `knowledge/`'s 6-category static catalog |
+| [`ai/AI_TOOLS.md`](ai/AI_TOOLS.md) | The 5 advisory-only AI tools |
+| [`ai/AI_RUNTIME.md`](ai/AI_RUNTIME.md) | Current real Runtime state, summary + pointers |
+| [`ai/AI_PROVIDER_SYSTEM.md`](ai/AI_PROVIDER_SYSTEM.md) | The real 4-provider roster and `BaseAIProvider` contract |
+| [`telegram/COMMAND_SYSTEM.md`](telegram/COMMAND_SYSTEM.md) | The real 3-tier command catalog and dual-listing rule |
+| [`telegram/OWNER_SYSTEM.md`](telegram/OWNER_SYSTEM.md) | Six-group Owner Control Center framing |
+| [`telegram/USER_SYSTEM.md`](telegram/USER_SYSTEM.md) | The real two-axis user model (lifecycle status vs. subscription tier) |
+| [`trading/TRADING_ARCHITECTURE.md`](trading/TRADING_ARCHITECTURE.md) | Trading-scoped pipeline order |
+| [`trading/MARKET_CONTEXT.md`](trading/MARKET_CONTEXT.md) | `context/`'s real structure |
+| [`trading/DECISION_ENGINE.md`](trading/DECISION_ENGINE.md) | The real 4-factor weighted confidence blend |
+| [`trading/RISK_SYSTEM.md`](trading/RISK_SYSTEM.md) | Position sizing, risk %, drawdown |
+| [`trading/EXECUTION_SYSTEM.md`](trading/EXECUTION_SYSTEM.md) | `execution/` (inert) vs. `lifecycle/` (real) |
+
 ## Trading Pipeline & Architecture (general)
 
 | Document | What it covers |
@@ -190,7 +209,8 @@ audit (historical; superseded as the canonical map by
 [`PHASE63_0_FOUNDATION_AUDIT.md`](PHASE63_0_FOUNDATION_AUDIT.md) ·
 [`PHASE63_0_FREEZE.md`](PHASE63_0_FREEZE.md) ·
 [`PHASE62_1A_GOVERNANCE_FREEZE.md`](PHASE62_1A_GOVERNANCE_FREEZE.md) ·
-[`PHASE62_1B_ARCHITECTURE_FREEZE.md`](PHASE62_1B_ARCHITECTURE_FREEZE.md) — most recent freeze before this document
+[`PHASE62_1B_ARCHITECTURE_FREEZE.md`](PHASE62_1B_ARCHITECTURE_FREEZE.md) ·
+[`PHASE62_1C_AI_TELEGRAM_TRADING_FREEZE.md`](PHASE62_1C_AI_TELEGRAM_TRADING_FREEZE.md) — most recent freeze before this document
 
 ## Release Notes & Specifications
 
@@ -211,6 +231,6 @@ they live with their code, not under `docs/`: `data/README.md`,
 ---
 
 *This index reflects the real file listing under `docs/` as of Phase
-62.1b. When adding a new document, add it here in the same pass
+62.1c. When adding a new document, add it here in the same pass
 (Constitution Article 6 applies to documentation completeness the
 same way it applies to test completeness).*
