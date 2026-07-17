@@ -243,6 +243,136 @@ class/function, answer in order, stopping at the first "yes":
 Reuse is the default outcome, not the exception. A new top-level
 package is the highest-cost option available and should be rare.
 
+## Article 8 — Change Management Law
+
+**Every change to this repository follows the same order: Constitution
+→ Architecture → Roadmap → Policy → Audit → Code.**
+
+A Worker Brief is read against this Constitution before it is acted
+on (see the mandatory reading order stated at the top of this
+document). If a brief conflicts with an Article, the Worker stops,
+documents the conflict, and returns it to the Director — it does not
+resolve the conflict itself and does not proceed with the conflicting
+instruction (**STOP → AUDIT → Director Decision**, the protocol this
+Article formalizes; in force in practice since Phase 62.0, made a
+standing law here). A Director message that carries no `TASK 0…N`
+breakdown, Strict Rules, and Acceptance Criteria is guidance or
+roadmap vision, not an executable brief — the Worker acknowledges it
+without changing code or creating files until an explicit brief
+arrives (the pattern already followed for the Phase 62.1 proposal
+itself before this Article existed).
+
+Every executable brief's own `TASK 0` is an audit of current code
+against the brief's assumptions — never a rebuild from a blank
+assumption. `docs/PHASE62_2_RUNTIME_AUDIT.md` and
+`docs/PHASE63_0_FOUNDATION_AUDIT.md` are the model: state what already
+exists, what is a genuine gap, and implement only the gap.
+
+## Article 9 — Version Compatibility Law
+
+**A LOCKed Foundation's name, location, import path, and public API
+do not change.**
+
+A module is LOCKed when its own Freeze document (a `docs/PHASE*_FREEZE.md`
+or equivalent) declares the phase that built it closed — for example
+Phase 62.x (Constitution & Runtime Foundation) and Phase 63.0 (Senior
+Trading AI Foundation), both LOCKed at the Director's explicit
+confirmation. Once LOCKed:
+
+- the module's file path and package name do not move or get renamed;
+- an existing public class, function, or method signature does not
+  change shape or get removed;
+- an existing import path (`from ai.persona.persona import Persona`,
+  `from broadcast.models import BroadcastRequest`, etc.) keeps
+  resolving exactly as it does today.
+
+What remains allowed on a LOCKed module: adding a new method, adding
+a new optional field, adding a new `Capability`/enum member, and
+extending its documentation. This is the same shape of change Phase
+61.1/61.3/61.6 already made three separate times to
+`ai/audit/provider_stats.py` (Article 7's own worked example) —
+additive, never a rename or a moved file. A change that would break
+this Article on a LOCKed module requires the same STOP → AUDIT →
+Director Decision protocol as a Constitution conflict (Article 8), not
+a routine Worker judgment call.
+
+## Article 10 — Owner Override Law
+
+**A critical module answers to the Owner through the Telegram Owner
+Panel, not through a hidden default.**
+
+Every module this Constitution treats as safety- or control-critical —
+emergency state (`core/emergency/`), runtime lifecycle
+(`ai/runtime/runtime_manager.py`), feature toggles
+(`configuration/runtime_feature_manager.py`), broadcast/media/
+translation intent (`broadcast/`, `media/`, `translation/`) — exposes
+its control surface through `telegram/owner/*_commands.py`, gated by
+`telegram/owner/security.py`'s `require_role()`/`log_owner_action()`
+(Article 4's Handler → Service → Repository chain applies here too: an
+Owner command never reaches into a repository directly).
+
+An Owner command may legitimately be foundation-only — returning a
+clear "not implemented" rather than a fabricated result — while its
+backend wiring awaits separate Director approval (the standing pattern
+`telegram/owner/broadcast_commands.py` established in Phase 63.0). What
+is never acceptable is a critical module with **no** Owner-facing
+surface at all, or one whose real state can diverge from what the
+Owner Panel reports.
+
+## Article 11 — Foundation Reuse Law
+
+**Before writing a new module, a Foundation Reuse Audit is mandatory,
+not advisory.**
+
+This is Article 7's Reuse Principle made into a checkable procedure.
+Every Worker Brief's `TASK 0` answers, for the capability the brief is
+about to build:
+
+1. Does a **Foundation** for this already exist (a package like
+   `ai/persona/`, `broadcast/`, `ai/content/`)?
+2. Does a **Manager** for this already exist (`PersonaManager`,
+   `BroadcastManager`, `RuntimeManager`, …)?
+3. Does a **Contract** for this already exist (a dataclass like
+   `ExplanationOutput`, `ContentRequest`, `BroadcastRequest`)?
+4. Does a **Model** for this already exist?
+5. Does a **Capability** for this already exist
+   (`ai/capabilities/capability.py`'s `Capability` enum)?
+6. Does a **Registry** for this already exist (`provider_registry.py`,
+   `persona_registry.py`, `media_registry.py`, …)?
+
+If any answer is yes, a new module is forbidden for that concern — the
+existing one is extended (Article 9 governs how, if it is LOCKed).
+Only when every answer is no may a new module be created, and its own
+docstring or its phase's audit document states why steps 1–6 were all
+"no" (Article 7's existing requirement, now scoped to this explicit
+six-item checklist).
+
+## Article 12 — Architecture Evolution Law
+
+**Every phase reports its own New / Extended / Reused shape.**
+
+A phase's Freeze document includes this table, filled in with the real
+count for that phase (module = a new `.py` file; manager = a class
+whose name ends `Manager`/`Engine`/`Service` at the phase's top level;
+model = a dataclass/enum; contract = a request/result/output
+dataclass meant to cross a boundary; registry = a `build_*_registry()`
+static catalog):
+
+| Item | New | Extended | Reused |
+|------|-----|----------|--------|
+| Modules | | | |
+| Managers | | | |
+| Models | | | |
+| Contracts | | | |
+| Registries | | | |
+
+This is not decorative — it is the Constitution's own KPI for Article
+11 taking effect. Its intended trend, stated for the record: as
+GoldBot's Foundation matures, each new phase's **New** column should
+shrink and its **Reused** column should grow. A phase whose table shows
+the opposite trend is the mechanical trigger for a STOP → AUDIT →
+Director Decision review of whether Article 11 was actually followed.
+
 ---
 
 ## Amendment process
@@ -251,10 +381,21 @@ This Constitution changes only by explicit Director instruction,
 delivered the same way any Worker Brief is delivered, and only as its
 own dedicated phase (never as a side effect of an unrelated task). A
 Worker never amends this document on its own initiative, no matter
-how well-reasoned the change seems in the moment.
+how well-reasoned the change seems in the moment. `docs/constitution/AMENDMENTS.md`
+is the running log of every amendment made under this process,
+including this one (Phase 62.1a — Articles 8 through 12).
 
 ## Related documents
 
+- `docs/constitution/ARTICLES.md` — a one-page index of all twelve
+  Articles above, for quick lookup without reading the full text.
+- `docs/constitution/AMENDMENTS.md` — the amendment history: which
+  phase added which Article, and why.
+- `docs/policies/DIRECTOR_POLICY.md` — the Director/Worker operating
+  model this Constitution's Article 8 formalizes.
+- `docs/policies/FOUNDATION_POLICY.md` — Article 9 and Article 11's
+  day-to-day operating detail (what "LOCKed" and "Reuse Audit" look
+  like in a real Worker Brief).
 - `docs/architecture/ARCHITECTURE_MASTER.md` — the full system layer
   diagram and per-layer responsibility (what each layer CAN and
   CANNOT do), the practical expression of Article 1 and Article 2.

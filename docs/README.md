@@ -10,11 +10,13 @@
 3. The four `architecture/` documents below — the practical,
    checkable expression of the Constitution's Articles.
 
-## Foundation (Phase 62.0 — the "Foundation Lock")
+## Foundation (Phase 62.0 — the "Foundation Lock" — Articles 1–7; Phase 62.1a adds Articles 8–12)
 
 | Document | What it covers |
 |---|---|
-| [`constitution/CONSTITUTION.md`](constitution/CONSTITUTION.md) | The 7 Articles every future task binds to |
+| [`constitution/CONSTITUTION.md`](constitution/CONSTITUTION.md) | The 12 Articles every future task binds to |
+| [`constitution/ARTICLES.md`](constitution/ARTICLES.md) | One-page index of all 12 Articles |
+| [`constitution/AMENDMENTS.md`](constitution/AMENDMENTS.md) | Amendment history — which phase added which Article |
 | [`architecture/ARCHITECTURE_MASTER.md`](architecture/ARCHITECTURE_MASTER.md) | System-wide layer diagram, per-layer CAN/CANNOT |
 | [`architecture/MODULE_DEPENDENCIES.md`](architecture/MODULE_DEPENDENCIES.md) | Real, current per-module dependency map |
 | [`architecture/IMPORT_RULES.md`](architecture/IMPORT_RULES.md) | Allowed/forbidden import table, line-by-line |
@@ -24,6 +26,22 @@
 | [`owner/OWNER_PANEL.md`](owner/OWNER_PANEL.md) | Owner Telegram Control Center, section by section |
 | [`telegram/TELEGRAM_ARCHITECTURE.md`](telegram/TELEGRAM_ARCHITECTURE.md) | Real Telegram Router → Permission → Handler → Service → Repository flow |
 | [`ai/AI_ARCHITECTURE.md`](ai/AI_ARCHITECTURE.md) | Real `ai/` package tree, all 19 subpackages |
+
+## Policies (Phase 62.1a — Director Policy, in force until superseded by a Constitution amendment)
+
+| Document | What it covers |
+|---|---|
+| [`policies/DIRECTOR_POLICY.md`](policies/DIRECTOR_POLICY.md) | Director/Worker operating model, what makes a brief executable |
+| [`policies/DEVELOPMENT_POLICY.md`](policies/DEVELOPMENT_POLICY.md) | Documentation First sequence |
+| [`policies/FOUNDATION_POLICY.md`](policies/FOUNDATION_POLICY.md) | LOCKed-module Stability rule + Foundation Reuse Audit detail |
+| [`policies/TESTING_POLICY.md`](policies/TESTING_POLICY.md) | Test categories + Commit Protocol as enforcement |
+| [`policies/SECURITY_POLICY.md`](policies/SECURITY_POLICY.md) | Never-logged secrets, provider/database isolation |
+| [`policies/RELEASE_POLICY.md`](policies/RELEASE_POLICY.md) | Freeze Protocol, the CI gate, versioning |
+| [`policies/DOCUMENTATION_POLICY.md`](policies/DOCUMENTATION_POLICY.md) | Documentation-driven development, cross-referencing convention |
+| [`policies/VERSION_POLICY.md`](policies/VERSION_POLICY.md) | Additive-within-version vs. version-boundary change |
+| [`policies/OWNER_POLICY.md`](policies/OWNER_POLICY.md) | Critical-module Owner surface, command chain |
+| [`policies/AI_POLICY.md`](policies/AI_POLICY.md) | AI assists-never-decides, provider isolation, Capability addition |
+| [`policies/BROADCAST_POLICY.md`](policies/BROADCAST_POLICY.md) | Broadcast/media/translation default-off, no real integration |
 
 ## Trading Pipeline & Architecture (general)
 
@@ -148,7 +166,12 @@ audit (historical; superseded as the canonical map by
 [`PHASE61_6_RUNTIME_OPERATIONS_AUDIT.md`](PHASE61_6_RUNTIME_OPERATIONS_AUDIT.md) ·
 [`PHASE61_7_INTEGRATION_AUDIT.md`](PHASE61_7_INTEGRATION_AUDIT.md) ·
 [`PHASE61_7_RUNTIME_INTEGRATION.md`](PHASE61_7_RUNTIME_INTEGRATION.md) ·
-[`PHASE61_7_FREEZE.md`](PHASE61_7_FREEZE.md) — most recent freeze before this document
+[`PHASE61_7_FREEZE.md`](PHASE61_7_FREEZE.md) ·
+[`PHASE62_2_RUNTIME_AUDIT.md`](PHASE62_2_RUNTIME_AUDIT.md) ·
+[`PHASE62_2_RUNTIME_FREEZE.md`](PHASE62_2_RUNTIME_FREEZE.md) ·
+[`PHASE63_0_FOUNDATION_AUDIT.md`](PHASE63_0_FOUNDATION_AUDIT.md) ·
+[`PHASE63_0_FREEZE.md`](PHASE63_0_FREEZE.md) ·
+[`PHASE62_1A_GOVERNANCE_FREEZE.md`](PHASE62_1A_GOVERNANCE_FREEZE.md) — most recent freeze before this document
 
 ## Release Notes & Specifications
 
@@ -169,6 +192,6 @@ they live with their code, not under `docs/`: `data/README.md`,
 ---
 
 *This index reflects the real file listing under `docs/` as of Phase
-62.0. When adding a new document, add it here in the same pass
+62.1a. When adding a new document, add it here in the same pass
 (Constitution Article 6 applies to documentation completeness the
 same way it applies to test completeness).*
