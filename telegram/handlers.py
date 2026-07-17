@@ -124,6 +124,13 @@ EventBus/collector default to empty) rather than a fabricated one, the
 same honesty posture ai_cost_handler's own empty-dict default already
 established. OWNER only.
 
+runtime_status_handler and runtime_check_handler (Phase 61.7: AI
+Platform Stabilization & Integration, TASK 7/8) are real: they call
+telegram.owner.runtime_commands.runtime_full_status()/runtime_check()
+-- a combined status panel and the AI runtime self-check,
+respectively. Same fresh-construction-per-call posture as every
+runtime_*_handler above. OWNER only.
+
 contact_handler (Phase 61.5 TASK 4) is real: it calls
 telegram.user_service.UserService.register_phone() -- the Phone Hash
 -> UserRecord -> Trial Check -> FREE account flow. Unlike every other
@@ -164,7 +171,7 @@ from telegram.feedback_service import FeedbackService
 from telegram.permissions import is_owner
 from telegram.owner.ai_commands import ai_cost, ai_health, ai_provider, ai_status, ai_usage, resolve_capability
 from telegram.owner.dashboard import get_doctor_report, get_owner_summary
-from telegram.owner.runtime_commands import runtime_events, runtime_metrics, runtime_status
+from telegram.owner.runtime_commands import runtime_check, runtime_events, runtime_full_status, runtime_metrics, runtime_status
 from core.logger import setup_logger
 
 logger = setup_logger("Handlers")
@@ -1008,6 +1015,16 @@ async def runtime_events_handler() -> str:
 async def runtime_metrics_handler() -> str:
     """/runtime_metrics -> telegram.owner.runtime_commands.runtime_metrics(). OWNER only. Never raises."""
     return runtime_metrics().message
+
+
+async def runtime_status_handler() -> str:
+    """/runtime_status -> telegram.owner.runtime_commands.runtime_full_status(). OWNER only. Never raises."""
+    return runtime_full_status().message
+
+
+async def runtime_check_handler() -> str:
+    """/runtime_check -> telegram.owner.runtime_commands.runtime_check(). OWNER only. Never raises."""
+    return runtime_check().message
 
 
 async def contact_handler(telegram_id, phone_number: str) -> str:

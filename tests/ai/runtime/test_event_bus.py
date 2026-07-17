@@ -84,6 +84,8 @@ def test_every_director_named_event_type_exists():
         "CacheHit", "CacheMiss", "ValidationFailed",
         "RuntimeStarted", "RuntimeStopped",
         "RuntimeFailed",  # Phase 61.6 TASK 7 addition -- see event_bus.py's own docstring
+        "RequestStarted", "RequestCompleted",  # Phase 61.7 TASK 5 addition -- see event_bus.py's own docstring
+        "RequestFailed", "RuntimeStateChanged", "RetryStarted", "RetryCompleted",  # Phase 61.7 TASK 7 (continuation) addition -- see event_bus.py's own docstring
     }
     actual = {member.value for member in EventType}
     assert actual == expected

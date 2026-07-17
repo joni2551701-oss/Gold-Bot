@@ -64,6 +64,68 @@ previous attempt within the same call, i.e. a failover). No new
 orchestration logic, no change to what `ask()` returns or when it
 returns it -- publishing is fire-and-forget and `EventBus.publish()`
 itself never raises.
+
+Platform Stabilization & Integration (Phase 61.7): every foundation
+piece Phase 61.6 built real-but-standalone now actually drives this
+method. Full detail: `docs/PHASE61_7_INTEGRATION_AUDIT.md`,
+`docs/AI_PLATFORM_STABILIZATION.md`.
+
+- **`runtime_manager`** (TASK 2, optional, defaults to a fresh
+  `RuntimeManager(event_bus=self._event_bus)`): `ask()`'s very first
+  check is `runtime_manager.is_healthy()` -- the Director's own
+  "Runtime READY?" gate, implemented as the existing, already-tested
+  `is_healthy()` (READY/BUSY/DEGRADED serve; FAILED/SHUTDOWN/
+  INITIALIZING reject) rather than a stricter literal `== READY`
+  equality, which would contradict that method's own Phase 61.6
+  contract. A rejection here returns an unaccepted `RuntimeResponse`
+  exactly like every other rejection path -- never raises.
+- **`circuit_breaker`** (TASK 3, optional, defaults to a fresh
+  `ProviderCircuitBreaker(health_tracker=self._health_tracker,
+  event_bus=self._event_bus)` -- same tracker instance, so a breaker
+  transition is immediately visible to `self._router`, which is never
+  itself modified): `_sync_circuit_breakers()` ticks `allow_request()`
+  for every registered provider once per `ask()` call, before routing
+  -- the only code path that ever moves a tripped breaker
+  `OPEN -> HALF_OPEN` once its recovery timeout elapses, so a provider
+  `AIRouter.route()` would otherwise never re-offer stays reachable.
+  A second `allow_request()` gate sits right before the real provider
+  call (after the cache-hit check -- a cache hit never touches the
+  live provider, so circuit state must never block it). A successful,
+  validated response calls `record_success()`; a `ProviderRuntimeError`
+  always calls `record_failure()`. The pre-existing (Phase 61.2)
+  `record_provider_failure()` call now fires **only** for
+  `ProviderRateLimitError`/`ProviderInvalidResponseError` (their own
+  distinct `RATE_LIMITED`/`DEGRADED` statuses, which the breaker's
+  three-state model doesn't capture) -- **not** for
+  `ProviderTimeoutError`/`ProviderUnavailableError`, both of which
+  already map to `HealthStatus.OFFLINE`, exactly what the breaker
+  itself writes once it actually trips. Writing that status on the
+  very first timeout, as the pre-Phase-61.7 code did, would mark the
+  provider `OFFLINE` immediately and make it invisible to
+  `AIRouter.route()` before the breaker could ever accumulate a second
+  failure -- its 5-strikes threshold could never be reached through
+  real, repeated attempts, contradicting this phase's own worked
+  example ("Gemini times out 5 times -> circuit opens"). This is an
+  intentional behavior change from Phase 61.2 -- a single timeout no
+  longer immediately marks a provider `OFFLINE`; five consecutive
+  ones do, via the breaker.
+- **`runtime_profile`** (TASK 4, optional, `None` by default -- `None`
+  means every behavior below is byte-for-byte identical to Phase 61.6):
+  when supplied, `validate_response(result, schema=runtime_profile.validation_schema)`
+  (that function's own pre-existing optional parameter, unchanged),
+  the constructor builds `ResponseCache(policy=runtime_profile.to_cache_policy())`
+  when no explicit `response_cache` was injected, and the per-request
+  attempt budget becomes `min(max_attempts, runtime_profile.max_retries)`.
+  `timeout_seconds` is intentionally **not** wired -- no real provider
+  exposes an injectable per-call timeout yet (see the integration
+  audit doc for why that is out of this task's scope).
+- **`REQUEST_STARTED`/`REQUEST_COMPLETED`** (TASK 5): `ask()` is now a
+  thin wrapper around the method that holds this entire flow
+  (`_execute()`) -- it publishes `REQUEST_STARTED` before calling
+  `_execute()` and `REQUEST_COMPLETED` (with the resulting
+  `accepted`/`provider_name`/`reason`) after, bracketing every
+  rejection and success path in exactly two publish calls rather than
+  one at every individual `return` site.
 """
 
 import hashlib
@@ -78,11 +140,19 @@ from ai.cache.response_cache import ResponseCache
 from ai.capabilities.capability import Capability
 from ai.capabilities.capability_manager import CapabilityManager
 from ai.prompts.prompt_manager import PromptManager
+from ai.providers.circuit_breaker import ProviderCircuitBreaker
 from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_manager import ProviderManager
-from ai.providers.runtime_errors import ProviderRuntimeError, record_provider_failure
+from ai.providers.runtime_errors import (
+    ProviderRuntimeError,
+    ProviderTimeoutError,
+    ProviderUnavailableError,
+    record_provider_failure,
+)
 from ai.router.router import AIRouter
 from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent
+from ai.runtime.runtime_manager import RuntimeManager
+from ai.runtime.runtime_profiles import RuntimeProfile
 from ai.runtime.runtime_request import RuntimeRequest
 from ai.runtime.runtime_response import RuntimeResponse
 from ai.validation.response_validator import validate_response
@@ -108,6 +178,35 @@ _CAPABILITY_METHOD: Dict[Capability, str] = {
 }
 
 
+class _AttemptScopedHealthTracker:
+    """
+    A read-only view over the one real, shared `ProviderHealthTracker`
+    that additionally treats provider names already attempted *this*
+    `ask()` call as unavailable. Introduces no new provider-state store
+    (Rule 4): `attempted` is a plain local `set`, already scoped to a
+    single `ask()` call, never persisted or written anywhere; this
+    class is never itself written to -- every real health transition
+    still goes through the one real, shared tracker only, unchanged.
+
+    Needed because `AIRouter.route()` always returns the single
+    best-ranked candidate for a capability, with no "exclude these
+    names" parameter, and (Phase 61.7 TASK 3) a provider that fails
+    once no longer immediately becomes tracker-`OFFLINE` -- the
+    circuit breaker's 5-strikes threshold now owns that. Without this
+    view, a provider that just failed within this call would keep
+    being re-offered as "best" for every remaining attempt, so
+    failover to a different, healthy candidate could never happen
+    inside one request.
+    """
+
+    def __init__(self, health_tracker: ProviderHealthTracker, attempted: set) -> None:
+        self._health_tracker = health_tracker
+        self._attempted = attempted
+
+    def is_available(self, provider_name: str) -> bool:
+        return provider_name not in self._attempted and self._health_tracker.is_available(provider_name)
+
+
 class AIService:
     """Every dependency is injectable (same convention as every other Phase 61.x foundation class) -- a caller/test never needs the real Gemini network path to exercise this orchestration."""
 
@@ -123,6 +222,9 @@ class AIService:
         response_log: Optional[ResponseLog] = None,
         prompt_manager: Optional[PromptManager] = None,
         event_bus: Optional[EventBus] = None,
+        runtime_manager: Optional[RuntimeManager] = None,
+        circuit_breaker: Optional[ProviderCircuitBreaker] = None,
+        runtime_profile: Optional[RuntimeProfile] = None,
     ) -> None:
         self._capability_manager = capability_manager or CapabilityManager()
         self._access_control = access_control or AccessControl()
@@ -131,11 +233,48 @@ class AIService:
         self._router = router or AIRouter(
             self._provider_manager, capability_manager=self._capability_manager, health_tracker=self._health_tracker,
         )
-        self._response_cache = response_cache or ResponseCache()
+        self._runtime_profile = runtime_profile
+        if response_cache is not None:
+            self._response_cache = response_cache
+        elif runtime_profile is not None:
+            self._response_cache = ResponseCache(policy=runtime_profile.to_cache_policy())
+        else:
+            self._response_cache = ResponseCache()
         self._request_log = request_log or RequestLog()
         self._response_log = response_log or ResponseLog()
         self._prompt_manager = prompt_manager or PromptManager()
         self._event_bus = event_bus or EventBus()
+        self._runtime_manager = runtime_manager or RuntimeManager(event_bus=self._event_bus)
+        self._circuit_breaker = circuit_breaker or ProviderCircuitBreaker(
+            health_tracker=self._health_tracker, event_bus=self._event_bus,
+        )
+
+    def _sync_circuit_breakers(self) -> None:
+        """Ticks allow_request() for every registered provider -- the only code path that ever moves a tripped breaker OPEN -> HALF_OPEN once its recovery timeout elapses. Without this, AIRouter.route() would never re-offer a still-OFFLINE-per-tracker provider as a candidate, so ask() would never get a chance to call allow_request() on it again -- a permanent deadlock this tick breaks. Idempotent and side-effect-free for CLOSED/HALF_OPEN providers."""
+        for provider_name in self._provider_manager.list_providers():
+            self._circuit_breaker.allow_request(provider_name)
+
+    def _route(self, capability: Capability, attempted: set):
+        """
+        Delegates to `self._router.route()` unmodified for the first
+        attempt (`attempted` empty -- identical to every prior phase's
+        behavior). For a retry (TASK 3's own fix -- see
+        `_AttemptScopedHealthTracker`'s docstring for why this is
+        needed), routes through a freshly-constructed `AIRouter` built
+        from this service's own `provider_manager`/`capability_manager`
+        (the exact same objects the default router already uses) and
+        an attempt-scoped tracker view -- `AIRouter.route()`'s own
+        selection logic (capability-matrix support, provider status,
+        health) is completely unmodified; only which names count as
+        "healthy" for this one retry differs.
+        """
+        if not attempted:
+            return self._router.route(capability)
+        scoped_tracker = _AttemptScopedHealthTracker(self._health_tracker, attempted)
+        scoped_router = AIRouter(
+            self._provider_manager, capability_manager=self._capability_manager, health_tracker=scoped_tracker,
+        )
+        return scoped_router.route(capability)
 
     def _resolve_prompt(self, request: RuntimeRequest) -> Optional[str]:
         """Reuses PromptManager.get_market_analysis_prompt() when a market context is available -- never builds prompt text itself. Returns None (never raises) when neither an explicit prompt nor a market context was supplied."""
@@ -146,7 +285,34 @@ class AIService:
         return None
 
     def ask(self, request: RuntimeRequest) -> RuntimeResponse:
-        """Never raises: every rejection path (access/capability/prompt/provider/validation) returns an unaccepted RuntimeResponse instead."""
+        """Publishes REQUEST_STARTED/REQUEST_COMPLETED bracketing _execute() -- never raises itself, since _execute() itself never raises."""
+        self._event_bus.publish(RuntimeEvent(
+            event_type=EventType.REQUEST_STARTED,
+            payload={"capability": request.capability.value, "role": request.role.value},
+        ))
+        response = self._execute(request)
+        self._event_bus.publish(RuntimeEvent(
+            event_type=EventType.REQUEST_COMPLETED,
+            payload={
+                "capability": request.capability.value, "accepted": response.accepted,
+                "provider_name": response.provider_name, "reason": response.reason,
+            },
+        ))
+        if not response.accepted:
+            self._event_bus.publish(RuntimeEvent(
+                event_type=EventType.REQUEST_FAILED,
+                payload={"capability": request.capability.value, "reason": response.reason},
+            ))
+        return response
+
+    def _execute(self, request: RuntimeRequest) -> RuntimeResponse:
+        """Never raises: every rejection path (runtime/access/capability/prompt/provider/validation) returns an unaccepted RuntimeResponse instead."""
+        if not self._runtime_manager.is_healthy():
+            return RuntimeResponse(
+                accepted=False, content=None, provider_name=None,
+                reason=f"runtime unavailable: state={self._runtime_manager.current_state().value}",
+            )
+
         if not self._access_control.is_allowed(request.role, request.capability):
             return RuntimeResponse(
                 accepted=False, content=None, provider_name=None,
@@ -173,18 +339,28 @@ class AIService:
                 reason="no prompt available -- request.prompt was None and ai_context.market_context is None",
             )
 
+        self._sync_circuit_breakers()
+
         attempted = set()
         previous_provider_name: Optional[str] = None
         max_attempts = max(len(self._provider_manager.list_providers()), 1)
+        if self._runtime_profile is not None:
+            max_attempts = min(max_attempts, self._runtime_profile.max_retries)
 
         for _ in range(max_attempts):
-            routing_result = self._router.route(request.capability)
+            routing_result = self._route(request.capability, attempted)
             provider_name = routing_result.provider_name
             if provider_name is None:
                 return RuntimeResponse(accepted=False, content=None, provider_name=None, reason=routing_result.reason)
             if provider_name in attempted:
                 break
             attempted.add(provider_name)
+            is_retry = len(attempted) > 1
+            if is_retry:
+                self._event_bus.publish(RuntimeEvent(
+                    event_type=EventType.RETRY_STARTED,
+                    payload={"attempt_number": len(attempted), "provider_name": provider_name},
+                ))
 
             if previous_provider_name is not None and provider_name != previous_provider_name:
                 self._event_bus.publish(RuntimeEvent(
@@ -206,6 +382,10 @@ class AIService:
                 )
             self._event_bus.publish(RuntimeEvent(event_type=EventType.CACHE_MISS, payload={"provider_name": provider_name}))
 
+            if not self._circuit_breaker.allow_request(provider_name):
+                logger.info(f"Provider {provider_name} circuit is OPEN -- skipping, trying next provider")
+                continue
+
             provider = self._provider_manager.get_provider(provider_name)
             if provider is None:
                 continue
@@ -220,20 +400,41 @@ class AIService:
                     request_id=request_record.request_id, capability=request.capability, provider_name=provider_name,
                     latency_ms=(time.monotonic() - started_at) * 1000, tokens=0, cost=0.0, status="NOT_IMPLEMENTED",
                 )
+                if is_retry:
+                    self._event_bus.publish(RuntimeEvent(
+                        event_type=EventType.RETRY_COMPLETED,
+                        payload={"attempt_number": len(attempted), "provider_name": provider_name, "success": False},
+                    ))
                 logger.info(f"Provider {provider_name} does not implement {method_name}() -- trying next provider")
                 continue
             except ProviderRuntimeError as e:
-                record_provider_failure(self._health_tracker, e)
+                if not isinstance(e, (ProviderTimeoutError, ProviderUnavailableError)):
+                    # Timeout/Unavailable both already map to HealthStatus.OFFLINE (runtime_errors.py's
+                    # own _ERROR_HEALTH_STATUS) -- exactly the status the circuit breaker itself writes
+                    # once it actually trips. Writing it here too, on the very first failure, would mark
+                    # the provider OFFLINE immediately and make it invisible to AIRouter.route() before
+                    # the breaker could ever accumulate a second failure -- its 5-strikes threshold could
+                    # never be reached through real, repeated attempts. RateLimit/InvalidResponse convey
+                    # a genuinely different signal (RATE_LIMITED/DEGRADED) the breaker's own three-state
+                    # model doesn't capture, so those still get an immediate, precise write.
+                    record_provider_failure(self._health_tracker, e)
+                self._circuit_breaker.record_failure(provider_name)
                 self._response_log.record(
                     request_id=request_record.request_id, capability=request.capability, provider_name=provider_name,
                     latency_ms=(time.monotonic() - started_at) * 1000, tokens=0, cost=0.0, status="FAILED",
                 )
                 self._event_bus.publish(RuntimeEvent(event_type=EventType.PROVIDER_FAILED, payload={"provider_name": provider_name, "reason": e.reason}))
+                if is_retry:
+                    self._event_bus.publish(RuntimeEvent(
+                        event_type=EventType.RETRY_COMPLETED,
+                        payload={"attempt_number": len(attempted), "provider_name": provider_name, "success": False},
+                    ))
                 logger.warning(f"Provider {provider_name} failed: {e.reason} -- trying next provider")
                 continue
 
             latency_ms = (time.monotonic() - started_at) * 1000
-            validation = validate_response(result)
+            validation_schema = self._runtime_profile.validation_schema if self._runtime_profile is not None else None
+            validation = validate_response(result, schema=validation_schema)
 
             if not validation.accepted:
                 self._response_log.record(
@@ -241,17 +442,29 @@ class AIService:
                     latency_ms=latency_ms, tokens=0, cost=0.0, status="REJECTED",
                 )
                 self._event_bus.publish(RuntimeEvent(event_type=EventType.VALIDATION_FAILED, payload={"provider_name": provider_name, "errors": validation.errors}))
+                if is_retry:
+                    self._event_bus.publish(RuntimeEvent(
+                        event_type=EventType.RETRY_COMPLETED,
+                        payload={"attempt_number": len(attempted), "provider_name": provider_name, "success": False},
+                    ))
                 return RuntimeResponse(
                     accepted=False, content=None, provider_name=provider_name,
                     reason="response failed validation", errors=validation.errors,
                     request_id=request_record.request_id,
                 )
 
+            # Provider -> Circuit Breaker -> Provider call -> Validation are all above; from here: Cache -> Audit -> (Events published by ask()'s own wrapper) -> Response.
+            self._response_cache.put(cache_key, result.content, metadata=result.metadata)
             self._response_log.record(
                 request_id=request_record.request_id, capability=request.capability, provider_name=provider_name,
                 latency_ms=latency_ms, tokens=0, cost=0.0, status="SUCCESS",
             )
-            self._response_cache.put(cache_key, result.content, metadata=result.metadata)
+            self._circuit_breaker.record_success(provider_name)
+            if is_retry:
+                self._event_bus.publish(RuntimeEvent(
+                    event_type=EventType.RETRY_COMPLETED,
+                    payload={"attempt_number": len(attempted), "provider_name": provider_name, "success": True},
+                ))
 
             return RuntimeResponse(
                 accepted=True, content=result.content, provider_name=provider_name,

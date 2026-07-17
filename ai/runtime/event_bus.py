@@ -21,6 +21,52 @@ alarming condition). `ai.runtime.runtime_manager.RuntimeManager.
 transition()` publishes it the same way it already publishes
 `RUNTIME_STARTED`/`RUNTIME_STOPPED` -- one more branch on the same
 existing `if/elif` block, no new orchestration logic.
+
+Phase 61.7 TASK 5: two more, `REQUEST_STARTED`/`REQUEST_COMPLETED` --
+the Director's own `AI_REQUEST_STARTED`/`AI_REQUEST_COMPLETED`,
+renamed to match this enum's existing un-prefixed convention (every
+member is already domain-scoped by name alone, e.g. `RUNTIME_STARTED`
+not `AI_RUNTIME_STARTED`). `ai.runtime.ai_service.AIService.ask()`
+publishes both, bracketing its own existing body -- see that module's
+own docstring for the wrapping shape.
+
+Phase 61.7 TASK 7 (Runtime Event Validation, continuation session):
+four more.
+
+    REQUEST_FAILED        -- the Director's `AIRequestFailed`. Fires
+        alongside REQUEST_COMPLETED (never instead of it -- a rejected
+        request still completed, it just didn't succeed) whenever
+        `RuntimeResponse.accepted` is False, for any rejection reason
+        (runtime unavailable, access denied, capability disabled, no
+        provider available, every provider failed, validation
+        rejected). One extra `if` in ask()'s existing wrapper, no new
+        control flow.
+    RUNTIME_STATE_CHANGED -- the Director's `RuntimeStateChanged`. A
+        generic "some transition just happened" signal, published
+        unconditionally on every valid `RuntimeManager.transition()`
+        call, in addition to (not instead of) the existing specific
+        RUNTIME_STARTED/RUNTIME_STOPPED/RUNTIME_FAILED publishes for
+        callers that only care "did the state change at all," not
+        which one.
+    RETRY_STARTED/RETRY_COMPLETED -- the Director's own names,
+        unchanged. Fire around every attempt after the first inside
+        AIService.ask()'s existing provider loop -- the loop already
+        tracks `attempted`; `len(attempted) > 1` is exactly "this is a
+        retry," reused as the guard rather than adding a new counter.
+        RETRY_STARTED fires once a new provider is chosen for a retry
+        attempt; RETRY_COMPLETED fires once that attempt's outcome
+        (not-implemented / failed / validation-rejected / succeeded)
+        is known -- both at points the loop already visits.
+
+"ProviderDown" (the Director's TASK 7 name) is intentionally not a
+new, separate event type -- it is `PROVIDER_FAILED` with
+`payload["circuit_state"] == "OPEN"`, exactly as already documented in
+`ai/providers/circuit_breaker.py` and relied on by
+`telegram/owner/runtime_notifications.py`. Renaming the existing
+member would break already-tested, already-relied-upon code across
+three modules for a cosmetic difference -- Rule 5 (backward
+compatibility) settles this in favor of the existing name plus a
+documented mapping, not a rename.
 """
 
 from dataclasses import dataclass, field
@@ -43,6 +89,12 @@ class EventType(Enum):
     RUNTIME_STARTED = "RuntimeStarted"
     RUNTIME_STOPPED = "RuntimeStopped"
     RUNTIME_FAILED = "RuntimeFailed"
+    REQUEST_STARTED = "RequestStarted"
+    REQUEST_COMPLETED = "RequestCompleted"
+    REQUEST_FAILED = "RequestFailed"
+    RUNTIME_STATE_CHANGED = "RuntimeStateChanged"
+    RETRY_STARTED = "RetryStarted"
+    RETRY_COMPLETED = "RetryCompleted"
 
 
 @dataclass(frozen=True)

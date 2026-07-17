@@ -59,6 +59,8 @@ OWNER_COMMANDS = {
     "runtime": "Show AI runtime lifecycle status",
     "runtime_events": "Show recent AI runtime events",
     "runtime_metrics": "Show AI runtime metrics",
+    "runtime_status": "Show the combined AI runtime status panel",
+    "runtime_check": "Run the AI runtime self-check",
 }
 
 ADMIN_COMMANDS = {

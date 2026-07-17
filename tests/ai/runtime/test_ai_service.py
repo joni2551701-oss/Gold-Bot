@@ -152,7 +152,16 @@ def test_provider_runtime_error_falls_back_to_next_candidate():
     assert response.provider_name == "openai"
 
 
-def test_provider_failure_is_recorded_in_health_tracker():
+def test_a_single_provider_timeout_no_longer_immediately_marks_it_offline():
+    """
+    Phase 61.7 TASK 3: record_provider_failure()'s own immediate
+    OFFLINE write is intentionally skipped for Timeout/Unavailable now
+    that ai/providers/circuit_breaker.py's ProviderCircuitBreaker owns
+    that status -- see ai_service.py's own docstring for why (a single
+    failure marking OFFLINE would make the provider invisible to
+    AIRouter.route() before the breaker could ever accumulate a second
+    failure, so its 5-strikes threshold could never be reached).
+    """
     def _fail(prompt):
         raise ProviderTimeoutError("gemini", "timed out")
 
@@ -165,6 +174,24 @@ def test_provider_failure_is_recorded_in_health_tracker():
     request = RuntimeRequest(capability=Capability.CHAT, ai_context=_context(), role=AIRole.OWNER, prompt="hi")
 
     service.ask(request)
+
+    assert health_tracker.is_available("gemini") is True
+
+
+def test_five_consecutive_timeouts_across_separate_calls_do_mark_it_offline_via_the_breaker():
+    def _fail(prompt):
+        raise ProviderTimeoutError("gemini", "timed out")
+
+    health_tracker = ProviderHealthTracker()
+    provider_manager = _FakeProviderManager({
+        "gemini": _FakeProvider("gemini", behavior=_fail),
+        "openai": _FakeProvider("openai"),
+    })
+    service = AIService(provider_manager=provider_manager, health_tracker=health_tracker)
+    request = RuntimeRequest(capability=Capability.CHAT, ai_context=_context(), role=AIRole.OWNER, prompt="hi")
+
+    for _ in range(5):
+        service.ask(request)
 
     assert health_tracker.is_available("gemini") is False
 

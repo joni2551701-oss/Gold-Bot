@@ -2097,6 +2097,57 @@ this codebase used for `ai/content/`'s `ContentEngine` in Phase 61.5.
 `core/pipeline.py`, `decision/`, `execution/`, `risk/`, `strategies/`,
 `signals/` unchanged; zero diff confirmed at the end of this phase.
 
+### Phase 61.7 — AI Platform Stabilization & Integration
+
+Closes the exact gap Phase 61.6 left open: `RuntimeManager`,
+`ProviderCircuitBreaker`, `RuntimeProfile`, and `EventBus` were real
+and tested but not wired into `AIService.ask()`'s own control flow.
+This phase wires all four in. No new capability, no new provider, no
+new Telegram product command beyond two purely-observational
+additions. Full detail: `docs/PHASE61_7_RUNTIME_INTEGRATION.md`;
+request-flow diagram: `docs/AI_RUNTIME_FLOW.md`; reuse audit:
+`docs/PHASE61_7_INTEGRATION_AUDIT.md`; closing freeze:
+`docs/PHASE61_7_FREEZE.md`.
+
+```
+ai/runtime/ai_service.py                (extended -- RuntimeManager health gate, CircuitBreaker
+                                          gate+record, RuntimeProfile-driven validation/cache/
+                                          retries, Request/Retry event publication)
+ai/runtime/event_bus.py                 (extended -- +5 EventType members: RequestStarted/
+                                          RequestCompleted/RequestFailed/RuntimeStateChanged/
+                                          RetryStarted/RetryCompleted)
+ai/runtime/runtime_manager.py           (extended -- publishes RuntimeStateChanged on every transition)
+ai/runtime/self_check.py                (new -- run_self_check(): 7 PASS/WARNING/FAILED checks)
+telegram/owner/runtime_commands.py      (extended -- runtime_full_status()/runtime_check())
+telegram/commands.py / handlers.py      (+/runtime_status, +/runtime_check -- LIVE)
+```
+
+**A discovered, intentional behavior change**: `record_provider_failure()`
+(Phase 61.2's immediate single-failure health write) now fires only
+for `ProviderRateLimitError`/`ProviderInvalidResponseError`, not for
+`ProviderTimeoutError`/`ProviderUnavailableError` — both of which
+already map to `HealthStatus.OFFLINE`, exactly what the breaker
+itself writes once it trips. Writing that status on the very first
+failure would make the provider invisible to `AIRouter.route()`
+before the breaker could ever accumulate a second failure, so its
+5-strikes threshold could never be reached through real, repeated
+usage — found and fixed via a real integration test.
+
+**A second discovered fix, same root cause**: once a single failure
+stopped immediately marking a provider unavailable, `AIRouter.route()`
+(still unmodified) would keep re-offering that just-failed provider as
+"best" for the rest of the same request. `_AttemptScopedHealthTracker`
+(`ai_service.py`, private, local) is a read-only view over the one
+real `ProviderHealthTracker` that additionally treats provider names
+already attempted *this call* as unavailable — no new provider-state
+store (Rule 4); `AIRouter.route()`'s own selection logic is completely
+unmodified, only which `health_tracker` instance one retry attempt's
+freshly-constructed `AIRouter` reads differs.
+
+`core/pipeline.py`, `decision/`, `execution/`, `risk/`, `strategies/`,
+`signals/`, and `ai/router/router.py` itself: zero diff, confirmed at
+the end of this phase. 2166 tests passing (target: 2100+).
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

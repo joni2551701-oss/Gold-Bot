@@ -90,6 +90,11 @@ from `ai_service.py`); a future, separately-approved phase can wire it
 into `ai_service.py`'s own failure handling if the Director asks for
 that specific change.
 
+**Update (Phase 61.7):** that future phase arrived. `ProviderCircuitBreaker`
+is now wired into `ai_service.py`'s real failure handling — see
+`docs/PHASE61_7_RUNTIME_INTEGRATION.md`. The historical reasoning above
+is kept for the record; it no longer describes current behavior.
+
 ## Runtime Metrics (TASK 4)
 
 `ai/audit/provider_stats.py` extended in place — "Yangi emas. Mavjud
@@ -270,6 +275,12 @@ already-live behavior. **This phase does not wire `RuntimeProfile`
 into `ai_service.py`** — the same scoping decision already made for
 the circuit breaker: built real and tested, wiring deferred, so no
 existing test's behavior can regress.
+
+**Update (Phase 61.7):** `RuntimeProfile.validation_schema`,
+`to_cache_policy()`, and `max_retries` are now wired into
+`ai_service.py` — see `docs/PHASE61_7_RUNTIME_INTEGRATION.md`.
+`timeout_seconds` alone remains unwired (still no real seam). The
+historical reasoning above is kept for the record.
 
 ## Documentation (TASK 9)
 

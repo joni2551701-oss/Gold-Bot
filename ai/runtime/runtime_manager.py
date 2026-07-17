@@ -30,6 +30,14 @@ FAILED" alert reads this). Never wired into `core/pipeline.py`/
 `decision/`/`risk/`/`execution/` (Rule 1) -- this is `ai/runtime/`'s
 own operational self-awareness, nothing else reads or drives it this
 phase.
+
+Phase 61.7 TASK 7 (continuation session): every valid transition,
+regardless of target state, additionally publishes the generic
+`EventType.RUNTIME_STATE_CHANGED` -- for a subscriber that only cares
+"did the state change at all," not which specific transition it was.
+Published unconditionally, before the specific STARTED/STOPPED/FAILED
+branches below (which still fire exactly as before, unchanged) -- not
+a replacement for them.
 """
 
 from typing import List, Optional
@@ -68,6 +76,10 @@ class RuntimeManager:
         logger.info(f"Runtime transitioned: {previous_state.value} -> {to_state.value} (reason={reason})")
 
         if self._event_bus is not None:
+            self._event_bus.publish(RuntimeEvent(
+                event_type=EventType.RUNTIME_STATE_CHANGED,
+                payload={"from_state": previous_state.value, "to_state": to_state.value, "reason": reason},
+            ))
             if to_state == RuntimeState.READY and previous_state != RuntimeState.READY:
                 self._event_bus.publish(RuntimeEvent(event_type=EventType.RUNTIME_STARTED, payload={"reason": reason}))
             elif to_state == RuntimeState.SHUTDOWN:

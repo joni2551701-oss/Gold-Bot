@@ -289,21 +289,19 @@ the existing AI Core observable, self-aware, and resilient:
   no new provider-state store (Rule 4); `router/router.py` needs zero
   change for the router to automatically respect a tripped breaker.
 - `runtime/event_bus.py` (new) — `EventBus`, in-memory decoupled
-  pub/sub, nine event types. `runtime/ai_service.py` (extended, not
-  rewritten), `runtime/runtime_manager.py`, and
-  `providers/circuit_breaker.py` each publish; `audit/provider_stats.py`'s
-  `RuntimeMetricsCollector` and `telegram/owner/runtime_notifications.py`'s
-  `RuntimeNotifier` each subscribe — no module in this list imports
-  another.
+  pub/sub, nine event types (Phase 61.7 added five more — see below).
+  `runtime/ai_service.py` (extended, not rewritten), `runtime/
+  runtime_manager.py`, and `providers/circuit_breaker.py` each
+  publish; `audit/provider_stats.py`'s `RuntimeMetricsCollector` and
+  `telegram/owner/runtime_notifications.py`'s `RuntimeNotifier` each
+  subscribe — no module in this list imports another.
 - `audit/provider_stats.py` (extended, not new) —
   `compute_requests_per_minute()`, `RuntimeMetrics`,
   `RuntimeMetricsCollector`.
 - `runtime/runtime_profiles.py` (new) — `RuntimeProfile`
   (Development/Testing/Production), reusing `cache/cache_policy.py`'s
   `CachePolicy` and `validation/schemas.py`'s `ResponseSchema` rather
-  than inventing parallel config types. Not yet wired into
-  `runtime/ai_service.py` — real, tested, deferred (same posture as
-  the circuit breaker).
+  than inventing parallel config types.
 - `telegram/owner/runtime_commands.py` / `runtime_notifications.py`
   (new) — `/runtime`, `/runtime_events`, `/runtime_metrics` (pull) and
   Owner-only Provider DOWN/RECOVERED/Runtime FAILED/High Cost/Cache
@@ -312,6 +310,52 @@ the existing AI Core observable, self-aware, and resilient:
 Trading Pipeline (`core/pipeline.py`/`decision/`/`execution/`/`risk/`/
 `strategies/`/`signals/`) has zero diff from this phase.
 
+## AI Platform Stabilization & Integration (Phase 61.7)
+
+Full detail in `docs/PHASE61_7_RUNTIME_INTEGRATION.md`; request flow
+in `docs/AI_RUNTIME_FLOW.md`; reuse audit in
+`docs/PHASE61_7_INTEGRATION_AUDIT.md`. Closes the gap Phase 61.6
+deliberately left open — `RuntimeManager`/`ProviderCircuitBreaker`/
+`RuntimeProfile`/`EventBus` are now real, load-bearing parts of
+`runtime/ai_service.py`'s own `ask()` flow, not standalone-but-unused
+foundation:
+
+- `RuntimeManager` — `ask()`'s first action is a health gate
+  (`is_healthy()`).
+- `ProviderCircuitBreaker` — gates every real provider call
+  (`allow_request()`) and records the outcome (`record_success()`/
+  `record_failure()`); a per-request tick lets a tripped breaker move
+  `OPEN → HALF_OPEN` once its recovery timeout elapses.
+- `RuntimeProfile` — drives `validate_response()`'s schema,
+  `ResponseCache`'s TTL policy, and the per-request attempt budget
+  when one is injected; `None` reproduces Phase 61.6 exactly.
+- `EventBus` gained five more event types this phase
+  (`RequestStarted`/`RequestCompleted`/`RequestFailed`/
+  `RuntimeStateChanged`/`RetryStarted`/`RetryCompleted`), all
+  published from real `ask()`/`RuntimeManager.transition()` control
+  flow.
+- `runtime/self_check.py` (new) — `run_self_check()`, seven
+  independently-wrapped PASS/WARNING/FAILED checks over Provider/
+  Runtime/Validation/Cache/Audit/EventBus/CircuitBreaker.
+- `telegram/owner/runtime_commands.py` gained `runtime_full_status()`
+  (`/runtime_status`) and `runtime_check()` (`/runtime_check`).
+
+**A discovered, intentional behavior change**: a single provider
+timeout/unavailable error no longer immediately marks that provider
+fully offline — `record_provider_failure()`'s immediate write is now
+skipped for those two error types specifically, since the circuit
+breaker's 5-consecutive-failure threshold owns that decision instead
+(writing OFFLINE on failure 1 would make the breaker's own threshold
+unreachable through real usage — found via a real integration test).
+A small, local, read-only `_AttemptScopedHealthTracker` in
+`ai_service.py` preserves correct same-request failover to a
+different, healthy provider without adding a new provider-state store
+(Rule 4) or touching `router/router.py`.
+
+`core/pipeline.py`/`decision/`/`execution/`/`risk/`/`strategies/`/
+`signals/`, and `ai/router/router.py` itself: zero diff. 2166 tests
+passing.
+
 ## Future Roadmap
 Full audit and folder-structure rationale in `docs/AI_ARCHITECTURE.md`.
 The real work — replacing the permanent-reject stub with actual
@@ -319,8 +363,12 @@ heuristic/model scoring — is still out of scope (`ai/ai_analyzer.py`
 is a separate, live production module this phase does not touch).
 Real content generation (a runtime method mapping for the four
 `AI_*` capabilities), real Router Intelligence auto-switching, real
-Broadcast delivery, and wiring `ProviderCircuitBreaker`/
-`RuntimeProfile` into `runtime/ai_service.py`'s own control flow are
-all still out of scope — see `docs/PHASE61_5_FREEZE.md`'s "Remaining"
-section and `docs/AI_RUNTIME_OPERATIONS.md`'s scoping notes for what
-comes next.
+Broadcast delivery, `RuntimeProfile.timeout_seconds` enforcement (no
+real provider exposes an injectable per-call HTTP timeout yet), and a
+persistent, process-wide `AIService` instance in the running bot (every
+Telegram command still constructs fresh objects per call) are all
+still out of scope — see `docs/PHASE61_7_FREEZE.md`'s "What is still
+not wired" section for what comes next. AI Core is now effectively
+frozen; the next major directions are v0.5 Business Layer, Owner
+Control Center, Broadcast Foundation, Web Dashboard, and an Academy/
+Education Platform.
