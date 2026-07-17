@@ -2048,6 +2048,55 @@ persisted. `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
 `strategies/`, `signals/` unchanged; closing AST sweep confirms zero
 new `ai/` → those layers' imports, including `ai/content/`.
 
+### Phase 61.6 — AI Operations & Reliability Foundation
+
+Does not extend AI Core's capability surface (frozen at the end of
+Phase 61.5) — makes the existing AI Core observable, self-aware, and
+resilient. Full detail: `docs/AI_RUNTIME_OPERATIONS.md`; reuse audit:
+`docs/PHASE61_6_RUNTIME_OPERATIONS_AUDIT.md`.
+
+```
+ai/runtime/runtime_state.py             (new -- RuntimeState enum + VALID_TRANSITIONS)
+ai/runtime/runtime_manager.py           (new -- RuntimeManager, transition-validating state machine)
+ai/runtime/runtime_events.py            (new -- RuntimeLifecycleEvent)
+ai/runtime/event_bus.py                 (new -- EventBus/EventType/RuntimeEvent, 9 event types)
+ai/runtime/runtime_profiles.py          (new -- RuntimeProfile: Development/Testing/Production)
+ai/runtime/ai_service.py                (extended -- event publication at existing control-flow points only)
+ai/providers/circuit_breaker.py         (new -- ProviderCircuitBreaker: CLOSED/OPEN/HALF_OPEN)
+ai/audit/provider_stats.py              (extended -- compute_requests_per_minute()/RuntimeMetrics/RuntimeMetricsCollector)
+
+telegram/owner/runtime_commands.py      (new -- /runtime /runtime_events /runtime_metrics, OWNER-only)
+telegram/owner/runtime_notifications.py (new -- RuntimeNotifier, Owner-only push alerts)
+telegram/commands.py                    (+runtime/runtime_events/runtime_metrics in OWNER_COMMANDS)
+telegram/handlers.py                    (+3 runtime_*_handler -- LIVE)
+```
+
+**Rule 4 (no duplicate provider state)**: `ProviderCircuitBreaker`'s
+`CLOSED`/`OPEN`/`HALF_OPEN` are breaker-internal bookkeeping only —
+every transition writes into the existing `ai.providers.provider_health.
+ProviderHealthTracker` (`OPEN`→`OFFLINE`, `HALF_OPEN`→`DEGRADED`,
+`CLOSED`→`ONLINE`). `ai/router/router.py` is unmodified — the router
+already reads `ProviderHealthTracker`, so "only healthy providers are
+used" holds for the breaker for free, proven against a real
+`AIRouter` in `tests/ai/providers/test_provider_circuit_breaker.py`.
+
+**"Nobody calls anybody directly"**: `ai/runtime/event_bus.py`'s
+`EventBus` decouples every publisher (`ai_service.py`,
+`runtime_manager.py`, `circuit_breaker.py`) from every subscriber
+(`RuntimeMetricsCollector`, `RuntimeNotifier`) — no publisher imports
+a subscriber or vice versa.
+
+**Deliberately not wired this phase**: `ProviderCircuitBreaker` is not
+called from `ai_service.py`'s own failure handling (which already has
+its own, differently-thresholded Phase 61.2 behavior); `RuntimeProfile`
+is not yet threaded into `ai_service.py`'s attempt/timeout logic. Both
+are real and tested, wiring deferred to a future, separately-approved
+phase — the same "build real, defer the deeper integration" posture
+this codebase used for `ai/content/`'s `ContentEngine` in Phase 61.5.
+
+`core/pipeline.py`, `decision/`, `execution/`, `risk/`, `strategies/`,
+`signals/` unchanged; zero diff confirmed at the end of this phase.
+
 ### Pre-Phase 59 Architecture Readiness Review (AC-01–AC-07)
 
 A Director-requested audit run after Phase A19, before Phase 59 Real

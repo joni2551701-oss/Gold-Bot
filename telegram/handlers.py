@@ -114,6 +114,16 @@ both composing already-existing service calls (AdminService,
 ai_commands, SubscriptionRepository, SignalRepository,
 EmergencyManager). OWNER only.
 
+runtime_handler, runtime_events_handler, and runtime_metrics_handler
+(Phase 61.6: AI Operations & Reliability Foundation, TASK 6) are real:
+they call telegram.owner.runtime_commands's own functions (built this
+phase), each with no injected RuntimeManager/EventBus/collector -- see
+that module's own docstring for why a fresh construction per call
+reports a fresh/default/empty state (RuntimeManager defaults to READY,
+EventBus/collector default to empty) rather than a fabricated one, the
+same honesty posture ai_cost_handler's own empty-dict default already
+established. OWNER only.
+
 contact_handler (Phase 61.5 TASK 4) is real: it calls
 telegram.user_service.UserService.register_phone() -- the Phone Hash
 -> UserRecord -> Trial Check -> FREE account flow. Unlike every other
@@ -154,6 +164,7 @@ from telegram.feedback_service import FeedbackService
 from telegram.permissions import is_owner
 from telegram.owner.ai_commands import ai_cost, ai_health, ai_provider, ai_status, ai_usage, resolve_capability
 from telegram.owner.dashboard import get_doctor_report, get_owner_summary
+from telegram.owner.runtime_commands import runtime_events, runtime_metrics, runtime_status
 from core.logger import setup_logger
 
 logger = setup_logger("Handlers")
@@ -982,6 +993,21 @@ async def owner_handler() -> str:
 async def doctor_handler() -> str:
     """/doctor -> telegram.owner.dashboard.get_doctor_report(). OWNER only. Never raises."""
     return get_doctor_report().message
+
+
+async def runtime_handler() -> str:
+    """/runtime -> telegram.owner.runtime_commands.runtime_status(). OWNER only. Never raises."""
+    return runtime_status().message
+
+
+async def runtime_events_handler() -> str:
+    """/runtime_events -> telegram.owner.runtime_commands.runtime_events(). OWNER only. Never raises."""
+    return runtime_events().message
+
+
+async def runtime_metrics_handler() -> str:
+    """/runtime_metrics -> telegram.owner.runtime_commands.runtime_metrics(). OWNER only. Never raises."""
+    return runtime_metrics().message
 
 
 async def contact_handler(telegram_id, phone_number: str) -> str:

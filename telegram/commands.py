@@ -15,6 +15,12 @@ precedent (`telegram.command_router._required_level()` checks
 "OWNER only"). `doctor` (a system self-diagnostic exposing internal
 subsystem reachability) and every other name unique to `OWNER_COMMANDS`
 stay OWNER-only.
+
+Phase 61.6 TASK 6: `runtime`/`runtime_events`/`runtime_metrics` (the
+Owner Runtime Dashboard) are OWNER-only, not dual-listed -- unlike the
+AI product-facing commands above, these expose internal runtime
+lifecycle/event/metrics detail, matching `doctor`'s own OWNER-only
+posture rather than the dual-listed `ai_*` commands.
 """
 
 COMMANDS = {
@@ -50,6 +56,9 @@ OWNER_COMMANDS = {
     "ai_health": "Show AI provider health ranking",
     "owner": "Show the owner dashboard summary",
     "doctor": "Run a system self-diagnostic",
+    "runtime": "Show AI runtime lifecycle status",
+    "runtime_events": "Show recent AI runtime events",
+    "runtime_metrics": "Show AI runtime metrics",
 }
 
 ADMIN_COMMANDS = {

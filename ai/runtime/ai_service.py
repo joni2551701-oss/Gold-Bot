@@ -51,6 +51,19 @@ timestamp interpolation), so every pre-existing cache-hit test keeps
 passing; it additionally now distinguishes any two calls whose
 resolved prompt text actually differs, which `ai_context.snapshot_id`
 alone could never do.
+
+Event publication (Phase 61.6: AI Operations & Reliability Foundation,
+TASK 5): `event_bus` is an optional, injectable dependency (defaults
+to a fresh, throwaway `EventBus` when omitted -- same convention every
+other constructor argument here already uses). `ask()`'s own control
+flow is unchanged; it only gains `event_bus.publish(...)` calls at
+four points that already existed (cache hit, cache miss, a provider
+failure/`NotImplementedError`, a validation rejection) plus one new
+observation (the router selecting a different provider than the
+previous attempt within the same call, i.e. a failover). No new
+orchestration logic, no change to what `ask()` returns or when it
+returns it -- publishing is fire-and-forget and `EventBus.publish()`
+itself never raises.
 """
 
 import hashlib
@@ -69,6 +82,7 @@ from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_manager import ProviderManager
 from ai.providers.runtime_errors import ProviderRuntimeError, record_provider_failure
 from ai.router.router import AIRouter
+from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent
 from ai.runtime.runtime_request import RuntimeRequest
 from ai.runtime.runtime_response import RuntimeResponse
 from ai.validation.response_validator import validate_response
@@ -108,6 +122,7 @@ class AIService:
         request_log: Optional[RequestLog] = None,
         response_log: Optional[ResponseLog] = None,
         prompt_manager: Optional[PromptManager] = None,
+        event_bus: Optional[EventBus] = None,
     ) -> None:
         self._capability_manager = capability_manager or CapabilityManager()
         self._access_control = access_control or AccessControl()
@@ -120,6 +135,7 @@ class AIService:
         self._request_log = request_log or RequestLog()
         self._response_log = response_log or ResponseLog()
         self._prompt_manager = prompt_manager or PromptManager()
+        self._event_bus = event_bus or EventBus()
 
     def _resolve_prompt(self, request: RuntimeRequest) -> Optional[str]:
         """Reuses PromptManager.get_market_analysis_prompt() when a market context is available -- never builds prompt text itself. Returns None (never raises) when neither an explicit prompt nor a market context was supplied."""
@@ -158,6 +174,7 @@ class AIService:
             )
 
         attempted = set()
+        previous_provider_name: Optional[str] = None
         max_attempts = max(len(self._provider_manager.list_providers()), 1)
 
         for _ in range(max_attempts):
@@ -169,16 +186,25 @@ class AIService:
                 break
             attempted.add(provider_name)
 
+            if previous_provider_name is not None and provider_name != previous_provider_name:
+                self._event_bus.publish(RuntimeEvent(
+                    event_type=EventType.PROVIDER_CHANGED,
+                    payload={"from": previous_provider_name, "to": provider_name},
+                ))
+            previous_provider_name = provider_name
+
             cache_key = build_cache_key_from_context(
                 request.ai_context, request.capability, provider_name, _PROMPT_VERSION, request.role.value,
                 context_hash=hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
             )
             cached_entry = self._response_cache.get(cache_key)
             if cached_entry is not None:
+                self._event_bus.publish(RuntimeEvent(event_type=EventType.CACHE_HIT, payload={"provider_name": provider_name}))
                 return RuntimeResponse(
                     accepted=True, content=cached_entry.content, provider_name=provider_name,
                     reason="cache hit", from_cache=True, metadata=dict(cached_entry.metadata),
                 )
+            self._event_bus.publish(RuntimeEvent(event_type=EventType.CACHE_MISS, payload={"provider_name": provider_name}))
 
             provider = self._provider_manager.get_provider(provider_name)
             if provider is None:
@@ -202,6 +228,7 @@ class AIService:
                     request_id=request_record.request_id, capability=request.capability, provider_name=provider_name,
                     latency_ms=(time.monotonic() - started_at) * 1000, tokens=0, cost=0.0, status="FAILED",
                 )
+                self._event_bus.publish(RuntimeEvent(event_type=EventType.PROVIDER_FAILED, payload={"provider_name": provider_name, "reason": e.reason}))
                 logger.warning(f"Provider {provider_name} failed: {e.reason} -- trying next provider")
                 continue
 
@@ -213,6 +240,7 @@ class AIService:
                     request_id=request_record.request_id, capability=request.capability, provider_name=provider_name,
                     latency_ms=latency_ms, tokens=0, cost=0.0, status="REJECTED",
                 )
+                self._event_bus.publish(RuntimeEvent(event_type=EventType.VALIDATION_FAILED, payload={"provider_name": provider_name, "errors": validation.errors}))
                 return RuntimeResponse(
                     accepted=False, content=None, provider_name=provider_name,
                     reason="response failed validation", errors=validation.errors,

@@ -25,13 +25,40 @@ same, unmodified `ProviderStats` shape -- again extended in place, no
 new metrics module and no new field. Still observability only: nothing
 in `ai/router/` or `ai/runtime/` calls this function; it exists for a
 future owner-facing report/command to read.
+
+Phase 61.6 TASK 4: "Yangi emas. Mavjud provider_stats.py kengayadi."
+(Not new. The existing provider_stats.py is extended.) Two additions,
+both still in this same file:
+
+- `compute_requests_per_minute()` -- a pure function over
+  `ai.audit.request_log.AIRequestLogEntry.created_at`, the same
+  "reuse the already-recorded timestamp, don't add a new counter"
+  convention this file's own `compute_provider_stats()` already uses
+  for `response_log.py`.
+- `RuntimeMetrics`/`RuntimeMetricsCollector` -- cache hit/miss,
+  validation-failure, retry, and failover counts, none of which are
+  recorded anywhere in `request_log.py`/`response_log.py` today (a
+  cache hit in `ai/runtime/ai_service.py` returns before either log is
+  ever touched). `RuntimeMetricsCollector` subscribes to
+  `ai.runtime.event_bus.EventBus` (Phase 61.6 TASK 5) and accumulates
+  counts from the events `ai_service.py` now publishes at points that
+  already existed in its control flow -- no new orchestration logic,
+  only new event-publication calls at the cache-hit/cache-miss/
+  validation-rejection/provider-failure/provider-switch points that
+  were already there. In-memory only, same posture as every counter in
+  this package; a caller (e.g. an Owner `/runtime_metrics` command)
+  constructs a collector, attaches it to the same `EventBus` a live
+  `AIService` was given, and reads its counts.
 """
 
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List
+from datetime import datetime, timedelta, timezone
+from typing import Dict, List, Optional
 
+from ai.audit.request_log import AIRequestLogEntry
 from ai.audit.response_log import AIResponseLogEntry
+from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent
 
 
 @dataclass(frozen=True)
@@ -86,3 +113,76 @@ def rank_providers(stats: Dict[str, ProviderStats]) -> List[ProviderStats]:
     returns an empty list.
     """
     return sorted(stats.values(), key=lambda s: (-s.success_rate, s.avg_latency_ms, s.total_cost))
+
+
+def compute_requests_per_minute(requests: List[AIRequestLogEntry], now: Optional[datetime] = None) -> float:
+    """Count of requests whose created_at falls within the last 60 seconds of `now` (defaults to the real current time). Never raises: an empty `requests` list returns 0.0."""
+    now = now if now is not None else datetime.now(timezone.utc)
+    window_start = now - timedelta(seconds=60)
+    return float(sum(1 for entry in requests if window_start <= entry.created_at <= now))
+
+
+@dataclass(frozen=True)
+class RuntimeMetrics:
+    requests_per_minute: float
+    cache_hits: int
+    cache_misses: int
+    validation_failures: int
+    retries: int
+    failover_count: int
+
+    @property
+    def cache_hit_rate(self) -> float:
+        total = self.cache_hits + self.cache_misses
+        return self.cache_hits / total if total else 0.0
+
+
+class RuntimeMetricsCollector:
+    """
+    Subscribes to an `EventBus` and accumulates in-memory counts --
+    never reaches into `ai/runtime/ai_service.py` or any provider
+    directly, only reacts to events already published onto the bus
+    (Rule 5's "Event Bus... nobody calls anybody directly" preserved).
+    `CACHE_HIT`/`CACHE_MISS`/`VALIDATION_FAILED` map one-to-one;
+    `PROVIDER_FAILED` counts as a retry (each failed attempt is exactly
+    the reason `AIService.ask()` tries the next candidate);
+    `PROVIDER_CHANGED` counts as a failover (the router actually
+    switched to a different provider than the previous attempt within
+    one request).
+    """
+
+    def __init__(self, event_bus: EventBus) -> None:
+        self._cache_hits = 0
+        self._cache_misses = 0
+        self._validation_failures = 0
+        self._retries = 0
+        self._failover_count = 0
+        event_bus.subscribe(EventType.CACHE_HIT, self._on_cache_hit)
+        event_bus.subscribe(EventType.CACHE_MISS, self._on_cache_miss)
+        event_bus.subscribe(EventType.VALIDATION_FAILED, self._on_validation_failed)
+        event_bus.subscribe(EventType.PROVIDER_FAILED, self._on_provider_failed)
+        event_bus.subscribe(EventType.PROVIDER_CHANGED, self._on_provider_changed)
+
+    def _on_cache_hit(self, event: RuntimeEvent) -> None:
+        self._cache_hits += 1
+
+    def _on_cache_miss(self, event: RuntimeEvent) -> None:
+        self._cache_misses += 1
+
+    def _on_validation_failed(self, event: RuntimeEvent) -> None:
+        self._validation_failures += 1
+
+    def _on_provider_failed(self, event: RuntimeEvent) -> None:
+        self._retries += 1
+
+    def _on_provider_changed(self, event: RuntimeEvent) -> None:
+        self._failover_count += 1
+
+    def snapshot(self, requests: Optional[List[AIRequestLogEntry]] = None, now: Optional[datetime] = None) -> RuntimeMetrics:
+        """requests_per_minute is computed fresh from an optional RequestLog snapshot -- omitted (None/empty) reports 0.0 rather than a stale cached rate."""
+        rpm = compute_requests_per_minute(requests, now) if requests else 0.0
+        return RuntimeMetrics(
+            requests_per_minute=rpm, cache_hits=self._cache_hits, cache_misses=self._cache_misses,
+            validation_failures=self._validation_failures, retries=self._retries,
+            failover_count=self._failover_count,
+        )

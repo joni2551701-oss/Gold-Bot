@@ -162,3 +162,12 @@ real, keyless `ProviderManager` default never crashing).
 
 AI Memory Runtime, Knowledge Base, real Tool Calling integration, AI
 Assistant Layer.
+
+## Operational layer (Phase 61.6)
+
+This document describes the request *lifecycle* (`AIService.ask()`'s
+own flow). The *operational* layer built on top of it — runtime
+lifecycle state, a provider circuit breaker, runtime metrics, a
+decoupled event bus, an Owner dashboard, Owner alerts, and named
+configuration profiles — is documented separately in
+`docs/AI_RUNTIME_OPERATIONS.md`.

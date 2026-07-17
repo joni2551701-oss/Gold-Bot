@@ -271,12 +271,56 @@ The first phase in the entire 61.x arc with real live-wiring — see
   (`ContentResult` → `BroadcastReadyContent`) — no real
   streaming/voice/video/scheduling/send logic.
 
+## AI Operations & Reliability Foundation (Phase 61.6)
+
+Full detail in `docs/AI_RUNTIME_OPERATIONS.md`; reuse audit in
+`docs/PHASE61_6_RUNTIME_OPERATIONS_AUDIT.md`. Does not extend AI
+Core's capability surface (frozen at the end of Phase 61.5) — makes
+the existing AI Core observable, self-aware, and resilient:
+
+- `runtime/runtime_state.py`/`runtime_manager.py`/`runtime_events.py`
+  (new) — `RuntimeManager`, a transition-validating lifecycle state
+  machine (`INITIALIZING`/`READY`/`BUSY`/`DEGRADED`/`FAILED`/
+  `SHUTDOWN`), same shape as `core/emergency/emergency_manager.py`'s
+  `EmergencyManager`.
+- `providers/circuit_breaker.py` (new) — `ProviderCircuitBreaker`
+  (`CLOSED`/`OPEN`/`HALF_OPEN`). Writes every transition into the
+  existing `providers/provider_health.py`'s `ProviderHealthTracker` —
+  no new provider-state store (Rule 4); `router/router.py` needs zero
+  change for the router to automatically respect a tripped breaker.
+- `runtime/event_bus.py` (new) — `EventBus`, in-memory decoupled
+  pub/sub, nine event types. `runtime/ai_service.py` (extended, not
+  rewritten), `runtime/runtime_manager.py`, and
+  `providers/circuit_breaker.py` each publish; `audit/provider_stats.py`'s
+  `RuntimeMetricsCollector` and `telegram/owner/runtime_notifications.py`'s
+  `RuntimeNotifier` each subscribe — no module in this list imports
+  another.
+- `audit/provider_stats.py` (extended, not new) —
+  `compute_requests_per_minute()`, `RuntimeMetrics`,
+  `RuntimeMetricsCollector`.
+- `runtime/runtime_profiles.py` (new) — `RuntimeProfile`
+  (Development/Testing/Production), reusing `cache/cache_policy.py`'s
+  `CachePolicy` and `validation/schemas.py`'s `ResponseSchema` rather
+  than inventing parallel config types. Not yet wired into
+  `runtime/ai_service.py` — real, tested, deferred (same posture as
+  the circuit breaker).
+- `telegram/owner/runtime_commands.py` / `runtime_notifications.py`
+  (new) — `/runtime`, `/runtime_events`, `/runtime_metrics` (pull) and
+  Owner-only Provider DOWN/RECOVERED/Runtime FAILED/High Cost/Cache
+  Disabled alerts (push).
+
+Trading Pipeline (`core/pipeline.py`/`decision/`/`execution/`/`risk/`/
+`strategies/`/`signals/`) has zero diff from this phase.
+
 ## Future Roadmap
 Full audit and folder-structure rationale in `docs/AI_ARCHITECTURE.md`.
 The real work — replacing the permanent-reject stub with actual
 heuristic/model scoring — is still out of scope (`ai/ai_analyzer.py`
 is a separate, live production module this phase does not touch).
 Real content generation (a runtime method mapping for the four
-`AI_*` capabilities), real Router Intelligence auto-switching, and
-real Broadcast delivery are all still out of scope — see
-`docs/PHASE61_5_FREEZE.md`'s "Remaining" section for what comes next.
+`AI_*` capabilities), real Router Intelligence auto-switching, real
+Broadcast delivery, and wiring `ProviderCircuitBreaker`/
+`RuntimeProfile` into `runtime/ai_service.py`'s own control flow are
+all still out of scope — see `docs/PHASE61_5_FREEZE.md`'s "Remaining"
+section and `docs/AI_RUNTIME_OPERATIONS.md`'s scoping notes for what
+comes next.
