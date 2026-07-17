@@ -5,6 +5,16 @@ Pure data: maps a command name to its short description. No command's
 internal behavior is implemented here. Handler wiring belongs to
 handlers.py; the actual business logic belongs to user_service.py /
 admin_service.py / result_handler.py in a later phase.
+
+Phase 61.5 Addendum (per Director review): `ai_status`/`ai_provider`/
+`ai_cost`/`ai_usage`/`ai_health`/`owner` are read-only informational
+commands, so they are listed in BOTH `OWNER_COMMANDS` and
+`ADMIN_COMMANDS` -- exactly the existing `"system"`/`"broadcast"`
+precedent (`telegram.command_router._required_level()` checks
+`ADMIN_COMMANDS` first, so dual membership means "ADMIN or OWNER", not
+"OWNER only"). `doctor` (a system self-diagnostic exposing internal
+subsystem reachability) and every other name unique to `OWNER_COMMANDS`
+stay OWNER-only.
 """
 
 COMMANDS = {
@@ -38,6 +48,8 @@ OWNER_COMMANDS = {
     "ai_cost": "Show today's AI cost by provider",
     "ai_usage": "Show a user's AI usage",
     "ai_health": "Show AI provider health ranking",
+    "owner": "Show the owner dashboard summary",
+    "doctor": "Run a system self-diagnostic",
 }
 
 ADMIN_COMMANDS = {
@@ -49,4 +61,10 @@ ADMIN_COMMANDS = {
     "broadcast": "Broadcast a message to all users",
     "system": "Show system status",
     "feedbacks": "View feedback list",
+    "ai_status": "Show AI Core status",
+    "ai_provider": "Show current/fallback provider for a capability",
+    "ai_cost": "Show today's AI cost by provider",
+    "ai_usage": "Show a user's AI usage",
+    "ai_health": "Show AI provider health ranking",
+    "owner": "Show the owner dashboard summary",
 }

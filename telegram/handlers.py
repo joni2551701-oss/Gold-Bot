@@ -106,6 +106,14 @@ phase either), so these report zero/"no usage" honestly rather than
 fabricating history, exactly as their own docstrings already promise
 for that input shape.
 
+owner_handler and doctor_handler (Phase 61.5 Addendum, per Director
+review) are real: they call telegram.owner.dashboard's
+get_owner_summary()/get_doctor_report() -- a compact key-value
+dashboard panel and a nine-subsystem self-diagnostic, respectively,
+both composing already-existing service calls (AdminService,
+ai_commands, SubscriptionRepository, SignalRepository,
+EmergencyManager). OWNER only.
+
 contact_handler (Phase 61.5 TASK 4) is real: it calls
 telegram.user_service.UserService.register_phone() -- the Phone Hash
 -> UserRecord -> Trial Check -> FREE account flow. Unlike every other
@@ -145,6 +153,7 @@ from telegram.signal_access_service import SignalAccessService
 from telegram.feedback_service import FeedbackService
 from telegram.permissions import is_owner
 from telegram.owner.ai_commands import ai_cost, ai_health, ai_provider, ai_status, ai_usage, resolve_capability
+from telegram.owner.dashboard import get_doctor_report, get_owner_summary
 from core.logger import setup_logger
 
 logger = setup_logger("Handlers")
@@ -963,6 +972,16 @@ async def ai_usage_handler(args=None) -> str:
 async def ai_health_handler() -> str:
     """/ai_health -> telegram.owner.ai_commands.ai_health(). OWNER only. Never raises."""
     return ai_health().message
+
+
+async def owner_handler() -> str:
+    """/owner -> telegram.owner.dashboard.get_owner_summary(). OWNER only. Never raises."""
+    return get_owner_summary().message
+
+
+async def doctor_handler() -> str:
+    """/doctor -> telegram.owner.dashboard.get_doctor_report(). OWNER only. Never raises."""
+    return get_doctor_report().message
 
 
 async def contact_handler(telegram_id, phone_number: str) -> str:

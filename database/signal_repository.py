@@ -119,6 +119,21 @@ class SignalRepository:
             cursor = conn.execute("SELECT * FROM signals WHERE status = 'CLOSED'")
             return [dict(row) for row in cursor.fetchall()]
 
+    def count_signals_today(self) -> int:
+        """Signals created today (UTC) -- same date('now') convention as UserRepository.count_users_created_today(). Used by telegram/owner/dashboard.py's /owner summary (Phase 61.5)."""
+        with self.db as conn:
+            cursor = conn.execute("SELECT COUNT(*) as count FROM signals WHERE date(created_at) = date('now')")
+            row = cursor.fetchone()
+            return row["count"] if row else 0
+
+    def get_closed_signals_today(self) -> List[Dict]:
+        """Signals with status 'CLOSED' created today (UTC). Empty list if none. Used to compute today's win rate (Phase 61.5)."""
+        with self.db as conn:
+            cursor = conn.execute(
+                "SELECT * FROM signals WHERE status = 'CLOSED' AND date(created_at) = date('now')"
+            )
+            return [dict(row) for row in cursor.fetchall()]
+
     def get_latest_signal(self) -> Optional[Dict]:
         """Most recently created signal, or None if the table is empty."""
         with self.db as conn:

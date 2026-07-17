@@ -147,6 +147,63 @@ No real streaming/voice/video/scheduling/send logic — explicitly
 deferred to a future v0.5 Product Media Layer / Phase 62.x Owner
 Broadcast Foundation, per the Director's own decision.
 
+## Addendum — Director review response
+
+The Director reviewed a mid-flight log snapshot of this phase and
+requested three verifications plus two new foundation commands before
+closing. All five are addressed here:
+
+1. **ProviderScore stays read-only.** Re-confirmed: `ai/router/router.py`
+   is unmodified this phase; `test_provider_score.py`'s own
+   `test_score_providers_never_calls_or_imports_router_route()`
+   inspects `provider_score.py`'s source directly to assert neither
+   `AIRouter` nor `.route(` appears in it.
+2. **`ai_health()` enriched.** Now shows per-provider Latency/Success/
+   Requests/Tokens/Today's Cost/Failures alongside the existing score
+   ranking — all reused from `ai.audit.provider_stats.ProviderStats`'s
+   existing fields, no new metric. A provider with no call history
+   reports "N/A" per field, never a fabricated number.
+   `ai_status()`/`ai_provider()`'s own inline online/current-provider
+   calculations were extracted into two new public helpers
+   (`ai_runtime_online()`/`current_provider_for()`) so `/owner` reuses
+   them directly instead of parsing formatted message text.
+3. **Permission-tier tests added**
+   (`tests/telegram/test_ai_command_permission_matrix.py`): FREE
+   denied, ADMIN allowed on every read-only AI/dashboard command,
+   OWNER allowed on all of them plus the OWNER-only `/doctor`, and an
+   unknown command (`/ai_abc`) reports "Unknown command." **Scope
+   note**: `ai_disable`/`ai_enable`/`ai_limit` (built Phase 61.4 TASK 3)
+   remain **not** live-wired this phase — TASK 3's original brief named
+   exactly five commands (`ai_status`/`ai_provider`/`ai_cost`/
+   `ai_usage`/`ai_health`); wiring three more mutating commands was not
+   in that scope and is flagged here rather than silently added.
+   `ai_status`/`ai_provider`/`ai_cost`/`ai_usage`/`ai_health`/`owner`
+   were additionally added to `ADMIN_COMMANDS` (dual membership with
+   `OWNER_COMMANDS`, same precedent as the pre-existing `system`/
+   `broadcast` commands) since they are read-only information, not
+   mutations — `doctor` stays OWNER-only (exposes internal subsystem
+   reachability).
+4. **`/owner`** (new) — `telegram/owner/dashboard.py`'s
+   `get_owner_summary()`: a compact panel (System/AI/Provider/Users/
+   Premium/Signals Today/Win Rate/Cost Today/Emergency), composing
+   `AdminService`, the new `ai_runtime_online()`/`current_provider_for()`
+   helpers, `ai_cost()`, two new repository methods
+   (`SubscriptionRepository.count_by_plan()`,
+   `SignalRepository.count_signals_today()`/
+   `get_closed_signals_today()`), `analytics.strategy_report.compute_win_rate()`,
+   and `core.emergency.emergency_manager.EmergencyManager`. Every
+   section degrades to "N/A" independently on failure — never raises,
+   never fabricates.
+5. **`/doctor`** (new) — `get_doctor_report()`: nine subsystem checks
+   (Database/AI/Market Data/Telegram/Scheduler/Providers/Learning/
+   Cache/Audit), each a cheap reachability probe or an existing status
+   field, never a live network call. "Scheduler" is honestly reported
+   "N/A" — GoldBot's own scheduling is external (cron/GitHub Actions),
+   so no in-process object exists to check.
+
+Neither `/owner` nor `/doctor` touches `decision/`/`risk/`/`execution/`
+— both are pure read/reachability reporting.
+
 ## Isolation re-verification (TASK 7)
 
 AST-based import sweep (`ast.walk()` over every `.py` file under

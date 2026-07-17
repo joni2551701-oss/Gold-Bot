@@ -14,10 +14,13 @@ from telegram.owner.ai_commands import (
     ai_cost,
     ai_disable,
     ai_enable,
+    ai_health,
     ai_limit,
     ai_provider,
+    ai_runtime_online,
     ai_status,
     ai_usage,
+    current_provider_for,
 )
 
 
@@ -189,3 +192,75 @@ def test_ai_usage_for_unknown_telegram_id_reports_no_usage_not_an_error():
     result = ai_usage("does-not-exist", {})
     assert result.success is True
     assert "No AI usage" in result.message
+
+
+def test_ai_runtime_online_true_when_a_provider_is_healthy():
+    provider_manager = _FakeProviderManager(["gemini"])
+    health_tracker = ProviderHealthTracker()
+    health_tracker.record("gemini", HealthStatus.ONLINE)
+    assert ai_runtime_online(provider_manager, health_tracker) is True
+
+
+def test_ai_runtime_online_false_when_nothing_is_healthy():
+    provider_manager = _FakeProviderManager(["gemini"])
+    health_tracker = ProviderHealthTracker()
+    health_tracker.record("gemini", HealthStatus.OFFLINE)
+    assert ai_runtime_online(provider_manager, health_tracker) is False
+
+
+def test_current_provider_for_matches_ai_providers_own_current_field():
+    provider_manager = _FakeProviderManager(["gemini", "claude"])
+    health_tracker = ProviderHealthTracker()
+    health_tracker.record("gemini", HealthStatus.ONLINE)
+    health_tracker.record("claude", HealthStatus.ONLINE)
+
+    current = current_provider_for(Capability.ANALYSIS, provider_manager, health_tracker)
+    result = ai_provider(Capability.ANALYSIS, provider_manager=provider_manager, health_tracker=health_tracker)
+
+    assert current is not None
+    assert current.title() in result.message
+
+
+def test_current_provider_for_is_none_when_nothing_available():
+    provider_manager = _FakeProviderManager([])
+    assert current_provider_for(Capability.ANALYSIS, provider_manager, ProviderHealthTracker()) is None
+
+
+def test_ai_health_shows_per_provider_stats_breakdown():
+    provider_manager = _FakeProviderManager(["gemini"])
+    health_tracker = ProviderHealthTracker()
+    health_tracker.record("gemini", HealthStatus.ONLINE)
+    provider_stats = {
+        "gemini": ProviderStats(
+            provider_name="gemini", total_calls=12450, success_count=12336,
+            avg_latency_ms=420.0, total_tokens=2_100_000, total_cost=14.23,
+        ),
+    }
+
+    result = ai_health(provider_manager=provider_manager, provider_stats=provider_stats, health_tracker=health_tracker)
+
+    assert result.success is True
+    assert "AI HEALTH" in result.message
+    assert "420 ms" in result.message
+    assert "99." in result.message  # success rate percentage
+    assert "12450" in result.message
+    assert "2100000" in result.message
+    assert "$14.23" in result.message
+    assert "114" in result.message  # failure_count = total_calls - success_count = 114
+
+
+def test_ai_health_reports_n_a_for_a_provider_with_no_call_history():
+    provider_manager = _FakeProviderManager(["gemini"])
+    health_tracker = ProviderHealthTracker()
+    health_tracker.record("gemini", HealthStatus.ONLINE)
+
+    result = ai_health(provider_manager=provider_manager, provider_stats={}, health_tracker=health_tracker)
+
+    assert result.success is True
+    assert "N/A" in result.message
+
+
+def test_ai_health_with_no_providers_registered():
+    result = ai_health(provider_manager=_FakeProviderManager([]), provider_stats={}, health_tracker=ProviderHealthTracker())
+    assert result.success is True
+    assert "No providers registered." in result.message

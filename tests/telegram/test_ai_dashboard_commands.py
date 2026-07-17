@@ -55,7 +55,7 @@ def test_ai_health_is_owner_only_and_returns_a_ranking():
     owner = _run(route_command("/ai_health", telegram_id=OWNER_ID))
     user = _run(route_command("/ai_health", telegram_id=USER_ID))
 
-    assert "AI Provider Health Ranking" in owner.text
+    assert "AI HEALTH" in owner.text
     assert user.text == PERMISSION_DENIED_TEXT
 
 

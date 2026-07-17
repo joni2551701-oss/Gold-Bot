@@ -235,10 +235,17 @@ The first phase in the entire 61.x arc with real live-wiring — see
   explicit constraint this phase.
 - `telegram/owner/ai_commands.py` (outside `ai/`) — **live-wired**:
   `/ai_status`, `/ai_provider`, `/ai_cost`, `/ai_usage`, and the new
-  `/ai_health` are now real OWNER-only Telegram commands
-  (`telegram/commands.py`'s `OWNER_COMMANDS`, `telegram/handlers.py`'s
-  `{command}_handler` functions) — the first live callers this module
-  has ever had.
+  `/ai_health` are now real Telegram commands, ADMIN+OWNER for the
+  five read-only ones (`telegram/commands.py`'s `OWNER_COMMANDS` and
+  `ADMIN_COMMANDS`, `telegram/handlers.py`'s `{command}_handler`
+  functions) — the first live callers this module has ever had.
+  `ai_health()` shows per-provider Latency/Success/Requests/Tokens/
+  Cost/Failures (Addendum, per Director review). Two new public
+  helpers, `ai_runtime_online()`/`current_provider_for()`, de-duplicate
+  logic `ai_status()`/`ai_provider()` already had inline and are
+  reused by `telegram/owner/dashboard.py`'s new `/owner` command
+  (`get_owner_summary()`) and `/doctor` (`get_doctor_report()`,
+  OWNER-only self-diagnostic).
 - `telegram/user_service.py`'s `register_phone()` (outside `ai/`) —
   **live-wired**: the real `/start` → Phone Share Button → Phone Hash
   → `UserRecord` → Trial Check → FREE account flow.

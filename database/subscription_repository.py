@@ -117,3 +117,10 @@ class SubscriptionRepository:
         with self.db as conn:
             cursor = conn.execute(_SUBSCRIPTION_SELECT_COLUMNS + " FROM subscriptions")
             return [_row_to_record(row) for row in cursor.fetchall()]
+
+    def count_by_plan(self, plan: str) -> int:
+        """Count of subscriptions on a given plan (FREE/PREMIUM/VIP) -- same convention as UserRepository.count_by_status(). Used by telegram/owner/dashboard.py's /owner summary (Phase 61.5)."""
+        with self.db as conn:
+            cursor = conn.execute("SELECT COUNT(*) as count FROM subscriptions WHERE plan = ?", (plan,))
+            row = cursor.fetchone()
+            return row["count"] if row else 0

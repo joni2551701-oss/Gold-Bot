@@ -59,6 +59,43 @@ def resolve_capability(name: str) -> Optional[Capability]:
         return None
 
 
+def ai_runtime_online(
+    provider_manager: Optional[ProviderManager] = None,
+    health_tracker: Optional[ProviderHealthTracker] = None,
+) -> bool:
+    """
+    Public (Phase 61.5 Addendum): whether at least one registered
+    provider is currently healthy. Extracted from `ai_status()`'s own
+    inline calculation so `telegram/owner/dashboard.py`'s `/owner`
+    summary can reuse it directly instead of parsing `ai_status()`'s
+    formatted message text for a "🟢 Online" substring.
+    """
+    provider_manager = provider_manager or ProviderManager()
+    health_tracker = health_tracker or ProviderHealthTracker()
+    return any(health_tracker.is_available(name) for name in provider_manager.list_providers())
+
+
+def current_provider_for(
+    capability: Capability,
+    provider_manager: Optional[ProviderManager] = None,
+    health_tracker: Optional[ProviderHealthTracker] = None,
+) -> Optional[str]:
+    """
+    Public (Phase 61.5 Addendum): the first available candidate for
+    `capability`, or `None` if none is available. Extracted from
+    `ai_provider()`'s own inline calculation, same reuse rationale as
+    `ai_runtime_online()` above -- `telegram/owner/dashboard.py`'s
+    `/owner` summary needs "which provider is currently active" without
+    re-deriving it or parsing formatted text.
+    """
+    provider_manager = provider_manager or ProviderManager()
+    health_tracker = health_tracker or ProviderHealthTracker()
+    candidates = get_candidate_providers(capability)
+    registered = set(provider_manager.list_providers())
+    available = [name for name in candidates if name in registered and health_tracker.is_available(name)]
+    return available[0] if available else None
+
+
 def ai_status(
     provider_manager: Optional[ProviderManager] = None,
     health_tracker: Optional[ProviderHealthTracker] = None,
@@ -80,7 +117,7 @@ def ai_status(
             f"{name.title()} {'🟢' if health_tracker.is_available(name) else '⚪'}"
             for name in names
         ]
-        runtime_online = any(health_tracker.is_available(name) for name in names)
+        runtime_online = ai_runtime_online(provider_manager, health_tracker)
 
         capability_lines = [
             f"{'✅' if capability_manager.is_enabled(capability) else '❌'} {capability.value.title()}"
@@ -128,7 +165,7 @@ def ai_provider(
         if not available_candidates:
             return AICommandResult(success=True, message=f"No available provider for {capability.value}.")
 
-        current = available_candidates[0]
+        current = current_provider_for(capability, provider_manager, health_tracker)
         fallback = available_candidates[1] if len(available_candidates) > 1 else "None"
 
         stats = provider_stats.get(current)
@@ -257,12 +294,21 @@ def ai_health(
     health_tracker: Optional[ProviderHealthTracker] = None,
 ) -> AICommandResult:
     """
-    The /ai_health command's payload (Phase 61.5 TASK 2/3). Best-first
-    ranking via `ai.router.provider_score.score_providers()` --
-    recommendation/analytics only, matching that module's own
-    docstring: `AIRouter.route()` is never called or influenced by
-    this. `provider_names` comes from `provider_manager.list_providers()`
-    so a provider with zero call history still appears in the ranking.
+    The /ai_health command's payload (Phase 61.5 TASK 2/3; extended
+    Phase 61.5 Addendum per Director review). Best-first ranking via
+    `ai.router.provider_score.score_providers()` -- recommendation/
+    analytics only, matching that module's own docstring:
+    `AIRouter.route()` is never called or influenced by this.
+    `provider_names` comes from `provider_manager.list_providers()` so
+    a provider with zero call history still appears in the ranking.
+
+    Per-provider Latency/Success/Requests/Tokens/Cost/Failures (the
+    Director's own worked example) reuse `ai.audit.provider_stats.
+    ProviderStats`'s existing fields directly -- no new metric, no
+    re-fetch, same "reuse the already-computed record" convention
+    `ai_cost()`/`ai_usage()` already use. A provider with no entry in
+    `provider_stats` (no call history yet) reports "N/A" for every
+    stat, never a fabricated number.
     """
     provider_manager = provider_manager or ProviderManager()
     health_tracker = health_tracker or ProviderHealthTracker()
@@ -271,11 +317,23 @@ def ai_health(
     try:
         names = provider_manager.list_providers()
         ranked = score_providers(names, provider_stats, health_tracker)
-        lines = [
-            f"{s.provider_name.title()}: {s.score:.2f} ({s.health_status.value if s.health_status else 'UNKNOWN'})"
-            for s in ranked
-        ]
-        message = "AI Provider Health Ranking:\n" + ("\n".join(lines) if lines else "No providers registered.")
+
+        blocks = []
+        for s in ranked:
+            stats = provider_stats.get(s.provider_name)
+            status_label = s.health_status.value if s.health_status else "UNKNOWN"
+            lines = [
+                f"{s.provider_name.title()} (score {s.score:.2f}, {status_label})",
+                f"Latency:\n{f'{stats.avg_latency_ms:.0f} ms' if stats else 'N/A'}",
+                f"Success:\n{f'{stats.success_rate * 100:.1f}%' if stats else 'N/A'}",
+                f"Requests:\n{stats.total_calls if stats else 'N/A'}",
+                f"Tokens:\n{stats.total_tokens if stats else 'N/A'}",
+                f"Today's Cost:\n{f'${stats.total_cost:.2f}' if stats else 'N/A'}",
+                f"Failures:\n{stats.failure_count if stats else 'N/A'}",
+            ]
+            blocks.append("\n".join(lines))
+
+        message = "AI HEALTH\n" + ("\n\n".join(blocks) if blocks else "No providers registered.")
         return AICommandResult(success=True, message=message)
     except Exception as e:
         logger.warning(f"ai_health failed: {e}")

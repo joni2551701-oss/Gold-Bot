@@ -49,6 +49,7 @@ tests, zero regressions).
 | 5 | `ai/capabilities/capability.py`'s four `AI_*` members + `ai/content/content_types.py`/`content_schema.py`/`content_adapter.py` — foundation only, no `AIService` runtime mapping yet. |
 | 6 | `ai/content/broadcast_output.py` — contract-only `BroadcastReadyContent`/`prepare_broadcast()`. |
 | 7 | Final isolation re-verification (AST sweep, unchanged counts). |
+| Addendum | Director review response: `ai_health()` enriched with per-provider stats; `ai_runtime_online()`/`current_provider_for()` helpers extracted; permission-tier test matrix (FREE/ADMIN/OWNER + unknown command); new `/owner` (dashboard summary) and `/doctor` (self-diagnostic) OWNER-console commands. |
 
 ## Remaining (post-freeze, future phases)
 
