@@ -90,8 +90,13 @@ layers, deterministic only. `65.0` AI Voice Intelligence Foundation
 (DONE) — top-level `voice/`, a genuine new package (not a naming
 correction like `media/`/`broadcast/`), Profile/Provider metadata
 catalogs only, no synthesis; first phase in a new `65.x` Voice
-sub-sequence (`65.1` real STT/TTS providers, `65.2` live Voice
-Conversation — both future, not yet briefed).
+sub-sequence. `65.1` AI Voice Provider Integration (DONE) — real
+OpenAI/ElevenLabs TTS adapters, per-profile provider selection,
+fallback handling, and Content/Media/Broadcast/Conversation
+integration adapters; Voice is now the terminal stage of the Official
+Intelligence Pipeline (`65.2` live Voice Conversation, `65.3` Personal
+AI Assistant, `65.4` Voice Avatar/Media — all future, not yet
+briefed).
 See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →

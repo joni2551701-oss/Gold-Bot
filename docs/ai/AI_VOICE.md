@@ -2,26 +2,29 @@
 
 Governed by `docs/constitution/CONSTITUTION.md` Article 1 and the
 Intelligence Dependency Principle (Director Policy,
-`docs/policies/DIRECTOR_POLICY.md`). `voice/` (Phase 65.0), real code,
-foundation-only — no STT, no TTS, no real Telegram/Mini App/YouTube
-wiring yet.
+`docs/policies/DIRECTOR_POLICY.md`). `voice/` (Phase 65.0 Foundation;
+Phase 65.1 real Provider Integration), real code — Phase 65.1 adds real
+OpenAI/ElevenLabs TTS HTTP calls (gated on Owner-set ENABLED status and
+a configured API key); still no STT, no real Telegram/Mini App/YouTube
+wiring, no Local/Custom backend.
 
 **`voice/` is a top-level package, a sibling of `ai/` — not
 `ai/voice/`.** Unlike `knowledge/`/`media/`/`broadcast/`'s naming
 corrections, this is a genuine ground-up new package: neither `voice/`
-nor `ai/voice/` existed before this phase — see
+nor `ai/voice/` existed before Phase 65.0 — see
 `docs/PHASE65_0_AUDIT.md`'s TASK 0 finding.
 
 ## Position in the Official Intelligence Pipeline
 
-`voice/` reads from `ai/content/` (upstream, type-only, via
-`adapter.py`) the same way `media/` does, but is not itself a stage in
-the `Knowledge → Memory → Reasoning → Conversation → Explanation →
-Content → Media → Broadcast` chain — it is a parallel, content-adjacent
-package (same relationship `translation/` has to that chain), intended
-to eventually serve AI Assistant, AI Conversation, Weekly Report,
-Market Brief, Trade Replay, Education, Broadcast, Mini App, and YouTube
-delivery surfaces.
+As of Phase 65.1, `voice/` is the terminal narrating stage of the
+Official Intelligence Pipeline (`docs/roadmap/AI_EVOLUTION.md`):
+`Knowledge → Memory → Reasoning → Conversation → Explanation → Content
+→ Media → Broadcast → Voice`. It reads from `ai/content/`, `media/`,
+`broadcast/`, and `ai.conversation`/`ai.session` (all upstream,
+type-only, via `adapter.py`) — Phase 65.0 deferred the `media`/
+`broadcast` reads "to a future phase"; Phase 65.1 is that phase (TASK
+9). Nothing downstream imports `voice/` back — the dependency still
+flows one direction only.
 
 ## Model
 
@@ -35,10 +38,15 @@ dataclasses: `VoiceProvider` (capability descriptor —
 `default_provider`), `VoiceSettings` (`language`/`speed`/`pitch`),
 `VoiceRequest` (`id`/`profile_name`/`provider_type`/`text`/`settings`/
 `requested_at`), `VoiceResult` (`request_id`/`status`/`reason`/
-`generated_at`). Every field is a primitive, an enum defined in the
-same file, or another dataclass in the same file — no `ContentResult`,
-`MediaAsset`, `BroadcastAsset`, `Persona`, `DecisionResult`,
-`RiskResult`, or MT5/trading object is a valid field type.
+`generated_at`/`metadata` — the last one added Phase 65.1 TASK 3/4,
+additive per Article 9: a real provider adapter's own reference info,
+e.g. `content_type`/`byte_length`/`provider`, never raw audio bytes,
+the same "reference only, never the payload itself" posture
+`media/models.py`'s `MediaAsset` already established). Every field is
+a primitive, an enum defined in the same file, or another dataclass in
+the same file — no `ContentResult`, `MediaAsset`, `BroadcastAsset`,
+`Persona`, `DecisionResult`, `RiskResult`, or MT5/trading object is a
+valid field type.
 
 ## Registry
 
@@ -92,16 +100,80 @@ ENABLED/DISABLED intent tracking (`register_provider()`/
 exists, the provider is registered and enabled, and `text` is
 non-empty. `prepare(request)` returns `validate()`'s own result.
 
-## Content integration (TASK 7 — real, type-only)
+Phase 65.1 TASK 6/7 additions (both additive, folded into this same
+class rather than a new `VoiceProviderManager` — Rule 1's own "no
+duplicate Manager"):
+- **Adapter registry**: `register_adapter(provider_type, adapter)`/
+  `get_adapter(provider_type)`/`list_adapters()` — holds the real
+  `VoiceProviderContract` implementation backing each provider type,
+  separate from the Phase 65.0 descriptor/status tracking.
+- **Per-profile provider selection**: `set_provider_for_profile(name,
+  provider_type)`/`provider_for_profile(name)` — an explicit override,
+  falling back to the profile's own `default_provider` (Phase 65.0,
+  LOCKed) when unset. An override never mutates the static
+  `VoiceProfile` itself.
 
-`voice/adapter.py`'s `content_result_to_voice_request(result, manager,
-profile_name, provider_type, settings=None)` reads an upstream
-`ContentResult`'s own already-public fields (`body`, `content_type`,
-`generated_at`) into a new `VoiceRequest`, mirroring
-`media/media_adapter.py`'s `content_result_to_media_asset()` shape
-exactly — never touches `ContentEngine`'s internal state. Returns
-`None` for a rejected or empty-body `ContentResult`, and also for an
-unknown `profile_name`/`provider_type` (checked via `manager`).
+## Provider Contract (Phase 65.1 TASK 1)
+
+`voice/provider_contract.py`'s `VoiceProviderContract` (ABC) is the
+interface every real synthesis adapter implements:
+`generate_audio(request) -> VoiceResult` (abstract), `validate() ->
+bool`/`health_check() -> bool` (concrete, overridable defaults). Not
+an extension of `ai/providers/base_provider.py`'s `BaseAIProvider` —
+that contract is LLM-chat-shaped, a different domain; see
+`docs/PHASE65_1_AUDIT.md`'s own resolution. `VoiceProviderError` (and
+its `VoiceProviderTimeoutError`/`VoiceProviderUnavailableError`/
+`VoiceProviderInvalidResponseError` subclasses) mirrors `ai/providers/
+runtime_errors.py`'s shape without importing it — `voice/` stays
+self-contained.
+
+## Provider Adapters (Phase 65.1 TASK 2-5)
+
+`voice/provider_adapters/` (not the brief's literal `voice/providers/`
+— that name is a LOCKed file, `voice/providers.py`, since Phase 65.0;
+see `docs/PHASE65_1_AUDIT.md`'s naming resolution):
+- `openai.py`'s `OpenAIVoiceProvider` — real HTTP call to OpenAI's
+  `/v1/audio/speech` TTS endpoint via `requests` (no SDK), gated on
+  `core/secrets.py`'s existing `OPENAI_API_KEY`.
+- `elevenlabs.py`'s `ElevenLabsVoiceProvider` — real HTTP call to
+  ElevenLabs' `/v1/text-to-speech/{voice_id}` endpoint, gated on the
+  new `ELEVENLABS_API_KEY` secret (Phase 65.1 TASK 2).
+- `local.py`'s `LocalVoiceProvider`, `custom.py`'s
+  `CustomVoiceProvider` — skeletons only, `validate()` always `False`,
+  `generate_audio()` always raises `VoiceProviderUnavailableError`; a
+  future phase wires a real backend into either without changing its
+  public shape (Article 9).
+
+Both real adapters: injectable `session`/`secrets` (never a real
+network call or environment variable needed in a test), API key
+travels only in the request header, never in a raised exception's
+message, never logged. `VoiceResult.metadata` carries reference info
+(`content_type`/`byte_length`/`provider`) on success — never the raw
+audio bytes.
+
+## Content/Media/Broadcast/Conversation integration (TASK 7, extended TASK 9)
+
+`voice/adapter.py` holds four pure functions, each reading one
+upstream type's own already-public fields into a `VoiceRequest` via
+`VoiceManager` — never touching any upstream engine's internal state:
+- `content_result_to_voice_request(result, manager, profile_name,
+  provider_type, settings=None)` (Phase 65.0) — reads `ContentResult`.
+- `media_asset_to_voice_request(asset, manager, profile_name,
+  provider_type, settings=None)` (Phase 65.1) — reads `MediaAsset`,
+  requires `status == READY` and a non-empty `description`.
+- `broadcast_asset_to_voice_request(asset, text, manager, profile_name,
+  provider_type, settings=None)` (Phase 65.1) — reads `BroadcastAsset`;
+  `text` is an explicit parameter since `BroadcastAsset` carries no
+  narration text of its own (only free-text `content_id`/`media_id`
+  references).
+- `conversation_turn_to_voice_request(turn, manager, profile_name,
+  provider_type, settings=None)` (Phase 65.1) — reads
+  `ai.session.conversation_state.ConversationTurn`; only narrates
+  `role == "assistant"` turns, never the user's own message.
+
+Every function returns `None` rather than fabricating a request for a
+non-ready/empty/unknown input — same "never fabricate" convention
+every adapter in this codebase already uses.
 
 ## Runtime
 
@@ -115,39 +187,57 @@ Registry → Manager → Runtime design exists specifically to satisfy
 CLAUDE.md's "No duplicate logic" restriction while still giving each
 of TASK 3/4/8's three files its own differently-named method set.
 
+Phase 65.1 TASK 7/8 additions:
+- `resolve_provider_for_profile(profile_name)` — delegates to
+  `VoiceManager.provider_for_profile()`.
+- `generate_audio(request)` — the one full real-generation call:
+  `validate()` first, then delegates to whichever `VoiceProviderContract`
+  adapter `VoiceManager.get_adapter()` returns. A `VoiceProviderError`
+  (or no adapter registered at all) becomes a `REJECTED` `VoiceResult`
+  — never raises, never fabricates a `READY` result.
+- `generate_with_fallback(request, fallback_providers=None)` — tries
+  `request.provider_type` first, then each provider in
+  `fallback_providers` in order (same id/profile/text/settings, only
+  `provider_type` changes), returning the first `READY` result or the
+  last `REJECTED` one if every attempt fails.
+
 ## Relationship to `media/media_types.py`'s `MediaType.VOICE`
 
 `MediaType.VOICE` is a single existing enum member flagging "this
-media asset is voice-shaped" — it stays untouched by this phase. This
-package's models answer a materially different question: *who speaks*
+media asset is voice-shaped" — it stays untouched. This package's
+models answer a materially different question: *who speaks*
 (`VoiceProfile`), *via which backend* (`VoiceProvider`), and *with
 what settings* (`VoiceSettings`). The two vocabularies are
-complementary, never embedded objects either direction, and `voice/`
-does not import `media/` this phase (see Dependency Compliance below).
+complementary, never embedded objects either direction.
 
 ## What it is not
 
-- No Speech/Microphone/Whisper/OpenAI-TTS/ElevenLabs API code, no STT,
-  no TTS, no synthesized audio anywhere (Rule 3).
+- No STT, no Speech/Microphone/Whisper SDK, no synthesized audio
+  storage or playback anywhere (Rule 3 of Phase 65.0, still in force
+  for everything except the two real TTS HTTP calls Phase 65.1 adds).
 - No real Telegram/Mini App/YouTube integration (Rule 4).
-- No LLM call anywhere — every method is deterministic (Rule 5).
+- No LLM call anywhere in `voice/` itself — every method is
+  deterministic except the two real adapters' own HTTP call, which is
+  TTS synthesis, not an LLM call (Rule 5).
 - Not a trading decision — `voice/` is never imported by `core/`,
   `decision/`, `risk/`, `execution/`, `signals/`, or `strategies/`,
   and never imports any of them either (Constitution Article 3).
-- Not Media or Broadcast — `voice/` does not import `media/` or
-  `broadcast/` this phase (per `docs/PHASE65_0_AUDIT.md`'s own
-  dependency-compliance decision); a future phase may compose them.
+- Not `translation/` — `voice/` never imports it, and it never
+  imports `voice/` (Intelligence Dependency Principle).
 - Not a new `ai.persona.Persona` — see the Profiles section above.
+- Provider selection is never hardcoded per-call — always resolved
+  through `VoiceManager`'s registry/selection methods (Rule 3 of this
+  phase: "Hech qaysi provider hardcode qilinmaydi").
 
 ## Related
 
-- `docs/PHASE65_0_AUDIT.md`, `docs/PHASE65_0_FREEZE.md` — TASK 0's
-  audit and the phase this Foundation was built in.
+- `docs/PHASE65_0_AUDIT.md`, `docs/PHASE65_0_FREEZE.md` — the
+  Foundation phase.
+- `docs/PHASE65_1_AUDIT.md`, `docs/PHASE65_1_FREEZE.md` — this real
+  Provider Integration phase.
 - `docs/policies/DIRECTOR_POLICY.md` — the Intelligence Dependency
   Principle this package's own dependency direction is checked
   against.
-- `docs/ai/AI_CONTENT.md` — the immediately upstream package this
-  package reads from.
-- `docs/ai/AI_MEDIA.md`, `docs/ai/AI_BROADCAST.md` — the sibling
-  top-level Intelligence packages this package is modeled after and
-  will eventually compose with (Phase 65.1/65.2, not this phase).
+- `docs/ai/AI_CONTENT.md`, `docs/ai/AI_MEDIA.md`,
+  `docs/ai/AI_BROADCAST.md` — the upstream packages this package now
+  reads from.

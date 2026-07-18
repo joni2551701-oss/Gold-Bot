@@ -1,8 +1,10 @@
-"""Phase 65.0 TASK 4 — voice/manager.py: VoiceManager."""
+"""Phase 65.0 TASK 4 — voice/manager.py: VoiceManager. Extended Phase 65.1 TASK 6/7 — adapter registry + per-profile provider selection."""
 
 from voice.manager import VoiceManager
 from voice.models import VoiceProvider, VoiceProviderStatus, VoiceProviderType, VoiceRequest, VoiceSettings
-from voice.profiles import SENIORITA_VOICE
+from voice.profiles import SENIOR_VOICE, SENIORITA_VOICE
+from voice.provider_adapters.local import LocalVoiceProvider
+from voice.provider_adapters.openai import OpenAIVoiceProvider
 from voice.registry import VoiceProfileRegistry
 
 
@@ -95,3 +97,58 @@ def test_prepare_mirrors_validate():
     request = _valid_request()
     assert manager.prepare(request) is True
     assert manager.validate(request) is True
+
+
+# --- Adapter registry (Phase 65.1 TASK 6/7) ---
+
+def test_get_adapter_returns_none_when_unregistered():
+    manager = VoiceManager()
+    assert manager.get_adapter(VoiceProviderType.OPENAI) is None
+
+
+def test_register_adapter_then_get_adapter_returns_it():
+    manager = VoiceManager()
+    adapter = OpenAIVoiceProvider()
+    manager.register_adapter(VoiceProviderType.OPENAI, adapter)
+    assert manager.get_adapter(VoiceProviderType.OPENAI) is adapter
+
+
+def test_register_adapter_does_not_change_provider_enabled_status():
+    manager = VoiceManager()
+    manager.register_adapter(VoiceProviderType.OPENAI, OpenAIVoiceProvider())
+    assert manager.is_provider_enabled(VoiceProviderType.OPENAI) is False
+
+
+def test_list_adapters_reflects_registrations():
+    manager = VoiceManager()
+    assert manager.list_adapters() == []
+    manager.register_adapter(VoiceProviderType.OPENAI, OpenAIVoiceProvider())
+    manager.register_adapter(VoiceProviderType.LOCAL, LocalVoiceProvider())
+    assert set(manager.list_adapters()) == {VoiceProviderType.OPENAI, VoiceProviderType.LOCAL}
+
+
+# --- Per-profile provider selection (Phase 65.1 TASK 6) ---
+
+def test_provider_for_profile_defaults_to_profile_default_provider():
+    manager = VoiceManager()
+    assert manager.provider_for_profile("Senior") == SENIOR_VOICE.default_provider
+
+
+def test_provider_for_profile_unknown_profile_returns_none():
+    manager = VoiceManager()
+    assert manager.provider_for_profile("Unknown") is None
+
+
+def test_set_provider_for_profile_overrides_default():
+    manager = VoiceManager()
+    assert manager.provider_for_profile("Senior") == VoiceProviderType.OPENAI
+
+    manager.set_provider_for_profile("Senior", VoiceProviderType.ELEVENLABS)
+
+    assert manager.provider_for_profile("Senior") == VoiceProviderType.ELEVENLABS
+
+
+def test_set_provider_for_profile_never_mutates_the_locked_static_profile():
+    manager = VoiceManager()
+    manager.set_provider_for_profile("Senior", VoiceProviderType.ELEVENLABS)
+    assert SENIOR_VOICE.default_provider == VoiceProviderType.OPENAI

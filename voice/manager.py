@@ -1,5 +1,7 @@
 """
-Voice Layer — Voice Manager (Phase 65.0, TASK 4).
+Voice Layer — Voice Manager (Phase 65.0, TASK 4; extended Phase 65.1,
+TASK 6/7 -- real provider adapter registry + per-profile provider
+selection).
 
 Composes `VoiceProfileRegistry` (TASK 3) with its own provider status
 tracking into the deterministic surface a future integration layer
@@ -10,13 +12,24 @@ storage (CLAUDE.md's "No duplicate logic" restriction --
 status tracking mirrors `media/media_manager.py`'s `MediaManager` and
 `broadcast/provider_manager.py`'s `BroadcastProviderManager` exactly:
 every provider starts `DISABLED`. No network call, no SDK, no audio
-library import anywhere in this class (Rule 3).
+library import anywhere in this class (Rule 3, unchanged).
+
+Phase 65.1 TASK 6/7 additions (all additive, Article 9): a real
+`VoiceProviderContract` adapter registry (`register_adapter()`/
+`get_adapter()`/`list_adapters()`) and per-profile provider selection
+(`set_provider_for_profile()`/`provider_for_profile()`) -- both folded
+into this existing class rather than a new `VoiceProviderManager`
+sibling, per `docs/PHASE65_1_AUDIT.md`'s own "no duplicate Manager"
+resolution. Selection falls back to `VoiceProfile.default_provider`
+(Phase 65.0, LOCKed) when no explicit override is set -- an override
+never mutates the static profile itself.
 """
 
 from typing import Dict, List, Optional
 
 from core.logger import setup_logger
 from voice.models import VoiceProfile, VoiceProvider, VoiceProviderStatus, VoiceProviderType, VoiceRequest
+from voice.provider_contract import VoiceProviderContract
 from voice.providers import build_voice_provider_registry
 from voice.registry import VoiceProfileRegistry
 
@@ -34,6 +47,8 @@ class VoiceManager:
         self._provider_status: Dict[VoiceProviderType, VoiceProviderStatus] = {
             provider_type: VoiceProviderStatus.DISABLED for provider_type in self._providers
         }
+        self._adapters: Dict[VoiceProviderType, VoiceProviderContract] = {}
+        self._profile_provider_overrides: Dict[str, VoiceProviderType] = {}
 
     # --- Profiles: delegates to VoiceProfileRegistry, no duplicate storage ---
 
@@ -81,3 +96,29 @@ class VoiceManager:
     def prepare(self, request: VoiceRequest) -> bool:
         """Never raises: returns validate()'s own result -- the one place TASK 4's own 'prepare' method lives; VoiceRuntime.prepare_voice() below builds the actual VoiceResult from this."""
         return self.validate(request)
+
+    # --- Real provider adapter registry (Phase 65.1 TASK 6/7) ---
+
+    def register_adapter(self, provider_type: VoiceProviderType, adapter: VoiceProviderContract) -> None:
+        """Registers/replaces the real `VoiceProviderContract` implementation backing a given `VoiceProviderType`. Registering an adapter does not itself enable the provider -- `set_provider_status()` (Phase 65.0, unchanged) still owns Owner-set ENABLED/DISABLED intent."""
+        self._adapters[provider_type] = adapter
+
+    def get_adapter(self, provider_type: VoiceProviderType) -> Optional[VoiceProviderContract]:
+        """Never raises: an unregistered provider_type returns None rather than a fabricated adapter."""
+        return self._adapters.get(provider_type)
+
+    def list_adapters(self) -> List[VoiceProviderType]:
+        return list(self._adapters.keys())
+
+    # --- Per-profile provider selection (Phase 65.1 TASK 6) ---
+
+    def set_provider_for_profile(self, profile_name: str, provider_type: VoiceProviderType) -> None:
+        """An explicit override -- never mutates the LOCKed static VoiceProfile.default_provider itself."""
+        self._profile_provider_overrides[profile_name] = provider_type
+
+    def provider_for_profile(self, profile_name: str) -> Optional[VoiceProviderType]:
+        """Resolution order: explicit override (this method's own dict) first, else the profile's own `default_provider` (Phase 65.0), else None if the profile itself is unknown. Never raises."""
+        if profile_name in self._profile_provider_overrides:
+            return self._profile_provider_overrides[profile_name]
+        profile = self.get_profile(profile_name)
+        return profile.default_provider if profile is not None else None

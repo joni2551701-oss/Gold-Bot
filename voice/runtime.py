@@ -1,15 +1,21 @@
 """
-Voice Layer — Voice Runtime (Phase 65.0, TASK 8).
+Voice Layer — Voice Runtime (Phase 65.0, TASK 8; extended Phase 65.1,
+TASK 7/8 -- provider resolution, real generation, and fallback).
 
 A thin façade over `VoiceManager` -- every method below delegates
 directly to `VoiceManager` (or assembles a `VoiceRequest`/`VoiceResult`
 from already-computed primitive values); it computes nothing
 `VoiceManager` doesn't already compute. Same "no duplicate logic"
 resolution `docs/PHASE65_0_AUDIT.md`'s TASK 3/4/8 section already
-decided. No network call, no SDK, no audio library import (Rule 3).
+decided. This class itself still makes no network call and imports no
+SDK/audio library directly -- `generate_audio()`/`generate_with_fallback()`
+(TASK 7/8) delegate the one real network call to whichever
+`VoiceProviderContract` adapter `VoiceManager.get_adapter()` returns,
+the same "runtime orchestrates, the real call lives one layer down"
+posture `ai/runtime/ai_service.py` already uses for LLM providers.
 """
 
-from typing import Optional
+from typing import List, Optional
 
 from voice.manager import VoiceManager
 from voice.models import (
@@ -21,6 +27,8 @@ from voice.models import (
     VoiceResultStatus,
     VoiceSettings,
 )
+from voice.provider_contract import VoiceProviderError
+
 
 class VoiceRuntime:
     """Every dependency is injectable, same convention as every other Phase 61.x-64.0 runtime/manager."""
@@ -70,3 +78,59 @@ class VoiceRuntime:
         ok = self.validate(request)
         reason = "" if ok else "profile/provider unresolved, provider disabled, or empty text"
         return self.build_result(request, ok, reason=reason, generated_at=generated_at)
+
+    # --- Provider resolution + real generation (Phase 65.1 TASK 7) ---
+
+    def resolve_provider_for_profile(self, profile_name: str) -> Optional[VoiceProviderType]:
+        """Delegates to VoiceManager.provider_for_profile() -- explicit override first, else the profile's own default_provider."""
+        return self._manager.provider_for_profile(profile_name)
+
+    def generate_audio(self, request: VoiceRequest) -> VoiceResult:
+        """
+        The one full real-generation call: validate() first (never
+        skips the Phase 65.0 profile/provider/status/text check), then
+        delegates to whichever `VoiceProviderContract` adapter
+        `VoiceManager.get_adapter()` returns for `request.provider_type`.
+        Never raises -- a `VoiceProviderError` from the adapter (or no
+        adapter registered at all) becomes a REJECTED `VoiceResult`,
+        the same "never fabricate a READY result" convention every
+        other Phase 61.x-65.0 result/asset builder already uses.
+        """
+        if not self.validate(request):
+            return self.build_result(request, ok=False, reason="profile/provider unresolved, provider disabled, or empty text")
+
+        adapter = self._manager.get_adapter(request.provider_type)
+        if adapter is None:
+            return self.build_result(request, ok=False, reason=f"no adapter registered for provider {request.provider_type.value}")
+
+        try:
+            return adapter.generate_audio(request)
+        except VoiceProviderError as e:
+            return self.build_result(request, ok=False, reason=str(e))
+
+    # --- Fallback handling (Phase 65.1 TASK 8) ---
+
+    def generate_with_fallback(self, request: VoiceRequest, fallback_providers: Optional[List[VoiceProviderType]] = None) -> VoiceResult:
+        """
+        Tries `request.provider_type` first, then each provider in
+        `fallback_providers` in order (each attempt reuses the same
+        id/profile_name/text/settings, only `provider_type` changes),
+        returning the first READY `VoiceResult`. If every attempt is
+        REJECTED, returns the *last* attempt's `VoiceResult` (its
+        `reason` reflects the final provider tried) rather than
+        raising -- never leaves a caller without some `VoiceResult`.
+        """
+        result = self.generate_audio(request)
+        if result.status == VoiceResultStatus.READY:
+            return result
+
+        for provider_type in (fallback_providers or []):
+            fallback_request = self.build_request(
+                request.id, request.profile_name, provider_type, request.text,
+                settings=request.settings, requested_at=request.requested_at,
+            )
+            result = self.generate_audio(fallback_request)
+            if result.status == VoiceResultStatus.READY:
+                return result
+
+        return result

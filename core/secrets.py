@@ -48,6 +48,11 @@ class Secrets:
         return self.get_optional("GROK_API_KEY")
 
     @property
+    def ELEVENLABS_API_KEY(self) -> Optional[str]:
+        """Phase 65.1 TASK 2 -- optional; a real ElevenLabsVoiceProvider (voice/provider_adapters/elevenlabs.py) treats None as "disabled", never crashes on a missing key. Same optional-get treatment as OPENAI_API_KEY (Phase 61.2 TASK 2)."""
+        return self.get_optional("ELEVENLABS_API_KEY")
+
+    @property
     def LOCAL_LLM_CONFIG(self) -> Optional[str]:
         """Phase 61.2 TASK 2 -- a connection string/config blob for a future local-inference provider, not an API key; same optional-get treatment since no local provider is implemented yet."""
         return self.get_optional("LOCAL_LLM_CONFIG")

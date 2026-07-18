@@ -201,21 +201,39 @@ corrections — see `docs/PHASE65_0_AUDIT.md`), `VoiceManager`/
 Local/Custom), all metadata-only — no STT, no TTS, no real API call,
 no LLM call. See `docs/PHASE65_0_FREEZE.md`.
 
+Built Phase 65.1 — **AI Voice Provider Integration**: real
+`OpenAIVoiceProvider`/`ElevenLabsVoiceProvider` TTS adapters
+(`voice/provider_adapters/`, real HTTP via `requests`, gated on
+`core/secrets.py`'s `OPENAI_API_KEY`/new `ELEVENLABS_API_KEY`),
+`LocalVoiceProvider`/`CustomVoiceProvider` skeletons,
+`VoiceProviderContract` (`voice/provider_contract.py`), per-profile
+provider selection and adapter registry (extends `VoiceManager`, no
+duplicate Manager), fallback handling (extends `VoiceRuntime`), and
+three new Content-sibling integration adapters
+(`media_asset_to_voice_request()`/`broadcast_asset_to_voice_request()`/
+`conversation_turn_to_voice_request()`, extends `voice/adapter.py`).
+Voice is now the terminal narrating stage of the Official Intelligence
+Pipeline below. See `docs/PHASE65_1_FREEZE.md`.
+
 ```
-65.0  Voice Foundation           DONE
-65.1  Voice Providers (real STT/TTS)   future, not yet briefed
-65.2  Voice Conversation (live)         future, not yet briefed
+65.0  Voice Foundation                    DONE
+65.1  Voice Provider Integration          DONE
+65.2  Voice Conversation (live)           future, not yet briefed
+65.3  Personal AI Assistant               future, not yet briefed
+65.4  Voice Avatar / Media                future, not yet briefed
 ```
 
-## Official Intelligence Pipeline (Director Decision, Phase 63.3)
+## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 
 The AI Core's real, ordered composition, as of the Phase 63.3 Director
 Decision — supersedes any earlier, less specific composition order
-this document previously implied:
+this document previously implied. Phase 65.1 appended `→ Voice` as the
+terminal narrating stage, per that phase's own Director Brief pipeline
+diagram (`Content → Media → Broadcast → Voice Narration`):
 
 ```
 Market → Knowledge → Memory → Reasoning → Conversation → Explanation
-   → Content → Translation → Media → Broadcast
+   → Content → Translation → Media → Broadcast → Voice
 ```
 
 **Explanation is a position in this chain, not a standalone module.**

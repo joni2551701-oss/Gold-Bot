@@ -154,8 +154,10 @@ above:
   layers above in Official Intelligence Pipeline order (Phase 64.0).
 - `docs/ai/AI_VOICE.md` — top-level `voice/`'s `VoiceManager`/
   `VoiceProfileRegistry`/`VoiceRuntime` (Profile + Provider metadata
-  catalogs, deterministic request/result lifecycle, no synthesis) and
-  its Content integration point (Phase 65.0).
+  catalogs, deterministic request/result lifecycle, Phase 65.0), real
+  OpenAI/ElevenLabs TTS provider adapters, per-profile provider
+  selection, and fallback handling (Phase 65.1), and its Content/
+  Media/Broadcast/Conversation integration points.
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

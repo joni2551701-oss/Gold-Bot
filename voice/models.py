@@ -14,7 +14,7 @@ type here.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 
 class VoiceProviderType(Enum):
@@ -88,8 +88,19 @@ class VoiceRequest:
 
 @dataclass(frozen=True)
 class VoiceResult:
-    """Never carries synthesized audio -- no such thing exists this phase (Rule 3). `reason` explains PENDING/READY/REJECTED, the same "never fabricate" convention every other Phase 63.x-64.0 result/asset dataclass already uses."""
+    """
+    Never carries synthesized audio *bytes* -- `metadata` (Phase 65.1
+    TASK 3/4 addition, additive per Article 9) carries reference
+    information a real provider adapter reports (e.g. `content_type`,
+    `byte_length`, `provider`), never the audio itself, the same
+    "never carry another package's/format's raw payload inline, only a
+    reference" posture `media/models.py`'s `MediaAsset` already
+    established. `reason` explains PENDING/READY/REJECTED, the same
+    "never fabricate" convention every other Phase 63.x-64.0
+    result/asset dataclass already uses.
+    """
     request_id: str
     status: VoiceResultStatus
     reason: str = ""
     generated_at: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
