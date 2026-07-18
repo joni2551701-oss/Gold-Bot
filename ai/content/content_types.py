@@ -2,7 +2,8 @@
 AI Layer — AI Content Types (Phase 61.5: AI Production Integration
 Foundation, TASK 5; extended Phase 63.0: Senior Trading AI Foundation,
 TASK 2; extended Phase 63.6: AI Content Intelligence Foundation,
-TASK 6).
+TASK 6; extended Phase 63.8: AI Broadcast Intelligence Foundation,
+TASK 1).
 
 `ai/capabilities/capability.py`'s four new `AI_*` members (Phase 61.5
 TASK 5) are already the vocabulary for "what content can AI be asked
@@ -56,7 +57,10 @@ class ContentType(Enum):
     `MARKET_REPORT`, `EDUCATION`, `WEEKLY_OUTLOOK`, `NEWS_SUMMARY`) all
     map onto an existing member (`EXPLANATION`, `MARKET_UPDATE`,
     `EDUCATION`, `WEEKLY_OUTLOOK`, `NEWS_ANALYSIS` respectively) -- see
-    `docs/PHASE63_6_AUDIT.md` for the full mapping.
+    `docs/PHASE63_6_AUDIT.md` for the full mapping. `LIVE_ANALYSIS`
+    added Phase 63.8 TASK 1 -- the one genuine gap in that same
+    phase's `BroadcastType` mapping exercise, see
+    `docs/PHASE63_8_AUDIT.md`.
     """
     WEEKLY_OUTLOOK = "WEEKLY_OUTLOOK"
     DAILY_BRIEF = "DAILY_BRIEF"
@@ -66,6 +70,7 @@ class ContentType(Enum):
     EDUCATION = "EDUCATION"
     EXPLANATION = "EXPLANATION"
     TRADE_REPLAY = "TRADE_REPLAY"
+    LIVE_ANALYSIS = "LIVE_ANALYSIS"
 
 _CONTENT_TITLES: Dict[Capability, str] = {
     Capability.AI_MARKET_REPORT: "Market Report",

@@ -10,12 +10,14 @@ from broadcast.provider_manager import BroadcastProviderManager, build_broadcast
 from broadcast.trigger_manager import BroadcastTriggerManager
 
 
-def test_provider_registry_has_all_six_director_named_types():
+def test_provider_registry_has_all_eight_director_named_types():
+    """Phase 63.8 TASK 3 added TELEGRAM/MINI_APP (additive, Article 9) -- see docs/PHASE63_8_AUDIT.md."""
     registry = build_broadcast_provider_registry()
     types = {d.provider_type for d in registry}
     assert types == {
         BroadcastProviderType.YOUTUBE, BroadcastProviderType.OBS, BroadcastProviderType.RTMP,
         BroadcastProviderType.TWITCH, BroadcastProviderType.KICK, BroadcastProviderType.CUSTOM,
+        BroadcastProviderType.TELEGRAM, BroadcastProviderType.MINI_APP,
     }
 
 

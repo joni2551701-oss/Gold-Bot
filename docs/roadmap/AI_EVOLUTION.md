@@ -144,7 +144,7 @@ Stage 1/3 above, not a separate top-level Stage:
 63.5  Conversation                DONE
 63.6  Content                     DONE
 63.7  Media                       DONE
-63.8  Broadcast                   next
+63.8  Broadcast                   DONE
 ```
 
 `63.4 Reasoning` was inserted between Memory and Conversation by the
@@ -171,6 +171,17 @@ a deterministic `MediaAsset` surface, alongside its original Owner
 ENABLED/DISABLED intent tracking; `media/models.py` (`MediaAsset`/
 `MediaAssetStatus`), `media_adapter.py`/`media_pipeline.py` (Content
 type-only reads) added. See `docs/PHASE63_7_FREEZE.md`.
+
+Built Phase 63.8: top-level `broadcast/`'s `BroadcastManager` (a
+sibling of `ai/`, not `ai/broadcast/` — see `docs/PHASE63_8_AUDIT.md`)
+extended with a deterministic `BroadcastAsset` surface, alongside its
+original `would_broadcast()`/`prepare()`; `broadcast/models.py`
+(`BroadcastStatus`/`BroadcastAsset`, plus `TELEGRAM`/`MINI_APP`
+provider types and `BroadcastTriggerType`), `broadcast_adapter.py`
+(Content/Media type-only reads, optional Persona reference) added.
+This closes the `63.0`–`63.8` AI Intelligence Layer sub-phase
+sequence — Broadcast is the pipeline's terminal layer; no real
+delivery exists yet. See `docs/PHASE63_8_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3)
 

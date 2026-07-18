@@ -98,13 +98,16 @@ document records the real structure rather than the assumed one, per
 Constitution Article 7 (Reuse Principle — audit before asserting).
 `media/` is the same shape — a separate **top-level** package, a
 sibling of `ai/`, not `ai/media/` (a Phase 63.7 brief assumed the
-latter; see `docs/PHASE63_7_AUDIT.md`).
+latter; see `docs/PHASE63_7_AUDIT.md`). `broadcast/` is the same shape
+a third time — not `ai/broadcast/` (a Phase 63.8 brief assumed the
+latter; see `docs/PHASE63_8_AUDIT.md`).
 
 ### Top-level Intelligence packages (siblings of `ai/`)
 
 | Module | Real responsibility | Depends on |
 |---|---|---|
 | `media/` | `MediaManager`'s two surfaces: Owner ENABLED/DISABLED intent per `MediaType` (Phase 63.0), extended Phase 63.7 with a deterministic `MediaAsset` surface (`create_asset`/`validate_asset`/`prepare_asset`/`get_asset`); `media_registry.py` (`MediaDescriptor`, `get`/`exists`, Phase 63.0/63.7); `models.py`/`media_adapter.py`/`media_pipeline.py` (Phase 63.7) | `ai/content/` (type-only), `core/` — never `broadcast/`/`translation/` (Intelligence Dependency Principle) |
+| `broadcast/` | `BroadcastManager`'s two surfaces: `would_broadcast`/`prepare` (real `BroadcastRequest` builder, Phase 63.0), extended Phase 63.8 with a deterministic `BroadcastAsset` surface (`create_broadcast`/`validate_broadcast`/`prepare_broadcast`/`get_broadcast`/`list_broadcasts`); `provider_manager.py`/`trigger_manager.py`/`models.py` (Phase 63.0, extended 63.8 with `TELEGRAM`/`MINI_APP`/`BroadcastTriggerType`); `broadcast_adapter.py` (Phase 63.8) | `media/` (type-only), `ai/content/` (type-only), `ai/persona/` (type-only), `core/` — never `decision/`/`risk/`/`execution/`/`strategies/`/`signals/` |
 
 ## Related documents
 

@@ -75,6 +75,10 @@ not have either:
   63.7 Worker Brief referred to `ai/media/` throughout; the same
   correction this document already made for `knowledge/` applies here
   too — see `docs/PHASE63_7_AUDIT.md`.
+- **`broadcast/` is a separate, top-level package** (Phase 63.0 TASK 4,
+  extended Phase 63.8) — a sibling of `ai/`, not `ai/broadcast/`. A
+  Phase 63.8 Worker Brief referred to `ai/broadcast/` throughout; the
+  same correction applies a third time — see `docs/PHASE63_8_AUDIT.md`.
 
 Per Constitution Article 7 (Reuse Principle) this document records
 what is actually real rather than fabricating folders to match an
@@ -133,6 +137,9 @@ above:
 - `docs/ai/AI_MEDIA.md` — top-level `media/`'s `MediaManager` (Owner
   ENABLED/DISABLED intent plus the deterministic `MediaAsset` surface)
   and its Content integration point (Phase 63.7).
+- `docs/ai/AI_BROADCAST.md` — top-level `broadcast/`'s `BroadcastManager`
+  (would_broadcast/prepare plus the deterministic `BroadcastAsset`
+  surface) and its Content/Media integration point (Phase 63.8).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).
