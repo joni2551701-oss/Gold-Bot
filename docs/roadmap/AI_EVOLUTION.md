@@ -183,6 +183,15 @@ This closes the `63.0`–`63.8` AI Intelligence Layer sub-phase
 sequence — Broadcast is the pipeline's terminal layer; no real
 delivery exists yet. See `docs/PHASE63_8_FREEZE.md`.
 
+Built Phase 64.0 — **AI Intelligence Integration Layer**, the first
+phase after the `63.0`–`63.8` sequence closed: `ai/intelligence_runtime.py`'s
+`IntelligenceRuntime`, the first orchestrator to actually call all
+eight layers (`Knowledge → Memory → Reasoning → Conversation →
+Explanation → Content → Media → Broadcast`) in sequence, deterministic
+only, zero LLM calls. No new Foundation, no new parallel Manager —
+every stage calls that layer's own existing entry point. See
+`docs/PHASE64_0_FREEZE.md`.
+
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3)
 
 The AI Core's real, ordered composition, as of the Phase 63.3 Director

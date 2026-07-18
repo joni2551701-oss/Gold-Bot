@@ -83,6 +83,16 @@ above; it depends on nothing in this diagram.
 | `ai/tools/` | AI-callable tool definitions (advisory only) | `core/` |
 | `ai/validation/` | response validation, `safety.py` | `core/` |
 
+`ai/intelligence_runtime.py` (Phase 64.0) — a single top-level file,
+not a subpackage — is the one deliberate exception to the per-layer
+dependency table above: it is the Intelligence layer's composition
+root, so it legitimately imports all eight layers it orchestrates
+(`knowledge/`, `ai/memory/`, `ai/reasoning/`, `ai/conversation/`,
+`ai/explanation/`, `ai/content/`, `media/`, `broadcast/`) — the same
+role `core/pipeline.py` already plays for the Trading layer. It never
+imports `decision/`/`risk/`/`execution/`/`strategies/`/`signals/`/
+`database/`/`telegram/`.
+
 Two top-level compat shims, documented so they are not mistaken for
 new modules: `ai/ai_analyzer.py` and `ai/trade_journal.py` are the
 canonical files; `ai/analyzer/ai_analyzer.py` and

@@ -83,7 +83,10 @@ sub-phase sequence, formalized in `docs/roadmap/AI_EVOLUTION.md`
 (Director Decision, Phase 63.3): `63.0` Foundation, `63.1` Explanation,
 `63.2` Knowledge, `63.3` Memory, `63.4` Reasoning, `63.5` Conversation,
 `63.6` Content, `63.7` Media, `63.8` Broadcast (all DONE) — closes the
-`63.0`–`63.8` AI Intelligence Layer sub-phase sequence.
+`63.0`–`63.8` AI Intelligence Layer sub-phase sequence. `64.0` AI
+Intelligence Integration Layer (DONE) — `ai/intelligence_runtime.py`'s
+`IntelligenceRuntime`, the first orchestrator composing all eight
+layers, deterministic only.
 See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →

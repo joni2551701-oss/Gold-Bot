@@ -45,12 +45,13 @@ ai/
   tools/           AI-callable tool definitions (advisory only)
   validation/      response validation, safety.py
 
-  ai_analyzer.py       canonical analyzer (ai/analyzer/ re-exports this)
-  ai_prompt.py         prompt construction
-  confidence_model.py  AI-side confidence blending helpers (internal to ai/ only - decision/ has its own independent confidence blending in decision_engine.py and does not import this file)
-  interfaces.py        AIAnalyzerInterface - the advisory-only contract every future provider must honor
-  learning_context.py  learning-context helpers
-  trade_journal.py     canonical trade journal (ai/journal/ re-exports this)
+  ai_analyzer.py            canonical analyzer (ai/analyzer/ re-exports this)
+  ai_prompt.py              prompt construction
+  confidence_model.py       AI-side confidence blending helpers (internal to ai/ only - decision/ has its own independent confidence blending in decision_engine.py and does not import this file)
+  intelligence_runtime.py   IntelligenceRuntime - the Official Intelligence Pipeline composition root (Knowledge -> Memory -> Reasoning -> Conversation -> Explanation -> Content -> Media -> Broadcast), deterministic-only, Phase 64.0
+  interfaces.py             AIAnalyzerInterface - the advisory-only contract every future provider must honor
+  learning_context.py       learning-context helpers
+  trade_journal.py          canonical trade journal (ai/journal/ re-exports this)
 ```
 
 ## Note on the brief's assumption (honest correction)
@@ -140,6 +141,9 @@ above:
 - `docs/ai/AI_BROADCAST.md` — top-level `broadcast/`'s `BroadcastManager`
   (would_broadcast/prepare plus the deterministic `BroadcastAsset`
   surface) and its Content/Media integration point (Phase 63.8).
+- `docs/ai/AI_INTELLIGENCE_PIPELINE.md` — `ai/intelligence_runtime.py`'s
+  `IntelligenceRuntime`, the composition root that calls all eight
+  layers above in Official Intelligence Pipeline order (Phase 64.0).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).
