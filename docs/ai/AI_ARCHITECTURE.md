@@ -80,6 +80,14 @@ not have either:
   extended Phase 63.8) — a sibling of `ai/`, not `ai/broadcast/`. A
   Phase 63.8 Worker Brief referred to `ai/broadcast/` throughout; the
   same correction applies a third time — see `docs/PHASE63_8_AUDIT.md`.
+- **`voice/` is a separate, top-level package** (Phase 65.0) — a
+  sibling of `ai/`, not `ai/voice/`. Unlike the three corrections
+  above, this is not a naming discrepancy: neither `voice/` nor
+  `ai/voice/` existed anywhere in the repository before this phase —
+  see `docs/PHASE65_0_AUDIT.md`'s TASK 0 finding, which confirms this
+  is a genuine new top-level package case (the same reasoning
+  `docs/PHASE63_0_FOUNDATION_AUDIT.md` originally used to justify
+  `broadcast/`).
 
 Per Constitution Article 7 (Reuse Principle) this document records
 what is actually real rather than fabricating folders to match an
@@ -144,6 +152,10 @@ above:
 - `docs/ai/AI_INTELLIGENCE_PIPELINE.md` — `ai/intelligence_runtime.py`'s
   `IntelligenceRuntime`, the composition root that calls all eight
   layers above in Official Intelligence Pipeline order (Phase 64.0).
+- `docs/ai/AI_VOICE.md` — top-level `voice/`'s `VoiceManager`/
+  `VoiceProfileRegistry`/`VoiceRuntime` (Profile + Provider metadata
+  catalogs, deterministic request/result lifecycle, no synthesis) and
+  its Content integration point (Phase 65.0).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

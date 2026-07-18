@@ -192,6 +192,21 @@ only, zero LLM calls. No new Foundation, no new parallel Manager —
 every stage calls that layer's own existing entry point. See
 `docs/PHASE64_0_FREEZE.md`.
 
+Built Phase 65.0 — **AI Voice Intelligence Foundation**, the first
+phase in a new `65.x` Voice sub-sequence: top-level `voice/` (a
+genuine new sibling of `ai/`, unlike the `63.7`/`63.8` naming
+corrections — see `docs/PHASE65_0_AUDIT.md`), `VoiceManager`/
+`VoiceProfileRegistry`/`VoiceRuntime`, static Profile catalog
+(Senior/Seniorita/Narrator) and Provider catalog (OpenAI/ElevenLabs/
+Local/Custom), all metadata-only — no STT, no TTS, no real API call,
+no LLM call. See `docs/PHASE65_0_FREEZE.md`.
+
+```
+65.0  Voice Foundation           DONE
+65.1  Voice Providers (real STT/TTS)   future, not yet briefed
+65.2  Voice Conversation (live)         future, not yet briefed
+```
+
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3)
 
 The AI Core's real, ordered composition, as of the Phase 63.3 Director

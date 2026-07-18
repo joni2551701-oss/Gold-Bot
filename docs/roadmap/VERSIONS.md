@@ -86,7 +86,12 @@ sub-phase sequence, formalized in `docs/roadmap/AI_EVOLUTION.md`
 `63.0`–`63.8` AI Intelligence Layer sub-phase sequence. `64.0` AI
 Intelligence Integration Layer (DONE) — `ai/intelligence_runtime.py`'s
 `IntelligenceRuntime`, the first orchestrator composing all eight
-layers, deterministic only.
+layers, deterministic only. `65.0` AI Voice Intelligence Foundation
+(DONE) — top-level `voice/`, a genuine new package (not a naming
+correction like `media/`/`broadcast/`), Profile/Provider metadata
+catalogs only, no synthesis; first phase in a new `65.x` Voice
+sub-sequence (`65.1` real STT/TTS providers, `65.2` live Voice
+Conversation — both future, not yet briefed).
 See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →
