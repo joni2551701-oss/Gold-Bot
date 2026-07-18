@@ -60,6 +60,17 @@ and a new `ai/memory/memory_registry.py` static catalog of the six
 `save`/`load`/`clear`/`clear_all`/`MemoryLayer` surface. See
 `docs/PHASE63_3_FREEZE.md`.
 
+Phase 63.4 built `ai/reasoning/` (Foundation Reuse Audit found no
+existing Reasoning module — the one Phase 63.x sub-phase so far that
+created a genuinely new subpackage rather than extending one):
+`ReasoningRuntime` (`reason`/`explain`/`summarize`/`evaluate`/
+`compare`/`chain`/`history`, all deterministic — no LLM, no inference
+computed by this module itself) over a primitive-only `ReasoningResult`/
+`ReasoningStep` contract, plus `reasoning_adapters.py`'s type-only
+reads from `KnowledgeEntry`/`MemoryEntry` (upstream) and a
+dict-only, no-import bridge toward `ExplanationInput`'s shape
+(downstream — never imported). See `docs/PHASE63_4_FREEZE.md`.
+
 ### Stage 2 — AI Runtime Intelligence — DONE
 `RuntimeManager`, `ProviderCircuitBreaker`, `RuntimeProfile`,
 `EventBus` built (61.6) and wired into `AIService.ask()`'s real
@@ -105,8 +116,8 @@ Stage 1/3 above, not a separate top-level Stage:
 63.1  Explanation                DONE
 63.2  Knowledge                  DONE
 63.3  Memory                     DONE
-63.4  Reasoning                  next
-63.5  Conversation
+63.4  Reasoning                  DONE
+63.5  Conversation                next
 63.6  Content
 63.7  Media
 63.8  Broadcast
@@ -115,10 +126,10 @@ Stage 1/3 above, not a separate top-level Stage:
 `63.4 Reasoning` was inserted between Memory and Conversation by the
 Director's own Phase 63.3 decision — "AI shu bilimlarni qanday
 bog'laydi" (how the AI connects what it knows), the layer that makes
-Knowledge + Memory useful to Conversation and Explanation. No code for
-Reasoning exists yet; it is named here as roadmap only, the same
-posture every future sub-phase in this list has until its own Worker
-Brief arrives (Constitution Article 8).
+Knowledge + Memory useful to Conversation and Explanation. Built Phase
+63.4: `ai/reasoning/` (`ReasoningRuntime`, deterministic
+store/read only — no LLM, no inference computation of its own). See
+`docs/PHASE63_4_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3)
 

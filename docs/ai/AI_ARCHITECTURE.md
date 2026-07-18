@@ -5,7 +5,7 @@ This document maps the real `ai/` package as it exists in the
 repository today — verified directly via directory listing for this
 phase, not transcribed from assumption.
 
-## Real package tree — 20 subpackages under `ai/`
+## Real package tree — 21 subpackages under `ai/`
 
 ```
 ai/
@@ -28,6 +28,9 @@ ai/
   profiles/        RuntimeProfile definitions (DEVELOPMENT/TESTING/PRODUCTION)
   prompts/         prompt templates
   providers/       BaseAIProvider, vendor implementations, circuit_breaker.py
+  reasoning/       models.py/reasoning_registry.py/reasoning_runtime.py/reasoning_adapters.py
+                   (Phase 63.4 - deterministic ReasoningResult store, Knowledge/Memory
+                   type-only reads, no ai.explanation import - Intelligence Dependency Principle)
   router/          AIRouter, routing_rules.py
   runtime/         AIService, RuntimeManager, EventBus, self_check.py - production-wired orchestration point (Phase 62.2)
   session/         session/user context for AI product surfaces
@@ -104,6 +107,9 @@ above:
   actually enters it.
 - `docs/ai/AI_MEMORY.md` — `ai/memory/`'s `MemoryRuntime` facade.
 - `docs/ai/AI_KNOWLEDGE.md` — `knowledge/`'s 6-category static catalog.
+- `docs/ai/AI_REASONING.md` — `ai/reasoning/`'s deterministic
+  `ReasoningRuntime` and its Knowledge/Memory/Explanation integration
+  points (Phase 63.4).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

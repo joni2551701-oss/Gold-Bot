@@ -47,6 +47,35 @@ Director Decision.** The Worker documents the specific Article and the
 specific conflicting instruction, and waits. This is Article 8's
 Change Management Law in its operational form.
 
+## Intelligence Dependency Principle (Director Policy, established at
+Phase 63.3's close; recorded here at Phase 63.4)
+
+Every AI Intelligence layer in the Official Intelligence Pipeline
+(`docs/roadmap/AI_EVOLUTION.md`) may depend only on the layer(s) that
+come before it in this chain, never on one that comes after:
+
+```
+Knowledge → Memory → Reasoning → Conversation → Explanation
+   → Content → Media → Broadcast
+```
+
+Worked examples, as the Director stated them:
+
+- ✅ Reasoning → Knowledge, Memory — ❌ Reasoning → Content, Media
+- ✅ Conversation → Reasoning — ❌ Conversation → Broadcast
+- ✅ Content → Explanation — ❌ Content → Memory (not directly)
+- ✅ Media → Content — ❌ Media → Knowledge
+- ✅ Broadcast → Media — ❌ Broadcast → Reasoning
+
+This is a Director Policy, not yet a Constitution Article — it governs
+how each new Phase 63.x sub-phase's TASK 0 Foundation Reuse Audit must
+check its own package's import direction (in addition to, not instead
+of, Constitution Article 3's `decision`/`risk`/`execution`/`telegram`/
+`database` prohibition), and is enforced the same way: a permanent
+AST/grep regression test in that sub-phase's own test suite. Whether
+this principle is promoted into the Constitution itself is left to a
+future, dedicated governance phase — not decided here.
+
 ## Reporting discipline
 
 The Worker never uses "Complete," "Validated," "Production Ready," or
@@ -63,3 +92,5 @@ Verification checklist and an explicit list of changed files.
   sequence a brief is executed against.
 - `docs/policies/RELEASE_POLICY.md` — the Freeze/CI gate a phase must
   clear before the Worker uses "complete" language.
+- `docs/roadmap/AI_EVOLUTION.md` — the Official Intelligence Pipeline
+  the Intelligence Dependency Principle above is checked against.

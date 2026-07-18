@@ -57,7 +57,7 @@ above; it depends on nothing in this diagram.
 |---|---|
 | `database/*_repository.py` (19 repositories) | `database/*_models.py`, `database/database.py` — SQL only, no business logic |
 
-### AI layer — 20 real subpackages under `ai/`
+### AI layer — 21 real subpackages under `ai/`
 
 | Subpackage | Real responsibility | Depends on |
 |---|---|---|
@@ -76,6 +76,7 @@ above; it depends on nothing in this diagram.
 | `ai/profiles/` | `RuntimeProfile` definitions | `core/` |
 | `ai/prompts/` | prompt templates | `core/` |
 | `ai/providers/` | `BaseAIProvider`, vendor implementations, `circuit_breaker.py` | `core/` only — no vendor name leaks above this package |
+| `ai/reasoning/` | `ReasoningRuntime` (deterministic `ReasoningResult` store, Phase 63.4) | `knowledge/` (type-only), `ai/memory/` (type-only), `core/` — never `ai/explanation/`/`ai/content/`/`ai/conversation/`/`broadcast/`/`media/`/`translation/` (Intelligence Dependency Principle, `docs/policies/DIRECTOR_POLICY.md`) |
 | `ai/router/` | `AIRouter`, `routing_rules.py` | `ai/providers/`, `ai/capabilities/`, `core/` |
 | `ai/runtime/` | `AIService`, `RuntimeManager`, `EventBus`, `self_check.py` — the orchestration point | `ai/router/`, `ai/providers/`, `ai/cache/`, `ai/audit/`, `ai/profiles/`, `core/` |
 | `ai/session/` | session/user context for AI product surfaces | `core/` |
