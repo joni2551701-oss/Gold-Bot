@@ -108,3 +108,19 @@ def test_duplicate_key_detection_raises():
         assert False, "expected ValueError on duplicate key"
     except ValueError:
         pass
+
+
+def test_source_field_defaults_to_none_on_every_pre_existing_entry():
+    """Phase 63.2 TASK 2 -- KnowledgeEntry.source is optional and unset on all 26 pre-Phase-63.2 entries; this phase does not backfill them."""
+    assert all(entry.source is None for entry in all_entries())
+
+
+def test_source_field_accepts_a_provenance_string():
+    entry = KnowledgeEntry(
+        key="test.source",
+        category=KnowledgeCategory.FAQ,
+        title="Test",
+        summary="A test entry.",
+        source="docs/WYCKOFF.md",
+    )
+    assert entry.source == "docs/WYCKOFF.md"

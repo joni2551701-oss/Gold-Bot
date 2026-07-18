@@ -22,10 +22,20 @@ Flat files per category, not literal subdirectories (see
 section for why) — `smc.py`, `wyckoff.py`, `risk.py`, `psychology.py`,
 `examples.py`, `faq.py`, each exporting one `*_ENTRIES` tuple of
 `KnowledgeEntry`. `registry.py` composes all six into one lookup.
+`knowledge_manager.py` (Phase 63.2, TASK 4) is a class-based facade
+over `registry.py`, matching the Manager-over-Registry shape
+`ai/persona/persona_manager.py` already established.
 
 ## Responsibilities
 - `models.py` — `KnowledgeCategory` enum + `KnowledgeEntry` (frozen
-  dataclass: `key`, `category`, `title`, `summary`, `tags`).
+  dataclass: `key`, `category`, `title`, `summary`, `tags`, and
+  `source` — optional free-text provenance, Phase 63.2 TASK 2,
+  `None` on every pre-existing entry).
+- `knowledge_manager.py` — `KnowledgeManager`: `lookup(key)`,
+  `search(query)`, `by_category(category)`, `filter(predicate)`,
+  `list_all()`. Every dependency (its own entry set) is injectable;
+  zero AI reasoning, zero LLM/network call, same read-only posture as
+  `registry.py`'s own module-level functions it wraps.
 - `smc.py` / `wyckoff.py` / `risk.py` — content traced directly to
   `context/bos.py`, `context/choch.py`, `context/liquidity.py`,
   `context/order_block.py`, `context/fvg.py`, `context/amd.py`,
@@ -61,4 +71,10 @@ those layers.
 ## Future Roadmap
 Not wired into any live handler or the pipeline this phase — a future
 `ai/tools/education_tool.py` (TASK 4) or Explanation Engine (TASK 7)
-reading through `registry.py` is the natural next step, not done here.
+reading through `registry.py`/`knowledge_manager.py` is the natural
+next step, not done here. Phase 63.2 documented (not wired) one
+concrete integration point: `ai/explanation/explanation_input.py`'s
+`ExplanationInput.technical_reason`/`concept`/`example`/`lesson`
+fields are natural landing spots for a future caller's
+`KnowledgeManager.lookup()`/`.search()` result — see
+`docs/PHASE63_2_AUDIT.md`.

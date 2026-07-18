@@ -48,7 +48,11 @@ not have either:
 
 - **`knowledge/` is a separate, top-level package** — a sibling of
   `ai/`, not `ai/knowledge/`. It is not part of the AI package tree
-  documented here.
+  documented here. This same correction recurred in a second Worker
+  Brief (Phase 63.2) — see `docs/PHASE63_2_AUDIT.md` — confirming this
+  is a stable, standing fact worth stating plainly for any future
+  brief: **the real Knowledge Foundation is `knowledge/`, never
+  `ai/knowledge/`.**
 - **There is no dedicated `ai/security/` folder.** AI-relevant safety
   checks live in `ai/validation/safety.py`; Telegram-side security
   concerns live in `telegram/owner/security.py`, outside `ai/`
