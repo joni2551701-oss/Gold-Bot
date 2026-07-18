@@ -71,6 +71,18 @@ reads from `KnowledgeEntry`/`MemoryEntry` (upstream) and a
 dict-only, no-import bridge toward `ExplanationInput`'s shape
 (downstream — never imported). See `docs/PHASE63_4_FREEZE.md`.
 
+Phase 63.5 extended `ai/conversation/conversation_engine.py`'s
+`ConversationEngine` (LOCKed since Phase 61.3) with a second,
+deterministic surface — `append()`/`summarize()`/`history()`/
+`context()`/`reset()`/`close()` — alongside its original, unchanged
+`start_session()`/`ask()` (the latter a real `AIService.ask()`/LLM
+call). No second Conversation class was created; Foundation Reuse
+Audit found `ConversationEngine` already existed, so Constitution
+Article 11 forbade a competing one. `conversation_adapters.py` adds
+type-only reads from `KnowledgeEntry`/`MemoryEntry`/`ReasoningResult`
+(all upstream) and a dict-only bridge toward `ExplanationInput`'s
+shape (downstream — never imported). See `docs/PHASE63_5_FREEZE.md`.
+
 ### Stage 2 — AI Runtime Intelligence — DONE
 `RuntimeManager`, `ProviderCircuitBreaker`, `RuntimeProfile`,
 `EventBus` built (61.6) and wired into `AIService.ask()`'s real
@@ -117,8 +129,8 @@ Stage 1/3 above, not a separate top-level Stage:
 63.2  Knowledge                  DONE
 63.3  Memory                     DONE
 63.4  Reasoning                  DONE
-63.5  Conversation                next
-63.6  Content
+63.5  Conversation                DONE
+63.6  Content                     next
 63.7  Media
 63.8  Broadcast
 ```
@@ -130,6 +142,10 @@ Knowledge + Memory useful to Conversation and Explanation. Built Phase
 63.4: `ai/reasoning/` (`ReasoningRuntime`, deterministic
 store/read only — no LLM, no inference computation of its own). See
 `docs/PHASE63_4_FREEZE.md`.
+
+Built Phase 63.5: `ai/conversation/`'s `ConversationEngine` extended
+with a deterministic surface, alongside its original real-`AIService.ask()`
+path. See `docs/PHASE63_5_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3)
 

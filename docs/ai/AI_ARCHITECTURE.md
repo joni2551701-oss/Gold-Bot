@@ -16,7 +16,10 @@ ai/
   capabilities/    Capability enum + permission matrix
   content/         content assembly helpers
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
-  conversation/    multi-turn conversation state
+  conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
+                   (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
+                   append()/summarize()/history()/context()/reset()/close() (deterministic,
+                   no AI call); models.py/conversation_adapters.py (Phase 63.5)
   explanation/     explanation_engine.py (signals type-only imports, real AIService.ask() path);
                    explanation_input.py/explanation_output.py/explanation_templates.py/
                    explanation_builder.py/explanation_content_adapter.py (Phase 63.1 -
@@ -110,6 +113,10 @@ above:
 - `docs/ai/AI_REASONING.md` — `ai/reasoning/`'s deterministic
   `ReasoningRuntime` and its Knowledge/Memory/Explanation integration
   points (Phase 63.4).
+- `docs/ai/AI_CONVERSATION.md` — `ai/conversation/`'s two surfaces
+  (real `AIService.ask()` path plus the deterministic extension) and
+  its Knowledge/Memory/Reasoning/Explanation integration points
+  (Phase 63.5).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

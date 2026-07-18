@@ -1,6 +1,7 @@
 """
 AI Layer — Conversation Engine (Phase 61.3: AI Intelligence Layer,
-TASK 5).
+TASK 5; extended Phase 63.5: AI Conversation Intelligence Foundation,
+TASK 3).
 
 The first caller of two foundation packages that were built but never
 called: `ai/session/` (Phase 61.0, TASK 7 -- `SessionManager`/
@@ -32,19 +33,30 @@ Not wired into `telegram/command_router.py` this phase -- same
 module (`docs/PHASE61_3_INTELLIGENCE_AUDIT.md`'s `telegram/` finding:
 no free-text/conversational handling exists anywhere in `telegram/`
 today).
+
+Phase 63.5 added a second, deterministic surface on this same class,
+alongside `start_session()`/`ask()`, which are completely unchanged:
+`append()`/`summarize()`/`history()`/`context()`/`reset()`/`close()`.
+None of these six call `AIService.ask()` or make any network call --
+per `docs/PHASE63_5_AUDIT.md`'s own finding, `ConversationEngine`
+already existed as the one real Manager for Conversation, so
+Constitution Article 11 forbids a second, competing class for the same
+concern; the deterministic surface this phase's own brief asked for is
+added here instead.
 """
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Sequence
 
 from ai.access.permissions import AIRole
 from ai.capabilities.capability import Capability
 from ai.context.context_snapshot import AIContext
+from ai.conversation.models import ConversationContext, ConversationMode
 from ai.runtime.ai_service import AIService
 from ai.runtime.runtime_request import RuntimeRequest
 from ai.runtime.runtime_response import RuntimeResponse
 from ai.session.context_window import ContextWindow
-from ai.session.conversation_state import ConversationState
+from ai.session.conversation_state import ConversationState, ConversationTurn
 from ai.session.session_manager import SessionManager
 
 
@@ -112,3 +124,67 @@ class ConversationEngine:
             state.add_turn("assistant", response.content)
 
         return ConversationResult(session_id=session_id, response=response)
+
+    # --- Phase 63.5 TASK 3: deterministic surface, additive only ---
+    # None of the six methods below call AIService.ask() or make any
+    # network call -- start() itself is already covered by
+    # start_session() above, so no separate start() method is added.
+
+    def append(self, session_id: str, role: str, content: str) -> bool:
+        """Records one turn without calling AIService. Never raises: an unknown session_id returns False."""
+        state = self._session_manager.get_session(session_id)
+        if state is None:
+            return False
+        state.add_turn(role, content)
+        return True
+
+    def summarize(self, session_id: str) -> Optional[str]:
+        """Joins each stored turn's `role: content` into one short string. Never raises: an unknown session_id returns None."""
+        state = self._session_manager.get_session(session_id)
+        if state is None:
+            return None
+        return "; ".join(f"{turn.role}: {turn.content}" for turn in state.history())
+
+    def history(self, session_id: str) -> Sequence[ConversationTurn]:
+        """Never raises: an unknown session_id returns an empty tuple."""
+        state = self._session_manager.get_session(session_id)
+        if state is None:
+            return ()
+        return state.history()
+
+    def context(
+        self,
+        session_id: str,
+        mode: ConversationMode = ConversationMode.GENERAL,
+        knowledge_keys: Sequence[str] = (),
+        memory_keys: Sequence[str] = (),
+        reasoning_keys: Sequence[str] = (),
+    ) -> Optional[ConversationContext]:
+        """Assembles a ConversationContext from already-stored turns plus caller-supplied upstream-layer key pointers. Never raises: an unknown session_id returns None."""
+        state = self._session_manager.get_session(session_id)
+        if state is None:
+            return None
+        return ConversationContext(
+            session_id=state.session_id,
+            telegram_id=state.telegram_id,
+            mode=mode,
+            recent_messages=self._context_window.trim(state.history()),
+            knowledge_keys=tuple(knowledge_keys),
+            memory_keys=tuple(memory_keys),
+            reasoning_keys=tuple(reasoning_keys),
+        )
+
+    def reset(self, session_id: str) -> bool:
+        """Clears a session's turn history; the session itself stays alive. Never raises: an unknown session_id returns False."""
+        state = self._session_manager.get_session(session_id)
+        if state is None:
+            return False
+        state.clear_turns()
+        return True
+
+    def close(self, session_id: str) -> bool:
+        """Ends a session via the existing SessionManager.end_session(). Never raises: an unknown session_id returns False."""
+        if self._session_manager.get_session(session_id) is None:
+            return False
+        self._session_manager.end_session(session_id)
+        return True

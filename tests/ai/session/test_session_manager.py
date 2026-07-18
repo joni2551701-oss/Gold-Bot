@@ -92,3 +92,19 @@ def test_context_window_returns_all_turns_when_under_limit():
     state.add_turn("user", "hi")
     window = ContextWindow(max_turns=20)
     assert len(window.trim(state.history())) == 1
+
+
+def test_clear_turns_empties_history_but_keeps_the_session_identity():
+    """Phase 63.5 TASK 3 -- clear_turns() is additive (Article 9); add_turn()/history() are unchanged."""
+    state = ConversationState(session_id="s1", telegram_id="123", created_at=datetime.now(timezone.utc))
+    state.add_turn("user", "hi")
+    state.add_turn("assistant", "hello")
+
+    state.clear_turns()
+
+    assert state.history() == ()
+    assert state.session_id == "s1"
+    assert state.telegram_id == "123"
+
+    state.add_turn("user", "still works")
+    assert len(state.history()) == 1

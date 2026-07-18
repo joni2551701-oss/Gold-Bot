@@ -68,7 +68,7 @@ above; it depends on nothing in this diagram.
 | `ai/capabilities/` | capability enum + permission matrix | `core/` |
 | `ai/content/` | content assembly helpers | `core/` |
 | `ai/context/` | `context_snapshot.py`/`context_builder.py` — reads `signals/`/`context/` types only | `signals/` (type-only), `context/` (type-only), `core/` |
-| `ai/conversation/` | multi-turn conversation state | `ai/session/`, `core/` |
+| `ai/conversation/` | `ConversationEngine`'s two surfaces: `start_session()`/`ask()` (real `AIService.ask()`, Phase 61.3), extended Phase 63.5 with a deterministic `append`/`summarize`/`history`/`context`/`reset`/`close` surface | `ai/session/`, `ai/runtime/`, `knowledge/` (type-only), `ai/memory/` (type-only), `ai/reasoning/` (type-only), `core/` — never `ai/explanation/`/`ai/content/`/`broadcast/`/`media/`/`translation/` (Intelligence Dependency Principle) |
 | `ai/explanation/` | `explanation_engine.py` — reads `signals/` types only; Phase 63.1 added `explanation_input.py`/`explanation_output.py`/`explanation_templates.py`/`explanation_builder.py`/`explanation_content_adapter.py` — deterministic, template-based, primitive-values-only (`ExplanationInput`), never imports `decision/`/`risk/` | `signals/` (type-only), `ai/persona/` (`PersonaManager`, Phase 63.1), `ai/content/` (`BroadcastReadyContent`, Phase 63.1 adapter only), `core/` |
 | `ai/journal/` | `trade_journal.py` (canonical) — reads `signals/` types only | `signals/` (type-only), `core/` |
 | `ai/memory/` | long-term AI memory storage; Phase 63.3 added `models.py`/`memory_registry.py` (`MemoryEntry` contract, `MemoryScope` catalog) and extended `MemoryRuntime` with a structured `store`/`recall`/`search`/`filter` surface | `core/` |

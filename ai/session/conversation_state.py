@@ -1,12 +1,18 @@
 """
 AI Layer — Conversation State (Phase 61.0: AI Infrastructure
-Foundation, TASK 7).
+Foundation, TASK 7; extended Phase 63.5: AI Conversation Intelligence
+Foundation, TASK 3).
 
 A `ConversationState` is one temporary conversation's turns --
 explicitly not `ai/memory/context_memory.py`'s `ContextMemory`, which
 is a longer-lived, arbitrary per-key store. "Session != Memory,
 Session vaqtinchalik" (a session is temporary) is the brief's own
 distinction; this module never imports or wraps `ContextMemory`.
+
+Phase 63.5 added `clear_turns()` (Article 9 -- LOCKed since Phase
+61.0, additive-only): clears a session's turn history while the
+session itself stays alive, the mutator `ai/conversation/conversation_engine.py`'s
+new `reset()` method calls. `add_turn()`/`history()` are unchanged.
 """
 
 from dataclasses import dataclass, field
@@ -42,3 +48,7 @@ class ConversationState:
 
     def history(self) -> Tuple[ConversationTurn, ...]:
         return tuple(self.turns)
+
+    def clear_turns(self) -> None:
+        """Clears every stored turn -- the session itself (session_id/telegram_id/created_at) is unaffected."""
+        self.turns.clear()
