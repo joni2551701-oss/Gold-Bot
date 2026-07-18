@@ -83,6 +83,18 @@ type-only reads from `KnowledgeEntry`/`MemoryEntry`/`ReasoningResult`
 (all upstream) and a dict-only bridge toward `ExplanationInput`'s
 shape (downstream — never imported). See `docs/PHASE63_5_FREEZE.md`.
 
+Phase 63.6 extended `ai/content/content_adapter.py`'s `ContentEngine`
+(LOCKed since Phase 61.5) with a second, deterministic surface —
+`create()`/`format()`/`preview()`/`validate()`/`history()` — alongside
+its original, unchanged `generate()` (a real `AIService.ask()`/LLM
+call). No second Content class was created; Foundation Reuse Audit
+found `ContentEngine` already existed, so Constitution Article 11
+forbade a competing one. `content_adapters.py` adds type-only reads
+from `ExplanationOutput`/`ConversationContext` (both upstream) — never
+imports `translation/`/`media/`/`broadcast/` (downstream). `ContentType`
+gained one additive member, `TRADE_REPLAY`. See
+`docs/PHASE63_6_FREEZE.md`.
+
 ### Stage 2 — AI Runtime Intelligence — DONE
 `RuntimeManager`, `ProviderCircuitBreaker`, `RuntimeProfile`,
 `EventBus` built (61.6) and wired into `AIService.ask()`'s real
@@ -130,8 +142,8 @@ Stage 1/3 above, not a separate top-level Stage:
 63.3  Memory                     DONE
 63.4  Reasoning                  DONE
 63.5  Conversation                DONE
-63.6  Content                     next
-63.7  Media
+63.6  Content                     DONE
+63.7  Media                       next
 63.8  Broadcast
 ```
 
@@ -146,6 +158,12 @@ store/read only — no LLM, no inference computation of its own). See
 Built Phase 63.5: `ai/conversation/`'s `ConversationEngine` extended
 with a deterministic surface, alongside its original real-`AIService.ask()`
 path. See `docs/PHASE63_5_FREEZE.md`.
+
+Built Phase 63.6: `ai/content/`'s `ContentEngine` extended with a
+deterministic surface, alongside its original real-`AIService.ask()`
+path; `ai/content/models.py` (`ContentMode`/`ContentMetadata`/
+`ContentContext`) and `content_adapters.py` (Explanation/Conversation
+type-only reads) added. See `docs/PHASE63_6_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3)
 

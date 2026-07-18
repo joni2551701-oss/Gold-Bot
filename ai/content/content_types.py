@@ -1,7 +1,8 @@
 """
 AI Layer — AI Content Types (Phase 61.5: AI Production Integration
 Foundation, TASK 5; extended Phase 63.0: Senior Trading AI Foundation,
-TASK 2).
+TASK 2; extended Phase 63.6: AI Content Intelligence Foundation,
+TASK 6).
 
 `ai/capabilities/capability.py`'s four new `AI_*` members (Phase 61.5
 TASK 5) are already the vocabulary for "what content can AI be asked
@@ -44,7 +45,19 @@ CONTENT_CAPABILITIES: FrozenSet[Capability] = frozenset({
 
 
 class ContentType(Enum):
-    """The kinds of content the future Senior Trading AI platform can produce -- pure vocabulary, no generation logic (Phase 63.0 TASK 2)."""
+    """
+    The kinds of content the future Senior Trading AI platform can
+    produce -- pure vocabulary, no generation logic (Phase 63.0 TASK 2).
+    `TRADE_REPLAY` added Phase 63.6 TASK 6 -- traced to
+    `docs/roadmap/AI_EVOLUTION.md`'s own "AI Media Intelligence
+    Platform" vision section, which already named "Trade Replay" as a
+    future content flow with no `ContentType` value of its own until
+    now. The brief's other five named types (`TRADE_EXPLANATION`,
+    `MARKET_REPORT`, `EDUCATION`, `WEEKLY_OUTLOOK`, `NEWS_SUMMARY`) all
+    map onto an existing member (`EXPLANATION`, `MARKET_UPDATE`,
+    `EDUCATION`, `WEEKLY_OUTLOOK`, `NEWS_ANALYSIS` respectively) -- see
+    `docs/PHASE63_6_AUDIT.md` for the full mapping.
+    """
     WEEKLY_OUTLOOK = "WEEKLY_OUTLOOK"
     DAILY_BRIEF = "DAILY_BRIEF"
     NEWS_ANALYSIS = "NEWS_ANALYSIS"
@@ -52,6 +65,7 @@ class ContentType(Enum):
     PERFORMANCE_REVIEW = "PERFORMANCE_REVIEW"
     EDUCATION = "EDUCATION"
     EXPLANATION = "EXPLANATION"
+    TRADE_REPLAY = "TRADE_REPLAY"
 
 _CONTENT_TITLES: Dict[Capability, str] = {
     Capability.AI_MARKET_REPORT: "Market Report",

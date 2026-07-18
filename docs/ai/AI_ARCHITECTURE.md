@@ -14,7 +14,12 @@ ai/
   audit/           provider_stats.py - call/provider auditing, DailyUsage/AI Cost Protection (Phase 62.2)
   cache/           response caching (ResponseCache, cache policy)
   capabilities/    Capability enum + permission matrix
-  content/         content assembly helpers
+  content/         content_adapter.py - ContentEngine.generate() (real AIService.ask() path,
+                   Phase 61.5), extended Phase 63.6 with create()/format()/preview()/validate()/
+                   history() (deterministic, no AI call); content_schema.py/content_types.py
+                   (ContentRequest/ContentResult/ContentType, Phase 61.5/63.0); models.py/
+                   content_adapters.py (Phase 63.6); broadcast_output.py (BroadcastReadyContent,
+                   Phase 61.5)
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
                    (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
@@ -117,6 +122,9 @@ above:
   (real `AIService.ask()` path plus the deterministic extension) and
   its Knowledge/Memory/Reasoning/Explanation integration points
   (Phase 63.5).
+- `docs/ai/AI_CONTENT.md` — `ai/content/`'s two surfaces (real
+  `AIService.ask()` path plus the deterministic extension) and its
+  Explanation/Conversation integration points (Phase 63.6).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).
