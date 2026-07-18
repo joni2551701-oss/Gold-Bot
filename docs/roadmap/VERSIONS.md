@@ -76,6 +76,21 @@ existing version number is renumbered or merged — several documents
 `docs/telegram/OWNER_SYSTEM.md`) already reference v0.5–v0.9 by these
 exact numbers.
 
+## Phase 63.x — AI Intelligence Layer sub-phases
+
+`v0.4`'s AI Foundation track continues today through a numbered
+sub-phase sequence, formalized in `docs/roadmap/AI_EVOLUTION.md`
+(Director Decision, Phase 63.3): `63.0` Foundation, `63.1` Explanation,
+`63.2` Knowledge, `63.3` Memory (all DONE) → `63.4` Reasoning (next) →
+`63.5` Conversation → `63.6` Content → `63.7` Media → `63.8` Broadcast.
+See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
+full sequence and its "Official Intelligence Pipeline" section for how
+these sub-phases compose (`Market → Knowledge → Memory → Reasoning →
+Conversation → Explanation → Content → Translation → Media →
+Broadcast`). This table is not repeated here to avoid two documents
+drifting out of sync — `docs/roadmap/AI_EVOLUTION.md` is the single
+source for this sequence's detail.
+
 ## Notes
 
 - This table intentionally does not promise dates — only scope and

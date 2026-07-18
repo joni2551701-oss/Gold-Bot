@@ -22,7 +22,9 @@ ai/
                    explanation_builder.py/explanation_content_adapter.py (Phase 63.1 -
                    deterministic, template-based, no AI/provider call, no decision/risk import)
   journal/         trade_journal.py (canonical) - AI-side trade journaling
-  memory/          long-term AI memory storage
+  memory/          context_memory.py/memory_runtime.py (long-term AI memory storage);
+                   models.py/memory_registry.py (Phase 63.3 - MemoryEntry contract +
+                   MemoryScope catalog, MemoryRuntime extended with store/recall/search)
   profiles/        RuntimeProfile definitions (DEVELOPMENT/TESTING/PRODUCTION)
   prompts/         prompt templates
   providers/       BaseAIProvider, vendor implementations, circuit_breaker.py

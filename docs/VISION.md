@@ -47,11 +47,17 @@ never influences.
 
 ## AI Core
 
-Analysis → Explanation → Memory → Learning → Persona. The connective
-layer both other platforms draw on — Trading Intelligence's decisions
-become explainable through it; Market Media Intelligence's content
-draws on the same Persona, Memory, and Knowledge. One AI Core, not
-two competing ones.
+Knowledge → Memory → Reasoning → Conversation → Explanation → Content
+→ Translation → Media → Broadcast — the official Intelligence Pipeline
+as of Phase 63.3 (see `docs/roadmap/AI_EVOLUTION.md`'s Stage
+definitions for the phase-by-phase build order this vision maps to).
+The connective layer both other platforms draw on — Trading
+Intelligence's decisions become explainable through it; Market Media
+Intelligence's content draws on the same Persona, Memory, and
+Knowledge. One AI Core, not two competing ones. Explanation is a
+*position* in this chain, not a standalone module — it is what
+Knowledge + Memory + Reasoning + Conversation produce together, never
+a decision-maker of its own (Constitution Article 1).
 
 ## Market Media Intelligence
 

@@ -44,6 +44,22 @@ templates). It never imports `decision/`/`risk/`; a caller such as
 `core/pipeline.py` extracts the primitives first. See
 `docs/PHASE63_1_FREEZE.md`.
 
+Phase 63.2 extended `knowledge/` (the real package — a top-level
+sibling of `ai/`, not `ai/knowledge/`) with `KnowledgeManager`, a
+class-based lookup/search/filter facade over the existing static
+catalog, plus an optional `source` provenance field on `KnowledgeEntry`.
+See `docs/PHASE63_2_FREEZE.md`.
+
+Phase 63.3 extended `ai/memory/memory_runtime.py`'s `MemoryRuntime`
+(LOCKed since Phase 61.3) with a second, structured surface —
+`store()`/`recall()`/`search()`/`filter()`/`list_all()`/`short_term()`/
+`long_term()`/`forget()` over a new `MemoryEntry` contract
+(`ai/memory/models.py`: `MemoryType`/`MemoryPriority`/`MemoryScope`)
+and a new `ai/memory/memory_registry.py` static catalog of the six
+`MemoryScope` categories — alongside, not replacing, the original
+`save`/`load`/`clear`/`clear_all`/`MemoryLayer` surface. See
+`docs/PHASE63_3_FREEZE.md`.
+
 ### Stage 2 — AI Runtime Intelligence — DONE
 `RuntimeManager`, `ProviderCircuitBreaker`, `RuntimeProfile`,
 `EventBus` built (61.6) and wired into `AIService.ask()`'s real
@@ -76,6 +92,54 @@ Any future proposal to let the AI vote, approve, or execute is not an
 evolution of this timeline — it is a Constitutional Amendment, and
 requires the explicit, dedicated Director process Article 1 and the
 Amendment section describe.
+
+## Phase 63.x — AI Intelligence Layer sub-phases (Director Decision, Phase 63.3)
+
+Formalized here per the Director's own Phase 63.3 decision, so no
+future Worker Brief needs to re-derive or re-number this sequence.
+Each sub-phase is its own Foundation Reuse Audit + Freeze cycle inside
+Stage 1/3 above, not a separate top-level Stage:
+
+```
+63.0  Foundation                DONE
+63.1  Explanation                DONE
+63.2  Knowledge                  DONE
+63.3  Memory                     DONE
+63.4  Reasoning                  next
+63.5  Conversation
+63.6  Content
+63.7  Media
+63.8  Broadcast
+```
+
+`63.4 Reasoning` was inserted between Memory and Conversation by the
+Director's own Phase 63.3 decision — "AI shu bilimlarni qanday
+bog'laydi" (how the AI connects what it knows), the layer that makes
+Knowledge + Memory useful to Conversation and Explanation. No code for
+Reasoning exists yet; it is named here as roadmap only, the same
+posture every future sub-phase in this list has until its own Worker
+Brief arrives (Constitution Article 8).
+
+## Official Intelligence Pipeline (Director Decision, Phase 63.3)
+
+The AI Core's real, ordered composition, as of the Phase 63.3 Director
+Decision — supersedes any earlier, less specific composition order
+this document previously implied:
+
+```
+Market → Knowledge → Memory → Reasoning → Conversation → Explanation
+   → Content → Translation → Media → Broadcast
+```
+
+**Explanation is a position in this chain, not a standalone module.**
+It is the output of Knowledge + Memory + Reasoning + Conversation
+working together, never a decision-maker of its own — this does not
+change anything about `ai/explanation/explanation_builder.py`'s actual
+code (it still accepts primitive `ExplanationInput` values directly,
+per its own Phase 63.1 Director Decision); it changes how this
+pipeline's *future* stages are expected to feed it. Every stage in
+this chain remains bound by Constitution Article 1: explain, never
+decide.
 
 ## AI Media Intelligence Platform (roadmap vision, Phase 62.1b)
 
