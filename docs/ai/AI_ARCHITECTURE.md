@@ -70,6 +70,11 @@ not have either:
   checks live in `ai/validation/safety.py`; Telegram-side security
   concerns live in `telegram/owner/security.py`, outside `ai/`
   entirely.
+- **`media/` is a separate, top-level package** (Phase 63.0 TASK 5,
+  extended Phase 63.7) — a sibling of `ai/`, not `ai/media/`. A Phase
+  63.7 Worker Brief referred to `ai/media/` throughout; the same
+  correction this document already made for `knowledge/` applies here
+  too — see `docs/PHASE63_7_AUDIT.md`.
 
 Per Constitution Article 7 (Reuse Principle) this document records
 what is actually real rather than fabricating folders to match an
@@ -125,6 +130,9 @@ above:
 - `docs/ai/AI_CONTENT.md` — `ai/content/`'s two surfaces (real
   `AIService.ask()` path plus the deterministic extension) and its
   Explanation/Conversation integration points (Phase 63.6).
+- `docs/ai/AI_MEDIA.md` — top-level `media/`'s `MediaManager` (Owner
+  ENABLED/DISABLED intent plus the deterministic `MediaAsset` surface)
+  and its Content integration point (Phase 63.7).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

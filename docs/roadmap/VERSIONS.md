@@ -82,7 +82,7 @@ exact numbers.
 sub-phase sequence, formalized in `docs/roadmap/AI_EVOLUTION.md`
 (Director Decision, Phase 63.3): `63.0` Foundation, `63.1` Explanation,
 `63.2` Knowledge, `63.3` Memory, `63.4` Reasoning, `63.5` Conversation,
-`63.6` Content (all DONE) → `63.7` Media (next) → `63.8` Broadcast.
+`63.6` Content, `63.7` Media (all DONE) → `63.8` Broadcast (next).
 See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →
