@@ -1,0 +1,41 @@
+from ai.access.permissions import AIRole
+from assistant.access import is_personal_ai_enabled_for
+from configuration.feature_flags import FeatureFlags
+
+
+def test_owner_allowed_when_flag_on():
+    flags = FeatureFlags(enable_personal_ai=True)
+    assert is_personal_ai_enabled_for(AIRole.OWNER, flags) is True
+
+
+def test_owner_blocked_when_flag_off():
+    flags = FeatureFlags(enable_personal_ai=False)
+    assert is_personal_ai_enabled_for(AIRole.OWNER, flags) is False
+
+
+def test_admin_blocked_even_when_flag_on():
+    flags = FeatureFlags(enable_personal_ai=True)
+    assert is_personal_ai_enabled_for(AIRole.ADMIN, flags) is False
+
+
+def test_vip_blocked_even_when_flag_on():
+    flags = FeatureFlags(enable_personal_ai=True)
+    assert is_personal_ai_enabled_for(AIRole.VIP, flags) is False
+
+
+def test_premium_blocked_even_when_flag_on():
+    flags = FeatureFlags(enable_personal_ai=True)
+    assert is_personal_ai_enabled_for(AIRole.PREMIUM, flags) is False
+
+
+def test_free_blocked_even_when_flag_on():
+    flags = FeatureFlags(enable_personal_ai=True)
+    assert is_personal_ai_enabled_for(AIRole.FREE, flags) is False
+
+
+def test_default_flags_instance_has_personal_ai_disabled():
+    assert FeatureFlags().enable_personal_ai is False
+
+
+def test_is_personal_ai_enabled_for_uses_default_flags_when_omitted():
+    assert is_personal_ai_enabled_for(AIRole.OWNER) is False

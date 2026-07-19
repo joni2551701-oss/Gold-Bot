@@ -237,11 +237,27 @@ systems it composes. `voice/` still never imports `ai.memory`/
 anywhere, with zero exemptions (Phase 65.2's own Rule 2). See
 `docs/PHASE65_2_FREEZE.md`.
 
+Built Phase 65.3 — **Personal AI Assistant Foundation**: top-level
+`assistant/` (`IdentityManager`/`AssistantIdentity`/
+`identity_registry.py`: Senior/Seniorita presentation metadata,
+deliberately not `ai.persona.Persona` — Rule 3 Persona Protection),
+`AssistantManager` (per-user `AssistantProfile` CRUD, Owner-only via
+`assistant/access.py`'s `is_personal_ai_enabled_for()`, deliberately
+*not* `ai/access/access_control.py`'s matrix since that grants ADMIN
+equally), and `assistant/conversation_adapter.py`'s three structural
+(not real-call) Conversation/Voice/Memory integration points. The
+brief's own diagram places Assistant *before* Conversation in the
+Official Intelligence Pipeline below, so — applying the Intelligence
+Dependency Principle literally one layer earlier than it has ever been
+applied — `assistant/` imports nothing downstream of it: not `voice/`,
+not `ai.conversation/`, not `ai.memory/`, not `ai.persona/`. See
+`docs/PHASE65_3_FREEZE.md`.
+
 ```
 65.0  Voice Foundation                    DONE
 65.1  Voice Provider Integration          DONE
 65.2  Voice Conversation Intelligence     DONE
-65.3  Personal AI Assistant               future, not yet briefed
+65.3  Personal AI Assistant Foundation    DONE
 65.4  Voice Avatar / Media                future, not yet briefed
 ```
 

@@ -301,6 +301,18 @@ is the permanent regression guard: `ai.conversation.conversation_engine`
 (the real, LLM-backed module) is imported by exactly this one file in
 the whole `voice/` package.
 
+## Personal AI Assistant selection (Phase 65.3, structural only)
+
+Top-level `assistant/`'s `assistant_to_voice_session_params()`
+(`assistant/conversation_adapter.py`) returns a plain
+`{"user_id", "voice_profile_name", "language"}` dict shaped to match
+`VoiceSessionManager.create_session()`'s existing three parameters —
+`assistant/` does not import `voice/` at all, so this package required
+zero code change for it. A future, separately-approved live-wiring
+phase is the one that actually passes that dict's values into a real
+`create_session()` call. See `docs/PHASE65_3_AUDIT.md`'s "core
+architectural resolution" for the full reasoning.
+
 ## Relationship to `media/media_types.py`'s `MediaType.VOICE`
 
 `MediaType.VOICE` is a single existing enum member flagging "this
@@ -336,9 +348,12 @@ complementary, never embedded objects either direction.
   public `ask()` method — never those four layers directly.
 - Not a new `ai.persona.Persona` — see the Profiles and Voice Session
   sections above.
-- Not Personal AI Assistant — Phase 65.2 builds the real voice
-  round-trip Foundation only; a persistent per-user AI profile is
-  Phase 65.3, not yet briefed.
+- Not Personal AI Assistant — `voice/` itself is never modified by
+  Phase 65.3; top-level `assistant/`'s `AssistantProfile`/
+  `AssistantManager` produce plain-value params structurally
+  compatible with `VoiceSessionManager.create_session()` without this
+  package importing `assistant/` or vice versa (see
+  `docs/PHASE65_3_AUDIT.md`).
 - Provider selection is never hardcoded per-call — always resolved
   through `VoiceManager`'s registry/selection methods (Rule 3 of
   Phase 65.1: "Hech qaysi provider hardcode qilinmaydi").
@@ -351,6 +366,9 @@ complementary, never embedded objects either direction.
   Provider Integration phase.
 - `docs/PHASE65_2_AUDIT.md`, `docs/PHASE65_2_FREEZE.md` — this real
   Voice Conversation Intelligence phase.
+- `docs/PHASE65_3_AUDIT.md`, `docs/ai/AI_PERSONAL_ASSISTANT.md` —
+  the Personal AI Assistant Foundation whose param-shape this package
+  is structurally, not literally, integrated with.
 - `docs/policies/DIRECTOR_POLICY.md` — the Intelligence Dependency
   Principle this package's own dependency direction is checked
   against.

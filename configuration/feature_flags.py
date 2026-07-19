@@ -37,12 +37,18 @@ class FeatureFlags:
         (named in docs/FEATURE_ENGINEERING.md's and
         docs/STRATEGY_LIFECYCLE.md's own "Future" sections) -- no
         replay harness exists.
+    enable_personal_ai: reserved for the Personal AI Assistant
+        (Phase 65.3, `assistant/`) -- always False by default; even
+        when True, `assistant.access.is_personal_ai_enabled_for()`
+        additionally requires `AIRole.OWNER` (Admin/VIP/Premium/Free
+        all BLOCK regardless of this flag's value, per TASK 7).
     """
     enable_ai: bool = False
     enable_crypto: bool = False
     enable_swing: bool = False
     enable_ai_memory: bool = False
     enable_replay: bool = False
+    enable_personal_ai: bool = False
 
 
 # The single safe-default instance -- every flag off. Not a singleton

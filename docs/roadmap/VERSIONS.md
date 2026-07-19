@@ -98,8 +98,12 @@ Intelligence Pipeline. `65.2` AI Voice Conversation Intelligence
 (DONE) — real OpenAI STT (Whisper), intent detection, voice sessions,
 and `voice/conversation_bridge.py`'s real "user speaks → AI
 understands → AI replies by voice" round trip via the existing,
-unmodified `ConversationEngine.ask()` (`65.3` Personal AI Assistant,
-`65.4` Voice Avatar/Media — both future, not yet briefed).
+unmodified `ConversationEngine.ask()`. `65.3` Personal AI Assistant
+Foundation (DONE) — top-level `assistant/`, Senior/Seniorita Identity
+metadata (deliberately not `ai.persona.Persona`), a per-user
+`AssistantProfile` + `AssistantManager` gated strictly Owner-only, and
+structural (not real-call) Conversation/Voice/Memory integration
+points (`65.4` Voice Avatar/Media — future, not yet briefed).
 See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →

@@ -84,6 +84,17 @@ of a voice round trip. `ai/conversation/` itself required zero code
 change for this — `voice/` simply calls the same public method a
 future `telegram/command_router.py` text-chat caller would.
 
+## Personal AI Assistant params (Phase 65.3, structural only)
+
+Top-level `assistant/`'s `assistant_to_conversation_params()`
+(`assistant/conversation_adapter.py`) returns a plain
+`{"telegram_id": ...}` dict shaped to match `start_session()`'s
+existing parameter — but `assistant/` does not import
+`ai.conversation` at all, and this module requires zero code change
+for it. See `docs/PHASE65_3_AUDIT.md`'s "core architectural
+resolution" for why the integration stays one-directional and
+structural rather than a real call this phase.
+
 ## What it is not
 
 - Not a second LLM-calling path — the six new methods never call
@@ -101,6 +112,8 @@ future `telegram/command_router.py` text-chat caller would.
 - `docs/PHASE65_2_AUDIT.md`, `docs/PHASE65_2_FREEZE.md`,
   `docs/ai/AI_VOICE.md` — `voice/conversation_bridge.py`'s own
   real-call integration, this package's second real caller.
+- `docs/PHASE65_3_AUDIT.md`, `docs/ai/AI_PERSONAL_ASSISTANT.md` —
+  `assistant/`'s structural (not real-call) integration point.
 - `docs/policies/DIRECTOR_POLICY.md` — the Intelligence Dependency
   Principle this package's own dependency direction is checked
   against.

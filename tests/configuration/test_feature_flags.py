@@ -59,8 +59,10 @@ def test_feature_flags_toggle_support_via_replace():
     assert toggled.enable_replay is False
 
 
-def test_feature_flags_field_names_are_exactly_the_five_foundation_flags():
+def test_feature_flags_field_names_are_exactly_the_six_foundation_flags():
+    """Phase 65.3 added enable_personal_ai (Personal AI Assistant, assistant/) alongside the original five."""
     field_names = {f.name for f in dataclasses.fields(FeatureFlags)}
     assert field_names == {
         "enable_ai", "enable_crypto", "enable_swing", "enable_ai_memory", "enable_replay",
+        "enable_personal_ai",
     }
