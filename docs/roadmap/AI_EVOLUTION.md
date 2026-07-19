@@ -215,10 +215,32 @@ three new Content-sibling integration adapters
 Voice is now the terminal narrating stage of the Official Intelligence
 Pipeline below. See `docs/PHASE65_1_FREEZE.md`.
 
+Built Phase 65.2 — **AI Voice Conversation Intelligence**: the first
+real, LLM-backed "user speaks → AI understands → AI replies by voice"
+round trip. `voice/stt/` (real `OpenAISTTProvider` via OpenAI's Whisper
+REST endpoint, `LocalSTTProvider`/`CustomSTTProvider` skeletons,
+`STTProviderContract`, `STTManager` single active-provider selection —
+mirrors `voice/provider_adapters/`'s Phase 65.1 shape for the opposite
+direction); `voice/intents/` (`VoiceIntent`, deterministic keyword
+`detect_intent()`, metadata only); `voice/session/` (`VoiceSession`/
+`VoiceSessionManager`, a genuinely different session concept from
+`ai/session/`'s `ConversationState`, linked by a
+`conversation_session_id` pointer); `voice/conversation_bridge.py`'s
+`handle_voice_turn()` — the second composition-root exception in this
+codebase (the first is `ai/intelligence_runtime.py`, Phase 64.0, which
+stays deliberately deterministic) — composes STT → intent detection →
+the *existing*, unmodified `ConversationEngine.ask()` (real call) →
+the *existing*, unmodified `VoiceRuntime.generate_audio()`/
+`generate_with_fallback()`. Zero new business logic in any of the four
+systems it composes. `voice/` still never imports `ai.memory`/
+`ai.reasoning`/`ai.explanation`/top-level `knowledge` directly,
+anywhere, with zero exemptions (Phase 65.2's own Rule 2). See
+`docs/PHASE65_2_FREEZE.md`.
+
 ```
 65.0  Voice Foundation                    DONE
 65.1  Voice Provider Integration          DONE
-65.2  Voice Conversation (live)           future, not yet briefed
+65.2  Voice Conversation Intelligence     DONE
 65.3  Personal AI Assistant               future, not yet briefed
 65.4  Voice Avatar / Media                future, not yet briefed
 ```

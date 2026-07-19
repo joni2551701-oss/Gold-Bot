@@ -94,9 +94,12 @@ sub-sequence. `65.1` AI Voice Provider Integration (DONE) — real
 OpenAI/ElevenLabs TTS adapters, per-profile provider selection,
 fallback handling, and Content/Media/Broadcast/Conversation
 integration adapters; Voice is now the terminal stage of the Official
-Intelligence Pipeline (`65.2` live Voice Conversation, `65.3` Personal
-AI Assistant, `65.4` Voice Avatar/Media — all future, not yet
-briefed).
+Intelligence Pipeline. `65.2` AI Voice Conversation Intelligence
+(DONE) — real OpenAI STT (Whisper), intent detection, voice sessions,
+and `voice/conversation_bridge.py`'s real "user speaks → AI
+understands → AI replies by voice" round trip via the existing,
+unmodified `ConversationEngine.ask()` (`65.3` Personal AI Assistant,
+`65.4` Voice Avatar/Media — both future, not yet briefed).
 See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →

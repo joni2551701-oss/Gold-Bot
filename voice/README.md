@@ -1,9 +1,11 @@
 # voice/
 
 Phase 65.0 (AI Voice Intelligence Foundation); extended Phase 65.1 (AI
-Voice Provider Integration — real OpenAI/ElevenLabs TTS calls). Genuine
-new top-level package, confirmed by `docs/PHASE65_0_AUDIT.md`'s TASK 0
-audit (neither `voice/` nor `ai/voice/` existed before Phase 65.0).
+Voice Provider Integration — real OpenAI/ElevenLabs TTS calls) and
+Phase 65.2 (AI Voice Conversation Intelligence — real OpenAI STT plus
+the first real, LLM-backed voice round trip). Genuine new top-level
+package, confirmed by `docs/PHASE65_0_AUDIT.md`'s TASK 0 audit
+(neither `voice/` nor `ai/voice/` existed before Phase 65.0).
 
 ## What this package is
 
@@ -46,18 +48,43 @@ audit (neither `voice/` nor `ai/voice/` existed before Phase 65.0).
   65.1's `resolve_provider_for_profile()`/`generate_audio()`/
   `generate_with_fallback()`); computes nothing `VoiceManager` doesn't
   already compute.
+- `stt/` (Phase 65.2) — `models.py` (`STTRequest`/`STTResult`/
+  `STTResultStatus`), `contract.py` (`STTProviderContract` +
+  `STTProviderError` hierarchy), `manager.py` (`STTManager`: adapter
+  registry + single active-provider selection), `providers/openai.py`
+  (real HTTP call to OpenAI Whisper), `providers/local.py`/`custom.py`
+  (skeletons). Mirrors `provider_contract.py`/`provider_adapters/`'s
+  shape for the opposite direction (audio → text).
+- `intents/` (Phase 65.2) — `models.py` (`VoiceIntent`), `detector.py`
+  (`detect_intent()`, deterministic keyword classifier, no LLM).
+- `session/` (Phase 65.2) — `models.py` (`VoiceSession`), `manager.py`
+  (`VoiceSessionManager`: create/get/end + `set_voice_profile()`
+  validated against `VoiceProfileRegistry`). A genuinely different
+  session concept from `ai/session/`'s `ConversationState` — linked by
+  a `conversation_session_id` pointer, never an embedded object.
+- `conversation_bridge.py` (Phase 65.2) — `handle_voice_turn()`, the
+  second composition-root exception in this codebase (after
+  `ai/intelligence_runtime.py`). Composes STT → intent detection → the
+  *existing* `ConversationEngine.ask()` (real call) → the *existing*
+  `VoiceRuntime.generate_audio()`/`generate_with_fallback()`. The one
+  file in this package permitted to import
+  `ai.conversation.conversation_engine`.
 
 ## What this package is not
 
-No STT, no Speech/Microphone/Whisper SDK import, no synthesized audio
-storage or playback anywhere (Rule 3, Phase 65.0 — still in force for
-everything except the two real TTS HTTP calls Phase 65.1 adds). No
-real Telegram/Mini App/YouTube integration (Rule 4). No LLM call
-anywhere in this package (Rule 5) — the two real adapters' HTTP calls
-are TTS synthesis, not chat/completion calls. `SENIORITA_VOICE` is a
-free-text voice-profile identifier only; it does not create, and is
-not, an `ai.persona.persona.Persona` — see
-`docs/PHASE65_0_AUDIT.md`'s own Persona relationship section.
+No Speech/Microphone SDK import, no permanent synthesized-audio or
+transcribed-audio storage anywhere — real STT/TTS HTTP calls exist
+(Phase 65.1/65.2), but no audio bytes or synthesized output is ever
+written to disk or a database in this package. No real Telegram/Mini
+App/YouTube integration (Rule 4). No LLM call anywhere in this package
+*except* the one real, intentional round trip `conversation_bridge.py`
+composes — every other file stays fully deterministic besides the real
+TTS/STT HTTP calls their own adapters make. Never imports `ai.memory`,
+`ai.reasoning`, `ai.explanation`, or top-level `knowledge` — anywhere,
+zero exemptions (Phase 65.2 Rule 2). `SENIORITA_VOICE` is a free-text
+voice-profile identifier only; it does not create, and is not, an
+`ai.persona.persona.Persona` — see `docs/PHASE65_0_AUDIT.md`'s own
+Persona relationship section and `voice/session/`'s TASK 8 resolution.
 `VoiceProviderType.OPENAI`'s descriptor/adapter here is unrelated to
 `ai/providers/openai_provider.py`'s real, `AIService`-calling
 `OpenAIProvider` — different package, different concern, no shared
@@ -68,13 +95,15 @@ code. No provider is ever hardcoded per-call — always resolved through
 
 - `ai/content/`, `media/`, `broadcast/`, `ai.session`/`ai.conversation`
   — the upstream packages `adapter.py`'s four functions read from
-  (type-only). Per Phase 65.1's own pipeline diagram, `voice/` is now
-  the terminal narrating stage: `... → Content → Media → Broadcast →
-  Voice`.
+  (type-only), and `conversation_bridge.py`'s one real
+  `ConversationEngine.ask()` call. Per Phase 65.1's own pipeline
+  diagram, `voice/` is the terminal narrating stage: `... → Content →
+  Media → Broadcast → Voice`.
 - `media/media_types.py`'s `MediaType.VOICE` — an adjacent-but-different
   vocabulary member flagging a media asset as voice-shaped; this
   package models *who speaks, via which backend, with what settings*
   instead.
 - `docs/ai/AI_VOICE.md`, `docs/PHASE65_0_AUDIT.md`,
   `docs/PHASE65_0_FREEZE.md`, `docs/PHASE65_1_AUDIT.md`,
-  `docs/PHASE65_1_FREEZE.md` — full documentation of both phases.
+  `docs/PHASE65_1_FREEZE.md`, `docs/PHASE65_2_AUDIT.md`,
+  `docs/PHASE65_2_FREEZE.md` — full documentation of all three phases.

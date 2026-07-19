@@ -73,6 +73,17 @@ because Explanation sits downstream of Conversation in the pipeline. A
 future caller (not this package) would import both `ai/conversation/`
 and `ai/explanation/` and bridge them.
 
+## Real callers of `ask()` (updated Phase 65.2)
+
+`ConversationEngine.ask()` itself is unmodified, unmoved, and its
+signature unchanged (Phase 65.2's own Rule 1: no rename/move/breaking
+API) — but as of Phase 65.2 it has a second real caller:
+`voice/conversation_bridge.py`'s `handle_voice_turn()`, which passes
+an STT-transcribed message through it as the one real, LLM-backed step
+of a voice round trip. `ai/conversation/` itself required zero code
+change for this — `voice/` simply calls the same public method a
+future `telegram/command_router.py` text-chat caller would.
+
 ## What it is not
 
 - Not a second LLM-calling path — the six new methods never call
@@ -87,6 +98,9 @@ and `ai/explanation/` and bridge them.
 
 - `docs/PHASE63_5_AUDIT.md`, `docs/PHASE63_5_FREEZE.md` — TASK 0's
   audit and the phase this extension was built in.
+- `docs/PHASE65_2_AUDIT.md`, `docs/PHASE65_2_FREEZE.md`,
+  `docs/ai/AI_VOICE.md` — `voice/conversation_bridge.py`'s own
+  real-call integration, this package's second real caller.
 - `docs/policies/DIRECTOR_POLICY.md` — the Intelligence Dependency
   Principle this package's own dependency direction is checked
   against.
