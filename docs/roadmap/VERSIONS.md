@@ -121,7 +121,18 @@ the existing Content/Media/Broadcast pipeline — zero new Trading
 Engine, zero diff in `decision/`/`risk/`/`execution/`/`strategies/`/
 `signals/`/`context/`/`monitoring/`, Owner-only via a dedicated
 `enable_trading_analyst` flag. First phase in a new `66.x` AI Trading
-Intelligence sub-sequence (`66.1`-`66.8` not yet briefed). See
+Intelligence sub-sequence. `66.1` AI Chart Intelligence Foundation
+(DONE) — new `ai/chart_intelligence/` subpackage, the *chart
+interpretation layer*: primitive-only `ChartAnalysisInput`/
+`ChartAnalysis`/`ChartContext` (no image bytes stored, only a
+content-hash reference), `ChartRuntime` (a pure relay/transform
+composing `ExplanationBuilder` in EDUCATION mode, never a Vision API
+call), `trading_analyst_adapter.py` (composes `TradingAnalysis` +
+`ChartAnalysis` into a combined Explanation), and
+`content_adapter.py` (existing Content/Media/Broadcast pipeline,
+`ContentType.LIVE_ANALYSIS`/`MediaType.IMAGE` both reused) —
+Owner-only via a dedicated `enable_chart_intelligence` flag
+(`66.2`-`66.8` not yet briefed). See
 `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →

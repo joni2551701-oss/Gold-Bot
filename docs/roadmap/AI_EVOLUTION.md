@@ -281,7 +281,7 @@ import posture unchanged. See `docs/PHASE65_4_FREEZE.md`.
 65.3  Personal AI Assistant Foundation    DONE
 65.4  Personal AI Runtime Integration     DONE
 66.0  AI Trading Analyst Foundation       DONE
-66.1  Chart Intelligence                  FUTURE (not yet briefed)
+66.1  Chart Intelligence Foundation       DONE
 66.2  Trade Journal Intelligence          FUTURE (not yet briefed)
 66.3  Learning Intelligence               FUTURE (not yet briefed)
 66.4  Coaching Intelligence               FUTURE (not yet briefed)
@@ -319,6 +319,36 @@ Broadcast pipeline (`ContentType.LIVE_ANALYSIS` reused as-is, no new
 `monitoring/` this phase (Rule 1). Not wired into `core/pipeline.py`
 or any Telegram command — foundation only. See
 `docs/PHASE66_0_FREEZE.md`.
+
+Built Phase 66.1 — **AI Chart Intelligence Foundation**, the second
+phase in the `66.x` AI Trading Intelligence sub-sequence: new
+`ai/chart_intelligence/` subpackage (inside the already-existing `ai/`
+top-level package, confirmed by `docs/PHASE66_1_AUDIT.md`'s TASK 0
+audit) — the *chart interpretation layer* the Director's own framing
+names: a single deterministic pipeline a future phase would route
+TradingView screenshots, MT5 screenshots, Telegram images, and PDF
+charts through uniformly (`ChartImageType`), not a single-screenshot
+tool. `ChartAnalysisInput`/`ChartAnalysis`/`ChartContext` (`models.py`)
+are primitive-only, following the same Article 3 resolution
+`ai/trading_analyst/models.py` already established — `ChartContext`
+never stores image bytes, only a content-hash reference. `ChartRuntime`
+(`chart_runtime.py`) is a pure relay/transform composing the existing,
+unmodified `ExplanationBuilder` in `EDUCATION` mode — no Vision API,
+LLM, or image recognition model call anywhere in this phase (Rule 4).
+`trading_analyst_adapter.py` composes an existing `TradingAnalysis`
+(Phase 66.0) with this phase's own `ChartAnalysis` into a combined
+Explanation — the pipeline's own "TradingAnalyst → ChartAnalysis →
+Explanation" order, the one file permitted to import
+`ai.trading_analyst`. `content_adapter.py` reuses the existing
+Content → Media → Broadcast pipeline (`ContentType.LIVE_ANALYSIS`
+reused a second time, `MediaType.IMAGE` reused as-is).
+`vision_provider_types.py`'s `ChartVisionProviderType` is pure
+future-compatible vocabulary (OpenAI/Gemini/Claude/Local Vision) — no
+provider wired, no API call. Owner-only via a dedicated
+`enable_chart_intelligence` flag. Zero diff in `decision/`, `risk/`,
+`execution/`, `strategies/`, `signals/`, `context/`, `monitoring/`
+this phase (Rule 1). Not wired into `core/pipeline.py` or any Telegram
+command — foundation only. See `docs/PHASE66_1_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 

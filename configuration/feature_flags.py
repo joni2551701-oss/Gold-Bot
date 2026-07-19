@@ -47,6 +47,11 @@ class FeatureFlags:
         default; even when True,
         `ai.trading_analyst.access.is_trading_analyst_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 9).
+    enable_chart_intelligence: reserved for AI Chart Intelligence
+        (Phase 66.1, `ai/chart_intelligence/`) -- always False by
+        default; even when True,
+        `ai.chart_intelligence.access.is_chart_intelligence_enabled_for()`
+        additionally requires `AIRole.OWNER` (TASK 7).
     """
     enable_ai: bool = False
     enable_crypto: bool = False
@@ -55,6 +60,7 @@ class FeatureFlags:
     enable_replay: bool = False
     enable_personal_ai: bool = False
     enable_trading_analyst: bool = False
+    enable_chart_intelligence: bool = False
 
 
 # The single safe-default instance -- every flag off. Not a singleton

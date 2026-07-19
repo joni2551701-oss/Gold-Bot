@@ -105,6 +105,17 @@ root** — the one place allowed to import every layer it composes,
 the same role `core/pipeline.py` plays for the Trading layer. See
 `docs/PHASE64_0_AUDIT.md` for the full reasoning.
 
+## Note — `ai/chart_intelligence/` does not call `run()` (Phase 66.1)
+
+Unlike `ai/trading_analyst/analyst_runtime.py`, Phase 66.1's
+`ai/chart_intelligence/chart_runtime.py` does **not** call
+`IntelligenceRuntime.run()` — TASK 0's own audit found no need for
+Knowledge/Memory/Reasoning/Conversation grounding for a pure
+relay/transform over caller-supplied chart fields; `ChartRuntime`
+composes `ExplanationBuilder` directly instead. Recorded here so a
+future reader does not assume every `66.x` runtime is a third caller
+of this file.
+
 ## Related
 
 - `docs/PHASE64_0_AUDIT.md`, `docs/PHASE64_0_FREEZE.md` — TASK 0's

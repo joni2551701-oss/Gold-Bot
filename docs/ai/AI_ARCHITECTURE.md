@@ -5,7 +5,7 @@ This document maps the real `ai/` package as it exists in the
 repository today — verified directly via directory listing for this
 phase, not transcribed from assumption.
 
-## Real package tree — 22 subpackages under `ai/`
+## Real package tree — 23 subpackages under `ai/`
 
 ```
 ai/
@@ -26,6 +26,15 @@ ai/
                    IntelligenceRuntime + ExplanationBuilder, zero new business logic),
                    content_adapter.py (Content/Media/Broadcast pipeline prep, LIVE_ANALYSIS reused)
                    (Phase 66.0)
+  chart_intelligence/ models.py (ChartAnalysisInput/ChartAnalysis/ChartContext/ChartImageType/
+                   ChartAnalysisType, primitive-only, no image bytes stored), access.py
+                   (is_chart_intelligence_enabled_for, Owner-only), chart_runtime.py
+                   (ChartRuntime.analyze()/explain() -- pure relay/transform + ExplanationBuilder,
+                   never calls a Vision API), trading_analyst_adapter.py (TradingAnalysis +
+                   ChartAnalysis -> combined Explanation, the one file importing ai.trading_analyst),
+                   content_adapter.py (Content/Media/Broadcast pipeline prep, LIVE_ANALYSIS reused),
+                   vision_provider_types.py (ChartVisionProviderType, future-compatible vocabulary
+                   only, no API) (Phase 66.1)
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
                    (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
@@ -191,6 +200,12 @@ above:
   result, never decides), its primitive-only `TradingAnalysisInput`
   contract (the Constitution Article 3 resolution), and its
   Explanation/Content/Media/Broadcast integration points (Phase 66.0).
+- `docs/ai/AI_CHART_INTELLIGENCE.md` — `ai/chart_intelligence/`'s
+  `ChartRuntime` (reads and narrates an already-supplied chart
+  interpretation, never decides, never calls a Vision API), its
+  primitive-only `ChartAnalysisInput`/`ChartContext` contracts (no
+  image bytes stored), and its Trading Analyst/Explanation/Content/
+  Media/Broadcast integration points (Phase 66.1).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

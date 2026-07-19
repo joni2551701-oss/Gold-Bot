@@ -141,5 +141,9 @@ is a sibling concern to Personal AI Assistant, not a dependent one;
   systems `analyst_runtime.py` composes.
 - `ai/content/`, `media/`, `broadcast/` — the three existing systems
   `content_adapter.py` composes.
+- `docs/ai/AI_CHART_INTELLIGENCE.md` — `ai/chart_intelligence/` (Phase
+  66.1), the next phase in the `66.x` sub-sequence; its own
+  `trading_analyst_adapter.py` reads `TradingAnalysis` from this
+  package's `models.py`, type-only.
 - `docs/constitution/CONSTITUTION.md` Article 3 — the zero-exception
   rule this package's own dependency direction is checked against.
