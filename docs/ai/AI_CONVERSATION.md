@@ -95,6 +95,15 @@ for it. See `docs/PHASE65_3_AUDIT.md`'s "core architectural
 resolution" for why the integration stays one-directional and
 structural rather than a real call this phase.
 
+## Third real caller: `assistant/runtime_adapter.py` (Phase 65.4)
+
+Phase 65.4 (Personal AI Runtime Integration) gives `ConversationEngine`
+a third real caller: `assistant/runtime_adapter.py`'s
+`advance_conversation()`, which calls `start_session()`/`ask()`
+exactly as `voice/conversation_bridge.py` does, gated by
+`assistant.access.is_personal_ai_enabled_for()` (Owner-only). Zero
+code change to `ConversationEngine` itself was required.
+
 ## What it is not
 
 - Not a second LLM-calling path — the six new methods never call
@@ -112,8 +121,9 @@ structural rather than a real call this phase.
 - `docs/PHASE65_2_AUDIT.md`, `docs/PHASE65_2_FREEZE.md`,
   `docs/ai/AI_VOICE.md` — `voice/conversation_bridge.py`'s own
   real-call integration, this package's second real caller.
-- `docs/PHASE65_3_AUDIT.md`, `docs/ai/AI_PERSONAL_ASSISTANT.md` —
-  `assistant/`'s structural (not real-call) integration point.
+- `docs/PHASE65_3_AUDIT.md`, `docs/PHASE65_4_AUDIT.md`,
+  `docs/ai/AI_PERSONAL_ASSISTANT.md` — `assistant/`'s integration
+  points, structural in Phase 65.3 and real as of Phase 65.4.
 - `docs/policies/DIRECTOR_POLICY.md` — the Intelligence Dependency
   Principle this package's own dependency direction is checked
   against.

@@ -1,10 +1,14 @@
 # AI Personal Assistant (`assistant/`)
 
-Phase 65.3 (Personal AI Assistant Foundation). Genuine new top-level
-package, confirmed by `docs/PHASE65_3_AUDIT.md`'s TASK 0 audit. Owns
-one job: let an Owner pick which Identity (Senior/Seniorita) a future
-conversation/voice round trip should use, and hold that choice in a
-durable per-user record. Nothing else.
+Phase 65.3 (Personal AI Assistant Foundation); extended Phase 65.4
+(Personal AI Runtime Integration). Genuine new top-level package,
+confirmed by `docs/PHASE65_3_AUDIT.md`'s TASK 0 audit. Phase 65.3 let
+an Owner pick which Identity (Senior/Seniorita) a conversation/voice
+round trip should use and hold that choice in a durable per-user
+record, with every integration point structural only. Phase 65.4
+connects that Foundation to the real Runtimes: an Owner can now
+actually run a personalized "text in → Conversation → Voice out"
+round trip through `assistant/runtime_adapter.py`.
 
 ## AI Identity Model
 
@@ -37,12 +41,21 @@ Applying the Intelligence Dependency Principle
 only on what comes before it — `assistant/` depends on **nothing**
 downstream: not `voice/`, not `ai.conversation/`, not `ai.memory/`,
 not `ai.reasoning/`, not `ai.explanation/`, not `ai.persona/`, not
-`knowledge/`. The one `ai.*` import anywhere in this package is
-`ai.access.permissions.AIRole` (an access-control type, orthogonal to
-the content chain). See `docs/PHASE65_3_AUDIT.md`'s "core
-architectural resolution" for the full reasoning, including why TASK
-5/6's "integration" requirement is satisfied structurally (compatible
-output shapes) rather than by a real cross-package call this phase.
+`knowledge/`. The one `ai.*` import anywhere in this package (outside
+`runtime_adapter.py`) is `ai.access.permissions.AIRole` (an
+access-control type, orthogonal to the content chain). See
+`docs/PHASE65_3_AUDIT.md`'s "core architectural resolution" for the
+full reasoning behind Phase 65.3's structural-only posture.
+
+**Phase 65.4 update:** `assistant/runtime_adapter.py` is now the one
+deliberate, narrow exception — the single file in `assistant/`
+permitted to import `ai.conversation/`, `ai.memory/`, and
+`ai.intelligence_runtime` for real integration (never `ai.reasoning/`,
+`ai.explanation/`, `ai.persona/`, `knowledge/`, `ai.content/`,
+`media/`, or `broadcast/` directly — those are reached only indirectly
+through `IntelligenceRuntime.run()`). Every other file in `assistant/`
+keeps the original zero-downstream-import posture unchanged. See
+`docs/PHASE65_4_AUDIT.md`.
 
 ## Model
 
@@ -146,9 +159,49 @@ public API — without importing it:
   emas. Memory Userniki." (Assistant is not the memory owner; memory
   belongs to the user), enforced by construction.
 
-A future, separately-approved live-wiring phase is the one that
-actually calls `VoiceSessionManager.create_session(**assistant_to_voice_session_params(...))`
-or `ConversationEngine.start_session(**assistant_to_conversation_params(...))`.
+Phase 65.3 deferred the actual call to "a future, separately-approved
+live-wiring phase" — Phase 65.4 is that phase.
+
+## Assistant Runtime + Real Integration (Phase 65.4)
+
+`assistant/models.py`'s `AssistantRuntime` (`session_id`,
+`assistant_id`, `started_at`, `updated_at`, `active`,
+`conversation_id`) is a live session record, managed by
+`AssistantManager`'s new methods:
+
+- `create_runtime(assistant_id, role)` — Owner-gated, validates
+  `assistant_id` exists.
+- `load_runtime(session_id)` / `runtime_status(session_id)` — getters.
+- `restore_runtime(session_id, role)` / `close_runtime(session_id, role)`
+  — Owner-gated, toggle `active`.
+
+`assistant/runtime_adapter.py` — the third composition-root-shaped
+file in this codebase (after `ai/intelligence_runtime.py` and
+`voice/conversation_bridge.py`) — composes the real calls:
+
+- `advance_conversation()` — real `ConversationEngine.ask()`, creating
+  a session via `start_session()` the first time and storing the
+  pointer onto `AssistantRuntime.conversation_id`.
+- `synthesize_voice()` — real `VoiceRuntime.generate_audio()`/
+  `generate_with_fallback()`, using `assistant_to_voice_session_params()`
+  (Phase 65.3, unchanged) to resolve profile/language.
+- `remember_turn()` / `recall_turn()` — real `MemoryRuntime.store()`/
+  `recall()`, keyed via `assistant_memory_scope_key()` (Phase 65.3,
+  unchanged) — always by `user_id`, never `assistant_id`.
+- `run_intelligence_pipeline()` — reuses `IntelligenceRuntime.run()`
+  exactly as-is (Phase 64.0, unmodified); Reasoning/Explanation/
+  Content/Media/Broadcast are all reached only through this one call,
+  never directly.
+- `run_personal_ai_turn()` — the full round trip: Owner-gate → run the
+  deterministic Intelligence pipeline for grounding → real
+  Conversation → remember the response → real Voice synthesis.
+  Returns a `REJECTED` `VoiceResult` at any failure point, the same
+  "never fabricate" convention `voice/conversation_bridge.py`'s
+  `handle_voice_turn()` already established.
+
+Every function re-checks `is_personal_ai_enabled_for()` itself —
+Owner Mode holds even if a caller reaches `runtime_adapter.py`
+directly, not only through `AssistantManager`.
 
 ## Future Compatibility (TASK 9)
 
@@ -162,30 +215,41 @@ future Mini App, Web, Desktop, or Mobile caller without a rewrite.
 - No avatar, animation, video, hologram, or 3D render of any kind
   (Director Note 4) — `default_avatar` is a stable identifier string
   only.
-- No persistence — every `AssistantProfile` lives in-process only.
-- No real call into `ConversationEngine`/`VoiceRuntime`/`MemoryRuntime`
-  — every integration point is a plain-value adapter (see above).
+- No persistence — every `AssistantProfile`/`AssistantRuntime` lives
+  in-process only.
+- No new Manager, Engine, or Runtime class for Conversation, Voice,
+  Memory, Reasoning, or the Intelligence Pipeline — `runtime_adapter.py`
+  calls each real, unmodified, existing class's public methods only
+  (Phase 65.4 Director Note 2).
 - Not a new `ai.persona.Persona`, and never imports `ai/persona/` at
-  all (Rule 3: Persona Protection).
-- Never imports `voice/`, `ai.conversation/`, `ai.memory/`,
-  `ai.reasoning/`, `ai.explanation/`, `knowledge/`, `ai.content/`,
-  `media/`, `broadcast/`, `translation/`, `decision/`, `risk/`,
-  `execution/`, `strategies/`, `signals/`, `database/`, or
-  `telegram/` — zero exceptions, permanently enforced by
-  `tests/assistant/test_assistant_isolation.py`.
-- Not wired into any Telegram command or dashboard this phase —
-  foundation only, same "not yet live-wired" posture every prior
-  Owner-facing foundation in this codebase has followed since Phase
-  59.x.
+  all (Rule 3: Persona Protection) — not even from `runtime_adapter.py`.
+- Outside `runtime_adapter.py`, never imports `voice/`,
+  `ai.conversation/`, `ai.memory/`, `ai.reasoning/`, `ai.explanation/`,
+  `knowledge/`, `ai.content/`, `media/`, `broadcast/`, `translation/`,
+  `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
+  `database/`, or `telegram/` — zero exceptions, permanently enforced
+  by `tests/assistant/test_assistant_isolation.py` and
+  `tests/assistant/runtime/test_runtime_isolation.py`. Even
+  `runtime_adapter.py` never imports `ai.reasoning/`,
+  `ai.explanation/`, `ai.persona/`, `knowledge/`, `ai.content/`,
+  `media/`, or `broadcast/` directly.
+- Not wired into any Telegram command or dashboard — foundation only,
+  same "not yet live-wired" posture every prior Owner-facing
+  foundation in this codebase has followed since Phase 59.x; Phase
+  65.4 makes the composition real and callable, not the Telegram
+  surface.
 
 ## Related
 
-- `docs/PHASE65_3_AUDIT.md`, `docs/PHASE65_3_FREEZE.md` — full
-  documentation of this phase.
+- `docs/PHASE65_3_AUDIT.md`, `docs/PHASE65_3_FREEZE.md`,
+  `docs/PHASE65_4_AUDIT.md`, `docs/PHASE65_4_FREEZE.md` — full
+  documentation of both phases.
 - `assistant/README.md` — the package's own top-level README.
-- `docs/ai/AI_VOICE.md`, `docs/ai/AI_CONVERSATION.md` — the two
-  packages this package's adapters produce structurally-compatible
-  (not literally imported) params for.
+- `docs/ai/AI_VOICE.md`, `docs/ai/AI_CONVERSATION.md`,
+  `docs/ai/AI_INTELLIGENCE_PIPELINE.md` — the packages
+  `runtime_adapter.py` now calls for real (Phase 65.4), after Phase
+  65.3's own adapters first produced their structurally-compatible
+  params.
 - `docs/policies/DIRECTOR_POLICY.md` — the Intelligence Dependency
   Principle this package's own dependency direction is checked
   against, applied one layer earlier than any prior phase.

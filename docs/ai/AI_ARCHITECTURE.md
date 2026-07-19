@@ -88,15 +88,19 @@ not have either:
   is a genuine new top-level package case (the same reasoning
   `docs/PHASE63_0_FOUNDATION_AUDIT.md` originally used to justify
   `broadcast/`).
-- **`assistant/` is a separate, top-level package** (Phase 65.3) — a
-  sibling of `ai/`, not `ai/assistant/`. Same genuine-new-package
-  reasoning as `voice/` above (see `docs/PHASE65_3_AUDIT.md`), plus one
-  further distinction: `assistant/` imports **nothing** from `ai/` at
-  all except the `ai.access.permissions.AIRole` type — it sits before
-  Conversation in the Official Intelligence Pipeline, so per the
-  Intelligence Dependency Principle it may depend on nothing
-  downstream of it, including `ai/persona/`, `ai/conversation/`, and
-  `ai/memory/`.
+- **`assistant/` is a separate, top-level package** (Phase 65.3;
+  extended Phase 65.4) — a sibling of `ai/`, not `ai/assistant/`. Same
+  genuine-new-package reasoning as `voice/` above (see
+  `docs/PHASE65_3_AUDIT.md`). Phase 65.3 built it importing
+  **nothing** from `ai/` except `ai.access.permissions.AIRole` (it
+  sits before Conversation in the Official Intelligence Pipeline, so
+  per the Intelligence Dependency Principle it may depend on nothing
+  downstream of it). Phase 65.4 adds one deliberate, narrow exception:
+  `assistant/runtime_adapter.py` — and only that one file — is now
+  permitted to import `ai.conversation/`, `ai.memory/`, and
+  `ai.intelligence_runtime` for real integration; every other file in
+  `assistant/` keeps the original zero-downstream-import posture (see
+  `docs/PHASE65_4_AUDIT.md`).
 
 Per Constitution Article 7 (Reuse Principle) this document records
 what is actually real rather than fabricating folders to match an
@@ -172,9 +176,10 @@ above:
   Media/Broadcast/Conversation integration points.
 - `docs/ai/AI_PERSONAL_ASSISTANT.md` — top-level `assistant/`'s
   `IdentityManager`/`AssistantManager` (Senior/Seniorita identity
-  metadata, per-user `AssistantProfile`, Owner-only gate) and its
-  structural (not live) Conversation/Voice/Memory integration points
-  (Phase 65.3).
+  metadata, per-user `AssistantProfile`, Owner-only gate, Phase 65.3),
+  extended with real `AssistantRuntime` lifecycle management and
+  `runtime_adapter.py`'s real Conversation/Voice/Memory/Intelligence
+  Pipeline composition (Phase 65.4).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

@@ -75,6 +75,16 @@ never another layer's own dataclass object (Rule 4).
   circuit breaker, cache); this Runtime *composes eight Intelligence
   layers*. Different concern, different file, both real.
 
+## Real callers of `run()` (updated Phase 65.4)
+
+`IntelligenceRuntime.run()` itself is unmodified, unmoved, and its
+signature unchanged (Phase 65.4's own Rule 1: no rename/move/breaking
+API) — but as of Phase 65.4 it has a second real caller:
+`assistant/runtime_adapter.py`'s `run_intelligence_pipeline()`, a thin
+wrapper that Owner-gates the call and passes `profile.user_id` as
+`telegram_id`. `ai/intelligence_runtime.py` itself required zero code
+change for this.
+
 ## Why this one file may import every layer
 
 Every individual layer's own isolation is unchanged and still

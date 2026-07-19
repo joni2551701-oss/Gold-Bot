@@ -313,6 +313,17 @@ phase is the one that actually passes that dict's values into a real
 `create_session()` call. See `docs/PHASE65_3_AUDIT.md`'s "core
 architectural resolution" for the full reasoning.
 
+## Personal AI Runtime real integration (Phase 65.4)
+
+`assistant/runtime_adapter.py`'s `synthesize_voice()` is a real caller
+of `VoiceRuntime.generate_audio()`/`generate_with_fallback()` — it
+builds a `VoiceRequest` via `VoiceRuntime.build_request()` using
+`assistant_to_voice_session_params()`'s output (Phase 65.3, unchanged)
+for the profile/language, and this package's own `generate_audio()`/
+`generate_with_fallback()` for the actual call. `voice/runtime.py`
+itself required zero code change. Gated by
+`assistant.access.is_personal_ai_enabled_for()` (Owner-only).
+
 ## Relationship to `media/media_types.py`'s `MediaType.VOICE`
 
 `MediaType.VOICE` is a single existing enum member flagging "this
@@ -349,11 +360,14 @@ complementary, never embedded objects either direction.
 - Not a new `ai.persona.Persona` — see the Profiles and Voice Session
   sections above.
 - Not Personal AI Assistant — `voice/` itself is never modified by
-  Phase 65.3; top-level `assistant/`'s `AssistantProfile`/
-  `AssistantManager` produce plain-value params structurally
-  compatible with `VoiceSessionManager.create_session()` without this
-  package importing `assistant/` or vice versa (see
-  `docs/PHASE65_3_AUDIT.md`).
+  Phase 65.3 or 65.4; top-level `assistant/`'s
+  `AssistantProfile`/`AssistantManager` produce plain-value params
+  structurally compatible with `VoiceSessionManager.create_session()`
+  (Phase 65.3), and `assistant/runtime_adapter.py` (Phase 65.4, the
+  only file in `assistant/` that imports `voice/`) calls
+  `VoiceRuntime.generate_audio()`/`generate_with_fallback()` for real
+  — `voice/` never imports `assistant/` back either direction (see
+  `docs/PHASE65_3_AUDIT.md`, `docs/PHASE65_4_AUDIT.md`).
 - Provider selection is never hardcoded per-call — always resolved
   through `VoiceManager`'s registry/selection methods (Rule 3 of
   Phase 65.1: "Hech qaysi provider hardcode qilinmaydi").
@@ -366,9 +380,10 @@ complementary, never embedded objects either direction.
   Provider Integration phase.
 - `docs/PHASE65_2_AUDIT.md`, `docs/PHASE65_2_FREEZE.md` — this real
   Voice Conversation Intelligence phase.
-- `docs/PHASE65_3_AUDIT.md`, `docs/ai/AI_PERSONAL_ASSISTANT.md` —
-  the Personal AI Assistant Foundation whose param-shape this package
-  is structurally, not literally, integrated with.
+- `docs/PHASE65_3_AUDIT.md`, `docs/PHASE65_4_AUDIT.md`,
+  `docs/ai/AI_PERSONAL_ASSISTANT.md` — the Personal AI Assistant
+  Foundation (structural param-shape only in Phase 65.3) and Runtime
+  Integration (a real caller as of Phase 65.4).
 - `docs/policies/DIRECTOR_POLICY.md` — the Intelligence Dependency
   Principle this package's own dependency direction is checked
   against.

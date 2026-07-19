@@ -253,12 +253,33 @@ applied — `assistant/` imports nothing downstream of it: not `voice/`,
 not `ai.conversation/`, not `ai.memory/`, not `ai.persona/`. See
 `docs/PHASE65_3_FREEZE.md`.
 
+Built Phase 65.4 — **Personal AI Runtime Integration**: connects the
+Phase 65.3 Foundation to the real Runtimes it deliberately never
+imported before. `AssistantManager` extended in place with
+`AssistantRuntime` lifecycle methods (`create_runtime()`/
+`load_runtime()`/`restore_runtime()`/`close_runtime()`/
+`runtime_status()`, all Owner-gated, no new Manager). New
+`assistant/runtime_adapter.py` — the third composition-root-shaped
+file in this codebase (after `ai/intelligence_runtime.py` and
+`voice/conversation_bridge.py`) — is the one file in `assistant/`
+permitted to import `ai.conversation.conversation_engine`,
+`ai.intelligence_runtime`, `ai.memory.memory_runtime`, and
+`voice.runtime`: `advance_conversation()` (real `ConversationEngine.ask()`),
+`synthesize_voice()` (real `VoiceRuntime.generate_audio()`/
+`generate_with_fallback()`), `remember_turn()`/`recall_turn()` (real
+`MemoryRuntime.store()`/`recall()`), `run_intelligence_pipeline()`
+(reuses `IntelligenceRuntime.run()` as-is — Reasoning is reached only
+through it), and `run_personal_ai_turn()` composing the full round
+trip. Zero new business logic in any of the five systems it composes;
+every other file in `assistant/` keeps Phase 65.3's zero-downstream-
+import posture unchanged. See `docs/PHASE65_4_FREEZE.md`.
+
 ```
 65.0  Voice Foundation                    DONE
 65.1  Voice Provider Integration          DONE
 65.2  Voice Conversation Intelligence     DONE
 65.3  Personal AI Assistant Foundation    DONE
-65.4  Voice Avatar / Media                future, not yet briefed
+65.4  Personal AI Runtime Integration     DONE
 ```
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)

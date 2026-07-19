@@ -1,16 +1,27 @@
 """
 Assistant Layer — Assistant Manager (Phase 65.3: Personal AI Assistant
-Foundation, TASK 4).
+Foundation, TASK 4; extended Phase 65.4: Personal AI Runtime
+Integration, TASK 1/8).
 
-Owns exactly one new resource type: `AssistantProfile` (see
-`docs/PHASE65_3_AUDIT.md` Question 2/4 for why this is not a duplicate
-of `ai.persona.persona_manager.PersonaManager`,
+Owns two resource types: `AssistantProfile` (durable per-user
+settings, Phase 65.3) and `AssistantRuntime` (a live session record,
+Phase 65.4 TASK 8) -- see `docs/PHASE65_3_AUDIT.md` Question 2/4 and
+`docs/PHASE65_4_AUDIT.md` Question 1 for why neither duplicates
+`ai.persona.persona_manager.PersonaManager`,
 `ai.session.session_manager.SessionManager`, or
-`voice.session.manager.VoiceSessionManager`). Every mutator is
+`voice.session.manager.VoiceSessionManager`, and why runtime
+lifecycle is added here rather than in a new `AssistantRuntimeManager`
+class (Rule 3: no new Foundation package). Every mutator is
 Owner-gated via `assistant.access.is_personal_ai_enabled_for()`
 (TASK 7) -- never raises on a denied caller, returns
 `None`/`False` the same "never fabricate a success" convention every
-manager in this codebase already follows.
+manager in this codebase already follows. This class itself still
+imports nothing from `voice/`, `ai.conversation/`, `ai.memory/`, or
+`ai.intelligence_runtime` -- per Phase 65.4's own Director Note 3
+("Assistant orchestration qatlami bo'lib qoladi... biznes logikasini
+o'zida saqlamaydi"), it only manages the `AssistantRuntime` lifecycle
+record; the real cross-layer composition lives in
+`assistant/runtime_adapter.py`.
 
 In-memory only, no persistence, no background job -- same foundation
 posture `ai/session/session_manager.py` and
@@ -24,7 +35,7 @@ from typing import Dict, Optional
 from ai.access.permissions import AIRole
 from assistant.access import is_personal_ai_enabled_for
 from assistant.identity_manager import IdentityManager
-from assistant.models import AssistantProfile
+from assistant.models import AssistantProfile, AssistantRuntime
 from configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 from core.logger import setup_logger
 
@@ -42,6 +53,7 @@ class AssistantManager:
         self._identities = identity_manager or IdentityManager()
         self._flags = flags
         self._profiles: Dict[str, AssistantProfile] = {}
+        self._runtimes: Dict[str, AssistantRuntime] = {}
 
     def create_assistant(
         self,
@@ -114,3 +126,55 @@ class AssistantManager:
             profile.timezone = timezone_name
         profile.updated_at = datetime.now(timezone.utc)
         return True
+
+    # --- Phase 65.4 TASK 1/8: Assistant Runtime lifecycle ---
+
+    def create_runtime(self, assistant_id: str, role: AIRole) -> Optional[AssistantRuntime]:
+        """Never raises: denied role or an unknown assistant_id returns None rather than creating a runtime for a nonexistent profile."""
+        if not is_personal_ai_enabled_for(role, self._flags):
+            logger.warning(f"create_runtime blocked: role={role} is not entitled to Personal AI Assistant")
+            return None
+        if assistant_id not in self._profiles:
+            logger.warning(f"create_runtime called with an unknown assistant_id: {assistant_id}")
+            return None
+
+        session_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc)
+        runtime = AssistantRuntime(session_id=session_id, assistant_id=assistant_id, started_at=now, updated_at=now, active=True)
+        self._runtimes[session_id] = runtime
+        logger.info(f"Assistant runtime created: session_id={session_id}, assistant_id={assistant_id}")
+        return runtime
+
+    def load_runtime(self, session_id: str) -> Optional[AssistantRuntime]:
+        return self._runtimes.get(session_id)
+
+    def restore_runtime(self, session_id: str, role: AIRole) -> bool:
+        """Never raises: denied role or an unknown session_id returns False. Re-activates a previously closed runtime without minting a new session_id."""
+        if not is_personal_ai_enabled_for(role, self._flags):
+            logger.warning(f"restore_runtime blocked: role={role} is not entitled to Personal AI Assistant")
+            return False
+        runtime = self._runtimes.get(session_id)
+        if runtime is None:
+            return False
+        runtime.active = True
+        runtime.updated_at = datetime.now(timezone.utc)
+        return True
+
+    def close_runtime(self, session_id: str, role: AIRole) -> bool:
+        """Never raises: denied role or an unknown session_id returns False. The runtime record itself is kept (not deleted) so load_runtime()/runtime_status() still resolve it -- restore_runtime() can re-activate it later."""
+        if not is_personal_ai_enabled_for(role, self._flags):
+            logger.warning(f"close_runtime blocked: role={role} is not entitled to Personal AI Assistant")
+            return False
+        runtime = self._runtimes.get(session_id)
+        if runtime is None:
+            return False
+        runtime.active = False
+        runtime.updated_at = datetime.now(timezone.utc)
+        return True
+
+    def runtime_status(self, session_id: str) -> Optional[str]:
+        """Never raises: an unknown session_id returns None. Returns 'active' or 'closed' for a known runtime -- never a fabricated status."""
+        runtime = self._runtimes.get(session_id)
+        if runtime is None:
+            return None
+        return "active" if runtime.active else "closed"

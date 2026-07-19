@@ -23,6 +23,20 @@ to the user) and `assistant/conversation_adapter.py`'s
 Deliberately has no `provider` field -- TASK 8's "Provider: Hidden"
 requirement is satisfied by this field never existing here at all, not
 by hiding it in a UI layer.
+
+`AssistantRuntime` (Phase 65.4, TASK 8) is a genuinely different
+resource from `AssistantProfile` above: a live, ephemeral session
+record (`session_id`/`started_at`/`updated_at`/`active`/
+`conversation_id`) versus durable per-user settings. Not a third
+session class alongside `ai.session.conversation_state.ConversationState`
+and `voice.session.models.VoiceSession` either -- see
+`docs/PHASE65_4_AUDIT.md` Question 1 for why extending
+`AssistantManager` with runtime-lifecycle methods (rather than a new
+`AssistantRuntimeManager`) is the correct move. `conversation_id` is a
+pointer into `ai.session.SessionManager`'s own store, never an
+embedded `ConversationState` object -- the same "never carry another
+package's object graph" posture `VoiceSession.conversation_session_id`
+already established in Phase 65.2.
 """
 
 from dataclasses import dataclass
@@ -40,3 +54,13 @@ class AssistantProfile:
     timezone: str = "UTC"
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
+
+@dataclass
+class AssistantRuntime:
+    session_id: str
+    assistant_id: str
+    started_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    active: bool = True
+    conversation_id: Optional[str] = None
