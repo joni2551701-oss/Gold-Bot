@@ -5,7 +5,7 @@ This document maps the real `ai/` package as it exists in the
 repository today — verified directly via directory listing for this
 phase, not transcribed from assumption.
 
-## Real package tree — 21 subpackages under `ai/`
+## Real package tree — 22 subpackages under `ai/`
 
 ```
 ai/
@@ -20,6 +20,12 @@ ai/
                    (ContentRequest/ContentResult/ContentType, Phase 61.5/63.0); models.py/
                    content_adapters.py (Phase 63.6); broadcast_output.py (BroadcastReadyContent,
                    Phase 61.5)
+  trading_analyst/ models.py (TradingAnalysisInput/TradingAnalysis/TradingRiskLevel, primitive-only
+                   contract per Constitution Article 3), access.py (is_trading_analyst_enabled_for,
+                   Owner-only), analyst_runtime.py (TradingAnalystRuntime.analyze() -- composes
+                   IntelligenceRuntime + ExplanationBuilder, zero new business logic),
+                   content_adapter.py (Content/Media/Broadcast pipeline prep, LIVE_ANALYSIS reused)
+                   (Phase 66.0)
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
                    (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
@@ -180,6 +186,11 @@ above:
   extended with real `AssistantRuntime` lifecycle management and
   `runtime_adapter.py`'s real Conversation/Voice/Memory/Intelligence
   Pipeline composition (Phase 65.4).
+- `docs/ai/AI_TRADING_ANALYST.md` — `ai/trading_analyst/`'s
+  `TradingAnalystRuntime` (analyzes an already-made Trading Core
+  result, never decides), its primitive-only `TradingAnalysisInput`
+  contract (the Constitution Article 3 resolution), and its
+  Explanation/Content/Media/Broadcast integration points (Phase 66.0).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

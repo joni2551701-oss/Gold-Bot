@@ -280,7 +280,45 @@ import posture unchanged. See `docs/PHASE65_4_FREEZE.md`.
 65.2  Voice Conversation Intelligence     DONE
 65.3  Personal AI Assistant Foundation    DONE
 65.4  Personal AI Runtime Integration     DONE
+66.0  AI Trading Analyst Foundation       DONE
+66.1  Chart Intelligence                  FUTURE (not yet briefed)
+66.2  Trade Journal Intelligence          FUTURE (not yet briefed)
+66.3  Learning Intelligence               FUTURE (not yet briefed)
+66.4  Coaching Intelligence               FUTURE (not yet briefed)
+66.5  Performance Intelligence            FUTURE (not yet briefed)
+66.6  Strategy Intelligence               FUTURE (not yet briefed)
+66.7  Portfolio Intelligence              FUTURE (not yet briefed)
+66.8  Research Intelligence               FUTURE (not yet briefed)
 ```
+
+Built Phase 66.0 — **AI Trading Analyst Foundation**, the first phase
+in a new `66.x` AI Trading Intelligence sub-sequence: new
+`ai/trading_analyst/` subpackage (inside the already-existing `ai/`
+top-level package, confirmed by `docs/PHASE66_0_AUDIT.md`'s TASK 0
+audit). `TradingAnalysisInput`/`TradingAnalysis`/`TradingRiskLevel`
+(`models.py`) — a primitive-only contract resolving the tension
+between the brief's own diagram (which implies reading live
+`TradeDecision`/`RiskResult` objects) and Constitution Article 3's
+absolute rule that `ai/` never imports `decision/`/`risk/`/
+`execution/`, following the exact precedent
+`ai/explanation/explanation_input.py`'s own `ExplanationInput` already
+established. `TradingAnalystRuntime.analyze()`
+(`analyst_runtime.py`) composes two real, unmodified systems —
+`IntelligenceRuntime.run()` (Phase 64.0, grounding only) and
+`ExplanationBuilder.build()` (Phase 63.1, TRADE-mode) — zero new
+business logic; Owner-gated via a dedicated `enable_trading_analyst`
+feature flag (`access.py`), deliberately not routed through
+`ai/access/access_control.py`'s `AccessControl` matrix. `recommendation`
+("WHY BUY/SELL/WAIT/SKIP") always echoes the already-decided
+`direction` it received, never invents a new verdict (Director Note
+1). `content_adapter.py` composes the existing Content → Media →
+Broadcast pipeline (`ContentType.LIVE_ANALYSIS` reused as-is, no new
+`ContentType`) — the one file in the package permitted to import
+`ai.content/`, `media/`, `broadcast/`. Zero diff in `decision/`,
+`risk/`, `execution/`, `strategies/`, `signals/`, `context/`,
+`monitoring/` this phase (Rule 1). Not wired into `core/pipeline.py`
+or any Telegram command — foundation only. See
+`docs/PHASE66_0_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 

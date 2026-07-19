@@ -110,7 +110,19 @@ composition-root-shaped file, after `ai/intelligence_runtime.py` and
 `VoiceRuntime.generate_audio()`, `MemoryRuntime.store()`/`recall()`,
 and `IntelligenceRuntime.run()` calls, plus `AssistantRuntime`
 session-lifecycle management on the existing `AssistantManager`.
-See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
+`66.0` AI Trading Analyst Foundation (DONE) — new `ai/trading_analyst/`
+subpackage: a primitive-only `TradingAnalysisInput`/`TradingAnalysis`
+contract (resolving Constitution Article 3's absolute `ai/` →
+`decision/`/`risk/`/`execution/` import ban against the brief's own
+diagram, following `ai/explanation/explanation_input.py`'s precedent),
+`TradingAnalystRuntime.analyze()` composing `IntelligenceRuntime.run()`
+and `ExplanationBuilder.build()`, and `content_adapter.py` composing
+the existing Content/Media/Broadcast pipeline — zero new Trading
+Engine, zero diff in `decision/`/`risk/`/`execution/`/`strategies/`/
+`signals/`/`context/`/`monitoring/`, Owner-only via a dedicated
+`enable_trading_analyst` flag. First phase in a new `66.x` AI Trading
+Intelligence sub-sequence (`66.1`-`66.8` not yet briefed). See
+`docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →
 Conversation → Explanation → Content → Translation → Media →

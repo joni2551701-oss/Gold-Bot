@@ -75,15 +75,26 @@ never another layer's own dataclass object (Rule 4).
   circuit breaker, cache); this Runtime *composes eight Intelligence
   layers*. Different concern, different file, both real.
 
-## Real callers of `run()` (updated Phase 65.4)
+## Real callers of `run()` (updated Phase 66.0)
 
 `IntelligenceRuntime.run()` itself is unmodified, unmoved, and its
-signature unchanged (Phase 65.4's own Rule 1: no rename/move/breaking
-API) — but as of Phase 65.4 it has a second real caller:
-`assistant/runtime_adapter.py`'s `run_intelligence_pipeline()`, a thin
-wrapper that Owner-gates the call and passes `profile.user_id` as
-`telegram_id`. `ai/intelligence_runtime.py` itself required zero code
-change for this.
+signature unchanged (Phase 65.4's own Rule 1, still honored by Phase
+66.0's own Rule 1: no rename/move/breaking API) — but it now has two
+real callers:
+
+- `assistant/runtime_adapter.py`'s `run_intelligence_pipeline()`
+  (Phase 65.4) — a thin wrapper that Owner-gates the call and passes
+  `profile.user_id` as `telegram_id`.
+- `ai/trading_analyst/analyst_runtime.py`'s
+  `TradingAnalystRuntime.analyze()` (Phase 66.0) — calls
+  `run(topic=data.symbol)` for its Knowledge/Memory/Reasoning/
+  Conversation grounding side-effect only; the returned `PipelineRun`
+  is not inspected further, since `TradingAnalysis`'s own summary comes
+  from a separate, second `ExplanationBuilder.build()` call built from
+  `TradingAnalysisInput`'s richer TRADE-mode fields.
+
+`ai/intelligence_runtime.py` itself required zero code change for
+either caller.
 
 ## Why this one file may import every layer
 

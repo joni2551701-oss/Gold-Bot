@@ -42,6 +42,11 @@ class FeatureFlags:
         when True, `assistant.access.is_personal_ai_enabled_for()`
         additionally requires `AIRole.OWNER` (Admin/VIP/Premium/Free
         all BLOCK regardless of this flag's value, per TASK 7).
+    enable_trading_analyst: reserved for the AI Trading Analyst
+        (Phase 66.0, `ai/trading_analyst/`) -- always False by
+        default; even when True,
+        `ai.trading_analyst.access.is_trading_analyst_enabled_for()`
+        additionally requires `AIRole.OWNER` (TASK 9).
     """
     enable_ai: bool = False
     enable_crypto: bool = False
@@ -49,6 +54,7 @@ class FeatureFlags:
     enable_ai_memory: bool = False
     enable_replay: bool = False
     enable_personal_ai: bool = False
+    enable_trading_analyst: bool = False
 
 
 # The single safe-default instance -- every flag off. Not a singleton
