@@ -282,7 +282,7 @@ import posture unchanged. See `docs/PHASE65_4_FREEZE.md`.
 65.4  Personal AI Runtime Integration     DONE
 66.0  AI Trading Analyst Foundation       DONE
 66.1  Chart Intelligence Foundation       DONE
-66.2  Trade Journal Intelligence          FUTURE (not yet briefed)
+66.2  Trade Journal Intelligence Foundation DONE
 66.3  Learning Intelligence               FUTURE (not yet briefed)
 66.4  Coaching Intelligence               FUTURE (not yet briefed)
 66.5  Performance Intelligence            FUTURE (not yet briefed)
@@ -349,6 +349,34 @@ provider wired, no API call. Owner-only via a dedicated
 `execution/`, `strategies/`, `signals/`, `context/`, `monitoring/`
 this phase (Rule 1). Not wired into `core/pipeline.py` or any Telegram
 command — foundation only. See `docs/PHASE66_1_FREEZE.md`.
+
+Built Phase 66.2 — **AI Trade Journal Intelligence Foundation**, the
+third phase in the `66.x` AI Trading Intelligence sub-sequence: new
+`ai/trade_journal/` subpackage (inside the existing `ai/` top-level
+package, confirmed by `docs/PHASE66_2_AUDIT.md`'s TASK 0 audit —
+which also reviewed the pre-existing, Trading-Core-coupled
+`ai.journal.trade_journal.TradeJournalEntry`, Phase 55, and
+DB-persisted `learning.models.LearningRecord`, Phase 60.6/60.7,
+neither reusable for this phase's own primitive-only, in-memory
+mandate). `TradeJournalEntry`/`ReplayContext` (`models.py`) are
+primitive-only, `chart_id`/`trade_id` mandatory links (Director Note
+4) — this same phase also extended the Phase 66.1 LOCKed
+`ChartAnalysis` with one new, additive `chart_id` field
+(LOCK-permitted extension). `TradeJournalRuntime`
+(`journal_runtime.py`) is CRUD-only —
+`create()`/`get()`/`list()`/`update_notes()`, in-memory dict, no
+database (Rule 3), no statistics/analytics of any kind (Rule 4;
+win rate/Sharpe/profit factor/drawdown belong to a future 66.5).
+`trading_analyst_adapter.py` composes an existing `TradingAnalysis`
+(66.0) and `ChartAnalysis` (66.1) into a `TradeJournalEntry` — the
+pipeline's own "TradingAnalysis → ChartAnalysis → TradeJournal" order.
+`memory_adapter.py`'s `memory_reference_key()` never imports
+`ai.memory` at all (Rule 6 — Memory itself never changes). Owner-only
+via a dedicated `enable_trade_journal` flag. Zero diff in `decision/`,
+`risk/`, `execution/`, `strategies/`, `signals/`, `context/`,
+`monitoring/` this phase (Rule 1). Not wired into `core/pipeline.py`
+or any Telegram command — foundation only. See
+`docs/PHASE66_2_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 

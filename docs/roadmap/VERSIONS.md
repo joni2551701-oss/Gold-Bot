@@ -131,8 +131,18 @@ call), `trading_analyst_adapter.py` (composes `TradingAnalysis` +
 `ChartAnalysis` into a combined Explanation), and
 `content_adapter.py` (existing Content/Media/Broadcast pipeline,
 `ContentType.LIVE_ANALYSIS`/`MediaType.IMAGE` both reused) —
-Owner-only via a dedicated `enable_chart_intelligence` flag
-(`66.2`-`66.8` not yet briefed). See
+Owner-only via a dedicated `enable_chart_intelligence` flag. `66.2` AI
+Trade Journal Intelligence Foundation (DONE) — new `ai/trade_journal/`
+subpackage: primitive-only, in-memory `TradeJournalEntry`/
+`ReplayContext` (mandatory `chart_id`/`trade_id` links, no database —
+Rule 3, no statistics — Rule 4), `TradeJournalRuntime` (CRUD-only:
+`create()`/`get()`/`list()`/`update_notes()`), `trading_analyst_adapter.py`
+(composes `TradingAnalysis` + `ChartAnalysis` into a `TradeJournalEntry`),
+and `memory_adapter.py` (`memory_reference_key()`, never imports
+`ai.memory`) — Owner-only via a dedicated `enable_trade_journal` flag.
+This same phase also extended the Phase 66.1 LOCKed `ChartAnalysis`
+with one new, additive `chart_id` field (LOCK-permitted extension)
+(`66.3`-`66.8` not yet briefed). See
 `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →

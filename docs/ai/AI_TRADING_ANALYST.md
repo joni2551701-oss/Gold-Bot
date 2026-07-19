@@ -145,5 +145,8 @@ is a sibling concern to Personal AI Assistant, not a dependent one;
   66.1), the next phase in the `66.x` sub-sequence; its own
   `trading_analyst_adapter.py` reads `TradingAnalysis` from this
   package's `models.py`, type-only.
+- `docs/ai/AI_TRADE_JOURNAL.md` — `ai/trade_journal/` (Phase 66.2),
+  whose own `trading_analyst_adapter.py` also reads `TradingAnalysis`
+  from this package's `models.py`, type-only.
 - `docs/constitution/CONSTITUTION.md` Article 3 — the zero-exception
   rule this package's own dependency direction is checked against.

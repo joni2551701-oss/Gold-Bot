@@ -114,7 +114,9 @@ Knowledge/Memory/Reasoning/Conversation grounding for a pure
 relay/transform over caller-supplied chart fields; `ChartRuntime`
 composes `ExplanationBuilder` directly instead. Recorded here so a
 future reader does not assume every `66.x` runtime is a third caller
-of this file.
+of this file. Phase 66.2's `ai/trade_journal/journal_runtime.py`
+likewise never calls `run()` — `TradeJournalRuntime` is CRUD-only
+(Rule 4), with no Explanation/Knowledge/Memory grounding of any kind.
 
 ## Related
 

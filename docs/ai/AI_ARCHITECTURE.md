@@ -5,7 +5,7 @@ This document maps the real `ai/` package as it exists in the
 repository today — verified directly via directory listing for this
 phase, not transcribed from assumption.
 
-## Real package tree — 23 subpackages under `ai/`
+## Real package tree — 24 subpackages under `ai/`
 
 ```
 ai/
@@ -27,7 +27,8 @@ ai/
                    content_adapter.py (Content/Media/Broadcast pipeline prep, LIVE_ANALYSIS reused)
                    (Phase 66.0)
   chart_intelligence/ models.py (ChartAnalysisInput/ChartAnalysis/ChartContext/ChartImageType/
-                   ChartAnalysisType, primitive-only, no image bytes stored), access.py
+                   ChartAnalysisType, primitive-only, no image bytes stored; ChartAnalysis gained
+                   chart_id in Phase 66.2, a LOCK-permitted additive extension), access.py
                    (is_chart_intelligence_enabled_for, Owner-only), chart_runtime.py
                    (ChartRuntime.analyze()/explain() -- pure relay/transform + ExplanationBuilder,
                    never calls a Vision API), trading_analyst_adapter.py (TradingAnalysis +
@@ -35,6 +36,14 @@ ai/
                    content_adapter.py (Content/Media/Broadcast pipeline prep, LIVE_ANALYSIS reused),
                    vision_provider_types.py (ChartVisionProviderType, future-compatible vocabulary
                    only, no API) (Phase 66.1)
+  trade_journal/   models.py (TradeJournalEntry/ReplayContext, primitive-only, in-memory,
+                   chart_id/trade_id mandatory links), access.py (is_trade_journal_enabled_for,
+                   Owner-only), journal_runtime.py (TradeJournalRuntime -- create/get/list/
+                   update_notes CRUD only, in-memory dict, no database), trading_analyst_adapter.py
+                   (TradingAnalysis + ChartAnalysis -> TradeJournalEntry, the one file importing
+                   ai.trading_analyst and ai.chart_intelligence), memory_adapter.py
+                   (memory_reference_key() -- a plain string key, never imports ai.memory) (Phase
+                   66.2)
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
                    (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
@@ -206,6 +215,12 @@ above:
   primitive-only `ChartAnalysisInput`/`ChartContext` contracts (no
   image bytes stored), and its Trading Analyst/Explanation/Content/
   Media/Broadcast integration points (Phase 66.1).
+- `docs/ai/AI_TRADE_JOURNAL.md` — `ai/trade_journal/`'s
+  `TradeJournalRuntime` (CRUD-only, in-memory, no database, no
+  statistics), its primitive-only `TradeJournalEntry`/`ReplayContext`
+  contracts (mandatory `chart_id`/`trade_id` links, metadata-only
+  replay pointers), and its Trading Analyst/Chart Intelligence/Memory
+  integration points (Phase 66.2).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

@@ -93,11 +93,12 @@ def test_chart_analysis_generated_at_defaults_empty():
 
 
 def test_chart_analysis_field_names_match_task_2_contract():
+    """Phase 66.2 TASK 1 added chart_id (LOCK-permitted extension) -- see docs/PHASE66_2_AUDIT.md."""
     field_names = {f.name for f in dataclasses.fields(ChartAnalysis)}
     assert field_names == {
         "symbol", "timeframe", "image_type", "analysis_type", "market_structure", "trend",
         "liquidity", "order_blocks", "fvg", "support", "resistance", "confidence", "notes",
-        "generated_at",
+        "generated_at", "chart_id",
     }
 
 

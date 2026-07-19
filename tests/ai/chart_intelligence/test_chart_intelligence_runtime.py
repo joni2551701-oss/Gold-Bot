@@ -97,6 +97,20 @@ def test_analyze_sets_generated_at():
     assert result.generated_at != ""
 
 
+def test_analyze_sets_chart_id():
+    """Phase 66.2 TASK 1 extension -- every analyze() call stamps a non-empty chart_id."""
+    result = _runtime().analyze(_input(), AIRole.OWNER)
+    assert result.chart_id != ""
+    assert result.chart_id.startswith("chart_")
+
+
+def test_analyze_chart_id_unique_across_calls():
+    runtime = _runtime()
+    result_a = runtime.analyze(_input(), AIRole.OWNER)
+    result_b = runtime.analyze(_input(), AIRole.OWNER)
+    assert result_a.chart_id != result_b.chart_id
+
+
 def test_analyze_never_raises_for_minimal_input():
     minimal = ChartAnalysisInput(symbol="EURUSD", timeframe="M15")
     result = _runtime().analyze(minimal, AIRole.OWNER)

@@ -52,6 +52,15 @@ class FeatureFlags:
         default; even when True,
         `ai.chart_intelligence.access.is_chart_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 7).
+    enable_trade_journal: reserved for AI Trade Journal Intelligence
+        (Phase 66.2, `ai/trade_journal/`) -- always False by default;
+        even when True,
+        `ai.trade_journal.access.is_trade_journal_enabled_for()`
+        additionally requires `AIRole.OWNER` (TASK 7). Distinct from
+        `enable_ai_memory` (whose own docstring already references
+        `ai/journal/trade_journal.py` but does not govern it) -- this
+        is a dedicated flag for the new, unrelated `ai/trade_journal/`
+        package.
     """
     enable_ai: bool = False
     enable_crypto: bool = False
@@ -61,6 +70,7 @@ class FeatureFlags:
     enable_personal_ai: bool = False
     enable_trading_analyst: bool = False
     enable_chart_intelligence: bool = False
+    enable_trade_journal: bool = False
 
 
 # The single safe-default instance -- every flag off. Not a singleton

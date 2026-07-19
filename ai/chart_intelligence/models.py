@@ -1,6 +1,7 @@
 """
 AI Layer — Chart Intelligence Model (Phase 66.1: AI Chart Intelligence
-Foundation, TASK 2/3).
+Foundation, TASK 2/3; extended Phase 66.2, TASK 1 -- `chart_id` field
+and `generate_chart_id()`).
 
 Follows `ai/trading_analyst/models.py`'s own Article 3 resolution
 exactly: every field is a primitive (`str`/`float`/`Sequence[str]`) or
@@ -19,11 +20,23 @@ even though no Vision API call exists yet (Rule 4).
 `ChartContext` (TASK 3) is deliberately image-free: `image_hash` is a
 content-hash *reference* only — this Foundation never stores image
 bytes or binary data anywhere (Director Note 4).
+
+Phase 66.2 TASK 1 extension: `ChartAnalysis.chart_id` (a trailing,
+defaulted field -- Article 9-compatible, no existing call site uses
+positional arguments) is the one deliberate, LOCK-permitted touch to
+this module Phase 66.2 makes, per the Phase 66.1 LOCK's own "✅
+extension" allowance and this same LOCK review's own Director Note 1
+("Kelajakda har ChartAnalysis ichida chart_id bo'lishi foydali
+bo'ladi... Bu Journal va Replay tizimida kerak bo'ladi"), now realized
+by Phase 66.2's own Director Note 4 (`chart_id` is a mandatory link on
+every `ai.trade_journal.models.TradeJournalEntry`). See
+`docs/PHASE66_2_AUDIT.md`'s "Chart ID extension" section.
 """
 
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional, Sequence
+from uuid import uuid4
 
 
 class ChartImageType(Enum):
@@ -133,3 +146,9 @@ class ChartAnalysis:
     confidence: float
     notes: Optional[str]
     generated_at: str = ""
+    chart_id: str = ""
+
+
+def generate_chart_id() -> str:
+    """Phase 66.2 TASK 1 -- a stateless, deterministic-format identifier (e.g. "chart_a1b2c3d4"), never a stateful sequence counter (this package stays a pure Foundation, no hidden state)."""
+    return f"chart_{uuid4().hex[:12]}"

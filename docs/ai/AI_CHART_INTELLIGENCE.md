@@ -153,6 +153,19 @@ imports `ai.trading_analyst`, and only type-only).
 - Not wired into `core/pipeline.py` or any Telegram command this
   phase — foundation only.
 
+## Chart ID extension (Phase 66.2)
+
+`ChartAnalysis` gained one new, additive, trailing-defaulted field —
+`chart_id: str = ""` — plus `generate_chart_id()`, added under this
+phase's own LOCK terms ("✅ extension" permitted) by Phase 66.2 (AI
+Trade Journal Intelligence Foundation), per this phase's own Director
+Note 1 from the LOCK review ("Kelajakda har ChartAnalysis ichida
+chart_id bo'lishi foydali bo'ladi... Bu Journal va Replay tizimida
+kerak bo'ladi"). `ChartRuntime.analyze()` now stamps every
+`ChartAnalysis` it produces with a unique `chart_id`. See
+`docs/PHASE66_2_AUDIT.md`'s "Chart ID extension" section and
+`docs/ai/AI_TRADE_JOURNAL.md`.
+
 ## Related
 
 - `docs/PHASE66_1_AUDIT.md`, `docs/PHASE66_1_FREEZE.md` — full
@@ -166,3 +179,7 @@ imports `ai.trading_analyst`, and only type-only).
 - `docs/ai/AI_TRADING_ANALYST.md` — the immediately preceding phase's
   own documentation, whose Article 3 resolution this phase's models
   follow exactly.
+- `docs/ai/AI_TRADE_JOURNAL.md` — `ai/trade_journal/` (Phase 66.2),
+  the next phase in the `66.x` sub-sequence, whose own
+  `trading_analyst_adapter.py` reads `ChartAnalysis.chart_id` from
+  this package's `models.py`, type-only.

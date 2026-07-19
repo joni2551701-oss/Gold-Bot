@@ -23,7 +23,7 @@ from typing import Optional
 
 from ai.access.permissions import AIRole
 from ai.chart_intelligence.access import is_chart_intelligence_enabled_for
-from ai.chart_intelligence.models import ChartAnalysis, ChartAnalysisInput
+from ai.chart_intelligence.models import ChartAnalysis, ChartAnalysisInput, generate_chart_id
 from ai.explanation.explanation_builder import ExplanationBuilder
 from ai.explanation.explanation_input import ExplanationInput, ExplanationMode
 from ai.explanation.explanation_output import ExplanationOutput
@@ -70,6 +70,7 @@ class ChartRuntime:
             confidence=_confidence_to_unit_scale(data.confidence),
             notes=data.notes,
             generated_at=datetime.now(timezone.utc).isoformat(),
+            chart_id=generate_chart_id(),
         )
 
     def explain(self, chart: ChartAnalysis, role: AIRole, language: str = "en") -> Optional[ExplanationOutput]:
