@@ -736,4 +736,44 @@ def _create_learning_records_indexes(connection: sqlite3.Connection):
         connection.commit()
     except sqlite3.Error as e:
         logger.error(f"Failed to create learning_records indexes: {e}")
+
+
+def init_monitoring_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the monitoring_error_events and
+    monitoring_decision_pipeline table schemas (GoldBot Core Owner
+    Monitoring Alpha, TASK 9). Both independent of every other table
+    -- no foreign key. Both append-only, same "history must never be
+    lost" posture as `init_emergency_state_schema()`. SystemHealth/
+    MarketHealth/SignalHealth are computed live, never persisted --
+    see `docs/PHASE_CORE_MONITORING_AUDIT.md`'s TASK 9 conclusion for
+    why only these two tables exist.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS monitoring_error_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        module TEXT NOT NULL,
+        error_type TEXT NOT NULL,
+        message TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS monitoring_decision_pipeline (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        symbol TEXT NOT NULL,
+        timeframe TEXT NOT NULL,
+        criteria_met TEXT NOT NULL,
+        criteria_total INTEGER NOT NULL,
+        decision TEXT NOT NULL,
+        reason TEXT,
+        created_at TEXT NOT NULL
+    );
+    """
+    try:
+        connection.executescript(query)
+        connection.commit()
+        logger.info("Database schema (monitoring_error_events, monitoring_decision_pipeline tables) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize monitoring schema: {e}")
+        raise
         raise

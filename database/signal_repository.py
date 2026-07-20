@@ -134,6 +134,12 @@ class SignalRepository:
             )
             return [dict(row) for row in cursor.fetchall()]
 
+    def get_signals_today(self) -> List[Dict]:
+        """All signals created today (UTC), any status -- unlike count_signals_today() (a count) and get_closed_signals_today() (closed only), this returns the full rows so a caller can aggregate by direction/confidence. Used by monitoring/signal_monitor.py's get_signal_health() (GoldBot Core Owner Monitoring Alpha)."""
+        with self.db as conn:
+            cursor = conn.execute("SELECT * FROM signals WHERE date(created_at) = date('now')")
+            return [dict(row) for row in cursor.fetchall()]
+
     def get_latest_signal(self) -> Optional[Dict]:
         """Most recently created signal, or None if the table is empty."""
         with self.db as conn:

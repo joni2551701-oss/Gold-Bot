@@ -64,6 +64,13 @@ OWNER_COMMANDS = {
     "runtime_restart": "Restart the AI runtime back to READY",
     "runtime_provider": "Show one provider's Health/Circuit/Latency/Requests panel",
     "ai_explanation_status": "Show the AI Explanation Intelligence Layer's status",
+    "owner_status": "Show GoldBot Core Owner Monitoring system status",
+    "health": "Run a full Owner monitoring diagnostic",
+    "market": "Show market data monitoring status",
+    "signals": "Show today's signal activity counts",
+    "errors": "Show recent captured errors",
+    "pipeline": "Show the most recent decision pipeline trace",
+    "report": "Show the GoldBot daily monitoring report",
 }
 
 ADMIN_COMMANDS = {

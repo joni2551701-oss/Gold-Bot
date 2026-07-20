@@ -171,6 +171,15 @@ from telegram.feedback_service import FeedbackService
 from telegram.permissions import is_owner
 from telegram.owner.ai_commands import ai_cost, ai_explanation_status, ai_health, ai_provider, ai_status, ai_usage, resolve_capability
 from telegram.owner.dashboard import get_doctor_report, get_owner_summary
+from telegram.owner.monitoring_commands import (
+    get_daily_report,
+    get_errors_report,
+    get_health_report,
+    get_market_report,
+    get_pipeline_report,
+    get_signals_report,
+    get_status_report,
+)
 from telegram.owner.runtime_commands import (
     runtime_check,
     runtime_events,
@@ -1013,6 +1022,49 @@ async def owner_handler() -> str:
 async def doctor_handler() -> str:
     """/doctor -> telegram.owner.dashboard.get_doctor_report(). OWNER only. Never raises."""
     return get_doctor_report().message
+
+
+async def owner_status_handler() -> str:
+    """
+    /owner_status -> telegram.owner.monitoring_commands.get_status_report()
+    (GoldBot Core Owner Monitoring Alpha). Named `owner_status` rather
+    than the brief's own literal `/status` -- `/status` is already a
+    live, public, USER-level command (`status_handler` above, "GoldBot
+    is running.", `telegram.commands.COMMANDS["status"]`) and command
+    names are never renamed/reused (Article 9). OWNER only. Never
+    raises.
+    """
+    return get_status_report().message
+
+
+async def health_handler() -> str:
+    """/health -> telegram.owner.monitoring_commands.get_health_report() (reuses telegram.owner.system_commands.get_system_health(), GoldBot Core Owner Monitoring Alpha). OWNER only. Never raises."""
+    return get_health_report().message
+
+
+async def market_handler() -> str:
+    """/market -> telegram.owner.monitoring_commands.get_market_report() (GoldBot Core Owner Monitoring Alpha). OWNER only. Never raises."""
+    return get_market_report().message
+
+
+async def signals_handler() -> str:
+    """/signals -> telegram.owner.monitoring_commands.get_signals_report() (GoldBot Core Owner Monitoring Alpha). OWNER only. Never raises."""
+    return get_signals_report().message
+
+
+async def errors_handler() -> str:
+    """/errors -> telegram.owner.monitoring_commands.get_errors_report() (GoldBot Core Owner Monitoring Alpha). OWNER only. Never raises."""
+    return get_errors_report().message
+
+
+async def pipeline_handler() -> str:
+    """/pipeline -> telegram.owner.monitoring_commands.get_pipeline_report() (GoldBot Core Owner Monitoring Alpha). OWNER only. Never raises."""
+    return get_pipeline_report().message
+
+
+async def report_handler() -> str:
+    """/report -> telegram.owner.monitoring_commands.get_daily_report() (GoldBot Core Owner Monitoring Alpha). OWNER only. Never raises."""
+    return get_daily_report().message
 
 
 async def runtime_handler() -> str:
