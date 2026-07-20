@@ -21,6 +21,11 @@ concurrency:
 jobs:
   send-snapshot:
     runs-on: ubuntu-latest
+    # Audit & Hardening TASK 5: bounds a hung TwelveData/Telegram call
+    # so a stuck one-shot run doesn't sit in the queue until GitHub's
+    # own default job timeout (6h) -- 5 minutes is generously above
+    # this job's own real completion time (a few seconds).
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repository

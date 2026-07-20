@@ -43,6 +43,11 @@ def test_owner_snapshot_workflow_has_a_job():
     assert "runs-on: ubuntu-latest" in _workflow_text()
 
 
+def test_owner_snapshot_workflow_has_a_timeout():
+    """Audit & Hardening TASK 5: bounds a hung API/Telegram call."""
+    assert "timeout-minutes: 5" in _workflow_text()
+
+
 def test_owner_snapshot_workflow_checks_out_production_branch():
     content = _workflow_text()
     assert "actions/checkout@v4" in content

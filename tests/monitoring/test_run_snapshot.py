@@ -113,10 +113,18 @@ def test_run_snapshot_report_returns_false_on_failed_send(monkeypatch):
     assert result is False
 
 
+async def _fake_send_snapshot(message, bot=None):
+    class Result:
+        sent = True
+        reason = ""
+    return Result()
+
+
 def test_run_snapshot_report_returns_false_on_collection_failure(monkeypatch):
     _all_secrets_present(monkeypatch)
 
-    with patch("monitoring.run_snapshot.collect_snapshot", side_effect=Exception("boom")):
+    with patch("monitoring.run_snapshot.collect_snapshot", side_effect=Exception("boom")), \
+         patch("monitoring.run_snapshot.send_snapshot", _fake_send_snapshot):
         result = asyncio.run(run_snapshot_report())
 
     assert result is False
@@ -124,7 +132,8 @@ def test_run_snapshot_report_returns_false_on_collection_failure(monkeypatch):
 
 def test_run_snapshot_report_never_raises_on_collection_failure(monkeypatch):
     _all_secrets_present(monkeypatch)
-    with patch("monitoring.run_snapshot.collect_snapshot", side_effect=Exception("boom")):
+    with patch("monitoring.run_snapshot.collect_snapshot", side_effect=Exception("boom")), \
+         patch("monitoring.run_snapshot.send_snapshot", _fake_send_snapshot):
         asyncio.run(run_snapshot_report())  # must not raise
 
 
@@ -153,3 +162,94 @@ def test_main_exits_cleanly_on_success(monkeypatch):
             run_snapshot_module.main()
         except SystemExit:
             assert False, "main() should not call sys.exit() on success"
+
+
+# Owner failure notification (Audit & Hardening TASK 4)
+
+def test_format_failure_message_contains_module_and_error():
+    from monitoring.run_snapshot import _format_failure_message
+
+    message = _format_failure_message("monitoring.run_snapshot", "boom")
+    assert "GoldBot Snapshot Failed" in message
+    assert "monitoring.run_snapshot" in message
+    assert "boom" in message
+    assert "Time:" in message
+
+
+def test_run_snapshot_report_notifies_owner_on_collection_failure(monkeypatch):
+    _all_secrets_present(monkeypatch)
+    sent_messages = []
+
+    async def fake_send_snapshot(message, bot=None):
+        sent_messages.append(message)
+
+        class Result:
+            sent = True
+            reason = ""
+        return Result()
+
+    with patch("monitoring.run_snapshot.collect_snapshot", side_effect=Exception("boom")), \
+         patch("monitoring.run_snapshot.send_snapshot", fake_send_snapshot):
+        result = asyncio.run(run_snapshot_report())
+
+    assert result is False
+    assert len(sent_messages) == 1
+    assert "GoldBot Snapshot Failed" in sent_messages[0]
+    assert "boom" in sent_messages[0]
+
+
+def test_run_snapshot_report_never_raises_when_failure_notification_itself_fails(monkeypatch):
+    _all_secrets_present(monkeypatch)
+
+    async def failing_send_snapshot(message, bot=None):
+        raise Exception("telegram is also down")
+
+    with patch("monitoring.run_snapshot.collect_snapshot", side_effect=Exception("boom")), \
+         patch("monitoring.run_snapshot.send_snapshot", failing_send_snapshot):
+        result = asyncio.run(run_snapshot_report())  # must not raise
+
+    assert result is False
+
+
+def test_failure_notification_never_logs_a_secret_value(monkeypatch, caplog):
+    _all_secrets_present(monkeypatch)
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "super-secret-token-value")
+
+    async def fake_send_snapshot(message, bot=None):
+        class Result:
+            sent = True
+            reason = ""
+        return Result()
+
+    with patch("monitoring.run_snapshot.collect_snapshot", side_effect=Exception("boom")), \
+         patch("monitoring.run_snapshot.send_snapshot", fake_send_snapshot), \
+         caplog.at_level(logging.INFO):
+        asyncio.run(run_snapshot_report())
+
+    messages = [r.message for r in caplog.records]
+    assert not any("super-secret-token-value" in m for m in messages)
+
+
+# Runtime timing (v1.1 TASK 7)
+
+def test_run_snapshot_report_passes_a_timed_snapshot_to_the_formatter(monkeypatch):
+    _all_secrets_present(monkeypatch)
+    formatted = []
+
+    def fake_format_snapshot(snapshot):
+        formatted.append(snapshot)
+        return "formatted"
+
+    async def fake_send_snapshot(message, bot=None):
+        class Result:
+            sent = True
+            reason = ""
+        return Result()
+
+    with patch("monitoring.run_snapshot.format_snapshot", fake_format_snapshot), \
+         patch("monitoring.run_snapshot.send_snapshot", fake_send_snapshot):
+        asyncio.run(run_snapshot_report())
+
+    assert len(formatted) == 1
+    assert formatted[0].runtime_execution_seconds >= 0.0
+    assert formatted[0].runtime_next_check is not None

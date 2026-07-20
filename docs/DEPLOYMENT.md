@@ -154,8 +154,11 @@ harmless but has no effect; do not expect it to change bot behavior.
 
 Until `telegram.polling` is actually deployed on a VPS, `.github/workflows/owner_snapshot.yml`
 runs `python -m monitoring.run_snapshot` every 15 minutes via GitHub
-Actions — a one-shot process that sends a Core/Database/Market
-Data/Signal status snapshot to `TELEGRAM_OWNER_ID`, with no
-long-running process required. See `docs/OWNER_SNAPSHOT_REPORTER.md`
-for the full design; this does not replace 24/7 VPS runtime, it's a
-temporary Alpha observation layer.
+Actions (`timeout-minutes: 5`) — a one-shot process that sends a
+Core/Database/Market Data/Signal/Decision/Error/Runtime status
+snapshot to `TELEGRAM_OWNER_ID`, with no long-running process
+required. This is still not VPS 24/7 production runtime — it is a
+temporary Alpha layer for collecting real operational data ahead of
+V1, explicitly meant to be replaced by production 24/7 VPS runtime
+once that exists. See `docs/OWNER_SNAPSHOT_REPORTER.md` for the full
+design.

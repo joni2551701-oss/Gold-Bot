@@ -40,6 +40,16 @@ def test_owner_snapshot_field_names_match_brief_plus_additive_signals_today():
     expected = {
         "timestamp", "status", "core_status", "database_status", "telegram_status",
         "market_data_status", "last_signal", "error_count", "uptime_info", "signals_today",
+        # v1.1 additive fields (TASK 1-8) -- see monitoring/snapshot_models.py's own docstring.
+        "pipeline_runs_today", "pipeline_last_at", "pipeline_last_status",
+        "signals_approved", "signals_rejected", "strategy_breakdown", "last_signal_score",
+        "decision_total", "decision_approved", "decision_rejected",
+        "decision_avg_confidence_pct", "decision_risk_pass_rate_pct",
+        "ai_requests_today", "ai_status",
+        "market_provider", "market_symbol", "market_timeframe", "market_candles_configured",
+        "errors_critical", "errors_warning", "last_error_module", "last_error_time",
+        "runtime_execution_seconds", "runtime_next_check",
+        "db_signals_total", "db_errors_total", "db_pipeline_events_total",
     }
     assert field_names == expected
 
