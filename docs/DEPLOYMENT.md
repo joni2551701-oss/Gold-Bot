@@ -126,10 +126,14 @@ goldbot-polling.service`), a container (`docker-compose.yml`'s
 secrets are necessary but not sufficient; the polling process must
 also be deployed and running. Check `journalctl -u goldbot-polling`
 (or the equivalent container logs) for one of two explicit startup
-log lines added by this audit: `TELEGRAM_BOT_TOKEN missing` /
-`Bot startup aborted` (token unset or unreadable) or `Telegram
-polling started.` (`telegram/polling.py`'s existing success log,
-confirming the listener actually started).
+log lines: `Startup aborted: Missing TELEGRAM_BOT_TOKEN` (token unset
+or unreadable) or `Telegram polling started.` (`telegram/polling.py`'s
+existing success log, confirming the listener actually started). Once
+started, the configured `TELEGRAM_OWNER_ID` also receives a one-time
+"GoldBot Online" message (Telegram Runtime Activation Alpha, TASK 2)
+— the fastest confirmation that polling is actually live, no log
+access needed. See `docs/TELEGRAM_RUNTIME.md` for the full runtime
+observability layer (startup notification, heartbeat, runtime status).
 
 **`BITGET_API_KEY` is not a real secret in this codebase.** Only an
 `ENABLE_BITGET` feature-registry flag exists
