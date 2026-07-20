@@ -2,6 +2,18 @@
 
 AI-assisted, semi-automated trading signal system for XAUUSD, built on Smart Money Concepts (SMC) market analysis.
 
+## Production branch
+
+**`claude/code-analysis-optimization-pwfo3q` is the production
+branch** — not `main`. `.github/workflows/trading_bot.yml` checks it
+out explicitly (`ref: claude/code-analysis-optimization-pwfo3q`) for
+the scheduled trading pipeline, and it is the only branch containing
+`telegram/polling.py` at all. `main` is a stale, pre-`TradingPipeline`
+snapshot kept around as the repository's default branch; it is not
+read by any CI/CD path and should not be assumed current. See
+`docs/PHASE_BRANCH_SYNC_AUDIT.md` for the full branch-state audit
+behind this note.
+
 ## Project Overview
 
 GoldBot analyzes XAUUSD price action using Smart Money Concepts (market structure, liquidity, order blocks, fair value gaps, and AMD cycles), evaluates candidate setups through an AI confidence layer, and delivers approved trade signals via Telegram. GoldBot does not place trades automatically — execution remains manual, performed by the trader in their own MT5 terminal.

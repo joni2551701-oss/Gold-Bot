@@ -1,5 +1,13 @@
 # GoldBot Deployment Guide (v0.3)
 
+**Production branch: `claude/code-analysis-optimization-pwfo3q`, not
+`main`.** `.github/workflows/trading_bot.yml` pins this branch
+explicitly for the scheduled pipeline; `main` is a stale, pre-
+`TradingPipeline` snapshot with no `telegram/polling.py` at all and is
+never read by CI/CD. Any deployment (VPS, container, or otherwise)
+must clone/pull this branch, not `main`. Full audit:
+`docs/PHASE_BRANCH_SYNC_AUDIT.md`.
+
 GoldBot is two independent processes sharing one SQLite database file
 — see `docs/ARCHITECTURE.md`'s System Overview. Today, the trading
 pipeline (`main.py`) runs on GitHub Actions
