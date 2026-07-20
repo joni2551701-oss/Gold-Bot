@@ -155,8 +155,21 @@ inference), `journal_adapter.py` (pure `TradeJournalEntry` ->
 `LearningRuntime.create()` input mapping, never infers `topic`/`level`),
 and `memory_adapter.py` (`memory_reference_key()`, never imports
 `ai.memory`) — Owner-only via a dedicated `enable_learning_intelligence`
-flag (`66.4`-`66.8` not yet briefed). See
-`docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
+flag. `66.4` AI Coaching Intelligence Foundation (DONE) — new
+`ai/coaching/` subpackage: AI still never decides a trade (GoldBot's
+Trading Core and AI Analyst remain the only decision source); this
+phase builds the Foundation for explaining mistakes, surfacing
+weaknesses, and carrying a study/action suggestion. Primitive-only, in-
+memory `CoachingRecommendation`/`CoachingTopic`/`CoachingPriority`/
+`CoachingType`/`CoachingStatus`, `CoachingRuntime` (CRUD-only:
+`create()`/`get()`/`list()`/`archive()`/`update_status()`, no LLM/
+reasoning/inference), `learning_adapter.py` (pure `LearningRecord` ->
+`CoachingRuntime.create()` input mapping, relays `topic` directly since
+`LearningRecord` already carries one), and `journal_adapter.py` (pure
+`TradeJournalEntry` -> `CoachingRuntime.create()` input mapping, never
+infers `topic`) — Owner-only via a dedicated
+`enable_coaching_intelligence` flag (`66.5`-`66.8` not yet briefed).
+See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →
 Conversation → Explanation → Content → Translation → Media →

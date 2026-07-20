@@ -284,7 +284,7 @@ import posture unchanged. See `docs/PHASE65_4_FREEZE.md`.
 66.1  Chart Intelligence Foundation       DONE
 66.2  Trade Journal Intelligence Foundation DONE
 66.3  Learning Intelligence Foundation     DONE
-66.4  Coaching Intelligence               FUTURE (not yet briefed)
+66.4  Coaching Intelligence Foundation     DONE
 66.5  Performance Intelligence            FUTURE (not yet briefed)
 66.6  Strategy Intelligence               FUTURE (not yet briefed)
 66.7  Portfolio Intelligence              FUTURE (not yet briefed)
@@ -404,6 +404,41 @@ dedicated `enable_learning_intelligence` flag. Zero diff in
 `database/`, `monitoring/`, `strategies/` this phase (Rule 1/2). Not
 wired into `core/pipeline.py` or any Telegram command — foundation
 only. See `docs/PHASE66_3_FREEZE.md`.
+
+Built Phase 66.4 — **AI Coaching Intelligence Foundation**, the fifth
+phase in the `66.x` AI Trading Intelligence sub-sequence: AI still
+never decides a trade — GoldBot's Trading Core and AI Analyst remain
+the only source of any BUY/SELL/NO_TRADE decision; this phase only
+builds the Foundation for explaining a trader's own mistakes,
+surfacing weaknesses, and carrying a study/action suggestion. New
+`ai/coaching/` subpackage (inside the existing `ai/` top-level package,
+confirmed by `docs/PHASE66_4_AUDIT.md`'s TASK 0 audit, which found no
+pre-existing Coaching model, Runtime, Manager, or Registry anywhere in
+the codebase). `CoachingRecommendation`/`CoachingTopic`/
+`CoachingPriority`/`CoachingType`/`CoachingStatus` (`models.py`) are
+primitive-only, in-memory — `CoachingTopic` mirrors
+`ai.learning.models.LearningTopic`'s own value set for coherence but
+is a separate, local enum (no cross-package import in `models.py`).
+`CoachingRuntime` (`coaching_runtime.py`) is CRUD-only —
+`create()`/`get()`/`list()`/`archive()`/`update_status()`, no LLM, no
+reasoning, no real inference of any kind; `update_status()` rejects
+ARCHIVED (a dedicated, one-way action via `archive()` only).
+`learning_adapter.py` maps an existing `LearningRecord` (Phase 66.3)
+into `CoachingRuntime.create()`'s own keyword arguments — pure
+mapping, and unlike the Journal Adapter it *can* relay `topic` directly
+since `LearningRecord` already carries an explicit one.
+`journal_adapter.py` maps an existing `TradeJournalEntry` (Phase 66.2)
+the same way, deliberately never returning `topic` (no topic-shaped
+field to relay without inferring one). Owner-only via a dedicated
+`enable_coaching_intelligence` flag. Zero diff in `decision/`, `risk/`,
+`execution/`, `strategies/`, `signals/`, `context/`, `telegram/`,
+`database/`, `monitoring/` this phase (Rule 1). Not wired into
+`core/pipeline.py` or any Telegram command — foundation only. Five
+Director Notes recorded for a future, separately-briefed phase (not
+implemented here): a Skill Tree view over `CoachingTopic`, per-user
+Weakness Tracking, Adaptive Coaching, a Learning History chain
+(Lesson → Exercise → Quiz → Replay → Exam → Certificate), and Academy
+integration. See `docs/PHASE66_4_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 

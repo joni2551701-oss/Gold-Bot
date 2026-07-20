@@ -5,7 +5,7 @@ This document maps the real `ai/` package as it exists in the
 repository today — verified directly via directory listing for this
 phase, not transcribed from assumption.
 
-## Real package tree — 25 subpackages under `ai/`
+## Real package tree — 26 subpackages under `ai/`
 
 ```
 ai/
@@ -53,6 +53,14 @@ ai/
                    LearningRecord input mapping, pure, the one file importing ai.trade_journal),
                    memory_adapter.py (memory_reference_key() -- a plain string key, never imports
                    ai.memory) (Phase 66.3)
+  coaching/        models.py (CoachingRecommendation/CoachingTopic/CoachingPriority/CoachingType/
+                   CoachingStatus, primitive-only, in-memory, no BUY/SELL/verdict field of any
+                   kind), access.py (is_coaching_intelligence_enabled_for, Owner-only),
+                   coaching_runtime.py (CoachingRuntime -- create/get/list/archive/update_status
+                   CRUD only, in-memory dict, no database, no LLM/reasoning/inference of any kind),
+                   learning_adapter.py (LearningRecord -> Coaching input mapping, pure, the one
+                   file importing ai.learning), journal_adapter.py (TradeJournalEntry -> Coaching
+                   input mapping, pure, the one file importing ai.trade_journal) (Phase 66.4)
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
                    (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
@@ -236,6 +244,12 @@ above:
   topic mastery, distinct from the pre-existing `learning/` package's
   own trade-outcome-statistics `LearningRecord`), and its Trade
   Journal/Memory integration points (Phase 66.3).
+- `docs/ai/AI_COACHING.md` — `ai/coaching/`'s `CoachingRuntime`
+  (CRUD-only, in-memory, no LLM/reasoning/inference, no BUY/SELL/
+  verdict field of any kind), its primitive-only
+  `CoachingRecommendation` contract (`learning_id`/`journal_id` links
+  to its two upstream sources), and its Learning/Trade Journal
+  integration points (Phase 66.4).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

@@ -68,6 +68,11 @@ class FeatureFlags:
         additionally requires `AIRole.OWNER` (TASK 6). Distinct from
         the pre-existing, unrelated `learning/` top-level package
         (Phase 60.6/60.7), which reads no feature flag at all.
+    enable_coaching_intelligence: reserved for AI Coaching Intelligence
+        (Phase 66.4, `ai/coaching/`) -- always False by default; even
+        when True,
+        `ai.coaching.access.is_coaching_intelligence_enabled_for()`
+        additionally requires `AIRole.OWNER` (TASK 6).
     """
     enable_ai: bool = False
     enable_crypto: bool = False
@@ -79,6 +84,7 @@ class FeatureFlags:
     enable_chart_intelligence: bool = False
     enable_trade_journal: bool = False
     enable_learning_intelligence: bool = False
+    enable_coaching_intelligence: bool = False
 
 
 # The single safe-default instance -- every flag off. Not a singleton

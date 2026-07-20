@@ -120,7 +120,10 @@ likewise never calls `run()` — `TradeJournalRuntime` is CRUD-only
 Phase 66.3's `ai/learning/learning_runtime.py` follows the same
 pattern — `LearningRuntime` is CRUD-only (Rule 10: no real AI
 inference), never calls `run()` or any Explanation/Knowledge/Memory
-system.
+system. Phase 66.4's `ai/coaching/coaching_runtime.py` follows the
+same pattern again — `CoachingRuntime` is CRUD-only ("LLM yo'q.
+Reasoning yo'q. Inference yo'q."), never calls `run()` or any
+Explanation/Knowledge/Memory system.
 
 ## Related
 
