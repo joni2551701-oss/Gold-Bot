@@ -103,3 +103,37 @@ sqlite3 database/goldbot.db ".backup database/goldbot.db.backup-$(date +%Y%m%d)"
 Nothing else needs backing up — `.env`/environment variables are
 deployment configuration, not state, and should be redeployed from
 your secrets manager rather than restored from a backup.
+
+## Troubleshooting: "/start doesn't respond"
+
+Audited as part of the GitHub Secrets / Environment Configuration
+Audit (Owner Monitoring track). If `TELEGRAM_BOT_TOKEN`/
+`TELEGRAM_CHAT_ID`/`TELEGRAM_OWNER_ID`/`TWELVE_DATA_API_KEY`/
+`GEMINI_API_KEY` are all correctly set as GitHub Secrets, `/start`
+can still appear to get no reply — because **GitHub Actions never
+runs `telegram/polling.py`**. `.github/workflows/trading_bot.yml`
+only runs the one-shot `python main.py` (outbound signal broadcast)
+on a cron schedule; there is no GitHub Actions job for the
+long-running inbound listener that `/start` (and every other command)
+needs, by design — a scheduled Actions job is the wrong shape for an
+always-on process (see `docs/ARCHITECTURE.md`'s System Overview and
+"Run" above).
+
+`/start` only gets a reply once `python -m telegram.polling` is
+actually running somewhere that stays up — a VPS (`deploy/systemd/
+goldbot-polling.service`), a container (`docker-compose.yml`'s
+`telegram-polling` service), or equivalent. Correctly configured
+secrets are necessary but not sufficient; the polling process must
+also be deployed and running. Check `journalctl -u goldbot-polling`
+(or the equivalent container logs) for one of two explicit startup
+log lines added by this audit: `TELEGRAM_BOT_TOKEN missing` /
+`Bot startup aborted` (token unset or unreadable) or `Telegram
+polling started.` (`telegram/polling.py`'s existing success log,
+confirming the listener actually started).
+
+**`BITGET_API_KEY` is not a real secret in this codebase.** Only an
+`ENABLE_BITGET` feature-registry flag exists
+(`configuration/feature_registry.py`) for a not-yet-built Bitget
+provider — no `core/secrets.py` property, no `.env.example` entry,
+no code path reads `BITGET_API_KEY`. Setting it as a GitHub Secret is
+harmless but has no effect; do not expect it to change bot behavior.

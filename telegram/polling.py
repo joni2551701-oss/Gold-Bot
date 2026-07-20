@@ -87,7 +87,13 @@ async def run_polling() -> None:
     try:
         token = Secrets().TELEGRAM_BOT_TOKEN
     except Exception as e:
-        logger.error(f"Cannot start polling: {e}")
+        # Deliberately explicit and grep-able: an operator scanning
+        # journald/GitHub Actions logs for "why isn't the bot
+        # responding" needs the missing variable name and the fact
+        # that startup was aborted (not silently degraded), without
+        # having to parse Secrets.get()'s generic ValueError text.
+        logger.error("TELEGRAM_BOT_TOKEN missing")
+        logger.error(f"Bot startup aborted: {e}")
         return
 
     bot = Bot(token=token)
