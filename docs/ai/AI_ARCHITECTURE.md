@@ -5,7 +5,7 @@ This document maps the real `ai/` package as it exists in the
 repository today — verified directly via directory listing for this
 phase, not transcribed from assumption.
 
-## Real package tree — 24 subpackages under `ai/`
+## Real package tree — 25 subpackages under `ai/`
 
 ```
 ai/
@@ -44,6 +44,15 @@ ai/
                    ai.trading_analyst and ai.chart_intelligence), memory_adapter.py
                    (memory_reference_key() -- a plain string key, never imports ai.memory) (Phase
                    66.2)
+  learning/        models.py (LearningRecord/LearningTopic/LearningLevel/LearningSource/
+                   LearningStatus, primitive-only, in-memory, per-user topic-mastery -- distinct
+                   from the pre-existing, unrelated top-level learning/ package), access.py
+                   (is_learning_intelligence_enabled_for, Owner-only), learning_runtime.py
+                   (LearningRuntime -- create/get/list/update/archive CRUD only, in-memory dict,
+                   no database, no real AI inference), journal_adapter.py (TradeJournalEntry ->
+                   LearningRecord input mapping, pure, the one file importing ai.trade_journal),
+                   memory_adapter.py (memory_reference_key() -- a plain string key, never imports
+                   ai.memory) (Phase 66.3)
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
                    (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
@@ -221,6 +230,12 @@ above:
   contracts (mandatory `chart_id`/`trade_id` links, metadata-only
   replay pointers), and its Trading Analyst/Chart Intelligence/Memory
   integration points (Phase 66.2).
+- `docs/ai/AI_LEARNING.md` — `ai/learning/`'s `LearningRuntime`
+  (CRUD-only, in-memory, no real AI inference, no performance
+  computation), its primitive-only `LearningRecord` contract (per-user
+  topic mastery, distinct from the pre-existing `learning/` package's
+  own trade-outcome-statistics `LearningRecord`), and its Trade
+  Journal/Memory integration points (Phase 66.3).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

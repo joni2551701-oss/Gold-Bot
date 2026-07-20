@@ -117,6 +117,10 @@ future reader does not assume every `66.x` runtime is a third caller
 of this file. Phase 66.2's `ai/trade_journal/journal_runtime.py`
 likewise never calls `run()` — `TradeJournalRuntime` is CRUD-only
 (Rule 4), with no Explanation/Knowledge/Memory grounding of any kind.
+Phase 66.3's `ai/learning/learning_runtime.py` follows the same
+pattern — `LearningRuntime` is CRUD-only (Rule 10: no real AI
+inference), never calls `run()` or any Explanation/Knowledge/Memory
+system.
 
 ## Related
 

@@ -141,8 +141,21 @@ Rule 3, no statistics — Rule 4), `TradeJournalRuntime` (CRUD-only:
 and `memory_adapter.py` (`memory_reference_key()`, never imports
 `ai.memory`) — Owner-only via a dedicated `enable_trade_journal` flag.
 This same phase also extended the Phase 66.1 LOCKed `ChartAnalysis`
-with one new, additive `chart_id` field (LOCK-permitted extension)
-(`66.3`-`66.8` not yet briefed). See
+with one new, additive `chart_id` field (LOCK-permitted extension).
+`66.3` AI Learning Intelligence Foundation (DONE) — new `ai/learning/`
+subpackage, the first phase where AI infrastructure begins preparing
+to learn from the user (though this phase itself performs no
+evaluation, coaching, or teaching): primitive-only, in-memory
+`LearningRecord`/`LearningTopic`/`LearningLevel`/`LearningSource`/
+`LearningStatus` (distinct from the pre-existing, DB-persisted
+`learning.models.LearningRecord`, Phase 60.6/60.7, reviewed but not
+reused), `LearningRuntime` (CRUD-only:
+`create()`/`get()`/`list()`/`update()`/`archive()`, no real AI
+inference), `journal_adapter.py` (pure `TradeJournalEntry` ->
+`LearningRuntime.create()` input mapping, never infers `topic`/`level`),
+and `memory_adapter.py` (`memory_reference_key()`, never imports
+`ai.memory`) — Owner-only via a dedicated `enable_learning_intelligence`
+flag (`66.4`-`66.8` not yet briefed). See
 `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →

@@ -283,7 +283,7 @@ import posture unchanged. See `docs/PHASE65_4_FREEZE.md`.
 66.0  AI Trading Analyst Foundation       DONE
 66.1  Chart Intelligence Foundation       DONE
 66.2  Trade Journal Intelligence Foundation DONE
-66.3  Learning Intelligence               FUTURE (not yet briefed)
+66.3  Learning Intelligence Foundation     DONE
 66.4  Coaching Intelligence               FUTURE (not yet briefed)
 66.5  Performance Intelligence            FUTURE (not yet briefed)
 66.6  Strategy Intelligence               FUTURE (not yet briefed)
@@ -377,6 +377,33 @@ via a dedicated `enable_trade_journal` flag. Zero diff in `decision/`,
 `monitoring/` this phase (Rule 1). Not wired into `core/pipeline.py`
 or any Telegram command — foundation only. See
 `docs/PHASE66_2_FREEZE.md`.
+
+Built Phase 66.3 — **AI Learning Intelligence Foundation**, the
+fourth phase in the `66.x` AI Trading Intelligence sub-sequence, and
+per the Director's own framing the first phase where AI infrastructure
+begins preparing to learn *from the user*, not just narrate the
+Trading Core's own output — though this phase itself performs no
+evaluation, coaching, or teaching of any kind. New `ai/learning/`
+subpackage (inside the existing `ai/` top-level package, confirmed by
+`docs/PHASE66_3_AUDIT.md`'s TASK 0 audit, which also reviewed and
+declined to reuse the pre-existing, DB-persisted
+`learning.models.LearningRecord`, Phase 60.6/60.7, and
+`ai/learning_context.py`'s `LearningContext`, both trade-outcome
+statistics concerns rather than per-user topic mastery).
+`LearningRecord`/`LearningTopic`/`LearningLevel`/`LearningSource`/
+`LearningStatus` (`models.py`) are primitive-only, in-memory. `LearningRuntime`
+(`learning_runtime.py`) is CRUD-only —
+`create()`/`get()`/`list()`/`update()`/`archive()`, no real AI
+inference, no performance computation, no coaching, no lesson/quiz
+generation. `journal_adapter.py` maps an existing `TradeJournalEntry`
+(Phase 66.2) into `LearningRuntime.create()`'s own keyword arguments —
+pure mapping, never infers `topic`/`level`. `memory_adapter.py`'s
+`memory_reference_key()` never imports `ai.memory`. Owner-only via a
+dedicated `enable_learning_intelligence` flag. Zero diff in
+`decision/`, `risk/`, `execution/`, `signals/`, `telegram/`,
+`database/`, `monitoring/`, `strategies/` this phase (Rule 1/2). Not
+wired into `core/pipeline.py` or any Telegram command — foundation
+only. See `docs/PHASE66_3_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 

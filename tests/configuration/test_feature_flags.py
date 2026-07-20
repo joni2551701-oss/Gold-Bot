@@ -59,11 +59,11 @@ def test_feature_flags_toggle_support_via_replace():
     assert toggled.enable_replay is False
 
 
-def test_feature_flags_field_names_are_exactly_the_nine_foundation_flags():
-    """Phase 65.3 added enable_personal_ai (Personal AI Assistant, assistant/); Phase 66.0 added enable_trading_analyst (AI Trading Analyst, ai/trading_analyst/); Phase 66.1 added enable_chart_intelligence (AI Chart Intelligence, ai/chart_intelligence/); Phase 66.2 added enable_trade_journal (AI Trade Journal Intelligence, ai/trade_journal/)."""
+def test_feature_flags_field_names_are_exactly_the_ten_foundation_flags():
+    """Phase 65.3 added enable_personal_ai (Personal AI Assistant, assistant/); Phase 66.0 added enable_trading_analyst (AI Trading Analyst, ai/trading_analyst/); Phase 66.1 added enable_chart_intelligence (AI Chart Intelligence, ai/chart_intelligence/); Phase 66.2 added enable_trade_journal (AI Trade Journal Intelligence, ai/trade_journal/); Phase 66.3 added enable_learning_intelligence (AI Learning Intelligence, ai/learning/)."""
     field_names = {f.name for f in dataclasses.fields(FeatureFlags)}
     assert field_names == {
         "enable_ai", "enable_crypto", "enable_swing", "enable_ai_memory", "enable_replay",
         "enable_personal_ai", "enable_trading_analyst", "enable_chart_intelligence",
-        "enable_trade_journal",
+        "enable_trade_journal", "enable_learning_intelligence",
     }

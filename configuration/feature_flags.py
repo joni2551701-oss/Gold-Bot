@@ -61,6 +61,13 @@ class FeatureFlags:
         `ai/journal/trade_journal.py` but does not govern it) -- this
         is a dedicated flag for the new, unrelated `ai/trade_journal/`
         package.
+    enable_learning_intelligence: reserved for AI Learning Intelligence
+        (Phase 66.3, `ai/learning/`) -- always False by default; even
+        when True,
+        `ai.learning.access.is_learning_intelligence_enabled_for()`
+        additionally requires `AIRole.OWNER` (TASK 6). Distinct from
+        the pre-existing, unrelated `learning/` top-level package
+        (Phase 60.6/60.7), which reads no feature flag at all.
     """
     enable_ai: bool = False
     enable_crypto: bool = False
@@ -71,6 +78,7 @@ class FeatureFlags:
     enable_trading_analyst: bool = False
     enable_chart_intelligence: bool = False
     enable_trade_journal: bool = False
+    enable_learning_intelligence: bool = False
 
 
 # The single safe-default instance -- every flag off. Not a singleton
