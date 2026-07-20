@@ -142,6 +142,18 @@ already satisfies exactly.
   SUPER_ADMIN/ADMIN/VIEWER) remains available for a future phase that
   needs finer-grained Owner-panel roles.
 
+## Owner Snapshot Reporter (GitHub Actions Alpha)
+
+`monitoring/snapshot_collector.py` (GoldBot Core Owner Snapshot
+Reporter Alpha) composes `get_health()`/`get_market_health()`/
+`get_signal_health()`/`ErrorMonitor` from this layer into a single
+`OwnerSnapshot`, delivered to the Owner's Telegram every 15 minutes by
+`.github/workflows/owner_snapshot.yml` — a one-shot substitute for
+this phase's own live commands until `telegram.polling` is deployed
+on a VPS. See `docs/OWNER_SNAPSHOT_REPORTER.md` for the full design
+and `docs/PHASE_OWNER_SNAPSHOT_FREEZE.md`'s LOCK Policy for
+`monitoring/snapshot_*`/`telegram/owner/snapshot_*`.
+
 ## Related documents
 
 - `docs/PHASE_CORE_MONITORING_AUDIT.md` — TASK 0's Foundation Reuse

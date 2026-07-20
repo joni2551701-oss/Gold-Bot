@@ -149,3 +149,13 @@ observability layer (startup notification, heartbeat, runtime status).
 provider — no `core/secrets.py` property, no `.env.example` entry,
 no code path reads `BITGET_API_KEY`. Setting it as a GitHub Secret is
 harmless but has no effect; do not expect it to change bot behavior.
+
+## Owner Snapshot Reporter (no VPS needed)
+
+Until `telegram.polling` is actually deployed on a VPS, `.github/workflows/owner_snapshot.yml`
+runs `python -m monitoring.run_snapshot` every 15 minutes via GitHub
+Actions — a one-shot process that sends a Core/Database/Market
+Data/Signal status snapshot to `TELEGRAM_OWNER_ID`, with no
+long-running process required. See `docs/OWNER_SNAPSHOT_REPORTER.md`
+for the full design; this does not replace 24/7 VPS runtime, it's a
+temporary Alpha observation layer.
