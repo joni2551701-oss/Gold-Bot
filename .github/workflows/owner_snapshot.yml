@@ -1,0 +1,53 @@
+name: GoldBot Owner Snapshot Reporter
+
+# GoldBot Core Owner Snapshot Reporter Alpha -- a temporary,
+# GitHub-Actions-driven substitute for the Telegram Runtime's own
+# live heartbeat/startup notification (docs/TELEGRAM_RUNTIME.md),
+# useful precisely because that heartbeat only fires once
+# telegram.polling is deployed on a VPS (not yet true -- see
+# docs/PHASE_BRANCH_SYNC_AUDIT.md). Runs monitoring/run_snapshot.py
+# once every 15 minutes: collect -> format -> send to TELEGRAM_OWNER_ID
+# -> exit. Does not replace 24/7 VPS runtime (docs/OWNER_SNAPSHOT_REPORTER.md).
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: goldbot-owner-snapshot
+  cancel-in-progress: true
+
+jobs:
+  send-snapshot:
+    runs-on: ubuntu-latest
+    # Audit & Hardening TASK 5: bounds a hung TwelveData/Telegram call
+    # so a stuck one-shot run doesn't sit in the queue until GitHub's
+    # own default job timeout (6h) -- 5 minutes is generously above
+    # this job's own real completion time (a few seconds).
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Same production-branch pin as trading_bot.yml -- see
+          # docs/PHASE_BRANCH_SYNC_AUDIT.md for why this branch, not
+          # the repository's default branch, is production.
+          ref: claude/code-analysis-optimization-pwfo3q
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Send owner snapshot
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_OWNER_ID: ${{ secrets.TELEGRAM_OWNER_ID }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -m monitoring.run_snapshot
