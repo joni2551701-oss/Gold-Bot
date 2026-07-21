@@ -90,7 +90,7 @@ jobs:
             --exclude='.git' \
             --exclude='__pycache__' \
             --exclude='*.pyc' \
-            --exclude='database' \
+            --exclude='database/*.db' \
             --exclude='.env' \
             --exclude='logs' \
             --exclude='venv' \

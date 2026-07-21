@@ -17,6 +17,7 @@ is exercised only via its systemd OnFailure= wiring).
 
 import pathlib
 import subprocess
+import sys
 
 
 def _script_path(name):
@@ -89,9 +90,27 @@ def test_release_deploy_script_never_overwrites_env_symlink_target():
     assert 'ln -sfn "$DEPLOY_PATH/shared/.env"' in text
 
 
-def test_release_deploy_script_symlinks_database_from_shared():
+def test_release_deploy_script_symlinks_database_file_from_shared():
+    """
+    Only the runtime SQLite file is symlinked from shared/ -- the
+    database/ directory itself is the Python package and ships fresh
+    with every release (rsync'd, not shared). See
+    docs/deployment/PRODUCTION_DEPLOYMENT.md's "package vs. runtime
+    data" section for why this distinction matters.
+    """
     text = _script_text("release_deploy.sh")
-    assert 'ln -sfn "$DEPLOY_PATH/shared/database"' in text
+    assert 'ln -sfn "$DEPLOY_PATH/shared/database/goldbot.db" "$RELEASE_DIR/database/goldbot.db"' in text
+
+
+def test_release_deploy_script_does_not_symlink_the_whole_database_directory():
+    """
+    Regression guard for the real bug caught on the first VPS deploy:
+    symlinking the whole database/ directory over the release's own
+    (rsync'd) Python package directory would shadow it, breaking
+    `from database.database import Database`.
+    """
+    text = _script_text("release_deploy.sh")
+    assert 'ln -sfn "$DEPLOY_PATH/shared/database" "$RELEASE_DIR/database"' not in text
 
 
 def test_release_deploy_script_symlinks_logs_from_shared():
@@ -170,6 +189,109 @@ def test_release_deploy_script_never_contains_a_plaintext_looking_secret():
     lowered = text.lower()
     for marker in ["bot_token=1", "api_key=sk-", "password="]:
         assert marker not in lowered
+
+
+# ---------------------------------------------------------------------------
+# Simulated deploy: rsync-exclude + shared-resource-symlink flow, run for
+# real against this repository's actual database/ package (no VPS/systemd
+# needed -- reproduces the exact bug caught on the first real VPS deploy:
+# excluding the bare 'database' directory silently dropped the Python
+# package, breaking every `from database...` import).
+# ---------------------------------------------------------------------------
+
+def _repo_root():
+    return pathlib.Path(__file__).resolve().parents[2]
+
+
+def _rsync_exclude_patterns():
+    """All --exclude='...' patterns from production_deploy.yml's rsync step, in order."""
+    workflow_text = (_repo_root() / ".github" / "workflows" / "production_deploy.yml").read_text()
+    rsync_section = workflow_text.split("rsync -az", 1)[1].split("Activate release", 1)[0]
+    patterns = []
+    for line in rsync_section.splitlines():
+        stripped = line.strip().rstrip("\\").strip()
+        if stripped.startswith("--exclude="):
+            patterns.append(stripped.split("--exclude='")[1].rsplit("'", 1)[0])
+    assert patterns, "expected at least one --exclude pattern in production_deploy.yml"
+    return patterns
+
+
+def test_simulated_deploy_ships_the_database_package_and_preserves_shared_db(tmp_path):
+    """
+    Simulates the real deploy flow (rsync excludes -> shared-resource
+    symlink) using this repository's *entire* real tree, without
+    needing a VPS: (1) copy the repo into a fake release directory,
+    skipping exactly what production_deploy.yml's rsync excludes; (2)
+    symlink the shared runtime .db file in exactly as
+    release_deploy.sh does; (3) confirm `database.database` -- which
+    itself imports core.logger and config, so a database/-only copy
+    would give a false signal -- still imports cleanly, and the shared
+    file's contents are reached through the symlink, not overwritten.
+
+    This reproduces the exact bug caught on the first real VPS deploy:
+    excluding the bare 'database' directory silently dropped the
+    Python package, breaking every `from database...` import.
+    """
+    import fnmatch
+    import shutil
+    import subprocess as sp
+
+    patterns = _rsync_exclude_patterns()
+    repo_root = _repo_root()
+
+    deploy_path = tmp_path / "goldbot"
+    shared_database_dir = deploy_path / "shared" / "database"
+    shared_database_dir.mkdir(parents=True)
+    shared_db = shared_database_dir / "goldbot.db"
+    shared_db.write_bytes(b"SQLITE_SHARED_CONTENT")
+
+    release_dir = deploy_path / "releases" / "20260101000000"
+
+    def _excluded(name, rel_posix):
+        for p in patterns:
+            # rsync matches a pattern with no '/' against the basename at
+            # any depth; a pattern containing '/' is matched against the
+            # path relative to the transfer root.
+            target = rel_posix if "/" in p else name
+            if fnmatch.fnmatch(target, p):
+                return True
+        return False
+
+    def _ignore(dirpath, names):
+        rel_dir = pathlib.Path(dirpath).relative_to(repo_root).as_posix()
+        skip = []
+        for name in names:
+            rel = name if rel_dir == "." else f"{rel_dir}/{name}"
+            if _excluded(name, rel):
+                skip.append(name)
+        return skip
+
+    shutil.copytree(repo_root, release_dir, ignore=_ignore, symlinks=False)
+
+    assert (release_dir / "database" / "database.py").exists(), (
+        "database/database.py must ship with the release -- the exclude "
+        "pattern must not drop the Python package"
+    )
+    assert not (release_dir / "database" / "goldbot.db").exists(), (
+        "the runtime .db file must be excluded by rsync, not copied"
+    )
+
+    # Reproduce release_deploy.sh's symlink step exactly.
+    (release_dir / "database" / "goldbot.db").symlink_to(shared_db)
+
+    result = sp.run(
+        [sys.executable, "-c", "from database.database import Database; print('OK')"],
+        cwd=str(release_dir),
+        capture_output=True, text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "OK" in result.stdout
+
+    # The runtime file is reached through the symlink, not copied --
+    # writing to the "shared" file is visible through the release path.
+    assert (release_dir / "database" / "goldbot.db").read_bytes() == b"SQLITE_SHARED_CONTENT"
+    shared_db.write_bytes(b"UPDATED_BY_A_LATER_RELEASE")
+    assert (release_dir / "database" / "goldbot.db").read_bytes() == b"UPDATED_BY_A_LATER_RELEASE"
 
 
 # ---------------------------------------------------------------------------

@@ -166,10 +166,60 @@ def test_workflow_rsync_excludes_env_file():
     assert "--exclude='.env'" in rsync_section
 
 
-def test_workflow_rsync_excludes_database():
+def test_workflow_rsync_excludes_database_file():
+    """
+    Only the runtime SQLite file is excluded -- the database/ Python
+    package (database.py, *_repository.py, etc.) must still ship with
+    every release. See docs/deployment/PRODUCTION_DEPLOYMENT.md's
+    "package vs. runtime data" section.
+    """
     text = _workflow_text()
     rsync_section = text.split("rsync -az", 1)[1].split("Activate release", 1)[0]
-    assert "--exclude='database'" in rsync_section
+    assert "--exclude='database/*.db'" in rsync_section
+
+
+def test_workflow_rsync_does_not_exclude_the_whole_database_package():
+    """
+    Regression guard for the real bug caught on the first VPS deploy:
+    excluding the bare 'database' directory silently drops the Python
+    package, breaking `from database.database import Database`
+    everywhere. Only the scoped database/*.db pattern is allowed.
+    """
+    text = _workflow_text()
+    rsync_section = text.split("rsync -az", 1)[1].split("Activate release", 1)[0]
+    assert "--exclude='database'" not in rsync_section
+    for line in rsync_section.splitlines():
+        stripped = line.strip().rstrip("\\").strip()
+        if stripped.startswith("--exclude="):
+            assert stripped != "--exclude='database'"
+
+
+def test_workflow_rsync_exclude_pattern_matches_only_db_files_not_package_source():
+    """
+    Verifies the *effect* of the exclude pattern against this
+    repository's real database/ package: real source files must never
+    match it, while a runtime .db file must.
+    """
+    import fnmatch
+    import pathlib
+
+    text = _workflow_text()
+    rsync_section = text.split("rsync -az", 1)[1].split("Activate release", 1)[0]
+    exclude_line = [
+        line for line in rsync_section.splitlines() if "--exclude='database" in line
+    ][0]
+    pattern = exclude_line.split("--exclude='")[1].split("'")[0]
+
+    database_dir = pathlib.Path(__file__).resolve().parents[2] / "database"
+    source_files = [p for p in database_dir.rglob("*.py")]
+    assert source_files, "expected real .py files under database/ to test against"
+    for path in source_files:
+        rel = path.relative_to(database_dir.parent).as_posix()
+        assert not fnmatch.fnmatch(rel, pattern), (
+            f"{rel} must not be excluded by rsync pattern {pattern!r}"
+        )
+
+    assert fnmatch.fnmatch("database/goldbot.db", pattern)
 
 
 def test_workflow_rsync_excludes_logs():

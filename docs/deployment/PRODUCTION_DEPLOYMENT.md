@@ -32,7 +32,7 @@ GitHub Actions: production_deploy.yml
          (runs ON the VPS, shipped as part of the release itself)
     |
     +-- create venv, pip install -r requirements.txt (per-release, isolated)
-    +-- symlink shared/.env, shared/database, shared/logs into the release
+    +-- symlink shared/.env, shared/database/goldbot.db, shared/logs into the release
     +-- pre-activation smoke test (scripts/health_check.py) --
     |       FAILS -> abort here, `current` and the live service untouched
     +-- atomic switch: current -> releases/<release_id>  (scripts/deploy/release_manager.py)
@@ -52,7 +52,7 @@ GitHub Actions: production_deploy.yml
 │   └── ...                       # never deleted automatically -- always keeps the previous release for rollback
 ├── shared/
 │   ├── .env                      # real secrets, chmod 600, created once manually -- never overwritten by a deploy
-│   ├── database/                 # goldbot.db lives here, symlinked into every release
+│   ├── database/goldbot.db       # the runtime SQLite file, symlinked (as this one file) into every release
 │   └── logs/                     # foundation per logs/README.md, symlinked into every release
 ├── current -> releases/20260721180912/   # atomic symlink, the only thing that changes on deploy
 └── backups/                      # for your own backup rotation, see docs/DEPLOYMENT.md's Backup section
@@ -61,9 +61,32 @@ GitHub Actions: production_deploy.yml
 RULE 3/4 compliance: a deploy **never** writes directly into `current`
 — it builds an entirely new `releases/<id>/` directory, and only
 switches the `current` symlink once that new release has passed its
-smoke test. `shared/.env`, `shared/database`, `shared/logs` are never
-copied or overwritten by any deploy step — every release only
-symlinks to them.
+smoke test. `shared/.env`, `shared/database/goldbot.db`, `shared/logs`
+are never copied or overwritten by any deploy step — every release
+only symlinks to them.
+
+### `database/` — package vs. runtime data (do not confuse the two)
+
+This repository has a naming collision that matters here: `database/`
+is **both** a Python package (`database/database.py`,
+`database/*_repository.py` — real application source, imported as
+`from database.database import Database`) **and**, per `config.py`'s
+`DB_PATH`, the directory the runtime SQLite file (`goldbot.db`) lives
+in. A deploy must ship the package (it's application code) while never
+overwriting the data file (RULE 4). Concretely:
+
+- `releases/<id>/database/*.py` — real files, `rsync`'d fresh with
+  every release, exactly like any other source directory.
+- `releases/<id>/database/goldbot.db` — a symlink to
+  `shared/database/goldbot.db`, the one persistent copy, reused by
+  every release.
+
+`rsync`'s exclude is therefore scoped to `database/*.db`, not
+`database` — excluding the whole directory would silently drop the
+Python package itself, breaking every `from database...` import in the
+release (this was a real bug caught during the first end-to-end VPS
+deploy verification; see `docs/PHASE_P1_FREEZE.md`'s Known Limitations
+section for the incident).
 
 ## One-time VPS setup (manual, before the first deploy)
 
@@ -125,8 +148,9 @@ scripts:
    **the deploy job does not run at all if any of these fail.**
 2. `deploy` job computes a release id (`date -u
    +%Y%m%d%H%M%S`), `rsync`s the checked-out tree (excluding `.git`,
-   `__pycache__`, `database`, `.env`, `logs`, `venv`) into
-   `$DEPLOY_PATH/releases/<id>/`, then SSHes in and runs
+   `__pycache__`, `database/*.db`, `.env`, `logs`, `venv` — the
+   `database` Python package itself ships with every release, see
+   above) into `$DEPLOY_PATH/releases/<id>/`, then SSHes in and runs
    `scripts/deploy/release_deploy.sh` — see the Architecture diagram
    above for what that script does on the VPS side.
 3. Every decision about which release is "current"/"previous" is

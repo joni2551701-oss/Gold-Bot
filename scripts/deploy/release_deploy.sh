@@ -50,7 +50,11 @@ python3.11 -m venv "$RELEASE_DIR/venv"
 
 echo "[deploy] Linking shared resources (never overwritten, always reused)"
 ln -sfn "$DEPLOY_PATH/shared/.env" "$RELEASE_DIR/.env"
-ln -sfn "$DEPLOY_PATH/shared/database" "$RELEASE_DIR/database"
+# database/ is this repository's Python package (database.py,
+# *_repository.py, etc.) -- it ships with every release like any other
+# source directory. Only the runtime SQLite file inside it is shared/
+# persistent, so only that file is symlinked, not the whole directory.
+ln -sfn "$DEPLOY_PATH/shared/database/goldbot.db" "$RELEASE_DIR/database/goldbot.db"
 ln -sfn "$DEPLOY_PATH/shared/logs" "$RELEASE_DIR/logs"
 
 echo "[deploy] Running pre-activation smoke test (startup verification only, no continuous execution)"

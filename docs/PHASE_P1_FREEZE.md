@@ -105,6 +105,27 @@ verified to import nothing from Trading Core).
   on the VPS before the first deploy (documented in
   `docs/deployment/PRODUCTION_DEPLOYMENT.md`'s one-time setup section).
 
+### Post-freeze incident: first real VPS deploy caught a database-exclude bug
+
+The first real end-to-end deploy against the production VPS (after
+this freeze) surfaced a bug this sandbox could never catch on its own:
+`production_deploy.yml`'s `rsync` excluded `database` to protect the
+shared SQLite file (RULE 4), but `database` is also this repository's
+Python package name (`database/database.py`, `database/*_repository.py`).
+The exclude matched the whole directory, so the release shipped
+without the package at all, and the pre-activation smoke test failed
+with `ModuleNotFoundError: No module named 'database.database'` —
+correctly aborting before `current` or `goldbot.service` were touched
+(the safety gate worked exactly as designed). Fixed by narrowing the
+exclude to `database/*.db` and changing `release_deploy.sh` to symlink
+only `shared/database/goldbot.db` into the release instead of the
+whole `database/` directory — see
+`docs/deployment/PRODUCTION_DEPLOYMENT.md`'s "package vs. runtime
+data" section for the corrected design. Trading Core was not touched
+by this fix; it is confined to deploy tooling
+(`production_deploy.yml`, `release_deploy.sh`) plus this documentation
+and their tests.
+
 ## Acceptance Criteria — Status
 
 | Criterion | Status |
