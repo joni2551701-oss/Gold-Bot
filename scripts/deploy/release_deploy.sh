@@ -58,6 +58,9 @@ ln -sfn "$DEPLOY_PATH/shared/database/goldbot.db" "$RELEASE_DIR/database/goldbot
 ln -sfn "$DEPLOY_PATH/shared/logs" "$RELEASE_DIR/logs"
 
 echo "[deploy] Running pre-activation smoke test (startup verification only, no continuous execution)"
+set -a
+source "$DEPLOY_PATH/shared/.env"
+set +a
 if ! "$RELEASE_DIR/venv/bin/python" "$RELEASE_DIR/scripts/health_check.py"; then
     echo "[deploy] FAILED: smoke test failed for release $RELEASE_ID." >&2
     echo "[deploy] current release left untouched, $SERVICE_NAME.service not restarted." >&2
@@ -76,8 +79,13 @@ sleep 2
 HEALTH_OK=1
 if ! systemctl is-active --quiet "${SERVICE_NAME}.service"; then
     HEALTH_OK=0
-elif ! "$DEPLOY_PATH/current/venv/bin/python" "$DEPLOY_PATH/current/scripts/health_check.py"; then
-    HEALTH_OK=0
+else
+    set -a
+    source "$DEPLOY_PATH/shared/.env"
+    set +a
+    if ! "$DEPLOY_PATH/current/venv/bin/python" "$DEPLOY_PATH/current/scripts/health_check.py"; then
+        HEALTH_OK=0
+    fi
 fi
 
 if [[ "$HEALTH_OK" -eq 0 ]]; then

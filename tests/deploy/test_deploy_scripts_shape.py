@@ -136,6 +136,61 @@ def test_release_deploy_script_runs_smoke_test_before_activation():
     assert smoke_idx < activate_idx
 
 
+def test_release_deploy_script_loads_shared_env_before_smoke_test():
+    """
+    Regression guard for the real bug caught on the second VPS deploy
+    attempt: core/secrets.py reads only os.getenv() ("No .env file
+    usage for production security"), and a bare python subprocess
+    invocation never sees shared/.env's contents unless something
+    exports them into the shell environment first. goldbot.service's
+    EnvironmentFile= handles this for the live service, but the
+    pre-activation smoke test runs as a direct subprocess call, not
+    through systemd.
+    """
+    text = _script_text("release_deploy.sh")
+    section = text.split("Running pre-activation smoke test", 1)[1].split(
+        'if ! "$RELEASE_DIR/venv/bin/python"', 1
+    )[0]
+    assert "set -a" in section
+    assert 'source "$DEPLOY_PATH/shared/.env"' in section
+    assert "set +a" in section
+
+
+def test_release_deploy_script_loads_shared_env_before_post_restart_health_check():
+    """Same gap, same fix, for the post-restart health check (also a bare subprocess call, not via systemd)."""
+    text = _script_text("release_deploy.sh")
+    section = text.split("HEALTH_OK=1", 1)[1].split(
+        'if ! "$DEPLOY_PATH/current/venv/bin/python"', 1
+    )[0]
+    assert "set -a" in section
+    assert 'source "$DEPLOY_PATH/shared/.env"' in section
+    assert "set +a" in section
+
+
+def test_release_deploy_script_env_sourcing_makes_secrets_visible_to_python(tmp_path):
+    """
+    Verifies the *effect* of the fix, not just its textual presence:
+    runs the exact set -a / source / set +a snippet from
+    release_deploy.sh against a real fake .env file and confirms a
+    Python subprocess actually sees the variable.
+    """
+    import subprocess as sp
+
+    shared_dir = tmp_path / "goldbot" / "shared"
+    shared_dir.mkdir(parents=True)
+    (shared_dir / ".env").write_text("TELEGRAM_BOT_TOKEN=fake-token-value\n")
+
+    script = (
+        "set -a\n"
+        f'source "{shared_dir}/.env"\n'
+        "set +a\n"
+        "python3 -c \"import os, sys; "
+        "sys.exit(0 if os.environ.get('TELEGRAM_BOT_TOKEN') == 'fake-token-value' else 1)\"\n"
+    )
+    result = sp.run(["bash", "-c", script], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
 def test_release_deploy_script_aborts_without_switching_current_on_failed_smoke_test():
     text = _script_text("release_deploy.sh")
     section = text.split("Running pre-activation smoke test", 1)[1].split("PREVIOUS_RELEASE", 1)[0]
