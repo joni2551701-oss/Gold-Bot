@@ -14,6 +14,17 @@ read by any CI/CD path and should not be assumed current. See
 `docs/PHASE_BRANCH_SYNC_AUDIT.md` for the full branch-state audit
 behind this note.
 
+## Production deployment
+
+As of Phase P1, GoldBot deploys to its production VPS **only** through
+`.github/workflows/production_deploy.yml` — push to the production
+branch above (or `workflow_dispatch`), and a validated build (pyflakes/
+compileall/pytest) is released via a release-based, symlink-switched
+layout with automatic rollback on a failed health check. No manual
+production deployment is permitted without explicit Director
+authorization. See `docs/deployment/PRODUCTION_DEPLOYMENT.md` and
+`docs/deployment/ROLLBACK.md`.
+
 ## Project Overview
 
 GoldBot analyzes XAUUSD price action using Smart Money Concepts (market structure, liquidity, order blocks, fair value gaps, and AMD cycles), evaluates candidate setups through an AI confidence layer, and delivers approved trade signals via Telegram. GoldBot does not place trades automatically — execution remains manual, performed by the trader in their own MT5 terminal.

@@ -300,6 +300,28 @@ and `backtesting/backtest_engine.py` call sites are unchanged and all
 See `docs/PHASE_V1_0_1_RISK_AUDIT.md`, `docs/PHASE_V1_0_1_RISK_FREEZE.md`,
 and the updated `docs/trading/RISK_SYSTEM.md`.
 
+### P1 — Production Deployment Pipeline Foundation
+**Status: COMPLETED.** Director-approved first Production phase after
+V1 Freeze — builds the permanent, GitHub-Actions-driven deployment
+path: `push -> validate (pyflakes/compileall/pytest) -> rsync release
+-> SSH activate -> systemd restart -> health check`. Scoped (RULE 1)
+to deploy tooling only — `core/`, `decision/`, `risk/`, `execution/`,
+`strategies/`, `signals/`, `context/`, `ai/` all locked, zero diff
+verified. New: `.github/workflows/production_deploy.yml`;
+`scripts/deploy/release_manager.py` (pure, unit-tested release-
+selection/rollback logic — no VPS needed to test it),
+`release_deploy.sh`, `rollback.sh`; `deploy/systemd/goldbot.service`
+(release-based, `User=senior`, never root). Extended, not duplicated:
+`scripts/health_check.py` gained two import-level checks
+(`main`/`telegram.polling`), reused as both the pre-activation smoke
+test and the post-restart health check. Release-based layout
+(`/opt/goldbot/{releases,shared,current,backups}`) never writes
+directly into `current`, never overwrites `shared/.env`/`database`/
+`logs`, and keeps every previous release on disk so rollback is always
+a symlink switch plus a restart — never a rebuild. 155 new tests. See
+`docs/PHASE_P1_AUDIT.md`, `docs/PHASE_P1_FREEZE.md`, and
+`docs/deployment/PRODUCTION_DEPLOYMENT.md`/`ROLLBACK.md`.
+
 ## Notes
 
 - This table intentionally does not promise dates — only scope and

@@ -1,19 +1,33 @@
 #!/usr/bin/env python3
 """
-scripts/health_check.py -- production health check (Phase 58).
+scripts/health_check.py -- production health check (Phase 58; two
+import checks added by Phase P1, Production Deployment Pipeline
+Foundation, TASK 8/9).
 
 Standalone, ops-facing script. Not part of the trading pipeline or
 Telegram layer -- not imported by core/pipeline.py, main.py,
 telegram/polling.py, or any application module. Meant to be run from
 systemd/cron on a VPS (see deploy/systemd/goldbot-healthcheck.timer
 and docs/production_setup.md) to verify the deployment is alive:
-config loads, the database is reachable, and the required secrets are
-present. Never prints a secret's value, only whether it is present.
+config loads, the database is reachable, the required secrets are
+present, and the two entry-point modules (`main`/`telegram.polling`)
+import cleanly. Never prints a secret's value, only whether it is
+present. Never executes either entry point -- only imports the
+module, so this stays a static "does it start" check, never a real
+pipeline cycle or a real polling session.
+
+Phase P1 reuses this exact script for two distinct purposes rather
+than adding a separate one (Module Reuse Principle): as the
+pre-activation smoke test (TASK 9, run against a new release before
+`current` is switched to it) and as the post-restart health check
+(TASK 8, run against the live `current` release after
+`goldbot.service` restarts) -- see scripts/deploy/release_deploy.sh.
 
 Exit code 0 -- all checks passed.
 Exit code 1 -- one or more checks failed (detail on stderr).
 """
 
+import importlib
 import os
 import sys
 
@@ -61,8 +75,30 @@ def check_database():
         return False, f"database: FAILED ({e})"
 
 
+def check_main_imports():
+    try:
+        importlib.import_module("core.pipeline")
+        return True, "main: OK"
+    except Exception as e:
+        return False, f"main: FAILED ({e})"
+
+
+def check_telegram_imports():
+    try:
+        importlib.import_module("telegram.polling")
+        return True, "telegram: OK"
+    except Exception as e:
+        return False, f"telegram: FAILED ({e})"
+
+
 def main() -> int:
-    checks = [check_config(), check_secrets(), check_database()]
+    checks = [
+        check_config(),
+        check_secrets(),
+        check_database(),
+        check_main_imports(),
+        check_telegram_imports(),
+    ]
     healthy = all(ok for ok, _ in checks)
     for ok, message in checks:
         print(message, file=sys.stdout if ok else sys.stderr)

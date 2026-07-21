@@ -14,7 +14,7 @@ roadmap-of-record lives in `docs/roadmap/`:
 - `docs/VISION.md` — the longer-range destination these versions build
   toward.
 
-## Current state (as of Phase V1.0.1)
+## Current state (as of Phase P1)
 
 GoldBot has completed its core trading pipeline (v0.1), database/
 product layer (v0.2), Telegram Owner foundation (v0.3), AI Foundation
@@ -41,8 +41,23 @@ read-only monitoring integration. Scope was confined to `risk/`,
 an empty diff. See `docs/PHASE_V1_0_1_RISK_AUDIT.md` and
 `docs/PHASE_V1_0_1_RISK_FREEZE.md` for the full audit/freeze trail.
 
+Following V1.0.1's acceptance and V1 Freeze approval, Phase P1
+("Production Deployment Pipeline Foundation") built the permanent
+production deployment path: `push -> GitHub Actions validate
+(pyflakes/compileall/pytest) -> release upload -> SSH activation ->
+systemd restart -> health check`, with automatic rollback to the
+previous release on a failed post-restart health check. Scope was
+confined to deploy tooling only (`.github/workflows/`, `scripts/`,
+`deploy/`, `docs/`) — `core/`, `decision/`, `risk/`, `execution/`,
+`strategies/`, `signals/`, `context/`, and `ai/` (Trading Core) were
+never touched, verified by an empty diff. After this phase, no manual
+production deployment is permitted without explicit Director
+authorization — every deploy goes through GitHub Actions. See
+`docs/PHASE_P1_AUDIT.md`, `docs/PHASE_P1_FREEZE.md`, and
+`docs/deployment/PRODUCTION_DEPLOYMENT.md`/`ROLLBACK.md`.
+
 Per the Director's own stated sequence (see `docs/roadmap/VERSIONS.md`
-and `docs/roadmap/AI_EVOLUTION.md`), a successful V1.0.1 Risk
-Hardening Patch is intended to lead to: V1.0.1 PASS -> VPS Deployment
--> 24/7 Closed Beta. No new strategy, AI Foundation, or Trading Core
-work is scheduled ahead of that sequence completing.
+and `docs/roadmap/AI_EVOLUTION.md`), a successful Phase P1 is intended
+to lead to: VPS Deployment -> Owner Alpha (24/7) -> 3-5 weeks
+Monitoring -> Bug Fix -> Closed Beta. No new strategy, AI Foundation,
+or Trading Core work is scheduled ahead of that sequence completing.
