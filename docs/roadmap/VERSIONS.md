@@ -205,7 +205,27 @@ input mapping, never imports the Performance Runtime),
 mapping, never relays per-trade confidence as a per-strategy value),
 and `memory_adapter.py` (`strategy_reference_key()`, never imports
 `ai.memory`) — Owner-only via a dedicated `enable_strategy_intelligence`
-flag (`66.7`-`66.8` not yet briefed). See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
+flag. `66.7` AI Portfolio Intelligence Foundation (DONE) — new
+`ai/portfolio/` subpackage: AI still never opens a trade, sizes a lot,
+replaces the Risk Manager, or affects the Decision Engine (GoldBot's
+Trading Core remains the only decision/sizing source); this phase
+builds the Foundation for answering "Portfolio qanday holatda?" (What
+state is the portfolio in?). Primitive-only, in-memory
+`PortfolioRecord`/`PortfolioStatus`/`PortfolioRiskLevel`/
+`PortfolioHealth` (no pre-existing Portfolio model found anywhere;
+`risk.risk_manager.RiskResult` is the nearest conceptual neighbor by
+name only, Trading Core, import forbidden outright by Rule 1),
+`PortfolioRuntime` (CRUD-only:
+`create()`/`get()`/`list()`/`update()`/`update_notes()`/`archive()`,
+no LLM/GPT/Claude/Gemini/reasoning/inference of any kind),
+`performance_adapter.py` (type-only `PerformanceRecord` -> Portfolio
+input mapping, relays `notes` only), `strategy_adapter.py` (the first
+`66.x` adapter to operate over a `Sequence[StrategyRecord]` rather
+than a single record, deterministically counting `strategy_count`/
+`active_strategy_count`, not inference), and `memory_adapter.py`
+(`portfolio_reference_key()`, never imports `ai.memory`) — Owner-only
+via a dedicated `enable_portfolio_intelligence` flag (`66.8` not yet
+briefed). See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →
 Conversation → Explanation → Content → Translation → Media →

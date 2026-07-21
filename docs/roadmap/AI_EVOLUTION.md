@@ -287,7 +287,7 @@ import posture unchanged. See `docs/PHASE65_4_FREEZE.md`.
 66.4  Coaching Intelligence Foundation     DONE
 66.5  Performance Intelligence Foundation  DONE
 66.6  Strategy Intelligence Foundation     DONE
-66.7  Portfolio Intelligence              FUTURE (not yet briefed)
+66.7  Portfolio Intelligence Foundation    DONE
 66.8  Research Intelligence               FUTURE (not yet briefed)
 ```
 
@@ -513,6 +513,42 @@ imports `ai.memory`. Owner-only via a dedicated
 `execution/`, `strategies/`, `signals/`, `context/`, `monitoring/`
 this phase (Rule 1). Not wired into `core/pipeline.py` or any Telegram
 command -- foundation only. See `docs/PHASE66_6_FREEZE.md`.
+
+Built Phase 66.7 — **AI Portfolio Intelligence Foundation**, the
+eighth phase in the `66.x` AI Trading Intelligence sub-sequence: AI
+still never opens a trade, sizes a lot, replaces the Risk Manager, or
+affects the Decision Engine — GoldBot's Trading Core remains the only
+decision/sizing source; this phase only builds the Foundation for
+answering "Portfolio qanday holatda?" (What state is the portfolio
+in?). New `ai/portfolio/` subpackage (inside the existing `ai/`
+top-level package, confirmed by `docs/PHASE66_7_AUDIT.md`'s TASK 0
+audit, which found no pre-existing Portfolio model, Runtime, Registry,
+or Manager anywhere in the codebase --
+`risk.risk_manager.RiskResult`/`RiskManager` are the nearest
+conceptual neighbor by name only, a per-trade sizing contract rather
+than a per-portfolio one, and Trading Core -- import forbidden
+outright by this brief's own Rule 1, the same absolute-ban conclusion
+`docs/PHASE66_6_AUDIT.md` already reached for `strategies/`).
+`PortfolioStatus`/`PortfolioRiskLevel`/`PortfolioHealth`/`PortfolioRecord`
+(`models.py`) are primitive-only, in-memory. `PortfolioRuntime`
+(`portfolio_runtime.py`) is CRUD-only --
+`create()`/`get()`/`list()`/`update()`/`update_notes()`/`archive()`,
+no LLM/GPT/Claude/Gemini/reasoning/inference of any kind (Rule 4).
+`performance_adapter.py` maps an existing `PerformanceRecord` (Phase
+66.5) into `PortfolioRuntime.create()`'s own keyword arguments --
+type-only, relays `notes` only. `strategy_adapter.py` is the first
+`66.x` adapter to operate over a `Sequence[StrategyRecord]` (Phase
+66.6) rather than a single record, since `strategy_count`/
+`active_strategy_count` are aggregate counts no single record could
+supply -- deterministic counting, not inference, the same class of
+operation `ai.performance.analytics_adapter.py`'s own win-rate
+counting (Phase 66.5) already performed. `memory_adapter.py`'s
+`portfolio_reference_key()` never imports `ai.memory`. Owner-only via
+a dedicated `enable_portfolio_intelligence` flag. Zero diff in
+`decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
+`context/`, `monitoring/` this phase (Rule 1). Not wired into
+`core/pipeline.py` or any Telegram command -- foundation only. See
+`docs/PHASE66_7_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 

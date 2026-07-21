@@ -131,7 +131,10 @@ Explanation/Knowledge/Memory system. Phase 66.6's
 `ai/strategy/strategy_runtime.py` follows the same pattern once more
 again — `StrategyRuntime` is CRUD-only (Rule 5: "Bu Foundation. Faqat
 CRUD."), never calls `run()` or any Explanation/Knowledge/Memory
-system.
+system. Phase 66.7's `ai/portfolio/portfolio_runtime.py` follows the
+same pattern once more — `PortfolioRuntime` is CRUD-only (Rule 5:
+"Foundation. CRUD only."), never calls `run()` or any Explanation/
+Knowledge/Memory system.
 
 ## Related
 

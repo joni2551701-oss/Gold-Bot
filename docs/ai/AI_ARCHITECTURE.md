@@ -85,6 +85,18 @@ ai/
                    Strategy input mapping, pure, the one file importing ai.trade_journal),
                    memory_adapter.py (strategy_reference_key() -- a plain string key, never imports
                    ai.memory) (Phase 66.6)
+  portfolio/       models.py (PortfolioRecord/PortfolioStatus/PortfolioRiskLevel/PortfolioHealth,
+                   primitive-only, in-memory, no lot-size/verdict field of any kind, no pre-existing
+                   Portfolio model found anywhere), access.py (is_portfolio_intelligence_enabled_for,
+                   Owner-only), portfolio_runtime.py (PortfolioRuntime -- create/get/list/update/
+                   update_notes/archive CRUD only, in-memory dict, no database, no LLM/reasoning),
+                   performance_adapter.py (PerformanceRecord -> Portfolio input mapping, type-only,
+                   the one file importing ai.performance -- never imports
+                   ai.performance.performance_runtime), strategy_adapter.py (Sequence[StrategyRecord]
+                   -> Portfolio input mapping, type-only, the one file importing ai.strategy --
+                   deterministic strategy_count/active_strategy_count counting, never imports
+                   ai.strategy.strategy_runtime), memory_adapter.py (portfolio_reference_key() -- a
+                   plain string key, never imports ai.memory) (Phase 66.7)
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
                    (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
@@ -287,6 +299,14 @@ above:
   `strategies.lifecycle.strategy_status.StrategyStatus` -- import of
   `strategies/` forbidden outright by this phase's own Rule 1), and
   its Performance/Trade Journal/Memory integration points (Phase 66.6).
+- `docs/ai/AI_PORTFOLIO.md` — `ai/portfolio/`'s `PortfolioRuntime`
+  (CRUD-only, in-memory, no LLM/reasoning/inference, no lot-size/
+  verdict field of any kind, no Risk Manager replacement), its
+  primitive-only `PortfolioRecord` contract (no pre-existing Portfolio
+  model found anywhere in the codebase), and its Performance/Strategy/
+  Memory integration points, including the first `66.x` adapter to
+  operate over a sequence of source records rather than a single one
+  (Phase 66.7).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).
