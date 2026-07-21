@@ -185,8 +185,27 @@ input mapping, structure only), `analytics_adapter.py` (reuses
 `analytics.strategy_report.compute_win_rate()` directly), and
 `memory_adapter.py` (`performance_memory_key()`, never imports
 `ai.memory`) — Owner-only via a dedicated
-`enable_performance_intelligence` flag (`66.6`-`66.8` not yet
-briefed). See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
+`enable_performance_intelligence` flag. `66.6` AI Strategy Intelligence
+Foundation (DONE) — new `ai/strategy/` subpackage: AI still never
+opens a trade, gives a signal, manages risk, or affects the Decision
+Engine (GoldBot's Trading Core remains the only decision source); this
+phase builds the Foundation for answering "Qaysi strategiya qanday
+ishlayapti?" (Which strategy is performing how?). Primitive-only,
+in-memory `StrategyRecord`/`StrategyType`/`StrategyStatus`/
+`StrategyConfidence` (`StrategyStatus` distinct from the Trading-Core-
+LOCKed `strategies.lifecycle.strategy_status.StrategyStatus` -- import
+of `strategies/` forbidden outright by this phase's own Rule 1, making
+reuse architecturally impossible rather than merely impractical),
+`StrategyRuntime` (CRUD-only:
+`create()`/`get()`/`list()`/`update()`/`update_notes()`/`archive()`,
+no LLM/GPT/Claude/Gemini/reasoning/inference of any kind),
+`performance_adapter.py` (type-only `PerformanceRecord` -> Strategy
+input mapping, never imports the Performance Runtime),
+`journal_adapter.py` (pure `TradeJournalEntry` -> Strategy input
+mapping, never relays per-trade confidence as a per-strategy value),
+and `memory_adapter.py` (`strategy_reference_key()`, never imports
+`ai.memory`) — Owner-only via a dedicated `enable_strategy_intelligence`
+flag (`66.7`-`66.8` not yet briefed). See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →
 Conversation → Explanation → Content → Translation → Media →

@@ -78,6 +78,11 @@ class FeatureFlags:
         by default; even when True,
         `ai.performance.access.is_performance_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 8).
+    enable_strategy_intelligence: reserved for AI Strategy Intelligence
+        (Phase 66.6, `ai/strategy/`) -- always False by default; even
+        when True,
+        `ai.strategy.access.is_strategy_intelligence_enabled_for()`
+        additionally requires `AIRole.OWNER` (TASK 7).
     """
     enable_ai: bool = False
     enable_crypto: bool = False
@@ -91,6 +96,7 @@ class FeatureFlags:
     enable_learning_intelligence: bool = False
     enable_coaching_intelligence: bool = False
     enable_performance_intelligence: bool = False
+    enable_strategy_intelligence: bool = False
 
 
 # The single safe-default instance -- every flag off. Not a singleton

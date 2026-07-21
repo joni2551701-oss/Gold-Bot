@@ -286,7 +286,7 @@ import posture unchanged. See `docs/PHASE65_4_FREEZE.md`.
 66.3  Learning Intelligence Foundation     DONE
 66.4  Coaching Intelligence Foundation     DONE
 66.5  Performance Intelligence Foundation  DONE
-66.6  Strategy Intelligence               FUTURE (not yet briefed)
+66.6  Strategy Intelligence Foundation     DONE
 66.7  Portfolio Intelligence              FUTURE (not yet briefed)
 66.8  Research Intelligence               FUTURE (not yet briefed)
 ```
@@ -477,6 +477,42 @@ dedicated `enable_performance_intelligence` flag. Zero diff in
 `context/`, `telegram/`, `database/`, `monitoring/` this phase (Rule
 1). Not wired into `core/pipeline.py` or any Telegram command —
 foundation only. See `docs/PHASE66_5_FREEZE.md`.
+
+Built Phase 66.6 — **AI Strategy Intelligence Foundation**, the
+seventh phase in the `66.x` AI Trading Intelligence sub-sequence: AI
+still never opens a trade, gives a signal, manages risk, or affects
+the Decision Engine — GoldBot's Trading Core remains the only source
+of any BUY/SELL/NO_TRADE decision; this phase only builds the
+Foundation for answering "Qaysi strategiya qanday ishlayapti?" (Which
+strategy is performing how?). New `ai/strategy/` subpackage (inside
+the existing `ai/` top-level package, confirmed by
+`docs/PHASE66_6_AUDIT.md`'s TASK 0 audit, which found a genuine,
+mature Strategy metadata contract already at
+`strategies.lifecycle.{strategy_model,strategy_status,strategy_registry}`
+-- but this brief's own Rule 1 bans `ai/` from importing `strategies/`
+at all, making a new, independent model the only constitutionally
+legal outcome, a stricter conclusion than every prior `66.x` naming
+collision where the blocking reason was always a field-shape mismatch,
+never an absolute import ban). `StrategyType`/`StrategyStatus`/
+`StrategyConfidence`/`StrategyRecord` (`models.py`) are primitive-only,
+in-memory -- `StrategyStatus` (`ACTIVE`/`TESTING`/`DISABLED`/
+`ARCHIVED`) is a distinct, non-colliding value set from the Trading
+Core enum of the same bare name. `StrategyRuntime`
+(`strategy_runtime.py`) is CRUD-only --
+`create()`/`get()`/`list()`/`update()`/`update_notes()`/`archive()`,
+no LLM/GPT/Claude/Gemini/reasoning/inference of any kind (Rule 4).
+`performance_adapter.py` maps an existing `PerformanceRecord` (Phase
+66.5) into `StrategyRuntime.create()`'s own keyword arguments --
+type-only, never imports the Performance Runtime.
+`journal_adapter.py` maps an existing `TradeJournalEntry` (Phase 66.2)
+the same way, deliberately never relaying `TradeJournalEntry.confidence`
+(a per-trade value, not a per-strategy one -- relaying it would be
+inference). `memory_adapter.py`'s `strategy_reference_key()` never
+imports `ai.memory`. Owner-only via a dedicated
+`enable_strategy_intelligence` flag. Zero diff in `decision/`, `risk/`,
+`execution/`, `strategies/`, `signals/`, `context/`, `monitoring/`
+this phase (Rule 1). Not wired into `core/pipeline.py` or any Telegram
+command -- foundation only. See `docs/PHASE66_6_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 

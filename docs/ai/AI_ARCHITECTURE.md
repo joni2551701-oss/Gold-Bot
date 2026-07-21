@@ -73,6 +73,18 @@ ai/
                    analytics.strategy_report.compute_win_rate(), the one file importing analytics),
                    memory_adapter.py (performance_memory_key() -- a plain string key, never imports
                    ai.memory) (Phase 66.5)
+  strategy/        models.py (StrategyRecord/StrategyType/StrategyStatus/StrategyConfidence,
+                   primitive-only, in-memory, no BUY/SELL/verdict field of any kind, StrategyStatus
+                   distinct from strategies.lifecycle.strategy_status.StrategyStatus -- import of
+                   strategies/ forbidden outright), access.py (is_strategy_intelligence_enabled_for,
+                   Owner-only), strategy_runtime.py (StrategyRuntime -- create/get/list/update/
+                   update_notes/archive CRUD only, in-memory dict, no database, no LLM/reasoning),
+                   performance_adapter.py (PerformanceRecord -> Strategy input mapping, type-only,
+                   the one file importing ai.performance -- never imports
+                   ai.performance.performance_runtime), journal_adapter.py (TradeJournalEntry ->
+                   Strategy input mapping, pure, the one file importing ai.trade_journal),
+                   memory_adapter.py (strategy_reference_key() -- a plain string key, never imports
+                   ai.memory) (Phase 66.6)
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
                    (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
@@ -268,6 +280,13 @@ above:
   `PerformanceMetric` contracts (distinct from
   `analytics.performance_metrics.PerformanceMetrics`), and its Trade
   Journal/Coaching/Analytics/Memory integration points (Phase 66.5).
+- `docs/ai/AI_STRATEGY.md` — `ai/strategy/`'s `StrategyRuntime`
+  (CRUD-only, in-memory, no LLM/reasoning/inference, no BUY/SELL/
+  verdict field of any kind), its primitive-only `StrategyRecord`
+  contract (`StrategyStatus` distinct from the Trading-Core-LOCKed
+  `strategies.lifecycle.strategy_status.StrategyStatus` -- import of
+  `strategies/` forbidden outright by this phase's own Rule 1), and
+  its Performance/Trade Journal/Memory integration points (Phase 66.6).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

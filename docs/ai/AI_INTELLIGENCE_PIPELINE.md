@@ -127,7 +127,11 @@ Explanation/Knowledge/Memory system. Phase 66.5's
 `ai/performance/performance_runtime.py` follows the same pattern once
 more — `PerformanceRuntime` is CRUD-only ("AI xulosa bermaydi. GPT
 chaqirmaydi. Scoring algoritm yaratmaydi."), never calls `run()` or any
-Explanation/Knowledge/Memory system.
+Explanation/Knowledge/Memory system. Phase 66.6's
+`ai/strategy/strategy_runtime.py` follows the same pattern once more
+again — `StrategyRuntime` is CRUD-only (Rule 5: "Bu Foundation. Faqat
+CRUD."), never calls `run()` or any Explanation/Knowledge/Memory
+system.
 
 ## Related
 
