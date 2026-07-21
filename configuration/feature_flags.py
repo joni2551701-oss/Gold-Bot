@@ -88,6 +88,12 @@ class FeatureFlags:
         default; even when True,
         `ai.portfolio.access.is_portfolio_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 7).
+    enable_research_intelligence: reserved for AI Research
+        Intelligence (Phase 66.8, `ai/research/`, the final phase in
+        the `66.x` AI Trading Intelligence sub-sequence) -- always
+        False by default; even when True,
+        `ai.research.access.is_research_intelligence_enabled_for()`
+        additionally requires `AIRole.OWNER` (TASK 8).
     """
     enable_ai: bool = False
     enable_crypto: bool = False
@@ -103,6 +109,7 @@ class FeatureFlags:
     enable_performance_intelligence: bool = False
     enable_strategy_intelligence: bool = False
     enable_portfolio_intelligence: bool = False
+    enable_research_intelligence: bool = False
 
 
 # The single safe-default instance -- every flag off. Not a singleton

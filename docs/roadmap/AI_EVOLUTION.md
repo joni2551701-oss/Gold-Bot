@@ -288,7 +288,7 @@ import posture unchanged. See `docs/PHASE65_4_FREEZE.md`.
 66.5  Performance Intelligence Foundation  DONE
 66.6  Strategy Intelligence Foundation     DONE
 66.7  Portfolio Intelligence Foundation    DONE
-66.8  Research Intelligence               FUTURE (not yet briefed)
+66.8  Research Intelligence Foundation     DONE (final 66.x phase)
 ```
 
 Built Phase 66.0 — **AI Trading Analyst Foundation**, the first phase
@@ -549,6 +549,53 @@ a dedicated `enable_portfolio_intelligence` flag. Zero diff in
 `context/`, `monitoring/` this phase (Rule 1). Not wired into
 `core/pipeline.py` or any Telegram command -- foundation only. See
 `docs/PHASE66_7_FREEZE.md`.
+
+Built Phase 66.8 — **AI Research Intelligence Foundation**, the ninth
+and **final** phase in the `66.x` AI Trading Intelligence sub-sequence:
+AI still never opens a trade, gives a signal, computes risk, selects a
+strategy, or touches Trading Core in any way -- this phase only builds
+a single scientific layer accepting data from every prior `66.x`
+Foundation module, for future AI Research/Analytics/Academy work. New
+`ai/research/` subpackage (inside the existing `ai/` top-level
+package, confirmed by `docs/PHASE66_8_AUDIT.md`'s TASK 0 audit, which
+found no pre-existing Research model, Runtime, Registry, or Manager
+anywhere in the codebase -- including no pre-existing top-level
+`research/` package at all, confirmed absent by direct filesystem
+check rather than merely import-forbidden the way `strategies/`
+(66.6) and `risk/` (66.7) were). `ResearchStatus`/`ResearchPriority`/
+`ResearchCategory`/`ResearchRecord` (`models.py`) are primitive-only,
+in-memory. `ResearchRuntime` (`research_runtime.py`) is CRUD-only --
+`create()`/`get()`/`list()`/`update()`/`update_notes()`/`archive()`,
+no LLM/GPT/Claude/Gemini/OpenAI/reasoning/inference of any kind (Rule
+4). `performance_adapter.py`/`strategy_adapter.py`/
+`portfolio_adapter.py` each map an existing `PerformanceRecord` (Phase
+66.5)/`StrategyRecord` (Phase 66.6)/`PortfolioRecord` (Phase 66.7)
+into `ResearchRuntime.create()`'s own keyword arguments -- type-only,
+relaying `notes` and setting a fixed `category` value that is a
+structural constant of that specific adapter (not content-based
+inference, since every record a given adapter produces originates from
+the same source type). Unlike Phase 66.7's own `strategy_adapter.py`
+(the first `66.x` adapter to operate over a `Sequence[StrategyRecord]`
+for deterministic counting), all three of this phase's adapters revert
+to single-record mapping -- `ResearchRecord.source_count` has no
+natural single-type counting target, so it stays a plain
+caller-supplied `int = 0` field, never computed by any adapter (see
+`docs/PHASE66_8_AUDIT.md`'s "Question 6"). `memory_adapter.py`'s
+`research_reference_key()` never imports `ai.memory`. Owner-only via a
+dedicated `enable_research_intelligence` flag. Zero diff in
+`decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
+`context/`, `monitoring/` this phase (Rule 1). Not wired into
+`core/pipeline.py` or any Telegram command -- foundation only. This
+closes the `66.x` AI Trading Intelligence sub-sequence entirely -- all
+nine Foundation modules (Trading Analyst, Chart Intelligence, Trade
+Journal, Learning, Coaching, Performance, Strategy, Portfolio,
+Research) are now built and LOCKed. Per the Director's own NEXT
+ROADMAP, no further AI Foundation phase begins; the next Track is
+**GoldBot Core Owner Monitoring Alpha (Track B)** -- real market data
+collection (3-5 weeks), Owner Telegram Monitoring Panel oversight,
+bug/error/performance stat collection, V1 final audit and
+stabilization, then V1 Freeze → Beta Test → VPS Production. See
+`docs/PHASE66_8_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 

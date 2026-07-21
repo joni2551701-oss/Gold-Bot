@@ -97,6 +97,22 @@ ai/
                    deterministic strategy_count/active_strategy_count counting, never imports
                    ai.strategy.strategy_runtime), memory_adapter.py (portfolio_reference_key() -- a
                    plain string key, never imports ai.memory) (Phase 66.7)
+  research/        models.py (ResearchRecord/ResearchStatus/ResearchPriority/ResearchCategory,
+                   primitive-only, in-memory, no dataset/report/pattern/regime/version field of
+                   any kind, no pre-existing Research model or top-level research/ package found
+                   anywhere), access.py (is_research_intelligence_enabled_for, Owner-only),
+                   research_runtime.py (ResearchRuntime -- create/get/list/update/update_notes/
+                   archive CRUD only, in-memory dict, no database, no LLM/reasoning),
+                   performance_adapter.py (PerformanceRecord -> Research input mapping, type-only,
+                   the one file importing ai.performance -- never imports
+                   ai.performance.performance_runtime), strategy_adapter.py (StrategyRecord ->
+                   Research input mapping, type-only, the one file importing ai.strategy -- never
+                   imports ai.strategy.strategy_runtime), portfolio_adapter.py (PortfolioRecord ->
+                   Research input mapping, type-only, the one file importing ai.portfolio -- never
+                   imports ai.portfolio.portfolio_runtime; each of the three adapters' `category`
+                   value is a fixed structural constant of that adapter, never content-based
+                   inference), memory_adapter.py (research_reference_key() -- a plain string key,
+                   never imports ai.memory) (Phase 66.8 -- final phase of the 66.x sub-sequence)
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
                    (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
@@ -307,6 +323,14 @@ above:
   Memory integration points, including the first `66.x` adapter to
   operate over a sequence of source records rather than a single one
   (Phase 66.7).
+- `docs/ai/AI_RESEARCH.md` — `ai/research/`'s `ResearchRuntime`
+  (CRUD-only, in-memory, no LLM/reasoning/inference, no BUY/SELL/
+  verdict field of any kind), its primitive-only `ResearchRecord`
+  contract (no pre-existing Research model found anywhere, including
+  no pre-existing top-level `research/` package), and its
+  Performance/Strategy/Portfolio/Memory integration points — the
+  **final phase** of the `66.x` AI Trading Intelligence sub-sequence
+  (Phase 66.8).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

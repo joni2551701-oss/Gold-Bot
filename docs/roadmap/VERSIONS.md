@@ -224,8 +224,29 @@ input mapping, relays `notes` only), `strategy_adapter.py` (the first
 than a single record, deterministically counting `strategy_count`/
 `active_strategy_count`, not inference), and `memory_adapter.py`
 (`portfolio_reference_key()`, never imports `ai.memory`) — Owner-only
-via a dedicated `enable_portfolio_intelligence` flag (`66.8` not yet
-briefed). See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
+via a dedicated `enable_portfolio_intelligence` flag. `66.8` AI
+Research Intelligence Foundation (DONE, final phase of the `66.x`
+sub-sequence) — new `ai/research/` subpackage: AI still never opens a
+trade, gives a signal, computes risk, selects a strategy, or touches
+Trading Core; this phase builds a single scientific layer accepting
+data from every prior `66.x` Foundation module. Primitive-only,
+in-memory `ResearchRecord`/`ResearchStatus`/`ResearchPriority`/
+`ResearchCategory` (no pre-existing Research model found anywhere,
+including no pre-existing top-level `research/` package),
+`ResearchRuntime` (CRUD-only:
+`create()`/`get()`/`list()`/`update()`/`update_notes()`/`archive()`,
+no LLM/GPT/Claude/Gemini/OpenAI/reasoning/inference of any kind),
+`performance_adapter.py`/`strategy_adapter.py`/`portfolio_adapter.py`
+(each a type-only mapping from an existing `PerformanceRecord`/
+`StrategyRecord`/`PortfolioRecord`, relaying `notes` and setting a
+fixed `category` value that is a structural constant of that adapter,
+never content-based inference), and `memory_adapter.py`
+(`research_reference_key()`, never imports `ai.memory`) — Owner-only
+via a dedicated `enable_research_intelligence` flag. This closes the
+`66.x` AI Trading Intelligence sub-sequence entirely; the Director's
+own next roadmap moves to GoldBot Core Owner Monitoring Alpha (Track
+B), not a new AI Foundation phase. See
+`docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →
 Conversation → Explanation → Content → Translation → Media →

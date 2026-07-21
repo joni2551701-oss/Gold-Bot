@@ -134,7 +134,10 @@ CRUD."), never calls `run()` or any Explanation/Knowledge/Memory
 system. Phase 66.7's `ai/portfolio/portfolio_runtime.py` follows the
 same pattern once more — `PortfolioRuntime` is CRUD-only (Rule 5:
 "Foundation. CRUD only."), never calls `run()` or any Explanation/
-Knowledge/Memory system.
+Knowledge/Memory system. Phase 66.8's `ai/research/research_runtime.py`
+follows the same pattern once more, closing the `66.x` sub-sequence —
+`ResearchRuntime` is CRUD-only (Rule 5: "CRUD only."), never calls
+`run()` or any Explanation/Knowledge/Memory system.
 
 ## Related
 
