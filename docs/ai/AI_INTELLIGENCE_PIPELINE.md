@@ -123,6 +123,10 @@ inference), never calls `run()` or any Explanation/Knowledge/Memory
 system. Phase 66.4's `ai/coaching/coaching_runtime.py` follows the
 same pattern again — `CoachingRuntime` is CRUD-only ("LLM yo'q.
 Reasoning yo'q. Inference yo'q."), never calls `run()` or any
+Explanation/Knowledge/Memory system. Phase 66.5's
+`ai/performance/performance_runtime.py` follows the same pattern once
+more — `PerformanceRuntime` is CRUD-only ("AI xulosa bermaydi. GPT
+chaqirmaydi. Scoring algoritm yaratmaydi."), never calls `run()` or any
 Explanation/Knowledge/Memory system.
 
 ## Related

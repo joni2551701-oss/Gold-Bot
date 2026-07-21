@@ -168,8 +168,25 @@ reasoning/inference), `learning_adapter.py` (pure `LearningRecord` ->
 `LearningRecord` already carries one), and `journal_adapter.py` (pure
 `TradeJournalEntry` -> `CoachingRuntime.create()` input mapping, never
 infers `topic`) — Owner-only via a dedicated
-`enable_coaching_intelligence` flag (`66.5`-`66.8` not yet briefed).
-See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
+`enable_coaching_intelligence` flag. `66.5` AI Performance Intelligence
+Foundation (DONE) — new `ai/performance/` subpackage: AI still never
+decides a trade (GoldBot's Trading Core and AI Analyst remain the only
+decision source); this phase builds the Foundation for understanding
+trade performance (quality scores, discipline tracking, pattern
+storage). Primitive-only, in-memory `PerformanceRecord`/
+`PerformanceMetric`/`PerformanceCategory` (`PerformanceMetric`, a
+generic named observation, distinct from the pre-existing, fixed-shape
+`analytics.performance_metrics.PerformanceMetrics`), `PerformanceRuntime`
+(CRUD-only: `create()`/`get()`/`list()`/`update_notes()`/`archive()`,
+no scoring algorithm), `journal_adapter.py` (pure `TradeJournalEntry`
+-> `PerformanceRuntime.create()` input mapping, never computes win/loss),
+`coaching_adapter.py` (pure `PerformanceRecord` -> `CoachingRuntime.create()`
+input mapping, structure only), `analytics_adapter.py` (reuses
+`analytics.strategy_report.compute_win_rate()` directly), and
+`memory_adapter.py` (`performance_memory_key()`, never imports
+`ai.memory`) — Owner-only via a dedicated
+`enable_performance_intelligence` flag (`66.6`-`66.8` not yet
+briefed). See `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →
 Conversation → Explanation → Content → Translation → Media →

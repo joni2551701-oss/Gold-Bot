@@ -73,6 +73,11 @@ class FeatureFlags:
         when True,
         `ai.coaching.access.is_coaching_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 6).
+    enable_performance_intelligence: reserved for AI Performance
+        Intelligence (Phase 66.5, `ai/performance/`) -- always False
+        by default; even when True,
+        `ai.performance.access.is_performance_intelligence_enabled_for()`
+        additionally requires `AIRole.OWNER` (TASK 8).
     """
     enable_ai: bool = False
     enable_crypto: bool = False
@@ -85,6 +90,7 @@ class FeatureFlags:
     enable_trade_journal: bool = False
     enable_learning_intelligence: bool = False
     enable_coaching_intelligence: bool = False
+    enable_performance_intelligence: bool = False
 
 
 # The single safe-default instance -- every flag off. Not a singleton

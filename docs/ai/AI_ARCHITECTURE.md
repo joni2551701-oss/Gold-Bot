@@ -61,6 +61,18 @@ ai/
                    learning_adapter.py (LearningRecord -> Coaching input mapping, pure, the one
                    file importing ai.learning), journal_adapter.py (TradeJournalEntry -> Coaching
                    input mapping, pure, the one file importing ai.trade_journal) (Phase 66.4)
+  performance/     models.py (PerformanceRecord/PerformanceMetric/PerformanceCategory,
+                   primitive-only, in-memory, no BUY/SELL/verdict field of any kind, distinct from
+                   analytics.performance_metrics.PerformanceMetrics), access.py
+                   (is_performance_intelligence_enabled_for, Owner-only), performance_runtime.py
+                   (PerformanceRuntime -- create/get/list/update_notes/archive CRUD only, in-memory
+                   dict, no database, no scoring algorithm), journal_adapter.py (TradeJournalEntry
+                   -> Performance input mapping, pure, the one file importing ai.trade_journal),
+                   coaching_adapter.py (PerformanceRecord -> Coaching input mapping, pure, no
+                   ai.coaching import needed), analytics_adapter.py (reuses
+                   analytics.strategy_report.compute_win_rate(), the one file importing analytics),
+                   memory_adapter.py (performance_memory_key() -- a plain string key, never imports
+                   ai.memory) (Phase 66.5)
   context/         context_snapshot.py, context_builder.py (signals/context type-only imports)
   conversation/    conversation_engine.py - ConversationEngine.start_session()/ask()
                    (real AIService.ask() path, Phase 61.3), extended Phase 63.5 with
@@ -250,6 +262,12 @@ above:
   `CoachingRecommendation` contract (`learning_id`/`journal_id` links
   to its two upstream sources), and its Learning/Trade Journal
   integration points (Phase 66.4).
+- `docs/ai/AI_PERFORMANCE.md` — `ai/performance/`'s `PerformanceRuntime`
+  (CRUD-only, in-memory, no scoring algorithm, no BUY/SELL/verdict
+  field of any kind), its primitive-only `PerformanceRecord`/
+  `PerformanceMetric` contracts (distinct from
+  `analytics.performance_metrics.PerformanceMetrics`), and its Trade
+  Journal/Coaching/Analytics/Memory integration points (Phase 66.5).
 - `docs/ai/AI_TOOLS.md` — `ai/tools/`'s 5 advisory-only tools.
 - `docs/ai/AI_RUNTIME.md` — current real Runtime state (Manager,
   Circuit Breaker, Event Bus, Metrics, Cost Protection).

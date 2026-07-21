@@ -285,7 +285,7 @@ import posture unchanged. See `docs/PHASE65_4_FREEZE.md`.
 66.2  Trade Journal Intelligence Foundation DONE
 66.3  Learning Intelligence Foundation     DONE
 66.4  Coaching Intelligence Foundation     DONE
-66.5  Performance Intelligence            FUTURE (not yet briefed)
+66.5  Performance Intelligence Foundation  DONE
 66.6  Strategy Intelligence               FUTURE (not yet briefed)
 66.7  Portfolio Intelligence              FUTURE (not yet briefed)
 66.8  Research Intelligence               FUTURE (not yet briefed)
@@ -439,6 +439,44 @@ implemented here): a Skill Tree view over `CoachingTopic`, per-user
 Weakness Tracking, Adaptive Coaching, a Learning History chain
 (Lesson → Exercise → Quiz → Replay → Exam → Certificate), and Academy
 integration. See `docs/PHASE66_4_FREEZE.md`.
+
+Built Phase 66.5 — **AI Performance Intelligence Foundation**, the
+sixth phase in the `66.x` AI Trading Intelligence sub-sequence: AI
+still never decides a trade — GoldBot's Trading Core and AI Analyst
+remain the only source of any BUY/SELL/NO_TRADE decision; this phase
+only builds the Foundation for understanding trade performance —
+quality scores, discipline tracking, pattern storage — so a future
+Senior Trading AI can answer "What did the trader do? → What was the
+outcome? → Where was the mistake? → Which habit keeps repeating?" New
+`ai/performance/` subpackage (inside the existing `ai/` top-level
+package, confirmed by `docs/PHASE66_5_AUDIT.md`'s TASK 0 audit, which
+found no pre-existing Performance model, Runtime, Manager, or Registry
+anywhere in the codebase — `analytics.performance_metrics.PerformanceMetrics`,
+Phase 60.4, is a different, fixed-shape portfolio aggregate, not a
+duplicate). `PerformanceRecord`/`PerformanceMetric`/`PerformanceCategory`
+(`models.py`) are primitive-only, in-memory — `PerformanceRecord`
+extends TASK 2's own field list additively with `archived: bool =
+False` so TASK 3's `archive()` has a lifecycle field, mirroring
+`ai.learning.models.LearningRecord`'s own precedent. `PerformanceRuntime`
+(`performance_runtime.py`) is CRUD-only —
+`create()`/`get()`/`list()`/`update_notes()`/`archive()`, no AI
+conclusions, no GPT call, no scoring algorithm.
+`journal_adapter.py` maps an existing `TradeJournalEntry` (Phase 66.2)
+into `PerformanceRuntime.create()`'s own keyword arguments — pure
+mapping, never computes win/loss or finds a cause.
+`coaching_adapter.py` maps a `PerformanceRecord` into
+`CoachingRuntime.create()`-shaped keyword arguments, structure only,
+with no `ai.coaching` import needed at all. `analytics_adapter.py`
+reuses `analytics.strategy_report.compute_win_rate()` directly rather
+than force-fitting `compute_performance_metrics()` (which needs a
+field `PerformanceRecord` doesn't carry) — an honestly documented
+partial-reuse gap, not fabrication. `memory_adapter.py`'s
+`performance_memory_key()` never imports `ai.memory`. Owner-only via a
+dedicated `enable_performance_intelligence` flag. Zero diff in
+`decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
+`context/`, `telegram/`, `database/`, `monitoring/` this phase (Rule
+1). Not wired into `core/pipeline.py` or any Telegram command —
+foundation only. See `docs/PHASE66_5_FREEZE.md`.
 
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 
