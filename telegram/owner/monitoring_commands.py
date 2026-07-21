@@ -1,6 +1,8 @@
 """
 Telegram Layer — Owner Monitoring Commands (GoldBot Core Owner
-Monitoring Alpha, TASK 7). Same "real function, not live-wired until
+Monitoring Alpha, TASK 7; extended by Phase B.0 with `get_performance_report()`
+and resource/health lines appended to `get_status_report()`, see
+`docs/PHASE_B0_AUDIT.md`). Same "real function, not live-wired until
 wired in `telegram/handlers.py`" posture as every other module in
 `telegram/owner/` -- see `telegram/owner/provider_commands.py`'s own
 docstring for the established convention.
@@ -16,13 +18,19 @@ output that itself checks permission -- gating happens once, in
 `telegram/commands.py`'s `OWNER_COMMANDS` registration + the existing,
 live `telegram.permissions`/`telegram.command_router` gate (see the
 audit's own "Security" section for why no new `access_control.py` is
-created).
+created). Phase B.0's own new surface (`get_performance_report()`, the
+resource/health lines) is additionally gated by
+`monitoring.access.is_owner_monitoring_enabled()`.
 """
 
 from config import Config
+from monitoring.access import is_owner_monitoring_enabled
 from monitoring.decision_logger import DecisionLogger
 from monitoring.error_monitor import ErrorMonitor
+from monitoring.health_monitor import classify_health
 from monitoring.market_monitor import get_market_health
+from monitoring.performance_collector import get_counts as get_performance_counts
+from monitoring.resource_monitor import get_resource_snapshot
 from monitoring.signal_monitor import get_signal_health
 from monitoring.system_monitor import get_health as get_system_health_snapshot
 from telegram.owner.provider_commands import ProviderCommandResult
@@ -49,7 +57,11 @@ def get_status_report() -> ProviderCommandResult:
     """
     /status -> `monitoring.system_monitor.get_health()`. Never raises:
     the underlying `get_health()` already never raises; this function
-    only formats its output.
+    only formats its output. When `enable_owner_monitoring` is on
+    (Phase B.0), appends an overall health classification
+    (`monitoring.health_monitor.classify_health()`) and a resource
+    snapshot line (`monitoring.resource_monitor.get_resource_snapshot()`)
+    -- both additive, never replacing the existing lines above.
     """
     try:
         health = get_system_health_snapshot()
@@ -63,9 +75,52 @@ def get_status_report() -> ProviderCommandResult:
         ]
         if health.last_error:
             lines.append(f"Last error: {health.last_error}")
+
+        if is_owner_monitoring_enabled():
+            overall = classify_health(health, ErrorMonitor().get_error_counts(hours=24))
+            lines.append(f"Overall health: {overall.value}")
+
+            resources = get_resource_snapshot()
+            cpu = f"{resources.cpu_time_seconds:.1f}s" if resources.cpu_time_seconds is not None else "N/A"
+            ram = f"{resources.max_rss_kb} KB" if resources.max_rss_kb is not None else "N/A"
+            lines.append(
+                f"Resources: CPU {cpu} | RAM {ram} | Threads {resources.thread_count} | "
+                f"Restarts {resources.restart_count} | Heartbeat {resources.heartbeat_at}"
+            )
+
         return ProviderCommandResult(success=True, message="\n".join(lines))
     except Exception as e:
         logger.warning(f"get_status_report failed: {e}")
+        return ProviderCommandResult(success=False, message=f"Error: {e}")
+
+
+def get_performance_report() -> ProviderCommandResult:
+    """
+    /performance -> `monitoring.performance_collector.get_counts()`
+    (Phase B.0 TASK 7 -- a pure counter collector, never a computed
+    metric; `monitoring.performance.PerformanceTracker`'s own win-rate
+    stats are a separate, already-existing concern). Owner-gated by
+    `enable_owner_monitoring` (Rule 5) in addition to the live
+    OWNER_COMMANDS gate. Never raises.
+    """
+    try:
+        if not is_owner_monitoring_enabled():
+            return ProviderCommandResult(success=False, message="Owner monitoring is not enabled.")
+
+        counts = get_performance_counts()
+        lines = [
+            "Performance Counters",
+            f"Signals: {counts.signal_count}",
+            f"Decisions: {counts.decision_count}",
+            f"Trades: {counts.trade_count}",
+            f"Rejects: {counts.reject_count}",
+            f"Errors: {counts.error_count}",
+            f"Reconnects: {counts.reconnect_count}",
+            f"Runtime: {_format_uptime(counts.runtime_seconds)}",
+        ]
+        return ProviderCommandResult(success=True, message="\n".join(lines))
+    except Exception as e:
+        logger.warning(f"get_performance_report failed: {e}")
         return ProviderCommandResult(success=False, message=f"Error: {e}")
 
 

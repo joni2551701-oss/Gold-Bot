@@ -18,7 +18,7 @@ Persisted via `database.monitoring_repository.MonitoringRepository`
 accumulate a real dataset for a future phase.
 """
 
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Tuple
 
 from core.logger import setup_logger
 from database.monitoring_repository import MonitoringRepository
@@ -44,12 +44,19 @@ class DecisionLogger:
         criteria_total: int,
         decision: str,
         reason: str = "",
+        stage_durations_ms: Optional[Sequence[Tuple[str, float]]] = None,
     ) -> Optional[DecisionPipelineEntry]:
-        """Never raises: a database failure logs a warning and returns None rather than propagating."""
+        """
+        Never raises: a database failure logs a warning and returns
+        None rather than propagating. `stage_durations_ms` (Phase B.0
+        TASK 5) is caller-supplied only -- this method never measures a
+        stage's duration itself, only relays what it is given.
+        """
         try:
             row = self._get_repository().record_decision_entry(
                 symbol=symbol, timeframe=timeframe, criteria_met=criteria_met,
                 criteria_total=criteria_total, decision=decision, reason=reason,
+                stage_durations_ms=stage_durations_ms or (),
             )
         except Exception as e:
             logger.warning(f"log_entry failed: {e}")
@@ -63,6 +70,7 @@ class DecisionLogger:
             criteria_total=row.criteria_total,
             decision=row.decision,
             reason=row.reason,
+            stage_durations_ms=row.stage_durations_ms,
         )
 
     def get_recent_entries(self, limit: int = 20) -> Sequence[DecisionPipelineEntry]:
@@ -82,6 +90,7 @@ class DecisionLogger:
                 criteria_total=row.criteria_total,
                 decision=row.decision,
                 reason=row.reason,
+                stage_durations_ms=row.stage_durations_ms,
             )
             for row in rows
         )

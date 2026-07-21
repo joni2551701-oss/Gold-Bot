@@ -176,6 +176,7 @@ from telegram.owner.monitoring_commands import (
     get_errors_report,
     get_health_report,
     get_market_report,
+    get_performance_report,
     get_pipeline_report,
     get_signals_report,
     get_status_report,
@@ -1065,6 +1066,11 @@ async def pipeline_handler() -> str:
 async def report_handler() -> str:
     """/report -> telegram.owner.monitoring_commands.get_daily_report() (GoldBot Core Owner Monitoring Alpha). OWNER only. Never raises."""
     return get_daily_report().message
+
+
+async def performance_handler() -> str:
+    """/performance -> telegram.owner.monitoring_commands.get_performance_report() (Phase B.0 TASK 7 -- pure counters, Owner-gated by enable_owner_monitoring). OWNER only. Never raises."""
+    return get_performance_report().message
 
 
 async def runtime_handler() -> str:

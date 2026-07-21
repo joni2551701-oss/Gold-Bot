@@ -152,3 +152,9 @@ follows the same pattern once more, closing the `66.x` sub-sequence —
   `AI_REASONING.md`, `AI_CONVERSATION.md`, `AI_MEMORY.md`,
   `AI_KNOWLEDGE.md` — the eight layers this Runtime composes, each in
   its own depth.
+- `docs/architecture/MONITORING.md`, `docs/PHASE_B0_FREEZE.md` —
+  GoldBot Core Owner Monitoring Alpha (Phase B.0, Track B), a
+  read-only observation layer over GoldBot Core that never calls this
+  Runtime and is never called by it -- cross-referenced here only
+  because it is the Director's own next Track after the `66.x` AI
+  Foundation closed.

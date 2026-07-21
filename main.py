@@ -1,6 +1,7 @@
 from config import Config
 from core.logger import setup_logger
 from core.pipeline import TradingPipeline
+from monitoring.resource_monitor import record_process_start
 
 logger = setup_logger("GoldBot")
 
@@ -20,6 +21,7 @@ class GoldBot:
     """
 
     def __init__(self):
+        record_process_start()
         self.pipeline = TradingPipeline(
             symbol="XAUUSD",
             interval="M15",

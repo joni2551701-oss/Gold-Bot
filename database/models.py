@@ -740,14 +740,18 @@ def _create_learning_records_indexes(connection: sqlite3.Connection):
 
 def init_monitoring_schema(connection: sqlite3.Connection):
     """
-    Defines and creates the monitoring_error_events and
-    monitoring_decision_pipeline table schemas (GoldBot Core Owner
-    Monitoring Alpha, TASK 9). Both independent of every other table
-    -- no foreign key. Both append-only, same "history must never be
-    lost" posture as `init_emergency_state_schema()`. SystemHealth/
+    Defines and creates the monitoring_error_events,
+    monitoring_decision_pipeline, and monitoring_process_starts table
+    schemas (GoldBot Core Owner Monitoring Alpha, TASK 9; the third
+    table and the `stage_durations_ms` column added by Phase B.0 --
+    see `docs/PHASE_B0_AUDIT.md`). All independent of every other
+    table -- no foreign key. All append-only, same "history must never
+    be lost" posture as `init_emergency_state_schema()`. SystemHealth/
     MarketHealth/SignalHealth are computed live, never persisted --
     see `docs/PHASE_CORE_MONITORING_AUDIT.md`'s TASK 9 conclusion for
-    why only these two tables exist.
+    why. `monitoring_process_starts` is the one fact Phase B.0 adds
+    that cannot be computed live -- a restart count only exists across
+    process lifetimes.
     """
     query = """
     CREATE TABLE IF NOT EXISTS monitoring_error_events (
@@ -768,12 +772,50 @@ def init_monitoring_schema(connection: sqlite3.Connection):
         reason TEXT,
         created_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS monitoring_process_starts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at TEXT NOT NULL
+    );
     """
     try:
         connection.executescript(query)
         connection.commit()
-        logger.info("Database schema (monitoring_error_events, monitoring_decision_pipeline tables) initialized successfully.")
+        logger.info(
+            "Database schema (monitoring_error_events, monitoring_decision_pipeline, "
+            "monitoring_process_starts tables) initialized successfully."
+        )
     except sqlite3.Error as e:
         logger.error(f"Failed to initialize monitoring schema: {e}")
         raise
+
+    _migrate_monitoring_decision_pipeline_stage_durations(connection)
+
+
+def _migrate_monitoring_decision_pipeline_stage_durations(connection: sqlite3.Connection):
+    """
+    Phase B.0 TASK 5: guarded `ALTER TABLE ADD COLUMN` for
+    `stage_durations_ms` on a table that may already exist from the
+    prior phase without this column -- mirrors `database/models.py`'s
+    own established migration pattern (see `_migrate_signals_table()`
+    and its sibling migrations). A no-op when the column is already
+    present.
+    """
+    try:
+        cursor = connection.execute("PRAGMA table_info(monitoring_decision_pipeline)")
+        existing_columns = {row[1] for row in cursor.fetchall()}
+    except sqlite3.Error as e:
+        logger.error(f"Failed to inspect monitoring_decision_pipeline table for migration: {e}")
+        raise
+
+    if "stage_durations_ms" in existing_columns:
+        return
+
+    try:
+        connection.execute(
+            "ALTER TABLE monitoring_decision_pipeline ADD COLUMN stage_durations_ms TEXT DEFAULT ''"
+        )
+        connection.commit()
+        logger.info("Migrated monitoring_decision_pipeline table: added column 'stage_durations_ms'.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to add column 'stage_durations_ms' to monitoring_decision_pipeline table: {e}")
         raise

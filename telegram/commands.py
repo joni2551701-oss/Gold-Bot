@@ -71,6 +71,7 @@ OWNER_COMMANDS = {
     "errors": "Show recent captured errors",
     "pipeline": "Show the most recent decision pipeline trace",
     "report": "Show the GoldBot daily monitoring report",
+    "performance": "Show performance counters (GoldBot Core Owner Monitoring Alpha, Phase B.0)",
 }
 
 ADMIN_COMMANDS = {

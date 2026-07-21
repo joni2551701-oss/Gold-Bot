@@ -597,6 +597,19 @@ bug/error/performance stat collection, V1 final audit and
 stabilization, then V1 Freeze → Beta Test → VPS Production. See
 `docs/PHASE66_8_FREEZE.md`.
 
+Track B is now underway. A follow-up Worker Brief arrived under the
+same "GoldBot Core Owner Monitoring Alpha" title as the phase that had
+already shipped this Track's own foundation (commit `71f4073`).
+Phase B.0's own TASK 0 audit found ~90% overlap and extended
+`monitoring/` in place with six genuine gaps (system resource metrics,
+OK/WARNING/CRITICAL classification, a pure performance counter,
+per-pipeline-stage timing, `enable_owner_monitoring`, and a
+`/performance` command) rather than creating a duplicate
+`monitoring/owner/` subpackage -- see `docs/PHASE_B0_AUDIT.md`/
+`docs/PHASE_B0_FREEZE.md`. This work is explicitly outside the `66.x`
+AI Trading Intelligence sub-sequence (no `ai.*` import anywhere in
+`monitoring/`) and does not reopen it.
+
 ## Official Intelligence Pipeline (Director Decision, Phase 63.3; extended Phase 65.1)
 
 The AI Core's real, ordered composition, as of the Phase 63.3 Director

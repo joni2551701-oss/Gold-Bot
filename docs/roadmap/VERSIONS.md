@@ -245,7 +245,12 @@ never content-based inference), and `memory_adapter.py`
 via a dedicated `enable_research_intelligence` flag. This closes the
 `66.x` AI Trading Intelligence sub-sequence entirely; the Director's
 own next roadmap moves to GoldBot Core Owner Monitoring Alpha (Track
-B), not a new AI Foundation phase. See
+B), not a new AI Foundation phase. Track B is now underway: Phase B.0
+(a follow-up Worker Brief under the same title as the already-shipped
+"GoldBot Core Owner Monitoring Alpha") extended `monitoring/` with
+resource metrics, health classification, a performance counter, and
+per-pipeline-stage timing — see `docs/PHASE_B0_AUDIT.md`/
+`docs/PHASE_B0_FREEZE.md`. See
 `docs/roadmap/AI_EVOLUTION.md`'s own "Phase 63.x" section for the
 full sequence and its "Official Intelligence Pipeline" section for how
 these sub-phases compose (`Market → Knowledge → Memory → Reasoning →

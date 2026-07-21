@@ -7,6 +7,18 @@ not part of the `66.x` AI Trading Intelligence sub-sequence). Full
 Foundation Reuse Audit: `docs/PHASE_CORE_MONITORING_AUDIT.md`. Full
 freeze: `docs/PHASE_CORE_MONITORING_FREEZE.md`.
 
+**Phase B.0 addendum**: a second, identically-named Worker Brief
+("GoldBot Core Owner Monitoring Alpha Foundation") arrived after this
+phase had already shipped. `docs/PHASE_B0_AUDIT.md` found ~90% overlap
+with the content already documented on this page and extended the
+existing modules in place rather than creating a duplicate
+`monitoring/owner/` package — see `docs/PHASE_B0_FREEZE.md` for the six
+genuine gaps that were filled (system resource metrics,
+OK/WARNING/CRITICAL classification, a pure performance counter, per-
+pipeline-stage timing, `enable_owner_monitoring`, and a `/performance`
+command). This page's own "Architecture"/"What is monitored" sections
+below are updated in place to reflect the current, combined state.
+
 ## Why this phase exists
 
 GoldBot has not shipped V1 yet. The current goal is observing real
@@ -33,8 +45,11 @@ Owner Telegram Panel
 | Market data | `monitoring.models.MarketHealth` | `monitoring/market_monitor.py` | `/market` |
 | Signal activity | `monitoring.models.SignalHealth` | `monitoring/signal_monitor.py` | `/signals` |
 | Errors | `monitoring.models.ErrorEvent` | `monitoring/error_monitor.py` | `/errors` |
-| Decision pipeline trace | `monitoring.models.DecisionPipelineEntry` | `monitoring/decision_logger.py` | `/pipeline` |
+| Decision pipeline trace | `monitoring.models.DecisionPipelineEntry` (+ Phase B.0's own `stage_durations_ms`) | `monitoring/decision_logger.py` | `/pipeline` |
 | Daily digest | (composes the above) | `telegram/owner/monitoring_commands.py` | `/report` |
+| Resource metrics (CPU/RAM/threads/restarts/heartbeat) | `monitoring.models.ResourceSnapshot` | `monitoring/resource_monitor.py` (Phase B.0) | appended to `/owner_status` |
+| Overall health classification (OK/WARNING/CRITICAL) | `monitoring.models.HealthStatus` | `monitoring/health_monitor.py` (Phase B.0) | appended to `/owner_status` |
+| Performance counters (raw tallies, never computed) | `monitoring.models.PerformanceCounters` | `monitoring/performance_collector.py` (Phase B.0) | `/performance` |
 
 ## What is *not* monitored (or not yet)
 
@@ -69,27 +84,42 @@ renamed or reused (Article 9). The Owner-only richer version is named
 ```
 monitoring/
   models.py            SystemHealth/MarketHealth/SignalHealth/ErrorEvent/
-                        ErrorSeverity/DecisionPipelineEntry -- primitive-only
+                        ErrorSeverity/DecisionPipelineEntry/HealthStatus/
+                        ResourceSnapshot/PerformanceCounters -- primitive-only
   system_monitor.py     SystemMonitor -- in-memory uptime/last_scan/last_error,
                          composes AdminService + provider registry health
   market_monitor.py     get_market_health() -- composes monitoring.provider_health
   signal_monitor.py      (extended) get_signal_health() -- aggregates
                           SignalRepository.get_signals_today()
   decision_logger.py     DecisionLogger -- persists a primitive per-criterion
-                          trace via MonitoringRepository
+                          trace (+ Phase B.0's own stage_durations_ms) via
+                          MonitoringRepository
   error_monitor.py       ErrorMonitor -- persists ErrorEvent via
                           MonitoringRepository, updates SystemMonitor.last_error
+  resource_monitor.py    (Phase B.0) get_resource_snapshot()/record_process_start()
+                          -- CPU/RAM/thread/restart/heartbeat, stdlib only
+  health_monitor.py      (Phase B.0) classify_health() -- pure OK/WARNING/CRITICAL
+                          classifier over already-known SystemHealth/error counts
+  performance_collector.py (Phase B.0) PerformanceCollector -- in-memory
+                          raw counters (signal/decision/trade/reject/error/
+                          reconnect), never computed
+  access.py              (Phase B.0) is_owner_monitoring_enabled() -- gates
+                          this phase's own new surface only
 
 database/
-  monitoring_models.py    ErrorEventEntry / DecisionPipelineEntryRow
-  monitoring_repository.py MonitoringRepository -- append-only, two tables
-                            (monitoring_error_events, monitoring_decision_pipeline)
+  monitoring_models.py    ErrorEventEntry / DecisionPipelineEntryRow (+ Phase
+                           B.0's own stage_durations_ms field) / ProcessStartEntry
+  monitoring_repository.py MonitoringRepository -- append-only, three tables
+                            (monitoring_error_events, monitoring_decision_pipeline,
+                            monitoring_process_starts)
 
 telegram/owner/
-  monitoring_commands.py  get_status_report()/get_health_report()/
-                          get_market_report()/get_signals_report()/
-                          get_errors_report()/get_pipeline_report()/
-                          get_daily_report()
+  monitoring_commands.py  get_status_report() (+ Phase B.0's own appended
+                          resource/health lines when enable_owner_monitoring is
+                          on)/get_health_report()/get_market_report()/
+                          get_signals_report()/get_errors_report()/
+                          get_pipeline_report()/get_daily_report()/
+                          get_performance_report() (Phase B.0, new command)
 ```
 
 `SystemHealth`/`MarketHealth`/`SignalHealth` are **computed live, on
@@ -110,8 +140,13 @@ Monitoring never imports `decision/`, `risk/`, or `execution/`
 "primitive contract, no upstream object import" discipline this
 codebase's `ai/*/models.py` Foundation contracts already established.
 Monitoring never mutates Trading Core state — every function here
-either reads an already-existing source or writes to its own two new
-tables.
+either reads an already-existing source or writes to its own tables.
+Phase B.0's own new files (`resource_monitor.py`, `health_monitor.py`,
+`performance_collector.py`, `access.py`) are confirmed isolated the
+same way by `tests/monitoring/test_phase_b0_isolation.py`; `access.py`
+imports only `configuration.feature_flags`, `health_monitor.py` and
+`performance_collector.py` import no database of any kind (in-memory/
+pure-function only).
 
 ## Security
 
@@ -166,10 +201,36 @@ the full design and `docs/PHASE_OWNER_SNAPSHOT_FREEZE.md`/
 `docs/PHASE_OWNER_SNAPSHOT_V1_1_FREEZE.md`'s LOCK Policy for
 `monitoring/snapshot_*`/`telegram/owner/snapshot_*`.
 
+## Phase B.0 — genuine gaps only (no duplicate package)
+
+`docs/PHASE_B0_AUDIT.md`'s own headline finding: the Phase B.0 brief
+requested a new `monitoring/owner/` subpackage duplicating
+`system_monitor.py`/`market_monitor.py`/`signal_monitor.py`/
+`error_monitor.py`/a decision-pipeline logger under near-identical
+names, plus seven Owner commands that collide with the seven already
+live (`/health`, `/market`, `/signals`, `/errors`, `/status` vs.
+`/owner_status`, `/decision` vs. `/pipeline`, `/runtime` — the last of
+which already means "AI Runtime lifecycle," a different concern
+entirely). Per the Module Reuse Principle, only six genuine gaps were
+filled, all as additive extensions to the existing modules above:
+system resource metrics (`resource_monitor.py`), OK/WARNING/CRITICAL
+classification (`health_monitor.py`), a pure counter collector
+(`performance_collector.py`), per-pipeline-stage timing
+(`DecisionPipelineEntry.stage_durations_ms`), the
+`enable_owner_monitoring` feature flag, and a new `/performance`
+command. `OWNER_IDS` (Rule 4) was not implemented as a second,
+competing owner-identity source — the existing singular
+`Secrets.TELEGRAM_OWNER_ID` gate already satisfies "only OWNER can use
+these commands." Full detail: `docs/PHASE_B0_AUDIT.md`,
+`docs/PHASE_B0_FREEZE.md`.
+
 ## Related documents
 
 - `docs/PHASE_CORE_MONITORING_AUDIT.md` — TASK 0's Foundation Reuse
   Audit.
 - `docs/PHASE_CORE_MONITORING_FREEZE.md` — this phase's own freeze.
+- `docs/PHASE_B0_AUDIT.md`, `docs/PHASE_B0_FREEZE.md` — the
+  genuine-gaps-only extension phase, run after this page's own content
+  had already shipped under an identically-named brief.
 - `docs/owner/OWNER_PANEL.md` — the wider Owner Telegram panel this
   phase's commands are added to.

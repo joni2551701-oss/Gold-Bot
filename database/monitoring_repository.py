@@ -1,9 +1,12 @@
 """
 Database Layer — Monitoring repository (GoldBot Core Owner Monitoring
-Alpha, TASK 9). Mirrors `database/emergency_repository.py`'s own
-structure (append-only, no update/delete, idempotent schema init in
-`__init__`) -- an error/decision history must never be overwritten,
-same "Tarix yo'qolmasligi kerak" (history must never be lost) posture.
+Alpha, TASK 9; extended by Phase B.0 -- `stage_durations_ms` persistence
+and `record_process_start()`/`get_restart_count()`, see
+`docs/PHASE_B0_AUDIT.md`). Mirrors `database/emergency_repository.py`'s
+own structure (append-only, no update/delete, idempotent schema init in
+`__init__`) -- an error/decision/process-start history must never be
+overwritten, same "Tarix yo'qolmasligi kerak" (history must never be
+lost) posture.
 """
 
 from datetime import datetime, timedelta, timezone
@@ -14,8 +17,10 @@ from database.models import init_monitoring_schema
 from database.monitoring_models import (
     DecisionPipelineEntryRow,
     ErrorEventEntry,
+    ProcessStartEntry,
     create_decision_pipeline_entry_row,
     create_error_event_entry,
+    create_process_start_entry,
 )
 from core.logger import setup_logger
 
@@ -32,8 +37,25 @@ def _row_to_error_event(row) -> ErrorEventEntry:
     )
 
 
+def _serialize_stage_durations(stage_durations_ms) -> str:
+    return ",".join(f"{stage}:{duration}" for stage, duration in stage_durations_ms)
+
+
+def _deserialize_stage_durations(raw: str):
+    if not raw:
+        return ()
+    pairs = []
+    for entry in raw.split(","):
+        if not entry:
+            continue
+        stage, _, duration = entry.rpartition(":")
+        pairs.append((stage, float(duration)))
+    return tuple(pairs)
+
+
 def _row_to_decision_entry(row) -> DecisionPipelineEntryRow:
     criteria_met = tuple(c for c in row["criteria_met"].split(",") if c)
+    stage_durations_raw = row["stage_durations_ms"] if "stage_durations_ms" in row.keys() else ""
     return DecisionPipelineEntryRow(
         symbol=row["symbol"],
         timeframe=row["timeframe"],
@@ -41,8 +63,13 @@ def _row_to_decision_entry(row) -> DecisionPipelineEntryRow:
         criteria_total=row["criteria_total"],
         decision=row["decision"],
         reason=row["reason"] or "",
+        stage_durations_ms=_deserialize_stage_durations(stage_durations_raw or ""),
         created_at=datetime.fromisoformat(row["created_at"]),
     )
+
+
+def _row_to_process_start(row) -> ProcessStartEntry:
+    return ProcessStartEntry(created_at=datetime.fromisoformat(row["created_at"]))
 
 
 class MonitoringRepository:
@@ -77,17 +104,21 @@ class MonitoringRepository:
 
     def record_decision_entry(
         self, symbol: str, timeframe: str, criteria_met, criteria_total: int, decision: str, reason: str = "",
+        stage_durations_ms=(),
     ) -> DecisionPipelineEntryRow:
         """Builds (via create_decision_pipeline_entry_row()) and inserts one new row -- never an UPDATE."""
-        entry = create_decision_pipeline_entry_row(symbol, timeframe, criteria_met, criteria_total, decision, reason)
+        entry = create_decision_pipeline_entry_row(
+            symbol, timeframe, criteria_met, criteria_total, decision, reason, stage_durations_ms,
+        )
         with self.db as conn:
             conn.execute(
                 "INSERT INTO monitoring_decision_pipeline "
-                "(symbol, timeframe, criteria_met, criteria_total, decision, reason, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "(symbol, timeframe, criteria_met, criteria_total, decision, reason, stage_durations_ms, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     entry.symbol, entry.timeframe, ",".join(entry.criteria_met), entry.criteria_total,
-                    entry.decision, entry.reason, entry.created_at.isoformat(),
+                    entry.decision, entry.reason, _serialize_stage_durations(entry.stage_durations_ms),
+                    entry.created_at.isoformat(),
                 ),
             )
         return entry
@@ -96,8 +127,25 @@ class MonitoringRepository:
         """Most recent `limit` decision pipeline entries, newest first."""
         with self.db as conn:
             cursor = conn.execute(
-                "SELECT symbol, timeframe, criteria_met, criteria_total, decision, reason, created_at "
+                "SELECT symbol, timeframe, criteria_met, criteria_total, decision, reason, stage_durations_ms, created_at "
                 "FROM monitoring_decision_pipeline ORDER BY id DESC LIMIT ?",
                 (limit,),
             )
             return [_row_to_decision_entry(row) for row in cursor.fetchall()]
+
+    def record_process_start(self) -> ProcessStartEntry:
+        """Phase B.0 TASK 2: builds (via create_process_start_entry()) and inserts one new row -- one call per process start, never an UPDATE."""
+        entry = create_process_start_entry()
+        with self.db as conn:
+            conn.execute(
+                "INSERT INTO monitoring_process_starts (created_at) VALUES (?)",
+                (entry.created_at.isoformat(),),
+            )
+        return entry
+
+    def get_restart_count(self) -> int:
+        """Phase B.0 TASK 2: total number of recorded process starts. Never raises: relies on the same connection-context posture as every other read here."""
+        with self.db as conn:
+            cursor = conn.execute("SELECT COUNT(*) AS count FROM monitoring_process_starts")
+            row = cursor.fetchone()
+            return row["count"] if row else 0

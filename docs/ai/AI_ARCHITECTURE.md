@@ -339,6 +339,14 @@ above:
 
 ## Related documents
 
+- `docs/architecture/MONITORING.md`, `docs/PHASE_B0_FREEZE.md` —
+  GoldBot Core Owner Monitoring Alpha (Phase B.0, Track B) — a
+  V1 pre-production observation layer over `monitoring/`, explicitly
+  **not** part of the `66.x` AI Trading Intelligence sub-sequence this
+  document describes (no `ai/` import anywhere in `monitoring/`,
+  confirmed by `tests/monitoring/test_monitoring_isolation.py`).
+  Listed here only for cross-reference completeness, since it is the
+  Director's own next Track after `66.8` closed the AI Foundation.
 - `docs/constitution/CONSTITUTION.md` — Articles 1/3/5 this structure
   must always satisfy.
 - `docs/architecture/MODULE_DEPENDENCIES.md` — this same tree in the

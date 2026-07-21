@@ -67,8 +67,12 @@ def test_error_event_field_names():
 
 
 def test_decision_pipeline_entry_field_names():
+    """Phase B.0 added stage_durations_ms (additive, defaults to ()) -- see docs/PHASE_B0_AUDIT.md."""
     field_names = {f.name for f in dataclasses.fields(DecisionPipelineEntry)}
-    assert field_names == {"timestamp", "symbol", "timeframe", "criteria_met", "criteria_total", "decision", "reason"}
+    assert field_names == {
+        "timestamp", "symbol", "timeframe", "criteria_met", "criteria_total", "decision", "reason",
+        "stage_durations_ms",
+    }
 
 
 def test_decision_pipeline_entry_reason_defaults_empty_string():

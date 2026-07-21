@@ -94,6 +94,20 @@ class FeatureFlags:
         False by default; even when True,
         `ai.research.access.is_research_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 8).
+    enable_owner_monitoring: reserved for the GoldBot Core Owner
+        Monitoring Alpha's own genuine-gap additions (Phase B.0 --
+        `monitoring/resource_monitor.py`,
+        `monitoring/health_monitor.py`,
+        `monitoring/performance_collector.py`, see
+        `docs/PHASE_B0_AUDIT.md`) -- always False by default. Distinct
+        from the prior "GoldBot Core Owner Monitoring Alpha" phase's
+        own seven live commands (`/owner_status`, `/health`, `/market`,
+        `/signals`, `/errors`, `/pipeline`, `/report`), which are
+        already gated by the live `telegram.permissions`/
+        `telegram.command_router` Owner-only mechanism and read no
+        feature flag at all -- this flag governs only the new
+        `/performance` command and the resource/health lines appended
+        to `/owner_status`'s own report, not the pre-existing seven.
     """
     enable_ai: bool = False
     enable_crypto: bool = False
@@ -110,6 +124,7 @@ class FeatureFlags:
     enable_strategy_intelligence: bool = False
     enable_portfolio_intelligence: bool = False
     enable_research_intelligence: bool = False
+    enable_owner_monitoring: bool = False
 
 
 # The single safe-default instance -- every flag off. Not a singleton
