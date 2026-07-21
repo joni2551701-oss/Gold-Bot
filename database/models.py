@@ -819,3 +819,56 @@ def _migrate_monitoring_decision_pipeline_stage_durations(connection: sqlite3.Co
     except sqlite3.Error as e:
         logger.error(f"Failed to add column 'stage_durations_ms' to monitoring_decision_pipeline table: {e}")
         raise
+
+
+def init_risk_schema(connection: sqlite3.Connection):
+    """
+    Defines and creates the risk_decisions and risk_account_state
+    table schemas (Phase V1.0.1: Risk Management Hardening Patch,
+    TASK 8/10 -- see docs/PHASE_V1_0_1_RISK_AUDIT.md's TASK 4/10
+    sections for why neither table could reuse an existing one). Both
+    independent of every other table -- no foreign key.
+
+    risk_decisions: append-only (same "history must never be lost"
+    posture as init_emergency_state_schema()) -- one row per
+    RiskManager.evaluate() call, whatever the outcome.
+
+    risk_account_state: one row per symbol, upserted (same
+    one-row-per-name convention as init_runtime_feature_schema()) --
+    holds the drawdown baseline (starting_equity/current_equity) and
+    the daily-loss baseline (daily_start_balance/daily_date) together,
+    since both are small, related, per-symbol account-state facts
+    read/written by risk.account_state_tracker.AccountStateTracker.
+    """
+    query = """
+    CREATE TABLE IF NOT EXISTS risk_decisions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        symbol TEXT NOT NULL,
+        strategy_name TEXT,
+        direction TEXT,
+        risk_percent REAL,
+        risk_reward REAL,
+        drawdown_percent REAL,
+        decision TEXT NOT NULL,
+        reason TEXT NOT NULL,
+        reject_category TEXT,
+        created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS risk_account_state (
+        symbol TEXT PRIMARY KEY,
+        starting_equity REAL,
+        current_equity REAL,
+        drawdown_status TEXT NOT NULL DEFAULT 'NORMAL',
+        daily_start_balance REAL,
+        daily_date TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    );
+    """
+    try:
+        connection.executescript(query)
+        connection.commit()
+        logger.info("Database schema (risk_decisions, risk_account_state tables) initialized successfully.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize risk schema: {e}")
+        raise
