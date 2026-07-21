@@ -259,6 +259,22 @@ Broadcast`). This table is not repeated here to avoid two documents
 drifting out of sync — `docs/roadmap/AI_EVOLUTION.md` is the single
 source for this sequence's detail.
 
+### V1.0 Pre-Freeze Audit — GoldBot V1 Final Audit Foundation
+**Status: COMPLETED (audit only, no code change).** A dedicated
+audit/verification/stabilization phase — no new strategy, no new AI
+Foundation, no Trading Core logic change, no architecture rebuild.
+Covered Repository Health, full Architecture Verification (import
+graph + circular-import check), Trading Pipeline, Risk Management,
+Execution, AI Layer, Monitoring, Database, Configuration,
+Error/Logging, Test, Performance, and Production Readiness audits. No
+safety-relevant defect found; a set of known, mostly pre-existing gaps
+(no RR/drawdown/duplicate-trade enforcement in `risk/`, no automated
+DB backup, some architecture-doc drift) was documented for the
+Director rather than fixed, per this phase's own Trading Core/AI
+Foundation lock rules. See `docs/PHASE_V1_AUDIT.md`,
+`docs/V1_RISK_AUDIT.md`, `docs/V1_PERFORMANCE_REPORT.md`, and
+`docs/PHASE_V1_FREEZE.md` for full detail.
+
 ## Notes
 
 - This table intentionally does not promise dates — only scope and
