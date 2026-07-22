@@ -156,3 +156,40 @@ def phone_share_keyboard(language=None):
         resize_keyboard=True,
         one_time_keyboard=True,
     )
+
+
+# V2 Phase 5 -- the persistent Reply Keyboard shown once a user's
+# Registration Wizard reaches COMPLETE (telegram/command_router.py
+# decides when to attach it -- never before COMPLETE, since it would
+# otherwise replace phone_share_keyboard() above; see
+# docs/PHASE5_AUDIT.md Section 2). Director decision: buttons send the
+# literal "/command" text -- no separate display label, no new
+# label->command mapping layer in command_router.py, so every button
+# routes through the exact same telegram.command_router.route_command()
+# dispatch a typed command already uses. This makes the keyboard
+# language-invariant (there is no label to translate), the same
+# posture Phase 1.5 Localized Keyboards already gives
+# admin_panel_keyboard() below -- neither takes a `language` argument.
+_USER_REPLY_COMMANDS = ("start", "profile", "signal", "subscription", "settings", "help")
+_ADMIN_REPLY_COMMANDS = _USER_REPLY_COMMANDS + ("admin",)
+_OWNER_REPLY_COMMANDS = _ADMIN_REPLY_COMMANDS + ("owner",)
+
+
+def _reply_keyboard_rows(commands):
+    buttons = [KeyboardButton(text=f"/{command}") for command in commands]
+    return [buttons[i:i + 2] for i in range(0, len(buttons), 2)]
+
+
+def reply_keyboard():
+    """USER-tier persistent Reply Keyboard (V2 Phase 5): Home/Profile/Signals/Subscription/Settings/Help."""
+    return ReplyKeyboardMarkup(keyboard=_reply_keyboard_rows(_USER_REPLY_COMMANDS), resize_keyboard=True)
+
+
+def admin_reply_keyboard():
+    """ADMIN-tier persistent Reply Keyboard (V2 Phase 5): USER's set plus /admin -- same superset policy as Phase 4's Persistent Menu."""
+    return ReplyKeyboardMarkup(keyboard=_reply_keyboard_rows(_ADMIN_REPLY_COMMANDS), resize_keyboard=True)
+
+
+def owner_reply_keyboard():
+    """OWNER-tier persistent Reply Keyboard (V2 Phase 5): ADMIN's set plus /owner -- same superset policy as Phase 4's Persistent Menu."""
+    return ReplyKeyboardMarkup(keyboard=_reply_keyboard_rows(_OWNER_REPLY_COMMANDS), resize_keyboard=True)

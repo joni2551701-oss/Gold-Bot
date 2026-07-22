@@ -19,7 +19,14 @@ from telegram.keyboards import (
     admin_panel_keyboard,
     notifications_keyboard,
     phone_share_keyboard,
+    reply_keyboard,
+    admin_reply_keyboard,
+    owner_reply_keyboard,
 )
+
+
+def _reply_texts(markup):
+    return [button.text for row in markup.keyboard for button in row]
 
 
 def _labels(markup):
@@ -111,6 +118,38 @@ def test_admin_panel_keyboard_stays_english_only_and_zero_arg():
     # OWNER/ADMIN tier -- Director decision, excluded from Phase 1.5.
     labels = _labels(admin_panel_keyboard())
     assert labels == ["Users", "Statistics", "System", "Broadcast", "Admins"]
+
+
+# ---------------------------------------------------------------------------
+# V2 Phase 5 -- persistent Reply Keyboard. Language-invariant (Director
+# decision: buttons send the literal "/command" text, no separate
+# label -- see docs/PHASE5_AUDIT.md), same posture admin_panel_keyboard()
+# above already has, so no `language` argument.
+# ---------------------------------------------------------------------------
+
+
+def test_reply_keyboard_sends_literal_slash_commands():
+    assert _reply_texts(reply_keyboard()) == [
+        "/start", "/profile", "/signal", "/subscription", "/settings", "/help",
+    ]
+
+
+def test_reply_keyboard_is_resizable_and_not_one_time():
+    markup = reply_keyboard()
+    assert markup.resize_keyboard is True
+    assert not markup.one_time_keyboard
+
+
+def test_admin_reply_keyboard_is_user_set_plus_admin():
+    assert _reply_texts(admin_reply_keyboard()) == [
+        "/start", "/profile", "/signal", "/subscription", "/settings", "/help", "/admin",
+    ]
+
+
+def test_owner_reply_keyboard_is_admin_set_plus_owner():
+    assert _reply_texts(owner_reply_keyboard()) == [
+        "/start", "/profile", "/signal", "/subscription", "/settings", "/help", "/admin", "/owner",
+    ]
 
 
 def test_command_router_attaches_a_keyboard_localized_to_the_caller():

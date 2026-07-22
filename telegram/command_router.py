@@ -29,6 +29,8 @@ import inspect
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
+from aiogram.types import ReplyKeyboardRemove
+
 from telegram import handlers
 from telegram.commands import COMMANDS, OWNER_COMMANDS, ADMIN_COMMANDS
 from telegram.keyboards import (
@@ -39,6 +41,9 @@ from telegram.keyboards import (
     settings_keyboard,
     admin_panel_keyboard,
     phone_share_keyboard,
+    reply_keyboard,
+    admin_reply_keyboard,
+    owner_reply_keyboard,
 )
 from telegram.permissions import PermissionLevel, get_permission_level
 from telegram.registration_service import RegistrationStep
@@ -73,28 +78,49 @@ _KEYBOARD_BY_COMMAND = {
 }
 
 # V2 Phase 3: which keyboard builder to attach to /start's reply for
-# each Wizard step. RegistrationStep.COMPLETE (and a BANNED user, or
-# any other unrecognized/None step) intentionally has no entry here --
-# _start_keyboard() falls back to None, meaning /start carries no
-# keyboard once the Wizard is done or was never applicable.
+# each Wizard step. RegistrationStep.COMPLETE has no entry here --
+# _start_keyboard() handles that case separately (V2 Phase 5: the
+# persistent Reply Keyboard, tier-aware).
 _START_KEYBOARD_BY_STEP = {
     RegistrationStep.LANGUAGE: language_keyboard,
     RegistrationStep.PHONE: phone_share_keyboard,
 }
 
 
+def _persistent_reply_keyboard(telegram_id):
+    """
+    V2 Phase 5: the tier-aware persistent Reply Keyboard for a fully
+    registered (registration_step == COMPLETE) user -- USER/ADMIN/OWNER
+    each get their own superset, mirroring Phase 4's Persistent Menu
+    tiering policy exactly (telegram/menu_commands.py).
+    """
+    level = get_permission_level(telegram_id)
+    if level == PermissionLevel.OWNER:
+        return owner_reply_keyboard()
+    if level == PermissionLevel.ADMIN:
+        return admin_reply_keyboard()
+    return reply_keyboard()
+
+
 def _start_keyboard(telegram_id, language):
     """
-    V2 Phase 3: /start's reply keyboard follows wherever the
+    V2 Phase 3/5: /start's reply keyboard follows wherever the
     Registration Wizard left off -- language_keyboard while
     registration_step is LANGUAGE, phone_share_keyboard while PHONE,
-    no keyboard once COMPLETE. handlers._registration_step() already
-    returns None for a BANNED user, so this naturally attaches no
-    Wizard keyboard to a banned /start reply either.
+    the persistent Reply Keyboard once COMPLETE (V2 Phase 5).
+    ReplyKeyboardRemove() for a BANNED user -- checked first and
+    independently of registration_step, since
+    handlers._registration_step() already collapses BANNED and
+    COMPLETE to the same None and cannot distinguish them on its own.
     """
+    if handlers._is_banned(telegram_id):
+        return ReplyKeyboardRemove()
+
     step = handlers._registration_step(telegram_id)
     builder = _START_KEYBOARD_BY_STEP.get(step)
-    return builder(language) if builder else None
+    if builder is not None:
+        return builder(language)
+    return _persistent_reply_keyboard(telegram_id)
 
 
 _LEVEL_RANK = {
@@ -246,4 +272,15 @@ async def route_contact(message) -> RouterResult:
         logger.warning(f"contact_handler failed for telegram_id={telegram_id}: {e}")
         return RouterResult(text=SERVICE_UNAVAILABLE_TEXT)
 
-    return RouterResult(text=text)
+    # V2 Phase 5: a successful phone share is also the Wizard's
+    # completion trigger (contact_handler() already called
+    # RegistrationService.complete() internally) -- attach the
+    # tier-aware persistent Reply Keyboard to this same reply,
+    # replacing phone_share_keyboard() directly (Telegram needs no
+    # explicit ReplyKeyboardRemove() step before a straight
+    # ReplyKeyboardMarkup replacement -- see docs/PHASE5_AUDIT.md
+    # Section 3). No-op (keyboard stays None) if registration did not
+    # actually complete this call (e.g. the phone number was already
+    # registered elsewhere).
+    keyboard = _persistent_reply_keyboard(telegram_id) if handlers._is_registration_complete(telegram_id) else None
+    return RouterResult(text=text, keyboard=keyboard)

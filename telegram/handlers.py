@@ -273,6 +273,36 @@ def _registration_step(telegram_id) -> Optional[str]:
         return None
 
 
+def _is_registration_complete(telegram_id) -> bool:
+    """
+    Best-effort check (V2 Phase 5) for whether telegram_id's
+    registration has reached COMPLETE -- used by
+    command_router.route_contact() to decide whether to attach the
+    persistent Reply Keyboard right after a successful phone share.
+    Never raises.
+    """
+    try:
+        return RegistrationService().is_complete(telegram_id)
+    except Exception as e:
+        logger.warning(f"_is_registration_complete failed for telegram_id={telegram_id}: {e}")
+        return False
+
+
+def _is_banned(telegram_id) -> bool:
+    """
+    Best-effort check (V2 Phase 5) for whether telegram_id's account
+    is BANNED -- used by command_router.py to attach
+    ReplyKeyboardRemove() instead of any Wizard/persistent keyboard on
+    /start's reply. Mirrors _current_language()'s shape. Never raises.
+    """
+    try:
+        result = UserService().get_profile(telegram_id)
+    except Exception as e:
+        logger.warning(f"_is_banned failed for telegram_id={telegram_id}: {e}")
+        return False
+    return result.success and result.profile is not None and result.profile.status == "BANNED"
+
+
 async def help_handler(telegram_id=None) -> str:
     """/help -> localized command reference. No service call beyond the language lookup."""
     return t("help.text", _current_language(telegram_id))

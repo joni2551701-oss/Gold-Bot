@@ -105,6 +105,26 @@ def test_route_contact_end_to_end_registers_a_free_account():
     assert "sinov" in result.text.lower()
 
 
+def test_route_contact_attaches_the_persistent_reply_keyboard_on_completion():
+    """V2 Phase 5: a successful phone share (Wizard COMPLETE) gets the USER-tier persistent Reply Keyboard."""
+    from aiogram.types import ReplyKeyboardMarkup
+
+    _run(route_command("/start", telegram_id="618"))
+    result = _run(route_contact(_contact_message("618", "+1 555 444 0001")))
+
+    assert isinstance(result.keyboard, ReplyKeyboardMarkup)
+    buttons = [b.text for row in result.keyboard.keyboard for b in row]
+    assert buttons == ["/start", "/profile", "/signal", "/subscription", "/settings", "/help"]
+
+
+def test_route_contact_no_keyboard_when_registration_does_not_complete():
+    """A rejected contact (ownership mismatch) never reaches COMPLETE -- no persistent keyboard attached."""
+    _run(route_command("/start", telegram_id="619"))
+    result = _run(route_contact(_contact_message("619", "+1 555 444 0002", contact_user_id="999999")))
+
+    assert result.keyboard is None
+
+
 def test_route_contact_for_unregistered_user_is_localized():
     # Phase 1.6 -- contact_handler no longer echoes UserService's raw
     # English reason string; DB default language is UZ.
@@ -176,7 +196,9 @@ def test_start_keyboard_is_the_phone_share_keyboard_once_at_the_phone_step():
     assert result.keyboard.keyboard[0][0].request_contact is True
 
 
-def test_start_keyboard_is_none_once_registration_is_complete():
+def test_start_keyboard_is_the_persistent_reply_keyboard_once_registration_is_complete():
+    """V2 Phase 5: COMPLETE replaces "no keyboard" with the USER-tier persistent Reply Keyboard."""
+    from aiogram.types import ReplyKeyboardMarkup
     from telegram.registration_service import RegistrationService
 
     _run(route_command("/start", telegram_id="616"))
@@ -184,10 +206,14 @@ def test_start_keyboard_is_none_once_registration_is_complete():
 
     result = _run(route_command("/start", telegram_id="616"))
 
-    assert result.keyboard is None
+    assert isinstance(result.keyboard, ReplyKeyboardMarkup)
+    buttons = [b.text for row in result.keyboard.keyboard for b in row]
+    assert buttons == ["/start", "/profile", "/signal", "/subscription", "/settings", "/help"]
 
 
-def test_start_keyboard_is_none_for_a_banned_user():
+def test_start_keyboard_is_reply_keyboard_remove_for_a_banned_user():
+    """V2 Phase 5 Decision 3: a BANNED /start gets ReplyKeyboardRemove(), not None."""
+    from aiogram.types import ReplyKeyboardRemove
     from telegram.user_service import UserService as _US
 
     _run(route_command("/start", telegram_id="617"))
@@ -195,5 +221,41 @@ def test_start_keyboard_is_none_for_a_banned_user():
 
     result = _run(route_command("/start", telegram_id="617"))
 
-    assert result.keyboard is None
+    assert isinstance(result.keyboard, ReplyKeyboardRemove)
     assert result.text == "Sizning hisobingiz bloklangan."
+
+
+# ---------------------------------------------------------------------------
+# V2 Phase 5 Decision 4 -- the persistent Reply Keyboard is tier-aware,
+# same superset policy as Phase 4's Persistent Menu (menu_commands.py).
+# ---------------------------------------------------------------------------
+
+
+def test_start_keyboard_is_the_admin_reply_keyboard_for_a_completed_admin(monkeypatch):
+    from database.admin_repository import AdminRepository
+    from telegram.registration_service import RegistrationService
+
+    monkeypatch.delenv("TELEGRAM_OWNER_ID", raising=False)
+    _run(route_command("/start", telegram_id="620"))
+    RegistrationService().complete("620")
+    AdminRepository().add_admin("620")
+
+    result = _run(route_command("/start", telegram_id="620"))
+
+    buttons = [b.text for row in result.keyboard.keyboard for b in row]
+    assert buttons == ["/start", "/profile", "/signal", "/subscription", "/settings", "/help", "/admin"]
+
+
+def test_start_keyboard_is_the_owner_reply_keyboard_for_a_completed_owner(monkeypatch):
+    from telegram.registration_service import RegistrationService
+
+    monkeypatch.setenv("TELEGRAM_OWNER_ID", "621")
+    _run(route_command("/start", telegram_id="621"))
+    RegistrationService().complete("621")
+
+    result = _run(route_command("/start", telegram_id="621"))
+
+    buttons = [b.text for row in result.keyboard.keyboard for b in row]
+    assert buttons == [
+        "/start", "/profile", "/signal", "/subscription", "/settings", "/help", "/admin", "/owner",
+    ]

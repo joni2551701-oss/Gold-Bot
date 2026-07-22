@@ -91,3 +91,18 @@ class RegistrationService:
         except Exception as e:
             logger.warning(f"complete failed for telegram_id={telegram_id}: {e}")
             return False
+
+    def is_complete(self, telegram_id) -> bool:
+        """
+        True if this user's registration has reached COMPLETE (V2
+        Phase 5) -- used by telegram.command_router.route_contact()
+        to decide whether to attach the persistent Reply Keyboard
+        right after a successful phone share. False for an unknown
+        user. Never raises.
+        """
+        try:
+            user = self._get_repository().get_user(telegram_id)
+        except Exception as e:
+            logger.warning(f"is_complete failed for telegram_id={telegram_id}: {e}")
+            return False
+        return user is not None and user.registration_completed
