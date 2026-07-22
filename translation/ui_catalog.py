@@ -423,6 +423,18 @@ _CATALOG: dict = {
     "keyboard.phone_share": {
         "EN": "📱 Share Phone Number", "UZ": "📱 Telefon raqamini yuborish", "RU": "📱 Отправить номер телефона",
     },
+    # V2 Phase 4 -- Persistent Menu (Telegram Menu Button) labels. USER
+    # tier only; the ADMIN/OWNER menu's one extra entry each stays
+    # language-invariant, same precedent telegram.keyboards.
+    # admin_panel_keyboard() already established (Phase 1.5 Localized
+    # Keyboards: OWNER/ADMIN UI is Director decision, out of scope for
+    # USER-facing localization).
+    "menu.home": {"EN": "🏠 Home", "UZ": "🏠 Bosh sahifa", "RU": "🏠 Главная"},
+    "menu.profile": {"EN": "👤 Profile", "UZ": "👤 Profil", "RU": "👤 Профиль"},
+    "menu.signals": {"EN": "📊 Signals", "UZ": "📊 Signallar", "RU": "📊 Сигналы"},
+    "menu.subscription": {"EN": "💳 Subscription", "UZ": "💳 Obuna", "RU": "💳 Подписка"},
+    "menu.settings": {"EN": "⚙️ Settings", "UZ": "⚙️ Sozlamalar", "RU": "⚙️ Настройки"},
+    "menu.help": {"EN": "❓ Help", "UZ": "❓ Yordam", "RU": "❓ Помощь"},
 }
 
 

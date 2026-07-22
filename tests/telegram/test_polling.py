@@ -500,6 +500,30 @@ def test_run_polling_sends_owner_startup_notification(monkeypatch):
     assert captured_bot["bot"].sent[0][0] == "111"
 
 
+def test_run_polling_registers_menus_before_owner_notification(monkeypatch):
+    """V2 Phase 4: register_all_menus() runs once, before dispatcher.start_polling()."""
+    import telegram.polling as polling_module
+
+    monkeypatch.setenv("TELEGRAM_OWNER_ID", "111")
+    monkeypatch.setattr(polling_module, "Bot", _FakeBot)
+
+    calls = []
+
+    async def fake_register_all_menus(bot):
+        calls.append(bot)
+
+    monkeypatch.setattr(polling_module, "register_all_menus", fake_register_all_menus)
+    monkeypatch.setattr(polling_module, "create_dispatcher", lambda: _FakeDispatcherStopsImmediately())
+
+    try:
+        asyncio.run(run_polling())
+    except _StopPolling:
+        pass
+
+    assert len(calls) == 1
+    assert isinstance(calls[0], _FakeBot)
+
+
 def test_run_polling_closes_bot_session_on_exit(monkeypatch):
     import telegram.polling as polling_module
 

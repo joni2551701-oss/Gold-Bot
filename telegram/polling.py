@@ -66,6 +66,13 @@ able to block/abort the actual polling loop):
   phase's own new Telegram-connection-specific status tracker (see
   that module's docstring for why it's separate from
   `monitoring.system_monitor.SystemMonitor`).
+
+V2 Phase 4 (Persistent Menu) addition: `register_all_menus()`
+(`telegram/menu_commands.py`) registers Telegram's native Menu Button
+command lists once, at startup, before polling begins -- same
+one-shot, best-effort, never-blocks-polling posture as every step
+above. See that module's own docstring for the USER/ADMIN/OWNER scope
+strategy.
 """
 
 import asyncio
@@ -80,6 +87,7 @@ from core.logger import setup_logger
 from telegram import runtime_monitor
 from telegram.callback_router import route_callback
 from telegram.command_router import route_contact, route_message
+from telegram.menu_commands import register_all_menus
 from monitoring.system_monitor import get_health as _get_core_health
 
 logger = setup_logger("TelegramPolling")
@@ -245,6 +253,7 @@ async def run_polling() -> None:
     logger.info("Telegram polling started.")
     heartbeat_task = asyncio.create_task(_heartbeat_loop())
     try:
+        await register_all_menus(bot)
         await _notify_owner_startup(bot)
         await dispatcher.start_polling(bot)
     finally:
