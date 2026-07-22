@@ -435,6 +435,13 @@ _CATALOG: dict = {
     "menu.subscription": {"EN": "💳 Subscription", "UZ": "💳 Obuna", "RU": "💳 Подписка"},
     "menu.settings": {"EN": "⚙️ Settings", "UZ": "⚙️ Sozlamalar", "RU": "⚙️ Настройки"},
     "menu.help": {"EN": "❓ Help", "UZ": "❓ Yordam", "RU": "❓ Помощь"},
+    # V2 Phase 5.1 -- Reply Keyboard Navigation Mapping's ADMIN/OWNER
+    # extra buttons. Language-invariant, matching the literal labels
+    # telegram.menu_commands' _ADMIN_EXTRA/_OWNER_EXTRA already use for
+    # the Persistent Menu (Phase 4) -- routed through t() here too so
+    # every navigation button, including these, has one single source.
+    "menu.admin": {"EN": "🛠 Admin", "UZ": "🛠 Admin", "RU": "🛠 Admin"},
+    "menu.owner": {"EN": "👑 Owner", "UZ": "👑 Owner", "RU": "👑 Owner"},
 }
 
 

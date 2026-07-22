@@ -162,34 +162,82 @@ def phone_share_keyboard(language=None):
 # Registration Wizard reaches COMPLETE (telegram/command_router.py
 # decides when to attach it -- never before COMPLETE, since it would
 # otherwise replace phone_share_keyboard() above; see
-# docs/PHASE5_AUDIT.md Section 2). Director decision: buttons send the
-# literal "/command" text -- no separate display label, no new
-# label->command mapping layer in command_router.py, so every button
-# routes through the exact same telegram.command_router.route_command()
-# dispatch a typed command already uses. This makes the keyboard
-# language-invariant (there is no label to translate), the same
-# posture Phase 1.5 Localized Keyboards already gives
-# admin_panel_keyboard() below -- neither takes a `language` argument.
+# docs/PHASE5_AUDIT.md Section 2).
+#
+# V2 Phase 5.1 (Director Approved) -- UX Polish & Command Abstraction:
+# reverses Phase 5's "literal /command text" decision. A user must
+# never see "/profile"/"/signal"/etc. on the Reply Keyboard; buttons
+# now show the same localized labels telegram.menu_commands' Persistent
+# Menu (Phase 4) already uses (translation.ui_catalog's "menu.*" keys
+# -- reused here rather than duplicated, per the Module Reuse
+# Principle). A tap sends that localized label as plain text, which
+# telegram.command_router.route_command() resolves back to its
+# "/command" via NAVIGATION_MAP/resolve_navigation_command() below
+# *before* parsing -- no handler rewrite, no second execution path:
+# command_router remains the single authoritative dispatcher every
+# typed "/command" already goes through.
 _USER_REPLY_COMMANDS = ("start", "profile", "signal", "subscription", "settings", "help")
 _ADMIN_REPLY_COMMANDS = _USER_REPLY_COMMANDS + ("admin",)
 _OWNER_REPLY_COMMANDS = _ADMIN_REPLY_COMMANDS + ("owner",)
 
+# command -> translation.ui_catalog key. The USER-tier six reuse Phase
+# 4's own "menu.*" keys verbatim (identical labels, Director decision);
+# "menu.admin"/"menu.owner" are Phase 5.1's own additions, language-
+# invariant like menu_commands.py's _ADMIN_EXTRA/_OWNER_EXTRA.
+_REPLY_LABEL_KEYS = {
+    "start": "menu.home",
+    "profile": "menu.profile",
+    "signal": "menu.signals",
+    "subscription": "menu.subscription",
+    "settings": "menu.settings",
+    "help": "menu.help",
+    "admin": "menu.admin",
+    "owner": "menu.owner",
+}
 
-def _reply_keyboard_rows(commands):
-    buttons = [KeyboardButton(text=f"/{command}") for command in commands]
+_NAVIGATION_LANGUAGES = ("EN", "UZ", "RU")
+
+
+def _build_navigation_map():
+    """Every localized label (any supported language) -> its "/command" string."""
+    mapping = {}
+    for command, key in _REPLY_LABEL_KEYS.items():
+        for language in _NAVIGATION_LANGUAGES:
+            mapping[t(key, language)] = f"/{command}"
+    return mapping
+
+
+NAVIGATION_MAP = _build_navigation_map()
+
+
+def resolve_navigation_command(text):
+    """
+    Looks up a Reply Keyboard tap's text against NAVIGATION_MAP and
+    returns the "/command" it stands for, or None if text isn't a
+    known navigation label (e.g. an ordinary typed message, or a
+    literal "/command" already -- those are not navigation labels and
+    are left to _parse_command() as before). Never raises.
+    """
+    if not text:
+        return None
+    return NAVIGATION_MAP.get(text.strip())
+
+
+def _reply_keyboard_rows(commands, language):
+    buttons = [KeyboardButton(text=t(_REPLY_LABEL_KEYS[command], language)) for command in commands]
     return [buttons[i:i + 2] for i in range(0, len(buttons), 2)]
 
 
-def reply_keyboard():
-    """USER-tier persistent Reply Keyboard (V2 Phase 5): Home/Profile/Signals/Subscription/Settings/Help."""
-    return ReplyKeyboardMarkup(keyboard=_reply_keyboard_rows(_USER_REPLY_COMMANDS), resize_keyboard=True)
+def reply_keyboard(language=None):
+    """USER-tier persistent Reply Keyboard (V2 Phase 5.1): localized Home/Profile/Signals/Subscription/Settings/Help labels."""
+    return ReplyKeyboardMarkup(keyboard=_reply_keyboard_rows(_USER_REPLY_COMMANDS, language), resize_keyboard=True)
 
 
-def admin_reply_keyboard():
-    """ADMIN-tier persistent Reply Keyboard (V2 Phase 5): USER's set plus /admin -- same superset policy as Phase 4's Persistent Menu."""
-    return ReplyKeyboardMarkup(keyboard=_reply_keyboard_rows(_ADMIN_REPLY_COMMANDS), resize_keyboard=True)
+def admin_reply_keyboard(language=None):
+    """ADMIN-tier persistent Reply Keyboard (V2 Phase 5.1): USER's set plus Admin -- same superset policy as Phase 4's Persistent Menu."""
+    return ReplyKeyboardMarkup(keyboard=_reply_keyboard_rows(_ADMIN_REPLY_COMMANDS, language), resize_keyboard=True)
 
 
-def owner_reply_keyboard():
-    """OWNER-tier persistent Reply Keyboard (V2 Phase 5): ADMIN's set plus /owner -- same superset policy as Phase 4's Persistent Menu."""
-    return ReplyKeyboardMarkup(keyboard=_reply_keyboard_rows(_OWNER_REPLY_COMMANDS), resize_keyboard=True)
+def owner_reply_keyboard(language=None):
+    """OWNER-tier persistent Reply Keyboard (V2 Phase 5.1): ADMIN's set plus Owner -- same superset policy as Phase 4's Persistent Menu."""
+    return ReplyKeyboardMarkup(keyboard=_reply_keyboard_rows(_OWNER_REPLY_COMMANDS, language), resize_keyboard=True)

@@ -106,7 +106,7 @@ def test_route_contact_end_to_end_registers_a_free_account():
 
 
 def test_route_contact_attaches_the_persistent_reply_keyboard_on_completion():
-    """V2 Phase 5: a successful phone share (Wizard COMPLETE) gets the USER-tier persistent Reply Keyboard."""
+    """V2 Phase 5.1: a successful phone share (Wizard COMPLETE) gets the USER-tier persistent Reply Keyboard with localized (UZ default) labels."""
     from aiogram.types import ReplyKeyboardMarkup
 
     _run(route_command("/start", telegram_id="618"))
@@ -114,7 +114,9 @@ def test_route_contact_attaches_the_persistent_reply_keyboard_on_completion():
 
     assert isinstance(result.keyboard, ReplyKeyboardMarkup)
     buttons = [b.text for row in result.keyboard.keyboard for b in row]
-    assert buttons == ["/start", "/profile", "/signal", "/subscription", "/settings", "/help"]
+    assert buttons == [
+        "🏠 Bosh sahifa", "👤 Profil", "📊 Signallar", "💳 Obuna", "⚙️ Sozlamalar", "❓ Yordam",
+    ]
 
 
 def test_route_contact_no_keyboard_when_registration_does_not_complete():
@@ -197,7 +199,7 @@ def test_start_keyboard_is_the_phone_share_keyboard_once_at_the_phone_step():
 
 
 def test_start_keyboard_is_the_persistent_reply_keyboard_once_registration_is_complete():
-    """V2 Phase 5: COMPLETE replaces "no keyboard" with the USER-tier persistent Reply Keyboard."""
+    """V2 Phase 5.1: COMPLETE replaces "no keyboard" with the USER-tier persistent Reply Keyboard, localized (UZ default) labels."""
     from aiogram.types import ReplyKeyboardMarkup
     from telegram.registration_service import RegistrationService
 
@@ -208,7 +210,9 @@ def test_start_keyboard_is_the_persistent_reply_keyboard_once_registration_is_co
 
     assert isinstance(result.keyboard, ReplyKeyboardMarkup)
     buttons = [b.text for row in result.keyboard.keyboard for b in row]
-    assert buttons == ["/start", "/profile", "/signal", "/subscription", "/settings", "/help"]
+    assert buttons == [
+        "🏠 Bosh sahifa", "👤 Profil", "📊 Signallar", "💳 Obuna", "⚙️ Sozlamalar", "❓ Yordam",
+    ]
 
 
 def test_start_keyboard_is_reply_keyboard_remove_for_a_banned_user():
@@ -243,7 +247,9 @@ def test_start_keyboard_is_the_admin_reply_keyboard_for_a_completed_admin(monkey
     result = _run(route_command("/start", telegram_id="620"))
 
     buttons = [b.text for row in result.keyboard.keyboard for b in row]
-    assert buttons == ["/start", "/profile", "/signal", "/subscription", "/settings", "/help", "/admin"]
+    assert buttons == [
+        "🏠 Bosh sahifa", "👤 Profil", "📊 Signallar", "💳 Obuna", "⚙️ Sozlamalar", "❓ Yordam", "🛠 Admin",
+    ]
 
 
 def test_start_keyboard_is_the_owner_reply_keyboard_for_a_completed_owner(monkeypatch):
@@ -257,5 +263,29 @@ def test_start_keyboard_is_the_owner_reply_keyboard_for_a_completed_owner(monkey
 
     buttons = [b.text for row in result.keyboard.keyboard for b in row]
     assert buttons == [
-        "/start", "/profile", "/signal", "/subscription", "/settings", "/help", "/admin", "/owner",
+        "🏠 Bosh sahifa", "👤 Profil", "📊 Signallar", "💳 Obuna", "⚙️ Sozlamalar", "❓ Yordam", "🛠 Admin", "👑 Owner",
     ]
+
+
+def test_start_keyboard_reply_labels_follow_the_users_language():
+    """V2 Phase 5.1: labels localize to whatever language the user has selected, not just the UZ default."""
+    from telegram.user_service import UserService
+
+    _run(route_command("/start", telegram_id="622"))
+    UserService().change_language("622", "EN")
+    from telegram.registration_service import RegistrationService
+    RegistrationService().complete("622")
+
+    result = _run(route_command("/start", telegram_id="622"))
+
+    buttons = [b.text for row in result.keyboard.keyboard for b in row]
+    assert buttons == ["🏠 Home", "👤 Profile", "📊 Signals", "💳 Subscription", "⚙️ Settings", "❓ Help"]
+
+
+def test_navigation_label_from_the_reply_keyboard_routes_to_the_same_handler_as_its_command():
+    """V2 Phase 5.1: tapping a localized Reply Keyboard button behaves identically to typing its "/command"."""
+    _run(route_command("/start", telegram_id="623"))
+    by_label = _run(route_command("👤 Profil", telegram_id="623"))
+    by_command = _run(route_command("/profile", telegram_id="623"))
+
+    assert by_label.text == by_command.text

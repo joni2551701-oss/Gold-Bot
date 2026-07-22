@@ -286,3 +286,81 @@ phase (40, 41, 43, 61.5, V2 Phase 3) has extended.
 
 No implementation begins until the Director responds to this
 document.
+
+---
+
+## 13. Phase 5.1 — Reply Keyboard UX Polish & Command Abstraction (Director Approved)
+
+Status: **Implemented.** Reverses Open Question 1's original answer
+(Section 12): Phase 5 shipped with the literal-`/command` option
+(buttons showed `/profile`, `/signal`, etc.); the Director subsequently
+approved Phase 5.1 to replace that with localized labels, since a user
+should never see a raw slash command on the persistent keyboard.
+
+### Navigation Mapping
+
+`telegram/keyboards.py` owns the mapping, right next to the keyboard
+builders it serves — no new top-level module, per the Module Reuse
+Principle:
+
+- `_REPLY_LABEL_KEYS`: `command -> translation.ui_catalog key`. The
+  six USER-tier entries reuse Phase 4 Persistent Menu's own `"menu.*"`
+  keys verbatim (`menu.home`, `menu.profile`, `menu.signals`,
+  `menu.subscription`, `menu.settings`, `menu.help`) — identical labels
+  in both surfaces by construction, not by convention. `menu.admin`/
+  `menu.owner` are Phase 5.1's own additions (language-invariant, same
+  posture as `menu_commands.py`'s `_ADMIN_EXTRA`/`_OWNER_EXTRA`).
+- `NAVIGATION_MAP`: built once at import time — every label, in every
+  supported language (EN/UZ/RU), mapped to its `"/command"` string.
+- `resolve_navigation_command(text)`: the lookup function. Returns
+  `None` for anything that isn't a known label (an ordinary message, or
+  a literal `"/command"` typed by hand — those still go through
+  `_parse_command()` unchanged).
+
+### Dispatch flow
+
+```
+Reply Keyboard tap ("👤 Profil")
+    -> aiogram Message (.text = "👤 Profil")
+    -> command_router.route_message() -> route_command()
+    -> resolve_navigation_command("👤 Profil") -> "/profile"
+    -> _parse_command("/profile") -> ("profile", "")
+    -> existing profile_handler() (unchanged)
+```
+
+`route_command()` calls `resolve_navigation_command()` as its very
+first step, before `_parse_command()`. No second dispatch path exists:
+a tapped label and a typed `/profile` produce byte-identical
+`RouterResult.text` (see
+`tests/telegram/test_phone_registration.py::test_navigation_label_from_the_reply_keyboard_routes_to_the_same_handler_as_its_command`).
+`telegram/handlers.py` and `telegram/callback_router.py` are untouched.
+
+### Reply Keyboard lifecycle (unchanged from Phase 5)
+
+Still exactly the flow Section 8/9 already established — Phase 5.1
+only changes what the buttons *say*, not *when* they appear:
+
+```
+/start -> Language step -> Phone Share Keyboard -> Registration COMPLETE
+    -> persistent Reply Keyboard (now with localized labels)
+```
+
+`_persistent_reply_keyboard()` (`telegram/command_router.py`) now
+resolves the caller's language (`handlers._current_language()`, the
+same lookup every other localized keyboard builder in this module
+already performs) and passes it to `reply_keyboard()`/
+`admin_reply_keyboard()`/`owner_reply_keyboard()`, each of which
+gained an optional `language` parameter. BANNED still gets
+`ReplyKeyboardRemove()` first, checked independently, exactly as
+before — Section 5/8's reasoning is unaffected by this phase.
+
+### Telegram Menu coexistence
+
+Unaffected: `telegram/menu_commands.py`'s native `☰ Menu` (Phase 4,
+`Bot.set_my_commands()`) is a structurally separate Telegram surface
+from `ReplyKeyboardMarkup` (Section 2's platform-constraint finding
+still holds — this phase touches neither `menu_commands.py` nor its
+registration call in `telegram/polling.py`). A user who prefers typing
+`/profile` via the `☰ Menu` still reaches the exact same
+`command_router.route_command()` path the Reply Keyboard now also
+funnels through via Navigation Mapping.

@@ -22,6 +22,7 @@ from telegram.keyboards import (
     reply_keyboard,
     admin_reply_keyboard,
     owner_reply_keyboard,
+    resolve_navigation_command,
 )
 
 
@@ -121,16 +122,27 @@ def test_admin_panel_keyboard_stays_english_only_and_zero_arg():
 
 
 # ---------------------------------------------------------------------------
-# V2 Phase 5 -- persistent Reply Keyboard. Language-invariant (Director
-# decision: buttons send the literal "/command" text, no separate
-# label -- see docs/PHASE5_AUDIT.md), same posture admin_panel_keyboard()
-# above already has, so no `language` argument.
+# V2 Phase 5.1 (Director Approved) -- persistent Reply Keyboard, localized
+# labels. Reverses Phase 5's "literal /command text" decision: buttons
+# now show the same localized labels telegram.menu_commands' Persistent
+# Menu (Phase 4) uses, resolved back to a command by Navigation Mapping
+# (resolve_navigation_command()) inside command_router.route_command().
 # ---------------------------------------------------------------------------
 
 
-def test_reply_keyboard_sends_literal_slash_commands():
+def test_reply_keyboard_labels_localized():
+    en = _reply_texts(reply_keyboard("EN"))
+    uz = _reply_texts(reply_keyboard("UZ"))
+    ru = _reply_texts(reply_keyboard("RU"))
+
+    assert en == ["🏠 Home", "👤 Profile", "📊 Signals", "💳 Subscription", "⚙️ Settings", "❓ Help"]
+    assert uz == ["🏠 Bosh sahifa", "👤 Profil", "📊 Signallar", "💳 Obuna", "⚙️ Sozlamalar", "❓ Yordam"]
+    assert ru == ["🏠 Главная", "👤 Профиль", "📊 Сигналы", "💳 Подписка", "⚙️ Настройки", "❓ Помощь"]
+
+
+def test_reply_keyboard_defaults_to_english_with_no_language():
     assert _reply_texts(reply_keyboard()) == [
-        "/start", "/profile", "/signal", "/subscription", "/settings", "/help",
+        "🏠 Home", "👤 Profile", "📊 Signals", "💳 Subscription", "⚙️ Settings", "❓ Help",
     ]
 
 
@@ -141,15 +153,44 @@ def test_reply_keyboard_is_resizable_and_not_one_time():
 
 
 def test_admin_reply_keyboard_is_user_set_plus_admin():
-    assert _reply_texts(admin_reply_keyboard()) == [
-        "/start", "/profile", "/signal", "/subscription", "/settings", "/help", "/admin",
+    assert _reply_texts(admin_reply_keyboard("UZ")) == [
+        "🏠 Bosh sahifa", "👤 Profil", "📊 Signallar", "💳 Obuna", "⚙️ Sozlamalar", "❓ Yordam", "🛠 Admin",
     ]
 
 
 def test_owner_reply_keyboard_is_admin_set_plus_owner():
-    assert _reply_texts(owner_reply_keyboard()) == [
-        "/start", "/profile", "/signal", "/subscription", "/settings", "/help", "/admin", "/owner",
+    assert _reply_texts(owner_reply_keyboard("UZ")) == [
+        "🏠 Bosh sahifa", "👤 Profil", "📊 Signallar", "💳 Obuna", "⚙️ Sozlamalar", "❓ Yordam", "🛠 Admin", "👑 Owner",
     ]
+
+
+def test_navigation_map_resolves_every_localized_label_to_its_command():
+    assert resolve_navigation_command("👤 Profil") == "/profile"
+    assert resolve_navigation_command("👤 Profile") == "/profile"
+    assert resolve_navigation_command("👤 Профиль") == "/profile"
+    assert resolve_navigation_command("📊 Signallar") == "/signal"
+    assert resolve_navigation_command("💳 Obuna") == "/subscription"
+    assert resolve_navigation_command("⚙️ Sozlamalar") == "/settings"
+    assert resolve_navigation_command("🏠 Bosh sahifa") == "/start"
+    assert resolve_navigation_command("❓ Yordam") == "/help"
+    assert resolve_navigation_command("🛠 Admin") == "/admin"
+    assert resolve_navigation_command("👑 Owner") == "/owner"
+
+
+def test_navigation_map_returns_none_for_non_navigation_text():
+    assert resolve_navigation_command("random text") is None
+    assert resolve_navigation_command("/profile") is None
+    assert resolve_navigation_command("") is None
+    assert resolve_navigation_command(None) is None
+
+
+def test_command_router_routes_a_localized_navigation_label_like_its_command():
+    from telegram.command_router import route_command
+
+    by_label = asyncio.run(route_command("👤 Profil", telegram_id="703"))
+    by_command = asyncio.run(route_command("/profile", telegram_id="703"))
+
+    assert by_label.text == by_command.text
 
 
 def test_command_router_attaches_a_keyboard_localized_to_the_caller():

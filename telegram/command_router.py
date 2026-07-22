@@ -44,6 +44,7 @@ from telegram.keyboards import (
     reply_keyboard,
     admin_reply_keyboard,
     owner_reply_keyboard,
+    resolve_navigation_command,
 )
 from telegram.permissions import PermissionLevel, get_permission_level
 from telegram.registration_service import RegistrationStep
@@ -92,14 +93,17 @@ def _persistent_reply_keyboard(telegram_id):
     V2 Phase 5: the tier-aware persistent Reply Keyboard for a fully
     registered (registration_step == COMPLETE) user -- USER/ADMIN/OWNER
     each get their own superset, mirroring Phase 4's Persistent Menu
-    tiering policy exactly (telegram/menu_commands.py).
+    tiering policy exactly (telegram/menu_commands.py). V2 Phase 5.1:
+    labels are localized, so the caller's language is resolved the
+    same way every other keyboard builder in this module already does.
     """
+    language = handlers._current_language(telegram_id)
     level = get_permission_level(telegram_id)
     if level == PermissionLevel.OWNER:
-        return owner_reply_keyboard()
+        return owner_reply_keyboard(language)
     if level == PermissionLevel.ADMIN:
-        return admin_reply_keyboard()
-    return reply_keyboard()
+        return admin_reply_keyboard(language)
+    return reply_keyboard(language)
 
 
 def _start_keyboard(telegram_id, language):
@@ -183,7 +187,18 @@ async def route_command(command_text: str, telegram_id=None, username=None) -> R
     Routes a raw command string (e.g. "/start" or "/addadmin 123") to
     its handler. Unknown commands, permission failures, and handler
     failures all return a safe text response instead of raising.
+
+    V2 Phase 5.1: command_text may also be a Reply Keyboard's localized
+    label (e.g. "👤 Profil") rather than a literal "/command" -- Navigation
+    Mapping (telegram.keyboards.resolve_navigation_command()) translates
+    it back to its "/command" here, before parsing, so this remains the
+    single dispatch path every typed command already goes through (no
+    second handler-lookup path, no business-logic duplication).
     """
+    resolved_command_text = resolve_navigation_command(command_text)
+    if resolved_command_text is not None:
+        command_text = resolved_command_text
+
     command, args = _parse_command(command_text)
     if command is None or command not in _ALL_COMMANDS:
         return RouterResult(text=UNKNOWN_COMMAND_TEXT)
