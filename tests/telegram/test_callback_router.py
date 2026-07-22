@@ -14,6 +14,8 @@ import asyncio
 
 from telegram.callback_router import route_callback
 from telegram.handlers import LanguageUpdateResult
+from database.user_repository import UserRepository
+from telegram.registration_service import RegistrationStep
 
 
 class FakeUser:
@@ -223,3 +225,38 @@ def test_route_callback_handles_none_data_without_raising():
     callback = FakeCallback(None)
     asyncio.run(route_callback(callback))  # must not raise
     assert callback.answered is True
+
+
+# ---------------------------------------------------------------------------
+# V2 Phase 3 -- a language choice mid-Wizard advances registration_step and
+# prompts the now-mandatory Phone Share step. Uses the real handlers.
+# language_status()/UserService (not mocked) since the point is to verify
+# real cross-module wiring, not just callback_router's own dispatch shape.
+# ---------------------------------------------------------------------------
+
+
+def test_lang_uz_mid_wizard_advances_step_and_prompts_phone_share():
+    repo = UserRepository()
+    repo.create_user("801", username="wizard_user")
+    assert repo.get_user("801").registration_step == RegistrationStep.LANGUAGE
+
+    callback = FakeCallback("lang_uz", telegram_id="801")
+    asyncio.run(route_callback(callback))
+
+    assert repo.get_user("801").registration_step == RegistrationStep.PHONE
+    assert callback.message.answered_with is not None
+    assert callback.message.answered_with_markup is not None
+
+
+def test_lang_uz_after_registration_complete_does_not_reopen_the_wizard():
+    repo = UserRepository()
+    repo.create_user("802", username="done_user")
+    repo.complete_registration("802")
+
+    callback = FakeCallback("lang_ru", telegram_id="802")
+    asyncio.run(route_callback(callback))
+
+    assert repo.get_user("802").registration_step == RegistrationStep.COMPLETE
+    # No extra Phone Share prompt sent -- only the edit-in-place from
+    # _handle_language() itself, no separate answer() call for the Wizard.
+    assert callback.message.answered_with is None

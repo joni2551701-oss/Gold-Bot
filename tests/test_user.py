@@ -96,6 +96,44 @@ def test_lifecycle_banned_user_not_silently_reactivated_by_start():
     assert service.get_user_state("106").profile.status == "BANNED"
 
 
+def test_start_handler_stops_a_banned_user_with_a_localized_reply():
+    """V2 Phase 3: /start -> User exists? -> BANNED? -> Stop, before touch_activity()."""
+    from telegram.handlers import start_handler
+    from telegram.user_service import UserService
+
+    service = UserService()
+    service.register_user("107", username="banned_user")
+    service.ban_user("107")
+    last_activity_before = service.get_user_state("107").profile.last_activity
+
+    result_text = asyncio.run(start_handler("107", username="banned_user"))
+
+    assert result_text == "Sizning hisobingiz bloklangan."
+    # touch_activity() must never run for a BANNED /start -- last_activity unchanged.
+    assert service.get_user_state("107").profile.last_activity == last_activity_before
+
+
+def test_start_handler_registration_step_is_reachable_via_registration_service():
+    """A brand new /start leaves the user at the LANGUAGE Wizard step."""
+    from telegram.handlers import start_handler, _registration_step
+    from telegram.registration_service import RegistrationStep
+
+    asyncio.run(start_handler("108", username="new_wizard_user"))
+
+    assert _registration_step("108") == RegistrationStep.LANGUAGE
+
+
+def test_registration_step_is_none_for_a_banned_user():
+    from telegram.handlers import _registration_step
+    from telegram.user_service import UserService
+
+    service = UserService()
+    service.register_user("109", username="banned_for_step_check")
+    service.ban_user("109")
+
+    assert _registration_step("109") is None
+
+
 def test_get_profile_unknown_user_returns_not_found():
     from telegram.user_service import UserService
 

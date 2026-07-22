@@ -41,6 +41,8 @@ from telegram.keyboards import (
     phone_share_keyboard,
 )
 from telegram.permissions import PermissionLevel, get_permission_level
+from telegram.registration_service import RegistrationStep
+from translation.ui_catalog import t
 from core.logger import setup_logger
 
 logger = setup_logger("CommandRouter")
@@ -57,13 +59,11 @@ _ALL_COMMANDS = {**COMMANDS, **OWNER_COMMANDS, **ADMIN_COMMANDS}
 # builder produces it (Phase 40). Not command-specific business logic --
 # just display; the keyboard's buttons are not wired to a callback_query
 # handler, so telegram.handlers documents the real interaction as a
-# command argument (e.g. "/risk 5").
+# command argument (e.g. "/risk 5"). "start" and "admin" are handled by
+# their own special cases below instead of this table -- "start"'s
+# keyboard depends on the caller's Registration Wizard step (V2 Phase
+# 3), not a fixed per-command builder.
 _KEYBOARD_BY_COMMAND = {
-    # "start" was language_keyboard through Phase 60; repurposed to
-    # phone_share_keyboard in Phase 61.5 TASK 4 for the real Phone
-    # Share Button flow -- language selection is unaffected, still
-    # fully available via its own "language" mapping below.
-    "start": phone_share_keyboard,
     "settings": settings_keyboard,
     "language": language_keyboard,
     "risk": risk_keyboard,
@@ -71,6 +71,31 @@ _KEYBOARD_BY_COMMAND = {
     "timeframe": timeframe_keyboard,
     "admin": admin_panel_keyboard,
 }
+
+# V2 Phase 3: which keyboard builder to attach to /start's reply for
+# each Wizard step. RegistrationStep.COMPLETE (and a BANNED user, or
+# any other unrecognized/None step) intentionally has no entry here --
+# _start_keyboard() falls back to None, meaning /start carries no
+# keyboard once the Wizard is done or was never applicable.
+_START_KEYBOARD_BY_STEP = {
+    RegistrationStep.LANGUAGE: language_keyboard,
+    RegistrationStep.PHONE: phone_share_keyboard,
+}
+
+
+def _start_keyboard(telegram_id, language):
+    """
+    V2 Phase 3: /start's reply keyboard follows wherever the
+    Registration Wizard left off -- language_keyboard while
+    registration_step is LANGUAGE, phone_share_keyboard while PHONE,
+    no keyboard once COMPLETE. handlers._registration_step() already
+    returns None for a BANNED user, so this naturally attaches no
+    Wizard keyboard to a banned /start reply either.
+    """
+    step = handlers._registration_step(telegram_id)
+    builder = _START_KEYBOARD_BY_STEP.get(step)
+    return builder(language) if builder else None
+
 
 _LEVEL_RANK = {
     PermissionLevel.USER: 0,
@@ -156,15 +181,20 @@ async def route_command(command_text: str, telegram_id=None, username=None) -> R
         logger.warning(f"Handler for /{command} failed: {e}")
         return RouterResult(text=SERVICE_UNAVAILABLE_TEXT)
 
-    keyboard_builder = _KEYBOARD_BY_COMMAND.get(command)
-    if keyboard_builder is None:
-        keyboard = None
-    elif command == "admin":
-        # OWNER/ADMIN keyboard -- stays English-only (Director
-        # decision, Phase 1.5 Localized Keyboards), no language passed.
-        keyboard = keyboard_builder()
+    if command == "start":
+        # V2 Phase 3: depends on the caller's Registration Wizard step,
+        # not a fixed per-command builder -- see _start_keyboard().
+        keyboard = _start_keyboard(telegram_id, handlers._current_language(telegram_id))
     else:
-        keyboard = keyboard_builder(handlers._current_language(telegram_id))
+        keyboard_builder = _KEYBOARD_BY_COMMAND.get(command)
+        if keyboard_builder is None:
+            keyboard = None
+        elif command == "admin":
+            # OWNER/ADMIN keyboard -- stays English-only (Director
+            # decision, Phase 1.5 Localized Keyboards), no language passed.
+            keyboard = keyboard_builder()
+        else:
+            keyboard = keyboard_builder(handlers._current_language(telegram_id))
     return RouterResult(text=text, keyboard=keyboard)
 
 
@@ -193,9 +223,22 @@ async def route_contact(message) -> RouterResult:
     same posture as `route_command()`. No permission tier is checked --
     sharing your own contact is a USER-level action, available to
     anyone `/start` already let in.
+
+    V2 Phase 3: rejects a contact whose `contact.user_id` doesn't match
+    the sender's own id -- tapping the Phone Share button always
+    populates `contact.user_id` with the sender's own id, so a mismatch
+    only happens when someone forwards a contact card for a different
+    person. contact_handler()/register_phone() is never called in that
+    case, so a stranger's phone number is never attached to the wrong
+    account.
     """
     telegram_id = message.from_user.id
+    contact_owner_id = message.contact.user_id
     phone_number = message.contact.phone_number
+
+    if contact_owner_id is None or contact_owner_id != telegram_id:
+        language = handlers._current_language(telegram_id)
+        return RouterResult(text=t("contact.wrong_owner", language))
 
     try:
         text = await handlers.contact_handler(telegram_id=telegram_id, phone_number=phone_number)

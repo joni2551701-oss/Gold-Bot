@@ -169,6 +169,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from telegram.user_service import UserService
+from telegram.registration_service import RegistrationService
 from telegram.admin_service import AdminService
 from telegram.signal_service import SignalService
 from telegram.signal_formatter import SignalFormatter
@@ -217,12 +218,28 @@ async def start_handler(telegram_id, username=None) -> str:
     (existing user) is exactly that next interaction, so it calls
     touch_activity() (updates last_activity, and promotes NEW->ACTIVE;
     a BANNED user is never silently reactivated by this).
+
+    V2 Phase 3 (Registration Wizard): a BANNED existing user is
+    stopped here, before touch_activity() or SubscriptionService are
+    ever called -- register_user()'s "already exists" branch already
+    carries the fetched profile, so this is a free check, not a second
+    query. command_router.py's keyboard selection (via
+    _registration_step()) independently returns None for a BANNED
+    user, so no Wizard keyboard is attached to this reply either.
     """
     try:
         result = UserService().register_user(telegram_id, username)
     except Exception as e:
         logger.warning(f"start_handler: register_user failed for telegram_id={telegram_id}: {e}")
         return t("start.error", _current_language(telegram_id), error=e)
+
+    if (
+        not result.success
+        and result.reason == "User already exists"
+        and result.profile is not None
+        and result.profile.status == "BANNED"
+    ):
+        return t("start.banned", _current_language(telegram_id))
 
     try:
         SubscriptionService().get_plan(telegram_id)
@@ -239,6 +256,21 @@ async def start_handler(telegram_id, username=None) -> str:
             logger.warning(f"start_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
         return t("start.already_exists", _current_language(telegram_id))
     return t("start.error", _current_language(telegram_id), error=result.reason)
+
+
+def _registration_step(telegram_id) -> Optional[str]:
+    """
+    Best-effort read of the Wizard step to show next (V2 Phase 3),
+    mirroring _current_language()'s shape -- used by command_router.py
+    to pick /start's reply keyboard. None means "no Wizard keyboard":
+    the user is BANNED, already COMPLETE, or the lookup itself failed.
+    Never raises.
+    """
+    try:
+        return RegistrationService().current_step(telegram_id)
+    except Exception as e:
+        logger.warning(f"_registration_step failed for telegram_id={telegram_id}: {e}")
+        return None
 
 
 async def help_handler(telegram_id=None) -> str:
@@ -1145,6 +1177,13 @@ async def contact_handler(telegram_id, phone_number: str) -> str:
     not from the normal /command dispatch table (a contact message has
     no `.text`, so it never reaches route_command()/_ALL_COMMANDS at
     all). USER-level, no permission tier -- never raises.
+
+    V2 Phase 3 (Registration Wizard): a successful phone registration
+    is also the Wizard's completion trigger -- RegistrationService.
+    complete() is called best-effort (a failure here never changes
+    this handler's reply; the Wizard simply stays at its current step
+    and the next /start re-offers it, same resilience posture as every
+    other best-effort call in this file).
     """
     language = _current_language(telegram_id)
     try:
@@ -1156,6 +1195,11 @@ async def contact_handler(telegram_id, phone_number: str) -> str:
     if not result.success:
         key = _CONTACT_FAILURE_KEYS.get(result.reason, "contact.error")
         return t(key, language)
+
+    try:
+        RegistrationService().complete(telegram_id)
+    except Exception as e:
+        logger.warning(f"contact_handler: registration complete failed for telegram_id={telegram_id}: {e}")
 
     if result.trial_active:
         return t("contact.trial_active", language, expires=result.trial_expires_at)

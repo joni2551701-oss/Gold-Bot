@@ -12,10 +12,19 @@ def _run(coro):
     return asyncio.run(coro)
 
 
-def _contact_message(telegram_id, phone_number):
+def _contact_message(telegram_id, phone_number, contact_user_id=None):
+    """
+    contact_user_id defaults to telegram_id -- the real Phone Share
+    Button always populates aiogram's Contact.user_id with the
+    sender's own id (V2 Phase 3 ownership check). Pass a different
+    value to simulate a forwarded contact card for someone else.
+    """
     return SimpleNamespace(
         from_user=SimpleNamespace(id=telegram_id, username="phoneuser"),
-        contact=SimpleNamespace(phone_number=phone_number),
+        contact=SimpleNamespace(
+            phone_number=phone_number,
+            user_id=telegram_id if contact_user_id is None else contact_user_id,
+        ),
         text=None,
     )
 
@@ -116,5 +125,75 @@ def test_route_contact_for_a_reused_phone_number_is_localized():
 
 
 def test_start_reply_carries_the_phone_share_keyboard():
+    """New user: Wizard step is LANGUAGE, so /start's keyboard is the language picker."""
     result = _run(route_command("/start", telegram_id="602"))
     assert result.keyboard is not None
+
+
+def test_route_contact_rejects_a_contact_for_a_different_person():
+    """V2 Phase 3: a forwarded contact card for someone else must never register that phone."""
+    _run(route_command("/start", telegram_id="612"))
+
+    message = _contact_message("612", "+1 555 111 0000", contact_user_id="999999")
+    result = _run(route_contact(message))
+
+    assert result.text == "Iltimos, tugma orqali o'zingizning telefon raqamingizni yuboring."
+    assert UserService().get_profile("612").profile.phone_hash is None
+
+
+def test_route_contact_rejects_a_contact_with_no_user_id():
+    """A contact card with no linked Telegram account (user_id=None) is also rejected, not silently accepted."""
+    _run(route_command("/start", telegram_id="613"))
+
+    message = _contact_message("613", "+1 555 222 0001", contact_user_id=None)
+    message.contact.user_id = None  # override the default-to-telegram_id behavior explicitly
+    result = _run(route_contact(message))
+
+    assert result.text == "Iltimos, tugma orqali o'zingizning telefon raqamingizni yuboring."
+
+
+def test_route_contact_accepts_the_senders_own_contact():
+    """Sanity check: the ownership guard must not break the legitimate Phone Share Button flow."""
+    _run(route_command("/start", telegram_id="614"))
+
+    message = _contact_message("614", "+1 555 333 0002")
+    result = _run(route_contact(message))
+
+    assert "tasdiqlandi" in result.text.lower()
+    assert UserService().get_profile("614").profile.phone_hash is not None
+
+
+def test_start_keyboard_is_the_phone_share_keyboard_once_at_the_phone_step():
+    """V2 Phase 3: after the Language step is done, /start's keyboard becomes Phone Share."""
+    from telegram.registration_service import RegistrationService
+
+    _run(route_command("/start", telegram_id="615"))
+    RegistrationService().advance_past_language("615")
+
+    result = _run(route_command("/start", telegram_id="615"))
+
+    assert result.keyboard is not None
+    assert result.keyboard.keyboard[0][0].request_contact is True
+
+
+def test_start_keyboard_is_none_once_registration_is_complete():
+    from telegram.registration_service import RegistrationService
+
+    _run(route_command("/start", telegram_id="616"))
+    RegistrationService().complete("616")
+
+    result = _run(route_command("/start", telegram_id="616"))
+
+    assert result.keyboard is None
+
+
+def test_start_keyboard_is_none_for_a_banned_user():
+    from telegram.user_service import UserService as _US
+
+    _run(route_command("/start", telegram_id="617"))
+    _US().ban_user("617")
+
+    result = _run(route_command("/start", telegram_id="617"))
+
+    assert result.keyboard is None
+    assert result.text == "Sizning hisobingiz bloklangan."

@@ -141,7 +141,9 @@ def init_user_schema(connection: sqlite3.Connection):
         status TEXT DEFAULT 'NEW',
         last_activity TIMESTAMP,
         phone_hash TEXT,
-        trial_started_at TEXT
+        trial_started_at TEXT,
+        registration_step TEXT DEFAULT 'LANGUAGE',
+        registration_completed INTEGER DEFAULT 0
     );
     """
     try:
@@ -183,10 +185,11 @@ def _create_users_indexes(connection: sqlite3.Connection):
 def _migrate_users_schema(connection: sqlite3.Connection):
     """
     Adds the Phase 40 settings columns, Phase 45 lifecycle columns
-    (status, last_activity), Phase 61.4 TASK 4's phone_hash column, and
-    Phase 61.5 TASK 4's trial_started_at column to a 'users' table
-    created before those phases. SQLite has no "ADD COLUMN IF NOT
-    EXISTS", so each column's presence is checked via PRAGMA
+    (status, last_activity), Phase 61.4 TASK 4's phone_hash column,
+    Phase 61.5 TASK 4's trial_started_at column, and V2 Phase 3's
+    registration_step/registration_completed columns to a 'users'
+    table created before those phases. SQLite has no "ADD COLUMN IF
+    NOT EXISTS", so each column's presence is checked via PRAGMA
     table_info first -- on a fresh table (already created with all
     columns above) every column is already present and this is a
     no-op. Idempotent: safe to call every time a UserRepository is
@@ -200,6 +203,8 @@ def _migrate_users_schema(connection: sqlite3.Connection):
         ("last_activity", "TIMESTAMP"),
         ("phone_hash", "TEXT"),
         ("trial_started_at", "TEXT"),
+        ("registration_step", "TEXT DEFAULT 'LANGUAGE'"),
+        ("registration_completed", "INTEGER DEFAULT 0"),
     ]
 
     try:
@@ -210,6 +215,7 @@ def _migrate_users_schema(connection: sqlite3.Connection):
         raise
 
     migrated = False
+    registration_columns_are_new = "registration_step" not in existing_columns
     for column_name, column_def in new_columns:
         if column_name in existing_columns:
             continue
@@ -221,8 +227,40 @@ def _migrate_users_schema(connection: sqlite3.Connection):
             logger.error(f"Failed to add column '{column_name}' to users table: {e}")
             raise
 
+    if registration_columns_are_new:
+        _backfill_registration_state(connection)
+
     if migrated:
         connection.commit()
+
+
+def _backfill_registration_state(connection: sqlite3.Connection):
+    """
+    V2 Phase 3: one-time backfill for rows that predate the
+    registration_step/registration_completed columns -- these users
+    already went through the (then-optional) Phone Share flow under
+    the pre-Phase-3 product, so they must not be sent back through
+    the Language step. A row with phone_hash already set is treated
+    as having completed registration under the old model; a row
+    without one still needs the now-mandatory Phone Share step, but
+    not the Language step (Language was never gated for them either).
+    Brand new rows created after this migration get the column
+    defaults applied by init_user_schema()'s own CREATE TABLE
+    (registration_step='LANGUAGE', registration_completed=0) instead,
+    since they never reach this function.
+    """
+    try:
+        connection.execute(
+            "UPDATE users SET registration_step = 'COMPLETE', registration_completed = 1 "
+            "WHERE phone_hash IS NOT NULL"
+        )
+        connection.execute(
+            "UPDATE users SET registration_step = 'PHONE' WHERE phone_hash IS NULL"
+        )
+        logger.info("Backfilled registration_step/registration_completed for pre-existing users.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to backfill registration state: {e}")
+        raise
 
 
 def init_subscription_schema(connection: sqlite3.Connection):

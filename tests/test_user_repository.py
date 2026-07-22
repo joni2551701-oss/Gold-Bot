@@ -61,3 +61,40 @@ def test_update_user_still_rejects_unknown_fields():
     repo = UserRepository()
     repo.create_user("111", username="alice")
     assert repo.update_user("111", not_a_real_column="x") is False
+
+
+def test_new_user_starts_at_language_step_and_incomplete():
+    """V2 Phase 3: schema defaults applied at INSERT time, not a repository-level override."""
+    repo = UserRepository()
+    user = repo.create_user("111", username="alice")
+    assert user.registration_step == "LANGUAGE"
+    assert user.registration_completed is False
+
+
+def test_set_registration_step_persists_the_step():
+    repo = UserRepository()
+    repo.create_user("111", username="alice")
+
+    updated = repo.set_registration_step("111", "PHONE")
+
+    assert updated is True
+    assert repo.get_user("111").registration_step == "PHONE"
+
+
+def test_set_registration_step_never_touches_registration_completed():
+    repo = UserRepository()
+    repo.create_user("111", username="alice")
+    repo.set_registration_step("111", "PHONE")
+    assert repo.get_user("111").registration_completed is False
+
+
+def test_complete_registration_sets_both_columns_together():
+    repo = UserRepository()
+    repo.create_user("111", username="alice")
+
+    updated = repo.complete_registration("111")
+
+    user = repo.get_user("111")
+    assert updated is True
+    assert user.registration_step == "COMPLETE"
+    assert user.registration_completed is True

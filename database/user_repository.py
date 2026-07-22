@@ -16,7 +16,8 @@ logger = setup_logger("UserRepository")
 # column name (sqlite3.Row), so column order here is irrelevant.
 _USER_SELECT_COLUMNS = (
     "SELECT telegram_id, username, language, trading_style, risk_percent, "
-    "timeframe, created_at, strategy, notifications_enabled, status, last_activity, phone_hash, trial_started_at"
+    "timeframe, created_at, strategy, notifications_enabled, status, last_activity, phone_hash, trial_started_at, "
+    "registration_step, registration_completed"
 )
 
 
@@ -35,6 +36,8 @@ def _row_to_record(row) -> UserRecord:
         last_activity=row["last_activity"],
         phone_hash=row["phone_hash"],
         trial_started_at=row["trial_started_at"],
+        registration_step=row["registration_step"],
+        registration_completed=bool(row["registration_completed"]),
     )
 
 
@@ -154,6 +157,7 @@ class UserRepository:
             "username", "language", "trading_style", "risk_percent",
             "timeframe", "strategy", "notifications_enabled",
             "status", "last_activity", "phone_hash", "trial_started_at",
+            "registration_step", "registration_completed",
         }
         updates = {k: v for k, v in fields.items() if k in allowed}
         if not updates:
@@ -268,3 +272,21 @@ class UserRepository:
         repository's).
         """
         return self.update_user(telegram_id, trial_started_at=started_at_iso)
+
+    def set_registration_step(self, telegram_id, step: str) -> bool:
+        """
+        Advances (or sets) where an in-progress Registration Wizard
+        left off (V2 Phase 3) -- "LANGUAGE"/"PHONE"/"COMPLETE". Never
+        touches registration_completed; use complete_registration()
+        for the terminal transition so both columns change together.
+        """
+        return self.update_user(telegram_id, registration_step=step)
+
+    def complete_registration(self, telegram_id) -> bool:
+        """
+        Terminal Wizard transition (V2 Phase 3): registration_step ->
+        "COMPLETE", registration_completed -> True, in one write so the
+        two columns never disagree even if a caller only reads one of
+        them.
+        """
+        return self.update_user(telegram_id, registration_step="COMPLETE", registration_completed=True)

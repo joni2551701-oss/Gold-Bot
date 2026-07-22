@@ -35,6 +35,17 @@ class UserRecord:
     `ai.access.trial_manager.trial_status_from_started_at()` to
     compute active/expires_at without a second, database-specific
     reimplementation of that math.
+
+    registration_step/registration_completed (V2 Phase 3: Registration
+    Wizard): registration_step tracks where an in-progress Wizard left
+    off -- "LANGUAGE" (new row, nothing chosen yet), "PHONE" (language
+    done, Phone Share still pending -- now mandatory), or "COMPLETE".
+    registration_completed is the boolean derived from reaching
+    "COMPLETE", kept as its own column (rather than only ever comparing
+    registration_step == "COMPLETE") because other modules only need a
+    yes/no gate, not the step name. A row created before this phase is
+    backfilled by `database.models._backfill_registration_state()` --
+    never defaults to "LANGUAGE" for an already-active user.
     """
     telegram_id: str
     username: Optional[str]
@@ -49,3 +60,5 @@ class UserRecord:
     last_activity: Optional[str] = None
     phone_hash: Optional[str] = None
     trial_started_at: Optional[str] = None
+    registration_step: str = "LANGUAGE"
+    registration_completed: bool = False

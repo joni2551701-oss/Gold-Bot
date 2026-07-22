@@ -29,7 +29,9 @@ codebase staying honestly inert rather than fabricating behavior.
 from aiogram.types import CallbackQuery
 
 from telegram import handlers
-from telegram.keyboards import language_keyboard
+from telegram.keyboards import language_keyboard, phone_share_keyboard
+from telegram.registration_service import RegistrationService
+from translation.ui_catalog import t
 from core.logger import setup_logger
 
 logger = setup_logger("CallbackRouter")
@@ -110,3 +112,19 @@ async def _handle_language(callback: CallbackQuery, language: str) -> None:
     except Exception as e:
         logger.warning(f"route_callback: edit_text failed, sending new message instead: {e}")
         await callback.message.answer(result.text, reply_markup=reply_markup)
+
+    # V2 Phase 3: a language choice mid-Wizard (registration_step ==
+    # LANGUAGE) advances to the now-mandatory Phone Share step. A
+    # no-op (advance_past_language() returns False) for an
+    # already-registered user changing language later via /language --
+    # this block never fires for them. ReplyKeyboardMarkup (Phone
+    # Share) cannot be attached via edit_text() the way the inline
+    # language_keyboard above was, so this is deliberately a separate
+    # new message, best-effort like every other side effect here.
+    try:
+        if RegistrationService().advance_past_language(telegram_id):
+            await callback.message.answer(
+                t("registration.phone_prompt", language), reply_markup=phone_share_keyboard(language)
+            )
+    except Exception as e:
+        logger.warning(f"route_callback: registration advance failed for telegram_id={telegram_id}: {e}")

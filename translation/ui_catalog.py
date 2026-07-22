@@ -41,6 +41,11 @@ _CATALOG: dict = {
         "UZ": "Ishga tushirib bo'lmadi: {error}",
         "RU": "Не удалось запустить: {error}",
     },
+    "start.banned": {
+        "EN": "Your account has been suspended.",
+        "UZ": "Sizning hisobingiz bloklangan.",
+        "RU": "Ваш аккаунт заблокирован.",
+    },
     "help.text": {
         "EN": (
             "GoldBot Commands\n"
@@ -330,6 +335,16 @@ _CATALOG: dict = {
         "EN": "This phone number is already registered on another account.",
         "UZ": "Bu telefon raqami boshqa hisobda allaqachon ro'yxatdan o'tgan.",
         "RU": "Этот номер телефона уже зарегистрирован на другом аккаунте.",
+    },
+    "contact.wrong_owner": {
+        "EN": "Please share your own phone number using the button.",
+        "UZ": "Iltimos, tugma orqali o'zingizning telefon raqamingizni yuboring.",
+        "RU": "Пожалуйста, поделитесь своим номером телефона с помощью кнопки.",
+    },
+    "registration.phone_prompt": {
+        "EN": "One last step -- share your phone number to complete registration.",
+        "UZ": "Oxirgi qadam -- ro'yxatdan o'tishni yakunlash uchun telefon raqamingizni yuboring.",
+        "RU": "Последний шаг -- поделитесь номером телефона, чтобы завершить регистрацию.",
     },
     # Phase 1.6 -- /language's own reply text (language_status()/
     # language_handler()). _language_name() (telegram/handlers.py) stays
