@@ -13,65 +13,86 @@ Phase 34. Real settings changes happen via command arguments (e.g.
 telegram/handlers.py's module docstring for why. admin_panel_keyboard()
 stays a placeholder -- no admin panel UI exists yet, only text (Phase
 37's /admin).
+
+Phase 1.5 Localized Keyboards: every USER-tier keyboard below takes an
+optional `language` parameter and resolves its button labels via
+translation.ui_catalog.t() (callback_data is never touched -- only the
+label a user sees changes). admin_panel_keyboard() is intentionally
+excluded and stays English-only -- OWNER/ADMIN keyboards are Director
+decision, out of scope for USER-facing localization. Callers resolve
+`language` the same way telegram/handlers.py's own handlers do (see
+telegram.handlers._current_language()); see
+telegram/command_router.py and telegram/callback_router.py for where
+that value is supplied.
 """
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup
 
+from translation.ui_catalog import t
 
-def language_keyboard():
+
+def language_keyboard(language=None):
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🇺🇿 Uzbek", callback_data="lang_uz")],
-            [InlineKeyboardButton(text="🇷🇺 Русский", callback_data="lang_ru")],
-            [InlineKeyboardButton(text="🇬🇧 English", callback_data="lang_en")],
+            [InlineKeyboardButton(text=t("keyboard.language.uz", language), callback_data="lang_uz")],
+            [InlineKeyboardButton(text=t("keyboard.language.ru", language), callback_data="lang_ru")],
+            [InlineKeyboardButton(text=t("keyboard.language.en", language), callback_data="lang_en")],
         ]
     )
 
 
-def risk_keyboard():
+def risk_keyboard(language=None):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="1%", callback_data="risk_1"),
-                InlineKeyboardButton(text="2%", callback_data="risk_2"),
-                InlineKeyboardButton(text="3%", callback_data="risk_3"),
-                InlineKeyboardButton(text="5%", callback_data="risk_5"),
+                InlineKeyboardButton(text=t("keyboard.risk.1", language), callback_data="risk_1"),
+                InlineKeyboardButton(text=t("keyboard.risk.2", language), callback_data="risk_2"),
+                InlineKeyboardButton(text=t("keyboard.risk.3", language), callback_data="risk_3"),
+                InlineKeyboardButton(text=t("keyboard.risk.5", language), callback_data="risk_5"),
             ]
         ]
     )
 
 
-def timeframe_keyboard():
+def timeframe_keyboard(language=None):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="M15", callback_data="timeframe_m15"),
-                InlineKeyboardButton(text="H1", callback_data="timeframe_h1"),
-                InlineKeyboardButton(text="H4", callback_data="timeframe_h4"),
+                InlineKeyboardButton(text=t("keyboard.timeframe.m15", language), callback_data="timeframe_m15"),
+                InlineKeyboardButton(text=t("keyboard.timeframe.h1", language), callback_data="timeframe_h1"),
+                InlineKeyboardButton(text=t("keyboard.timeframe.h4", language), callback_data="timeframe_h4"),
             ]
         ]
     )
 
 
-def strategy_keyboard():
+def strategy_keyboard(language=None):
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Liquidity Sweep", callback_data="strategy_liquidity_sweep")],
-            [InlineKeyboardButton(text="FVG", callback_data="strategy_fvg")],
-            [InlineKeyboardButton(text="AMD", callback_data="strategy_amd")],
-            [InlineKeyboardButton(text="Order Block", callback_data="strategy_order_block")],
+            [InlineKeyboardButton(
+                text=t("keyboard.strategy.liquidity_sweep", language), callback_data="strategy_liquidity_sweep",
+            )],
+            [InlineKeyboardButton(text=t("keyboard.strategy.fvg", language), callback_data="strategy_fvg")],
+            [InlineKeyboardButton(text=t("keyboard.strategy.amd", language), callback_data="strategy_amd")],
+            [InlineKeyboardButton(
+                text=t("keyboard.strategy.order_block", language), callback_data="strategy_order_block",
+            )],
         ]
     )
 
 
-def settings_keyboard():
+def settings_keyboard(language=None):
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Language", callback_data="settings_language")],
-            [InlineKeyboardButton(text="Risk", callback_data="settings_risk")],
-            [InlineKeyboardButton(text="Strategy", callback_data="settings_strategy")],
-            [InlineKeyboardButton(text="Timeframe", callback_data="settings_timeframe")],
-            [InlineKeyboardButton(text="Notifications", callback_data="settings_notifications")],
+            [InlineKeyboardButton(text=t("keyboard.settings.language", language), callback_data="settings_language")],
+            [InlineKeyboardButton(text=t("keyboard.settings.risk", language), callback_data="settings_risk")],
+            [InlineKeyboardButton(text=t("keyboard.settings.strategy", language), callback_data="settings_strategy")],
+            [InlineKeyboardButton(
+                text=t("keyboard.settings.timeframe", language), callback_data="settings_timeframe",
+            )],
+            [InlineKeyboardButton(
+                text=t("keyboard.settings.notifications", language), callback_data="settings_notifications",
+            )],
         ]
     )
 
@@ -94,7 +115,7 @@ def admin_panel_keyboard():
     )
 
 
-def notifications_keyboard():
+def notifications_keyboard(language=None):
     """
     /notifications hint keyboard (Phase 43). Same command-based
     interaction model as the other Phase 40/41 keyboards -- no
@@ -108,13 +129,13 @@ def notifications_keyboard():
     """
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Enable Notifications", callback_data="notifications_on")],
-            [InlineKeyboardButton(text="Disable Notifications", callback_data="notifications_off")],
+            [InlineKeyboardButton(text=t("keyboard.notifications.enable", language), callback_data="notifications_on")],
+            [InlineKeyboardButton(text=t("keyboard.notifications.disable", language), callback_data="notifications_off")],
         ]
     )
 
 
-def phone_share_keyboard():
+def phone_share_keyboard(language=None):
     """
     /start hint keyboard (Phase 61.5: AI Production Integration
     Foundation, TASK 4). The first `ReplyKeyboardMarkup` in this
@@ -131,7 +152,7 @@ def phone_share_keyboard():
     normally uses.
     """
     return ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton(text="📱 Share Phone Number", request_contact=True)]],
+        keyboard=[[KeyboardButton(text=t("keyboard.phone_share", language), request_contact=True)]],
         resize_keyboard=True,
         one_time_keyboard=True,
     )

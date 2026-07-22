@@ -324,6 +324,51 @@ _CATALOG: dict = {
     "common.na": {"EN": "N/A", "UZ": "N/A", "RU": "N/A"},
     "common.on": {"EN": "ON", "UZ": "YOQILGAN", "RU": "ВКЛ"},
     "common.off": {"EN": "OFF", "UZ": "O'CHIRILGAN", "RU": "ВЫКЛ"},
+    # Phase 1.5 Localized Keyboards -- telegram/keyboards.py button labels
+    # (USER-tier only; admin_panel_keyboard() stays English, Director
+    # decision). Language-name and value buttons (lang_*, risk_*,
+    # timeframe_*, strategy_*) are identical across all three languages
+    # on purpose -- a language picker shows each language's own name,
+    # and percentages/timeframes/strategy names are the same literal
+    # value regardless of display language -- routed through t() anyway
+    # so every button label has one single source, per Director's
+    # instruction that ALL keyboard labels go through t().
+    "keyboard.language.uz": {"EN": "🇺🇿 Uzbek", "UZ": "🇺🇿 Uzbek", "RU": "🇺🇿 Uzbek"},
+    "keyboard.language.ru": {"EN": "🇷🇺 Русский", "UZ": "🇷🇺 Русский", "RU": "🇷🇺 Русский"},
+    "keyboard.language.en": {"EN": "🇬🇧 English", "UZ": "🇬🇧 English", "RU": "🇬🇧 English"},
+    "keyboard.risk.1": {"EN": "1%", "UZ": "1%", "RU": "1%"},
+    "keyboard.risk.2": {"EN": "2%", "UZ": "2%", "RU": "2%"},
+    "keyboard.risk.3": {"EN": "3%", "UZ": "3%", "RU": "3%"},
+    "keyboard.risk.5": {"EN": "5%", "UZ": "5%", "RU": "5%"},
+    "keyboard.timeframe.m15": {"EN": "M15", "UZ": "M15", "RU": "M15"},
+    "keyboard.timeframe.h1": {"EN": "H1", "UZ": "H1", "RU": "H1"},
+    "keyboard.timeframe.h4": {"EN": "H4", "UZ": "H4", "RU": "H4"},
+    "keyboard.strategy.liquidity_sweep": {
+        "EN": "Liquidity Sweep", "UZ": "Liquidity Sweep", "RU": "Liquidity Sweep",
+    },
+    "keyboard.strategy.fvg": {"EN": "FVG", "UZ": "FVG", "RU": "FVG"},
+    "keyboard.strategy.amd": {"EN": "AMD", "UZ": "AMD", "RU": "AMD"},
+    "keyboard.strategy.order_block": {
+        "EN": "Order Block", "UZ": "Order Block", "RU": "Order Block",
+    },
+    "keyboard.settings.language": {"EN": "Language", "UZ": "Til", "RU": "Язык"},
+    "keyboard.settings.risk": {"EN": "Risk", "UZ": "Risk", "RU": "Риск"},
+    "keyboard.settings.strategy": {"EN": "Strategy", "UZ": "Strategiya", "RU": "Стратегия"},
+    "keyboard.settings.timeframe": {
+        "EN": "Timeframe", "UZ": "Vaqt oralig'i", "RU": "Таймфрейм",
+    },
+    "keyboard.settings.notifications": {
+        "EN": "Notifications", "UZ": "Bildirishnomalar", "RU": "Уведомления",
+    },
+    "keyboard.notifications.enable": {
+        "EN": "Enable Notifications", "UZ": "Bildirishnomalarni yoqish", "RU": "Включить уведомления",
+    },
+    "keyboard.notifications.disable": {
+        "EN": "Disable Notifications", "UZ": "Bildirishnomalarni o'chirish", "RU": "Отключить уведомления",
+    },
+    "keyboard.phone_share": {
+        "EN": "📱 Share Phone Number", "UZ": "📱 Telefon raqamini yuborish", "RU": "📱 Отправить номер телефона",
+    },
 }
 
 

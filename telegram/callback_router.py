@@ -104,7 +104,7 @@ async def _handle_language(callback: CallbackQuery, language: str) -> None:
     telegram_id = callback.from_user.id
     result = await handlers.language_status(telegram_id, args=language)
     await callback.answer()
-    reply_markup = language_keyboard() if result.show_keyboard else None
+    reply_markup = language_keyboard(language) if result.show_keyboard else None
     try:
         await callback.message.edit_text(result.text, reply_markup=reply_markup)
     except Exception as e:

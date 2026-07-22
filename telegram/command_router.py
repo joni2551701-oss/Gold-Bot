@@ -157,7 +157,14 @@ async def route_command(command_text: str, telegram_id=None, username=None) -> R
         return RouterResult(text=SERVICE_UNAVAILABLE_TEXT)
 
     keyboard_builder = _KEYBOARD_BY_COMMAND.get(command)
-    keyboard = keyboard_builder() if keyboard_builder else None
+    if keyboard_builder is None:
+        keyboard = None
+    elif command == "admin":
+        # OWNER/ADMIN keyboard -- stays English-only (Director
+        # decision, Phase 1.5 Localized Keyboards), no language passed.
+        keyboard = keyboard_builder()
+    else:
+        keyboard = keyboard_builder(handlers._current_language(telegram_id))
     return RouterResult(text=text, keyboard=keyboard)
 
 
