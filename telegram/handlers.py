@@ -19,7 +19,14 @@ and call telegram.user_service.UserService's change_*() methods.
 Settings change via command argument, not an aiogram callback_query
 handler -- keyboards here are still display hints (same precedent as
 language_keyboard() since Phase 34), consistent with how /addadmin,
-/removeadmin, and /userinfo already take an argument.
+/removeadmin, and /userinfo already take an argument. language_handler
+is the one exception since the V1 Language Callback Fix: its
+lang_uz/lang_ru/lang_en keyboard buttons are wired to a real
+callback_query handler (telegram/callback_router.py), and V1.1
+Language UX Polish gave it a fuller result -- see language_status()
+next to it for the current-language display, duplicate-selection
+guard, and keyboard-removal-on-success behavior callback_router.py
+consumes.
 
 signal_handler and history_handler (Phase 38) are real: they call
 telegram.signal_service.SignalService (read-only) and format the
@@ -158,6 +165,7 @@ TelegramBot directly (await bot.send_message(...)) or a future
 async-native service.
 """
 
+from dataclasses import dataclass
 from typing import Optional
 
 from telegram.user_service import UserService
@@ -341,36 +349,108 @@ _STRATEGY_OPTIONS = {
     "order block": "Order Block",
 }
 
+# V1.1 Language UX Polish -- single source for the flag+name shown
+# anywhere a language code appears in Language-module text, so no
+# handler or the callback router ever spells one out inline.
+_LANGUAGE_NAMES = {
+    "UZ": "🇺🇿 Uzbek",
+    "RU": "🇷🇺 Русский",
+    "EN": "🇬🇧 English",
+}
 
-async def language_handler(telegram_id=None, args=None) -> str:
+_LANGUAGE_UPDATE_ERROR_TEXT = "Unable to update language.\nPlease try again."
+
+
+def _language_name(code: str) -> str:
+    return _LANGUAGE_NAMES.get(code, code)
+
+
+def _current_language(telegram_id) -> str:
+    """Best-effort read of the caller's stored language; falls back to
+    the database column's own default ('UZ') on any lookup failure so
+    the Language screen always has something to show. Never raises."""
+    try:
+        result = UserService().get_profile(telegram_id)
+    except Exception as e:
+        logger.warning(f"language_handler: get_profile failed for telegram_id={telegram_id}: {e}")
+        return "UZ"
+    if not result.success or result.profile is None:
+        return "UZ"
+    return result.profile.language or "UZ"
+
+
+@dataclass(frozen=True)
+class LanguageUpdateResult:
     """
-    /language [UZ|RU|EN] -> UserService.change_language(). No argument
-    shows the option keyboard (attached by command_router) plus a
-    usage hint. Never raises.
+    text: the message to show the caller.
+    show_keyboard: whether the language picker should stay attached --
+        True while the picker's job isn't finished (first prompt,
+        invalid input, re-selecting the current language, or an update
+        failure the caller may want to retry), False once a language
+        change actually took effect (the picker's job is done).
+    """
+    text: str
+    show_keyboard: bool
+
+
+async def language_status(telegram_id=None, args=None) -> LanguageUpdateResult:
+    """
+    Full result behind /language and its inline keyboard's lang_*
+    callbacks (V1.1 Language UX Polish): the reply text plus whether
+    the picker keyboard should remain visible. language_handler()
+    below is the plain str wrapper telegram.command_router's
+    text-command path already expects (its contract predates this
+    phase and stays str); telegram.callback_router uses this richer
+    form to decide whether to remove the keyboard after a tap. Never
+    raises.
     """
     choice = _first_arg(args)
     if choice is None:
-        return (
-            "Choose language:\n"
-            "🇺🇿 Uzbek (UZ)\n"
-            "🇷🇺 Русский (RU)\n"
-            "🇬🇧 English (EN)\n\n"
-            "Use /language UZ, /language RU, or /language EN."
+        current = _current_language(telegram_id)
+        return LanguageUpdateResult(
+            text=f"🌐 Language\nCurrent:\n{_language_name(current)}\n\nChoose a language",
+            show_keyboard=True,
         )
 
     normalized = choice.upper()
     if normalized not in _LANGUAGE_OPTIONS:
-        return "Invalid language. Choose one of: UZ, RU, EN."
+        return LanguageUpdateResult(
+            text="⚠️ Invalid language. Choose one of: UZ, RU, EN.",
+            show_keyboard=True,
+        )
+
+    current = _current_language(telegram_id)
+    if current == normalized:
+        return LanguageUpdateResult(
+            text=f"Already selected\n{_language_name(normalized)}",
+            show_keyboard=True,
+        )
 
     try:
         result = UserService().change_language(telegram_id, normalized)
     except Exception as e:
         logger.warning(f"language_handler: change_language failed for telegram_id={telegram_id}: {e}")
-        return f"Could not update language: {e}"
+        return LanguageUpdateResult(text=_LANGUAGE_UPDATE_ERROR_TEXT, show_keyboard=True)
 
     if not result.success:
-        return f"Could not update language: {result.reason}"
-    return f"Language updated to {normalized}."
+        logger.warning(f"language_handler: change_language rejected for telegram_id={telegram_id}: {result.reason}")
+        return LanguageUpdateResult(text=_LANGUAGE_UPDATE_ERROR_TEXT, show_keyboard=True)
+
+    return LanguageUpdateResult(
+        text=f"✅ Language updated\nCurrent language:\n{_language_name(normalized)}",
+        show_keyboard=False,
+    )
+
+
+async def language_handler(telegram_id=None, args=None) -> str:
+    """
+    /language [UZ|RU|EN] -> UserService.change_language(). No argument
+    shows the current language plus the inline picker prompt (the
+    keyboard itself is attached by command_router for the text-command
+    path). Never raises. See language_status() above for the full
+    result, including whether the picker should stay visible.
+    """
+    return (await language_status(telegram_id, args)).text
 
 
 async def risk_handler(telegram_id=None, args=None) -> str:
