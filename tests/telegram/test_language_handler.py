@@ -34,20 +34,24 @@ def test_language_status_no_args_reflects_a_previously_changed_language():
 
 
 def test_language_status_invalid_choice_keeps_keyboard_and_does_not_change_language():
+    # Rendered in the caller's current (pre-existing) language -- UZ is
+    # the DB default for a freshly-registered user.
     UserService().register_user("603", username="c")
     result = _run(language_status("603", args="XX"))
 
-    assert "Invalid language" in result.text
+    assert "Noto'g'ri til" in result.text
     assert result.show_keyboard is True
     assert UserService().get_profile("603").profile.language == "UZ"
 
 
 def test_language_status_successful_update_removes_keyboard_and_persists():
+    # Rendered in the newly-selected language (Phase 1.6) -- the
+    # confirmation itself proves the switch took effect.
     UserService().register_user("604", username="d")
     result = _run(language_status("604", args="RU"))
 
     assert result.show_keyboard is False
-    assert "✅ Language updated" in result.text
+    assert "✅ Язык обновлён" in result.text
     assert "🇷🇺 Русский" in result.text
     assert UserService().get_profile("604").profile.language == "RU"
 
@@ -66,9 +70,11 @@ def test_language_status_reselecting_current_language_is_a_no_op():
 
 
 def test_language_status_unknown_telegram_id_reports_a_friendly_error():
+    # _current_language() falls back to the DB schema default (UZ) for
+    # an unknown telegram_id.
     result = _run(language_status("999999999", args="RU"))
 
-    assert result.text == "Unable to update language.\nPlease try again."
+    assert result.text == "Tilni yangilab bo'lmadi.\nQaytadan urinib ko'ring."
     assert result.show_keyboard is True
 
 
@@ -77,12 +83,12 @@ def test_language_handler_returns_plain_text_wrapper():
     text = _run(language_handler("606", args="UZ"))
 
     assert isinstance(text, str)
-    assert "Already selected" in text  # UZ is the DB default
+    assert "Allaqachon tanlangan" in text  # UZ is the DB default
 
 
 def test_language_handler_lowercase_argument_is_normalized():
     UserService().register_user("607", username="g")
     text = _run(language_handler("607", args="ru"))
 
-    assert "✅ Language updated" in text
+    assert "✅ Язык обновлён" in text
     assert UserService().get_profile("607").profile.language == "RU"

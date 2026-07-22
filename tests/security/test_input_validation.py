@@ -35,13 +35,13 @@ def test_risk_command_accepts_valid_value():
 
 def test_language_command_rejects_unknown_language():
     result = _run(route_command("/language XX", telegram_id=USER_ID))
-    assert result.text == "⚠️ Invalid language. Choose one of: UZ, RU, EN."
+    assert result.text == "⚠️ Noto'g'ri til. Quyidagilardan birini tanlang: UZ, RU, EN."
 
 
 def test_language_command_accepts_valid_language():
     _run(route_command("/start", telegram_id=USER_ID))
     result = _run(route_command("/language RU", telegram_id=USER_ID))
-    assert result.text == "✅ Language updated\nCurrent language:\n🇷🇺 Русский"
+    assert result.text == "✅ Язык обновлён\nТекущий язык:\n🇷🇺 Русский"
 
 
 def test_timeframe_command_rejects_unknown_timeframe():

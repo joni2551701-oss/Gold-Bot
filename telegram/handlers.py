@@ -321,8 +321,6 @@ _LANGUAGE_NAMES = {
     "EN": "🇬🇧 English",
 }
 
-_LANGUAGE_UPDATE_ERROR_TEXT = "Unable to update language.\nPlease try again."
-
 
 def _language_name(code: str) -> str:
     return _LANGUAGE_NAMES.get(code, code)
@@ -367,25 +365,24 @@ async def language_status(telegram_id=None, args=None) -> LanguageUpdateResult:
     form to decide whether to remove the keyboard after a tap. Never
     raises.
     """
+    current = _current_language(telegram_id)
     choice = _first_arg(args)
     if choice is None:
-        current = _current_language(telegram_id)
         return LanguageUpdateResult(
-            text=f"🌐 Language\nCurrent:\n{_language_name(current)}\n\nChoose a language",
+            text=t("language.prompt", current, name=_language_name(current)),
             show_keyboard=True,
         )
 
     normalized = choice.upper()
     if normalized not in _LANGUAGE_OPTIONS:
         return LanguageUpdateResult(
-            text="⚠️ Invalid language. Choose one of: UZ, RU, EN.",
+            text=t("language.invalid", current),
             show_keyboard=True,
         )
 
-    current = _current_language(telegram_id)
     if current == normalized:
         return LanguageUpdateResult(
-            text=f"Already selected\n{_language_name(normalized)}",
+            text=t("language.already_selected", current, name=_language_name(normalized)),
             show_keyboard=True,
         )
 
@@ -393,14 +390,14 @@ async def language_status(telegram_id=None, args=None) -> LanguageUpdateResult:
         result = UserService().change_language(telegram_id, normalized)
     except Exception as e:
         logger.warning(f"language_handler: change_language failed for telegram_id={telegram_id}: {e}")
-        return LanguageUpdateResult(text=_LANGUAGE_UPDATE_ERROR_TEXT, show_keyboard=True)
+        return LanguageUpdateResult(text=t("language.update_error", current), show_keyboard=True)
 
     if not result.success:
         logger.warning(f"language_handler: change_language rejected for telegram_id={telegram_id}: {result.reason}")
-        return LanguageUpdateResult(text=_LANGUAGE_UPDATE_ERROR_TEXT, show_keyboard=True)
+        return LanguageUpdateResult(text=t("language.update_error", current), show_keyboard=True)
 
     return LanguageUpdateResult(
-        text=f"✅ Language updated\nCurrent language:\n{_language_name(normalized)}",
+        text=t("language.updated", normalized, name=_language_name(normalized)),
         show_keyboard=False,
     )
 
@@ -1130,6 +1127,17 @@ async def runtime_provider_handler(args=None) -> str:
     return runtime_provider(provider_name).message
 
 
+# Phase 1.6 -- UserService.register_phone()'s two known failure
+# reasons, mapped to localized catalog keys so contact_handler never
+# echoes UserService's raw (always-English) reason string back to the
+# caller. An unrecognized reason (future service change) falls back to
+# the generic contact.error text rather than leaking raw English.
+_CONTACT_FAILURE_KEYS = {
+    "User not found -- send /start first": "contact.not_registered",
+    "This phone number is already registered on another account.": "contact.phone_reused",
+}
+
+
 async def contact_handler(telegram_id, phone_number: str) -> str:
     """
     Phone Share Button reply -> UserService.register_phone() (Phase
@@ -1146,7 +1154,8 @@ async def contact_handler(telegram_id, phone_number: str) -> str:
         return t("contact.error", language)
 
     if not result.success:
-        return result.reason
+        key = _CONTACT_FAILURE_KEYS.get(result.reason, "contact.error")
+        return t(key, language)
 
     if result.trial_active:
         return t("contact.trial_active", language, expires=result.trial_expires_at)

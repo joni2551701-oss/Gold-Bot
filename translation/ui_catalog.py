@@ -321,6 +321,45 @@ _CATALOG: dict = {
         "UZ": "✅ Telefon tasdiqlandi. Bepul sinov muddatingiz tugadi.",
         "RU": "✅ Телефон подтверждён. Ваш бесплатный пробный период закончился.",
     },
+    "contact.not_registered": {
+        "EN": "User not found -- send /start first.",
+        "UZ": "Foydalanuvchi topilmadi -- avval /start yuboring.",
+        "RU": "Пользователь не найден -- сначала отправьте /start.",
+    },
+    "contact.phone_reused": {
+        "EN": "This phone number is already registered on another account.",
+        "UZ": "Bu telefon raqami boshqa hisobda allaqachon ro'yxatdan o'tgan.",
+        "RU": "Этот номер телефона уже зарегистрирован на другом аккаунте.",
+    },
+    # Phase 1.6 -- /language's own reply text (language_status()/
+    # language_handler()). _language_name() (telegram/handlers.py) stays
+    # invariant across languages by design -- same "a language picker
+    # shows each language's own name" rule as keyboard.language.*.
+    "language.prompt": {
+        "EN": "🌐 Language\nCurrent:\n{name}\n\nChoose a language",
+        "UZ": "🌐 Til\nJoriy:\n{name}\n\nTilni tanlang",
+        "RU": "🌐 Язык\nТекущий:\n{name}\n\nВыберите язык",
+    },
+    "language.invalid": {
+        "EN": "⚠️ Invalid language. Choose one of: UZ, RU, EN.",
+        "UZ": "⚠️ Noto'g'ri til. Quyidagilardan birini tanlang: UZ, RU, EN.",
+        "RU": "⚠️ Неверный язык. Выберите один из: UZ, RU, EN.",
+    },
+    "language.already_selected": {
+        "EN": "Already selected\n{name}",
+        "UZ": "Allaqachon tanlangan\n{name}",
+        "RU": "Уже выбрано\n{name}",
+    },
+    "language.update_error": {
+        "EN": "Unable to update language.\nPlease try again.",
+        "UZ": "Tilni yangilab bo'lmadi.\nQaytadan urinib ko'ring.",
+        "RU": "Не удалось обновить язык.\nПопробуйте ещё раз.",
+    },
+    "language.updated": {
+        "EN": "✅ Language updated\nCurrent language:\n{name}",
+        "UZ": "✅ Til yangilandi\nJoriy til:\n{name}",
+        "RU": "✅ Язык обновлён\nТекущий язык:\n{name}",
+    },
     "common.na": {"EN": "N/A", "UZ": "N/A", "RU": "N/A"},
     "common.on": {"EN": "ON", "UZ": "YOQILGAN", "RU": "ВКЛ"},
     "common.off": {"EN": "OFF", "UZ": "O'CHIRILGAN", "RU": "ВЫКЛ"},

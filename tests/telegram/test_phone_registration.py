@@ -96,6 +96,25 @@ def test_route_contact_end_to_end_registers_a_free_account():
     assert "sinov" in result.text.lower()
 
 
+def test_route_contact_for_unregistered_user_is_localized():
+    # Phase 1.6 -- contact_handler no longer echoes UserService's raw
+    # English reason string; DB default language is UZ.
+    message = _contact_message("609", "+1 555 444 5555")
+    result = _run(route_contact(message))
+
+    assert result.text == "Foydalanuvchi topilmadi -- avval /start yuboring."
+
+
+def test_route_contact_for_a_reused_phone_number_is_localized():
+    _run(route_command("/start", telegram_id="610"))
+    _run(route_contact(_contact_message("610", "+1 555 777 8888")))
+
+    _run(route_command("/start", telegram_id="611"))
+    result = _run(route_contact(_contact_message("611", "+1 555 777 8888")))
+
+    assert result.text == "Bu telefon raqami boshqa hisobda allaqachon ro'yxatdan o'tgan."
+
+
 def test_start_reply_carries_the_phone_share_keyboard():
     result = _run(route_command("/start", telegram_id="602"))
     assert result.keyboard is not None
