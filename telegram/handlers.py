@@ -441,8 +441,32 @@ async def language_handler(telegram_id=None, args=None) -> str:
     keyboard itself is attached by command_router for the text-command
     path). Never raises. See language_status() above for the full
     result, including whether the picker should stay visible.
+
+    V2 Phase 3.1: a valid language code given via this text-command
+    path (e.g. "/language UZ") advances the Registration Wizard past
+    LANGUAGE exactly like tapping the inline picker button already
+    does in telegram.callback_router._handle_language() -- unconditionally
+    on a valid choice, even one that re-selects the already-current
+    language (matching that same unconditional-on-a-real-selection
+    behavior), never on a bare "/language" (no choice made) or an
+    invalid code. Before this phase, only the inline-button path
+    advanced the Wizard, so a user who typed the command instead of
+    tapping could get permanently stuck being re-shown the Language
+    step by every subsequent /start. advance_past_language() is a
+    no-op (and never raises) for anyone not currently at the LANGUAGE
+    step, so this check is what to call it on, not whether it's safe
+    to call.
     """
-    return (await language_status(telegram_id, args)).text
+    result = await language_status(telegram_id, args)
+
+    choice = _first_arg(args)
+    if choice is not None and choice.upper() in _LANGUAGE_OPTIONS:
+        try:
+            RegistrationService().advance_past_language(telegram_id)
+        except Exception as e:
+            logger.warning(f"language_handler: registration advance failed for telegram_id={telegram_id}: {e}")
+
+    return result.text
 
 
 async def risk_handler(telegram_id=None, args=None) -> str:

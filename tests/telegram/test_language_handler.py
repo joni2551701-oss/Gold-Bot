@@ -11,6 +11,8 @@ import asyncio
 
 from telegram.handlers import language_handler, language_status
 from telegram.user_service import UserService
+from telegram.registration_service import RegistrationStep
+from database.user_repository import UserRepository
 
 
 def _run(coro):
@@ -92,3 +94,62 @@ def test_language_handler_lowercase_argument_is_normalized():
 
     assert "✅ Язык обновлён" in text
     assert UserService().get_profile("607").profile.language == "RU"
+
+
+# ---------------------------------------------------------------------------
+# V2 Phase 3.1 -- /language's text-command path (language_handler) must
+# advance the Registration Wizard past LANGUAGE exactly like tapping the
+# inline picker button already does (telegram/callback_router.py's
+# _handle_language()), so a user who types the command instead of tapping
+# is not left stuck being re-shown the Language step by every /start.
+# ---------------------------------------------------------------------------
+
+
+def test_language_handler_valid_choice_advances_a_mid_wizard_user_to_phone():
+    repo = UserRepository()
+    repo.create_user("608", username="h")
+    assert repo.get_user("608").registration_step == RegistrationStep.LANGUAGE
+
+    _run(language_handler("608", args="RU"))
+
+    assert repo.get_user("608").registration_step == RegistrationStep.PHONE
+
+
+def test_language_handler_reselecting_the_default_language_still_advances():
+    """Mirrors the callback path's own unconditional-on-a-real-selection
+    behavior -- UZ is the DB default, so this hits the 'already selected'
+    branch, yet the Wizard still advances (a real choice was made)."""
+    repo = UserRepository()
+    repo.create_user("609", username="i")
+
+    _run(language_handler("609", args="UZ"))
+
+    assert repo.get_user("609").registration_step == RegistrationStep.PHONE
+
+
+def test_language_handler_no_args_does_not_advance_the_wizard():
+    repo = UserRepository()
+    repo.create_user("610", username="j")
+
+    _run(language_handler("610", args=None))
+
+    assert repo.get_user("610").registration_step == RegistrationStep.LANGUAGE
+
+
+def test_language_handler_invalid_choice_does_not_advance_the_wizard():
+    repo = UserRepository()
+    repo.create_user("611", username="k")
+
+    _run(language_handler("611", args="XX"))
+
+    assert repo.get_user("611").registration_step == RegistrationStep.LANGUAGE
+
+
+def test_language_handler_does_not_reopen_an_already_completed_registration():
+    repo = UserRepository()
+    repo.create_user("612", username="l")
+    repo.complete_registration("612")
+
+    _run(language_handler("612", args="RU"))
+
+    assert repo.get_user("612").registration_step == RegistrationStep.COMPLETE
