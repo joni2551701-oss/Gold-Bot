@@ -322,6 +322,31 @@ a symlink switch plus a restart — never a rebuild. 155 new tests. See
 `docs/PHASE_P1_AUDIT.md`, `docs/PHASE_P1_FREEZE.md`, and
 `docs/deployment/PRODUCTION_DEPLOYMENT.md`/`ROLLBACK.md`.
 
+### V2 Phase 1 — Language Foundation
+**Status: COMPLETED (FROZEN as of commit `5c1f806`).** Director-
+approved incremental delivery (Phase 1.0 → 1.6, each sub-phase
+independently code-reviewed, tested, CI-confirmed, and production-
+deployed before the next one started). Built the Translation Engine
+(`translation/ui_catalog.py`, a 77-key static UZ/RU/EN catalog with
+`t(key, language, **kwargs)`), localized all 17 `COMMANDS`-registry
+USER-tier handlers and every USER-tier keyboard
+(`telegram/keyboards.py`), wired `/language`'s inline keyboard to a
+real `callback_query` handler (`telegram/callback_router.py`, new),
+and closed the two remaining hardcoded-English gaps
+(`language_status()`'s own reply text, `contact_handler`'s failure
+path). Confirmed via a real Production Telegram Manual Test (UZ/RU/EN
+selection via inline buttons, language persistence across bot
+restart), not just CI. OWNER/ADMIN-tier commands are permanently
+English by design, not deferred. `telegram/signal_formatter.py` and
+`telegram/signal_access_service.py` deferred to V2.1 (Signal Product
+Layer); `command_router.py`'s generic constants deferred to V2.2
+(future Generic Error Catalog). Zero diff in `core/`, `decision/`,
+`risk/`, `execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
+and `telegram/owner/` across the entire phase. 47 new tests (4575 →
+4622). See `docs/PHASE_V2_PHASE1_FREEZE.md` and
+`docs/telegram/TELEGRAM_ARCHITECTURE.md`'s Language Foundation
+section.
+
 ## Notes
 
 - This table intentionally does not promise dates — only scope and

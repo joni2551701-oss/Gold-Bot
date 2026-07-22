@@ -71,6 +71,72 @@ Service-layer call like any other — the AI's response is content to
 display, never a decision that changes what the Handler does next.
 See `docs/constitution/CONSTITUTION.md` Article 1.
 
+## Language Foundation (V2 Phase 1 — FROZEN)
+
+**Status: FROZEN as of commit `5c1f806`.** See
+`docs/PHASE_V2_PHASE1_FREEZE.md` for the full freeze record.
+
+A second dispatch path exists alongside the text-command flow above,
+for the `/language` picker's inline keyboard:
+
+```
+Telegram (callback_query)
+      |
+telegram/polling.py            forwards callback_query, no branching
+      |
+telegram/callback_router.py    route_callback() -> translates
+      |                        callback_data ("lang_uz") into the
+      |                        same call the text command would make
+   Handler                     telegram.handlers.language_status()
+      |
+   Service                     telegram.user_service.UserService
+```
+
+`route_callback()` never introduces a second business-logic path — a
+`lang_uz` tap resolves to exactly what `/language UZ` resolves to via
+`handlers.language_status()`. Every other keyboard's `callback_data`
+(`risk_*`, `timeframe_*`, `strategy_*`, `notifications_*`,
+`settings_*`, `admin_*`) is recognized but not yet wired to a handler
+— `callback.answer()` still clears the client's spinner, matching the
+"honestly inert until built" convention used elsewhere in this
+codebase.
+
+**Translation Engine.** `translation/ui_catalog.py` is a static
+UZ/RU/EN string catalog (77 keys) with a single lookup function,
+`t(key, language, **kwargs)` — caller's language → EN → any entry,
+never raises. It is intentionally distinct from
+`translation.translation_manager.TranslationManager`, which stays a
+deliberate no-op for dynamic/AI-generated content (Rule 4: no
+Google/DeepL/Gemini/OpenAI call anywhere in that package) — `t()` is
+hand-written UI strings only, looked up, not machine-translated.
+
+**What's localized (USER-tier only).** All 17 `COMMANDS`-registry
+handlers, all USER-tier keyboards (`telegram/keyboards.py`), and
+`/language`'s own reply text (`language_status()`/`language_handler()`)
+route through `t()`. `contact_handler`'s failure path maps
+`UserService.register_phone()`'s known failure reasons to localized
+keys rather than echoing raw English.
+
+**What stays English (by design, not oversight).**
+- OWNER/ADMIN-tier commands (`telegram/owner/*.py`, `admin_handler`,
+  `broadcast_handler`, `stats_handler`, `users_handler`,
+  `userinfo_handler`, `vipinfo_handler`, `feedbacks_handler`, every
+  `ai_*`/`owner_*`/`runtime_*` handler) — permanently English,
+  internal operator tooling, Director decision.
+- `telegram/signal_formatter.py` and
+  `telegram/signal_access_service.py` — deferred to V2.1 (Signal
+  Product Layer, will be touched anyway during Price Stream work).
+- `telegram/command_router.py`'s generic constants
+  (`UNKNOWN_COMMAND_TEXT`, `SERVICE_UNAVAILABLE_TEXT`,
+  `PERMISSION_DENIED_TEXT`) — deferred to V2.2 (a future Generic Error
+  Catalog).
+
+**Default language.** `database/models.py`'s schema default is
+`users.language = 'UZ'` — a fresh/unconfigured user gets Uzbek text,
+not English. This is a deliberate GoldBot V2 product decision (not a
+bug or a fallback-of-convenience); tests assert against this default,
+not against English.
+
 ## Related documents
 
 - `docs/architecture/MODULE_DEPENDENCIES.md` — Telegram's place in the
@@ -79,3 +145,5 @@ See `docs/constitution/CONSTITUTION.md` Article 1.
   Telegram command correctly.
 - `docs/owner/OWNER_PANEL.md` — the Owner-only command surface built
   on this same flow.
+- `docs/PHASE_V2_PHASE1_FREEZE.md` — the Language Foundation freeze
+  record: full changelog, deferred items, Phase 2 checklist.
