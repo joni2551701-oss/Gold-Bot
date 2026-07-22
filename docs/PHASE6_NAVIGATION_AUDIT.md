@@ -470,3 +470,111 @@ strategies/ signals/ context/ ai/ database/` is empty for this commit
 — verified as part of the Commit Protocol below.
 
 No implementation begins until the Director responds to this document.
+
+---
+
+## Director Decision — Phase 6
+
+Status: **Approved and binding.** These decisions resolve every Open
+Question above and are now the official architecture for Phase 6.
+Recorded verbatim/summarized here before any implementation begins, so
+Phase 6.1/6.2 have one unambiguous source of truth to build against.
+
+1. **Navigation method**: **Hybrid Navigation**, confirmed permanent.
+   Reply Keyboard = primary navigation. Inline Keyboard = in-page
+   actions. Native Telegram `☰` Menu = power-user fallback. Resolves
+   nothing new architecturally (this audit's Task 9 proposal already
+   assumed this split) — now explicitly locked as policy.
+
+2. **Handler architecture**: No handler is rewritten. Only
+   `command_router.py`, `callback_router.py`, and a new Navigation
+   Layer are extended. `telegram/handlers.py` remains the single
+   source of business logic. Matches this audit's Task 7/10 findings
+   exactly — confirmed, not amended.
+
+3. **Message Lifecycle** (resolves Open Question 3): Profile,
+   Subscription, Settings, Help, About, and History must **not**
+   create a new message on every navigation — they edit an existing
+   message in place, the same `message.edit_text()` pattern
+   `callback_router._handle_language()` already established for the
+   language picker (this audit's only existing precedent for editing).
+   Goal: app-like navigation, not a growing chat log.
+
+4. **Back Navigation** (resolves Open Questions 1 and 2): **Mandatory**.
+   Every inner page carries both `⬅️ Orqaga` (Back) and `🏠 Bosh sahifa`
+   (Home). Cross-referenced against Decision 6 (Stateless, no
+   history/screen stack, nothing persisted) — the two decisions
+   together mean Back cannot replay a dynamic history; it resolves
+   each page's **one fixed, hardcoded parent** in a static navigation
+   tree (e.g. a Settings sub-choice's Back always goes to Settings;
+   Settings' Back always goes to Home) rather than "whatever screen the
+   user was actually on before." This resolution is noted here for
+   Phase 6.1's implementation to follow — flagged for the Director's
+   awareness, not blocking, since it is the only way to satisfy
+   Decisions 4 and 6 simultaneously without contradiction.
+
+5. **Close**: Not mandatory. Telegram chat history is never deleted.
+   Not needed for Phase 6.
+
+6. **Navigation State** (resolves Open Question 7): **Fully stateless**.
+   No history stack, no screen stack, no navigation state in the
+   database. Matches this audit's Task 8 recommendation exactly.
+
+7. **Reply Keyboard visibility** (resolves Open Question 4): Always
+   visible, with one exception — the `PHONE` registration step
+   temporarily replaces it with the Phone Share Keyboard. On
+   completion the sequence is:
+   `Phone Share → ReplyKeyboardRemove() → Persistent Reply Keyboard`.
+   **Implementation note for Phase 6.1**: this explicitly inserts a
+   `ReplyKeyboardRemove()` step between Phone Share and the persistent
+   keyboard — a change from the current Phase 5 implementation, where
+   `route_contact()` attaches the persistent keyboard directly (no
+   removal step, since Telegram silently replaces one
+   `ReplyKeyboardMarkup` with another — see this audit's Task 4 and
+   `docs/PHASE5_AUDIT.md` Section 3). `RouterResult` carries exactly
+   one `keyboard` field, so satisfying this decision literally requires
+   two sequential messages on phone-share completion (one with
+   `ReplyKeyboardRemove()`, a follow-up with the persistent keyboard) —
+   not a blocker, just an implementation detail Phase 6.1 must account
+   for.
+
+8. **Inline vs. Reply split** (resolves Open Question 5 in part):
+   confirmed as a strict rule — inline buttons are for in-page actions
+   only; Reply Keyboard is for between-page navigation only. Whether an
+   inline keyboard's buttons disappear after a selection (the way
+   `language_keyboard` already does today) is left as a Phase
+   6.1/6.2 per-screen implementation detail, not a blocking
+   architectural question.
+
+9. **Settings** (resolves Open Question 6): the dead `settings_*`
+   callbacks stay placeholders through Phase 6.1 and are fully
+   completed in **Phase 6.2** (Risk/Strategy/Timeframe/Notifications —
+   every callback becomes real).
+
+10. **`notifications_keyboard`**: stays unattached/orphaned through
+    Phase 6.1; wired in as part of Phase 6.2's Settings Completion.
+
+11. **Trading Core**: reaffirmed — zero lines change in `core/`,
+    `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
+    `context/`, `ai/`, or database business logic, for the entirety of
+    Phase 6.
+
+### Phase 6 Roadmap (Director-approved)
+
+```
+Phase 6.1 -- Navigation Controller
+    Navigation Manager, Message Lifecycle (edit-in-place for
+    Profile/Subscription/Settings/Help/About/History), Reply + Inline
+    Integration, Back/Home on every inner page (static-parent
+    resolution per Decision 4). Settings callbacks remain placeholders.
+        |
+        v
+Phase 6.2 -- Settings Completion
+    Risk/Strategy/Timeframe/Notifications callbacks fully wired.
+    notifications_keyboard attached and used.
+        |
+        v
+Phase 6 Freeze
+    Manual Telegram test, CI, Production Deployment, documentation,
+    freeze.
+```
