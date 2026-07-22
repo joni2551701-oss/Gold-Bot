@@ -119,6 +119,53 @@ def test_on_message_routes_contact_to_route_contact(monkeypatch):
     assert message.answered_with == ("Phone number saved.", None)
 
 
+def test_on_callback_query_routes_to_callback_router(monkeypatch):
+    """A callback_query (inline keyboard button tap) is forwarded to
+    callback_router.route_callback() -- polling.py never branches on
+    callback.data itself (V1 Language Callback Fix)."""
+    import telegram.polling as polling_module
+
+    dispatcher = create_dispatcher()
+    handler = dispatcher.callback_query.handlers[0].callback
+
+    captured = {}
+
+    async def fake_route_callback(callback):
+        captured["callback"] = callback
+
+    monkeypatch.setattr(polling_module, "route_callback", fake_route_callback)
+
+    class FakeCallback:
+        data = "lang_uz"
+
+    callback = FakeCallback()
+    asyncio.run(handler(callback))
+    assert captured["callback"] is callback
+
+
+def test_on_callback_query_never_raises_on_routing_failure(monkeypatch):
+    import telegram.polling as polling_module
+
+    dispatcher = create_dispatcher()
+    handler = dispatcher.callback_query.handlers[0].callback
+
+    async def failing_route_callback(callback):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(polling_module, "route_callback", failing_route_callback)
+
+    class FakeCallback:
+        data = "lang_uz"
+        answered = False
+
+        async def answer(self):
+            self.answered = True
+
+    callback = FakeCallback()
+    asyncio.run(handler(callback))  # must not raise
+    assert callback.answered is True
+
+
 def test_on_message_never_raises_on_routing_failure(monkeypatch):
     import telegram.polling as polling_module
 

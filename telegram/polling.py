@@ -19,9 +19,20 @@ resolve it to "Unknown command." `_on_message` below checks
 `command_router.route_contact()` instead -- the one new conditional
 this phase adds to this file.
 
+A callback_query (an inline keyboard button tap, e.g.
+telegram.keyboards.language_keyboard()'s buttons) is a third,
+structurally distinct update type -- neither `.text` nor `.contact`,
+so it needs its own Dispatcher registration. `_on_callback_query`
+below forwards it, unexamined, to `telegram.callback_router.
+route_callback()` (V1 Language Callback Fix) -- this file still
+never branches on `callback.data` itself; that translation lives in
+callback_router.py, the same separation of concerns route_message()/
+route_contact() already keep for text/contact updates.
+
     Telegram User -> Aiogram Dispatcher -> polling.py
         -> command_router.route_message() -> handlers.py -> services -> database
         -> command_router.route_contact() -> handlers.py -> services -> database (contact messages)
+        -> callback_router.route_callback() -> handlers.py -> services -> database (button taps)
 
 This is a separate, standalone entry point from main.py. main.py
 (GoldBot) is a scheduled, one-shot pipeline run (Data -> ... ->
@@ -62,11 +73,12 @@ import contextlib
 from datetime import datetime, timezone
 
 from aiogram import Bot, Dispatcher
-from aiogram.types import Message
+from aiogram.types import CallbackQuery, Message
 
 from core.secrets import Secrets
 from core.logger import setup_logger
 from telegram import runtime_monitor
+from telegram.callback_router import route_callback
 from telegram.command_router import route_contact, route_message
 from monitoring.system_monitor import get_health as _get_core_health
 
@@ -111,6 +123,20 @@ def create_dispatcher() -> Dispatcher:
             return
 
         await message.answer(result.text, reply_markup=result.keyboard)
+
+    @dispatcher.callback_query()
+    async def _on_callback_query(callback: CallbackQuery) -> None:
+        try:
+            await route_callback(callback)
+        except Exception as e:
+            # Defense in depth: route_callback() already catches its own
+            # failures internally, but this must never crash the polling
+            # loop (same posture as _on_message above).
+            logger.warning(f"callback routing failed: {e}")
+            try:
+                await callback.answer()
+            except Exception:
+                pass
 
     return dispatcher
 
