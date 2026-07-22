@@ -209,7 +209,8 @@ without explicit Director approval.
 
 ## Phase 2 Checklist
 
-- [ ] Delete GitHub Owner Snapshot (Repository/Security cleanup —
+- [x] Delete GitHub Owner Snapshot (Repository/Security cleanup —
       scope, rules, and deliverable format per the Director's Phase 2
       task brief; audit-first, no deletion until the Director confirms
-      the audit).
+      the audit). See `docs/PHASE_OWNER_SNAPSHOT_REMOVAL.md` for the
+      removal record.

@@ -177,30 +177,6 @@ already satisfies exactly.
   SUPER_ADMIN/ADMIN/VIEWER) remains available for a future phase that
   needs finer-grained Owner-panel roles.
 
-## Owner Snapshot Reporter (GitHub Actions Alpha, v1.1)
-
-`monitoring/snapshot_collector.py` (GoldBot Core Owner Snapshot
-Reporter Alpha) composes `get_health()`/`get_market_health()`/
-`get_signal_health()`/`ErrorMonitor`/`SignalRepository.get_signals_today()`/
-`MonitoringRepository` from this layer into a single `OwnerSnapshot`,
-delivered to the Owner's Telegram every 15 minutes by
-`.github/workflows/owner_snapshot.yml` (`timeout-minutes: 5`) — a
-one-shot substitute for this phase's own live commands until
-`telegram.polling` is deployed on a VPS. v1.1 (Operational
-Intelligence Upgrade) extended the snapshot with Pipeline/Signal/
-Decision/AI/Market/Error/Runtime/Database detail, all additively
-sourced from data already read elsewhere in this file's own layer —
-see `docs/PHASE_OWNER_SNAPSHOT_V1_1_AUDIT.md` for the full Real/Proxy/
-Unavailable classification per field (e.g. `ai_status` is always
-`NO_DATA`: `ai/audit/*.py` is in-memory only, invisible to a fresh
-15-minute process). On a collection/formatting failure, the Owner also
-receives a short "Snapshot Failed" Telegram message (best-effort,
-never itself raises) instead of the failure only being visible in
-GitHub Actions' own logs. See `docs/OWNER_SNAPSHOT_REPORTER.md` for
-the full design and `docs/PHASE_OWNER_SNAPSHOT_FREEZE.md`/
-`docs/PHASE_OWNER_SNAPSHOT_V1_1_FREEZE.md`'s LOCK Policy for
-`monitoring/snapshot_*`/`telegram/owner/snapshot_*`.
-
 ## Phase B.0 — genuine gaps only (no duplicate package)
 
 `docs/PHASE_B0_AUDIT.md`'s own headline finding: the Phase B.0 brief

@@ -3,11 +3,9 @@ Phase P1 (Production Deployment Pipeline Foundation), TASK 1/2/12 --
 .github/workflows/production_deploy.yml structure tests.
 
 Plain string/line checks against the raw YAML text, not a YAML
-parser -- matching the established convention in
-tests/workflows/test_owner_snapshot_workflow.py: PyYAML is not a
-declared project dependency (requirements.txt only lists
-aiogram/requests) and this phase does not add one just to test a
-single, hand-written workflow file.
+parser: PyYAML is not a declared project dependency
+(requirements.txt only lists aiogram/requests) and this phase does
+not add one just to test a single, hand-written workflow file.
 """
 
 import pathlib
