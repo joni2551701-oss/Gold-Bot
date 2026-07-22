@@ -65,9 +65,9 @@ def test_feedback_handler_end_to_end_via_command_router():
 
     async def scenario():
         r = await route_command("/feedback Signal juda yaxshi", telegram_id="305")
-        assert r.text.startswith("✅ Feedback received.")
+        assert r.text.startswith("✅ Fikr-mulohaza qabul qilindi.")
         assert "ID: #" in r.text
-        assert "Status: OPEN" in r.text
+        assert "Holat: OPEN" in r.text
 
     asyncio.run(scenario())
 

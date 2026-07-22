@@ -88,7 +88,7 @@ def test_sql_injection_payload_via_command_router_does_not_crash():
         )
 
     result = asyncio.run(scenario())
-    assert result.text.startswith("✅ Feedback received.")
+    assert result.text.startswith("✅ Fikr-mulohaza qabul qilindi.")
     assert _table_exists("feedback")
 
 

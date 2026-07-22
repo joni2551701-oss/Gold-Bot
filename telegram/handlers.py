@@ -177,6 +177,7 @@ from telegram.notification_service import NotificationService
 from telegram.signal_access_service import SignalAccessService
 from telegram.feedback_service import FeedbackService
 from telegram.permissions import is_owner
+from translation.ui_catalog import t
 from telegram.owner.ai_commands import ai_cost, ai_explanation_status, ai_health, ai_provider, ai_status, ai_usage, resolve_capability
 from telegram.owner.dashboard import get_doctor_report, get_owner_summary
 from telegram.owner.monitoring_commands import (
@@ -221,7 +222,7 @@ async def start_handler(telegram_id, username=None) -> str:
         result = UserService().register_user(telegram_id, username)
     except Exception as e:
         logger.warning(f"start_handler: register_user failed for telegram_id={telegram_id}: {e}")
-        return f"Could not start: {e}"
+        return t("start.error", _current_language(telegram_id), error=e)
 
     try:
         SubscriptionService().get_plan(telegram_id)
@@ -230,40 +231,19 @@ async def start_handler(telegram_id, username=None) -> str:
         logger.warning(f"start_handler: get_plan failed for telegram_id={telegram_id}: {e}")
 
     if result.success:
-        return "Profile created."
+        return t("start.created", _current_language(telegram_id))
     if result.reason == "User already exists":
         try:
             UserService().touch_activity(telegram_id)
         except Exception as e:
             logger.warning(f"start_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
-        return "User already exists."
-    return f"Could not start: {result.reason}"
+        return t("start.already_exists", _current_language(telegram_id))
+    return t("start.error", _current_language(telegram_id), error=result.reason)
 
 
-async def help_handler() -> str:
-    """/help -> static command reference. No service call needed."""
-    return (
-        "GoldBot Commands\n"
-        "📊 Trading\n"
-        "/signal\n"
-        "/history\n"
-        "/status\n"
-        "👤 Profile\n"
-        "/profile\n"
-        "/settings\n"
-        "/language\n"
-        "/risk\n"
-        "/strategy\n"
-        "/timeframe\n"
-        "/notifications\n"
-        "💳 Plan\n"
-        "/plan\n"
-        "/subscription\n"
-        "/upgrade\n"
-        "ℹ️ Info\n"
-        "/help\n"
-        "/about"
-    )
+async def help_handler(telegram_id=None) -> str:
+    """/help -> localized command reference. No service call beyond the language lookup."""
+    return t("help.text", _current_language(telegram_id))
 
 
 async def profile_handler(telegram_id) -> str:
@@ -283,38 +263,29 @@ async def profile_handler(telegram_id) -> str:
         result = UserService().get_profile(telegram_id)
     except Exception as e:
         logger.warning(f"profile_handler: get_profile failed for telegram_id={telegram_id}: {e}")
-        return f"Could not load profile: {e}"
+        return t("profile.error", _current_language(telegram_id), error=e)
 
     if not result.success or result.profile is None:
-        return "No profile found.\nUse /start first."
+        return t("profile.not_found", _current_language(telegram_id))
 
     p = result.profile
     plan = _current_plan(telegram_id)
+    language = p.language or _current_language(telegram_id)
 
-    return (
-        "GoldBot Profile\n\n"
-        "ID:\n"
-        f"{p.telegram_id}\n\n"
-        "Username:\n"
-        f"{p.username or 'N/A'}\n\n"
-        "Language:\n"
-        f"{p.language}\n\n"
-        "Trading Style:\n"
-        f"{p.trading_style}\n\n"
-        "Strategy:\n"
-        f"{p.strategy}\n\n"
-        "Risk:\n"
-        f"{p.risk_percent:g}%\n\n"
-        "Timeframe:\n"
-        f"{p.timeframe}\n\n"
-        "Plan:\n"
-        f"{plan}\n\n"
-        "Notifications:\n"
-        f"{'ON' if p.notifications_enabled else 'OFF'}\n\n"
-        "Status:\n"
-        f"{p.status}\n\n"
-        "Created:\n"
-        f"{p.created_at}"
+    return t(
+        "profile.display",
+        language,
+        telegram_id=p.telegram_id,
+        username=p.username or t("common.na", language),
+        profile_language=p.language,
+        trading_style=p.trading_style,
+        strategy=p.strategy,
+        risk_percent=f"{p.risk_percent:g}",
+        timeframe=p.timeframe,
+        plan=plan,
+        notifications=t("common.on", language) if p.notifications_enabled else t("common.off", language),
+        status=p.status,
+        created_at=p.created_at,
     )
 
 
@@ -328,15 +299,7 @@ async def settings_handler(telegram_id=None) -> str:
     except Exception as e:
         logger.warning(f"settings_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
-    return (
-        "Settings\n\n"
-        "Language\n"
-        "Risk\n"
-        "Strategy\n"
-        "Timeframe\n"
-        "Notifications\n\n"
-        "Use /language, /risk, /strategy, or /timeframe to change a setting."
-    )
+    return t("settings.menu", _current_language(telegram_id))
 
 
 _LANGUAGE_OPTIONS = {"UZ", "RU", "EN"}
@@ -459,23 +422,24 @@ async def risk_handler(telegram_id=None, args=None) -> str:
     the option keyboard (attached by command_router) plus a usage
     hint. Never raises.
     """
+    language = _current_language(telegram_id)
     choice = _first_arg(args)
     if choice is None:
-        return "Choose risk percent:\n1%\n2%\n3%\n5%\n\nUse /risk 1, /risk 2, /risk 3, or /risk 5."
+        return t("risk.prompt", language)
 
     normalized = choice.rstrip("%")
     if normalized not in _RISK_OPTIONS:
-        return "Invalid risk percent. Choose one of: 1, 2, 3, 5."
+        return t("risk.invalid", language)
 
     try:
         result = UserService().change_risk(telegram_id, float(normalized))
     except Exception as e:
         logger.warning(f"risk_handler: change_risk failed for telegram_id={telegram_id}: {e}")
-        return f"Could not update risk: {e}"
+        return t("risk.error", language, error=e)
 
     if not result.success:
-        return f"Could not update risk: {result.reason}"
-    return f"Risk updated to {normalized}%."
+        return t("risk.error", language, error=result.reason)
+    return t("risk.updated", language, percent=normalized)
 
 
 async def strategy_handler(telegram_id=None, args=None) -> str:
@@ -485,30 +449,24 @@ async def strategy_handler(telegram_id=None, args=None) -> str:
     keyboard (attached by command_router) plus a usage hint. Never
     raises.
     """
+    language = _current_language(telegram_id)
     choice = (args or "").strip()
     if not choice:
-        return (
-            "Choose strategy:\n"
-            "Liquidity Sweep\n"
-            "FVG\n"
-            "AMD\n"
-            "Order Block\n\n"
-            "Use /strategy Liquidity Sweep, /strategy FVG, /strategy AMD, or /strategy Order Block."
-        )
+        return t("strategy.prompt", language)
 
     normalized = _STRATEGY_OPTIONS.get(choice.lower())
     if normalized is None:
-        return "Invalid strategy. Choose one of: Liquidity Sweep, FVG, AMD, Order Block."
+        return t("strategy.invalid", language)
 
     try:
         result = UserService().change_strategy(telegram_id, normalized)
     except Exception as e:
         logger.warning(f"strategy_handler: change_strategy failed for telegram_id={telegram_id}: {e}")
-        return f"Could not update strategy: {e}"
+        return t("strategy.error", language, error=e)
 
     if not result.success:
-        return f"Could not update strategy: {result.reason}"
-    return f"Strategy updated to {normalized}."
+        return t("strategy.error", language, error=result.reason)
+    return t("strategy.updated", language, strategy=normalized)
 
 
 async def timeframe_handler(telegram_id=None, args=None) -> str:
@@ -517,23 +475,24 @@ async def timeframe_handler(telegram_id=None, args=None) -> str:
     argument shows the option keyboard (attached by command_router)
     plus a usage hint. Never raises.
     """
+    language = _current_language(telegram_id)
     choice = _first_arg(args)
     if choice is None:
-        return "Choose timeframe:\nM15\nH1\nH4\n\nUse /timeframe M15, /timeframe H1, or /timeframe H4."
+        return t("timeframe.prompt", language)
 
     normalized = choice.upper()
     if normalized not in _TIMEFRAME_OPTIONS:
-        return "Invalid timeframe. Choose one of: M15, H1, H4."
+        return t("timeframe.invalid", language)
 
     try:
         result = UserService().change_timeframe(telegram_id, normalized)
     except Exception as e:
         logger.warning(f"timeframe_handler: change_timeframe failed for telegram_id={telegram_id}: {e}")
-        return f"Could not update timeframe: {e}"
+        return t("timeframe.error", language, error=e)
 
     if not result.success:
-        return f"Could not update timeframe: {result.reason}"
-    return f"Timeframe updated to {normalized}."
+        return t("timeframe.error", language, error=result.reason)
+    return t("timeframe.updated", language, timeframe=normalized)
 
 
 async def notifications_handler(telegram_id=None, args=None) -> str:
@@ -542,6 +501,7 @@ async def notifications_handler(telegram_id=None, args=None) -> str:
     / disable_notifications(). No argument shows current status plus a
     usage hint. Never raises.
     """
+    language = _current_language(telegram_id)
     choice = _first_arg(args)
     if choice is None:
         try:
@@ -549,32 +509,23 @@ async def notifications_handler(telegram_id=None, args=None) -> str:
         except Exception as e:
             logger.warning(f"notifications_handler: is_enabled failed for telegram_id={telegram_id}: {e}")
             enabled = True  # schema default
-        status_text = "ON ✅" if enabled else "OFF ❌"
-        return (
-            "Notifications\n\n"
-            "Current status:\n\n"
-            "Notifications:\n"
-            f"{status_text}\n\n"
-            "Options:\n\n"
-            "Enable\n"
-            "Disable\n\n"
-            "Use /notifications on or /notifications off."
-        )
+        status_text = t("notifications.status_on", language) if enabled else t("notifications.status_off", language)
+        return t("notifications.status", language, status=status_text)
 
     normalized = choice.lower()
     if normalized not in {"on", "off"}:
-        return "Invalid option. Use /notifications on or /notifications off."
+        return t("notifications.invalid", language)
 
     try:
         service = NotificationService()
         result = service.enable_notifications(telegram_id) if normalized == "on" else service.disable_notifications(telegram_id)
     except Exception as e:
         logger.warning(f"notifications_handler: update failed for telegram_id={telegram_id}: {e}")
-        return f"Could not update notifications: {e}"
+        return t("notifications.error", language, error=e)
 
     if not result.success:
-        return f"Could not update notifications: {result.reason}"
-    return "Notifications enabled." if normalized == "on" else "Notifications disabled."
+        return t("notifications.error", language, error=result.reason)
+    return t("notifications.enabled", language) if normalized == "on" else t("notifications.disabled", language)
 
 
 async def signal_handler(telegram_id=None) -> str:
@@ -592,22 +543,23 @@ async def signal_handler(telegram_id=None) -> str:
     except Exception as e:
         logger.warning(f"signal_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
+    language = _current_language(telegram_id)
     try:
         access_service = SignalAccessService()
         if not access_service.can_access_signal(telegram_id):
             return access_service.denied_message(telegram_id)
     except Exception as e:
         logger.warning(f"signal_handler: can_access_signal failed for telegram_id={telegram_id}: {e}")
-        return f"Could not check signal access: {e}"
+        return t("signal.access_error", language, error=e)
 
     try:
         result = SignalService().get_latest_signal()
     except Exception as e:
         logger.warning(f"signal_handler: get_latest_signal failed for telegram_id={telegram_id}: {e}")
-        return f"Could not load signal: {e}"
+        return t("signal.load_error", language, error=e)
 
     if not result.success or result.signal is None:
-        return "No active signal available."
+        return t("signal.none", language)
 
     return SignalFormatter().format_signal_row(result.signal)
 
@@ -627,29 +579,27 @@ async def history_handler(telegram_id=None) -> str:
     except Exception as e:
         logger.warning(f"history_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
+    language = _current_language(telegram_id)
     try:
         result = SignalService().get_signal_history(limit=5)
     except Exception as e:
         logger.warning(f"history_handler: get_signal_history failed for telegram_id={telegram_id}: {e}")
-        return f"Could not load history: {e}"
+        return t("history.error", language, error=e)
 
     if not result.success or not result.signals:
-        return "No signal history available."
+        return t("history.none", language)
 
     return SignalFormatter().format_signal_history(result.signals)
 
 
-async def status_handler() -> str:
-    """/status -> static bot status. No service call needed yet."""
-    return "GoldBot is running."
+async def status_handler(telegram_id=None) -> str:
+    """/status -> localized static bot status."""
+    return t("status.running", _current_language(telegram_id))
 
 
-async def about_handler() -> str:
-    """/about -> static bot description."""
-    return (
-        "GoldBot is a semi-automatic XAUUSD (Gold) trading signal assistant.\n"
-        "It analyzes market structure and delivers signals via Telegram."
-    )
+async def about_handler(telegram_id=None) -> str:
+    """/about -> localized static bot description."""
+    return t("about.text", _current_language(telegram_id))
 
 
 def _current_plan(telegram_id) -> str:
@@ -677,25 +627,17 @@ async def plan_handler(telegram_id=None) -> str:
     except Exception as e:
         logger.warning(f"plan_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
+    language = _current_language(telegram_id)
     try:
         result = SubscriptionService().get_plan(telegram_id)
     except Exception as e:
         logger.warning(f"plan_handler: get_plan failed for telegram_id={telegram_id}: {e}")
-        return f"Could not load plan: {e}"
+        return t("plan.error", language, detail=e)
 
     if not result.success or result.subscription is None:
-        return f"Could not load plan: {result.reason}"
+        return t("plan.error", language, detail=result.reason)
 
-    return (
-        "GoldBot Plan\n\n"
-        "Current Plan:\n"
-        f"{result.subscription.plan}\n\n"
-        "Features:\n"
-        "✓ Basic signals\n"
-        "✓ Signal history\n\n"
-        "Upgrade:\n"
-        "Use /upgrade"
-    )
+    return t("plan.display", language, plan=result.subscription.plan)
 
 
 async def subscription_handler(telegram_id=None) -> str:
@@ -709,24 +651,23 @@ async def subscription_handler(telegram_id=None) -> str:
     except Exception as e:
         logger.warning(f"subscription_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
+    language = _current_language(telegram_id)
     try:
         result = SubscriptionService().get_subscription(telegram_id)
     except Exception as e:
         logger.warning(f"subscription_handler: get_subscription failed for telegram_id={telegram_id}: {e}")
-        return f"Could not load subscription: {e}"
+        return t("subscription.error", language, detail=e)
 
     if not result.success or result.subscription is None:
-        return f"Could not load subscription: {result.reason}"
+        return t("subscription.error", language, detail=result.reason)
 
     sub = result.subscription
-    return (
-        "Subscription Status\n\n"
-        "Plan:\n"
-        f"{sub.plan}\n\n"
-        "Status:\n"
-        f"{sub.status}\n\n"
-        "Expires:\n"
-        f"{sub.expires_at if sub.expires_at else 'N/A'}"
+    return t(
+        "subscription.display",
+        language,
+        plan=sub.plan,
+        status=sub.status,
+        expires=sub.expires_at if sub.expires_at else t("common.na", language),
     )
 
 
@@ -742,7 +683,7 @@ async def upgrade_handler(telegram_id=None) -> str:
         # the confirmation text below is static either way
         logger.warning(f"upgrade_handler: upgrade_request failed for telegram_id={telegram_id}: {e}")
 
-    return "Upgrade request received.\n\nPremium plans will be available soon."
+    return t("upgrade.confirmation", _current_language(telegram_id))
 
 
 async def feedback_handler(telegram_id=None, args=None) -> str:
@@ -756,24 +697,21 @@ async def feedback_handler(telegram_id=None, args=None) -> str:
     except Exception as e:
         logger.warning(f"feedback_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
+    language = _current_language(telegram_id)
     message = (args or "").strip()
     if not message:
-        return "Send your feedback:\n\nUse /feedback <your message>."
+        return t("feedback.prompt", language)
 
     try:
         result = FeedbackService().send_feedback(telegram_id, message)
     except Exception as e:
         logger.warning(f"feedback_handler: send_feedback failed for telegram_id={telegram_id}: {e}")
-        return f"Could not send feedback: {e}"
+        return t("feedback.error", language, error=e)
 
     if not result.success or result.feedback is None:
-        return f"Could not send feedback: {result.reason}"
+        return t("feedback.error", language, error=result.reason)
 
-    return (
-        "✅ Feedback received.\n"
-        f"ID: #{result.feedback.id}\n"
-        f"Status: {result.feedback.status}"
-    )
+    return t("feedback.received", language, id=result.feedback.id, status=result.feedback.status)
 
 
 def _first_arg(args) -> Optional[str]:
@@ -1200,18 +1138,16 @@ async def contact_handler(telegram_id, phone_number: str) -> str:
     no `.text`, so it never reaches route_command()/_ALL_COMMANDS at
     all). USER-level, no permission tier -- never raises.
     """
+    language = _current_language(telegram_id)
     try:
         result = UserService().register_phone(telegram_id, phone_number)
     except Exception as e:
         logger.warning(f"contact_handler: register_phone failed for telegram_id={telegram_id}: {e}")
-        return "Could not process your phone number."
+        return t("contact.error", language)
 
     if not result.success:
         return result.reason
 
     if result.trial_active:
-        return (
-            "✅ Phone verified. Your FREE trial is active.\n"
-            f"Trial expires: {result.trial_expires_at}"
-        )
-    return "✅ Phone verified. Your FREE trial has ended."
+        return t("contact.trial_active", language, expires=result.trial_expires_at)
+    return t("contact.trial_ended", language)

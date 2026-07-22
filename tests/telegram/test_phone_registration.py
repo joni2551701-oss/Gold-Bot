@@ -92,8 +92,8 @@ def test_route_contact_end_to_end_registers_a_free_account():
     message = _contact_message("601", "+1 555 222 3333")
     result = _run(route_contact(message))
 
-    assert "verified" in result.text.lower()
-    assert "trial" in result.text.lower()
+    assert "tasdiqlandi" in result.text.lower()
+    assert "sinov" in result.text.lower()
 
 
 def test_start_reply_carries_the_phone_share_keyboard():

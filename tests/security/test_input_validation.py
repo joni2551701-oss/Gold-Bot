@@ -24,13 +24,13 @@ def _run(coro):
 
 def test_risk_command_rejects_out_of_range_value():
     result = _run(route_command("/risk 99", telegram_id=USER_ID))
-    assert result.text == "Invalid risk percent. Choose one of: 1, 2, 3, 5."
+    assert result.text == "Noto'g'ri risk foizi. Quyidagilardan birini tanlang: 1, 2, 3, 5."
 
 
 def test_risk_command_accepts_valid_value():
     _run(route_command("/start", telegram_id=USER_ID))
     result = _run(route_command("/risk 3", telegram_id=USER_ID))
-    assert result.text == "Risk updated to 3%."
+    assert result.text == "Risk 3% ga o'zgartirildi."
 
 
 def test_language_command_rejects_unknown_language():
@@ -46,12 +46,12 @@ def test_language_command_accepts_valid_language():
 
 def test_timeframe_command_rejects_unknown_timeframe():
     result = _run(route_command("/timeframe M99", telegram_id=USER_ID))
-    assert result.text == "Invalid timeframe. Choose one of: M15, H1, H4."
+    assert result.text == "Noto'g'ri vaqt oralig'i. Quyidagilardan birini tanlang: M15, H1, H4."
 
 
 def test_strategy_command_rejects_unknown_strategy():
     result = _run(route_command("/strategy Not A Real Strategy", telegram_id=USER_ID))
-    assert result.text == "Invalid strategy. Choose one of: Liquidity Sweep, FVG, AMD, Order Block."
+    assert result.text == "Noto'g'ri strategiya. Quyidagilardan birini tanlang: Liquidity Sweep, FVG, AMD, Order Block."
 
 
 def test_addadmin_command_requires_an_argument():
@@ -75,12 +75,12 @@ def test_userinfo_command_requires_an_argument_for_admin(admin_user):
 
 def test_feedback_command_with_no_argument_prompts_instead_of_submitting():
     result = _run(route_command("/feedback", telegram_id=USER_ID))
-    assert result.text == "Send your feedback:\n\nUse /feedback <your message>."
+    assert result.text == "Fikr-mulohazangizni yuboring:\n\n/feedback <xabaringiz> dan foydalaning."
 
 
 def test_feedback_command_with_only_whitespace_prompts_instead_of_submitting():
     result = _run(route_command("/feedback    ", telegram_id=USER_ID))
-    assert result.text == "Send your feedback:\n\nUse /feedback <your message>."
+    assert result.text == "Fikr-mulohazangizni yuboring:\n\n/feedback <xabaringiz> dan foydalaning."
 
 
 # ---------------------------------------------------------------------------
@@ -92,20 +92,20 @@ def test_feedback_command_with_only_whitespace_prompts_instead_of_submitting():
 def test_risk_command_with_non_numeric_value_does_not_crash():
     """The exact scenario this phase's spec named: /risk abc must not crash."""
     result = _run(route_command("/risk abc", telegram_id=USER_ID))
-    assert result.text == "Invalid risk percent. Choose one of: 1, 2, 3, 5."
+    assert result.text == "Noto'g'ri risk foizi. Quyidagilardan birini tanlang: 1, 2, 3, 5."
 
 
 def test_risk_command_with_negative_and_float_values_does_not_crash():
     for bad_value in ("-5", "1.5", "999999999999999999999", "0", "٥"):
         result = _run(route_command(f"/risk {bad_value}", telegram_id=USER_ID))
-        assert result.text == "Invalid risk percent. Choose one of: 1, 2, 3, 5."
+        assert result.text == "Noto'g'ri risk foizi. Quyidagilardan birini tanlang: 1, 2, 3, 5."
 
 
 def test_feedback_command_with_very_long_message_does_not_crash():
     """Telegram's own message cap is 4096 chars; well past it must still not crash."""
     long_message = "A" * 10000
     result = _run(route_command(f"/feedback {long_message}", telegram_id=USER_ID))
-    assert result.text.startswith("✅ Feedback received.")
+    assert result.text.startswith("✅ Fikr-mulohaza qabul qilindi.")
 
 
 def test_feedback_command_with_special_and_unicode_characters_does_not_crash():
@@ -121,7 +121,7 @@ def test_feedback_command_with_special_and_unicode_characters_does_not_crash():
     ]
     for payload in payloads:
         result = _run(route_command(f"/feedback {payload}", telegram_id=USER_ID))
-        assert result.text.startswith("✅ Feedback received."), f"crashed or rejected on: {payload!r}"
+        assert result.text.startswith("✅ Fikr-mulohaza qabul qilindi."), f"crashed or rejected on: {payload!r}"
 
 
 def test_broadcast_command_with_very_long_message_does_not_crash(owner_user):
@@ -138,7 +138,7 @@ def test_userinfo_command_with_special_character_target_id_does_not_crash(admin_
 
 def test_strategy_command_with_very_long_argument_does_not_crash():
     result = _run(route_command(f"/strategy {'X' * 5000}", telegram_id=USER_ID))
-    assert result.text == "Invalid strategy. Choose one of: Liquidity Sweep, FVG, AMD, Order Block."
+    assert result.text == "Noto'g'ri strategiya. Quyidagilardan birini tanlang: Liquidity Sweep, FVG, AMD, Order Block."
 
 
 def test_addadmin_command_with_special_character_argument_does_not_crash(owner_user):
