@@ -67,6 +67,32 @@ a full technical documentation base for `ai/`, `telegram/`, and
 `trading/` — the "architecture memory" this phase's own closing note
 names as its purpose.
 
+## Platform Documentation Phase — Senior Platform Engineer Role Assignment
+
+**Changes**: Branch `claude/trading-ai-arch-review-tgszrz` re-pointed
+from the stale `main` snapshot onto this production branch (Director
+decision, following an Architecture Understanding Report that first
+identified the two-branch divergence — see `docs/PHASE_BRANCH_SYNC_AUDIT.md`
+for the underlying audit this re-point acted on). `docs/PLATFORM_ARCHITECTURE.md`,
+`docs/PLATFORM_MODULE_MAP.md`, `docs/PLATFORM_DEPENDENCY_MAP.md` (new)
+— dispatch flow, permission/subscription/navigation/dashboard behavior,
+file-by-file responsibility map, and import boundaries for the
+Telegram Platform Layer. `docs/TECHNICAL_DEBT.md` (new) — logs `main`'s
+broken `owner_snapshot.yml` workflow (references
+`monitoring/run_snapshot.py`, deleted by `docs/PHASE_OWNER_SNAPSHOT_REMOVAL.md`)
+as a recorded, deliberately-unfixed item. Commit `bdf44a2`; CI
+(`ci.yml` run #148) confirmed `success`.
+
+**Architecture Impact**: Zero code changed. First phase run under the
+Senior Platform Engineer role split (Core → Trading Engine & AI,
+Platform → Product Experience & Platform Foundation) — the Platform
+Layer now has its own documented architecture/module/dependency map,
+separate from and cross-referencing the pre-existing
+`docs/telegram_layer.md`/`docs/telegram/TELEGRAM_ARCHITECTURE.md`
+detail. See `docs/CURRENT_PHASE.md` for this phase's freeze record and
+`docs/HANDOFF.md` for the state a future session/agent needs to
+continue Platform work.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.
