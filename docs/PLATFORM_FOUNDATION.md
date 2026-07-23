@@ -21,7 +21,8 @@ contracts.
 
 ## Implementation
 
-Seven files, each independently reusable:
+Eight files (seven from PLATFORM-001, `navigation_events.py` added
+TASK-002C), each independently reusable:
 
 | File | What it is |
 |---|---|
@@ -30,8 +31,9 @@ Seven files, each independently reusable:
 | `capability_model.py` | `SupportStatus` enum, `PlatformCapability` dataclass (platform/status/reason/future_plan) |
 | `capability_registry.py` | `ModuleCapabilityRegistry` — one module name → its full 5-platform capability declaration |
 | `cross_platform_checker.py` | `check_module_capabilities()` — validates a declaration covers all 5 platforms and every non-`SUPPORTED` entry has a `reason` |
-| `navigation_model.py` | `NavigationNode` — a platform-agnostic navigation-tree contract, unrelated to any Telegram type |
-| `menu_registry.py` | `MenuDefinition` + `MenuRegistry` — id/permission/platforms/version/dependencies, never hardcoded |
+| `navigation_model.py` | `NavigationNode` (now with `category`/`content_type`, TASK-002C) — a platform-agnostic navigation-tree contract; `is_valid_screen_id()` (TASK-002C, ADR-002) — the Universal Screen Identity validator |
+| `menu_registry.py` | `MenuDefinition` (now with `target_bindings`, TASK-002C — the Route Registry concept) + `MenuRegistry`; `DEFAULT_MENUS`/`build_default_menu_registry()` (TASK-002C) — a read-only mirror of GoldBot's 25 real, live Telegram screens |
+| `navigation_events.py` | **New, TASK-002C.** `NavigationEventType` enum + `NavigationEvent` dataclass — the Navigation Event Bus vocabulary (ADR-004), interface only, no dispatcher |
 
 Every registry follows this repo's established shape
 (`assets/asset_registry.py`): in-memory only, a `DuplicateXError` on a
@@ -39,10 +41,14 @@ repeated key, `register()`/`get()`/`list()`, no shared singleton.
 
 ## Testing
 
-`tests/platforms/` — one `test_<module>.py` per file above (5 files,
-covering all 7 modules since `capability_model.py`/`capability_registry.py`
+`tests/platforms/` — one `test_<module>.py` per file above (6 files,
+covering all 8 modules since `capability_model.py`/`capability_registry.py`
 and `platform_model.py`/`platform_registry.py` share test files with
-their registry), 28 tests total, all passing. Mirrors
+their registry), 39 tests total, all passing (28 from PLATFORM-001 +
+11 added TASK-002C: `is_valid_screen_id()` accept/reject cases,
+`category`/`content_type` defaults, `DEFAULT_MENUS`'s Universal Screen
+ID/no-duplicate/real-target-binding/valid-tier checks, the Navigation
+Event Bus's fixed vocabulary and event-shape tests). Mirrors
 `tests/assets/test_asset_intelligence.py`'s convention: real objects,
 no mocking, explicit immutability/duplicate/independence checks.
 
@@ -50,28 +56,41 @@ no mocking, explicit immutability/duplicate/independence checks.
 
 - **Not wired into any live command.** No `telegram/*.py` file imports
   `platforms/` in this phase — by design, this is a foundation phase.
-- **`navigation_model.py`/`menu_registry.py` do not reflect the real
-  live Telegram navigation tree yet** — they are contracts, not a
-  populated registry of GoldBot's actual menu structure (that
-  population is future work, likely part of TASK-002/Navigation).
+- **`is_valid_screen_id()` is not enforced at construction time** in
+  either `NavigationNode` or `MenuDefinition` — TASK-001's
+  already-approved, frozen registrations predate ADR-002 and are not
+  retroactively required to match it (enforcing it now would be a
+  breaking contract change under the No Silent Decisions Policy). New
+  registrations (`DEFAULT_MENUS`) are checked explicitly by test, not
+  by the dataclass itself.
+- **`navigation_events.py` has no dispatcher** — events can be
+  constructed but nothing publishes, queues, or delivers one. Deferred
+  to a future task per ADR-004.
+- **`DEFAULT_MENUS` mirrors only today's real Telegram screens** (25
+  entries) — no AI/Education/Marketplace/Trading screens are
+  pre-registered, since none of those modules exist yet (honest, not
+  speculative).
 - **`platform_registry.py`'s four non-Telegram platforms carry no
   real detail** beyond `NOT_STARTED` — honest, not filled in with
   speculative feature lists.
 
 ## Future Improvements
 
-- Wire `MenuRegistry` to describe GoldBot's actual live menu tree
-  (Main/Settings/Admin/Owner/Profile/Signals sections from
-  `docs/PLATFORM_ARCHITECTURE.md` §5), as a read-only mirror first,
-  before any live dispatch code depends on it.
+- Wire a Platform Adapter (per `docs/NAVIGATION_ARCHITECTURE.md` §8)
+  to actually read `MenuRegistry`/`DEFAULT_MENUS`, keeping
+  `telegram/reply_keyboard_manager.py`'s own frozen behavior unchanged
+  externally — a dedicated future task (TASK-002D or later), not
+  self-authorized here.
+- Implement the Navigation Event Bus's actual dispatch mechanism
+  (`navigation_events.py` is interface-only today) once a real
+  consumer (Analytics, AI) is scoped.
 - Populate `ModuleCapabilityRegistry` for each existing Telegram
   command/handler, run `cross_platform_checker` across all of them,
   and publish the result as a `docs/PLATFORM_CAPABILITY_MATRIX.md`
-  snapshot — natural TASK-002+ candidate.
-- Decide (a dedicated Director task, not a self-authorized change)
-  whether `telegram/reply_keyboard_manager.py` should eventually
-  adapt `NavigationNode` internally, keeping its own frozen Reply Menu
-  layout (`docs/PHASE6_FREEZE.md` Stage 5) unchanged externally.
+  snapshot.
+- Extend `DEFAULT_MENUS` with non-Telegram target bindings once a
+  second platform (Telegram Mini App, per the roadmap) has real code
+  to bind to.
 
 ## Platform Impact
 
@@ -100,5 +119,9 @@ block.
 - `docs/PLATFORM_ARCHITECTURE.md`, `docs/PLATFORM_MODULE_MAP.md`,
   `docs/PLATFORM_DEPENDENCY_MAP.md` — the existing Telegram-specific
   Platform Layer docs this foundation sits alongside.
+- `docs/NAVIGATION_ARCHITECTURE.md`, `communication/decisions/ADR-002.md`
+  through `ADR-004.md` — the approved design TASK-002C's additions
+  implement.
 - `docs/PLATFORM_CHANGELOG.md` — this phase's commit-level record.
-- `communication/task_queue/TASK-001.md` — the task this doc reports on.
+- `communication/task_queue/TASK-001.md`, `TASK-002C.md` — the tasks
+  this doc reports on.

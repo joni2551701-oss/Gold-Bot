@@ -8,17 +8,18 @@ document is only ever the current tip.
 
 ## Phase: TASK-002C — Navigation Registry
 
-**Status: IN PROGRESS.** Type: Real implementation, first code since
-PLATFORM-001 — Director-authorized under a specific rule list: no
-hardcoded screens, no `telegram/` dependency, no platform-specific
-code, Universal Screen ID (ADR-002), a dynamic Registry (extending
-TASK-001's `platforms/menu_registry.py`, not replacing it), a
-Navigation Event Bus interface only (ADR-004, no dispatch), and
-extensibility for future modules (AI, Education, Marketplace,
-Trading) without a Registry code change. Populates GoldBot's real,
-currently-live Telegram screens only — no fictitious future-module
-entries. Zero change to `telegram/reply_keyboard_manager.py`'s live
-behavior.
+**Status: DELIVERED, AWAITING DIRECTOR REVIEW.** Type: Real
+implementation, first code since PLATFORM-001 — Director-authorized
+under a specific rule list: no hardcoded screens, no `telegram/`
+dependency, no platform-specific code, Universal Screen ID (ADR-002),
+a dynamic Registry (extending TASK-001's `platforms/menu_registry.py`,
+not replacing it), a Navigation Event Bus interface only (ADR-004, no
+dispatch), and extensibility for future modules (AI, Education,
+Marketplace, Trading) without a Registry code change. Populates
+GoldBot's real, currently-live 25 Telegram screens only — no
+fictitious future-module entries. Zero change to
+`telegram/reply_keyboard_manager.py`'s live behavior. 15 new tests
+(39 total in `tests/platforms/`), full suite 4648 passing.
 
 ## Frozen / closed phases
 

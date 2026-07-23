@@ -1,9 +1,11 @@
 # TASK-002C
 
 **Title**: Navigation Registry
-**Status**: 🟢 AUTHORIZED, in progress. First real implementation
-under the Navigation architecture (`docs/NAVIGATION_ARCHITECTURE.md`,
-approved) and its four ADRs.
+**Status**: Delivered, awaiting Director review. First real
+implementation under the Navigation architecture
+(`docs/NAVIGATION_ARCHITECTURE.md`, approved) and its four ADRs.
+15 new tests (39 total in `tests/platforms/`), full suite 4648
+passing, zero diff to Trading Core or `telegram/`.
 
 ## Objective
 

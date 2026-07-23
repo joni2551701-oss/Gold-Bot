@@ -1,5 +1,7 @@
 """
-Platform Layer — Universal Navigation model (PLATFORM-001).
+Platform Layer — Universal Navigation model (PLATFORM-001; extended
+TASK-002C per the approved `docs/NAVIGATION_ARCHITECTURE.md` and
+ADR-002 Universal Screen Identity).
 
 A platform-agnostic navigation-tree contract: `NavigationNode` names a
 screen/section by id and permission, lists which platforms it applies
@@ -25,23 +27,55 @@ a reusable cross-platform contract.
 Never imports `telegram/`, `database/`, or any Trading Core package.
 """
 
+import re
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
 from platforms.platform_model import PlatformName
+
+# ADR-002 Universal Screen Identity: dotted, lowercase, "<category>.<name>"
+# -- e.g. "settings.language", "signals.upgrade". Stable across every
+# platform; never changes per platform (ADR-002's own wording).
+_SCREEN_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$")
+
+
+def is_valid_screen_id(screen_id: str) -> bool:
+    """
+    Never raises: a non-string or empty input simply returns False.
+    Checked explicitly against new TASK-002C registry entries (see
+    `platforms/menu_registry.py`'s `DEFAULT_MENUS`) -- not enforced
+    retroactively inside `NavigationNode`/`MenuDefinition` construction,
+    since TASK-001's already-approved, frozen registrations predate
+    ADR-002 and are not required to be renamed to match it (No Silent
+    Decisions Policy: retroactively rejecting a previously-valid id
+    would be a breaking contract change, which this function does not
+    attempt).
+    """
+    if not isinstance(screen_id, str) or not screen_id:
+        return False
+    return bool(_SCREEN_ID_PATTERN.match(screen_id))
 
 
 @dataclass(frozen=True)
 class NavigationNode:
     """
-    id: a stable, unique node identifier (not a Telegram command name
-    -- a future adapter maps id -> command/screen per platform).
+    id: a stable, unique node identifier -- new callers should follow
+    ADR-002's Universal Screen Identity convention
+    (`is_valid_screen_id()` above), though this is not enforced at
+    construction time (see that function's own docstring for why).
     label_key: a translation-catalog key (see `translation/ui_catalog.py`'s
     `t()`), not a literal string -- keeps this contract localizable the
     same way the existing Telegram UI already is.
     permission: a tier label ("USER"/"ADMIN"/"OWNER") matching
     `telegram/permissions.py`'s `PermissionLevel` values by convention,
     not by import -- this module has no dependency on `telegram/`.
+    category: which section this node groups under (e.g. "settings",
+    "signals") -- the Screen Model concept from
+    `docs/NAVIGATION_ARCHITECTURE.md` §2, added TASK-002C. `None` when
+    not yet categorized (fully optional, additive field).
+    content_type: what kind of content this screen shows (e.g. "list",
+    "form", "message") -- data-driven, never a rendering instruction.
+    Added TASK-002C, fully optional.
     """
 
     id: str
@@ -49,3 +83,5 @@ class NavigationNode:
     permission: str
     platforms: List[PlatformName] = field(default_factory=list)
     children: List["NavigationNode"] = field(default_factory=list)
+    category: Optional[str] = None
+    content_type: Optional[str] = None

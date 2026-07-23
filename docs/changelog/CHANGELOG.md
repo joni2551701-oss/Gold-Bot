@@ -232,6 +232,28 @@ Bus interface only, extensible for not-yet-built future modules).
 code changed in this entry. Sets the exact shape TASK-002C's real
 implementation must follow.
 
+## TASK-002C — Navigation Registry
+
+**Changes**: `platforms/navigation_model.py` — `is_valid_screen_id()`
+(ADR-002 validator, not enforced retroactively on TASK-001's frozen
+registrations) and `NavigationNode.category`/`content_type` (additive
+fields, Screen Model). `platforms/menu_registry.py` —
+`MenuDefinition.target_bindings` (additive field, Route Registry) and
+`DEFAULT_MENUS`/`build_default_menu_registry()`: a read-only mirror of
+GoldBot's real, live 25 Telegram screens under Universal Screen IDs
+with real `"/command"` target bindings — no fictitious AI/Education/
+Marketplace/Trading entries. `platforms/navigation_events.py` (new) —
+`NavigationEventType`/`NavigationEvent`, the ADR-004 Event Bus
+vocabulary, interface only, no dispatcher. 15 new tests
+(`tests/platforms/`, 39 total). `docs/PLATFORM_FOUNDATION.md` updated
+per the Documentation Policy.
+
+**Architecture Impact**: First real Platform code since PLATFORM-001.
+Zero diff to Trading Core or any `telegram/*.py` file —
+`telegram/reply_keyboard_manager.py`'s live behavior is completely
+unchanged; the Registry is a parallel, unwired mirror, per ADR-003.
+Full suite: 4648 passed.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.
