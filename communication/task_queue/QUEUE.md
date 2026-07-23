@@ -83,13 +83,13 @@ GOV-PLAN-001            Governance v1.1 Master Plan (ORDER-013)      ✅ DELIVER
 GOV-001  Director.md                     ✅ APPROVED (ORDER-015)
 GOV-002  Core_Worker.md                  ✅ APPROVED (ORDER-016)
 GOV-003  Platform_Worker.md              ✅ APPROVED (ORDER-017)
-GOV-004  Collaboration_Rules.md          ✅ DELIVERED (ORDER-018) — awaiting review
-GOV-005  Repository_Policy.md            ⏳ Pending
-GOV-006  Branch_Policy.md                ⏳ Pending
-GOV-007  Branch_Protection_Policy.md     ⏳ Pending
-GOV-008  Engineering_Language_Policy.md  ⏳ Pending
-GOV-009  Git_Workflow_Standard.md        ⏳ Pending
-    ↓  ("Governance v1.1 Frozen" only once all 9 above are individually Frozen)
+GOV-004  Collaboration_Rules.md          ✅ DELIVERED (ORDER-018) — verdict pending
+GOV-005  Repository_Policy.md            ✅ DELIVERED (ORDER-019, GOV-PACKAGE-001) — awaiting review
+GOV-006  Branch_Policy.md                ✅ DELIVERED (ORDER-019, GOV-PACKAGE-001) — awaiting review
+GOV-007  Branch_Protection_Policy.md     ✅ DELIVERED (ORDER-019, GOV-PACKAGE-001) — awaiting review
+GOV-008  Engineering_Language_Policy.md  ✅ DELIVERED (ORDER-019, GOV-PACKAGE-001) — awaiting review
+GOV-009  Git_Workflow_Standard.md        ✅ DELIVERED (ORDER-019, GOV-PACKAGE-001) — awaiting review
+    ↓  ("Governance v1.1 Frozen" only once all 9 above are individually APPROVED + Frozen)
 ```
 
 | Task | Title | Status |
@@ -99,8 +99,13 @@ GOV-009  Git_Workflow_Standard.md        ⏳ Pending
 | GOV-001 | Director.md — Director Role Definition | ✅ APPROVED (ORDER-015) — `docs/governance/roles/Director.md`. Naming convention `GOV-001`..`GOV-009` confirmed final by Director (TASK-XXX reserved for Platform Tasks). |
 | GOV-002 | Core_Worker.md — Core Worker Role Definition | ✅ APPROVED (ORDER-016) — `docs/governance/roles/Core_Worker.md`. |
 | GOV-003 | Platform_Worker.md — Platform Worker Role Definition | ✅ APPROVED (ORDER-017) — `docs/governance/roles/Platform_Worker.md`. |
-| GOV-004 | Collaboration_Rules.md — Collaboration Standard | ✅ DELIVERED (ORDER-018) — see `communication/task_queue/GOV-004.md` and `docs/governance/roles/Collaboration_Rules.md`. Awaiting Director verdict (APPROVED / CHANGES REQUIRED / REJECTED). |
-| GOV-005–GOV-009 | (see Master Plan for full titles) | ⏳ Pending — GOV-005 (Repository_Policy.md) is next once GOV-004 is APPROVED. |
+| GOV-004 | Collaboration_Rules.md — Collaboration Standard | ✅ DELIVERED (ORDER-018) — `docs/governance/roles/Collaboration_Rules.md`. Verdict still pending (ORDER-019 issued before an explicit GOV-004 verdict; not silently marked APPROVED). |
+| GOV-005 | Repository_Policy.md | ✅ DELIVERED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Repository_Policy.md`. |
+| GOV-006 | Branch_Policy.md | ✅ DELIVERED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Branch_Policy.md`. |
+| GOV-007 | Branch_Protection_Policy.md | ✅ DELIVERED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Branch_Protection_Policy.md`. |
+| GOV-008 | Engineering_Language_Policy.md | ✅ DELIVERED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Engineering_Language_Policy.md`. English default surfaced for Director override. |
+| GOV-009 | Git_Workflow_Standard.md | ✅ DELIVERED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/standards/Git_Workflow_Standard.md`. |
+| — | Governance v1.1 whole-set | ⏳ FROZEN only once GOV-004..009 are each APPROVED (GOV-001/002/003 already APPROVED). Final package review pending. See `communication/task_queue/GOV-PACKAGE-001.md`. |
 
 ## Repository Engineering (separate track — `REPO-XXX`, never a `TASK-XXX`, `DEVOPS-XXX`, or `GOVERNANCE-REVIEW-XXX`)
 
