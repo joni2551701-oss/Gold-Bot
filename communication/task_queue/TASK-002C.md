@@ -1,7 +1,8 @@
 # TASK-002C
 
 **Title**: Navigation Registry
-**Status**: Delivered, awaiting Director review. First real
+**Status**: Delivered, CI confirmed `success` (`ci.yml` run #155,
+commit `4784a18`), awaiting Director review/close. First real
 implementation under the Navigation architecture
 (`docs/NAVIGATION_ARCHITECTURE.md`, approved) and its four ADRs.
 15 new tests (39 total in `tests/platforms/`), full suite 4648
