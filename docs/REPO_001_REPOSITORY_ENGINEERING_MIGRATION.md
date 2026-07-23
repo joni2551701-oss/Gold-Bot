@@ -16,6 +16,139 @@ stated explicitly rather than silently smoothed over.
 
 ---
 
+## 0. Director's Five Verification Questions (Answered)
+
+Added after Director review, before proceeding to any governance
+document — per Director instruction, decisions must follow confirmed
+facts, not the original brief's assumption. Every answer below is
+backed by a live re-check (GitHub PR API, `git log`/`git diff` against
+the real refs), not a restatement of §1–§8's existing prose.
+
+**Q1 — Why is production not `main`? Since when?**
+
+Since **2026-07-12**, commit `ad1affe` ("Update config.py") — the exact
+last common ancestor of `main` and the production branch, confirmed via
+`git merge-base`. From that point, every commit building the real
+TradingPipeline (`core.pipeline.TradingPipeline`, `telegram/polling.py`,
+the 22-file Telegram Owner Panel, the full monitoring/database/
+configuration layers) landed exclusively on
+`claude/code-analysis-optimization-pwfo3q`. `main` received exactly 5
+commits after that point, and none of them is real development (see
+Q3/Q5). This is not a new discovery — `docs/PHASE_BRANCH_SYNC_AUDIT.md`
+already formally audited and Director-decided this: *"`claude/code-analysis-optimization-pwfo3q`
+is already the de facto production branch... This was a deliberate
+decision made in an earlier phase, not an oversight discovered here."*
+REPO-001 independently re-confirmed the fact rather than assuming that
+prior audit still held, and found nothing has changed since.
+
+**Q2 — Why does deploy run from `claude/code-analysis-optimization-pwfo3q`? Temporary or a historical mistake?**
+
+Neither — a **deliberate, previously-documented engineering decision**,
+not a stopgap and not an error. `docs/PHASE_P1_AUDIT.md` (Production
+Deployment Pipeline Foundation) records it directly: that phase's own
+brief literally named `main` as the trigger branch, but its TASK 0
+audit found deploying literal `main` "would ship the stale skeleton to
+the VPS" (`main` lacks `core/pipeline.py`, `telegram/polling.py`, and
+the entire TradingPipeline architecture) — so it adopted the production
+branch instead, matching what `trading_bot.yml` already did, and
+explicitly flagged the choice in writing for Director visibility rather
+than deciding it silently. The same document states that syncing `main`
+to match would require "a separate, explicitly-scoped branch-sync phase
+first (133+ commits of drift)" — explicitly out of scope for a
+deployment-pipeline phase. The only real gap that prior audit itself
+identified was that this decision lived in one workflow-file comment
+rather than a proper governance document — precisely the gap a future
+`Branch_Policy`/`Repository_Policy` document would close.
+
+**Q3 — What is inside the 171 commits? docs? code? CI? workflows? releases?**
+
+Measured directly (`git diff --stat`, `git log --format=%s` over
+`origin/main..origin/claude/code-analysis-optimization-pwfo3q`):
+**1,208 files changed, +137,391 / −650 lines** (GitHub's own PR #1 API
+independently reports the same shape: 1,208 changed files,
++137,391/−597 — the small deletion-count difference is a rename-detection
+accounting difference, not a discrepancy in substance). By top-level
+directory: 394 files under `tests/`, 264 under `docs/`, 194 under `ai/`,
+48 under `telegram/`, 35 under `database/`, plus `context/`, `core/`,
+`monitoring/`, `analytics/`, `knowledge/`, `contracts/`, `configuration/`,
+`strategies/`, `signals/`, `execution/`, `decision/`, `risk/`, `deploy/`,
+and 4 files under `.github/` (the CI/deploy workflows themselves). By
+commit-message shape: 25 commits tagged `feat:`, 10 tagged `fix:`, 132
+reference "docs/Phase/audit/freeze" (this repo's own habit of pairing
+every phase with an audit/freeze document, per Constitution Article 12),
+3 mention CI/workflow changes directly. **This is 171 commits of real,
+tested, documented architecture and feature work — not churn, and not
+something a routine one-shot merge could safely absorb.**
+
+**Q4 — If this branch broke today, where would rollback come from?**
+
+Two distinct mechanisms exist in this repository, and they answer
+different halves of this question:
+
+- **VPS deployment rollback — fully built, but not yet exercised.**
+  `docs/deployment/ROLLBACK.md` + `scripts/deploy/rollback.sh` +
+  `scripts/deploy/release_manager.py` implement a real, atomic
+  symlink-switch rollback: every deployed release stays on disk under
+  `releases/`, a failed deploy's own post-restart health check triggers
+  an automatic rollback to the last known-good release, and a manual
+  rollback is one SSH command. **However, this protects a future live
+  VPS deployment, not the git branch itself** — `docs/PHASE_P1_AUDIT.md`
+  states directly that no VPS exists yet, so this mechanism has never
+  actually been exercised against real traffic.
+- **Git-level rollback (recovering the branch itself) — still zero
+  anchor.** Re-confirmed again for this answer: 0 tags, 0 releases
+  exist anywhere in this repository's history. If
+  `claude/code-analysis-optimization-pwfo3q` were force-pushed over or
+  otherwise damaged today, the only recovery path is manually locating
+  a known-good commit SHA in `git log`/GitHub's own history (today,
+  that would be `d911b97`) and resetting to it by hand — which depends
+  entirely on someone already knowing which SHA was good. **This
+  confirms §8's original finding and keeps it High Priority**: tagging
+  today's tip of the production branch (and `main`) remains Migration
+  Plan Phase 1 — a zero-risk, zero-side-effect action, independent of
+  any larger branch-model decision, and nothing in this deeper check
+  changes that recommendation.
+
+**Q5 — Why is PR #2 still unmerged? Conflict? No review? Something else?**
+
+All three, confirmed directly via the GitHub PR API rather than
+inferred:
+
+1. **A real merge conflict exists.** `pull_request_read(method: get)`
+   reports `"mergeable_state": "dirty"` for **both** PR #2 and PR #1 —
+   GitHub's own signal that its merge-commit computation cannot cleanly
+   combine head and base. Not a guess; the API's own conflict state.
+2. **Zero reviews exist.** `pull_request_read(method: get_reviews)` for
+   PR #2 returns an empty list — no approval, no requested changes, no
+   formal review from anyone.
+3. **The structural reason a clean merge was never realistic**: `main`'s
+   5 post-divergence commits are themselves a chain of broken-filename
+   repairs. `git log --name-status` shows `ai/ai_analyzer.py`,
+   `strategies/strategy_manager.py`, and `strategies/liquidity_strategy.py`
+   were each renamed one or more times on `main` to fix invisible
+   Unicode word-joiner characters and a typo'd `strategie/` directory
+   name that had been embedded in the filenames (consistent with an
+   earlier manual edit through GitHub's web file editor). Those same
+   filenames exist on the production branch under their own,
+   independently-clean history — and in `ai/`'s case, also in a
+   different structural location entirely (`ai/analyzer/ai_analyzer.py`
+   exists there too). Git's merge/rename-detection logic sees two
+   independently-diverged, partially-overlapping histories for the same
+   filenames and cannot reconcile them automatically. This is very
+   likely the literal, file-level source of the "dirty" state, layered
+   on top of the much larger structural divergence
+   `docs/PHASE_BRANCH_SYNC_AUDIT.md` already documented (133+ commits
+   of drift, `telegram/polling.py` and `telegram/owner/` not existing on
+   `main` at all).
+
+**In one sentence**: PR #2 is not stuck on a missing review — it is
+stuck because `main` kept receiving small, uncoordinated direct edits
+after real development moved to the production branch, and those edits
+are just different enough to produce a real, tool-confirmed conflict on
+top of the pre-existing structural drift.
+
+---
+
 ## 1. Repository Audit Report
 
 **Branches** (3 total, confirmed via `list_branches` and `git ls-remote`
@@ -384,14 +517,23 @@ separately, but no action is taken on either here.
 **Migration Plan is complete and ready for Director decision.** No
 blocking unknown remains: every branch, PR, workflow, and protection
 fact in scope has been directly confirmed via the GitHub API and the
-actual checked-out workflow files, not assumed. The plan's highest-risk
-step (breaking the live trading/deploy pipelines) has a concrete,
-sequenced mitigation (update pinned refs before/atomically with any
-branch rename or delete). Recommend: approve this plan, then authorize
-REPO-002 (Implementation) to execute Phases 1–7 in order, confirming
-each phase's CI/verification before the next phase begins — starting
-with Phase 1 (rollback-anchor tags), which carries no risk and closes
-this repository's one true present-tense gap (zero rollback point)
+actual checked-out workflow files, not assumed — including, per §0's
+follow-up verification, the exact divergence commit and date (Q1), the
+documented rationale for the deploy-branch decision (Q2), a full
+files/lines/category breakdown of the 171-commit gap (Q3), a clear
+separation between the (built but unexercised) VPS rollback mechanism
+and the (still-zero) git-level rollback anchor (Q4), and the confirmed,
+API-verified reason both PRs remain unmerged — a real `dirty`
+merge-conflict state plus zero reviews, traced to `main`'s own
+post-divergence filename-repair commits colliding with the production
+branch's independent history (Q5). The plan's highest-risk step
+(breaking the live trading/deploy pipelines) has a concrete, sequenced
+mitigation (update pinned refs before/atomically with any branch rename
+or delete). Recommend: approve this plan, then authorize REPO-002
+(Implementation) to execute Phases 1–7 in order, confirming each
+phase's CI/verification before the next phase begins — starting with
+Phase 1 (rollback-anchor tags), which carries no risk and closes this
+repository's one true present-tense gap (zero rollback point)
 regardless of what else is ultimately decided about the branch model
 itself.
 

@@ -63,6 +63,23 @@ execute Phases 1–7 in sequence, starting with Phase 1 (rollback-anchor
 tags — zero risk, closes the one true present-tense gap regardless of
 what else is decided).
 
+**Addendum (Director follow-up)**: Director requested direct, evidenced
+answers to 5 verification questions before any governance document is
+written, so future policy is based on confirmed fact rather than the
+original brief's assumption. Added as new §0 in the report: (Q1) since
+which exact commit/date `main` and production diverged (2026-07-12,
+`ad1affe`); (Q2) confirmation the deploy-branch choice was a deliberate,
+already-documented decision (`docs/PHASE_P1_AUDIT.md`), not a temporary
+fix or historical mistake; (Q3) a full files/lines/directory/commit-type
+breakdown of the 171-commit gap; (Q4) the VPS rollback mechanism
+(`docs/deployment/ROLLBACK.md`) is real but unexercised (no VPS yet) and
+is distinct from the still-zero git-level rollback anchor; (Q5) both PR
+#1 and PR #2 report GitHub's own `mergeable_state: "dirty"` (a real
+conflict) plus zero reviews, traced to `main`'s own post-divergence
+filename-repair commits (fixing invisible Unicode characters and a
+typo'd directory name) colliding with the production branch's
+independent history of the same files.
+
 ## Depends on
 
 GOVERNANCE-REVIEW-001 — per Director instruction, this is the first
