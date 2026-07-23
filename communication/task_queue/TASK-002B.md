@@ -1,9 +1,11 @@
 # TASK-002B
 
 **Title**: Navigation Architecture
-**Status**: In Progress — Director-authorized. Architecture only: no
-implementation, code, or API is written. 002C (Registry) does not
-start until this Architecture is approved.
+**Status**: Delivered, awaiting Director review — see
+`docs/NAVIGATION_ARCHITECTURE.md`. Architecture only: no
+implementation, code, or API was written. 002C (Registry) does not
+start until this Architecture is approved, and six Director Questions
+in the document itself need answers first.
 
 ## Objective
 

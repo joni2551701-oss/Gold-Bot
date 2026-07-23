@@ -185,6 +185,25 @@ every future Platform Architecture decision: Telegram is one client
 among five, not the foundation. TASK-002B (Navigation Architecture)
 is the first task built under this rule.
 
+**CI**: `ci.yml` run #152, commit `8ee86ff` — pending confirmation.
+
+## TASK-002B — Navigation Architecture
+
+**Changes**: `docs/NAVIGATION_ARCHITECTURE.md` (new) — 13 components
+(Screen Model, Navigation Graph, Route Registry, Back Stack, Deep Link
+System, Permission Layer, Platform Adapter, Navigation State, Session
+Navigation, Navigation Events, Screen Lifecycle, Platform Capability
+Mapping, plus the Universal Navigation umbrella), each with a
+cross-platform compatibility table (Constitution Article 13) and a
+proposed design extending TASK-001's existing foundation
+(`platforms/navigation_model.py`/`menu_registry.py`/`capability_model.py`)
+rather than replacing it. Ends with 6 Director Questions — no design
+decision in this document is final until those are answered.
+
+**Architecture Impact**: None yet — design only, zero code, zero API,
+zero folder-structure change. Awaiting Director review before
+TASK-002C (Navigation Registry) starts.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.

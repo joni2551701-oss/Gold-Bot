@@ -8,18 +8,18 @@ document is only ever the current tip.
 
 ## Phase: TASK-002B — Navigation Architecture
 
-**Status: IN PROGRESS.** Type: Architecture only, per Director
-authorization — no implementation, code, or API is written. Designs
-Universal Navigation, Screen Model, Navigation Graph, Route Registry,
-Back Stack, Deep Link System, Permission Layer, Platform Adapter,
-Navigation State, Session Navigation, Navigation Events, Screen
-Lifecycle, and Platform Capability Mapping, each stating its
-compatibility across all five target platforms (Constitution Article
-13). Governed by ADR-001 (`communication/decisions/ADR-001.md`) and
-the Universal UI Abstraction rule (`docs/PLATFORM_WORKFLOW.md`).
-Deliverable: `docs/NAVIGATION_ARCHITECTURE.md`, ending with a
-"Director Questions" section. TASK-002C (Registry) does not start
-until this Architecture is approved.
+**Status: DELIVERED, AWAITING DIRECTOR REVIEW.** Type: Architecture
+only, per Director authorization — no implementation, code, or API
+was written. Designs Universal Navigation, Screen Model, Navigation
+Graph, Route Registry, Back Stack, Deep Link System, Permission Layer,
+Platform Adapter, Navigation State, Session Navigation, Navigation
+Events, Screen Lifecycle, and Platform Capability Mapping, each stating
+its compatibility across all five target platforms (Constitution
+Article 13). Governed by ADR-001 (`communication/decisions/ADR-001.md`)
+and the Universal UI Abstraction rule (`docs/PLATFORM_WORKFLOW.md`).
+Deliverable: `docs/NAVIGATION_ARCHITECTURE.md`, ending with 6 Director
+Questions. TASK-002C (Registry) does not start until this Architecture
+is approved and those questions are answered.
 
 ## Previous phases (frozen, never reopened)
 
