@@ -91,18 +91,35 @@ first task on this track is explicitly the first Engineering task
 after Governance v1.0 is frozen, per Director order.
 
 ```
-REPO-001              Repository Engineering Migration (Audit + Plan)   ⏸ PAUSED by ORDER-002 — Migration/Protection/Default-branch change halted pending BRANCH-FORENSICS-001
+REPO-001              Repository Engineering Migration (Audit + Plan)   ⏸ PAUSED by ORDER-009 — resumes only after Engineering Governance v1.1 Freeze
     ↓
-BRANCH-FORENSICS-001  Repository History Forensics (ORDER-003)          ✅ DELIVERED — awaiting Director review before Migration resumes
-    ↓  ("Repository history and conflict root cause fully understood")
-REPO-002              Repository Migration Implementation               ⏳ Blocked — not authorized until Director reviews BRANCH-FORENSICS-001
+BRANCH-FORENSICS-001  Repository History Forensics (ORDER-003)          ✅ APPROVED — root cause confirmed (F-008–F-013)
+    ↓
+Repository Recovery   Unicode filename fix + rollback tags (ORDER-010)  📋 QUEUED (backlog) — first implementation item after Governance v1.1 Freeze
+    ↓
+REPO-002              Repository Migration Implementation               ⏳ Blocked — not authorized until Repository Recovery completes
 ```
 
 | Task | Title | Status |
 |---|---|---|
-| REPO-001 | Repository Engineering Migration | ⏸ PAUSED — Director ORDER-002 halted all merge/rebase/branch-rename/branch-delete/default-branch-change action pending root-cause understanding. Audit + Plan themselves remain delivered and unchanged (`communication/task_queue/REPO-001.md`, `docs/REPO_001_REPOSITORY_ENGINEERING_MIGRATION.md`). |
-| BRANCH-FORENSICS-001 | Repository History Forensics | ✅ DELIVERED — see `communication/task_queue/BRANCH-FORENSICS-001.md` and `docs/BRANCH_FORENSICS_001.md`. Root cause fully identified: a single invisible Unicode character in one filename (`strategies/strategy_manager.py`), content byte-identical everywhere. Forensic investigation only, no branch/PR/protection/settings action taken. |
-| REPO-002 | Repository Migration Implementation | ⏳ Blocked — starts only after Director reviews BRANCH-FORENSICS-001 and lifts ORDER-002. |
+| REPO-001 | Repository Engineering Migration | ⏸ PAUSED — Director ORDER-009: stays paused until Engineering Governance v1.1 is frozen. Audit + Plan themselves remain delivered and unchanged (`communication/task_queue/REPO-001.md`, `docs/REPO_001_REPOSITORY_ENGINEERING_MIGRATION.md`). |
+| BRANCH-FORENSICS-001 | Repository History Forensics | ✅ APPROVED — see `communication/task_queue/BRANCH-FORENSICS-001.md` and `docs/BRANCH_FORENSICS_001.md`. Director findings F-008 through F-013 confirmed: root cause is a single invisible Unicode character (U+2060) in one filename (`strategies/strategy_manager.py`), zero code difference; the `strategie/` typo was a separate, already self-corrected historical event, not the conflict cause. |
+| Repository Recovery | Unicode filename fix + rollback tags | 📋 QUEUED (backlog) — Director ORDER-008: not yet authorized; ORDER-010: moved to backlog, to become the first implementation item once Governance v1.1 is frozen. |
+| REPO-002 | Repository Migration Implementation | ⏳ Blocked — starts only after Repository Recovery completes. |
+
+## Governance v1.1 (upcoming, not yet an executable brief)
+
+Per Director's Next Priority ordering (this update): (1) Governance
+v1.1 — 9 new documents, not yet individually named/scoped by an
+executable Director Brief; (2) Governance v1.1 Freeze; (3) Repository
+Recovery (Unicode fix + rollback tags); (4) Repository Migration;
+(5) Core/Platform parallel workflow. Per Constitution Article 8 /
+`docs/policies/DIRECTOR_POLICY.md`'s "what makes a brief executable"
+rule, a priority ordering naming a document count but not each
+document's scope, TASK 0 audit, Strict Rules, and Acceptance Criteria
+is roadmap guidance, not yet an executable brief — the Worker
+acknowledges this priority and awaits the explicit Governance v1.1
+brief before creating any of the 9 documents.
 
 ## Rule change (Engineering track, this update)
 

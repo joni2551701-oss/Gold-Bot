@@ -4,8 +4,17 @@
 **Track**: Repository Engineering (`REPO-XXX` family — see
 `communication/task_queue/QUEUE.md`)
 **Priority**: Critical
-**Status**: ✅ DELIVERED — awaiting Director review before Repository
-Migration (paused by ORDER-002) may resume.
+**Status**: ✅ APPROVED — Director review complete (F-008 through F-013
+confirmed: root cause is a single file, `strategies/strategy_manager.py`,
+zero code difference, caused by one invisible Unicode U+2060 character;
+the `strategie/` typo was a separate, already self-corrected historical
+event, not the conflict cause).
+
+**Follow-on orders** (this review): ORDER-008 — Repository Recovery
+Strategy not yet authorized (Engineering Governance v1.1 must complete
+first). ORDER-009 — Repository Migration stays PAUSED. ORDER-010 —
+Repository Recovery moves to QUEUED (backlog), first implementation
+item after Governance v1.1 Freeze.
 **Issued as**: ORDER-003, immediately following ORDER-002 (Repository
 Migration halted — no merge, rebase, branch rename, branch delete, or
 default-branch change).
