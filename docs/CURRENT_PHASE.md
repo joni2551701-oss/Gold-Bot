@@ -6,73 +6,61 @@ known, what's authorized to start next. `docs/changelog/CHANGELOG.md`
 and `docs/changelog/PHASE_HISTORY.md` are the permanent record; this
 document is only ever the current tip.
 
-## Phase: Platform Foundation & Collaboration Infrastructure (PLATFORM-001)
+## Phase: TASK-002A — Navigation Analysis
 
-**Status: IN PROGRESS.** Type: Foundation phase — new `platforms/`
-package (data models, registries, a validator) and a new
-`communication/` process infrastructure, plus four new docs. Zero
-Trading Core diff; nothing wired into any existing `telegram/*.py`
-file's live behavior. Will be marked `FROZEN` once GitHub Actions
-confirms `success` on the commit closing this phase, per this
-project's own reporting-language convention.
-
-### Scope authorized by the Director
-
-1. `platforms/` — Platform Registry, Universal Navigation model,
-   Universal Menu Registry, Platform Capability System, Cross Platform
-   Checker (foundation only, no live wiring).
-2. `communication/` — nine collaboration folders (requests/responses/
-   notifications/issues/contracts/reviews/decisions/technical_debt/
-   task_queue), each with a README and template.
-3. `docs/PLATFORM_DOCUMENTATION_POLICY.md`,
-   `docs/PLATFORM_BUG_REPORT_STANDARD.md`, `docs/PLATFORM_CHANGELOG.md`.
-4. A Platform Task Queue (`communication/task_queue/QUEUE.md`) seeded
-   with the Director's own Phase 2 — Platform backlog (Navigation,
-   Dashboard, Settings, Notification Center), so Platform stops asking
-   "what's next?" after this task.
-
-### Exit criteria
-
-| Criterion | Result |
-|---|---|
-| `platforms/` foundation created, tested | ✅ 7 modules, `tests/platforms/` (28 tests passing) |
-| `communication/` infrastructure created | ✅ 9 folders + task queue, each with README + template |
-| Documentation Policy, Bug Report Standard, Platform Changelog written | ✅ `docs/PLATFORM_DOCUMENTATION_POLICY.md`, `docs/PLATFORM_BUG_REPORT_STANDARD.md`, `docs/PLATFORM_CHANGELOG.md` |
-| Cross-platform policy encoded, not just described | ✅ `platforms/capability_model.py` + `platforms/cross_platform_checker.py`, both tested |
-| Trading Core zero-diff | ✅ every file changed is under `platforms/`, `communication/`, `docs/`, `tests/platforms/` |
-| CI passed | pending — see Status above |
-| README/standard docs present for every new folder | ✅ |
-
-### Role boundary reaffirmed by this phase
-
-Per `docs/HANDOFF.md`'s role split: **Core** (Trading Engine & AI) is
-untouched — no file under `context/`, `strategies/`, `signals/`,
-`decision/`, `risk/`, `ai/`, or `core/pipeline.py` was modified.
-**Platform** (Product Experience & Platform Foundation) gains its
-first real implementation, still foundation-only per the Director's
-own framing: infrastructure and process first, live features after.
+**Status: DELIVERED, AWAITING DIRECTOR REVIEW.** Type: Analysis only —
+step 1 of the mandatory "Architecture First" workflow
+(`docs/PLATFORM_WORKFLOW.md`), applied to Navigation (TASK-002). No
+architecture proposal, no code, no new API, no folder-structure
+change. Deliverable: `docs/NAVIGATION_ANALYSIS.md`. Per Director
+instruction, this task stops here — TASK-002B (Navigation
+Architecture) does not start until the Director reviews and approves
+this analysis.
 
 ## Previous phase
 
-**Platform Documentation** (Senior Platform Engineer role
-assignment) — FROZEN, CI `success` confirmed (`ci.yml` run #149,
-commit `00e3f4a`). Full record: `docs/changelog/CHANGELOG.md`'s
-"Platform Documentation Phase" entry.
+**PLATFORM-001 (Platform Foundation & Collaboration Infrastructure)**
+— **FROZEN**, CI `success` confirmed (`ci.yml` run #150, commit
+`05d05c7`), Director-approved. Full record:
+`docs/changelog/CHANGELOG.md`'s "PLATFORM-001" entry,
+`docs/PLATFORM_FOUNDATION.md`, `communication/task_queue/TASK-001.md`.
+
+This phase also introduced two standing rules that apply to every
+phase from here on:
+
+- **"Architecture First"** (`docs/PLATFORM_WORKFLOW.md`) — the
+  mandatory 10-step sequence (Analysis → Architecture → Implementation
+  Plan → Approval Check → Implementation → Tests → Documentation → CI
+  → Freeze → Next Task) every Platform task now follows.
+- **"No Silent Decisions Policy"** (`communication/decisions/README.md`)
+  — a folder-structure change, new public API, broken contract,
+  database schema change, or Core↔Platform interface change requires a
+  `communication/decisions/PROPOSED-DECISION-XXXX.md` ticket and
+  Director approval before implementation. Internal refactoring, bug
+  fixes, and documentation are exempt.
+
+## Role boundary (unchanged)
+
+**Core** (Trading Engine & AI) remains untouched by this and the prior
+phase. **Platform** (Product Experience & Platform Foundation) is
+where all activity in this phase happens.
 
 ## Next
 
-`communication/task_queue/QUEUE.md` — TASK-002 (Navigation) is next,
-Pending a dedicated Director brief. Until then, Trading Core, Decision
-Engine, Risk Manager, and Signal/Context Engine remain off-limits to
-this role.
+Awaiting Director review of `docs/NAVIGATION_ANALYSIS.md` before
+TASK-002B (Navigation Architecture) begins. See
+`communication/task_queue/QUEUE.md` for the full Navigation sub-task
+chain (002A–002F) and the remaining Phase 2 backlog (Dashboard,
+Settings, Notification Center).
 
 ## Related
 
+- `docs/PLATFORM_WORKFLOW.md` — the "Architecture First" process now
+  governing every task.
+- `communication/decisions/README.md` — the No Silent Decisions Policy.
+- `communication/task_queue/QUEUE.md` — the live task chain.
+- `docs/NAVIGATION_ANALYSIS.md` — this phase's deliverable.
 - `docs/HANDOFF.md` — the Core/Platform role split and how to pick up
   Platform work.
-- `docs/changelog/CHANGELOG.md` — the permanent phase-level record.
-- `docs/PLATFORM_FOUNDATION.md` — this phase's `platforms/` module doc.
-- `communication/README.md`, `communication/task_queue/QUEUE.md` —
-  this phase's collaboration infrastructure and live task chain.
-- `docs/TECHNICAL_DEBT.md` — the one open item from the prior phase,
+- `docs/TECHNICAL_DEBT.md` — the one open item from two phases ago,
   still unresolved (out of scope for this one too).

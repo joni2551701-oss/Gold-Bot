@@ -120,6 +120,45 @@ handoff document per phase. See `docs/PLATFORM_FOUNDATION.md` for the
 full module doc and `docs/CURRENT_PHASE.md` for this phase's exit
 criteria.
 
+**CI**: `ci.yml` run #150, commit `05d05c7`, conclusion `success`.
+Director-approved and closed.
+
+## Governance update — "Architecture First" workflow & No Silent Decisions Policy
+
+**Changes**: `docs/PLATFORM_WORKFLOW.md` (new) — the mandatory 10-step
+sequence (Analysis → Architecture → Implementation Plan → Approval
+Check → Implementation → Tests → Documentation → CI → Freeze → Next
+Task) every Platform task now follows, applying Constitution Article
+8's whole-codebase change-management order at task granularity.
+`communication/decisions/README.md` updated with the "No Silent
+Decisions Policy" and a new `PROPOSED-DECISION-XXXX.md` ticket type
+(`communication/decisions/PROPOSED_DECISION_TEMPLATE.md`) — a
+folder-structure change, new public API, broken contract, database
+schema change, or Core↔Platform interface change requires Director
+approval via this ticket before implementation; internal refactoring,
+bug fixes, and documentation are exempt.
+
+**Architecture Impact**: Zero code changed — governance only. Director
+decision, prompted by Navigation (TASK-002) being judged the
+highest-risk Platform module built so far (every future client
+depends on getting it right).
+
+## TASK-002A — Navigation Analysis
+
+**Changes**: `docs/NAVIGATION_ANALYSIS.md` (new) — records the current
+Telegram-specific navigation implementation
+(`telegram/keyboards.py`/`telegram/reply_keyboard_manager.py`), the
+unwired foundation `platforms/navigation_model.py`/`menu_registry.py`
+already provide, six open questions for TASK-002B to resolve, and the
+constraints (Phase 6 Freeze, No Silent Decisions Policy) any future
+architecture must respect. `communication/task_queue/TASK-002.md`
+split into sub-tasks 002A–002F, per Director decision to stage
+Navigation instead of delivering it as one task.
+
+**Architecture Impact**: None — analysis only, no design decision made.
+Awaiting Director review before TASK-002B (Navigation Architecture)
+starts.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.
