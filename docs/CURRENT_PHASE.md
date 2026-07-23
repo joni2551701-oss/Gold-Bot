@@ -6,34 +6,24 @@ known, what's authorized to start next. `docs/changelog/CHANGELOG.md`
 and `docs/changelog/PHASE_HISTORY.md` are the permanent record; this
 document is only ever the current tip.
 
-## Phase: TASK-002D — Navigation Implementation (governance review)
+## Phase: TASK-002E — Navigation Tests (Validation)
 
-**Status: 🟡 CONDITIONALLY APPROVED.** Architecture (Navigation Core,
-Platform Adapter, Tests) reviewed and approved by the Director. Freeze
-pending final CI confirmation — see the CI note below.
+**Status: IN PROGRESS.** Director-authorized: Navigation Validation,
+Edge Cases, Stack Consistency, Multi-session Validation, Permission
+Validation, Event Validation, Recovery Scenarios, Integration
+Validation — all against the existing, frozen TASK-002D contracts.
 
-**CI note**: `ci.yml` run #158 (commit `b366971`, TASK-002D's own
-content) shows `cancelled`, not `success` — GitHub's own
-`concurrency: cancel-in-progress: true` killed it when the next commit
-(`8adf53b`, a 1-line changelog fix, no code) was pushed before #158
-finished. Run #159 (`8adf53b`) — the exact same code as #158 plus that
-one non-code line — completed with `success`. Flagged for Director
-confirmation that this satisfies the "CI #158 Success" condition.
+**Forbidden**: redesigning the Navigation architecture, changing any
+existing public contract, touching Trading Core, or turning
+`PlatformAdapterBase` into a concrete per-platform implementation.
 
-## New governance from this review
+## New governance this round
 
-- **ADR-006 (Navigation Transaction)**, **ADR-007 (Navigation
-  Context)**, **ADR-008 (Navigation Result)** — all recorded
-  (`communication/decisions/ADR-006.md` through `ADR-008.md`, folded
-  into `docs/changelog/DECISION_LOG.md`). All three explicitly govern
-  **future** Navigation work — none is applied retroactively to
-  TASK-002D's own already-approved code in this cycle (No Silent
-  Decisions Policy: rewriting a same-cycle contract is its own task).
-- **TASK-002E (Navigation Tests / Validation)** scoped
-  (`communication/task_queue/TASK-002E.md`): stress tests, edge cases,
-  session recovery, stack consistency, invalid route handling,
-  permission failures, event validation, multi-session isolation.
-  Pending — starts only after TASK-002D's freeze is confirmed.
+- **ADR-009 (CI Supersession Rule)** — a CI run cancelled only by a
+  superseding push (never a real failure) is resolved by that later
+  run's `success`, which becomes the official validation. Recorded in
+  `docs/PLATFORM_WORKFLOW.md`'s Freeze Checklist section and
+  `docs/changelog/DECISION_LOG.md`. Applies to every future task.
 
 ## Frozen / closed phases
 
@@ -41,37 +31,38 @@ confirmation that this satisfies the "CI #158 Success" condition.
 - **TASK-002A (Navigation Analysis)** — ✅ **CLOSED**.
 - **TASK-002B (Navigation Architecture)** — ✅ **APPROVED**.
 - **TASK-002C (Navigation Registry)** — ✅ **FROZEN**.
+- **TASK-002D (Navigation Implementation)** — ✅ **FROZEN** — CI
+  validated via ADR-009's Supersession Rule (run #159 success covers
+  run #158's cancelled-by-supersession content). Full Freeze Checklist:
+  `communication/task_queue/TASK-002D.md`.
+
+## Engineering track (unchanged, still parked)
+
+**DEVOPS-001 (Smart CI Routing)** remains recorded and ⏳ **Blocked**
+until Navigation Foundation (TASK-002E + TASK-002F) is fully complete
+— the pause on Navigation itself has been lifted (this phase), but
+DEVOPS-001's own block stands independently, per Director order.
+DEVOPS-002/003/004 remain unscoped.
 
 ## Role boundary (unchanged)
 
 **Core** (Trading Engine & AI) remains untouched. **Platform** (Product
 Experience & Platform Foundation) is where all activity happens.
 
-## Engineering track established (separate from Platform Tasks)
-
-Director decision: DevOps/CI-infrastructure work is its own roadmap
-(`DEVOPS-XXX`), sequenced independently so it never interrupts or
-reorders the Platform Tasks chain (`TASK-XXX`) — Architecture First
-discipline applied to roadmap sequencing itself. **DEVOPS-001 (Smart
-CI Routing)** is recorded (`communication/task_queue/DEVOPS-001.md`)
-but explicitly **Blocked** until Navigation Foundation (TASK-002E +
-TASK-002F) is fully complete; DEVOPS-002/003/004 (Release Pipeline,
-Branch Protection, Build Optimization) are named but not yet scoped.
-No `.github/workflows/*.yml` file is touched — design first,
-implementation second, and only once DEVOPS-001's five mandatory
-pre-start deliverables are reviewed and approved.
-
 ## Next
 
-Awaiting Director confirmation on the CI note above before TASK-002D
-is marked ✅ APPROVED / Frozen and TASK-002E starts.
+TASK-002E's own deliverable (deeper Navigation test coverage), then
+Director review before TASK-002F (Navigation Freeze) — which closes
+Navigation Foundation and unblocks DEVOPS-001.
 
 ## Related
 
 - `docs/NAVIGATION_ARCHITECTURE.md` — the approved architecture.
-- `communication/decisions/ADR-001.md` through `ADR-008.md`.
-- `docs/PLATFORM_WORKFLOW.md` — "Architecture First," Freeze Checklist.
-- `communication/task_queue/QUEUE.md` — the live task chain.
+- `communication/decisions/ADR-001.md` through `ADR-009.md`.
+- `docs/PLATFORM_WORKFLOW.md` — "Architecture First," Freeze Checklist,
+  CI Supersession Rule.
+- `communication/task_queue/QUEUE.md` — the live task chain (both
+  Platform Tasks and Engineering tracks).
 - `docs/HANDOFF.md` — the Core/Platform role split and how to pick up
   Platform work.
 - `docs/TECHNICAL_DEBT.md` — the one open item from an earlier phase,

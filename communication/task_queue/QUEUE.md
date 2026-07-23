@@ -23,8 +23,8 @@ TASK-002   Navigation                                           In Progress
     ├── TASK-002A  Navigation Analysis                          ✅ CLOSED
     ├── TASK-002B  Navigation Architecture                      ✅ APPROVED
     ├── TASK-002C  Navigation Registry                          ✅ FROZEN
-    ├── TASK-002D  Navigation Implementation                    🟡 Conditionally Approved (CI confirmation pending)
-    ├── TASK-002E  Navigation Tests (Validation)                 ⏳ Pending
+    ├── TASK-002D  Navigation Implementation                    ✅ FROZEN
+    ├── TASK-002E  Navigation Tests (Validation)                 🟢 AUTHORIZED, In Progress
     └── TASK-002F  Navigation Freeze                              ⏳ Pending
     ↓  ("Navigation Foundation Complete")
 TASK-003   Dashboard                                             Pending
@@ -41,8 +41,8 @@ TASK-005   Notification Center                                     Pending
 | TASK-002A | Navigation Analysis | ✅ CLOSED |
 | TASK-002B | Navigation Architecture | ✅ APPROVED |
 | TASK-002C | Navigation Registry | ✅ FROZEN (Freeze Checklist complete) |
-| TASK-002D | Navigation Implementation | 🟡 Conditionally Approved — CI #158 cancelled (concurrency, superseded by #159 success); Director confirmation on this specific point still pending |
-| TASK-002E | Navigation Tests (Validation) | ⏳ Pending, awaiting TASK-002D freeze |
+| TASK-002D | Navigation Implementation | ✅ FROZEN — CI #158's cancellation resolved by ADR-009 (CI Supersession Rule); #159 success is the official validation |
+| TASK-002E | Navigation Tests (Validation) | 🟢 AUTHORIZED, In Progress |
 | TASK-002F | Navigation Freeze | ⏳ Pending |
 | TASK-003 | Dashboard | Pending |
 | TASK-004 | Settings | Pending |

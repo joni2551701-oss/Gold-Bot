@@ -167,11 +167,31 @@ security issue, a Director-approved ADR, or a future, separately
 authorized Migration Task, per `communication/decisions/ADR-005.md`'s
 own precedent).
 
+## CI Supersession Rule (ADR-009 — what "CI Passed" means on the Freeze Checklist)
+
+`ci.yml`'s `concurrency: cancel-in-progress: true` means a push
+arriving before an in-flight run finishes cancels that run — this is
+not a code failure, and does not by itself block a task. "CI Passed"
+on the Freeze Checklist is satisfied when:
+
+1. The prior run's only fate was cancellation-by-supersession (never
+   a real failure), and
+2. A later run — on the same tree, or the same tree plus only a
+   non-functional change (e.g. a documentation fix) — completed with
+   `success`.
+
+That later `success` is the task's official CI validation, regardless
+of which run number a task's own brief happened to name first. See
+`communication/decisions/ADR-009.md` for the TASK-002D precedent this
+formalizes.
+
 ## Related
 
 - `docs/constitution/CONSTITUTION.md` Article 8, Article 11.
 - `communication/task_queue/README.md` — how tasks and sub-tasks are
   tracked.
+- `communication/decisions/ADR-009.md` — the CI Supersession Rule's
+  full record.
 - `communication/decisions/ADR-005.md` — the Migration Task rules that
   govern any future change to a Frozen task's content.
 - `communication/decisions/README.md` — the No Silent Decisions Policy.

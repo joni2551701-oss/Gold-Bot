@@ -1,19 +1,32 @@
 # TASK-002D
 
 **Title**: Navigation Implementation
-**Status**: 🟡 Conditionally Approved — architecture (Navigation Core,
-Platform Adapter, Tests) reviewed and approved. Freeze pending final
-CI confirmation.
+**Status**: ✅ APPROVED. **Freeze: ✅ YES — Frozen from this point.**
+No refactoring or new capability added to this task's own content
+except for a critical bug, a security issue, a Director-approved ADR,
+or a future Migration Task.
 
-**CI note**: `ci.yml` run #158 (commit `b366971`, this task's own
-content) shows `cancelled`, not `success` — GitHub's own
-`concurrency: cancel-in-progress: true` on `ci.yml` killed it when the
-very next commit (`8adf53b`, a 1-line changelog fix, no code) was
-pushed before #158 finished. Run #159 (`8adf53b`) — which contains the
-exact same code as #158 plus that one non-code line — completed with
-`success`. Flagged for Director confirmation that #159's success
-satisfies the "CI #158 Success" condition, since #158 itself never
-reached a conclusion of `success` or `failure`.
+**CI resolution**: `ci.yml` run #158 (commit `b366971`) was cancelled
+by supersession, not failure; run #159 (`8adf53b`, same tree + one
+non-code line) completed `success`. Per the Director-approved CI
+Supersession Rule (`communication/decisions/ADR-009.md`), run #159's
+success is this task's official CI validation.
+
+## Freeze Checklist
+
+```
+Freeze Checklist
+☑ CI Passed              -- ci.yml run #159 success, per ADR-009 (CI Supersession Rule) resolving #158's cancellation-by-supersession
+☑ Tests Passed            -- 12 new (51 total in tests/platforms/), full suite 4660/4660
+☑ Documentation Updated   -- docs/PLATFORM_FOUNDATION.md (Documentation Policy)
+☑ ADR Updated (if required) -- ADR-009 recorded as a direct consequence of this task's own CI review
+☑ Constitution Impact Reviewed -- none; no new Article required
+☑ Public Contracts Reviewed -- new NavigationCore/PlatformAdapterBase contracts; no existing platforms/ field removed or retyped
+☑ Backward Compatibility Checked -- zero diff to Trading Core or any telegram/*.py file; NavigationCore/PlatformAdapterBase are additive, unwired modules
+☑ No Silent Decisions     -- every design choice traces to Director-approved ADR-001/002/003/004 or the TASK-002D permitted/forbidden scope itself
+☑ Director Approval       -- this review
+☑ Freeze Applied          -- this document
+```
 
 ## Objective
 

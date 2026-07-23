@@ -227,6 +227,22 @@ bool` (TASK-002D) is explicitly not rewritten in this cycle — a
 breaking change to a same-cycle contract is deferred to its own task.
 Full record: `communication/decisions/ADR-008.md`.
 
+---
+
+**Decision** (ADR-009): A cancelled CI run does not permanently block
+a task if the cancellation was only caused by a superseding push (not
+a failure) and the superseding run validates the same content
+successfully — that later `success` is the official validation.
+
+**Reason**: A task should not sit artificially blocked by a
+"cancellation" that was never an actual failure; resource-efficient
+and correct at once.
+
+**Date**: TASK-002D freeze review — the Worker flagged the CI #158
+(cancelled)/#159 (success) discrepancy rather than deciding it
+silently; this rule resolves it and applies to every future task. Full
+record: `communication/decisions/ADR-009.md`.
+
 ## Related
 
 - `docs/changelog/CHANGELOG.md` — what shipped alongside each decision.

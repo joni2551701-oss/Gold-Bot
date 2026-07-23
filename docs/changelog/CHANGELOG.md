@@ -359,6 +359,29 @@ DEVOPS-001 is explicitly **Blocked** until Navigation Foundation
 file is touched now or at DEVOPS-001's own start without those five
 deliverables reviewed first.
 
+**CI**: `ci.yml` run #161, commit `d3bd60e`, conclusion `success`.
+
+## ADR-009 (CI Supersession Rule); TASK-002D frozen; TASK-002E authorized
+
+**Changes**: `communication/decisions/ADR-009.md` (new) — a CI run
+cancelled only by a superseding push (never a real failure) is
+resolved by that later run's `success`, which becomes the official
+validation; folded into `docs/changelog/DECISION_LOG.md` and
+`docs/PLATFORM_WORKFLOW.md`'s Freeze Checklist section. Applied
+immediately: TASK-002D marked ✅ **APPROVED and Frozen** — run #158's
+cancellation-by-supersession is resolved by run #159's `success`, full
+Freeze Checklist recorded in `communication/task_queue/TASK-002D.md`.
+Navigation Foundation's pause lifted. TASK-002E (Navigation Tests /
+Validation) 🟢 authorized with explicit scope (Navigation Validation,
+Edge Cases, Stack Consistency, Multi-session/Permission/Event
+Validation, Recovery Scenarios, Integration Validation — forbidden:
+architecture redesign, contract changes, Trading Core, concrete
+Platform Adapter implementation).
+
+**Architecture Impact**: Governance only, zero code changed. Closes
+the last open question from TASK-002D's review and unblocks Navigation
+Foundation's final two steps.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.
