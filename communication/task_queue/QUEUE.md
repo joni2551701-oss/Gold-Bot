@@ -80,8 +80,8 @@ GOVERNANCE-REVIEW-001   Engineering Governance Layer Review          ✅ DELIVER
     ↓
 GOV-PLAN-001            Governance v1.1 Master Plan (ORDER-013)      ✅ DELIVERED — awaiting Director review before GOV-001..GOV-009 are issued
     ↓  (each issued separately, reviewed separately, Frozen separately)
-GOV-001  Director.md                     ✅ DELIVERED (ORDER-015) — awaiting review
-GOV-002  Core_Worker.md                  ⏳ Pending
+GOV-001  Director.md                     ✅ APPROVED (ORDER-015)
+GOV-002  Core_Worker.md                  ✅ DELIVERED (ORDER-016) — awaiting review
 GOV-003  Platform_Worker.md              ⏳ Pending
 GOV-004  Collaboration_Rules.md          ⏳ Pending
 GOV-005  Repository_Policy.md            ⏳ Pending
@@ -96,8 +96,9 @@ GOV-009  Git_Workflow_Standard.md        ⏳ Pending
 |---|---|---|
 | GOVERNANCE-REVIEW-001 | Engineering Governance Layer Review | ✅ DELIVERED — see `communication/task_queue/GOVERNANCE-REVIEW-001.md` and `docs/GOVERNANCE_REVIEW_001.md`. Final Recommendation: READY WITH MINOR IMPROVEMENTS. |
 | GOV-PLAN-001 | Governance v1.1 Master Plan | ✅ DELIVERED — see `communication/task_queue/GOV-PLAN-001.md` and `docs/GOVERNANCE_V1_1_MASTER_PLAN.md`. Planning only; each of GOV-001–GOV-009 remains Pending until individually issued by the Director. |
-| GOV-001 | Director.md — Director Role Definition | ✅ DELIVERED (ORDER-015) — see `communication/task_queue/GOV-001.md` and `docs/governance/roles/Director.md`. Awaiting Director verdict (APPROVED / CHANGES REQUIRED / REJECTED). |
-| GOV-002–GOV-009 | (see Master Plan for full titles) | ⏳ Pending — GOV-002 (Core_Worker.md) is next once GOV-001 is APPROVED. |
+| GOV-001 | Director.md — Director Role Definition | ✅ APPROVED (ORDER-015) — `docs/governance/roles/Director.md`. Naming convention `GOV-001`..`GOV-009` confirmed final by Director (TASK-XXX reserved for Platform Tasks). |
+| GOV-002 | Core_Worker.md — Core Worker Role Definition | ✅ DELIVERED (ORDER-016) — see `communication/task_queue/GOV-002.md` and `docs/governance/roles/Core_Worker.md`. Awaiting Director verdict (APPROVED / CHANGES REQUIRED / REJECTED). |
+| GOV-003–GOV-009 | (see Master Plan for full titles) | ⏳ Pending — GOV-003 (Platform_Worker.md) is next once GOV-002 is APPROVED. |
 
 ## Repository Engineering (separate track — `REPO-XXX`, never a `TASK-XXX`, `DEVOPS-XXX`, or `GOVERNANCE-REVIEW-XXX`)
 
