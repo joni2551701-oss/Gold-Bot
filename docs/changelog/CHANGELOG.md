@@ -281,7 +281,7 @@ entry. TASK-002C is now permanently closed to refactoring — only a
 critical bug, security issue, Director-approved ADR, or future
 Migration Task can touch it again.
 
-**CI**: `ci.yml` run #156, commit `00bc826` — pending confirmation.
+**CI**: `ci.yml` run #157, commit `00bc826`, conclusion `success`.
 
 ## TASK-002D — Navigation Implementation
 
