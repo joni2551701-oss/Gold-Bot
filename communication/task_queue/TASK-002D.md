@@ -1,9 +1,19 @@
 # TASK-002D
 
 **Title**: Navigation Implementation
-**Status**: Delivered, awaiting Director review. 12 new tests (51
-total in `tests/platforms/`), full suite 4660 passing, zero diff to
-Trading Core or `telegram/`.
+**Status**: 🟡 Conditionally Approved — architecture (Navigation Core,
+Platform Adapter, Tests) reviewed and approved. Freeze pending final
+CI confirmation.
+
+**CI note**: `ci.yml` run #158 (commit `b366971`, this task's own
+content) shows `cancelled`, not `success` — GitHub's own
+`concurrency: cancel-in-progress: true` on `ci.yml` killed it when the
+very next commit (`8adf53b`, a 1-line changelog fix, no code) was
+pushed before #158 finished. Run #159 (`8adf53b`) — which contains the
+exact same code as #158 plus that one non-code line — completed with
+`success`. Flagged for Director confirmation that #159's success
+satisfies the "CI #158 Success" condition, since #158 itself never
+reached a conclusion of `success` or `failure`.
 
 ## Objective
 

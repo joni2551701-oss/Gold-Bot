@@ -185,6 +185,48 @@ judgment call.
 
 **Date**: TASK-002C freeze review. Full record: `communication/decisions/ADR-005.md`.
 
+---
+
+**Decision** (ADR-006): Every Navigation operation runs as a
+transaction (Start → Permission → Resolve Route → Update Stack → Emit
+Events → Commit); any stage failing rolls back the whole operation.
+
+**Reason**: A partially-applied navigation (stack changed but no event,
+or an event with no matching stack change) is a silent-corruption risk
+once multiple platforms and a future Event Bus consumer depend on
+Navigation State being trustworthy.
+
+**Date**: TASK-002D review. Governs future work; not applied
+retroactively to TASK-002D's own already-approved code. Full record:
+`communication/decisions/ADR-006.md`.
+
+---
+
+**Decision** (ADR-007): Every screen navigation carries a Context
+(`screen_id`, `session_id`, `parameters`, `source`, `timestamp`,
+`navigation_reason`), not just a screen id.
+
+**Reason**: Future Analytics/AI/Audit/Debug consumers need "why" and
+"from where," not only "where" — a bare screen id can't answer that.
+
+**Date**: TASK-002D review. Governs future work; not applied
+retroactively. Full record: `communication/decisions/ADR-007.md`.
+
+---
+
+**Decision** (ADR-008): Navigation never returns a plain true/false —
+the standard result model is a fixed outcome vocabulary (`SUCCESS`,
+`BLOCKED`, `NOT_FOUND`, `PERMISSION_DENIED`, `FAILED`, `REDIRECTED`).
+
+**Reason**: A bare boolean collapses distinct failure reasons into one
+bit; a caller can't distinguish "doesn't exist" from "no permission"
+from "redirected" without a separate, informally-shaped field.
+
+**Date**: TASK-002D review. Governs future work; `NavigationResult.ok:
+bool` (TASK-002D) is explicitly not rewritten in this cycle — a
+breaking change to a same-cycle contract is deferred to its own task.
+Full record: `communication/decisions/ADR-008.md`.
+
 ## Related
 
 - `docs/changelog/CHANGELOG.md` — what shipped alongside each decision.

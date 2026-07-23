@@ -301,6 +301,37 @@ tested Navigation Core, still fully unwired (no `telegram/*.py` file
 imports it). Zero diff to Trading Core or any `telegram/*.py` file.
 Full suite: 4660 passed.
 
+**CI**: run #157 success (governance commit); run #158 (this commit's
+own content, `b366971`) shows `cancelled` — superseded by the very
+next push before it finished (GitHub's `concurrency:
+cancel-in-progress: true` on `ci.yml`), not a code failure; run #159
+(`8adf53b`, same tree plus one non-code line) completed `success`.
+
+## TASK-002D architecture review; ADR-006/007/008; TASK-002E scoped
+
+**Changes**: Director reviewed and approved TASK-002D's architecture
+(Navigation Core, Platform Adapter, Tests) — status 🟡 Conditionally
+Approved pending final CI confirmation (see CI note above).
+`communication/decisions/ADR-006.md` (Navigation Transaction — every
+Navigation operation is Start→Permission→Resolve Route→Update
+Stack→Emit Events→Commit, with rollback on any stage failing),
+`ADR-007.md` (Navigation Context — every screen navigation carries
+`screen_id`/`session_id`/`parameters`/`source`/`timestamp`/
+`navigation_reason`, not just a screen id), `ADR-008.md` (Navigation
+Result — a fixed outcome vocabulary, `SUCCESS`/`BLOCKED`/`NOT_FOUND`/
+`PERMISSION_DENIED`/`FAILED`/`REDIRECTED`, never a plain boolean) — all
+three folded into `docs/changelog/DECISION_LOG.md`, all three
+explicitly governing **future** Navigation work, not retroactively
+applied to TASK-002D's own already-approved code in this cycle.
+`communication/task_queue/TASK-002E.md` scoped: Navigation Validation
+(stress tests, edge cases, session recovery, stack consistency,
+invalid route handling, permission failures, event validation,
+multi-session isolation) — Pending, starts after TASK-002D's freeze.
+
+**Architecture Impact**: Governance only, zero code changed. Sets the
+direction for Navigation's next maturity level without rewriting what
+was just reviewed.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.

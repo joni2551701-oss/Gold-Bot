@@ -6,53 +6,41 @@ known, what's authorized to start next. `docs/changelog/CHANGELOG.md`
 and `docs/changelog/PHASE_HISTORY.md` are the permanent record; this
 document is only ever the current tip.
 
-## Phase: TASK-002D — Navigation Implementation
+## Phase: TASK-002D — Navigation Implementation (governance review)
 
-**Status: DELIVERED, AWAITING DIRECTOR REVIEW.** Type: Real
-implementation, wiring TASK-002C's Registry into an actual Navigation
-Core — Director-authorized under an explicit permitted/forbidden
-list. 12 new tests (51 total in `tests/platforms/`), full suite 4660
-passing, zero diff to Trading Core or `telegram/`.
+**Status: 🟡 CONDITIONALLY APPROVED.** Architecture (Navigation Core,
+Platform Adapter, Tests) reviewed and approved by the Director. Freeze
+pending final CI confirmation — see the CI note below.
 
-**Permitted**: Navigation Registry integration, Navigation State
-connection (Platform Layer only — Business Layer has zero awareness),
-Permission Flow integration (`Request → Permission → Navigation →
-Screen`), Event Interface connection (real operations produce
-`NavigationEvent`s, still no dispatcher), Platform Layer's own
-internal adapter interface (abstract only, no concrete per-platform
-implementation).
+**CI note**: `ci.yml` run #158 (commit `b366971`, TASK-002D's own
+content) shows `cancelled`, not `success` — GitHub's own
+`concurrency: cancel-in-progress: true` killed it when the next commit
+(`8adf53b`, a 1-line changelog fix, no code) was pushed before #158
+finished. Run #159 (`8adf53b`) — the exact same code as #158 plus that
+one non-code line — completed with `success`. Flagged for Director
+confirmation that this satisfies the "CI #158 Success" condition.
 
-**Forbidden**: Any Trading Core change, touching Signal/Decision
-Engine, any database schema change, breaking any Telegram public
-API/contract, hardcoded platform-specific logic.
+## New governance from this review
 
-Full detail: `communication/task_queue/TASK-002D.md`.
+- **ADR-006 (Navigation Transaction)**, **ADR-007 (Navigation
+  Context)**, **ADR-008 (Navigation Result)** — all recorded
+  (`communication/decisions/ADR-006.md` through `ADR-008.md`, folded
+  into `docs/changelog/DECISION_LOG.md`). All three explicitly govern
+  **future** Navigation work — none is applied retroactively to
+  TASK-002D's own already-approved code in this cycle (No Silent
+  Decisions Policy: rewriting a same-cycle contract is its own task).
+- **TASK-002E (Navigation Tests / Validation)** scoped
+  (`communication/task_queue/TASK-002E.md`): stress tests, edge cases,
+  session recovery, stack consistency, invalid route handling,
+  permission failures, event validation, multi-session isolation.
+  Pending — starts only after TASK-002D's freeze is confirmed.
 
 ## Frozen / closed phases
 
 - **PLATFORM-001** — ✅ **FROZEN**, never reopened.
 - **TASK-002A (Navigation Analysis)** — ✅ **CLOSED**.
 - **TASK-002B (Navigation Architecture)** — ✅ **APPROVED**.
-- **TASK-002C (Navigation Registry)** — ✅ **FROZEN** — full Freeze
-  Checklist complete (`communication/task_queue/TASK-002C.md`). No
-  refactoring or new capability added to it except a critical bug, a
-  security issue, a Director-approved ADR, or a future Migration Task.
-
-## Governance added this round
-
-- **ADR-005** (`communication/decisions/ADR-005.md`) — Universal
-  Screen Identity Migration is its own, separately-scoped Migration
-  Task: no silent migration, frozen tasks not modified, mandatory
-  Backward Compatibility and Rollback plans.
-- **Freeze Checklist** (`docs/PLATFORM_WORKFLOW.md`) — the formal
-  definition of step 9 ("Freeze"): 10 mandatory boxes (CI Passed,
-  Tests Passed, Documentation Updated, ADR Updated, Constitution
-  Impact Reviewed, Public Contracts Reviewed, Backward Compatibility
-  Checked, No Silent Decisions, Director Approval, Freeze Applied) —
-  a task is not "Completed" until every box is checked.
-- **PR #2** (base `main`, this branch's head) — Director order: no
-  action. Not merged, not closed, not reviewed. Its own, separate
-  review process, gated by a future Director + Founder decision.
+- **TASK-002C (Navigation Registry)** — ✅ **FROZEN**.
 
 ## Role boundary (unchanged)
 
@@ -61,18 +49,18 @@ Experience & Platform Foundation) is where all activity happens.
 
 ## Next
 
-TASK-002D's own deliverable (Navigation Core + Platform Adapter
-interface, tests, documentation, CI), then Director review before
-TASK-002E (Navigation Tests) / TASK-002F (Navigation Freeze). See
-`communication/task_queue/QUEUE.md` for the full chain.
+Awaiting Director confirmation on the CI note above before TASK-002D
+is marked ✅ APPROVED / Frozen and TASK-002E starts. Separately, the
+Director has raised a CI-routing efficiency proposal (Documentation-
+only / Platform / Core tiered pipelines) — not yet assigned as a task;
+see the latest `communication/task_queue/QUEUE.md` discussion before
+acting on it.
 
 ## Related
 
-- `docs/NAVIGATION_ARCHITECTURE.md` — the approved architecture this
-  Implementation follows.
-- `communication/decisions/ADR-001.md` through `ADR-005.md`.
-- `docs/PLATFORM_WORKFLOW.md` — "Architecture First," Universal UI
-  Abstraction, Future Expansion, Director Questions, Freeze Checklist.
+- `docs/NAVIGATION_ARCHITECTURE.md` — the approved architecture.
+- `communication/decisions/ADR-001.md` through `ADR-008.md`.
+- `docs/PLATFORM_WORKFLOW.md` — "Architecture First," Freeze Checklist.
 - `communication/task_queue/QUEUE.md` — the live task chain.
 - `docs/HANDOFF.md` — the Core/Platform role split and how to pick up
   Platform work.
