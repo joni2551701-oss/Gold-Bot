@@ -21,8 +21,9 @@ contracts.
 
 ## Implementation
 
-Eight files (seven from PLATFORM-001, `navigation_events.py` added
-TASK-002C), each independently reusable:
+Ten files (seven from PLATFORM-001, `navigation_events.py` added
+TASK-002C, `navigation_core.py`/`platform_adapter.py` added TASK-002D),
+each independently reusable:
 
 | File | What it is |
 |---|---|
@@ -33,24 +34,29 @@ TASK-002C), each independently reusable:
 | `cross_platform_checker.py` | `check_module_capabilities()` — validates a declaration covers all 5 platforms and every non-`SUPPORTED` entry has a `reason` |
 | `navigation_model.py` | `NavigationNode` (now with `category`/`content_type`, TASK-002C) — a platform-agnostic navigation-tree contract; `is_valid_screen_id()` (TASK-002C, ADR-002) — the Universal Screen Identity validator |
 | `menu_registry.py` | `MenuDefinition` (now with `target_bindings`, TASK-002C — the Route Registry concept) + `MenuRegistry`; `DEFAULT_MENUS`/`build_default_menu_registry()` (TASK-002C) — a read-only mirror of GoldBot's 25 real, live Telegram screens |
-| `navigation_events.py` | **New, TASK-002C.** `NavigationEventType` enum + `NavigationEvent` dataclass — the Navigation Event Bus vocabulary (ADR-004), interface only, no dispatcher |
+| `navigation_events.py` | `NavigationEventType` enum + `NavigationEvent` dataclass — the Navigation Event Bus vocabulary (ADR-004), interface only, no dispatcher |
+| `navigation_core.py` | **New, TASK-002D.** `NavigationCore` — Registry lookup + Permission Flow (`Request → Permission → Navigation → Screen`) + per-session Navigation State (a real stack, no Telegram exception) + Event Interface (`navigate()`/`go_back()` return a `NavigationResult` carrying a real `NavigationEvent`). `has_sufficient_permission()` — platform-agnostic tier comparison. |
+| `platform_adapter.py` | **New, TASK-002D.** `PlatformAdapterBase` — abstract interface only (`render_screen()`/`render_permission_denied()`/`render_navigation_failed()`); no concrete per-platform subclass exists. |
 
 Every registry follows this repo's established shape
 (`assets/asset_registry.py`): in-memory only, a `DuplicateXError` on a
 repeated key, `register()`/`get()`/`list()`, no shared singleton.
+`NavigationCore` follows the same "real objects, no hidden state"
+posture — its only state is the per-session stack, never persisted,
+never read by anything outside this class.
 
 ## Testing
 
-`tests/platforms/` — one `test_<module>.py` per file above (6 files,
-covering all 8 modules since `capability_model.py`/`capability_registry.py`
+`tests/platforms/` — one `test_<module>.py` per file above (8 files,
+covering all 10 modules since `capability_model.py`/`capability_registry.py`
 and `platform_model.py`/`platform_registry.py` share test files with
-their registry), 39 tests total, all passing (28 from PLATFORM-001 +
-11 added TASK-002C: `is_valid_screen_id()` accept/reject cases,
-`category`/`content_type` defaults, `DEFAULT_MENUS`'s Universal Screen
-ID/no-duplicate/real-target-binding/valid-tier checks, the Navigation
-Event Bus's fixed vocabulary and event-shape tests). Mirrors
-`tests/assets/test_asset_intelligence.py`'s convention: real objects,
-no mocking, explicit immutability/duplicate/independence checks.
+their registry), 51 tests total, all passing (28 from PLATFORM-001 +
+11 from TASK-002C + 12 from TASK-002D: `NavigationCore`'s permission-
+rank/navigate/go_back/session-isolation cases, `PlatformAdapterBase`'s
+abstract-instantiation and concrete-subclass-completeness checks).
+Mirrors `tests/assets/test_asset_intelligence.py`'s convention: real
+objects, no mocking, explicit immutability/duplicate/independence
+checks.
 
 ## Known Limitations
 
@@ -73,14 +79,22 @@ no mocking, explicit immutability/duplicate/independence checks.
 - **`platform_registry.py`'s four non-Telegram platforms carry no
   real detail** beyond `NOT_STARTED` — honest, not filled in with
   speculative feature lists.
+- **`PlatformAdapterBase` has no concrete subclass.** No
+  Telegram/Android/iOS/Desktop/Mini-App adapter exists — building one
+  (especially a Telegram one, which would need to import `telegram/`
+  types) is a future, separately-authorized task, per ADR-003's own
+  framing.
+- **`NavigationCore` is not called by anything.** No `telegram/*.py`
+  file constructs or invokes it — it exists, is tested, and is unwired,
+  same posture as every other module in this package.
 
 ## Future Improvements
 
-- Wire a Platform Adapter (per `docs/NAVIGATION_ARCHITECTURE.md` §8)
-  to actually read `MenuRegistry`/`DEFAULT_MENUS`, keeping
+- Build a concrete Platform Adapter (Telegram first, per
+  `docs/NAVIGATION_ARCHITECTURE.md` §8) that reads `MenuRegistry`/
+  `DEFAULT_MENUS` through `NavigationCore`, keeping
   `telegram/reply_keyboard_manager.py`'s own frozen behavior unchanged
-  externally — a dedicated future task (TASK-002D or later), not
-  self-authorized here.
+  externally — a dedicated future task, not self-authorized here.
 - Implement the Navigation Event Bus's actual dispatch mechanism
   (`navigation_events.py` is interface-only today) once a real
   consumer (Analytics, AI) is scoped.
@@ -123,5 +137,5 @@ block.
   through `ADR-004.md` — the approved design TASK-002C's additions
   implement.
 - `docs/PLATFORM_CHANGELOG.md` — this phase's commit-level record.
-- `communication/task_queue/TASK-001.md`, `TASK-002C.md` — the tasks
-  this doc reports on.
+- `communication/task_queue/TASK-001.md`, `TASK-002C.md`, `TASK-002D.md`
+  — the tasks this doc reports on.

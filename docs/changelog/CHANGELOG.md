@@ -281,6 +281,26 @@ entry. TASK-002C is now permanently closed to refactoring — only a
 critical bug, security issue, Director-approved ADR, or future
 Migration Task can touch it again.
 
+**CI**: `ci.yml` run #156, commit `00bc826` — pending confirmation.
+
+## TASK-002D — Navigation Implementation
+
+**Changes**: `platforms/navigation_core.py` (new) — `NavigationCore`
+(Registry lookup + Permission Flow `Request → Permission → Navigation
+→ Screen` + per-session Navigation State, a real stack with no
+Telegram exception + Event Interface via `NavigationResult`/
+`NavigationEvent`), `has_sufficient_permission()` (platform-agnostic
+tier rank comparison). `platforms/platform_adapter.py` (new) —
+`PlatformAdapterBase`, an abstract interface only, no concrete
+per-platform subclass. 12 new tests (`tests/platforms/`, 51 total).
+`docs/PLATFORM_FOUNDATION.md` updated per the Documentation Policy.
+
+**Architecture Impact**: First orchestration code in `platforms/` —
+composes TASK-001/002C's Registry and Event contracts into a real,
+tested Navigation Core, still fully unwired (no `telegram/*.py` file
+imports it). Zero diff to Trading Core or any `telegram/*.py` file.
+Full suite: 4660 passed.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.

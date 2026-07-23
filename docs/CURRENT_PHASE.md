@@ -8,9 +8,11 @@ document is only ever the current tip.
 
 ## Phase: TASK-002D — Navigation Implementation
 
-**Status: IN PROGRESS.** Type: Real implementation, wiring
-TASK-002C's Registry into an actual Navigation Core — Director-
-authorized under an explicit permitted/forbidden list.
+**Status: DELIVERED, AWAITING DIRECTOR REVIEW.** Type: Real
+implementation, wiring TASK-002C's Registry into an actual Navigation
+Core — Director-authorized under an explicit permitted/forbidden
+list. 12 new tests (51 total in `tests/platforms/`), full suite 4660
+passing, zero diff to Trading Core or `telegram/`.
 
 **Permitted**: Navigation Registry integration, Navigation State
 connection (Platform Layer only — Business Layer has zero awareness),
