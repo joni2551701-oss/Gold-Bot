@@ -82,8 +82,8 @@ GOV-PLAN-001            Governance v1.1 Master Plan (ORDER-013)      ✅ DELIVER
     ↓  (each issued separately, reviewed separately, Frozen separately)
 GOV-001  Director.md                     ✅ APPROVED (ORDER-015)
 GOV-002  Core_Worker.md                  ✅ APPROVED (ORDER-016)
-GOV-003  Platform_Worker.md              ✅ DELIVERED (ORDER-017) — awaiting review
-GOV-004  Collaboration_Rules.md          ⏳ Pending
+GOV-003  Platform_Worker.md              ✅ APPROVED (ORDER-017)
+GOV-004  Collaboration_Rules.md          ✅ DELIVERED (ORDER-018) — awaiting review
 GOV-005  Repository_Policy.md            ⏳ Pending
 GOV-006  Branch_Policy.md                ⏳ Pending
 GOV-007  Branch_Protection_Policy.md     ⏳ Pending
@@ -98,8 +98,9 @@ GOV-009  Git_Workflow_Standard.md        ⏳ Pending
 | GOV-PLAN-001 | Governance v1.1 Master Plan | ✅ DELIVERED — see `communication/task_queue/GOV-PLAN-001.md` and `docs/GOVERNANCE_V1_1_MASTER_PLAN.md`. Planning only; each of GOV-001–GOV-009 remains Pending until individually issued by the Director. |
 | GOV-001 | Director.md — Director Role Definition | ✅ APPROVED (ORDER-015) — `docs/governance/roles/Director.md`. Naming convention `GOV-001`..`GOV-009` confirmed final by Director (TASK-XXX reserved for Platform Tasks). |
 | GOV-002 | Core_Worker.md — Core Worker Role Definition | ✅ APPROVED (ORDER-016) — `docs/governance/roles/Core_Worker.md`. |
-| GOV-003 | Platform_Worker.md — Platform Worker Role Definition | ✅ DELIVERED (ORDER-017) — see `communication/task_queue/GOV-003.md` and `docs/governance/roles/Platform_Worker.md`. Awaiting Director verdict (APPROVED / CHANGES REQUIRED / REJECTED). |
-| GOV-004–GOV-009 | (see Master Plan for full titles) | ⏳ Pending — GOV-004 (Collaboration_Rules.md) is next once GOV-003 is APPROVED; it needs all three role documents to exist first. |
+| GOV-003 | Platform_Worker.md — Platform Worker Role Definition | ✅ APPROVED (ORDER-017) — `docs/governance/roles/Platform_Worker.md`. |
+| GOV-004 | Collaboration_Rules.md — Collaboration Standard | ✅ DELIVERED (ORDER-018) — see `communication/task_queue/GOV-004.md` and `docs/governance/roles/Collaboration_Rules.md`. Awaiting Director verdict (APPROVED / CHANGES REQUIRED / REJECTED). |
+| GOV-005–GOV-009 | (see Master Plan for full titles) | ⏳ Pending — GOV-005 (Repository_Policy.md) is next once GOV-004 is APPROVED. |
 
 ## Repository Engineering (separate track — `REPO-XXX`, never a `TASK-XXX`, `DEVOPS-XXX`, or `GOVERNANCE-REVIEW-XXX`)
 
