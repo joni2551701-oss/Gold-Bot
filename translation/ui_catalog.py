@@ -442,6 +442,19 @@ _CATALOG: dict = {
     # every navigation button, including these, has one single source.
     "menu.admin": {"EN": "🛠 Admin", "UZ": "🛠 Admin", "RU": "🛠 Admin"},
     "menu.owner": {"EN": "👑 Owner", "UZ": "👑 Owner", "RU": "👑 Owner"},
+    # V2 Phase 6.1 -- Navigation Controller (Director Decision 4): the
+    # mandatory Back/Home inline row every editable page carries. See
+    # telegram/navigation.py.
+    "nav.back": {"EN": "⬅️ Back", "UZ": "⬅️ Orqaga", "RU": "⬅️ Назад"},
+    "nav.home": {"EN": "🏠 Home", "UZ": "🏠 Bosh sahifa", "RU": "🏠 Главная"},
+    # V2 Phase 6.1 Director Decision 7 -- the short follow-up message
+    # that carries the persistent Reply Keyboard right after
+    # ReplyKeyboardRemove() on registration completion.
+    "navigation.menu_ready": {
+        "EN": "Menu ready.",
+        "UZ": "Menyu tayyor.",
+        "RU": "Меню готово.",
+    },
 }
 
 

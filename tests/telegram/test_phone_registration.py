@@ -106,25 +106,32 @@ def test_route_contact_end_to_end_registers_a_free_account():
 
 
 def test_route_contact_attaches_the_persistent_reply_keyboard_on_completion():
-    """V2 Phase 5.1: a successful phone share (Wizard COMPLETE) gets the USER-tier persistent Reply Keyboard with localized (UZ default) labels."""
-    from aiogram.types import ReplyKeyboardMarkup
+    """V2 Phase 6.1 (Director Decision 7): a successful phone share (Wizard
+    COMPLETE) gets ReplyKeyboardRemove() on this reply, followed by a
+    second message (result.followup) carrying the USER-tier persistent
+    Reply Keyboard with localized (UZ default) labels -- the literal
+    Phone Share -> ReplyKeyboardRemove() -> Persistent Reply Keyboard
+    sequence."""
+    from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
     _run(route_command("/start", telegram_id="618"))
     result = _run(route_contact(_contact_message("618", "+1 555 444 0001")))
 
-    assert isinstance(result.keyboard, ReplyKeyboardMarkup)
-    buttons = [b.text for row in result.keyboard.keyboard for b in row]
+    assert isinstance(result.keyboard, ReplyKeyboardRemove)
+    assert isinstance(result.followup.keyboard, ReplyKeyboardMarkup)
+    buttons = [b.text for row in result.followup.keyboard.keyboard for b in row]
     assert buttons == [
         "🏠 Bosh sahifa", "👤 Profil", "📊 Signallar", "💳 Obuna", "⚙️ Sozlamalar", "❓ Yordam",
     ]
 
 
 def test_route_contact_no_keyboard_when_registration_does_not_complete():
-    """A rejected contact (ownership mismatch) never reaches COMPLETE -- no persistent keyboard attached."""
+    """A rejected contact (ownership mismatch) never reaches COMPLETE -- no persistent keyboard attached, no followup."""
     _run(route_command("/start", telegram_id="619"))
     result = _run(route_contact(_contact_message("619", "+1 555 444 0002", contact_user_id="999999")))
 
     assert result.keyboard is None
+    assert result.followup is None
 
 
 def test_route_contact_for_unregistered_user_is_localized():

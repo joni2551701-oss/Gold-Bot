@@ -202,7 +202,11 @@ def test_command_router_attaches_a_keyboard_localized_to_the_caller():
 
     result = asyncio.run(route_command("/settings", telegram_id="701"))
 
-    assert _labels(result.keyboard) == ["Til", "Risk", "Strategiya", "Vaqt oralig'i", "Bildirishnomalar"]
+    # V2 Phase 6.1 Director Decision 4: Settings is an editable page, so
+    # its five categories now carry a trailing Back/Home row too.
+    assert _labels(result.keyboard) == [
+        "Til", "Risk", "Strategiya", "Vaqt oralig'i", "Bildirishnomalar", "⬅️ Orqaga", "🏠 Bosh sahifa",
+    ]
 
 
 def test_command_router_admin_keyboard_stays_english_regardless_of_caller_language(monkeypatch):
@@ -219,3 +223,45 @@ def test_command_router_admin_keyboard_stays_english_regardless_of_caller_langua
     result = asyncio.run(route_command("/admin", telegram_id="702"))
 
     assert _labels(result.keyboard) == ["Users", "Statistics", "System", "Broadcast", "Admins"]
+
+
+# ---------------------------------------------------------------------------
+# V2 Phase 6.1 (Director Approved) -- Navigation Controller / Unified
+# Message Lifecycle: the six editable pages (telegram.navigation.
+# EDITABLE_COMMANDS) carry the mandatory Back/Home inline row and are
+# flagged editable=True on RouterResult.
+# ---------------------------------------------------------------------------
+
+
+def test_command_router_marks_editable_pages_per_director_decision_3():
+    from telegram.command_router import route_command
+    from telegram.user_service import UserService
+
+    UserService().register_user("704", username="editableuser")
+
+    for command in ("/profile", "/subscription", "/settings", "/help", "/about", "/history"):
+        result = asyncio.run(route_command(command, telegram_id="704"))
+        assert result.editable is True, f"{command} must be editable"
+
+
+def test_command_router_start_and_signal_are_not_editable():
+    from telegram.command_router import route_command
+    from telegram.user_service import UserService
+
+    UserService().register_user("705", username="notedituser")
+
+    for command in ("/start", "/signal"):
+        result = asyncio.run(route_command(command, telegram_id="705"))
+        assert result.editable is False
+
+
+def test_command_router_editable_pages_carry_the_back_home_row():
+    from telegram.command_router import route_command
+    from telegram.user_service import UserService
+
+    UserService().register_user("706", username="backhomeuser")
+
+    result = asyncio.run(route_command("/profile", telegram_id="706"))
+
+    last_row = result.keyboard.inline_keyboard[-1]
+    assert [b.callback_data for b in last_row] == ["nav_back", "nav_home"]

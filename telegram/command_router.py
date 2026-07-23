@@ -46,6 +46,7 @@ from telegram.keyboards import (
     owner_reply_keyboard,
     resolve_navigation_command,
 )
+from telegram.navigation import EDITABLE_COMMANDS, with_back_home
 from telegram.permissions import PermissionLevel, get_permission_level
 from telegram.registration_service import RegistrationStep
 from translation.ui_catalog import t
@@ -138,6 +139,17 @@ _LEVEL_RANK = {
 class RouterResult:
     text: str
     keyboard: Optional[object] = None
+    # V2 Phase 6.1 (Director Decision 3) -- True for the six pages
+    # (telegram.navigation.EDITABLE_COMMANDS) whose reply should edit
+    # the chat's last bot message in place instead of sending a new
+    # one; telegram/polling.py is the only reader of this field.
+    editable: bool = False
+    # V2 Phase 6.1 (Director Decision 7) -- an optional second message
+    # to send right after this one (e.g. the persistent Reply Keyboard
+    # attached after an explicit ReplyKeyboardRemove()). RouterResult
+    # carries exactly one keyboard field, so a "remove then reattach"
+    # sequence needs a second RouterResult to send as a follow-up.
+    followup: Optional["RouterResult"] = None
 
 
 def _parse_command(text: str) -> Tuple[Optional[str], str]:
@@ -236,7 +248,17 @@ async def route_command(command_text: str, telegram_id=None, username=None) -> R
             keyboard = keyboard_builder()
         else:
             keyboard = keyboard_builder(handlers._current_language(telegram_id))
-    return RouterResult(text=text, keyboard=keyboard)
+
+    # V2 Phase 6.1 (Director Decision 3/4): the six editable pages get
+    # the mandatory Back/Home inline row appended to whatever keyboard
+    # they already had (settings_keyboard()'s five categories) or, if
+    # they had none (profile/subscription/help/about/history), a
+    # keyboard consisting of just that row.
+    editable = command in EDITABLE_COMMANDS
+    if editable:
+        keyboard = with_back_home(keyboard, handlers._current_language(telegram_id))
+
+    return RouterResult(text=text, keyboard=keyboard, editable=editable)
 
 
 async def route_message(message) -> RouterResult:
@@ -289,13 +311,29 @@ async def route_contact(message) -> RouterResult:
 
     # V2 Phase 5: a successful phone share is also the Wizard's
     # completion trigger (contact_handler() already called
-    # RegistrationService.complete() internally) -- attach the
-    # tier-aware persistent Reply Keyboard to this same reply,
-    # replacing phone_share_keyboard() directly (Telegram needs no
-    # explicit ReplyKeyboardRemove() step before a straight
-    # ReplyKeyboardMarkup replacement -- see docs/PHASE5_AUDIT.md
-    # Section 3). No-op (keyboard stays None) if registration did not
-    # actually complete this call (e.g. the phone number was already
-    # registered elsewhere).
-    keyboard = _persistent_reply_keyboard(telegram_id) if handlers._is_registration_complete(telegram_id) else None
-    return RouterResult(text=text, keyboard=keyboard)
+    # RegistrationService.complete() internally). No-op (keyboard
+    # stays None, no followup) if registration did not actually
+    # complete this call (e.g. the phone number was already registered
+    # elsewhere).
+    #
+    # V2 Phase 6.1 (Director Decision 7) reverses Phase 5's direct
+    # attachment: the persistent Reply Keyboard no longer replaces
+    # phone_share_keyboard() on the same reply. Instead this reply
+    # carries an explicit ReplyKeyboardRemove(), and the persistent
+    # keyboard is attached to a follow-up message -- RouterResult has
+    # exactly one keyboard field, so satisfying "Phone Share ->
+    # ReplyKeyboardRemove() -> Persistent Reply Keyboard" literally
+    # requires two sequential messages (see
+    # docs/PHASE6_NAVIGATION_AUDIT.md, Director Decision 7). Telegram
+    # itself never required the explicit removal step (Phase 5's own
+    # docs/PHASE5_AUDIT.md Section 3 finding still holds technically),
+    # but the Director's decision is followed as given.
+    if not handlers._is_registration_complete(telegram_id):
+        return RouterResult(text=text, keyboard=None)
+
+    language = handlers._current_language(telegram_id)
+    return RouterResult(
+        text=text,
+        keyboard=ReplyKeyboardRemove(),
+        followup=RouterResult(text=t("navigation.menu_ready", language), keyboard=_persistent_reply_keyboard(telegram_id)),
+    )

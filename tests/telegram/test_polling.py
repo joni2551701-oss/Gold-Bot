@@ -16,6 +16,7 @@ tests below, since dispatcher.start_polling() blocks forever for real).
 
 import asyncio
 import logging
+from types import SimpleNamespace
 
 from telegram import runtime_monitor
 from telegram.polling import (
@@ -77,6 +78,7 @@ def test_on_message_routes_text_to_route_message(monkeypatch):
     class FakeMessage:
         contact = None
         text = "/start"
+        from_user = SimpleNamespace(id=100)
         answered_with = None
 
         async def answer(self, text, reply_markup=None):
@@ -109,6 +111,7 @@ def test_on_message_routes_contact_to_route_contact(monkeypatch):
     class FakeMessage:
         contact = FakeContact()
         text = None
+        from_user = SimpleNamespace(id=101)
         answered_with = None
 
         async def answer(self, text, reply_markup=None):
@@ -188,6 +191,172 @@ def test_on_message_never_raises_on_routing_failure(monkeypatch):
     message = FakeMessage()
     asyncio.run(handler(message))  # must not raise
     assert message.answered_with[0] == "Service temporarily unavailable."
+
+
+# ---------------------------------------------------------------------------
+# V2 Phase 6.1 (Director Approved) -- Unified Message Lifecycle: _deliver()
+# picks edit-vs-send per RouterResult.editable, using telegram.navigation's
+# process-local Message Lifecycle Tracker as the edit target, and always
+# sends RouterResult.followup (if set) as a second new message.
+# ---------------------------------------------------------------------------
+
+
+def test_deliver_sends_new_message_for_non_editable_result():
+    """editable=False (the default) always sends a new message, never edits."""
+    import telegram.polling as polling_module
+
+    class FakeBot:
+        async def edit_message_text(self, *args, **kwargs):
+            raise AssertionError("must not be called for a non-editable result")
+
+    class FakeMessage:
+        from_user = SimpleNamespace(id=950)
+        bot = FakeBot()
+        answered_with = None
+
+        async def answer(self, text, reply_markup=None):
+            self.answered_with = (text, reply_markup)
+            return SimpleNamespace(message_id=5000)
+
+    class FakeResult:
+        text = "hello"
+        keyboard = None
+        editable = False
+        followup = None
+
+    message = FakeMessage()
+    asyncio.run(polling_module._deliver(message, FakeResult()))
+    assert message.answered_with == ("hello", None)
+
+
+def test_deliver_sends_new_message_when_editable_but_no_tracked_id():
+    import telegram.polling as polling_module
+    from telegram import navigation
+
+    class FakeBot:
+        async def edit_message_text(self, *args, **kwargs):
+            raise AssertionError("must not be called with no tracked message id")
+
+    class FakeMessage:
+        from_user = SimpleNamespace(id=951)
+        bot = FakeBot()
+        answered_with = None
+
+        async def answer(self, text, reply_markup=None):
+            self.answered_with = (text, reply_markup)
+            return SimpleNamespace(message_id=5001)
+
+    class FakeResult:
+        text = "profile page"
+        keyboard = None
+        editable = True
+        followup = None
+
+    message = FakeMessage()
+    asyncio.run(polling_module._deliver(message, FakeResult()))
+    assert message.answered_with == ("profile page", None)
+    assert navigation.last_message_id(951) == 5001
+
+
+def test_deliver_edits_existing_message_when_editable_and_tracked():
+    import telegram.polling as polling_module
+    from telegram import navigation
+
+    navigation.record_message(952, 6001)
+    edited = {}
+
+    class FakeBot:
+        async def edit_message_text(self, text, chat_id=None, message_id=None, reply_markup=None):
+            edited["text"] = text
+            edited["chat_id"] = chat_id
+            edited["message_id"] = message_id
+
+    class FakeMessage:
+        from_user = SimpleNamespace(id=952)
+        bot = FakeBot()
+        answered_with = None
+
+        async def answer(self, text, reply_markup=None):
+            self.answered_with = (text, reply_markup)
+            return SimpleNamespace(message_id=9999)
+
+    class FakeResult:
+        text = "settings page"
+        keyboard = None
+        editable = True
+        followup = None
+
+    message = FakeMessage()
+    asyncio.run(polling_module._deliver(message, FakeResult()))
+
+    assert edited == {"text": "settings page", "chat_id": 952, "message_id": 6001}
+    assert message.answered_with is None
+
+
+def test_deliver_falls_back_to_send_new_on_edit_failure():
+    import telegram.polling as polling_module
+    from telegram import navigation
+
+    navigation.record_message(953, 6002)
+
+    class FakeBot:
+        async def edit_message_text(self, *args, **kwargs):
+            raise RuntimeError("message too old to edit")
+
+    class FakeMessage:
+        from_user = SimpleNamespace(id=953)
+        bot = FakeBot()
+        answered_with = None
+
+        async def answer(self, text, reply_markup=None):
+            self.answered_with = (text, reply_markup)
+            return SimpleNamespace(message_id=7000)
+
+    class FakeResult:
+        text = "help page"
+        keyboard = None
+        editable = True
+        followup = None
+
+    message = FakeMessage()
+    asyncio.run(polling_module._deliver(message, FakeResult()))
+
+    assert message.answered_with == ("help page", None)
+    assert navigation.last_message_id(953) == 7000
+
+
+def test_deliver_sends_followup_as_a_second_message():
+    import telegram.polling as polling_module
+
+    class FakeBot:
+        async def edit_message_text(self, *args, **kwargs):
+            raise AssertionError("must not be called -- result is not editable")
+
+    class FakeMessage:
+        from_user = SimpleNamespace(id=954)
+        bot = FakeBot()
+
+        def __init__(self):
+            self.answered = []
+
+        async def answer(self, text, reply_markup=None):
+            self.answered.append((text, reply_markup))
+            return SimpleNamespace(message_id=8000 + len(self.answered))
+
+    class FakeFollowup:
+        text = "menu ready"
+        keyboard = None
+
+    class FakeResult:
+        text = "phone registered"
+        keyboard = None
+        editable = False
+        followup = FakeFollowup()
+
+    message = FakeMessage()
+    asyncio.run(polling_module._deliver(message, FakeResult()))
+
+    assert message.answered == [("phone registered", None), ("menu ready", None)]
 
 
 # ---------------------------------------------------------------------------
