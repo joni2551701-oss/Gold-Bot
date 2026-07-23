@@ -138,9 +138,40 @@ This lets the Director see immediately, at the end of any Architecture
 document, exactly where a decision is needed — without reading the
 whole document to find it.
 
+## Freeze Checklist (mandatory — defines what step 9, "Freeze," means)
+
+A task is not "Completed" — regardless of what its own status line
+says — until every box below is checked, in its own
+`communication/task_queue/TASK-XXX(X).md` record:
+
+```
+Freeze Checklist
+□ CI Passed
+□ Tests Passed
+□ Documentation Updated
+□ ADR Updated (if required)
+□ Constitution Impact Reviewed
+□ Public Contracts Reviewed
+□ Backward Compatibility Checked
+□ No Silent Decisions
+□ Director Approval
+□ Freeze Applied
+```
+
+"ADR Updated (if required)" and "Constitution Impact Reviewed" are
+allowed to be checked as *not applicable* — stated as such, never
+silently skipped. Once every box is checked, that task is Frozen (per
+`docs/PLATFORM_WORKFLOW.md`'s wider meaning of the word: it is never
+reopened for refactoring or new features — only for a critical bug, a
+security issue, a Director-approved ADR, or a future, separately
+authorized Migration Task, per `communication/decisions/ADR-005.md`'s
+own precedent).
+
 ## Related
 
 - `docs/constitution/CONSTITUTION.md` Article 8, Article 11.
 - `communication/task_queue/README.md` — how tasks and sub-tasks are
   tracked.
+- `communication/decisions/ADR-005.md` — the Migration Task rules that
+  govern any future change to a Frozen task's content.
 - `communication/decisions/README.md` — the No Silent Decisions Policy.

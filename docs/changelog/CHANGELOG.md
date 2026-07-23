@@ -254,6 +254,33 @@ Zero diff to Trading Core or any `telegram/*.py` file —
 unchanged; the Registry is a parallel, unwired mirror, per ADR-003.
 Full suite: 4648 passed.
 
+**CI**: `ci.yml` run #155, commit `4784a18`, conclusion `success`.
+
+## TASK-002C frozen; ADR-005; Freeze Checklist; TASK-002D authorized
+
+**Changes**: TASK-002C marked ✅ APPROVED and **Frozen** — full Freeze
+Checklist recorded in `communication/task_queue/TASK-002C.md`.
+`communication/decisions/ADR-005.md` (new) — Universal Screen Identity
+Migration is its own, separately-scoped Migration Task: no silent
+migration, frozen tasks not modified, mandatory Backward Compatibility
+and Rollback plans; folded into `docs/changelog/DECISION_LOG.md`.
+`docs/PLATFORM_WORKFLOW.md` extended with the mandatory **Freeze
+Checklist** — the formal definition of step 9 ("Freeze"): 10 boxes
+(CI Passed, Tests Passed, Documentation Updated, ADR Updated,
+Constitution Impact Reviewed, Public Contracts Reviewed, Backward
+Compatibility Checked, No Silent Decisions, Director Approval, Freeze
+Applied) that must all be checked before a task counts as
+"Completed." TASK-002D (Navigation Implementation) 🟢 AUTHORIZED with
+an explicit permitted/forbidden scope
+(`communication/task_queue/TASK-002D.md`). Director order recorded: no
+action on PR #2 (base `main`) — not merged, closed, or reviewed; its
+own separate review process.
+
+**Architecture Impact**: Governance only, zero code changed in this
+entry. TASK-002C is now permanently closed to refactoring — only a
+critical bug, security issue, Director-approved ADR, or future
+Migration Task can touch it again.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.

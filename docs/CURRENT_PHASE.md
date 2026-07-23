@@ -6,42 +6,51 @@ known, what's authorized to start next. `docs/changelog/CHANGELOG.md`
 and `docs/changelog/PHASE_HISTORY.md` are the permanent record; this
 document is only ever the current tip.
 
-## Phase: TASK-002C — Navigation Registry
+## Phase: TASK-002D — Navigation Implementation
 
-**Status: DELIVERED, AWAITING DIRECTOR REVIEW.** Type: Real
-implementation, first code since PLATFORM-001 — Director-authorized
-under a specific rule list: no hardcoded screens, no `telegram/`
-dependency, no platform-specific code, Universal Screen ID (ADR-002),
-a dynamic Registry (extending TASK-001's `platforms/menu_registry.py`,
-not replacing it), a Navigation Event Bus interface only (ADR-004, no
-dispatch), and extensibility for future modules (AI, Education,
-Marketplace, Trading) without a Registry code change. Populates
-GoldBot's real, currently-live 25 Telegram screens only — no
-fictitious future-module entries. Zero change to
-`telegram/reply_keyboard_manager.py`'s live behavior. 15 new tests
-(39 total in `tests/platforms/`), full suite 4648 passing.
+**Status: IN PROGRESS.** Type: Real implementation, wiring
+TASK-002C's Registry into an actual Navigation Core — Director-
+authorized under an explicit permitted/forbidden list.
+
+**Permitted**: Navigation Registry integration, Navigation State
+connection (Platform Layer only — Business Layer has zero awareness),
+Permission Flow integration (`Request → Permission → Navigation →
+Screen`), Event Interface connection (real operations produce
+`NavigationEvent`s, still no dispatcher), Platform Layer's own
+internal adapter interface (abstract only, no concrete per-platform
+implementation).
+
+**Forbidden**: Any Trading Core change, touching Signal/Decision
+Engine, any database schema change, breaking any Telegram public
+API/contract, hardcoded platform-specific logic.
+
+Full detail: `communication/task_queue/TASK-002D.md`.
 
 ## Frozen / closed phases
 
 - **PLATFORM-001** — ✅ **FROZEN**, never reopened.
 - **TASK-002A (Navigation Analysis)** — ✅ **CLOSED**.
-- **TASK-002B (Navigation Architecture)** — ✅ **APPROVED**, following
-  Director resolution of its 6 open questions
-  (`docs/NAVIGATION_ARCHITECTURE.md`'s "Director Decisions" section)
-  and three new ADRs (`communication/decisions/ADR-002.md` Universal
-  Screen Identity, `ADR-003.md` Platform never creates a Screen,
-  `ADR-004.md` Navigation Event Bus).
+- **TASK-002B (Navigation Architecture)** — ✅ **APPROVED**.
+- **TASK-002C (Navigation Registry)** — ✅ **FROZEN** — full Freeze
+  Checklist complete (`communication/task_queue/TASK-002C.md`). No
+  refactoring or new capability added to it except a critical bug, a
+  security issue, a Director-approved ADR, or a future Migration Task.
 
 ## Governance added this round
 
-- **Constitution-level decisions ADR-002/003/004** (not promoted to
-  Constitution Articles — Director-issued Architecture Decision
-  Records, permanent per `docs/changelog/DECISION_LOG.md`, but scoped
-  to Navigation specifically rather than a codebase-wide law like
-  Article 13).
-- **"Future Expansion" section**, mandatory in every Architecture
-  document from now on (AI/Education/Marketplace/Enterprise Impact,
-  Scalability, Migration Risk) — `docs/PLATFORM_WORKFLOW.md`.
+- **ADR-005** (`communication/decisions/ADR-005.md`) — Universal
+  Screen Identity Migration is its own, separately-scoped Migration
+  Task: no silent migration, frozen tasks not modified, mandatory
+  Backward Compatibility and Rollback plans.
+- **Freeze Checklist** (`docs/PLATFORM_WORKFLOW.md`) — the formal
+  definition of step 9 ("Freeze"): 10 mandatory boxes (CI Passed,
+  Tests Passed, Documentation Updated, ADR Updated, Constitution
+  Impact Reviewed, Public Contracts Reviewed, Backward Compatibility
+  Checked, No Silent Decisions, Director Approval, Freeze Applied) —
+  a task is not "Completed" until every box is checked.
+- **PR #2** (base `main`, this branch's head) — Director order: no
+  action. Not merged, not closed, not reviewed. Its own, separate
+  review process, gated by a future Director + Founder decision.
 
 ## Role boundary (unchanged)
 
@@ -50,17 +59,18 @@ Experience & Platform Foundation) is where all activity happens.
 
 ## Next
 
-TASK-002C's own deliverable (Registry code + tests + documentation +
-CI), then Director review before TASK-002D (Navigation Implementation)
-starts. See `communication/task_queue/QUEUE.md` for the full chain.
+TASK-002D's own deliverable (Navigation Core + Platform Adapter
+interface, tests, documentation, CI), then Director review before
+TASK-002E (Navigation Tests) / TASK-002F (Navigation Freeze). See
+`communication/task_queue/QUEUE.md` for the full chain.
 
 ## Related
 
 - `docs/NAVIGATION_ARCHITECTURE.md` — the approved architecture this
-  Registry implements.
-- `communication/decisions/ADR-001.md` through `ADR-004.md`.
+  Implementation follows.
+- `communication/decisions/ADR-001.md` through `ADR-005.md`.
 - `docs/PLATFORM_WORKFLOW.md` — "Architecture First," Universal UI
-  Abstraction, Future Expansion, Director Questions.
+  Abstraction, Future Expansion, Director Questions, Freeze Checklist.
 - `communication/task_queue/QUEUE.md` — the live task chain.
 - `docs/HANDOFF.md` — the Core/Platform role split and how to pick up
   Platform work.

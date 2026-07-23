@@ -9,15 +9,15 @@ through the full "Architecture First" workflow
 (`docs/PLATFORM_WORKFLOW.md`) one step at a time.
 
 ```
-TASK-001   Platform Foundation & Collaboration Infrastructure   APPROVED (Frozen)
+TASK-001   Platform Foundation & Collaboration Infrastructure   ✅ Frozen
     ↓
 TASK-002   Navigation                                           In Progress
     ├── TASK-002A  Navigation Analysis                          ✅ CLOSED
     ├── TASK-002B  Navigation Architecture                      ✅ APPROVED
-    ├── TASK-002C  Navigation Registry                          Delivered, awaiting review
-    ├── TASK-002D  Navigation Implementation                    Pending
-    ├── TASK-002E  Navigation Tests                              Pending
-    └── TASK-002F  Navigation Freeze                              Pending
+    ├── TASK-002C  Navigation Registry                          ✅ FROZEN
+    ├── TASK-002D  Navigation Implementation                    🟢 AUTHORIZED, In Progress
+    ├── TASK-002E  Navigation Tests                              ⏳ Pending
+    └── TASK-002F  Navigation Freeze                              ⏳ Pending
     ↓
 TASK-003   Dashboard                                             Pending
     ↓
@@ -28,14 +28,14 @@ TASK-005   Notification Center                                     Pending
 
 | Task | Title | Status |
 |---|---|---|
-| TASK-001 | Platform Foundation & Collaboration Infrastructure | ✅ APPROVED, Frozen — never reopened |
+| TASK-001 | Platform Foundation & Collaboration Infrastructure | ✅ Frozen — never reopened |
 | TASK-002 | Navigation (parent) | In Progress |
 | TASK-002A | Navigation Analysis | ✅ CLOSED |
 | TASK-002B | Navigation Architecture | ✅ APPROVED |
-| TASK-002C | Navigation Registry | Delivered, awaiting Director review (15 new tests, 39 total, zero Trading Core/telegram diff) |
-| TASK-002D | Navigation Implementation | Pending |
-| TASK-002E | Navigation Tests | Pending |
-| TASK-002F | Navigation Freeze | Pending |
+| TASK-002C | Navigation Registry | ✅ FROZEN (Freeze Checklist complete) |
+| TASK-002D | Navigation Implementation | 🟢 AUTHORIZED, In Progress |
+| TASK-002E | Navigation Tests | ⏳ Pending |
+| TASK-002F | Navigation Freeze | ⏳ Pending |
 | TASK-003 | Dashboard | Pending |
 | TASK-004 | Settings | Pending |
 | TASK-005 | Notification Center | Pending |

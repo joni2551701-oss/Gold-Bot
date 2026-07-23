@@ -1,12 +1,26 @@
 # TASK-002C
 
 **Title**: Navigation Registry
-**Status**: Delivered, CI confirmed `success` (`ci.yml` run #155,
-commit `4784a18`), awaiting Director review/close. First real
-implementation under the Navigation architecture
-(`docs/NAVIGATION_ARCHITECTURE.md`, approved) and its four ADRs.
-15 new tests (39 total in `tests/platforms/`), full suite 4648
-passing, zero diff to Trading Core or `telegram/`.
+**Status**: ✅ APPROVED. **Freeze: ✅ YES — Frozen from this point.**
+No refactoring or new capability added to this task's own content
+except for a critical bug, a security issue, a Director-approved ADR,
+or a future Migration Task (`communication/decisions/ADR-005.md`).
+
+## Freeze Checklist
+
+```
+Freeze Checklist
+☑ CI Passed              -- ci.yml run #155, commit 4784a18, success
+☑ Tests Passed            -- 15 new (39 total in tests/platforms/), full suite 4648/4648
+☑ Documentation Updated   -- docs/PLATFORM_FOUNDATION.md (Documentation Policy)
+☑ ADR Updated (if required) -- ADR-002/003/004 already recorded at TASK-002B; none new at 002C itself
+☑ Constitution Impact Reviewed -- none; no new Article, Article 13 already covers this work
+☑ Public Contracts Reviewed -- additive only (target_bindings/category/content_type fields); no existing field removed or retyped
+☑ Backward Compatibility Checked -- is_valid_screen_id() not enforced retroactively on TASK-001's registrations (ADR-005's own precedent)
+☑ No Silent Decisions     -- every design choice traces to Director-approved ADR-002/003/004 or the TASK-002C rule list itself
+☑ Director Approval       -- this review
+☑ Freeze Applied          -- this document
+```
 
 ## Objective
 

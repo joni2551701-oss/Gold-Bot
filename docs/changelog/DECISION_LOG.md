@@ -170,6 +170,21 @@ without each one inventing its own logging shape.
 
 **Date**: TASK-002B review. Full record: `communication/decisions/ADR-004.md`.
 
+---
+
+**Decision** (ADR-005): Migrating any pre-ADR-002 screen/menu id to the
+Universal Screen Identity convention is its own, separately-scoped
+Migration Task — never a silent side effect of another task. That task
+must state a Backward Compatibility plan and a Rollback plan before
+its Implementation step.
+
+**Reason**: Formalizes the restraint `platforms/navigation_model.py`'s
+`is_valid_screen_id()` already exercised at TASK-002C (not enforcing
+the new convention retroactively) as a standing rule, not a one-off
+judgment call.
+
+**Date**: TASK-002C freeze review. Full record: `communication/decisions/ADR-005.md`.
+
 ## Related
 
 - `docs/changelog/CHANGELOG.md` — what shipped alongside each decision.
