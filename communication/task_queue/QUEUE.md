@@ -91,12 +91,18 @@ first task on this track is explicitly the first Engineering task
 after Governance v1.0 is frozen, per Director order.
 
 ```
-REPO-001   Repository Engineering Migration (Audit + Plan)   ✅ DELIVERED — awaiting Director approval before REPO-002 (Implementation)
+REPO-001              Repository Engineering Migration (Audit + Plan)   ⏸ PAUSED by ORDER-002 — Migration/Protection/Default-branch change halted pending BRANCH-FORENSICS-001
+    ↓
+BRANCH-FORENSICS-001  Repository History Forensics (ORDER-003)          ✅ DELIVERED — awaiting Director review before Migration resumes
+    ↓  ("Repository history and conflict root cause fully understood")
+REPO-002              Repository Migration Implementation               ⏳ Blocked — not authorized until Director reviews BRANCH-FORENSICS-001
 ```
 
 | Task | Title | Status |
 |---|---|---|
-| REPO-001 | Repository Engineering Migration | ✅ DELIVERED — see `communication/task_queue/REPO-001.md` and `docs/REPO_001_REPOSITORY_ENGINEERING_MIGRATION.md`. Audit + Proposal + Plan only, no branch/PR/protection/settings action taken. Recommend approving the plan and authorizing REPO-002 (Implementation). |
+| REPO-001 | Repository Engineering Migration | ⏸ PAUSED — Director ORDER-002 halted all merge/rebase/branch-rename/branch-delete/default-branch-change action pending root-cause understanding. Audit + Plan themselves remain delivered and unchanged (`communication/task_queue/REPO-001.md`, `docs/REPO_001_REPOSITORY_ENGINEERING_MIGRATION.md`). |
+| BRANCH-FORENSICS-001 | Repository History Forensics | ✅ DELIVERED — see `communication/task_queue/BRANCH-FORENSICS-001.md` and `docs/BRANCH_FORENSICS_001.md`. Root cause fully identified: a single invisible Unicode character in one filename (`strategies/strategy_manager.py`), content byte-identical everywhere. Forensic investigation only, no branch/PR/protection/settings action taken. |
+| REPO-002 | Repository Migration Implementation | ⏳ Blocked — starts only after Director reviews BRANCH-FORENSICS-001 and lifts ORDER-002. |
 
 ## Rule change (Engineering track, this update)
 
