@@ -6,61 +6,67 @@ known, what's authorized to start next. `docs/changelog/CHANGELOG.md`
 and `docs/changelog/PHASE_HISTORY.md` are the permanent record; this
 document is only ever the current tip.
 
-## Phase: TASK-002A — Navigation Analysis
+## Phase: TASK-002B — Navigation Architecture
 
-**Status: DELIVERED, AWAITING DIRECTOR REVIEW.** Type: Analysis only —
-step 1 of the mandatory "Architecture First" workflow
-(`docs/PLATFORM_WORKFLOW.md`), applied to Navigation (TASK-002). No
-architecture proposal, no code, no new API, no folder-structure
-change. Deliverable: `docs/NAVIGATION_ANALYSIS.md`. Per Director
-instruction, this task stops here — TASK-002B (Navigation
-Architecture) does not start until the Director reviews and approves
-this analysis.
+**Status: IN PROGRESS.** Type: Architecture only, per Director
+authorization — no implementation, code, or API is written. Designs
+Universal Navigation, Screen Model, Navigation Graph, Route Registry,
+Back Stack, Deep Link System, Permission Layer, Platform Adapter,
+Navigation State, Session Navigation, Navigation Events, Screen
+Lifecycle, and Platform Capability Mapping, each stating its
+compatibility across all five target platforms (Constitution Article
+13). Governed by ADR-001 (`communication/decisions/ADR-001.md`) and
+the Universal UI Abstraction rule (`docs/PLATFORM_WORKFLOW.md`).
+Deliverable: `docs/NAVIGATION_ARCHITECTURE.md`, ending with a
+"Director Questions" section. TASK-002C (Registry) does not start
+until this Architecture is approved.
 
-## Previous phase
+## Previous phases (frozen, never reopened)
 
-**PLATFORM-001 (Platform Foundation & Collaboration Infrastructure)**
-— **FROZEN**, CI `success` confirmed (`ci.yml` run #150, commit
-`05d05c7`), Director-approved. Full record:
-`docs/changelog/CHANGELOG.md`'s "PLATFORM-001" entry,
-`docs/PLATFORM_FOUNDATION.md`, `communication/task_queue/TASK-001.md`.
+- **PLATFORM-001 (Platform Foundation & Collaboration Infrastructure)**
+  — ✅ **APPROVED, FROZEN**. CI `success` (`ci.yml` runs #150/#151).
+  Record: `docs/changelog/CHANGELOG.md`, `docs/PLATFORM_FOUNDATION.md`,
+  `communication/task_queue/TASK-001.md`.
+- **TASK-002A (Navigation Analysis)** — ✅ **APPROVED**. Record:
+  `docs/NAVIGATION_ANALYSIS.md`, its six open questions answered in
+  `communication/decisions/ADR-001.md`.
 
-This phase also introduced two standing rules that apply to every
-phase from here on:
+## Governance added this round
 
-- **"Architecture First"** (`docs/PLATFORM_WORKFLOW.md`) — the
-  mandatory 10-step sequence (Analysis → Architecture → Implementation
-  Plan → Approval Check → Implementation → Tests → Documentation → CI
-  → Freeze → Next Task) every Platform task now follows.
-- **"No Silent Decisions Policy"** (`communication/decisions/README.md`)
-  — a folder-structure change, new public API, broken contract,
-  database schema change, or Core↔Platform interface change requires a
-  `communication/decisions/PROPOSED-DECISION-XXXX.md` ticket and
-  Director approval before implementation. Internal refactoring, bug
-  fixes, and documentation are exempt.
+- **ADR-001** (`communication/decisions/ADR-001.md`) — GoldBot
+  Platform is a Shared Platform Layer serving five equal clients
+  (Telegram Bot, Telegram Mini App, Android, iOS, Desktop), not
+  Telegram Bot with others bolted on later.
+- **Constitution Article 13 — Future First Principle** — every
+  Architecture document states its compatibility across all five
+  platforms, even the four with no code today.
+- **Universal UI Abstraction rule** (`docs/PLATFORM_WORKFLOW.md`) — no
+  Platform component is ever `Telegram Callback → Business Logic`
+  directly; always `Platform UI → Navigation Layer → Application Layer
+  → Business Logic`.
+- **Director Questions section** — every Architecture document now
+  ends with one (or `None.`), per `docs/PLATFORM_WORKFLOW.md`.
 
 ## Role boundary (unchanged)
 
-**Core** (Trading Engine & AI) remains untouched by this and the prior
-phase. **Platform** (Product Experience & Platform Foundation) is
-where all activity in this phase happens.
+**Core** (Trading Engine & AI) remains untouched. **Platform** (Product
+Experience & Platform Foundation) is where all activity in this and
+the prior two phases happens.
 
 ## Next
 
-Awaiting Director review of `docs/NAVIGATION_ANALYSIS.md` before
-TASK-002B (Navigation Architecture) begins. See
-`communication/task_queue/QUEUE.md` for the full Navigation sub-task
-chain (002A–002F) and the remaining Phase 2 backlog (Dashboard,
-Settings, Notification Center).
+`docs/NAVIGATION_ARCHITECTURE.md` (this phase's deliverable), then
+Director review before TASK-002C (Navigation Registry) starts. See
+`communication/task_queue/QUEUE.md` for the full chain.
 
 ## Related
 
-- `docs/PLATFORM_WORKFLOW.md` — the "Architecture First" process now
-  governing every task.
-- `communication/decisions/README.md` — the No Silent Decisions Policy.
+- `docs/PLATFORM_WORKFLOW.md` — the "Architecture First" process,
+  Universal UI Abstraction rule, and Director Questions requirement.
+- `communication/decisions/ADR-001.md`, `docs/constitution/CONSTITUTION.md`
+  Article 13 — this round's governance additions.
 - `communication/task_queue/QUEUE.md` — the live task chain.
-- `docs/NAVIGATION_ANALYSIS.md` — this phase's deliverable.
 - `docs/HANDOFF.md` — the Core/Platform role split and how to pick up
   Platform work.
-- `docs/TECHNICAL_DEBT.md` — the one open item from two phases ago,
+- `docs/TECHNICAL_DEBT.md` — the one open item from an earlier phase,
   still unresolved (out of scope for this one too).

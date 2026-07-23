@@ -54,6 +54,61 @@ See `communication/decisions/README.md` — the specific trigger
 conditions requiring a `PROPOSED-DECISION-XXXX.md` ticket and Director
 sign-off before Implementation (step 5) begins.
 
+## Universal UI Abstraction (ADR-001)
+
+No Platform component is ever written as:
+
+```
+Telegram Callback → Business Logic
+```
+
+It is always:
+
+```
+Platform UI → Navigation Layer → Application Layer → Business Logic
+```
+
+This follows directly from `communication/decisions/ADR-001.md`:
+GoldBot Platform is a Shared Platform Layer serving five equal clients
+(Telegram Bot, Telegram Mini App, Android, iOS, Desktop), not Telegram
+Bot with everything else bolted on later. Skipping the Navigation/
+Application layers to call business logic straight from a Telegram
+handler is exactly the shortcut that would need undoing once a second
+platform exists.
+
+## Future First Principle (Constitution Article 13)
+
+Every Architecture step (step 2) states, for every component it
+defines, its compatibility with all five target platforms — using
+`platforms/capability_model.py`'s existing `SupportStatus` contract —
+even for platforms with zero code today. See Article 13's full text
+for what this does and does not require.
+
+## Director Questions section (mandatory in every Architecture document)
+
+Every Architecture-step deliverable (step 2's output) ends with:
+
+```
+## Director Questions
+
+Question 1
+...
+Question 2
+...
+```
+
+or, if nothing needs a Director decision:
+
+```
+## Director Questions
+
+None.
+```
+
+This lets the Director see immediately, at the end of any Architecture
+document, exactly where a decision is needed — without reading the
+whole document to find it.
+
 ## Related
 
 - `docs/constitution/CONSTITUTION.md` Article 8, Article 11.

@@ -159,6 +159,32 @@ Navigation instead of delivering it as one task.
 Awaiting Director review before TASK-002B (Navigation Architecture)
 starts.
 
+**CI**: `ci.yml` run #151, commit `0e8f89b`, conclusion `success`.
+
+## PLATFORM-001 — Director approval and freeze; ADR-001; Constitution Article 13
+
+**Changes**: PLATFORM-001 marked ✅ APPROVED and FROZEN (never
+reopened) following CI success on both its commits (`ci.yml` runs
+#150/#151). TASK-002A (Navigation Analysis) marked ✅ APPROVED.
+`communication/decisions/ADR-001.md` (new) — GoldBot Platform is
+architected as a Shared Platform Layer serving five equal clients
+(Telegram Bot, Telegram Mini App, Android, iOS, Desktop), not Telegram
+Bot with others bolted on later; also answers TASK-002A's six open
+questions directly. `docs/constitution/CONSTITUTION.md` Article 13
+(Future First Principle, new) — every Architecture document states its
+compatibility across all five platforms, even the four with no code
+today; `docs/constitution/AMENDMENTS.md`/`ARTICLES.md` updated to
+match. `docs/PLATFORM_WORKFLOW.md` extended with the Universal UI
+Abstraction rule (no `Telegram Callback → Business Logic` shortcuts)
+and the mandatory "Director Questions" section for every Architecture
+document. `docs/changelog/DECISION_LOG.md` updated with ADR-001's
+permanent ledger entry.
+
+**Architecture Impact**: Governance only, zero code changed. Reframes
+every future Platform Architecture decision: Telegram is one client
+among five, not the foundation. TASK-002B (Navigation Architecture)
+is the first task built under this rule.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.

@@ -1,7 +1,9 @@
 # TASK-002A
 
 **Title**: Navigation Analysis
-**Status**: Delivered, awaiting Director review — see `docs/NAVIGATION_ANALYSIS.md`
+**Status**: ✅ APPROVED — see `docs/NAVIGATION_ANALYSIS.md`. The six
+open questions it raised were answered directly by the Director; see
+`communication/decisions/ADR-001.md`.
 
 ## Objective
 

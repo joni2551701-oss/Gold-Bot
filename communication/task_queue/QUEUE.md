@@ -9,11 +9,11 @@ through the full "Architecture First" workflow
 (`docs/PLATFORM_WORKFLOW.md`) one step at a time.
 
 ```
-TASK-001   Platform Foundation & Collaboration Infrastructure   Completed
+TASK-001   Platform Foundation & Collaboration Infrastructure   APPROVED (Frozen)
     ↓
 TASK-002   Navigation                                           In Progress
-    ├── TASK-002A  Navigation Analysis                          Delivered, awaiting review
-    ├── TASK-002B  Navigation Architecture                      Pending (needs 002A approval)
+    ├── TASK-002A  Navigation Analysis                          APPROVED
+    ├── TASK-002B  Navigation Architecture                      In Progress
     ├── TASK-002C  Navigation Registry                          Pending
     ├── TASK-002D  Navigation Implementation                    Pending
     ├── TASK-002E  Navigation Tests                              Pending
@@ -28,10 +28,10 @@ TASK-005   Notification Center                                     Pending
 
 | Task | Title | Status |
 |---|---|---|
-| TASK-001 | Platform Foundation & Collaboration Infrastructure | Completed (CI `success`, `ci.yml` run #150, commit `05d05c7`) |
+| TASK-001 | Platform Foundation & Collaboration Infrastructure | ✅ APPROVED, Frozen — never reopened |
 | TASK-002 | Navigation (parent) | In Progress |
-| TASK-002A | Navigation Analysis | Delivered, awaiting Director review |
-| TASK-002B | Navigation Architecture | Pending |
+| TASK-002A | Navigation Analysis | ✅ APPROVED |
+| TASK-002B | Navigation Architecture | In Progress (architecture only, no code) |
 | TASK-002C | Navigation Registry | Pending |
 | TASK-002D | Navigation Implementation | Pending |
 | TASK-002E | Navigation Tests | Pending |
@@ -40,7 +40,18 @@ TASK-005   Notification Center                                     Pending
 | TASK-004 | Settings | Pending |
 | TASK-005 | Notification Center | Pending |
 
-## Rule change (this update)
+## Rule change (ADR-001, this update)
+
+Per `communication/decisions/ADR-001.md` and Constitution Article 13
+(Future First Principle): GoldBot Platform is architected around a
+Shared Platform Layer serving five equal clients (Telegram Bot,
+Telegram Mini App, Android, iOS, Desktop), not Telegram Bot with
+others added later. Every Architecture document from TASK-002B onward
+states each component's compatibility across all five, and no
+component is ever written as `Telegram Callback → Business Logic`
+directly (`docs/PLATFORM_WORKFLOW.md`'s Universal UI Abstraction rule).
+
+## Rule change (prior update)
 
 Per Director decision: every future task (not just Navigation) follows
 the mandatory 10-step "Architecture First" workflow

@@ -108,6 +108,28 @@ cross-references.
 
 **Date**: Phase 62.1d TASK 2.
 
+---
+
+**Decision** (ADR-001): GoldBot Platform is architected around a
+Shared Platform Layer serving five equal clients — Telegram Bot,
+Telegram Mini App, Android, iOS, Desktop — not around Telegram Bot
+with other clients bolted on afterward. Concretely: `Platform Core →
+Shared Platform Layer → {Telegram Bot, Mini App, Android, iOS,
+Desktop}`, and no Platform component may be written as `Telegram
+Callback → Business Logic` directly — it is always `Platform UI →
+Navigation Layer → Application Layer → Business Logic` (the Universal
+UI Abstraction rule).
+
+**Reason**: A Navigation (or any Platform component) designed
+Telegram-first would have to be rewritten for Android, iOS, and
+Desktop once they exist — the exact rework this decision exists to
+avoid, at the cost of designing for four platforms with zero code
+today.
+
+**Date**: TASK-002A review (Navigation Analysis approved); formalized
+as Constitution Article 13 (Future First Principle) in the same
+review. Full record: `communication/decisions/ADR-001.md`.
+
 ## Related
 
 - `docs/changelog/CHANGELOG.md` — what shipped alongside each decision.

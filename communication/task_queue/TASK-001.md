@@ -1,7 +1,9 @@
 # TASK-001
 
 **Title**: Platform Foundation & Collaboration Infrastructure (PLATFORM-001)
-**Status**: Completed — CI `success` confirmed (`ci.yml` run #150, commit `05d05c7`), Director-approved.
+**Status**: ✅ APPROVED — Director-approved, CI `success` confirmed
+(`ci.yml` runs #150 and #151, commits `05d05c7`/`0e8f89b`). **Freeze:
+YES — this task is never reopened.**
 
 ## Objective
 

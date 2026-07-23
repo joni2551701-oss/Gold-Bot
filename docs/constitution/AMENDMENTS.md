@@ -55,6 +55,27 @@ change itself, tracked separately): `docs/policies/` (11 files),
 `docs/constitution/ARTICLES.md` (this index's sibling), and this
 `AMENDMENTS.md` file were all introduced in Phase 62.1a.
 
+## TASK-002B (Navigation Architecture) — Second amendment: Article 13
+
+**Added**, following the Director's explicit decision (ADR-001,
+`communication/decisions/ADR-001.md`) that GoldBot Platform is
+architected around a Shared Platform Layer with five equal clients
+(Telegram Bot, Telegram Mini App, Android, iOS, Desktop) rather than
+around Telegram Bot with other clients added later:
+
+- **Article 13 — Future First Principle.** Every Architecture document
+  states its compatibility with all five target platforms, even for
+  the four with zero code today, using the existing
+  `platforms/capability_model.py`'s `SupportStatus` contract
+  (Article 11's Foundation Reuse Law already required checking for
+  this before building anything new — `SupportStatus` already existed
+  from TASK-001, reused here rather than duplicated). Governs
+  Architecture (design) only — does not require or authorize building
+  any non-Telegram client today, and does not relax Article 8's
+  Change Management order or Article 11's Reuse Audit.
+
+No existing Article (1–12) was altered by this amendment.
+
 ## Related
 
 - `docs/constitution/CONSTITUTION.md` — the current full text.

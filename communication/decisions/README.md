@@ -1,6 +1,18 @@
 # decisions/
 
-Two distinct ticket types live here — do not conflate them:
+Three distinct ticket types live here — do not conflate them:
+
+## `ADR-XXX.md` — Architecture Decision Records
+
+Director-issued, binding, permanent — a foundational ruling on how
+GoldBot Platform itself is structured (e.g. `ADR-001.md`: GoldBot
+Platform is built around a Shared Platform Layer serving five equal
+clients, not around Telegram Bot with others added later). Always also
+folded into `docs/changelog/DECISION_LOG.md` and, when it changes a
+standing rule, `docs/constitution/CONSTITUTION.md` — an ADR is never
+the only record of itself. Numbered `ADR-XXX` (3-digit, matching the
+Director's own naming for ADR-001), a separate sequence from
+`DEC-XXXX`/`PROPOSED-DECISION-XXXX` below.
 
 ## `DEC-XXXX.md` — recorded decisions
 
