@@ -1,12 +1,20 @@
 # Platform Task Queue
 
-Live chain. Update this file and the corresponding `TASK-XXX.md`
-together whenever a status changes. Seeded from the Director's own
-GoldBot Master Progress table (Phase 2 — Platform); TASK-002
-(Navigation) split into sub-tasks per Director decision — Navigation
-is treated as the highest-risk Platform module, so it is staged
-through the full "Architecture First" workflow
+Live chain. Update this file and the corresponding `TASK-XXX.md`/
+`DEVOPS-XXX.md` together whenever a status changes. Seeded from the
+Director's own GoldBot Master Progress table (Phase 2 — Platform);
+TASK-002 (Navigation) split into sub-tasks per Director decision —
+Navigation is treated as the highest-risk Platform module, so it is
+staged through the full "Architecture First" workflow
 (`docs/PLATFORM_WORKFLOW.md`) one step at a time.
+
+**Two independent tracks, per Director decision (this update):
+Platform Tasks and Engineering never interrupt each other.** A future
+Engineering/DevOps item is never inserted into the Platform Tasks
+numbering (e.g. it does not take the reserved TASK-003 slot) — it gets
+its own `DEVOPS-XXX` sequence instead.
+
+## Platform Tasks
 
 ```
 TASK-001   Platform Foundation & Collaboration Infrastructure   ✅ Frozen
@@ -18,7 +26,7 @@ TASK-002   Navigation                                           In Progress
     ├── TASK-002D  Navigation Implementation                    🟡 Conditionally Approved (CI confirmation pending)
     ├── TASK-002E  Navigation Tests (Validation)                 ⏳ Pending
     └── TASK-002F  Navigation Freeze                              ⏳ Pending
-    ↓
+    ↓  ("Navigation Foundation Complete")
 TASK-003   Dashboard                                             Pending
     ↓
 TASK-004   Settings                                               Pending
@@ -33,12 +41,45 @@ TASK-005   Notification Center                                     Pending
 | TASK-002A | Navigation Analysis | ✅ CLOSED |
 | TASK-002B | Navigation Architecture | ✅ APPROVED |
 | TASK-002C | Navigation Registry | ✅ FROZEN (Freeze Checklist complete) |
-| TASK-002D | Navigation Implementation | 🟡 Conditionally Approved — CI #158 cancelled (concurrency, superseded by #159 success); Director confirmation pending |
+| TASK-002D | Navigation Implementation | 🟡 Conditionally Approved — CI #158 cancelled (concurrency, superseded by #159 success); Director confirmation on this specific point still pending |
 | TASK-002E | Navigation Tests (Validation) | ⏳ Pending, awaiting TASK-002D freeze |
 | TASK-002F | Navigation Freeze | ⏳ Pending |
 | TASK-003 | Dashboard | Pending |
 | TASK-004 | Settings | Pending |
 | TASK-005 | Notification Center | Pending |
+
+## Engineering (separate track — `DEVOPS-XXX`, never a `TASK-XXX`)
+
+Per Director decision: DevOps/CI-infrastructure work is its own
+roadmap, sequenced independently of Platform Tasks so neither
+interrupts the other's context.
+
+```
+DEVOPS-001   Smart CI Routing         ⏳ Blocked until Navigation Foundation Complete (TASK-002E + TASK-002F)
+DEVOPS-002   Release Pipeline         ⏳ Not yet scoped
+DEVOPS-003   Branch Protection        ⏳ Not yet scoped
+DEVOPS-004   Build Optimization       ⏳ Not yet scoped
+```
+
+| Task | Title | Status |
+|---|---|---|
+| DEVOPS-001 | Smart CI Routing | ⏳ Blocked — starts only after TASK-002E and TASK-002F are both fully complete. See `communication/task_queue/DEVOPS-001.md` for the full scope and mandatory pre-start deliverables. |
+| DEVOPS-002 | Release Pipeline | ⏳ Not yet scoped |
+| DEVOPS-003 | Branch Protection | ⏳ Not yet scoped |
+| DEVOPS-004 | Build Optimization | ⏳ Not yet scoped |
+
+## Rule change (Engineering track, this update)
+
+Per Director decision: a separate Engineering/DevOps roadmap
+(`DEVOPS-XXX`) exists alongside Platform Tasks (`TASK-XXX`), never
+replacing a reserved Platform Tasks slot. DEVOPS-001 (Smart CI
+Routing — routing CI into Documentation/Platform/Trading/Full-Regression
+pipelines by changed path) is recorded now but does not start until
+Navigation Foundation (TASK-002E + TASK-002F) is complete. No
+`.github/workflows/*.yml` file is touched before then, and not even
+then without the five mandatory pre-start deliverables (current
+Actions map, per-pipeline trigger conditions, path→pipeline table,
+measured time savings, regression risk) reviewed and approved first.
 
 ## Rule change (ADR-001, this update)
 

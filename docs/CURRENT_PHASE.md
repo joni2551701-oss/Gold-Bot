@@ -47,14 +47,24 @@ confirmation that this satisfies the "CI #158 Success" condition.
 **Core** (Trading Engine & AI) remains untouched. **Platform** (Product
 Experience & Platform Foundation) is where all activity happens.
 
+## Engineering track established (separate from Platform Tasks)
+
+Director decision: DevOps/CI-infrastructure work is its own roadmap
+(`DEVOPS-XXX`), sequenced independently so it never interrupts or
+reorders the Platform Tasks chain (`TASK-XXX`) — Architecture First
+discipline applied to roadmap sequencing itself. **DEVOPS-001 (Smart
+CI Routing)** is recorded (`communication/task_queue/DEVOPS-001.md`)
+but explicitly **Blocked** until Navigation Foundation (TASK-002E +
+TASK-002F) is fully complete; DEVOPS-002/003/004 (Release Pipeline,
+Branch Protection, Build Optimization) are named but not yet scoped.
+No `.github/workflows/*.yml` file is touched — design first,
+implementation second, and only once DEVOPS-001's five mandatory
+pre-start deliverables are reviewed and approved.
+
 ## Next
 
 Awaiting Director confirmation on the CI note above before TASK-002D
-is marked ✅ APPROVED / Frozen and TASK-002E starts. Separately, the
-Director has raised a CI-routing efficiency proposal (Documentation-
-only / Platform / Core tiered pipelines) — not yet assigned as a task;
-see the latest `communication/task_queue/QUEUE.md` discussion before
-acting on it.
+is marked ✅ APPROVED / Frozen and TASK-002E starts.
 
 ## Related
 

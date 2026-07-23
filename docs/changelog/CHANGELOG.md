@@ -332,6 +332,33 @@ multi-session isolation) — Pending, starts after TASK-002D's freeze.
 direction for Navigation's next maturity level without rewriting what
 was just reviewed.
 
+**CI**: `ci.yml` run #160, commit `954ee42`, conclusion `success` —
+Director-confirmed, ADR-006/007/008 accepted.
+
+## Engineering track established; DEVOPS-001 recorded and blocked
+
+**Changes**: Following the observation that a documentation-only
+commit (run #160) still ran the full ~2-minute, 4660+-test suite, the
+Director proposed and then formalized a separate **Engineering**
+roadmap (`DEVOPS-XXX`), sequenced independently from **Platform
+Tasks** (`TASK-XXX`) so neither interrupts the other — the reserved
+`TASK-003` (Dashboard) slot is not displaced.
+`communication/task_queue/DEVOPS-001.md` (Smart CI Routing — routes CI
+into Documentation/Platform/Trading/Full-Regression pipelines by
+changed path) recorded with its full scope and five mandatory
+pre-start deliverables (current Actions map, per-pipeline trigger
+conditions, path→pipeline table, measured time savings, regression
+risk); `DEVOPS-002.md`/`003.md`/`004.md` (Release Pipeline, Branch
+Protection, Build Optimization) stubbed, not yet scoped.
+`communication/task_queue/QUEUE.md`/`README.md` updated with the
+two-track structure.
+
+**Architecture Impact**: Roadmap organization only, zero code changed.
+DEVOPS-001 is explicitly **Blocked** until Navigation Foundation
+(TASK-002E + TASK-002F) is complete — no `.github/workflows/*.yml`
+file is touched now or at DEVOPS-001's own start without those five
+deliverables reviewed first.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.
