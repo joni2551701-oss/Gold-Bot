@@ -2,17 +2,33 @@
 Telegram Layer — inline keyboard foundation.
 
 language_keyboard(), risk_keyboard(), timeframe_keyboard(),
-strategy_keyboard(), and settings_keyboard() (Phase 40) are real: each
-renders the options telegram/handlers.py documents in its command's
-"no argument" prompt text. Their callback_data carries the value the
-user would need to pass as a command argument (e.g. "risk_5" ->
-"/risk 5"), but no aiogram callback_query handler consumes it yet --
-these are display hints, same precedent as language_keyboard() since
-Phase 34. Real settings changes happen via command arguments (e.g.
-"/risk 5"), handled by telegram.handlers / telegram.user_service; see
-telegram/handlers.py's module docstring for why. admin_panel_keyboard()
-stays a placeholder -- no admin panel UI exists yet, only text (Phase
-37's /admin).
+strategy_keyboard(), and settings_keyboard() (Phase 40) render the
+options telegram/handlers.py documents in its command's "no argument"
+prompt text. Their callback_data carries the value the user would need
+to pass as a command argument (e.g. "risk_5" -> "/risk 5").
+admin_panel_keyboard() stays a placeholder -- no admin panel UI exists
+yet, only text (Phase 37's /admin).
+
+V2 Phase 6.2 (Settings Callback Completion): risk_keyboard(),
+timeframe_keyboard(), strategy_keyboard(), and notifications_keyboard()
+are real now -- telegram/callback_router.py's risk_*/timeframe_*/
+strategy_*/notifications_* dispatch (added this phase) consumes their
+callback_data and updates the database via the corresponding
+telegram.handlers.*_status() function. Each of these four builders
+also takes an optional `selected` parameter: when given, every button
+is prefixed with a "●" (this option is the caller's current value) or
+"○" (it isn't) radio marker, so the picker can be redrawn in place
+after a change to show the new current selection (Director's "Inline
+UX" requirement) without a second, separate current-value display.
+`selected` defaults to None, which renders every button exactly as
+before this phase (no radio prefix) -- existing callers that only pass
+`language` see no change. language_keyboard() and settings_keyboard()
+have no `selected` concept: language selection isn't a "current value
+you're adjusting" picker in the same sense, and settings_keyboard()
+(the old inline Settings hint) is superseded by
+telegram.reply_keyboard_manager's Settings Reply Keyboard section (V2
+Phase 6.3) -- it stays in place, unreferenced by routing, only for its
+own isolated tests.
 
 Phase 1.5 Localized Keyboards: every USER-tier keyboard below takes an
 optional `language` parameter and resolves its button labels via
@@ -31,7 +47,14 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardBu
 from translation.ui_catalog import t
 
 
-def language_keyboard(language=None):
+def language_keyboard(language=None, selected=None):
+    """
+    `selected` is accepted but unused -- V2 Phase 6.2's
+    _KEYBOARD_BY_COMMAND calls every builder uniformly as
+    builder(language, selected=...); language has no "current value
+    you are adjusting" radio concept (Director's spec), so this stays
+    a no-op parameter rather than requiring a special-cased call site.
+    """
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=t("keyboard.language.uz", language), callback_data="lang_uz")],
@@ -41,41 +64,73 @@ def language_keyboard(language=None):
     )
 
 
-def risk_keyboard(language=None):
+def _radio_label(label: str, value: str, selected) -> str:
+    """`selected` is None -> label unchanged (pre-Phase-6.2 behavior). Otherwise prefix with a ●/○ radio marker."""
+    if selected is None:
+        return label
+    return f"{'●' if value == selected else '○'} {label}"
+
+
+def risk_keyboard(language=None, selected=None):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text=t("keyboard.risk.1", language), callback_data="risk_1"),
-                InlineKeyboardButton(text=t("keyboard.risk.2", language), callback_data="risk_2"),
-                InlineKeyboardButton(text=t("keyboard.risk.3", language), callback_data="risk_3"),
-                InlineKeyboardButton(text=t("keyboard.risk.5", language), callback_data="risk_5"),
+                InlineKeyboardButton(
+                    text=_radio_label(t("keyboard.risk.1", language), "1", selected), callback_data="risk_1",
+                ),
+                InlineKeyboardButton(
+                    text=_radio_label(t("keyboard.risk.2", language), "2", selected), callback_data="risk_2",
+                ),
+                InlineKeyboardButton(
+                    text=_radio_label(t("keyboard.risk.3", language), "3", selected), callback_data="risk_3",
+                ),
+                InlineKeyboardButton(
+                    text=_radio_label(t("keyboard.risk.5", language), "5", selected), callback_data="risk_5",
+                ),
             ]
         ]
     )
 
 
-def timeframe_keyboard(language=None):
+def timeframe_keyboard(language=None, selected=None):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text=t("keyboard.timeframe.m15", language), callback_data="timeframe_m15"),
-                InlineKeyboardButton(text=t("keyboard.timeframe.h1", language), callback_data="timeframe_h1"),
-                InlineKeyboardButton(text=t("keyboard.timeframe.h4", language), callback_data="timeframe_h4"),
+                InlineKeyboardButton(
+                    text=_radio_label(t("keyboard.timeframe.m15", language), "M15", selected),
+                    callback_data="timeframe_m15",
+                ),
+                InlineKeyboardButton(
+                    text=_radio_label(t("keyboard.timeframe.h1", language), "H1", selected),
+                    callback_data="timeframe_h1",
+                ),
+                InlineKeyboardButton(
+                    text=_radio_label(t("keyboard.timeframe.h4", language), "H4", selected),
+                    callback_data="timeframe_h4",
+                ),
             ]
         ]
     )
 
 
-def strategy_keyboard(language=None):
+def strategy_keyboard(language=None, selected=None):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(
-                text=t("keyboard.strategy.liquidity_sweep", language), callback_data="strategy_liquidity_sweep",
+                text=_radio_label(t("keyboard.strategy.liquidity_sweep", language), "liquidity_sweep", selected),
+                callback_data="strategy_liquidity_sweep",
             )],
-            [InlineKeyboardButton(text=t("keyboard.strategy.fvg", language), callback_data="strategy_fvg")],
-            [InlineKeyboardButton(text=t("keyboard.strategy.amd", language), callback_data="strategy_amd")],
             [InlineKeyboardButton(
-                text=t("keyboard.strategy.order_block", language), callback_data="strategy_order_block",
+                text=_radio_label(t("keyboard.strategy.fvg", language), "fvg", selected),
+                callback_data="strategy_fvg",
+            )],
+            [InlineKeyboardButton(
+                text=_radio_label(t("keyboard.strategy.amd", language), "amd", selected),
+                callback_data="strategy_amd",
+            )],
+            [InlineKeyboardButton(
+                text=_radio_label(t("keyboard.strategy.order_block", language), "order_block", selected),
+                callback_data="strategy_order_block",
             )],
         ]
     )
@@ -115,22 +170,23 @@ def admin_panel_keyboard():
     )
 
 
-def notifications_keyboard(language=None):
+def notifications_keyboard(language=None, selected=None):
     """
-    /notifications hint keyboard (Phase 43). Same command-based
-    interaction model as the other Phase 40/41 keyboards -- no
-    callback_query handler consumes these buttons; the real commands
-    are /notifications on and /notifications off. telegram/
-    command_router.py is out of scope for this phase (not in its
-    Files restriction list), so this keyboard is not wired into
-    command_router._KEYBOARD_BY_COMMAND -- it exists as a display
-    asset for a future phase to attach, same as admin_panel_keyboard()
-    was for several phases before Phase 41 wired it in.
+    /notifications picker. V2 Phase 6.2 (Settings Callback Completion)
+    wires this into command_router._KEYBOARD_BY_COMMAND and into
+    callback_router's notifications_* dispatch -- it was a display-only
+    asset (not attached anywhere) from Phase 43 until this phase.
     """
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=t("keyboard.notifications.enable", language), callback_data="notifications_on")],
-            [InlineKeyboardButton(text=t("keyboard.notifications.disable", language), callback_data="notifications_off")],
+            [InlineKeyboardButton(
+                text=_radio_label(t("keyboard.notifications.enable", language), "on", selected),
+                callback_data="notifications_on",
+            )],
+            [InlineKeyboardButton(
+                text=_radio_label(t("keyboard.notifications.disable", language), "off", selected),
+                callback_data="notifications_off",
+            )],
         ]
     )
 

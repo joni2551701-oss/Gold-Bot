@@ -101,17 +101,28 @@ _CATALOG: dict = {
     },
     "settings.menu": {
         "EN": (
-            "Settings\n\nLanguage\nRisk\nStrategy\nTimeframe\nNotifications\n\n"
+            "Settings\n\n"
+            "Language: {language_value}\nRisk: {risk_value}\nStrategy: {strategy_value}\n"
+            "Timeframe: {timeframe_value}\nNotifications: {notifications_value}\n\n"
             "Use /language, /risk, /strategy, or /timeframe to change a setting."
         ),
         "UZ": (
-            "Sozlamalar\n\nTil\nRisk\nStrategiya\nVaqt oralig'i\nBildirishnomalar\n\n"
+            "Sozlamalar\n\n"
+            "Til: {language_value}\nRisk: {risk_value}\nStrategiya: {strategy_value}\n"
+            "Vaqt oralig'i: {timeframe_value}\nBildirishnomalar: {notifications_value}\n\n"
             "Sozlamani o'zgartirish uchun /language, /risk, /strategy yoki /timeframe dan foydalaning."
         ),
         "RU": (
-            "Настройки\n\nЯзык\nРиск\nСтратегия\nТаймфрейм\nУведомления\n\n"
+            "Настройки\n\n"
+            "Язык: {language_value}\nРиск: {risk_value}\nСтратегия: {strategy_value}\n"
+            "Таймфрейм: {timeframe_value}\nУведомления: {notifications_value}\n\n"
             "Используйте /language, /risk, /strategy или /timeframe, чтобы изменить настройку."
         ),
+    },
+    "settings.saved": {
+        "EN": "✅ Saved",
+        "UZ": "✅ Saqlandi",
+        "RU": "✅ Сохранено",
     },
     "risk.prompt": {
         "EN": "Choose risk percent:\n1%\n2%\n3%\n5%\n\nUse /risk 1, /risk 2, /risk 3, or /risk 5.",

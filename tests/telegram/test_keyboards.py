@@ -103,6 +103,55 @@ def test_strategy_keyboard_labels_and_callback_data():
     ]
 
 
+# ---------------------------------------------------------------------------
+# V2 Phase 6.2 (Settings Callback Completion) -- `selected=` radio markers.
+# `selected=None` (every pre-existing call site above) must stay
+# byte-identical to pre-Phase-6.2 output; passing a value prefixes each
+# button with a "●" (match) or "○" (no match) radio marker.
+# ---------------------------------------------------------------------------
+
+
+def test_risk_keyboard_selected_none_is_unchanged_from_pre_phase_6_2():
+    assert _labels(risk_keyboard("UZ", selected=None)) == ["1%", "2%", "3%", "5%"]
+
+
+def test_risk_keyboard_selected_marks_the_matching_option():
+    labels = _labels(risk_keyboard("UZ", selected="3"))
+    assert labels == ["○ 1%", "○ 2%", "● 3%", "○ 5%"]
+
+
+def test_risk_keyboard_selected_callback_data_is_unaffected():
+    assert _callback_data(risk_keyboard("UZ", selected="3")) == ["risk_1", "risk_2", "risk_3", "risk_5"]
+
+
+def test_timeframe_keyboard_selected_marks_the_matching_option():
+    labels = _labels(timeframe_keyboard("RU", selected="H1"))
+    assert labels == ["○ M15", "● H1", "○ H4"]
+
+
+def test_strategy_keyboard_selected_marks_the_matching_option():
+    labels = _labels(strategy_keyboard("UZ", selected="fvg"))
+    assert labels == ["○ Liquidity Sweep", "● FVG", "○ AMD", "○ Order Block"]
+
+
+def test_notifications_keyboard_selected_marks_the_matching_option():
+    labels = _labels(notifications_keyboard("EN", selected="off"))
+    assert labels == ["○ Enable Notifications", "● Disable Notifications"]
+
+
+def test_notifications_keyboard_selected_none_is_unchanged_from_pre_phase_6_2():
+    uz = _labels(notifications_keyboard("UZ", selected=None))
+    assert uz == ["Bildirishnomalarni yoqish", "Bildirishnomalarni o'chirish"]
+
+
+def test_language_keyboard_accepts_but_ignores_selected():
+    # language has no "current value you are adjusting" radio concept
+    # (Director's spec) -- selected is accepted so command_router's
+    # generic builder(language, selected=...) call site works uniformly,
+    # but it never changes language_keyboard's output.
+    assert _labels(language_keyboard("UZ", selected="uz")) == ["🇺🇿 Uzbek", "🇷🇺 Русский", "🇬🇧 English"]
+
+
 def test_phone_share_keyboard_label_localized():
     markup = phone_share_keyboard("UZ")
     button = markup.keyboard[0][0]

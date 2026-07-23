@@ -355,13 +355,39 @@ async def settings_handler(telegram_id=None) -> str:
     """
     /settings -> menu (keyboard attached by command_router). USER
     command. Touches activity (Phase 45). Never raises.
+
+    V2 Phase 6.2 (Settings Callback Completion, Stage 5): shows the
+    caller's actual stored values (Language/Risk/Strategy/Timeframe/
+    Notifications), read via _current_profile() -- never hardcoded.
+    Falls back to common.na for each field if the profile can't be
+    read (e.g. an unregistered caller), same "never raises, always
+    something to show" posture _current_language() already keeps.
     """
     try:
         UserService().touch_activity(telegram_id)
     except Exception as e:
         logger.warning(f"settings_handler: touch_activity failed for telegram_id={telegram_id}: {e}")
 
-    return t("settings.menu", _current_language(telegram_id))
+    language = _current_language(telegram_id)
+    profile = _current_profile(telegram_id)
+    na = t("common.na", language)
+    if profile is None:
+        language_value = risk_value = strategy_value = timeframe_value = notifications_value = na
+    else:
+        language_value = _language_name(profile.language)
+        risk_value = f"{profile.risk_percent:g}%"
+        strategy_value = profile.strategy
+        timeframe_value = profile.timeframe
+        notifications_value = t("common.on", language) if profile.notifications_enabled else t("common.off", language)
+
+    return t(
+        "settings.menu", language,
+        language_value=language_value,
+        risk_value=risk_value,
+        strategy_value=strategy_value,
+        timeframe_value=timeframe_value,
+        notifications_value=notifications_value,
+    )
 
 
 _LANGUAGE_OPTIONS = {"UZ", "RU", "EN"}
@@ -400,6 +426,50 @@ def _current_language(telegram_id) -> str:
     if not result.success or result.profile is None:
         return "UZ"
     return result.profile.language or "UZ"
+
+
+def _current_profile(telegram_id):
+    """
+    V2 Phase 6.2 (Settings Callback Completion) -- best-effort read of
+    the caller's full stored profile (UserRecord), or None on any
+    lookup failure. Shared by every "_current_*" accessor below and by
+    settings_handler()'s current-value display, so a DB round trip
+    isn't repeated per field. Never raises.
+    """
+    try:
+        result = UserService().get_profile(telegram_id)
+    except Exception as e:
+        logger.warning(f"_current_profile failed for telegram_id={telegram_id}: {e}")
+        return None
+    if not result.success or result.profile is None:
+        return None
+    return result.profile
+
+
+def _current_risk(telegram_id):
+    """Caller's stored risk_percent as a bare string ('1'/'2'/'3'/'5'), or None. Matches _RISK_OPTIONS' own string shape."""
+    profile = _current_profile(telegram_id)
+    return f"{profile.risk_percent:g}" if profile else None
+
+
+def _current_timeframe(telegram_id):
+    """Caller's stored timeframe ('M15'/'H1'/'H4'), or None."""
+    profile = _current_profile(telegram_id)
+    return profile.timeframe if profile else None
+
+
+def _current_strategy_slug(telegram_id):
+    """Caller's stored strategy as a keyboard callback_data slug (e.g. 'Liquidity Sweep' -> 'liquidity_sweep'), or None."""
+    profile = _current_profile(telegram_id)
+    return profile.strategy.lower().replace(" ", "_") if profile else None
+
+
+def _current_notifications_choice(telegram_id):
+    """Caller's stored notification preference ('on'/'off'), or None."""
+    profile = _current_profile(telegram_id)
+    if profile is None:
+        return None
+    return "on" if profile.notifications_enabled else "off"
 
 
 @dataclass(frozen=True)
@@ -499,30 +569,70 @@ async def language_handler(telegram_id=None, args=None) -> str:
     return result.text
 
 
-async def risk_handler(telegram_id=None, args=None) -> str:
+async def risk_status(telegram_id=None, args=None) -> LanguageUpdateResult:
     """
-    /risk [1|2|3|5] -> UserService.change_risk(). No argument shows
-    the option keyboard (attached by command_router) plus a usage
-    hint. Never raises.
+    Full result behind /risk and its inline keyboard's risk_* callbacks
+    (V2 Phase 6.2: Settings Callback Completion) -- the reply text plus
+    whether the picker should stay open. Reuses LanguageUpdateResult
+    as-is (V1.1 Language UX Polish): its (text, show_keyboard) shape is
+    already generic, not language-specific, so no new result type is
+    introduced here. risk_handler() below is the plain str wrapper
+    telegram.command_router's text-command path already expects. Never
+    raises.
     """
     language = _current_language(telegram_id)
     choice = _first_arg(args)
     if choice is None:
-        return t("risk.prompt", language)
+        return LanguageUpdateResult(text=t("risk.prompt", language), show_keyboard=True)
 
     normalized = choice.rstrip("%")
     if normalized not in _RISK_OPTIONS:
-        return t("risk.invalid", language)
+        return LanguageUpdateResult(text=t("risk.invalid", language), show_keyboard=True)
 
     try:
         result = UserService().change_risk(telegram_id, float(normalized))
     except Exception as e:
         logger.warning(f"risk_handler: change_risk failed for telegram_id={telegram_id}: {e}")
-        return t("risk.error", language, error=e)
+        return LanguageUpdateResult(text=t("risk.error", language, error=e), show_keyboard=True)
 
     if not result.success:
-        return t("risk.error", language, error=result.reason)
-    return t("risk.updated", language, percent=normalized)
+        return LanguageUpdateResult(text=t("risk.error", language, error=result.reason), show_keyboard=True)
+    return LanguageUpdateResult(text=t("risk.updated", language, percent=normalized), show_keyboard=False)
+
+
+async def risk_handler(telegram_id=None, args=None) -> str:
+    """
+    /risk [1|2|3|5] -> UserService.change_risk(). No argument shows
+    the option keyboard (attached by command_router) plus a usage
+    hint. Never raises. See risk_status() above for the full result.
+    """
+    return (await risk_status(telegram_id, args)).text
+
+
+async def strategy_status(telegram_id=None, args=None) -> LanguageUpdateResult:
+    """
+    Full result behind /strategy and its inline keyboard's strategy_*
+    callbacks (V2 Phase 6.2). See risk_status()'s docstring for why
+    LanguageUpdateResult is reused as-is. Never raises.
+    """
+    language = _current_language(telegram_id)
+    choice = (args or "").strip()
+    if not choice:
+        return LanguageUpdateResult(text=t("strategy.prompt", language), show_keyboard=True)
+
+    normalized = _STRATEGY_OPTIONS.get(choice.lower())
+    if normalized is None:
+        return LanguageUpdateResult(text=t("strategy.invalid", language), show_keyboard=True)
+
+    try:
+        result = UserService().change_strategy(telegram_id, normalized)
+    except Exception as e:
+        logger.warning(f"strategy_handler: change_strategy failed for telegram_id={telegram_id}: {e}")
+        return LanguageUpdateResult(text=t("strategy.error", language, error=e), show_keyboard=True)
+
+    if not result.success:
+        return LanguageUpdateResult(text=t("strategy.error", language, error=result.reason), show_keyboard=True)
+    return LanguageUpdateResult(text=t("strategy.updated", language, strategy=normalized), show_keyboard=False)
 
 
 async def strategy_handler(telegram_id=None, args=None) -> str:
@@ -530,59 +640,54 @@ async def strategy_handler(telegram_id=None, args=None) -> str:
     /strategy [Liquidity Sweep|FVG|AMD|Order Block] ->
     UserService.change_strategy(). No argument shows the option
     keyboard (attached by command_router) plus a usage hint. Never
+    raises. See strategy_status() above for the full result.
+    """
+    return (await strategy_status(telegram_id, args)).text
+
+
+async def timeframe_status(telegram_id=None, args=None) -> LanguageUpdateResult:
+    """
+    Full result behind /timeframe and its inline keyboard's
+    timeframe_* callbacks (V2 Phase 6.2). See risk_status()'s
+    docstring for why LanguageUpdateResult is reused as-is. Never
     raises.
     """
     language = _current_language(telegram_id)
-    choice = (args or "").strip()
-    if not choice:
-        return t("strategy.prompt", language)
+    choice = _first_arg(args)
+    if choice is None:
+        return LanguageUpdateResult(text=t("timeframe.prompt", language), show_keyboard=True)
 
-    normalized = _STRATEGY_OPTIONS.get(choice.lower())
-    if normalized is None:
-        return t("strategy.invalid", language)
+    normalized = choice.upper()
+    if normalized not in _TIMEFRAME_OPTIONS:
+        return LanguageUpdateResult(text=t("timeframe.invalid", language), show_keyboard=True)
 
     try:
-        result = UserService().change_strategy(telegram_id, normalized)
+        result = UserService().change_timeframe(telegram_id, normalized)
     except Exception as e:
-        logger.warning(f"strategy_handler: change_strategy failed for telegram_id={telegram_id}: {e}")
-        return t("strategy.error", language, error=e)
+        logger.warning(f"timeframe_handler: change_timeframe failed for telegram_id={telegram_id}: {e}")
+        return LanguageUpdateResult(text=t("timeframe.error", language, error=e), show_keyboard=True)
 
     if not result.success:
-        return t("strategy.error", language, error=result.reason)
-    return t("strategy.updated", language, strategy=normalized)
+        return LanguageUpdateResult(text=t("timeframe.error", language, error=result.reason), show_keyboard=True)
+    return LanguageUpdateResult(text=t("timeframe.updated", language, timeframe=normalized), show_keyboard=False)
 
 
 async def timeframe_handler(telegram_id=None, args=None) -> str:
     """
     /timeframe [M15|H1|H4] -> UserService.change_timeframe(). No
     argument shows the option keyboard (attached by command_router)
-    plus a usage hint. Never raises.
+    plus a usage hint. Never raises. See timeframe_status() above for
+    the full result.
     """
-    language = _current_language(telegram_id)
-    choice = _first_arg(args)
-    if choice is None:
-        return t("timeframe.prompt", language)
-
-    normalized = choice.upper()
-    if normalized not in _TIMEFRAME_OPTIONS:
-        return t("timeframe.invalid", language)
-
-    try:
-        result = UserService().change_timeframe(telegram_id, normalized)
-    except Exception as e:
-        logger.warning(f"timeframe_handler: change_timeframe failed for telegram_id={telegram_id}: {e}")
-        return t("timeframe.error", language, error=e)
-
-    if not result.success:
-        return t("timeframe.error", language, error=result.reason)
-    return t("timeframe.updated", language, timeframe=normalized)
+    return (await timeframe_status(telegram_id, args)).text
 
 
-async def notifications_handler(telegram_id=None, args=None) -> str:
+async def notifications_status(telegram_id=None, args=None) -> LanguageUpdateResult:
     """
-    /notifications [on|off] -> NotificationService.enable_notifications()
-    / disable_notifications(). No argument shows current status plus a
-    usage hint. Never raises.
+    Full result behind /notifications and its inline keyboard's
+    notifications_* callbacks (V2 Phase 6.2). See risk_status()'s
+    docstring for why LanguageUpdateResult is reused as-is. Never
+    raises.
     """
     language = _current_language(telegram_id)
     choice = _first_arg(args)
@@ -593,22 +698,33 @@ async def notifications_handler(telegram_id=None, args=None) -> str:
             logger.warning(f"notifications_handler: is_enabled failed for telegram_id={telegram_id}: {e}")
             enabled = True  # schema default
         status_text = t("notifications.status_on", language) if enabled else t("notifications.status_off", language)
-        return t("notifications.status", language, status=status_text)
+        return LanguageUpdateResult(text=t("notifications.status", language, status=status_text), show_keyboard=True)
 
     normalized = choice.lower()
     if normalized not in {"on", "off"}:
-        return t("notifications.invalid", language)
+        return LanguageUpdateResult(text=t("notifications.invalid", language), show_keyboard=True)
 
     try:
         service = NotificationService()
         result = service.enable_notifications(telegram_id) if normalized == "on" else service.disable_notifications(telegram_id)
     except Exception as e:
         logger.warning(f"notifications_handler: update failed for telegram_id={telegram_id}: {e}")
-        return t("notifications.error", language, error=e)
+        return LanguageUpdateResult(text=t("notifications.error", language, error=e), show_keyboard=True)
 
     if not result.success:
-        return t("notifications.error", language, error=result.reason)
-    return t("notifications.enabled", language) if normalized == "on" else t("notifications.disabled", language)
+        return LanguageUpdateResult(text=t("notifications.error", language, error=result.reason), show_keyboard=True)
+    text = t("notifications.enabled", language) if normalized == "on" else t("notifications.disabled", language)
+    return LanguageUpdateResult(text=text, show_keyboard=False)
+
+
+async def notifications_handler(telegram_id=None, args=None) -> str:
+    """
+    /notifications [on|off] -> NotificationService.enable_notifications()
+    / disable_notifications(). No argument shows current status plus a
+    usage hint. Never raises. See notifications_status() above for the
+    full result.
+    """
+    return (await notifications_status(telegram_id, args)).text
 
 
 async def signal_handler(telegram_id=None) -> str:

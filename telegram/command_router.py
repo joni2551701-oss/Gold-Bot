@@ -38,6 +38,7 @@ from telegram.keyboards import (
     risk_keyboard,
     timeframe_keyboard,
     strategy_keyboard,
+    notifications_keyboard,
     phone_share_keyboard,
     resolve_navigation_command,
 )
@@ -58,21 +59,33 @@ PERMISSION_DENIED_TEXT = "Permission denied."
 _ALL_COMMANDS = {**COMMANDS, **OWNER_COMMANDS, **ADMIN_COMMANDS}
 
 # Which commands get an inline VALUE-PICKER keyboard attached to their
-# reply (Phase 40; scope narrowed by V2 Phase 6.3 -- see module note
-# below). Not command-specific business logic -- just display. Only
-# real-choice screens stay here: picking a language/risk percent/
-# strategy/timeframe is a genuine selection (Director's own inline
-# allow-list), never a between-screen navigation, so these keyboards
-# are untouched by Phase 6.3's Reply-Keyboard-is-navigation policy.
-# "start"/"settings"/"admin" are NOT here -- their replies now go
-# through telegram.reply_keyboard_manager.keyboard_for_command()
-# instead (V2 Phase 6.3), since Settings/Admin/Owner/Profile/Signals
-# are Reply Keyboard sections, not inline hints, as of this phase.
+# reply (Phase 40; scope narrowed by V2 Phase 6.3; notifications wired
+# in by V2 Phase 6.2 -- see module note below). Not command-specific
+# business logic -- just display. Only real-choice screens stay here:
+# picking a language/risk percent/strategy/timeframe/notification
+# preference is a genuine selection (Director's own inline allow-list),
+# never a between-screen navigation, so these keyboards are untouched
+# by Phase 6.3's Reply-Keyboard-is-navigation policy. "start"/
+# "settings"/"admin" are NOT here -- their replies now go through
+# telegram.reply_keyboard_manager.keyboard_for_command() instead (V2
+# Phase 6.3), since Settings/Admin/Owner/Profile/Signals are Reply
+# Keyboard sections, not inline hints, as of this phase.
+#
+# V2 Phase 6.2 (Settings Callback Completion): each builder is paired
+# with an optional "current value" accessor (telegram.handlers'
+# _current_risk()/_current_strategy_slug()/_current_timeframe()/
+# _current_notifications_choice()) so the picker opens already showing
+# a ●/○ radio marker on the caller's actual stored value (Stage 5/6:
+# "Current Value" + "Inline UX"), not a bare unmarked list. language
+# has no such accessor -- language selection has no "current value you
+# are adjusting" radio concept in Director's spec, unchanged from
+# Phase 40.
 _KEYBOARD_BY_COMMAND = {
-    "language": language_keyboard,
-    "risk": risk_keyboard,
-    "strategy": strategy_keyboard,
-    "timeframe": timeframe_keyboard,
+    "language": (language_keyboard, None),
+    "risk": (risk_keyboard, handlers._current_risk),
+    "strategy": (strategy_keyboard, handlers._current_strategy_slug),
+    "timeframe": (timeframe_keyboard, handlers._current_timeframe),
+    "notifications": (notifications_keyboard, handlers._current_notifications_choice),
 }
 
 # V2 Phase 3: which keyboard builder to attach to /start's reply for
@@ -253,14 +266,17 @@ async def route_command(command_text: str, telegram_id=None, username=None) -> R
         keyboard = _start_keyboard(telegram_id, handlers._current_language(telegram_id))
         reply_keyboard_manager.record_section(telegram_id, reply_keyboard_manager.SECTION_MAIN)
     else:
-        keyboard_builder = _KEYBOARD_BY_COMMAND.get(command)
-        if keyboard_builder is not None:
-            # Inline value-picker (Language/Risk/Strategy/Timeframe) --
-            # a real choice, Director's own inline allow-list; never a
-            # navigation switch, so the Reply Keyboard section tracker
-            # is deliberately left untouched here (whatever section the
-            # caller was already in stays current).
-            keyboard = keyboard_builder(handlers._current_language(telegram_id))
+        keyboard_entry = _KEYBOARD_BY_COMMAND.get(command)
+        if keyboard_entry is not None:
+            # Inline value-picker (Language/Risk/Strategy/Timeframe/
+            # Notifications) -- a real choice, Director's own inline
+            # allow-list; never a navigation switch, so the Reply
+            # Keyboard section tracker is deliberately left untouched
+            # here (whatever section the caller was already in stays
+            # current).
+            builder, current_value_accessor = keyboard_entry
+            selected = current_value_accessor(telegram_id) if current_value_accessor is not None else None
+            keyboard = builder(handlers._current_language(telegram_id), selected=selected)
         else:
             # V2 Phase 6.3 (Director Approved: Dynamic Reply Keyboard
             # Navigation) -- every other command's reply carries the
