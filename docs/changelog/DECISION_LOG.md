@@ -243,6 +243,39 @@ and correct at once.
 silently; this rule resolves it and applies to every future task. Full
 record: `communication/decisions/ADR-009.md`.
 
+---
+
+**Decision** (ADR-010): Any permission check — present or future —
+must fail closed. An unknown, invalid, missing, or malformed
+permission value, on either side of the comparison, never grants
+access; it always evaluates to DENY.
+
+**Reason**: `has_sufficient_permission()` (`platforms/navigation_core.py`,
+Frozen) fails closed for an unrecognized *user* tier but not for an
+unrecognized *required* tier (ranked at -1, satisfied by any real user
+tier ≥0) — a permission system's safe default must be symmetric.
+
+**Date**: TASK-002E review — the Worker surfaced this finding via a
+new edge-case test without self-authorizing a fix, since the module is
+Frozen; the Director classified it as a Potential Security Weakness
+(not a bug) and issued this ADR as the standing policy, while deferring
+the actual code fix to a dedicated future Security Task (tracked in
+`docs/TECHNICAL_DEBT.md`). Full record: `communication/decisions/ADR-010.md`.
+
+---
+
+**Decision** (ADR-011): Every task touching Permission, Authentication,
+Authorization, Session, or Navigation code must include a Security
+Review section in its report (Attack Surface, Failure Modes, Fail
+Open/Fail Closed, Abuse Scenarios, Recommendations).
+
+**Reason**: Formalizes the review practice that caught ADR-010's
+finding, so this class of issue is caught consistently rather than by
+chance.
+
+**Date**: TASK-002E review, same cycle as ADR-010. Applies starting
+with TASK-002F. Full record: `communication/decisions/ADR-011.md`.
+
 ## Related
 
 - `docs/changelog/CHANGELOG.md` — what shipped alongside each decision.

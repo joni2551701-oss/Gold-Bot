@@ -185,12 +185,35 @@ of which run number a task's own brief happened to name first. See
 `communication/decisions/ADR-009.md` for the TASK-002D precedent this
 formalizes.
 
+## Fail Closed Permission Policy (ADR-010)
+
+Any permission check — present or future, in `platforms/navigation_core.py`
+or any later Permission/Authentication/Authorization/Session/Navigation
+module — must fail closed: an unknown, invalid, missing, or malformed
+value, on either side of the comparison, never grants access. See
+`communication/decisions/ADR-010.md` for the finding that prompted this
+(`has_sufficient_permission()`'s required-tier direction, tracked as a
+Security Backlog entry in `docs/TECHNICAL_DEBT.md`, not yet fixed since
+the module is Frozen).
+
+## Security Review Layer (ADR-011 — mandatory report section)
+
+Every task whose scope touches Permission, Authentication,
+Authorization, Session, or Navigation code must include a **Security
+Review** section in its end-of-task report: Attack Surface, Failure
+Modes, Fail Open/Fail Closed, Abuse Scenarios, Recommendations. See
+`communication/decisions/ADR-011.md`. Applies starting with TASK-002F.
+
 ## Related
 
 - `docs/constitution/CONSTITUTION.md` Article 8, Article 11.
 - `communication/task_queue/README.md` — how tasks and sub-tasks are
   tracked.
 - `communication/decisions/ADR-009.md` — the CI Supersession Rule's
+  full record.
+- `communication/decisions/ADR-010.md` — the Fail Closed Permission
+  Policy's full record.
+- `communication/decisions/ADR-011.md` — the Security Review Layer's
   full record.
 - `communication/decisions/ADR-005.md` — the Migration Task rules that
   govern any future change to a Frozen task's content.

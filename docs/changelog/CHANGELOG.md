@@ -414,6 +414,33 @@ under the No Silent Decisions Policy, not self-authorized.
 **Architecture Impact**: Test-depth only, zero production code changed,
 zero Trading Core/`telegram/`/`.github/` diff.
 
+## ADR-010/011 (Fail Closed Permission Policy; Security Review Layer); TASK-002E frozen; TASK-002F authorized (expanded)
+
+**Changes**: `communication/decisions/ADR-010.md` (new) — every
+permission check must fail closed on an unknown/invalid/missing/
+malformed value, on either side of the comparison.
+`communication/decisions/ADR-011.md` (new) — every task touching
+Permission/Authentication/Authorization/Session/Navigation code must
+include a Security Review section (Attack Surface, Failure Modes, Fail
+Open/Fail Closed, Abuse Scenarios, Recommendations) in its report; both
+folded into `docs/changelog/DECISION_LOG.md` and
+`docs/PLATFORM_WORKFLOW.md`. TASK-002E marked ✅ **APPROVED and
+Frozen** — full Freeze Checklist recorded in
+`communication/task_queue/TASK-002E.md`. The `has_sufficient_permission()`
+finding is classified by Director decision as a Potential Security
+Weakness (not a routine bug) and recorded as a Security Backlog entry
+in `docs/TECHNICAL_DEBT.md` — no code change applied; deferred to a
+future, separately-authorized Security Task. TASK-002F re-scoped by
+Director order from "Navigation Freeze" to a full **Navigation
+Foundation Final Audit** (Architecture/Code/Documentation/Test/Future/
+Security Audit — see `communication/task_queue/TASK-002F.md`) and
+🟢 authorized to start.
+
+**Architecture Impact**: Governance only, zero code changed. If
+TASK-002F's audit succeeds, Navigation Foundation (Phase 1 of Platform
+Foundation) will be declared COMPLETE and Production Ready, unblocking
+DEVOPS-001.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.

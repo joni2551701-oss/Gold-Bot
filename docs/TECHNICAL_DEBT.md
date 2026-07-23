@@ -41,6 +41,42 @@ it; adding an entry is documentation only and implies no code change.
   decision follows the Constitution v2 / documentation-system work
   referenced in the Director's own roadmap.
 
+## Security Backlog: `has_sufficient_permission()` fails open for an unrecognized required tier
+
+- **Where**: `platforms/navigation_core.py` (Frozen since TASK-002D),
+  `has_sufficient_permission(user_tier, required_tier)`.
+- **What**: `_TIER_RANK.get(required_tier, -1)` ranks any unrecognized
+  `required_tier` value at `-1`. Since every real user tier
+  (`USER`/`ADMIN`/`OWNER`) ranks at 0 or above, `rank(user) >= -1` is
+  always true — an empty, malformed, or unrecognized *required* tier
+  is treated as "no restriction" instead of "no access." The *user*-tier
+  side of the same function correctly fails closed (an unrecognized
+  user tier ranks at `-1`, which never satisfies a real required tier's
+  rank ≥0).
+- **Why it's not exploitable today**: every `DEFAULT_MENUS` entry's
+  `permission` field is independently validated (by test) to be
+  exactly one of `USER`/`ADMIN`/`OWNER` — no live code path can supply
+  an unrecognized `required_tier` to this function today.
+- **Discovery**: surfaced by TASK-002E's validation test suite
+  (`tests/platforms/test_navigation_validation.py`), not fixed at the
+  time, since `navigation_core.py` was already Frozen.
+- **Director decision**: classified as a **Potential Security
+  Weakness**, not a routine bug — see `communication/decisions/ADR-010.md`
+  (Fail Closed Permission Policy, the standing rule this violates) and
+  `communication/decisions/ADR-011.md` (Security Review Layer, the
+  reporting practice that will re-check this class of issue going
+  forward). No code change made yet — a dedicated future Security Task,
+  authorized separately after Navigation Foundation (TASK-002E +
+  TASK-002F) closes, will fix `_TIER_RANK.get(required_tier, -1)`'s
+  handling explicitly (e.g. treating an unrecognized required tier as
+  "deny," not "no restriction").
+- **Resolution path, if/when authorized**: change
+  `has_sufficient_permission()` so an unrecognized `required_tier`
+  returns `False` rather than being satisfied by any real user rank —
+  requires reopening the Frozen `navigation_core.py` module under
+  ADR-010's own authorization, plus a regression test confirming the
+  fix doesn't change behavior for any of the three real tier values.
+
 ## Related documents
 
 - `docs/PHASE_BRANCH_SYNC_AUDIT.md` — the branch-of-record decision
