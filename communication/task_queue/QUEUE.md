@@ -68,6 +68,21 @@ DEVOPS-004   Build Optimization       ⏳ Not yet scoped
 | DEVOPS-003 | Branch Protection | ⏳ Not yet scoped |
 | DEVOPS-004 | Build Optimization | ⏳ Not yet scoped |
 
+## Governance (separate track — `GOVERNANCE-REVIEW-XXX`, never a `TASK-XXX` or `DEVOPS-XXX`)
+
+A third independent track for whole-governance-layer review work (as
+opposed to Platform feature work or CI/Engineering infrastructure work)
+— never interrupts, and is never interrupted by, either of the other
+two tracks.
+
+```
+GOVERNANCE-REVIEW-001   Engineering Governance Layer Review   ✅ DELIVERED — awaiting Director Governance Freeze decision
+```
+
+| Task | Title | Status |
+|---|---|---|
+| GOVERNANCE-REVIEW-001 | Engineering Governance Layer Review | ✅ DELIVERED — see `communication/task_queue/GOVERNANCE-REVIEW-001.md` and `docs/GOVERNANCE_REVIEW_001.md`. Final Recommendation: READY WITH MINOR IMPROVEMENTS. |
+
 ## Rule change (Engineering track, this update)
 
 Per Director decision: a separate Engineering/DevOps roadmap
