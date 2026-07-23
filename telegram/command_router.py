@@ -215,9 +215,8 @@ async def route_command(command_text: str, telegram_id=None, username=None) -> R
     from the Settings section, or "◀️ Ortga" from any section) is tried
     next if the Main-tier map above doesn't recognize it --
     telegram.reply_keyboard_manager.resolve_navigation_command() owns
-    that second map, including the one label collision Director's UX
-    spec creates ("📊 Statistics" under both Admin and Profile), which
-    it resolves using the caller's tracked current section.
+    that second map, using the caller's tracked current section to
+    resolve it.
     """
     resolved_command_text = resolve_navigation_command(command_text)
     if resolved_command_text is None:

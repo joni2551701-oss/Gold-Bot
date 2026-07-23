@@ -38,17 +38,32 @@ submenu attached.
 
 Per-chat "current section" tracking: process-local only (dict, never
 written to the database), the same non-persisted-state precedent
-Phase 6.1's Message Lifecycle Tracker already established. Its only
-job is disambiguating the one label collision Director's own UX spec
-creates: "📊 Statistics" appears verbatim under both Admin (-> /stats)
-and Profile (-> /profile). Since Telegram only ever shows the buttons
-of whichever Reply Keyboard was sent last, a chat can only be looking
-at one of those two screens at a time -- resolve_navigation_command()
-uses the tracked section to pick the right destination, and falls back
-to a fixed default (/profile, the less-privileged of the two -- route_
-command()'s own permission check is what actually protects /stats
-either way) if the section was never recorded (e.g. after a process
-restart).
+Phase 6.1's Message Lifecycle Tracker already established. It records
+which submenu a chat is currently looking at, so a same-text label
+tapped from two different submenus can still resolve unambiguously
+(checked first; the combined map across all sections is the fallback
+for an untracked/stale section, e.g. after a process restart).
+
+Director Review (Phase 6.3 Addendum) -- four corrections applied after
+the first Phase 6.3 pass:
+1. Admin submenu's "Admin Management" button (was "👑 Admins", mapped
+   to /addadmin) now maps back to /admin -- Director: "/addadmin bu
+   amaliyot (action), menyu emas" (/addadmin is an action, not a
+   menu); tapping it must re-open the Admin Panel (admin_handler()'s
+   own reply already lists "👑 Admin Management" as one of its lines),
+   never directly perform an add-admin action.
+2. Profile's "📊 Statistics" button is removed outright (Director's
+   Variant B) -- no per-user statistics feature exists yet to route it
+   to, and reusing /profile for a second, differently-labeled button
+   was rejected as poor UX. This also removes the only label collision
+   Admin/Profile ever had, since Admin's own "📊 Statistics" (-> /stats)
+   is now the sole owner of that text.
+3. Admin/Owner submenu action labels are now localized in all three
+   languages like every other submenu -- Director: "GoldBot uch tilda
+   ishlaydi. Demak Reply Keyboard ham uch tilda bo'lishi kerak" (GoldBot
+   runs in three languages, so the Reply Keyboard must too). This
+   retires the English-only precedent the first Phase 6.3 pass borrowed
+   from the old inline admin_panel_keyboard() -- Director overrode it.
 """
 
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
@@ -80,7 +95,6 @@ _SECTION_BY_COMMAND = {
     "stats": SECTION_ADMIN,
     "system": SECTION_ADMIN,
     "broadcast": SECTION_ADMIN,
-    "addadmin": SECTION_ADMIN,
     "removeadmin": SECTION_ADMIN,
     "owner": SECTION_OWNER,
     "runtime": SECTION_OWNER,
@@ -112,7 +126,10 @@ _SECTION_LABEL_KEYS = {
         "stats": "rkm.admin.statistics",
         "system": "rkm.admin.system",
         "broadcast": "rkm.admin.broadcast",
-        "addadmin": "rkm.admin.admins",
+        # "Admin Management" re-opens the Admin Panel (/admin) rather
+        # than performing an action -- Director Review correction 1:
+        # /addadmin is an action, not a menu destination.
+        "admin": "rkm.admin.admins",
     },
     SECTION_OWNER: {
         "runtime": "rkm.owner.runtime",
@@ -125,11 +142,6 @@ _SECTION_LABEL_KEYS = {
     SECTION_PROFILE: {
         "profile": "rkm.profile.profile",
         "subscription": "menu.subscription",
-        # "profile" is used twice deliberately: the Profile submenu's
-        # own "📄 Profile" button and its "📊 Statistics" button both
-        # reuse profile_handler() (Director UX spec; no separate
-        # per-user statistics command exists to reuse instead -- see
-        # this module's docstring / Phase 6.3 audit notes).
     },
     SECTION_SIGNALS: {
         "signal": "rkm.signals.live",
@@ -137,16 +149,6 @@ _SECTION_LABEL_KEYS = {
         "upgrade": "rkm.signals.premium",
     },
 }
-
-# The one label Director's spec repeats verbatim across two sections.
-# Resolved by tracked section, not by a flat global map (see module
-# docstring).
-_STATISTICS_LABEL_KEY = "rkm.admin.statistics"  # same text as rkm.profile.statistics
-_STATISTICS_COMMAND_BY_SECTION = {
-    SECTION_ADMIN: "stats",
-    SECTION_PROFILE: "profile",
-}
-_STATISTICS_DEFAULT_COMMAND = "profile"
 
 
 def _label_map_for_section(section):
@@ -165,7 +167,6 @@ def _label_map_for_section(section):
 _SECTION_MAPS = {section: _label_map_for_section(section) for section in _SECTION_LABEL_KEYS}
 
 _BACK_LABELS = frozenset(t("rkm.back", language) for language in _NAVIGATION_LANGUAGES)
-_STATISTICS_LABELS = frozenset(t(_STATISTICS_LABEL_KEY, language) for language in _NAVIGATION_LANGUAGES)
 
 
 def main_keyboard(telegram_id, level=None):
@@ -196,21 +197,10 @@ def main_keyboard(telegram_id, level=None):
     return reply_keyboard(language)
 
 
-def _submenu_rows(section, language, label_language=None):
-    """
-    `label_language`, when given, overrides the language used for the
-    section's own action buttons while "◀️ Ortga" still uses `language`
-    (the caller's real language) -- used by the Admin/Owner submenus
-    below, which stay English-only for their action labels (Phase 1.5
-    Localized Keyboards precedent: "OWNER/ADMIN UI is Director
-    decision, out of scope for USER-facing localization", same as the
-    retired admin_panel_keyboard() this replaces), while Back still
-    localizes normally, matching Phase 6.1's own precedent of
-    localizing Back/Home even on admin-adjacent pages.
-    """
-    label_language = language if label_language is None else label_language
+def _submenu_rows(section, language):
+    """Every action button for `section`, localized to `language`, plus a trailing "◀️ Ortga" row."""
     buttons = [
-        KeyboardButton(text=t(key, label_language)) for key in _SECTION_LABEL_KEYS[section].values()
+        KeyboardButton(text=t(key, language)) for key in _SECTION_LABEL_KEYS[section].values()
     ]
     rows = [buttons[i:i + 2] for i in range(0, len(buttons), 2)]
     rows.append([KeyboardButton(text=t("rkm.back", language))])
@@ -223,25 +213,24 @@ def settings_keyboard(language=None):
 
 
 def admin_submenu_keyboard(language=None):
-    """Admin submenu Reply Keyboard: Users/Statistics/System/Broadcast/Admins (English-only) + Ortga (localized)."""
-    return ReplyKeyboardMarkup(
-        keyboard=_submenu_rows(SECTION_ADMIN, language, label_language="EN"), resize_keyboard=True,
-    )
+    """Admin submenu Reply Keyboard: Users/Statistics/System/Broadcast/Admin Management + Ortga, all localized."""
+    return ReplyKeyboardMarkup(keyboard=_submenu_rows(SECTION_ADMIN, language), resize_keyboard=True)
 
 
 def owner_submenu_keyboard(language=None):
-    """Owner submenu Reply Keyboard: Runtime/Health/Performance/Errors/Pipeline/Reports (English-only) + Ortga (localized)."""
-    return ReplyKeyboardMarkup(
-        keyboard=_submenu_rows(SECTION_OWNER, language, label_language="EN"), resize_keyboard=True,
-    )
+    """Owner submenu Reply Keyboard: Runtime/Health/Performance/Errors/Pipeline/Reports + Ortga, all localized."""
+    return ReplyKeyboardMarkup(keyboard=_submenu_rows(SECTION_OWNER, language), resize_keyboard=True)
 
 
 def profile_keyboard(language=None):
-    """Profile submenu Reply Keyboard: Profile/Subscription/Statistics + Ortga."""
+    """
+    Profile submenu Reply Keyboard: Profile/Subscription + Ortga. No
+    Statistics button (Director Review correction 2) -- no per-user
+    statistics feature exists yet to route it to.
+    """
     rows = [
         [KeyboardButton(text=t("rkm.profile.profile", language))],
         [KeyboardButton(text=t("menu.subscription", language))],
-        [KeyboardButton(text=t("rkm.profile.statistics", language))],
         [KeyboardButton(text=t("rkm.back", language))],
     ]
     return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
@@ -283,7 +272,7 @@ def keyboard_for_command(command, telegram_id):
     The "keyboard switch" (Director's own naming): given the command
     that was just executed, returns the Reply Keyboard that should
     accompany its reply, and records the resulting section so a later
-    ambiguous label (see _STATISTICS_LABELS) can be resolved correctly.
+    submenu label tap can be resolved against the right section first.
     """
     section = _SECTION_BY_COMMAND.get(command, SECTION_MAIN)
     record_section(telegram_id, section)
@@ -306,9 +295,7 @@ def resolve_navigation_command(text, telegram_id=None):
 
     "◀️ Ortga" always resolves to "/start" regardless of section
     (Director: "Alohida Home tugmasi kerak emas. Ortga -> Main
-    Keyboard"). "📊 Statistics" is the one genuine collision (see
-    module docstring) -- resolved via the caller's tracked section,
-    falling back to _STATISTICS_DEFAULT_COMMAND if untracked.
+    Keyboard").
     """
     if not text:
         return None
@@ -316,11 +303,6 @@ def resolve_navigation_command(text, telegram_id=None):
 
     if text in _BACK_LABELS:
         return "/start"
-
-    if text in _STATISTICS_LABELS:
-        section = current_section(telegram_id) if telegram_id is not None else None
-        command = _STATISTICS_COMMAND_BY_SECTION.get(section, _STATISTICS_DEFAULT_COMMAND)
-        return f"/{command}"
 
     section = current_section(telegram_id) if telegram_id is not None else None
     if section in _SECTION_MAPS:

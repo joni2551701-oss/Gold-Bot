@@ -466,30 +466,38 @@ _CATALOG: dict = {
     # requires. "◀️ Ortga" (rkm.back) is intentionally a different
     # glyph/label from Phase 6.1's retired "nav.back" ("⬅️ Orqaga") --
     # not the same button, a new one.
+    #
+    # Phase 6.3 Addendum (Director Review correction 3): Admin/Owner
+    # action labels are localized in all three languages, same as
+    # every other submenu -- the first pass's English-only precedent
+    # (borrowed from the retired inline admin_panel_keyboard()) was
+    # overridden by the Director: "GoldBot uch tilda ishlaydi. Demak
+    # Reply Keyboard ham uch tilda bo'lishi kerak." "Runtime"/"Pipeline"
+    # (rkm.owner.runtime/pipeline) stay as loanwords in UZ -- no
+    # natural one-word Uzbek equivalent, same as their own RU rows.
     "rkm.back": {"EN": "◀️ Back", "UZ": "◀️ Ortga", "RU": "◀️ Назад"},
     "rkm.settings.language": {"EN": "🌐 Language", "UZ": "🌐 Til", "RU": "🌐 Язык"},
     "rkm.settings.risk": {"EN": "💰 Risk", "UZ": "💰 Risk", "RU": "💰 Риск"},
     "rkm.settings.strategy": {"EN": "📈 Strategy", "UZ": "📈 Strategiya", "RU": "📈 Стратегия"},
     "rkm.settings.timeframe": {"EN": "⏰ Timeframe", "UZ": "⏰ Vaqt oralig'i", "RU": "⏰ Таймфрейм"},
     "rkm.settings.notifications": {"EN": "🔔 Notifications", "UZ": "🔔 Bildirishnomalar", "RU": "🔔 Уведомления"},
-    "rkm.admin.users": {"EN": "👥 Users", "UZ": "👥 Users", "RU": "👥 Пользователи"},
-    "rkm.admin.statistics": {"EN": "📊 Statistics", "UZ": "📊 Statistics", "RU": "📊 Статистика"},
-    "rkm.admin.system": {"EN": "🛠 System", "UZ": "🛠 System", "RU": "🛠 Система"},
-    "rkm.admin.broadcast": {"EN": "📢 Broadcast", "UZ": "📢 Broadcast", "RU": "📢 Рассылка"},
-    "rkm.admin.admins": {"EN": "👑 Admins", "UZ": "👑 Admins", "RU": "👑 Админы"},
+    "rkm.admin.users": {"EN": "👥 Users", "UZ": "👥 Foydalanuvchilar", "RU": "👥 Пользователи"},
+    "rkm.admin.statistics": {"EN": "📊 Statistics", "UZ": "📊 Statistika", "RU": "📊 Статистика"},
+    "rkm.admin.system": {"EN": "🛠 System", "UZ": "🛠 Tizim", "RU": "🛠 Система"},
+    "rkm.admin.broadcast": {"EN": "📢 Broadcast", "UZ": "📢 Xabar yuborish", "RU": "📢 Рассылка"},
+    # Re-opens the Admin Panel (/admin) -- Director Review correction 1:
+    # /addadmin is an action, not a menu destination (see
+    # telegram/reply_keyboard_manager.py's module docstring).
+    "rkm.admin.admins": {
+        "EN": "👑 Admin Management", "UZ": "👑 Admin boshqaruvi", "RU": "👑 Управление администраторами",
+    },
     "rkm.owner.runtime": {"EN": "⚙️ Runtime", "UZ": "⚙️ Runtime", "RU": "⚙️ Runtime"},
-    "rkm.owner.health": {"EN": "❤️ Health", "UZ": "❤️ Health", "RU": "❤️ Здоровье"},
-    "rkm.owner.performance": {"EN": "📈 Performance", "UZ": "📈 Performance", "RU": "📈 Производительность"},
-    "rkm.owner.errors": {"EN": "🚨 Errors", "UZ": "🚨 Errors", "RU": "🚨 Ошибки"},
+    "rkm.owner.health": {"EN": "❤️ Health", "UZ": "❤️ Salomatlik", "RU": "❤️ Здоровье"},
+    "rkm.owner.performance": {"EN": "📈 Performance", "UZ": "📈 Unumdorlik", "RU": "📈 Производительность"},
+    "rkm.owner.errors": {"EN": "🚨 Errors", "UZ": "🚨 Xatoliklar", "RU": "🚨 Ошибки"},
     "rkm.owner.pipeline": {"EN": "📦 Pipeline", "UZ": "📦 Pipeline", "RU": "📦 Пайплайн"},
-    "rkm.owner.reports": {"EN": "📋 Reports", "UZ": "📋 Reports", "RU": "📋 Отчёты"},
+    "rkm.owner.reports": {"EN": "📋 Reports", "UZ": "📋 Hisobotlar", "RU": "📋 Отчёты"},
     "rkm.profile.profile": {"EN": "📄 Profile", "UZ": "📄 Profile", "RU": "📄 Профиль"},
-    # Deliberately the same text as rkm.admin.statistics in every
-    # language (Director's own UX spec repeats "📊 Statistics" under
-    # both Admin and Profile) -- telegram.reply_keyboard_manager's
-    # per-section resolution (not a flat global map) is what tells the
-    # two apart at runtime; see that module's docstring.
-    "rkm.profile.statistics": {"EN": "📊 Statistics", "UZ": "📊 Statistics", "RU": "📊 Статистика"},
     "rkm.signals.live": {"EN": "📈 Live Signals", "UZ": "📈 Live Signals", "RU": "📈 Живые сигналы"},
     "rkm.signals.history": {"EN": "📜 History", "UZ": "📜 History", "RU": "📜 История"},
     "rkm.signals.premium": {"EN": "⭐ Premium", "UZ": "⭐ Premium", "RU": "⭐ Премиум"},

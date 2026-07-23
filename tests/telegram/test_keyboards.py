@@ -209,7 +209,7 @@ def test_command_router_attaches_a_keyboard_localized_to_the_caller():
     ]
 
 
-def test_command_router_admin_keyboard_stays_english_regardless_of_caller_language(monkeypatch):
+def test_command_router_admin_keyboard_localizes_to_the_callers_language(monkeypatch):
     from telegram.command_router import route_command
     from telegram.user_service import UserService
     from telegram.permissions import PermissionLevel
@@ -222,11 +222,11 @@ def test_command_router_admin_keyboard_stays_english_regardless_of_caller_langua
 
     result = asyncio.run(route_command("/admin", telegram_id="702"))
 
-    # V2 Phase 6.3: action labels stay English-only (Director decision,
-    # same precedent as the retired inline admin_panel_keyboard()), but
-    # the trailing Back button still localizes to the caller's language.
+    # V2 Phase 6.3 Addendum (Director Review correction 3): Admin/Owner
+    # submenus localize like every other submenu -- no more English-only.
     assert _reply_texts(result.keyboard) == [
-        "👥 Users", "📊 Statistics", "🛠 System", "📢 Broadcast", "👑 Admins", "◀️ Назад",
+        "👥 Пользователи", "📊 Статистика", "🛠 Система", "📢 Рассылка",
+        "👑 Управление администраторами", "◀️ Назад",
     ]
 
 
@@ -284,8 +284,10 @@ def test_navigation_main_to_profile_switches_to_the_profile_reply_keyboard():
 
     result = asyncio.run(route_command("/profile", telegram_id="712"))
 
+    # V2 Phase 6.3 Addendum (Director Review correction 2): no Statistics
+    # button on Profile -- no per-user statistics feature exists yet.
     assert _reply_texts(result.keyboard) == [
-        "📄 Profile", "💳 Subscription", "📊 Statistics", "◀️ Back",
+        "📄 Profile", "💳 Subscription", "◀️ Back",
     ]
 
 
@@ -320,7 +322,30 @@ def test_navigation_main_to_admin_switches_to_the_admin_submenu_reply_keyboard(m
     result = asyncio.run(route_command("/admin", telegram_id="714"))
 
     assert _reply_texts(result.keyboard) == [
-        "👥 Users", "📊 Statistics", "🛠 System", "📢 Broadcast", "👑 Admins", "◀️ Back",
+        "👥 Users", "📊 Statistics", "🛠 System", "📢 Broadcast", "👑 Admin Management", "◀️ Back",
+    ]
+
+
+def test_navigation_admin_management_button_reopens_the_admin_panel_not_addadmin(monkeypatch):
+    """V2 Phase 6.3 Addendum (Director Review correction 1): tapping
+    "👑 Admin Management" must re-open the Admin Panel (/admin), never
+    directly invoke /addadmin (an action, not a menu destination)."""
+    from telegram.command_router import route_command
+    from telegram.user_service import UserService
+    from telegram.permissions import PermissionLevel
+
+    monkeypatch.setattr(
+        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
+    )
+    UserService().register_user("718", username="navadminmgmt")
+    UserService().change_language("718", "EN")
+
+    asyncio.run(route_command("/admin", telegram_id="718"))
+    result = asyncio.run(route_command("👑 Admin Management", telegram_id="718"))
+
+    assert result.text != "Usage: /addadmin USER_ID"
+    assert _reply_texts(result.keyboard) == [
+        "👥 Users", "📊 Statistics", "🛠 System", "📢 Broadcast", "👑 Admin Management", "◀️ Back",
     ]
 
 
