@@ -8,14 +8,27 @@ document is only ever the current tip.
 
 ## Phase: TASK-002E — Navigation Tests (Validation)
 
-**Status: IN PROGRESS.** Director-authorized: Navigation Validation,
-Edge Cases, Stack Consistency, Multi-session Validation, Permission
-Validation, Event Validation, Recovery Scenarios, Integration
-Validation — all against the existing, frozen TASK-002D contracts.
+**Status: ✅ DELIVERED — awaiting Director review.**
+`tests/platforms/test_navigation_validation.py` (29 new tests) added:
+Navigation Validation, Edge Cases, Stack Consistency, Multi-session
+Validation, Permission Validation, Event Validation, Recovery
+Scenarios, Integration Validation — all against the existing, frozen
+TASK-002D contracts. `tests/platforms/` total: 80 tests, all passing;
+full suite 4689 passed. Zero diff to Trading Core/`telegram/`/
+`.github/`/existing `platforms/*.py` files.
 
-**Forbidden**: redesigning the Navigation architecture, changing any
-existing public contract, touching Trading Core, or turning
-`PlatformAdapterBase` into a concrete per-platform implementation.
+One validation finding surfaced (not fixed, since `navigation_core.py`
+is Frozen): `has_sufficient_permission()` is permissive rather than
+restrictive for an unrecognized/empty *required*-tier input (the
+*user*-tier direction correctly fails closed). Not exploitable today
+— every `DEFAULT_MENUS.permission` is independently validated to be
+USER/ADMIN/OWNER. See `communication/task_queue/TASK-002E.md` for full
+detail.
+
+**Forbidden (respected)**: redesigning the Navigation architecture,
+changing any existing public contract, touching Trading Core, or
+turning `PlatformAdapterBase` into a concrete per-platform
+implementation.
 
 ## New governance this round
 

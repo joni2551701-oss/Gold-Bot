@@ -382,6 +382,38 @@ Platform Adapter implementation).
 the last open question from TASK-002D's review and unblocks Navigation
 Foundation's final two steps.
 
+## TASK-002E — Navigation Tests (Validation) delivered
+
+**Changes**: `tests/platforms/test_navigation_validation.py` (new, 29
+tests) — Navigation Validation, Edge Cases/Invalid Route Handling,
+Stack Consistency, Multi-session Validation (20 sessions, interleaved
+ops), Permission Validation (full USER/ADMIN/OWNER rank matrix),
+Event Validation, Recovery Scenarios (after repeated failures),
+Integration Validation (`NavigationCore` + `build_default_menu_registry()`
++ a test-only `PlatformAdapterBase` subclass composed end-to-end), and
+a stress test (50 sessions × 20 ops each). `docs/PLATFORM_FOUNDATION.md`'s
+Testing section updated to reflect 80 total tests
+(28 PLATFORM-001 + 11 TASK-002C + 12 TASK-002D + 29 TASK-002E).
+
+Zero changes to `platforms/navigation_core.py`, `platforms/platform_adapter.py`,
+`platforms/navigation_events.py`, or `platforms/menu_registry.py` — all
+Frozen contracts stayed exactly as TASK-002D left them.
+
+**Validation finding surfaced, not fixed**: `has_sufficient_permission()`
+ranks an unrecognized *required* tier at -1, so any real user tier
+(rank ≥0) satisfies "≥ -1" — making the function permissive rather than
+restrictive for a malformed/empty *required*-tier input specifically
+(the *user*-tier direction correctly fails closed). Not exploitable
+today since every `DEFAULT_MENUS` entry's `permission` is independently
+validated to be exactly USER/ADMIN/OWNER. Documented in
+`tests/platforms/test_navigation_validation.py` and
+`docs/PLATFORM_FOUNDATION.md`; left for a future authorized fix since
+`navigation_core.py` is Frozen — raised here for Director awareness
+under the No Silent Decisions Policy, not self-authorized.
+
+**Architecture Impact**: Test-depth only, zero production code changed,
+zero Trading Core/`telegram/`/`.github/` diff.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.

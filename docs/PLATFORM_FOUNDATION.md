@@ -47,15 +47,23 @@ never read by anything outside this class.
 
 ## Testing
 
-`tests/platforms/` — one `test_<module>.py` per file above (8 files,
-covering all 10 modules since `capability_model.py`/`capability_registry.py`
-and `platform_model.py`/`platform_registry.py` share test files with
-their registry), 51 tests total, all passing (28 from PLATFORM-001 +
-11 from TASK-002C + 12 from TASK-002D: `NavigationCore`'s permission-
-rank/navigate/go_back/session-isolation cases, `PlatformAdapterBase`'s
-abstract-instantiation and concrete-subclass-completeness checks).
-Mirrors `tests/assets/test_asset_intelligence.py`'s convention: real
-objects, no mocking, explicit immutability/duplicate/independence
+`tests/platforms/` — one `test_<module>.py` per file above (8 files),
+plus `test_navigation_validation.py` (TASK-002E, deeper coverage
+against the same frozen contracts, not a per-module file) — 80 tests
+total, all passing (28 from PLATFORM-001 + 11 from TASK-002C + 12 from
+TASK-002D + 29 from TASK-002E: stack consistency, multi-session
+isolation under interleaving, the full permission-rank matrix,
+recovery after repeated failures, a stress test, and an integration
+test composing `NavigationCore` + `build_default_menu_registry()` + a
+test-only `PlatformAdapterBase` subclass end-to-end). TASK-002E also
+surfaced and documented one validation finding without changing frozen
+code: `has_sufficient_permission()` ranks an unrecognized *required*
+tier at -1, making it permissive rather than restrictive for that one
+malformed-data direction — not exploitable today since every
+`DEFAULT_MENUS` entry's `permission` is independently validated to be
+exactly USER/ADMIN/OWNER; left to a future authorized fix, per the
+Freeze Checklist. Mirrors `tests/assets/test_asset_intelligence.py`'s
+convention: real objects, no mocking, explicit immutability/duplicate/independence
 checks.
 
 ## Known Limitations

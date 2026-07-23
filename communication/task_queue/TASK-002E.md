@@ -1,7 +1,7 @@
 # TASK-002E
 
 **Title**: Navigation Tests (Navigation Validation)
-**Status**: 🟢 AUTHORIZED, in progress.
+**Status**: ✅ DELIVERED — awaiting Director review.
 
 ## Objective
 
@@ -41,3 +41,28 @@ back, session isolation) — this task's job is depth (stress/edge
 cases, recovery, integration), not first coverage. Whatever this task
 adds is additional test coverage against the existing, frozen
 TASK-002D contracts — not a change to those contracts themselves.
+
+## Delivered
+
+`tests/platforms/test_navigation_validation.py` — 29 new tests across
+8 sections (Navigation Validation, Edge Cases/Invalid Route Handling,
+Stack Consistency, Multi-session Validation, Permission Validation,
+Event Validation, Recovery Scenarios, Integration Validation, plus a
+Stress section). `tests/platforms/` total: 80 tests, all passing.
+Full suite: 4689 passed. `pyflakes`/`compileall` clean. `main.py`
+smoke run clean, matching baseline log shape. Zero diff to Trading
+Core (`core/`, `context/`, `strategies/`, `signals/`, `decision/`,
+`risk/`, `ai/`, `execution/`, `database/`), `telegram/`, `.github/`, or
+any existing `platforms/*.py` file — confirmed via
+`git diff --cached --stat`.
+
+**Validation finding (documented, not fixed — `navigation_core.py` is
+Frozen)**: `has_sufficient_permission()` ranks an unrecognized
+*required* tier at -1, so it is permissive (returns `True`) rather
+than restrictive for an empty/malformed *required*-tier input; the
+*user*-tier direction correctly fails closed. Not exploitable today
+since every `DEFAULT_MENUS.permission` is independently validated to
+be exactly USER/ADMIN/OWNER. Raised for Director awareness per the No
+Silent Decisions Policy; a fix requires future authorization.
+
+`docs/PLATFORM_FOUNDATION.md`'s Testing section updated accordingly.
