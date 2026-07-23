@@ -93,6 +93,33 @@ detail. See `docs/CURRENT_PHASE.md` for this phase's freeze record and
 `docs/HANDOFF.md` for the state a future session/agent needs to
 continue Platform work.
 
+## PLATFORM-001 — Platform Foundation & Collaboration Infrastructure
+
+**Changes**: New `platforms/` package (`platform_model.py`,
+`platform_registry.py`, `capability_model.py`, `capability_registry.py`,
+`cross_platform_checker.py`, `navigation_model.py`, `menu_registry.py`)
+plus `tests/platforms/` (28 tests). New `communication/` collaboration
+infrastructure — nine folders (`requests/`, `responses/`,
+`notifications/`, `issues/`, `contracts/`, `reviews/`, `decisions/`,
+`technical_debt/`, `task_queue/`), each with a README and template;
+`task_queue/QUEUE.md` seeded with the Director's own Phase 2 —
+Platform backlog. New `docs/PLATFORM_DOCUMENTATION_POLICY.md`,
+`docs/PLATFORM_BUG_REPORT_STANDARD.md`, `docs/PLATFORM_CHANGELOG.md`,
+`docs/PLATFORM_FOUNDATION.md`. Named `platforms/` (plural), not
+`platform/`, to avoid shadowing Python's own stdlib `platform` module.
+
+**Architecture Impact**: First real Platform implementation task
+(previously documentation-only). Foundation only — no live wiring into
+`telegram/`'s existing commands/keyboards/handlers, zero Trading Core
+diff. Establishes the shared metadata/validation layer every future
+client platform (Telegram Bot, Telegram Mini App, Android, iOS,
+Desktop) will register into, plus the ticket-based process
+infrastructure so cross-role (Core↔Platform) collaboration and the
+Platform Worker's own task queue no longer depend on a single prose
+handoff document per phase. See `docs/PLATFORM_FOUNDATION.md` for the
+full module doc and `docs/CURRENT_PHASE.md` for this phase's exit
+criteria.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.
