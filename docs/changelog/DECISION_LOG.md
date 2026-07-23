@@ -130,6 +130,46 @@ today.
 as Constitution Article 13 (Future First Principle) in the same
 review. Full record: `communication/decisions/ADR-001.md`.
 
+---
+
+**Decision** (ADR-002): Every screen gets one Universal Screen ID
+(dotted, lowercase, `<category>.<name>` — e.g. `settings.language`),
+stable across every platform. The ID never changes per platform.
+
+**Reason**: Without one stable ID, each platform needs its own mapping
+table for "what this screen actually means" — the same per-platform
+divergence ADR-001 exists to prevent, one level lower (per-screen
+instead of per-architecture).
+
+**Date**: TASK-002B review. Full record: `communication/decisions/ADR-002.md`.
+
+---
+
+**Decision** (ADR-003): A platform only ever calls Navigation to reach
+a screen — it never constructs one itself
+(`Screen Registry → Navigation → Platform Adapter → <client>`, never
+`<client> → Create Screen` directly).
+
+**Reason**: A platform able to construct its own Screen ad hoc could
+silently diverge from every other platform's version of it, defeating
+ADR-002's Universal Screen Identity.
+
+**Date**: TASK-002B review. Full record: `communication/decisions/ADR-003.md`.
+
+---
+
+**Decision** (ADR-004): Every platform emits the same navigation event
+vocabulary (`ScreenOpened`, `ScreenClosed`, `BackPressed`,
+`PermissionDenied`, `NavigationFailed`, `DeepLinkOpened`,
+`SessionExpired`) — interface only, no dispatch implementation, in
+TASK-002C.
+
+**Reason**: A shared event vocabulary lets a future Analytics or AI
+consumer observe navigation behavior uniformly across every platform,
+without each one inventing its own logging shape.
+
+**Date**: TASK-002B review. Full record: `communication/decisions/ADR-004.md`.
+
 ## Related
 
 - `docs/changelog/CHANGELOG.md` — what shipped alongside each decision.

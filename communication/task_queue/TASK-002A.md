@@ -1,9 +1,10 @@
 # TASK-002A
 
 **Title**: Navigation Analysis
-**Status**: ✅ APPROVED — see `docs/NAVIGATION_ANALYSIS.md`. The six
-open questions it raised were answered directly by the Director; see
-`communication/decisions/ADR-001.md`.
+**Status**: ✅ CLOSED — see `docs/NAVIGATION_ANALYSIS.md`. The six open
+questions it raised were answered directly by the Director; see
+`communication/decisions/ADR-001.md` and
+`docs/NAVIGATION_ARCHITECTURE.md`'s "Director Decisions" section.
 
 ## Objective
 

@@ -1,14 +1,47 @@
 # TASK-002C
 
 **Title**: Navigation Registry
-**Status**: Pending — awaiting TASK-002B
+**Status**: 🟢 AUTHORIZED, in progress. First real implementation
+under the Navigation architecture (`docs/NAVIGATION_ARCHITECTURE.md`,
+approved) and its four ADRs.
 
 ## Objective
 
-Not started. Will populate/extend `platforms/navigation_model.py` and
-`platforms/menu_registry.py` with GoldBot's real navigation tree, per
-whatever TASK-002B's approved architecture specifies.
+Build the Screen/Route Registry — dynamic, universal-ID-keyed,
+extensible for modules that don't exist yet — plus the Navigation
+Event Bus's interface (contract only). Per Director's explicit rule
+list for this task:
+
+- No hardcoded screens or dispatch tables.
+- No `telegram/` import or Telegram-callback dependency anywhere in
+  `platforms/` (unchanged boundary from TASK-001).
+- No platform-specific code — the Registry stores platform-agnostic
+  data plus per-platform target bindings, never platform-native types.
+- Universal Screen ID used (ADR-002's `<category>.<name>` convention).
+- Dynamic Registry used (register/get/list — the same mechanism
+  `platforms/menu_registry.py`'s `MenuRegistry` already has from
+  TASK-001, extended, not replaced).
+- Navigation Event Bus interface prepared — event vocabulary only
+  (ADR-004), no dispatch/pub-sub implementation.
+- Extensible for future modules (AI, Education, Marketplace, Trading)
+  — the Registry mechanism must not assume today's known categories
+  are the only ones that will ever exist.
 
 ## Depends on
 
-TASK-002B (Navigation Architecture) — Pending.
+TASK-002B (Navigation Architecture) — Approved.
+
+## Notes
+
+Populates the Registry with GoldBot's real, currently-live Telegram
+screens only (Main/Settings/Admin/Owner/Profile/Signals, per
+`docs/PLATFORM_ARCHITECTURE.md` §5) under the new Universal Screen ID
+convention — no invented AI/Education/Marketplace screens (those
+modules don't exist; the Registry mechanism being open to them is not
+the same as pre-registering fictitious entries for them, which would
+violate this repo's "no fabricated documentation/content" convention).
+Zero change to `telegram/reply_keyboard_manager.py`'s live behavior —
+this remains a foundation-only mirror, per ADR-003 (a platform never
+creates a Screen, it only calls Navigation — today's Telegram code
+still creates its own Reply Keyboards directly, unchanged, until a
+future, separately-approved task adapts it).

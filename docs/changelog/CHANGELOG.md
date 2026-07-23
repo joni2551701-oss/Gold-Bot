@@ -204,6 +204,34 @@ decision in this document is final until those are answered.
 zero folder-structure change. Awaiting Director review before
 TASK-002C (Navigation Registry) starts.
 
+**CI**: `ci.yml` run #153, commit `8de03f3`, conclusion `success`.
+
+## Navigation Architecture approved; ADR-002/003/004; TASK-002C authorized
+
+**Changes**: TASK-002B marked ✅ APPROVED following Director resolution
+of its 6 Director Questions — `docs/NAVIGATION_ARCHITECTURE.md`
+updated with a "Director Decisions" section (Navigation Stack with no
+Telegram exception; Platform Adapter touches UI only; Route Registry
+is dynamic; Permission Layer runs before Navigation; Deep Link System
+covers all five platforms; Navigation State lives in the Platform
+Layer, never the Business Layer) and a new "Future Expansion" section
+(AI/Education/Marketplace/Enterprise Impact, Scalability, Migration
+Risk). Three new ADRs: `communication/decisions/ADR-002.md` (Universal
+Screen Identity — one dotted ID per screen, stable across every
+platform), `ADR-003.md` (a platform never creates a Screen, only calls
+Navigation), `ADR-004.md` (Navigation Event Bus vocabulary — interface
+only, no dispatch). All three folded into
+`docs/changelog/DECISION_LOG.md`. `docs/PLATFORM_WORKFLOW.md` extended
+with the mandatory "Future Expansion" section for every future
+Architecture document. TASK-002C (Navigation Registry) 🟢 AUTHORIZED
+under a specific rule list (no hardcode, no `telegram/` dependency, no
+platform-specific code, Universal Screen ID, dynamic Registry, Event
+Bus interface only, extensible for not-yet-built future modules).
+
+**Architecture Impact**: Governance and design resolution only, zero
+code changed in this entry. Sets the exact shape TASK-002C's real
+implementation must follow.
+
 ## Related
 
 - `docs/changelog/PHASE_HISTORY.md` — the flat, complete phase list.

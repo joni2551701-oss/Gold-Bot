@@ -1,5 +1,11 @@
 # Navigation Architecture (TASK-002B)
 
+**Status: ✅ APPROVED** (Director review, following the 6 Director
+Questions below — see "Director Decisions" for the actual resolutions,
+which supersede this document's original proposals where they
+differ). TASK-002C (Navigation Registry) is 🟢 AUTHORIZED under the
+constraints recorded in `communication/task_queue/TASK-002C.md`.
+
 Step 2 of `docs/PLATFORM_WORKFLOW.md`'s "Architecture First" process.
 **Architecture only — no implementation, code, or public API exists
 after this document.** Every proposal below is a design for Director
@@ -294,43 +300,119 @@ No Silent Decisions Policy (`communication/decisions/README.md`) at
 TASK-002D (Implementation) — approving this Architecture is not itself
 approval to implement any specific API shape.
 
-## Director Questions
+## Director Decisions (resolved)
 
-1. **Back Stack (§5)** — do you approve modeling Telegram's flat
-   Back-to-Main behavior as a depth-1-collapsing special case of a
-   real, arbitrary-depth stack, or should Telegram's model be treated
-   as fundamentally different (not a special case of the same
-   structure)?
-2. **Navigation State (§9)** — do you approve keeping navigation
-   position per-client/session (never centralized in `database/`), as
-   proposed?
-3. **Permission Layer (§7)** — this proposes a future platform-agnostic
-   tier concept alongside `telegram/permissions.py`'s existing
-   `PermissionLevel`. Should that eventually become a real, separate
-   contract (a "new public API" under the No Silent Decisions Policy,
-   requiring its own `PROPOSED-DECISION-XXXX.md` before TASK-002D), or
-   should `telegram/permissions.py`'s enum simply be reused directly
-   once cross-platform code needs it?
-4. **Deep Link System (§6)** — this component has zero existing
-   foundation and no near-term client to serve. Should it stay in
-   TASK-002's scope, or move to its own later task so Navigation's
-   core (Screen Model/Graph/Route Registry/Back Stack) isn't blocked
-   waiting on it?
-5. **Screen Lifecycle (§12)** — do you approve treating Telegram as a
-   genuine degenerate case (no Backgrounded state) rather than forcing
-   a synthetic lifecycle onto it?
-6. **TASK-002C scope check** — should Navigation Registry (002C)
-   populate the graph with GoldBot's real, current Telegram tree
-   (Main/Settings/Admin/Owner/Profile/Signals) as a **read-only
-   mirror only** (matching `docs/PLATFORM_FOUNDATION.md`'s own
-   "Future Improvements" note), with zero change to
-   `telegram/reply_keyboard_manager.py`'s live behavior — confirming
-   this is still the intended scope before 002C starts?
+The Director answered six questions directly; where an answer
+supersedes this document's original §-section proposal, the answer
+governs. Full record: `communication/decisions/ADR-001.md` through
+`ADR-004.md`.
+
+1. **Back Stack (§5) — RESOLVED: real Navigation Stack, no exception
+   for Telegram.** Telegram is never treated as a special case.
+   Every platform — Telegram, Android, iOS, Desktop, Mini App — pushes
+   the same stack (e.g. `Root → Dashboard → Signals → Signal Details`).
+   Telegram's "Back to Main" is `Stack → Root`, not a distinct rule.
+   This is stronger than §5's original "depth-1-collapsing special
+   case" proposal — there is no special case at all, one model for
+   every platform.
+2. **Platform Adapter boundary (new, beyond the original 6 questions)
+   — RESOLVED.** The Adapter touches UI only, never Business Logic:
+   `UI → Platform Adapter → Navigation Core → Application → Business
+   Logic`. Refines §8.
+3. **Route Registry (§4) — RESOLVED: dynamic, not static.** Required
+   for future extensibility (Plugin, AI Module, Education, Marketplace
+   modules will each need to register their own screens without a code
+   change to the Registry itself). Confirms and strengthens §4's
+   design.
+4. **Permission Layer (§7) — RESOLVED: runs before Navigation, not
+   inside it.** Sequence: `Request → Permission → Navigation → Screen`
+   — an unauthorized screen is never navigated to in the first place,
+   not hidden after the fact. Refines §7 (the original proposal did
+   not specify this ordering explicitly).
+5. **Deep Link System (§6) — RESOLVED: in scope, all five platforms.**
+   `goldbot://signal/123`, `goldbot://profile`, `goldbot://education`
+   resolve identically on Telegram, Mini App, Android, iOS, and
+   Desktop. Supersedes §6's "should this move to a later task?"
+   framing — it stays in TASK-002's scope.
+6. **Navigation State (§9) — RESOLVED: stored in the Platform Layer;
+   the Business Layer never knows about it.** Confirms §9's original
+   proposal (per-client, not centralized in `database/`) and adds the
+   explicit layering rule: Business Logic has zero navigation-state
+   awareness, full stop.
+
+**Not explicitly re-answered** (carried forward, still open for
+TASK-002D): Screen Lifecycle's Telegram mismatch (§12) and whether
+Permission Layer's future platform-agnostic tier concept becomes a
+new formal contract or reuses `telegram/permissions.py`'s enum
+directly — both deferred to Navigation Implementation (TASK-002D),
+not blocking TASK-002C (Registry).
+
+### ADR-002 — Universal Screen Identity
+
+Every screen gets one ID, stable across every platform — e.g.
+`dashboard.home`, `signals.list`, `signals.details`, `settings.main`,
+`settings.notifications`, `profile.main`. The ID never changes per
+platform. See `communication/decisions/ADR-002.md`.
+
+### ADR-003 — Platform never creates a Screen
+
+A platform only ever *calls* Navigation to reach a screen; it never
+constructs one itself. Always `Screen Registry → Navigation →
+Platform Adapter → Telegram` (or any other client) — never `Telegram →
+Create Screen` directly. See `communication/decisions/ADR-003.md`.
+
+### ADR-004 — Navigation Event Bus
+
+Every platform emits the same event vocabulary: `ScreenOpened`,
+`ScreenClosed`, `BackPressed`, `PermissionDenied`, `NavigationFailed`,
+`DeepLinkOpened`, `SessionExpired` — for a future Analytics/AI consumer.
+Interface only in TASK-002C, no dispatch implementation. See
+`communication/decisions/ADR-004.md`.
+
+## Future Expansion
+
+Per Director instruction, every Architecture document from this point
+states its impact on GoldBot's future direction, not only today's task:
+
+**AI Impact**: The Navigation Event Bus (ADR-004) is the intended
+future integration point for AI — an AI Assistant module (foundation
+already exists: `assistant/`, `ai/conversation/`) would consume
+`ScreenOpened`/`NavigationFailed` events to understand user context,
+not call Navigation internals directly. No AI wiring exists today.
+
+**Education Impact**: An Academy/Education module (`ai/learning/`
+foundation exists per `docs/PHASE6_FREEZE.md` Stage 6's reservation
+table) would register its own screens (e.g. `education.lesson.list`)
+into the same dynamic Route Registry (ADR-003's decision), requiring
+zero change to Navigation Core itself — this is exactly what "dynamic,
+not static" (Director Decision 3 above) is for.
+
+**Marketplace Impact**: Same shape as Education — a future Marketplace
+module registers its own screens dynamically; Navigation Core does not
+need to know Marketplace exists.
+
+**Enterprise Impact**: Not applicable today — no enterprise/multi-tenant
+concept exists anywhere in GoldBot. Flagged honestly as out of scope
+rather than speculated on.
+
+**Scalability**: A dynamic Registry (Director Decision 3) means adding
+a new module's screens is an additive registration, not a Navigation
+Core code change — the mechanism scales by design; whether any given
+future module's *screen count* scales well is that module's own
+concern, not Navigation's.
+
+**Migration Risk**: Low for TASK-002C specifically (additive fields on
+existing `platforms/` dataclasses, no existing behavior changed). The
+real migration risk is deferred to a future, separately-approved task:
+if `telegram/reply_keyboard_manager.py` is ever adapted to consume this
+Registry internally, that adaptation is the actual risk point — not
+this Architecture or Registry, which stay unwired.
 
 ## Related
 
 - `docs/NAVIGATION_ANALYSIS.md` — the analysis this architecture builds on.
-- `communication/decisions/ADR-001.md` — the governing decision.
+- `communication/decisions/ADR-001.md` through `ADR-004.md` — the
+  governing decisions, including this document's own resolutions.
 - `docs/constitution/CONSTITUTION.md` Article 13 — the Future First Principle.
 - `docs/PLATFORM_WORKFLOW.md` — the Universal UI Abstraction rule and
   Director Questions requirement.

@@ -6,65 +6,60 @@ known, what's authorized to start next. `docs/changelog/CHANGELOG.md`
 and `docs/changelog/PHASE_HISTORY.md` are the permanent record; this
 document is only ever the current tip.
 
-## Phase: TASK-002B — Navigation Architecture
+## Phase: TASK-002C — Navigation Registry
 
-**Status: DELIVERED, AWAITING DIRECTOR REVIEW.** Type: Architecture
-only, per Director authorization — no implementation, code, or API
-was written. Designs Universal Navigation, Screen Model, Navigation
-Graph, Route Registry, Back Stack, Deep Link System, Permission Layer,
-Platform Adapter, Navigation State, Session Navigation, Navigation
-Events, Screen Lifecycle, and Platform Capability Mapping, each stating
-its compatibility across all five target platforms (Constitution
-Article 13). Governed by ADR-001 (`communication/decisions/ADR-001.md`)
-and the Universal UI Abstraction rule (`docs/PLATFORM_WORKFLOW.md`).
-Deliverable: `docs/NAVIGATION_ARCHITECTURE.md`, ending with 6 Director
-Questions. TASK-002C (Registry) does not start until this Architecture
-is approved and those questions are answered.
+**Status: IN PROGRESS.** Type: Real implementation, first code since
+PLATFORM-001 — Director-authorized under a specific rule list: no
+hardcoded screens, no `telegram/` dependency, no platform-specific
+code, Universal Screen ID (ADR-002), a dynamic Registry (extending
+TASK-001's `platforms/menu_registry.py`, not replacing it), a
+Navigation Event Bus interface only (ADR-004, no dispatch), and
+extensibility for future modules (AI, Education, Marketplace,
+Trading) without a Registry code change. Populates GoldBot's real,
+currently-live Telegram screens only — no fictitious future-module
+entries. Zero change to `telegram/reply_keyboard_manager.py`'s live
+behavior.
 
-## Previous phases (frozen, never reopened)
+## Frozen / closed phases
 
-- **PLATFORM-001 (Platform Foundation & Collaboration Infrastructure)**
-  — ✅ **APPROVED, FROZEN**. CI `success` (`ci.yml` runs #150/#151).
-  Record: `docs/changelog/CHANGELOG.md`, `docs/PLATFORM_FOUNDATION.md`,
-  `communication/task_queue/TASK-001.md`.
-- **TASK-002A (Navigation Analysis)** — ✅ **APPROVED**. Record:
-  `docs/NAVIGATION_ANALYSIS.md`, its six open questions answered in
-  `communication/decisions/ADR-001.md`.
+- **PLATFORM-001** — ✅ **FROZEN**, never reopened.
+- **TASK-002A (Navigation Analysis)** — ✅ **CLOSED**.
+- **TASK-002B (Navigation Architecture)** — ✅ **APPROVED**, following
+  Director resolution of its 6 open questions
+  (`docs/NAVIGATION_ARCHITECTURE.md`'s "Director Decisions" section)
+  and three new ADRs (`communication/decisions/ADR-002.md` Universal
+  Screen Identity, `ADR-003.md` Platform never creates a Screen,
+  `ADR-004.md` Navigation Event Bus).
 
 ## Governance added this round
 
-- **ADR-001** (`communication/decisions/ADR-001.md`) — GoldBot
-  Platform is a Shared Platform Layer serving five equal clients
-  (Telegram Bot, Telegram Mini App, Android, iOS, Desktop), not
-  Telegram Bot with others bolted on later.
-- **Constitution Article 13 — Future First Principle** — every
-  Architecture document states its compatibility across all five
-  platforms, even the four with no code today.
-- **Universal UI Abstraction rule** (`docs/PLATFORM_WORKFLOW.md`) — no
-  Platform component is ever `Telegram Callback → Business Logic`
-  directly; always `Platform UI → Navigation Layer → Application Layer
-  → Business Logic`.
-- **Director Questions section** — every Architecture document now
-  ends with one (or `None.`), per `docs/PLATFORM_WORKFLOW.md`.
+- **Constitution-level decisions ADR-002/003/004** (not promoted to
+  Constitution Articles — Director-issued Architecture Decision
+  Records, permanent per `docs/changelog/DECISION_LOG.md`, but scoped
+  to Navigation specifically rather than a codebase-wide law like
+  Article 13).
+- **"Future Expansion" section**, mandatory in every Architecture
+  document from now on (AI/Education/Marketplace/Enterprise Impact,
+  Scalability, Migration Risk) — `docs/PLATFORM_WORKFLOW.md`.
 
 ## Role boundary (unchanged)
 
 **Core** (Trading Engine & AI) remains untouched. **Platform** (Product
-Experience & Platform Foundation) is where all activity in this and
-the prior two phases happens.
+Experience & Platform Foundation) is where all activity happens.
 
 ## Next
 
-`docs/NAVIGATION_ARCHITECTURE.md` (this phase's deliverable), then
-Director review before TASK-002C (Navigation Registry) starts. See
-`communication/task_queue/QUEUE.md` for the full chain.
+TASK-002C's own deliverable (Registry code + tests + documentation +
+CI), then Director review before TASK-002D (Navigation Implementation)
+starts. See `communication/task_queue/QUEUE.md` for the full chain.
 
 ## Related
 
-- `docs/PLATFORM_WORKFLOW.md` — the "Architecture First" process,
-  Universal UI Abstraction rule, and Director Questions requirement.
-- `communication/decisions/ADR-001.md`, `docs/constitution/CONSTITUTION.md`
-  Article 13 — this round's governance additions.
+- `docs/NAVIGATION_ARCHITECTURE.md` — the approved architecture this
+  Registry implements.
+- `communication/decisions/ADR-001.md` through `ADR-004.md`.
+- `docs/PLATFORM_WORKFLOW.md` — "Architecture First," Universal UI
+  Abstraction, Future Expansion, Director Questions.
 - `communication/task_queue/QUEUE.md` — the live task chain.
 - `docs/HANDOFF.md` — the Core/Platform role split and how to pick up
   Platform work.

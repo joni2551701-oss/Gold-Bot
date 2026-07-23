@@ -84,6 +84,35 @@ defines, its compatibility with all five target platforms — using
 even for platforms with zero code today. See Article 13's full text
 for what this does and does not require.
 
+## Future Expansion section (mandatory in every Architecture document)
+
+Every Architecture-step deliverable also ends with (immediately before
+Director Questions):
+
+```
+## Future Expansion
+
+AI Impact
+...
+Education Impact
+...
+Marketplace Impact
+...
+Enterprise Impact
+...
+Scalability
+...
+Migration Risk
+...
+```
+
+Each line is a real, honest statement — "not applicable today, no such
+concept exists yet" is a valid, complete answer; a speculative feature
+is never invented to fill a blank. This forces every Architecture
+decision to consider GoldBot's v1.0 Platform direction and beyond, not
+only the task in front of it (per Director instruction, TASK-002B
+review).
+
 ## Director Questions section (mandatory in every Architecture document)
 
 Every Architecture-step deliverable (step 2's output) ends with:

@@ -12,9 +12,9 @@ through the full "Architecture First" workflow
 TASK-001   Platform Foundation & Collaboration Infrastructure   APPROVED (Frozen)
     ↓
 TASK-002   Navigation                                           In Progress
-    ├── TASK-002A  Navigation Analysis                          APPROVED
-    ├── TASK-002B  Navigation Architecture                      Delivered, awaiting review
-    ├── TASK-002C  Navigation Registry                          Pending
+    ├── TASK-002A  Navigation Analysis                          ✅ CLOSED
+    ├── TASK-002B  Navigation Architecture                      ✅ APPROVED
+    ├── TASK-002C  Navigation Registry                          🟢 AUTHORIZED, In Progress
     ├── TASK-002D  Navigation Implementation                    Pending
     ├── TASK-002E  Navigation Tests                              Pending
     └── TASK-002F  Navigation Freeze                              Pending
@@ -30,9 +30,9 @@ TASK-005   Notification Center                                     Pending
 |---|---|---|
 | TASK-001 | Platform Foundation & Collaboration Infrastructure | ✅ APPROVED, Frozen — never reopened |
 | TASK-002 | Navigation (parent) | In Progress |
-| TASK-002A | Navigation Analysis | ✅ APPROVED |
-| TASK-002B | Navigation Architecture | Delivered, awaiting Director review (6 Director Questions) |
-| TASK-002C | Navigation Registry | Pending |
+| TASK-002A | Navigation Analysis | ✅ CLOSED |
+| TASK-002B | Navigation Architecture | ✅ APPROVED |
+| TASK-002C | Navigation Registry | 🟢 AUTHORIZED, In Progress |
 | TASK-002D | Navigation Implementation | Pending |
 | TASK-002E | Navigation Tests | Pending |
 | TASK-002F | Navigation Freeze | Pending |

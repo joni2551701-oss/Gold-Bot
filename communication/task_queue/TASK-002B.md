@@ -1,11 +1,10 @@
 # TASK-002B
 
 **Title**: Navigation Architecture
-**Status**: Delivered, awaiting Director review — see
-`docs/NAVIGATION_ARCHITECTURE.md`. Architecture only: no
-implementation, code, or API was written. 002C (Registry) does not
-start until this Architecture is approved, and six Director Questions
-in the document itself need answers first.
+**Status**: ✅ APPROVED — see `docs/NAVIGATION_ARCHITECTURE.md`'s
+"Director Decisions" section for the six resolved questions and
+ADR-002/ADR-003/ADR-004. Architecture only: no implementation, code,
+or API was written in this task.
 
 ## Objective
 
