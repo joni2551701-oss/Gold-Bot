@@ -76,12 +76,27 @@ opposed to Platform feature work or CI/Engineering infrastructure work)
 two tracks.
 
 ```
-GOVERNANCE-REVIEW-001   Engineering Governance Layer Review   ✅ DELIVERED — awaiting Director Governance Freeze decision
+GOVERNANCE-REVIEW-001   Engineering Governance Layer Review          ✅ DELIVERED — awaiting Director Governance Freeze decision
+    ↓
+GOV-PLAN-001            Governance v1.1 Master Plan (ORDER-013)      ✅ DELIVERED — awaiting Director review before GOV-001..GOV-009 are issued
+    ↓  (each issued separately, reviewed separately, Frozen separately)
+GOV-001  Director.md                     ⏳ Pending (not yet issued)
+GOV-002  Core_Worker.md                  ⏳ Pending
+GOV-003  Platform_Worker.md              ⏳ Pending
+GOV-004  Collaboration_Rules.md          ⏳ Pending
+GOV-005  Repository_Policy.md            ⏳ Pending
+GOV-006  Branch_Policy.md                ⏳ Pending
+GOV-007  Branch_Protection_Policy.md     ⏳ Pending
+GOV-008  Engineering_Language_Policy.md  ⏳ Pending
+GOV-009  Git_Workflow_Standard.md        ⏳ Pending
+    ↓  ("Governance v1.1 Frozen" only once all 9 above are individually Frozen)
 ```
 
 | Task | Title | Status |
 |---|---|---|
 | GOVERNANCE-REVIEW-001 | Engineering Governance Layer Review | ✅ DELIVERED — see `communication/task_queue/GOVERNANCE-REVIEW-001.md` and `docs/GOVERNANCE_REVIEW_001.md`. Final Recommendation: READY WITH MINOR IMPROVEMENTS. |
+| GOV-PLAN-001 | Governance v1.1 Master Plan | ✅ DELIVERED — see `communication/task_queue/GOV-PLAN-001.md` and `docs/GOVERNANCE_V1_1_MASTER_PLAN.md`. Planning only; each of GOV-001–GOV-009 remains Pending until individually issued by the Director. |
+| GOV-001–GOV-009 | (see Master Plan for full titles) | ⏳ Pending — not yet issued as executable tasks. |
 
 ## Repository Engineering (separate track — `REPO-XXX`, never a `TASK-XXX`, `DEVOPS-XXX`, or `GOVERNANCE-REVIEW-XXX`)
 
