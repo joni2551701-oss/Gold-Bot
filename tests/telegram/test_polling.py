@@ -194,34 +194,26 @@ def test_on_message_never_raises_on_routing_failure(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# V2 Phase 6.1 (Director Approved) -- Unified Message Lifecycle: _deliver()
-# picks edit-vs-send per RouterResult.editable, using telegram.navigation's
-# process-local Message Lifecycle Tracker as the edit target, and always
-# sends RouterResult.followup (if set) as a second new message.
+# V2 Phase 6.3 (Director Approved: Dynamic Reply Keyboard Navigation) --
+# _deliver() always sends a new message (Phase 6.1's edit-in-place delivery
+# and telegram.navigation's Message Lifecycle Tracker are both retired), and
+# always sends RouterResult.followup (if set) as a second new message.
 # ---------------------------------------------------------------------------
 
 
-def test_deliver_sends_new_message_for_non_editable_result():
-    """editable=False (the default) always sends a new message, never edits."""
+def test_deliver_sends_a_new_message():
     import telegram.polling as polling_module
-
-    class FakeBot:
-        async def edit_message_text(self, *args, **kwargs):
-            raise AssertionError("must not be called for a non-editable result")
 
     class FakeMessage:
         from_user = SimpleNamespace(id=950)
-        bot = FakeBot()
         answered_with = None
 
         async def answer(self, text, reply_markup=None):
             self.answered_with = (text, reply_markup)
-            return SimpleNamespace(message_id=5000)
 
     class FakeResult:
         text = "hello"
         keyboard = None
-        editable = False
         followup = None
 
     message = FakeMessage()
@@ -229,119 +221,17 @@ def test_deliver_sends_new_message_for_non_editable_result():
     assert message.answered_with == ("hello", None)
 
 
-def test_deliver_sends_new_message_when_editable_but_no_tracked_id():
-    import telegram.polling as polling_module
-    from telegram import navigation
-
-    class FakeBot:
-        async def edit_message_text(self, *args, **kwargs):
-            raise AssertionError("must not be called with no tracked message id")
-
-    class FakeMessage:
-        from_user = SimpleNamespace(id=951)
-        bot = FakeBot()
-        answered_with = None
-
-        async def answer(self, text, reply_markup=None):
-            self.answered_with = (text, reply_markup)
-            return SimpleNamespace(message_id=5001)
-
-    class FakeResult:
-        text = "profile page"
-        keyboard = None
-        editable = True
-        followup = None
-
-    message = FakeMessage()
-    asyncio.run(polling_module._deliver(message, FakeResult()))
-    assert message.answered_with == ("profile page", None)
-    assert navigation.last_message_id(951) == 5001
-
-
-def test_deliver_edits_existing_message_when_editable_and_tracked():
-    import telegram.polling as polling_module
-    from telegram import navigation
-
-    navigation.record_message(952, 6001)
-    edited = {}
-
-    class FakeBot:
-        async def edit_message_text(self, text, chat_id=None, message_id=None, reply_markup=None):
-            edited["text"] = text
-            edited["chat_id"] = chat_id
-            edited["message_id"] = message_id
-
-    class FakeMessage:
-        from_user = SimpleNamespace(id=952)
-        bot = FakeBot()
-        answered_with = None
-
-        async def answer(self, text, reply_markup=None):
-            self.answered_with = (text, reply_markup)
-            return SimpleNamespace(message_id=9999)
-
-    class FakeResult:
-        text = "settings page"
-        keyboard = None
-        editable = True
-        followup = None
-
-    message = FakeMessage()
-    asyncio.run(polling_module._deliver(message, FakeResult()))
-
-    assert edited == {"text": "settings page", "chat_id": 952, "message_id": 6001}
-    assert message.answered_with is None
-
-
-def test_deliver_falls_back_to_send_new_on_edit_failure():
-    import telegram.polling as polling_module
-    from telegram import navigation
-
-    navigation.record_message(953, 6002)
-
-    class FakeBot:
-        async def edit_message_text(self, *args, **kwargs):
-            raise RuntimeError("message too old to edit")
-
-    class FakeMessage:
-        from_user = SimpleNamespace(id=953)
-        bot = FakeBot()
-        answered_with = None
-
-        async def answer(self, text, reply_markup=None):
-            self.answered_with = (text, reply_markup)
-            return SimpleNamespace(message_id=7000)
-
-    class FakeResult:
-        text = "help page"
-        keyboard = None
-        editable = True
-        followup = None
-
-    message = FakeMessage()
-    asyncio.run(polling_module._deliver(message, FakeResult()))
-
-    assert message.answered_with == ("help page", None)
-    assert navigation.last_message_id(953) == 7000
-
-
 def test_deliver_sends_followup_as_a_second_message():
     import telegram.polling as polling_module
 
-    class FakeBot:
-        async def edit_message_text(self, *args, **kwargs):
-            raise AssertionError("must not be called -- result is not editable")
-
     class FakeMessage:
         from_user = SimpleNamespace(id=954)
-        bot = FakeBot()
 
         def __init__(self):
             self.answered = []
 
         async def answer(self, text, reply_markup=None):
             self.answered.append((text, reply_markup))
-            return SimpleNamespace(message_id=8000 + len(self.answered))
 
     class FakeFollowup:
         text = "menu ready"
@@ -350,7 +240,6 @@ def test_deliver_sends_followup_as_a_second_message():
     class FakeResult:
         text = "phone registered"
         keyboard = None
-        editable = False
         followup = FakeFollowup()
 
     message = FakeMessage()
@@ -365,13 +254,8 @@ def test_deliver_still_sends_followup_when_the_primary_send_fails():
     it would leave the chat with no Reply Keyboard at all."""
     import telegram.polling as polling_module
 
-    class FakeBot:
-        async def edit_message_text(self, *args, **kwargs):
-            raise AssertionError("must not be called -- result is not editable")
-
     class FakeMessage:
         from_user = SimpleNamespace(id=955)
-        bot = FakeBot()
 
         def __init__(self):
             self.calls = 0
@@ -380,7 +264,6 @@ def test_deliver_still_sends_followup_when_the_primary_send_fails():
             self.calls += 1
             if self.calls == 1:
                 raise RuntimeError("network unreachable")
-            return SimpleNamespace(message_id=9500)
 
     class FakeFollowup:
         text = "menu ready"
@@ -389,7 +272,6 @@ def test_deliver_still_sends_followup_when_the_primary_send_fails():
     class FakeResult:
         text = "phone registered"
         keyboard = None
-        editable = False
         followup = FakeFollowup()
 
     message = FakeMessage()

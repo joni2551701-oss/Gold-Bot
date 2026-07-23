@@ -29,7 +29,6 @@ codebase staying honestly inert rather than fabricating behavior.
 from aiogram.types import CallbackQuery
 
 from telegram import handlers
-from telegram.command_router import route_command
 from telegram.keyboards import language_keyboard, phone_share_keyboard
 from telegram.registration_service import RegistrationService
 from translation.ui_catalog import t
@@ -43,13 +42,14 @@ _LANGUAGE_CALLBACKS = {
     "lang_en": "EN",
 }
 
-# V2 Phase 6.1 -- the Back/Home inline row (telegram.navigation.
-# back_home_row()) every editable page carries (Director Decision 4).
-_NAVIGATION_CALLBACKS = ("nav_back", "nav_home")
-
 # Recognized-but-not-yet-implemented callback_data prefixes (future
 # phases add a branch here, same shape as _handle_language below --
-# never a second dispatch mechanism).
+# never a second dispatch mechanism). "nav_" (Phase 6.1's inline Back/
+# Home row) was retired by V2 Phase 6.3 (Director Approved: Dynamic
+# Reply Keyboard Navigation) -- navigation is Reply-Keyboard-only now,
+# so no nav_* callback_data is ever produced anymore; any stray one
+# from a stale client-cached inline keyboard still falls through to
+# the harmless "recognized but not implemented" answer() below.
 _RECOGNIZED_PREFIXES = (
     "lang_",
     "risk_",
@@ -58,7 +58,6 @@ _RECOGNIZED_PREFIXES = (
     "notifications_",
     "settings_",
     "admin_",
-    "nav_",
 )
 
 
@@ -76,10 +75,6 @@ async def route_callback(callback: CallbackQuery) -> None:
     try:
         if data in _LANGUAGE_CALLBACKS:
             await _handle_language(callback, _LANGUAGE_CALLBACKS[data])
-            return
-
-        if data in _NAVIGATION_CALLBACKS:
-            await _handle_navigation(callback)
             return
 
         # Recognized category, not yet implemented -- clear the
@@ -138,32 +133,3 @@ async def _handle_language(callback: CallbackQuery, language: str) -> None:
             )
     except Exception as e:
         logger.warning(f"route_callback: registration advance failed for telegram_id={telegram_id}: {e}")
-
-
-async def _handle_navigation(callback: CallbackQuery) -> None:
-    """
-    nav_back/nav_home (V2 Phase 6.1, Director Decision 4 -- every
-    editable page carries a Back/Home row). Both currently resolve to
-    the same destination: Phase 6.1 has no sub-screens with a distinct
-    parent yet, so for these flat, one-level pages Director Decision
-    4's "one fixed, hardcoded parent" is simply Home -- both callbacks
-    route through the same /start call. Phase 6.2's Settings
-    sub-screens will give Back a different destination (-> Settings)
-    once they exist (see docs/PHASE6_NAVIGATION_AUDIT.md).
-
-    Edits the page's own message in place, mirroring _handle_language's
-    edit-then-fallback shape. No reply_markup is passed to edit_text(),
-    so any inline Back/Home row on that page is cleared -- the Reply
-    Keyboard itself is untouched (Director Decision 7: always visible),
-    since editing a message's text/inline keyboard never affects the
-    chat's ReplyKeyboardMarkup.
-    """
-    telegram_id = callback.from_user.id
-    username = callback.from_user.username
-    result = await route_command("/start", telegram_id=telegram_id, username=username)
-    await callback.answer()
-    try:
-        await callback.message.edit_text(result.text)
-    except Exception as e:
-        logger.warning(f"route_callback: nav edit_text failed, sending new message instead: {e}")
-        await callback.message.answer(result.text)

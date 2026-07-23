@@ -74,14 +74,16 @@ one-shot, best-effort, never-blocks-polling posture as every step
 above. See that module's own docstring for the USER/ADMIN/OWNER scope
 strategy.
 
-V2 Phase 6.1 (Director Approved Navigation Controller) addition:
-`_on_message` no longer always calls `message.answer()` -- `_deliver()`
-decides edit-vs-send per `RouterResult.editable` (telegram/navigation.py
-owns the process-local "last message per chat" pointer this decision
-consults) and sends `RouterResult.followup` as a second message when
-set. See telegram/navigation.py's own docstring and
-docs/PHASE6_NAVIGATION_AUDIT.md's "Director Decision — Phase 6" for the
-full rationale.
+V2 Phase 6.1 (Director Approved Navigation Controller) addition,
+RETIRED by V2 Phase 6.3 (Director Approved: Dynamic Reply Keyboard
+Navigation): `_deliver()` used to edit the chat's last bot message in
+place for six "editable" pages. Director's Phase 6.3 decision retires
+that mechanism outright -- "Eski xabarlar tahrir qilinmaydi. Yangi
+javob yuboriladi" (old messages are never edited; every reply is a new
+message) -- so `_deliver()` now always sends a new message, same as
+every other reply here, and lets the Reply Keyboard attached to it
+(telegram/reply_keyboard_manager.py) carry the navigation instead.
+`RouterResult.followup`, if set, is still sent as a second message.
 """
 
 import asyncio
@@ -97,7 +99,6 @@ from telegram import runtime_monitor
 from telegram.callback_router import route_callback
 from telegram.command_router import route_contact, route_message
 from telegram.menu_commands import register_all_menus
-from telegram.navigation import last_message_id, record_message
 from monitoring.system_monitor import get_health as _get_core_health
 
 logger = setup_logger("TelegramPolling")
@@ -159,76 +160,42 @@ def create_dispatcher() -> Dispatcher:
     return dispatcher
 
 
-async def _send_new(message: Message, result, telegram_id) -> None:
-    """
-    Sends `result` as a brand-new message and records it as this
-    chat's Message Lifecycle anchor (V2 Phase 6.1) -- the target a
-    later editable-page reply will try to edit in place. `sent` may
-    lack a real `.message_id` in tests using a lightweight fake
-    Message double; recording is skipped rather than raising.
-    """
-    sent = await message.answer(result.text, reply_markup=result.keyboard)
-    new_message_id = getattr(sent, "message_id", None)
-    if new_message_id is not None:
-        record_message(telegram_id, new_message_id)
+async def _send_new(message: Message, result) -> None:
+    """Sends `result` as a brand-new message. Never edits an existing one (V2 Phase 6.3)."""
+    await message.answer(result.text, reply_markup=result.keyboard)
 
 
 async def _deliver(message: Message, result) -> None:
     """
-    V2 Phase 6.1 -- Unified Message Lifecycle (Director Decision 3):
-    the six editable pages (RouterResult.editable) edit the chat's
-    last bot message in place instead of sending a new one, using
-    telegram.navigation.last_message_id() as the edit target -- a
-    process-local pointer (Director Decision 6: never persisted to the
-    database, not a history/screen stack). Falls back to sending a new
-    message on any edit failure (message too old, never tracked yet,
-    etc.), the same never-raises posture every other delivery path
-    here already keeps. `getattr(..., default)` tolerates the
-    lightweight FakeResult doubles pre-Phase-6.1 tests already use, so
-    those keep behaving exactly as before (always send-new).
+    V2 Phase 6.3 (Director Approved: Dynamic Reply Keyboard Navigation)
+    -- every reply is a brand-new message; Phase 6.1's edit-in-place
+    delivery is retired outright ("Eski xabarlar tahrir qilinmaydi.
+    Yangi javob yuboriladi"). Navigation now happens through the Reply
+    Keyboard attached to each reply (telegram/reply_keyboard_manager.py
+    decides which one), not through editing a previous message.
 
-    A chat's private DM chat_id equals the user's own telegram_id
-    (same fact telegram/menu_commands.py's own docstring already
-    documents), so no separate `message.chat` lookup is needed here.
-
-    V2 Phase 6.1 Director Decision 7 -- if `result.followup` is set
-    (only route_contact()'s registration-completion reply sets it
-    today), it is always sent as a second, brand-new message after the
-    primary one.
-
-    V2 Phase 6.1.1 -- the primary send and the followup send are each
-    wrapped so a failure in one never silently drops the other (e.g. a
-    transient network error on the ReplyKeyboardRemove() message must
-    not skip the persistent-keyboard followup, since that would leave
+    If `result.followup` is set (V2 Phase 6.1 Director Decision 7 --
+    only route_contact()'s registration-completion reply sets it
+    today: ReplyKeyboardRemove() -> Persistent Reply Keyboard), it is
+    always sent as a second, brand-new message after the primary one.
+    Each send is wrapped independently so a failure in one never
+    silently drops the other (e.g. a transient network error on the
+    primary message must not skip the followup, since that would leave
     the chat with no Reply Keyboard at all). `_deliver()` itself never
     raises, matching the never-raises posture _on_message's caller
     already relies on for every other delivery path.
     """
-    telegram_id = message.from_user.id
-    editable = getattr(result, "editable", False)
-    tracked_message_id = last_message_id(telegram_id) if editable else None
-
     try:
-        if editable and tracked_message_id is not None:
-            try:
-                await message.bot.edit_message_text(
-                    result.text, chat_id=telegram_id, message_id=tracked_message_id, reply_markup=result.keyboard,
-                )
-                record_message(telegram_id, tracked_message_id)
-            except Exception as e:
-                logger.warning(f"edit_message_text failed, sending new message instead: {e}")
-                await _send_new(message, result, telegram_id)
-        else:
-            await _send_new(message, result, telegram_id)
+        await _send_new(message, result)
     except Exception as e:
-        logger.warning(f"_deliver: primary send failed for telegram_id={telegram_id}: {e}")
+        logger.warning(f"_deliver: primary send failed for telegram_id={message.from_user.id}: {e}")
 
     followup = getattr(result, "followup", None)
     if followup is not None:
         try:
-            await _send_new(message, followup, telegram_id)
+            await _send_new(message, followup)
         except Exception as e:
-            logger.warning(f"_deliver: followup send failed for telegram_id={telegram_id}: {e}")
+            logger.warning(f"_deliver: followup send failed for telegram_id={message.from_user.id}: {e}")
 
 
 def _log_startup_secret_presence() -> None:

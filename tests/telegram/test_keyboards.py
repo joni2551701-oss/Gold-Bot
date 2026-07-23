@@ -202,10 +202,10 @@ def test_command_router_attaches_a_keyboard_localized_to_the_caller():
 
     result = asyncio.run(route_command("/settings", telegram_id="701"))
 
-    # V2 Phase 6.1 Director Decision 4: Settings is an editable page, so
-    # its five categories now carry a trailing Back/Home row too.
-    assert _labels(result.keyboard) == [
-        "Til", "Risk", "Strategiya", "Vaqt oralig'i", "Bildirishnomalar", "⬅️ Orqaga", "🏠 Bosh sahifa",
+    # V2 Phase 6.3: Settings is a Reply Keyboard section now, not an
+    # inline value-picker with a Back/Home row.
+    assert _reply_texts(result.keyboard) == [
+        "🌐 Til", "💰 Risk", "📈 Strategiya", "⏰ Vaqt oralig'i", "🔔 Bildirishnomalar", "◀️ Ortga",
     ]
 
 
@@ -222,46 +222,145 @@ def test_command_router_admin_keyboard_stays_english_regardless_of_caller_langua
 
     result = asyncio.run(route_command("/admin", telegram_id="702"))
 
-    assert _labels(result.keyboard) == ["Users", "Statistics", "System", "Broadcast", "Admins"]
+    # V2 Phase 6.3: action labels stay English-only (Director decision,
+    # same precedent as the retired inline admin_panel_keyboard()), but
+    # the trailing Back button still localizes to the caller's language.
+    assert _reply_texts(result.keyboard) == [
+        "👥 Users", "📊 Statistics", "🛠 System", "📢 Broadcast", "👑 Admins", "◀️ Назад",
+    ]
 
 
 # ---------------------------------------------------------------------------
-# V2 Phase 6.1 (Director Approved) -- Navigation Controller / Unified
-# Message Lifecycle: the six editable pages (telegram.navigation.
-# EDITABLE_COMMANDS) carry the mandatory Back/Home inline row and are
-# flagged editable=True on RouterResult.
+# V2 Phase 6.3 (Director Approved: "Dynamic Reply Keyboard Navigation") --
+# Reply Keyboard is GoldBot's sole navigation; Director's mandatory test
+# list: Main->Settings, Settings->Back, Main->Profile, Profile->Back,
+# Main->Admin, Main->Owner, USER doesn't see admin, USER doesn't see owner.
+# ("Registration-completion keyboard switch" and "BANNED gets no keyboard"
+# are already covered by tests/telegram/test_phone_registration.py's
+# existing test_route_contact_attaches_the_persistent_reply_keyboard_on_completion
+# and test_start_keyboard_is_reply_keyboard_remove_for_a_banned_user -- that
+# behavior is unchanged by Phase 6.3, only the keyboard's source moved to
+# telegram.reply_keyboard_manager.)
 # ---------------------------------------------------------------------------
 
 
-def test_command_router_marks_editable_pages_per_director_decision_3():
+def test_navigation_main_to_settings_switches_to_the_settings_reply_keyboard():
     from telegram.command_router import route_command
     from telegram.user_service import UserService
 
-    UserService().register_user("704", username="editableuser")
+    UserService().register_user("710", username="navsettings")
+    UserService().change_language("710", "EN")
 
-    for command in ("/profile", "/subscription", "/settings", "/help", "/about", "/history"):
-        result = asyncio.run(route_command(command, telegram_id="704"))
-        assert result.editable is True, f"{command} must be editable"
+    result = asyncio.run(route_command("/settings", telegram_id="710"))
+
+    assert _reply_texts(result.keyboard) == [
+        "🌐 Language", "💰 Risk", "📈 Strategy", "⏰ Timeframe", "🔔 Notifications", "◀️ Back",
+    ]
 
 
-def test_command_router_start_and_signal_are_not_editable():
+def test_navigation_settings_back_returns_to_the_main_reply_keyboard():
+    from telegram.command_router import route_command
+    from telegram.user_service import UserService
+    from telegram.registration_service import RegistrationService
+
+    UserService().register_user("711", username="navsettingsback")
+    UserService().change_language("711", "EN")
+    RegistrationService().complete("711")
+    asyncio.run(route_command("/settings", telegram_id="711"))
+
+    result = asyncio.run(route_command("◀️ Back", telegram_id="711"))
+
+    assert _reply_texts(result.keyboard) == [
+        "🏠 Home", "👤 Profile", "📊 Signals", "💳 Subscription", "⚙️ Settings", "❓ Help",
+    ]
+
+
+def test_navigation_main_to_profile_switches_to_the_profile_reply_keyboard():
     from telegram.command_router import route_command
     from telegram.user_service import UserService
 
-    UserService().register_user("705", username="notedituser")
+    UserService().register_user("712", username="navprofile")
+    UserService().change_language("712", "EN")
 
-    for command in ("/start", "/signal"):
-        result = asyncio.run(route_command(command, telegram_id="705"))
-        assert result.editable is False
+    result = asyncio.run(route_command("/profile", telegram_id="712"))
+
+    assert _reply_texts(result.keyboard) == [
+        "📄 Profile", "💳 Subscription", "📊 Statistics", "◀️ Back",
+    ]
 
 
-def test_command_router_editable_pages_carry_the_back_home_row():
+def test_navigation_profile_back_returns_to_the_main_reply_keyboard():
     from telegram.command_router import route_command
     from telegram.user_service import UserService
+    from telegram.registration_service import RegistrationService
 
-    UserService().register_user("706", username="backhomeuser")
+    UserService().register_user("713", username="navprofileback")
+    UserService().change_language("713", "EN")
+    RegistrationService().complete("713")
+    asyncio.run(route_command("/profile", telegram_id="713"))
 
-    result = asyncio.run(route_command("/profile", telegram_id="706"))
+    result = asyncio.run(route_command("◀️ Back", telegram_id="713"))
 
-    last_row = result.keyboard.inline_keyboard[-1]
-    assert [b.callback_data for b in last_row] == ["nav_back", "nav_home"]
+    assert _reply_texts(result.keyboard) == [
+        "🏠 Home", "👤 Profile", "📊 Signals", "💳 Subscription", "⚙️ Settings", "❓ Help",
+    ]
+
+
+def test_navigation_main_to_admin_switches_to_the_admin_submenu_reply_keyboard(monkeypatch):
+    from telegram.command_router import route_command
+    from telegram.user_service import UserService
+    from telegram.permissions import PermissionLevel
+
+    monkeypatch.setattr(
+        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.ADMIN,
+    )
+    UserService().register_user("714", username="navadmin")
+    UserService().change_language("714", "EN")
+
+    result = asyncio.run(route_command("/admin", telegram_id="714"))
+
+    assert _reply_texts(result.keyboard) == [
+        "👥 Users", "📊 Statistics", "🛠 System", "📢 Broadcast", "👑 Admins", "◀️ Back",
+    ]
+
+
+def test_navigation_main_to_owner_switches_to_the_owner_submenu_reply_keyboard(monkeypatch):
+    from telegram.command_router import route_command
+    from telegram.user_service import UserService
+    from telegram.permissions import PermissionLevel
+
+    monkeypatch.setattr(
+        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
+    )
+    UserService().register_user("715", username="navowner")
+    UserService().change_language("715", "EN")
+
+    result = asyncio.run(route_command("/owner", telegram_id="715"))
+
+    assert _reply_texts(result.keyboard) == [
+        "⚙️ Runtime", "❤️ Health", "📈 Performance", "🚨 Errors", "📦 Pipeline", "📋 Reports", "◀️ Back",
+    ]
+
+
+def test_navigation_regular_user_does_not_see_the_admin_keyboard():
+    from telegram.command_router import route_command, PERMISSION_DENIED_TEXT
+    from telegram.user_service import UserService
+
+    UserService().register_user("716", username="navuseradmin")
+
+    result = asyncio.run(route_command("/admin", telegram_id="716"))
+
+    assert result.text == PERMISSION_DENIED_TEXT
+    assert result.keyboard is None
+
+
+def test_navigation_regular_user_does_not_see_the_owner_keyboard():
+    from telegram.command_router import route_command, PERMISSION_DENIED_TEXT
+    from telegram.user_service import UserService
+
+    UserService().register_user("717", username="navuserowner")
+
+    result = asyncio.run(route_command("/owner", telegram_id="717"))
+
+    assert result.text == PERMISSION_DENIED_TEXT
+    assert result.keyboard is None

@@ -38,15 +38,10 @@ from telegram.keyboards import (
     risk_keyboard,
     timeframe_keyboard,
     strategy_keyboard,
-    settings_keyboard,
-    admin_panel_keyboard,
     phone_share_keyboard,
-    reply_keyboard,
-    admin_reply_keyboard,
-    owner_reply_keyboard,
     resolve_navigation_command,
 )
-from telegram.navigation import EDITABLE_COMMANDS, with_back_home
+from telegram import reply_keyboard_manager
 from telegram.permissions import PermissionLevel, get_permission_level
 from telegram.registration_service import RegistrationStep
 from translation.ui_catalog import t
@@ -62,49 +57,33 @@ PERMISSION_DENIED_TEXT = "Permission denied."
 # this command exist at all" (regardless of who is allowed to use it).
 _ALL_COMMANDS = {**COMMANDS, **OWNER_COMMANDS, **ADMIN_COMMANDS}
 
-# Which commands get a hint keyboard attached to their reply, and which
-# builder produces it (Phase 40). Not command-specific business logic --
-# just display; the keyboard's buttons are not wired to a callback_query
-# handler, so telegram.handlers documents the real interaction as a
-# command argument (e.g. "/risk 5"). "start" and "admin" are handled by
-# their own special cases below instead of this table -- "start"'s
-# keyboard depends on the caller's Registration Wizard step (V2 Phase
-# 3), not a fixed per-command builder.
+# Which commands get an inline VALUE-PICKER keyboard attached to their
+# reply (Phase 40; scope narrowed by V2 Phase 6.3 -- see module note
+# below). Not command-specific business logic -- just display. Only
+# real-choice screens stay here: picking a language/risk percent/
+# strategy/timeframe is a genuine selection (Director's own inline
+# allow-list), never a between-screen navigation, so these keyboards
+# are untouched by Phase 6.3's Reply-Keyboard-is-navigation policy.
+# "start"/"settings"/"admin" are NOT here -- their replies now go
+# through telegram.reply_keyboard_manager.keyboard_for_command()
+# instead (V2 Phase 6.3), since Settings/Admin/Owner/Profile/Signals
+# are Reply Keyboard sections, not inline hints, as of this phase.
 _KEYBOARD_BY_COMMAND = {
-    "settings": settings_keyboard,
     "language": language_keyboard,
     "risk": risk_keyboard,
     "strategy": strategy_keyboard,
     "timeframe": timeframe_keyboard,
-    "admin": admin_panel_keyboard,
 }
 
 # V2 Phase 3: which keyboard builder to attach to /start's reply for
 # each Wizard step. RegistrationStep.COMPLETE has no entry here --
 # _start_keyboard() handles that case separately (V2 Phase 5: the
-# persistent Reply Keyboard, tier-aware).
+# persistent Reply Keyboard, tier-aware; V2 Phase 6.3: that keyboard
+# now lives in telegram.reply_keyboard_manager.main_keyboard()).
 _START_KEYBOARD_BY_STEP = {
     RegistrationStep.LANGUAGE: language_keyboard,
     RegistrationStep.PHONE: phone_share_keyboard,
 }
-
-
-def _persistent_reply_keyboard(telegram_id):
-    """
-    V2 Phase 5: the tier-aware persistent Reply Keyboard for a fully
-    registered (registration_step == COMPLETE) user -- USER/ADMIN/OWNER
-    each get their own superset, mirroring Phase 4's Persistent Menu
-    tiering policy exactly (telegram/menu_commands.py). V2 Phase 5.1:
-    labels are localized, so the caller's language is resolved the
-    same way every other keyboard builder in this module already does.
-    """
-    language = handlers._current_language(telegram_id)
-    level = get_permission_level(telegram_id)
-    if level == PermissionLevel.OWNER:
-        return owner_reply_keyboard(language)
-    if level == PermissionLevel.ADMIN:
-        return admin_reply_keyboard(language)
-    return reply_keyboard(language)
 
 
 def _start_keyboard(telegram_id, language):
@@ -112,7 +91,8 @@ def _start_keyboard(telegram_id, language):
     V2 Phase 3/5: /start's reply keyboard follows wherever the
     Registration Wizard left off -- language_keyboard while
     registration_step is LANGUAGE, phone_share_keyboard while PHONE,
-    the persistent Reply Keyboard once COMPLETE (V2 Phase 5).
+    the persistent Main Reply Keyboard once COMPLETE (V2 Phase 5; V2
+    Phase 6.3: telegram.reply_keyboard_manager.main_keyboard()).
     ReplyKeyboardRemove() for a BANNED user -- checked first and
     independently of registration_step, since
     handlers._registration_step() already collapses BANNED and
@@ -144,13 +124,13 @@ def _start_keyboard(telegram_id, language):
 
     level = get_permission_level(telegram_id)
     if level in (PermissionLevel.OWNER, PermissionLevel.ADMIN):
-        return _persistent_reply_keyboard(telegram_id)
+        return reply_keyboard_manager.main_keyboard(telegram_id, level=level)
 
     step = handlers._registration_step(telegram_id)
     builder = _START_KEYBOARD_BY_STEP.get(step)
     if builder is not None:
         return builder(language)
-    return _persistent_reply_keyboard(telegram_id)
+    return reply_keyboard_manager.main_keyboard(telegram_id, level=level)
 
 
 _LEVEL_RANK = {
@@ -164,16 +144,15 @@ _LEVEL_RANK = {
 class RouterResult:
     text: str
     keyboard: Optional[object] = None
-    # V2 Phase 6.1 (Director Decision 3) -- True for the six pages
-    # (telegram.navigation.EDITABLE_COMMANDS) whose reply should edit
-    # the chat's last bot message in place instead of sending a new
-    # one; telegram/polling.py is the only reader of this field.
-    editable: bool = False
     # V2 Phase 6.1 (Director Decision 7) -- an optional second message
     # to send right after this one (e.g. the persistent Reply Keyboard
     # attached after an explicit ReplyKeyboardRemove()). RouterResult
     # carries exactly one keyboard field, so a "remove then reattach"
     # sequence needs a second RouterResult to send as a follow-up.
+    # V2 Phase 6.3 retired the sibling `editable` field this dataclass
+    # used to carry (Phase 6.1's edit-in-place delivery mechanism) --
+    # every reply is now a new message; see telegram/polling.py's
+    # _deliver() and telegram.reply_keyboard_manager's module docstring.
     followup: Optional["RouterResult"] = None
 
 
@@ -231,8 +210,18 @@ async def route_command(command_text: str, telegram_id=None, username=None) -> R
     it back to its "/command" here, before parsing, so this remains the
     single dispatch path every typed command already goes through (no
     second handler-lookup path, no business-logic duplication).
+
+    V2 Phase 6.3: a submenu Reply Keyboard's own label (e.g. "💰 Risk"
+    from the Settings section, or "◀️ Ortga" from any section) is tried
+    next if the Main-tier map above doesn't recognize it --
+    telegram.reply_keyboard_manager.resolve_navigation_command() owns
+    that second map, including the one label collision Director's UX
+    spec creates ("📊 Statistics" under both Admin and Profile), which
+    it resolves using the caller's tracked current section.
     """
     resolved_command_text = resolve_navigation_command(command_text)
+    if resolved_command_text is None:
+        resolved_command_text = reply_keyboard_manager.resolve_navigation_command(command_text, telegram_id)
     if resolved_command_text is not None:
         command_text = resolved_command_text
 
@@ -263,27 +252,28 @@ async def route_command(command_text: str, telegram_id=None, username=None) -> R
         # V2 Phase 3: depends on the caller's Registration Wizard step,
         # not a fixed per-command builder -- see _start_keyboard().
         keyboard = _start_keyboard(telegram_id, handlers._current_language(telegram_id))
+        reply_keyboard_manager.record_section(telegram_id, reply_keyboard_manager.SECTION_MAIN)
     else:
         keyboard_builder = _KEYBOARD_BY_COMMAND.get(command)
-        if keyboard_builder is None:
-            keyboard = None
-        elif command == "admin":
-            # OWNER/ADMIN keyboard -- stays English-only (Director
-            # decision, Phase 1.5 Localized Keyboards), no language passed.
-            keyboard = keyboard_builder()
-        else:
+        if keyboard_builder is not None:
+            # Inline value-picker (Language/Risk/Strategy/Timeframe) --
+            # a real choice, Director's own inline allow-list; never a
+            # navigation switch, so the Reply Keyboard section tracker
+            # is deliberately left untouched here (whatever section the
+            # caller was already in stays current).
             keyboard = keyboard_builder(handlers._current_language(telegram_id))
+        else:
+            # V2 Phase 6.3 (Director Approved: Dynamic Reply Keyboard
+            # Navigation) -- every other command's reply carries the
+            # Reply Keyboard for the section it belongs to (Main/
+            # Settings/Admin/Owner/Profile/Signals), switching the
+            # chat's persistent keyboard exactly like a native Telegram
+            # app screen transition. Retires Phase 6.1's inline Back/
+            # Home row entirely (see telegram.reply_keyboard_manager's
+            # module docstring).
+            keyboard = reply_keyboard_manager.keyboard_for_command(command, telegram_id)
 
-    # V2 Phase 6.1 (Director Decision 3/4): the six editable pages get
-    # the mandatory Back/Home inline row appended to whatever keyboard
-    # they already had (settings_keyboard()'s five categories) or, if
-    # they had none (profile/subscription/help/about/history), a
-    # keyboard consisting of just that row.
-    editable = command in EDITABLE_COMMANDS
-    if editable:
-        keyboard = with_back_home(keyboard, handlers._current_language(telegram_id))
-
-    return RouterResult(text=text, keyboard=keyboard, editable=editable)
+    return RouterResult(text=text, keyboard=keyboard)
 
 
 async def route_message(message) -> RouterResult:
@@ -357,8 +347,11 @@ async def route_contact(message) -> RouterResult:
         return RouterResult(text=text, keyboard=None)
 
     language = handlers._current_language(telegram_id)
+    reply_keyboard_manager.record_section(telegram_id, reply_keyboard_manager.SECTION_MAIN)
     return RouterResult(
         text=text,
         keyboard=ReplyKeyboardRemove(),
-        followup=RouterResult(text=t("navigation.menu_ready", language), keyboard=_persistent_reply_keyboard(telegram_id)),
+        followup=RouterResult(
+            text=t("navigation.menu_ready", language), keyboard=reply_keyboard_manager.main_keyboard(telegram_id),
+        ),
     )

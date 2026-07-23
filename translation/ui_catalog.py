@@ -455,6 +455,44 @@ _CATALOG: dict = {
         "UZ": "Menyu tayyor.",
         "RU": "Меню готово.",
     },
+    # V2 Phase 6.3 (Director Approved) -- Dynamic Reply Keyboard
+    # Navigation: labels for the five submenu Reply Keyboards
+    # (telegram/reply_keyboard_manager.py). "rkm." prefix distinguishes
+    # these from the pre-existing "keyboard.settings.*"/"menu.*" keys,
+    # which stay attached to the untouched inline value-picker
+    # keyboards (settings_keyboard(), admin_panel_keyboard()) and the
+    # Main-tier Reply Keyboard respectively -- deliberately not reused
+    # here since several of those lack the emoji this phase's UX spec
+    # requires. "◀️ Ortga" (rkm.back) is intentionally a different
+    # glyph/label from Phase 6.1's retired "nav.back" ("⬅️ Orqaga") --
+    # not the same button, a new one.
+    "rkm.back": {"EN": "◀️ Back", "UZ": "◀️ Ortga", "RU": "◀️ Назад"},
+    "rkm.settings.language": {"EN": "🌐 Language", "UZ": "🌐 Til", "RU": "🌐 Язык"},
+    "rkm.settings.risk": {"EN": "💰 Risk", "UZ": "💰 Risk", "RU": "💰 Риск"},
+    "rkm.settings.strategy": {"EN": "📈 Strategy", "UZ": "📈 Strategiya", "RU": "📈 Стратегия"},
+    "rkm.settings.timeframe": {"EN": "⏰ Timeframe", "UZ": "⏰ Vaqt oralig'i", "RU": "⏰ Таймфрейм"},
+    "rkm.settings.notifications": {"EN": "🔔 Notifications", "UZ": "🔔 Bildirishnomalar", "RU": "🔔 Уведомления"},
+    "rkm.admin.users": {"EN": "👥 Users", "UZ": "👥 Users", "RU": "👥 Пользователи"},
+    "rkm.admin.statistics": {"EN": "📊 Statistics", "UZ": "📊 Statistics", "RU": "📊 Статистика"},
+    "rkm.admin.system": {"EN": "🛠 System", "UZ": "🛠 System", "RU": "🛠 Система"},
+    "rkm.admin.broadcast": {"EN": "📢 Broadcast", "UZ": "📢 Broadcast", "RU": "📢 Рассылка"},
+    "rkm.admin.admins": {"EN": "👑 Admins", "UZ": "👑 Admins", "RU": "👑 Админы"},
+    "rkm.owner.runtime": {"EN": "⚙️ Runtime", "UZ": "⚙️ Runtime", "RU": "⚙️ Runtime"},
+    "rkm.owner.health": {"EN": "❤️ Health", "UZ": "❤️ Health", "RU": "❤️ Здоровье"},
+    "rkm.owner.performance": {"EN": "📈 Performance", "UZ": "📈 Performance", "RU": "📈 Производительность"},
+    "rkm.owner.errors": {"EN": "🚨 Errors", "UZ": "🚨 Errors", "RU": "🚨 Ошибки"},
+    "rkm.owner.pipeline": {"EN": "📦 Pipeline", "UZ": "📦 Pipeline", "RU": "📦 Пайплайн"},
+    "rkm.owner.reports": {"EN": "📋 Reports", "UZ": "📋 Reports", "RU": "📋 Отчёты"},
+    "rkm.profile.profile": {"EN": "📄 Profile", "UZ": "📄 Profile", "RU": "📄 Профиль"},
+    # Deliberately the same text as rkm.admin.statistics in every
+    # language (Director's own UX spec repeats "📊 Statistics" under
+    # both Admin and Profile) -- telegram.reply_keyboard_manager's
+    # per-section resolution (not a flat global map) is what tells the
+    # two apart at runtime; see that module's docstring.
+    "rkm.profile.statistics": {"EN": "📊 Statistics", "UZ": "📊 Statistics", "RU": "📊 Статистика"},
+    "rkm.signals.live": {"EN": "📈 Live Signals", "UZ": "📈 Live Signals", "RU": "📈 Живые сигналы"},
+    "rkm.signals.history": {"EN": "📜 History", "UZ": "📜 History", "RU": "📜 История"},
+    "rkm.signals.premium": {"EN": "⭐ Premium", "UZ": "⭐ Premium", "RU": "⭐ Премиум"},
 }
 
 
