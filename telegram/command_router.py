@@ -117,9 +117,34 @@ def _start_keyboard(telegram_id, language):
     independently of registration_step, since
     handlers._registration_step() already collapses BANNED and
     COMPLETE to the same None and cannot distinguish them on its own.
+
+    V2 Phase 6.1.1 (Director-reported bug, root-caused): OWNER/ADMIN
+    always get the tier-aware persistent Reply Keyboard, regardless of
+    registration_step. database/models.py's _backfill_registration_state()
+    (V2 Phase 3) permanently set registration_step='PHONE' for any
+    pre-existing row with no phone_hash -- which includes operator
+    accounts (e.g. the account matching TELEGRAM_OWNER_ID) that were
+    created before the mandatory Phone Share Wizard existed and were
+    never going to complete it. Without this check, such an account's
+    /start reply keeps re-attaching phone_share_keyboard() forever,
+    which is what actually produced the reported "Phone Share button
+    never goes away" / "Owner buttons missing from the Reply Keyboard"
+    symptoms -- the ReplyKeyboardRemove()->Persistent Reply Keyboard
+    sequence in route_contact() was already correct and is untouched
+    by this fix. is_owner()/is_admin() (telegram/permissions.py) are
+    already the stronger identity check (TELEGRAM_OWNER_ID env var /
+    admins table), so gating an operator's own UI behind the same
+    anti-abuse Phone Share requirement (V2 Phase 3/61.4) meant for
+    anonymous free-tier signups was never the intent. Command routing
+    itself was never affected -- permission checks in route_command()
+    already only consult get_permission_level(), never registration_step.
     """
     if handlers._is_banned(telegram_id):
         return ReplyKeyboardRemove()
+
+    level = get_permission_level(telegram_id)
+    if level in (PermissionLevel.OWNER, PermissionLevel.ADMIN):
+        return _persistent_reply_keyboard(telegram_id)
 
     step = handlers._registration_step(telegram_id)
     builder = _START_KEYBOARD_BY_STEP.get(step)

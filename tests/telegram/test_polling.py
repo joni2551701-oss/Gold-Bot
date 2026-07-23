@@ -359,6 +359,45 @@ def test_deliver_sends_followup_as_a_second_message():
     assert message.answered == [("phone registered", None), ("menu ready", None)]
 
 
+def test_deliver_still_sends_followup_when_the_primary_send_fails():
+    """V2 Phase 6.1.1: a transient failure on the primary (e.g. the
+    ReplyKeyboardRemove() message) must not skip the followup -- skipping
+    it would leave the chat with no Reply Keyboard at all."""
+    import telegram.polling as polling_module
+
+    class FakeBot:
+        async def edit_message_text(self, *args, **kwargs):
+            raise AssertionError("must not be called -- result is not editable")
+
+    class FakeMessage:
+        from_user = SimpleNamespace(id=955)
+        bot = FakeBot()
+
+        def __init__(self):
+            self.calls = 0
+
+        async def answer(self, text, reply_markup=None):
+            self.calls += 1
+            if self.calls == 1:
+                raise RuntimeError("network unreachable")
+            return SimpleNamespace(message_id=9500)
+
+    class FakeFollowup:
+        text = "menu ready"
+        keyboard = None
+
+    class FakeResult:
+        text = "phone registered"
+        keyboard = None
+        editable = False
+        followup = FakeFollowup()
+
+    message = FakeMessage()
+    asyncio.run(polling_module._deliver(message, FakeResult()))  # must not raise
+
+    assert message.calls == 2
+
+
 # ---------------------------------------------------------------------------
 # TASK 6 -- startup secret validation
 # ---------------------------------------------------------------------------

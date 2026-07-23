@@ -195,26 +195,40 @@ async def _deliver(message: Message, result) -> None:
     (only route_contact()'s registration-completion reply sets it
     today), it is always sent as a second, brand-new message after the
     primary one.
+
+    V2 Phase 6.1.1 -- the primary send and the followup send are each
+    wrapped so a failure in one never silently drops the other (e.g. a
+    transient network error on the ReplyKeyboardRemove() message must
+    not skip the persistent-keyboard followup, since that would leave
+    the chat with no Reply Keyboard at all). `_deliver()` itself never
+    raises, matching the never-raises posture _on_message's caller
+    already relies on for every other delivery path.
     """
     telegram_id = message.from_user.id
     editable = getattr(result, "editable", False)
     tracked_message_id = last_message_id(telegram_id) if editable else None
 
-    if editable and tracked_message_id is not None:
-        try:
-            await message.bot.edit_message_text(
-                result.text, chat_id=telegram_id, message_id=tracked_message_id, reply_markup=result.keyboard,
-            )
-            record_message(telegram_id, tracked_message_id)
-        except Exception as e:
-            logger.warning(f"edit_message_text failed, sending new message instead: {e}")
+    try:
+        if editable and tracked_message_id is not None:
+            try:
+                await message.bot.edit_message_text(
+                    result.text, chat_id=telegram_id, message_id=tracked_message_id, reply_markup=result.keyboard,
+                )
+                record_message(telegram_id, tracked_message_id)
+            except Exception as e:
+                logger.warning(f"edit_message_text failed, sending new message instead: {e}")
+                await _send_new(message, result, telegram_id)
+        else:
             await _send_new(message, result, telegram_id)
-    else:
-        await _send_new(message, result, telegram_id)
+    except Exception as e:
+        logger.warning(f"_deliver: primary send failed for telegram_id={telegram_id}: {e}")
 
     followup = getattr(result, "followup", None)
     if followup is not None:
-        await _send_new(message, followup, telegram_id)
+        try:
+            await _send_new(message, followup, telegram_id)
+        except Exception as e:
+            logger.warning(f"_deliver: followup send failed for telegram_id={telegram_id}: {e}")
 
 
 def _log_startup_secret_presence() -> None:

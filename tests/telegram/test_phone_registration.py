@@ -222,6 +222,74 @@ def test_start_keyboard_is_the_persistent_reply_keyboard_once_registration_is_co
     ]
 
 
+# ---------------------------------------------------------------------------
+# V2 Phase 6.1.1 (Director-reported bug, root-caused) -- database/models.py's
+# _backfill_registration_state() (V2 Phase 3) permanently set
+# registration_step='PHONE' for any pre-existing row with no phone_hash,
+# which includes operator accounts (OWNER/ADMIN) created before the
+# mandatory Phone Share Wizard existed. Without the fix, such an account's
+# /start reply keeps re-attaching phone_share_keyboard() forever -- these
+# tests pin the exact stuck-at-PHONE scenario and confirm OWNER/ADMIN now
+# always get the tier-aware persistent Reply Keyboard regardless of
+# registration_step, while a regular USER stuck the same way is unaffected
+# (still correctly re-offered Phone Share -- Phase 3's mandatory-completion
+# policy for ordinary signups is untouched).
+# ---------------------------------------------------------------------------
+
+
+def test_start_keyboard_is_persistent_for_owner_stuck_at_phone_step(monkeypatch):
+    from aiogram.types import ReplyKeyboardMarkup
+    from database.user_repository import UserRepository
+    from telegram.permissions import PermissionLevel
+
+    _run(route_command("/start", telegram_id="624"))
+    UserRepository().set_registration_step("624", "PHONE")  # simulates the Phase 3 backfill
+
+    monkeypatch.setattr(
+        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
+    )
+
+    result = _run(route_command("/start", telegram_id="624"))
+
+    assert isinstance(result.keyboard, ReplyKeyboardMarkup)
+    buttons = [b.text for row in result.keyboard.keyboard for b in row]
+    assert "🛠 Admin" in buttons
+    assert "👑 Owner" in buttons
+
+
+def test_start_keyboard_is_persistent_for_admin_stuck_at_phone_step(monkeypatch):
+    from aiogram.types import ReplyKeyboardMarkup
+    from database.user_repository import UserRepository
+    from telegram.permissions import PermissionLevel
+
+    _run(route_command("/start", telegram_id="625"))
+    UserRepository().set_registration_step("625", "PHONE")
+
+    monkeypatch.setattr(
+        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.ADMIN,
+    )
+
+    result = _run(route_command("/start", telegram_id="625"))
+
+    assert isinstance(result.keyboard, ReplyKeyboardMarkup)
+    buttons = [b.text for row in result.keyboard.keyboard for b in row]
+    assert "🛠 Admin" in buttons
+    assert "👑 Owner" not in buttons
+
+
+def test_start_keyboard_still_offers_phone_share_for_a_regular_user_stuck_at_phone_step():
+    """Regression guard: the OWNER/ADMIN bypass must not leak to ordinary USER-tier accounts -- Phase 3's mandatory Phone Share policy for them is untouched."""
+    from database.user_repository import UserRepository
+
+    _run(route_command("/start", telegram_id="626"))
+    UserRepository().set_registration_step("626", "PHONE")
+
+    result = _run(route_command("/start", telegram_id="626"))
+
+    assert result.keyboard is not None
+    assert result.keyboard.keyboard[0][0].request_contact is True
+
+
 def test_start_keyboard_is_reply_keyboard_remove_for_a_banned_user():
     """V2 Phase 5 Decision 3: a BANNED /start gets ReplyKeyboardRemove(), not None."""
     from aiogram.types import ReplyKeyboardRemove
