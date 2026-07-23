@@ -83,6 +83,21 @@ GOVERNANCE-REVIEW-001   Engineering Governance Layer Review   ✅ DELIVERED — 
 |---|---|---|
 | GOVERNANCE-REVIEW-001 | Engineering Governance Layer Review | ✅ DELIVERED — see `communication/task_queue/GOVERNANCE-REVIEW-001.md` and `docs/GOVERNANCE_REVIEW_001.md`. Final Recommendation: READY WITH MINOR IMPROVEMENTS. |
 
+## Repository Engineering (separate track — `REPO-XXX`, never a `TASK-XXX`, `DEVOPS-XXX`, or `GOVERNANCE-REVIEW-XXX`)
+
+A fourth independent track for whole-repository engineering work
+(branch strategy, migration, CI/branch-protection structure) — the
+first task on this track is explicitly the first Engineering task
+after Governance v1.0 is frozen, per Director order.
+
+```
+REPO-001   Repository Engineering Migration (Audit + Plan)   ✅ DELIVERED — awaiting Director approval before REPO-002 (Implementation)
+```
+
+| Task | Title | Status |
+|---|---|---|
+| REPO-001 | Repository Engineering Migration | ✅ DELIVERED — see `communication/task_queue/REPO-001.md` and `docs/REPO_001_REPOSITORY_ENGINEERING_MIGRATION.md`. Audit + Proposal + Plan only, no branch/PR/protection/settings action taken. Recommend approving the plan and authorizing REPO-002 (Implementation). |
+
 ## Rule change (Engineering track, this update)
 
 Per Director decision: a separate Engineering/DevOps roadmap
