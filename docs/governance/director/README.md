@@ -69,6 +69,8 @@ These ten amend the Market Data Foundation architecture
 |----|----------|--------|
 | [DD-036](DD-036.md) | Branch strategy formalized (`feature/*`,`fix/*`,`hotfix/*` → PR → `main`) | Approved |
 | [DD-037](DD-037.md) | Market Data Foundation architecture FROZEN on approval | Approved |
+| [DD-038](DD-038.md) | Architecture-First Development flow (standard for all phases) | Approved |
+| [DD-039](DD-039.md) | Market Data Foundation is the Canonical Architecture (merged via PR #3) | Approved |
 
 ## Related
 
