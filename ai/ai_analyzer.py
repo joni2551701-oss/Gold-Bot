@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from context.context_orchestrator import ContextSnapshot
 from signals.models import SignalCandidate
+from core.logger import setup_logger
+
+logger = setup_logger("AIAnalyzer")
 
 
 @dataclass(frozen=True)
@@ -28,10 +31,17 @@ class AIAnalyzer:
         """
         # Note: Heuristic scoring logic will be implemented in Phase 6.0.1
         # This layer performs the "AI Evaluation" without creating signals.
+        logger.info(f"AI started: strategy={signal.strategy_name}, signal_type={signal.signal_type.value}.")
 
-        return AIAnalysisResult(
+        result = AIAnalysisResult(
             approved=False,
             confidence=0.0,
             risk_score=1.0,  # Default high-risk until scored
             explanation="AI Analyzer initialized. Pending heuristic integration."
         )
+
+        logger.info(
+            f"AI finished: approved={result.approved}, confidence={result.confidence:.2f}, "
+            f"risk_score={result.risk_score:.2f}."
+        )
+        return result

@@ -1,0 +1,33 @@
+# GoldBot v0.3 — Docker Compose foundation (Phase 56).
+#
+# Optional. Not required for the current deployment -- see
+# docs/DEPLOYMENT.md. Defines the two independent processes
+# (docs/ARCHITECTURE.md's System Overview) as separate services
+# sharing one persisted database volume. Neither service definition
+# changes any application code or trading logic.
+
+services:
+  telegram-polling:
+    build: .
+    command: python -m telegram.polling
+    env_file: .env
+    volumes:
+      - goldbot-db:/app/database
+    restart: unless-stopped
+
+  # The trading pipeline is one-shot (exits when done) -- it does not
+  # belong in `restart: unless-stopped`. Run it on a schedule via your
+  # host's cron/timer calling `docker compose run --rm trading-pipeline`,
+  # or keep using GitHub Actions (trading_bot.yml) as documented in
+  # docs/DEPLOYMENT.md.
+  trading-pipeline:
+    build: .
+    command: python main.py
+    env_file: .env
+    volumes:
+      - goldbot-db:/app/database
+    profiles:
+      - manual
+
+volumes:
+  goldbot-db:

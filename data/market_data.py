@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 from config import Config
 from data.twelve_data_client import TwelveDataClient, Candle
+from data.api_error_classifier import classify_api_error
 from core.logger import setup_logger
 
 logger = setup_logger("MarketDataNormalizer")
@@ -28,7 +29,13 @@ class MarketDataNormalizer:
             "M5": timedelta(minutes=5),
             "M15": timedelta(minutes=15),
             "H1": timedelta(hours=1),
-            "H4": timedelta(hours=4)
+            "H4": timedelta(hours=4),
+            # "Daily" added for the HTF Bias layer (Phase A2) so
+            # get_snapshot()'s existing gap detection covers it too,
+            # instead of silently skipping it (the fallback for an
+            # interval missing from this dict is "no gap detection
+            # performed" -- see _detect_missing_candles()).
+            "Daily": timedelta(days=1)
         }
 
     def _validate_and_clean(self, candles: List[Candle], symbol: str, interval: str) -> List[Candle]:
@@ -104,6 +111,13 @@ class MarketDataNormalizer:
             return self._validate_and_clean(raw_candles, symbol, interval)
         except Exception as e:
             logger.error(f"Failed to get normalized candles for {symbol} at {interval}: {str(e)}")
+            # Pre-Phase 59 Architecture Readiness Review, AC-07: an
+            # additional, structured log line only -- control flow and
+            # the empty-list return below are unchanged.
+            # classify_api_error() never raises, so this can never
+            # replace the graceful-degradation behavior above with a
+            # crash.
+            logger.error(classify_api_error(e, module="MarketDataNormalizer").to_dict())
             return []
 
     def get_snapshot(self, symbol: str, intervals: List[str]) -> MarketSnapshot:

@@ -1,0 +1,284 @@
+# GoldBot — Decision Log
+
+Governed by `docs/constitution/CONSTITUTION.md` Article 8. The
+load-bearing architectural and governance decisions behind this
+repository, in the Director's requested format: Decision / Reason /
+Date. "Date" here is the phase the decision was made or formalized in
+— this repository does not track a per-decision calendar date, so none
+is fabricated.
+
+---
+
+**Decision**: Trading Core must remain isolated from the AI layer —
+`ai/` never imports `decision/`, `risk/`, or `execution/`.
+
+**Reason**: Risk reduction. A deterministic, rule-based Decision Engine
+is auditable in a way an AI-influenced one is not; Constitution
+Article 1 makes this permanent, not a temporary limitation.
+
+**Date**: Phase 61.0's isolation audit; formalized as Constitution
+Article 1/3, Phase 62.0.
+
+---
+
+**Decision**: A LOCKed Foundation module's name, path, import path,
+and public API cannot change without explicit Director approval.
+
+**Reason**: Architecture stability — a rename or move silently breaks
+every existing import path across the codebase; explicit approval
+keeps that blast radius visible before it happens.
+
+**Date**: Director Policy following Phase 63.0's freeze; formalized as
+Constitution Article 9, Phase 62.1a.
+
+---
+
+**Decision**: Before writing a new module, search for an existing
+Foundation/Manager/Contract/Model/Capability/Registry first.
+
+**Reason**: Prevents duplicate logic at scale — `ai/audit/provider_stats.py`
+being extended three separate times (61.1/61.3/61.6) rather than
+replaced is the worked proof this discipline holds.
+
+**Date**: Phase 59's Architecture Freeze; Constitution Article 7,
+Phase 62.0; the explicit six-item checklist, Constitution Article 11,
+Phase 62.1a.
+
+---
+
+**Decision**: Content-type contracts extend the existing `ai/content/`
+package; they do not get a new top-level `content/` package.
+
+**Reason**: `ai/content/` already existed from Phase 61.5 — a Reuse
+Audit found it before Phase 63.0's brief assumed it needed building
+from scratch.
+
+**Date**: Phase 63.0 TASK 2.
+
+---
+
+**Decision**: `broadcast/`, `media/`, `translation/` are new top-level
+packages, not `ai/broadcast/` etc.
+
+**Reason**: Channel/media-type/language *management* is a genuinely
+different responsibility from AI content *generation* — the same
+reasoning that keeps `execution/` (Layer 3) separate from `decision/`
+(Layer 2).
+
+**Date**: Phase 63.0 TASK 4/5/6.
+
+---
+
+**Decision**: `ai/router/router.py`'s selection logic is never touched
+when adding a new `Capability` — only `routing_rules.py`'s declarative
+data table gains an entry.
+
+**Reason**: Keeps the Router's tested selection behavior stable across
+every capability addition; a routing rule is data, not a code change
+to the router itself.
+
+**Date**: Established Phase 62.2, reused Phase 63.0 TASK 8.
+
+---
+
+**Decision**: `AI_EVOLUTION.md` holds Future Vision only;
+`docs/roadmap/VERSIONS.md` plus each phase's Freeze document hold
+Actual Development Status. The two never mix.
+
+**Reason**: A Worker's own audit flagged `AI_EVOLUTION.md`'s stage
+table as possibly stale relative to real Phase 61.3 work. Rather than
+silently rewriting a vision document to match code status, the
+Director ruled the two document types stay role-separated —
+`AI_EVOLUTION.md` was later restructured (Phase 62.1d) on its own
+terms, not to "catch up" to code.
+
+**Date**: Phase 62.1c.
+
+---
+
+**Decision**: Version numbers `v0.5`–`v0.9` are never renumbered or
+reassigned, even when a new roadmap vision (`docs/VISION.md`'s
+"Senior Trading AI Platform") groups their themes differently.
+
+**Reason**: Multiple existing documents
+(`docs/PHASE61_7_FREEZE.md`, `docs/owner/OWNER_PANEL.md`,
+`docs/telegram/OWNER_SYSTEM.md`) already reference these exact version
+numbers; renumbering would silently break every one of those
+cross-references.
+
+**Date**: Phase 62.1d TASK 2.
+
+---
+
+**Decision** (ADR-001): GoldBot Platform is architected around a
+Shared Platform Layer serving five equal clients — Telegram Bot,
+Telegram Mini App, Android, iOS, Desktop — not around Telegram Bot
+with other clients bolted on afterward. Concretely: `Platform Core →
+Shared Platform Layer → {Telegram Bot, Mini App, Android, iOS,
+Desktop}`, and no Platform component may be written as `Telegram
+Callback → Business Logic` directly — it is always `Platform UI →
+Navigation Layer → Application Layer → Business Logic` (the Universal
+UI Abstraction rule).
+
+**Reason**: A Navigation (or any Platform component) designed
+Telegram-first would have to be rewritten for Android, iOS, and
+Desktop once they exist — the exact rework this decision exists to
+avoid, at the cost of designing for four platforms with zero code
+today.
+
+**Date**: TASK-002A review (Navigation Analysis approved); formalized
+as Constitution Article 13 (Future First Principle) in the same
+review. Full record: `communication/decisions/ADR-001.md`.
+
+---
+
+**Decision** (ADR-002): Every screen gets one Universal Screen ID
+(dotted, lowercase, `<category>.<name>` — e.g. `settings.language`),
+stable across every platform. The ID never changes per platform.
+
+**Reason**: Without one stable ID, each platform needs its own mapping
+table for "what this screen actually means" — the same per-platform
+divergence ADR-001 exists to prevent, one level lower (per-screen
+instead of per-architecture).
+
+**Date**: TASK-002B review. Full record: `communication/decisions/ADR-002.md`.
+
+---
+
+**Decision** (ADR-003): A platform only ever calls Navigation to reach
+a screen — it never constructs one itself
+(`Screen Registry → Navigation → Platform Adapter → <client>`, never
+`<client> → Create Screen` directly).
+
+**Reason**: A platform able to construct its own Screen ad hoc could
+silently diverge from every other platform's version of it, defeating
+ADR-002's Universal Screen Identity.
+
+**Date**: TASK-002B review. Full record: `communication/decisions/ADR-003.md`.
+
+---
+
+**Decision** (ADR-004): Every platform emits the same navigation event
+vocabulary (`ScreenOpened`, `ScreenClosed`, `BackPressed`,
+`PermissionDenied`, `NavigationFailed`, `DeepLinkOpened`,
+`SessionExpired`) — interface only, no dispatch implementation, in
+TASK-002C.
+
+**Reason**: A shared event vocabulary lets a future Analytics or AI
+consumer observe navigation behavior uniformly across every platform,
+without each one inventing its own logging shape.
+
+**Date**: TASK-002B review. Full record: `communication/decisions/ADR-004.md`.
+
+---
+
+**Decision** (ADR-005): Migrating any pre-ADR-002 screen/menu id to the
+Universal Screen Identity convention is its own, separately-scoped
+Migration Task — never a silent side effect of another task. That task
+must state a Backward Compatibility plan and a Rollback plan before
+its Implementation step.
+
+**Reason**: Formalizes the restraint `platforms/navigation_model.py`'s
+`is_valid_screen_id()` already exercised at TASK-002C (not enforcing
+the new convention retroactively) as a standing rule, not a one-off
+judgment call.
+
+**Date**: TASK-002C freeze review. Full record: `communication/decisions/ADR-005.md`.
+
+---
+
+**Decision** (ADR-006): Every Navigation operation runs as a
+transaction (Start → Permission → Resolve Route → Update Stack → Emit
+Events → Commit); any stage failing rolls back the whole operation.
+
+**Reason**: A partially-applied navigation (stack changed but no event,
+or an event with no matching stack change) is a silent-corruption risk
+once multiple platforms and a future Event Bus consumer depend on
+Navigation State being trustworthy.
+
+**Date**: TASK-002D review. Governs future work; not applied
+retroactively to TASK-002D's own already-approved code. Full record:
+`communication/decisions/ADR-006.md`.
+
+---
+
+**Decision** (ADR-007): Every screen navigation carries a Context
+(`screen_id`, `session_id`, `parameters`, `source`, `timestamp`,
+`navigation_reason`), not just a screen id.
+
+**Reason**: Future Analytics/AI/Audit/Debug consumers need "why" and
+"from where," not only "where" — a bare screen id can't answer that.
+
+**Date**: TASK-002D review. Governs future work; not applied
+retroactively. Full record: `communication/decisions/ADR-007.md`.
+
+---
+
+**Decision** (ADR-008): Navigation never returns a plain true/false —
+the standard result model is a fixed outcome vocabulary (`SUCCESS`,
+`BLOCKED`, `NOT_FOUND`, `PERMISSION_DENIED`, `FAILED`, `REDIRECTED`).
+
+**Reason**: A bare boolean collapses distinct failure reasons into one
+bit; a caller can't distinguish "doesn't exist" from "no permission"
+from "redirected" without a separate, informally-shaped field.
+
+**Date**: TASK-002D review. Governs future work; `NavigationResult.ok:
+bool` (TASK-002D) is explicitly not rewritten in this cycle — a
+breaking change to a same-cycle contract is deferred to its own task.
+Full record: `communication/decisions/ADR-008.md`.
+
+---
+
+**Decision** (ADR-009): A cancelled CI run does not permanently block
+a task if the cancellation was only caused by a superseding push (not
+a failure) and the superseding run validates the same content
+successfully — that later `success` is the official validation.
+
+**Reason**: A task should not sit artificially blocked by a
+"cancellation" that was never an actual failure; resource-efficient
+and correct at once.
+
+**Date**: TASK-002D freeze review — the Worker flagged the CI #158
+(cancelled)/#159 (success) discrepancy rather than deciding it
+silently; this rule resolves it and applies to every future task. Full
+record: `communication/decisions/ADR-009.md`.
+
+---
+
+**Decision** (ADR-010): Any permission check — present or future —
+must fail closed. An unknown, invalid, missing, or malformed
+permission value, on either side of the comparison, never grants
+access; it always evaluates to DENY.
+
+**Reason**: `has_sufficient_permission()` (`platforms/navigation_core.py`,
+Frozen) fails closed for an unrecognized *user* tier but not for an
+unrecognized *required* tier (ranked at -1, satisfied by any real user
+tier ≥0) — a permission system's safe default must be symmetric.
+
+**Date**: TASK-002E review — the Worker surfaced this finding via a
+new edge-case test without self-authorizing a fix, since the module is
+Frozen; the Director classified it as a Potential Security Weakness
+(not a bug) and issued this ADR as the standing policy, while deferring
+the actual code fix to a dedicated future Security Task (tracked in
+`docs/TECHNICAL_DEBT.md`). Full record: `communication/decisions/ADR-010.md`.
+
+---
+
+**Decision** (ADR-011): Every task touching Permission, Authentication,
+Authorization, Session, or Navigation code must include a Security
+Review section in its report (Attack Surface, Failure Modes, Fail
+Open/Fail Closed, Abuse Scenarios, Recommendations).
+
+**Reason**: Formalizes the review practice that caught ADR-010's
+finding, so this class of issue is caught consistently rather than by
+chance.
+
+**Date**: TASK-002E review, same cycle as ADR-010. Applies starting
+with TASK-002F. Full record: `communication/decisions/ADR-011.md`.
+
+## Related
+
+- `docs/changelog/CHANGELOG.md` — what shipped alongside each decision.
+- `docs/changelog/PHASE_HISTORY.md` — the full phase list.
+- `docs/constitution/AMENDMENTS.md` — the subset of these decisions
+  that became Constitution Articles.

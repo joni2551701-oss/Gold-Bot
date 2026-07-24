@@ -9,6 +9,9 @@ from context.bos import BosEvent, BosDirection
 from context.choch import ChochEvent, ChochDirection
 from context.order_block import OrderBlock, OrderBlockType
 from context.fvg import FairValueGap, FvgType
+from core.logger import setup_logger
+
+logger = setup_logger("AMD")
 
 
 class AmdEventType(Enum):
@@ -124,15 +127,28 @@ def detect_amd_events(
     bullish_obs, bearish_obs = [], []
 
     for idx, etype, event in timeline:
-        is_bull = _resolve_direction(etype, event)
+        try:
+            is_bull = _resolve_direction(etype, event)
+        except ValueError as e:
+            # Defensive only: today's timeline construction (lines above)
+            # only ever tags 'sweep'/'break'/'ob'/'fvg' with matching
+            # event types, so this branch is unreachable with the
+            # current five event types. It exists so that a future
+            # timeline addition with a missing _resolve_direction()
+            # mapping degrades to "skip this event" instead of crashing
+            # the whole AMD detection pass.
+            logger.warning(f"Skipping unresolvable AMD timeline event at index {idx}: {e}")
+            continue
 
         if etype == 'sweep':
             if is_bull:
                 last_bullish_sweep = event
                 bullish_fvgs.clear()
+                bullish_obs.clear()
             else:
                 last_bearish_sweep = event
                 bearish_fvgs.clear()
+                bearish_obs.clear()
 
         elif etype == 'fvg':
             if is_bull and last_bullish_sweep and idx >= last_bullish_sweep.index:

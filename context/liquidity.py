@@ -33,14 +33,19 @@ def detect_equal_levels(swings: Sequence[SwingPoint], tolerance: float) -> List[
     
     def find_clusters(points: List[SwingPoint], l_type: LiquidityType):
         if len(points) < 2: return
+        consumed = set()
         for i in range(len(points)):
+            if i in consumed:
+                continue
             cluster = [points[i]]
             for j in range(i + 1, len(points)):
+                if j in consumed:
+                    continue
                 if abs(points[j].price - points[i].price) <= tolerance:
                     cluster.append(points[j])
-                else:
-                    break
+                    consumed.add(j)
             if len(cluster) >= 2:
+                consumed.add(i)
                 zones.append(LiquidityZone(
                     price=sum(s.price for s in cluster) / len(cluster),
                     type=l_type,

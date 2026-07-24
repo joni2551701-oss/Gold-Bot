@@ -16,6 +16,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # schedule/workflow_dispatch runs check out the repository's
+          # default branch unless a ref is pinned here. GoldBot v0.1
+          # stable (main.py -> core.pipeline.TradingPipeline, and every
+          # layer it wires) currently lives on this branch, not on the
+          # default branch -- pin explicitly so scheduled runs execute
+          # the real pipeline instead of the old skeleton main.py.
+          ref: claude/code-analysis-optimization-pwfo3q
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -31,6 +39,25 @@ jobs:
           python -c "import os; print(os.getcwd())"
           python -c "import decision; print(decision.__file__)"
           python -c "import decision.decision_engine; print('IMPORT OK')"
+
+      - name: Verify runtime branch and entrypoint
+        run: |
+          echo "Commit: $(git rev-parse HEAD)"
+          echo "Branch: $(git rev-parse --abbrev-ref HEAD)"
+
+          if grep -q "from core.pipeline import TradingPipeline" main.py; then
+            echo "OK: main.py imports TradingPipeline."
+          else
+            echo "FAIL: main.py does not import TradingPipeline (stale/skeleton entrypoint detected)."
+            exit 1
+          fi
+
+          if grep -q "skeleton" main.py; then
+            echo "FAIL: main.py still contains the old skeleton marker text."
+            exit 1
+          else
+            echo "OK: no skeleton marker found in main.py."
+          fi
 
       - name: Run GoldBot
         env:

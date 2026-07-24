@@ -1,0 +1,48 @@
+# GoldBot -- Production systemd unit (Phase P1, Production Deployment
+# Pipeline Foundation, TASK 6).
+#
+# Long-running process (telegram/polling.py), same process the
+# pre-existing goldbot-polling.service already supervises -- the
+# trading pipeline stays on GitHub Actions (trading_bot.yml) and is
+# not duplicated here (see docs/PHASE_P1_AUDIT.md section 4 for why
+# this is a new file rather than an edit to goldbot-polling.service).
+#
+# Unlike goldbot-polling.service (which targets /opt/goldbot
+# directly), this unit targets the release-based, CI/CD-managed layout
+# release_deploy.sh maintains: WorkingDirectory/ExecStart always point
+# at the `current` symlink, which release_deploy.sh atomically
+# repoints at a new releases/<id>/ directory on every successful
+# deploy -- this file itself never changes between deploys, only what
+# `current` points at does.
+#
+# Runs as a dedicated non-root user (never root, per RULE 6 of the
+# Phase P1 brief) -- adjust User= below to match whatever your actual
+# deploy user is if it is not literally "senior".
+#
+# Install (one-time, manual):
+#   sudo cp deploy/systemd/goldbot.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable goldbot.service
+# (release_deploy.sh restarts it on every deploy after that; it does
+# not install or enable the unit file itself.)
+
+[Unit]
+Description=GoldBot Telegram Polling (production, release-based deployment)
+After=network-online.target
+Wants=network-online.target
+OnFailure=goldbot-notify-failure@%n.service
+
+[Service]
+Type=simple
+User=senior
+WorkingDirectory=/opt/goldbot/current
+EnvironmentFile=/opt/goldbot/shared/.env
+ExecStart=/opt/goldbot/current/venv/bin/python -m telegram.polling
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=goldbot
+
+[Install]
+WantedBy=multi-user.target

@@ -3,6 +3,7 @@ from enum import Enum
 from typing import List, Sequence
 from datetime import datetime
 from data.twelve_data_client import Candle
+from context.candle import is_bullish, is_bearish
 from context.liquidity import LiquiditySweepEvent, LiquidityType
 from context.bos import BosEvent, BosDirection
 from context.choch import ChochEvent, ChochDirection
@@ -47,7 +48,7 @@ def detect_order_blocks(
         if sweep.type == LiquidityType.SSL and next_break.direction in [BosDirection.BULLISH, ChochDirection.BULLISH]:
             # Look at candles preceding the sweep for the last bearish candle
             for i in range(sweep.index - 1, -1, -1):
-                if candles[i].close < candles[i].open:
+                if is_bearish(candles[i]):
                     order_blocks.append(OrderBlock(
                         high=candles[i].high,
                         low=candles[i].low,
@@ -62,7 +63,7 @@ def detect_order_blocks(
         elif sweep.type == LiquidityType.BSL and next_break.direction in [BosDirection.BEARISH, ChochDirection.BEARISH]:
             # Look at candles preceding the sweep for the last bullish candle
             for i in range(sweep.index - 1, -1, -1):
-                if candles[i].close > candles[i].open:
+                if is_bullish(candles[i]):
                     order_blocks.append(OrderBlock(
                         high=candles[i].high,
                         low=candles[i].low,

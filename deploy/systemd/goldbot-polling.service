@@ -1,0 +1,32 @@
+# GoldBot v0.3 -- Telegram polling unit (Phase 58).
+#
+# Long-running process (telegram/polling.py). Restart=always gives
+# crash recovery; OnFailure fires an alert via notify_failure.sh on
+# every failed start. StandardOutput/StandardError=journal gives log
+# persistence through journald without any change to core/logger.py
+# (see logs/README.md -- stdout capture by the host process manager
+# was always the intended path for VPS hosting).
+#
+# Install: see docs/production_setup.md "Process management" section.
+# Adjust WorkingDirectory/EnvironmentFile/ExecStart paths to match
+# your actual install location if not /opt/goldbot.
+
+[Unit]
+Description=GoldBot Telegram Polling (long-running command listener)
+After=network-online.target
+Wants=network-online.target
+OnFailure=goldbot-notify-failure@%n.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/goldbot
+EnvironmentFile=/opt/goldbot/.env.production
+ExecStart=/opt/goldbot/venv/bin/python -m telegram.polling
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=goldbot-polling
+
+[Install]
+WantedBy=multi-user.target

@@ -1,77 +1,20 @@
-from enum import Enum
-from dataclasses import dataclass
-from datetime import datetime
-from signals.models import SignalType  # Reusing established SignalType
+"""
+Compatibility shim (Phase 55 AI folder restructure).
 
+The real module moved to ai/journal/trade_journal.py as part of the
+new professional ai/ package layout. trade_journal.py had zero
+importers anywhere in the codebase at the time of the move (confirmed
+by a repo-wide grep), so this shim exists purely as a defensive,
+zero-cost safety net for any future/external caller that still does
+`from ai.trade_journal import ...` -- not because anything currently
+depends on this path.
+"""
 
-class TradeOutcome(Enum):
-    WIN = "WIN"
-    LOSS = "LOSS"
-    BREAK_EVEN = "BREAK_EVEN"
+from ai.journal.trade_journal import (
+    TradeOutcome,
+    DecisionType,
+    TradeJournalEntry,
+    create_journal_entry,
+)
 
-
-class DecisionType(Enum):
-    APPROVED = "APPROVED"
-    REJECTED = "REJECTED"
-    NO_TRADE = "NO_TRADE"
-
-
-@dataclass(frozen=True)
-class TradeJournalEntry:
-    """
-    An immutable, type-safe record of a completed trade.
-    """
-    signal_id: str
-    strategy_name: str
-    signal_type: SignalType
-    technical_score: float
-    ai_confidence: float
-    decision: DecisionType
-    entry: float
-    stop_loss: float
-    take_profit: float
-    exit_price: float
-    pnl: float
-    rr: float
-    outcome: TradeOutcome
-    timestamp: datetime
-    notes: str
-
-
-def create_journal_entry(
-    signal_id: str,
-    strategy_name: str,
-    signal_type: SignalType,
-    technical_score: float,
-    ai_confidence: float,
-    decision: DecisionType,
-    entry: float,
-    stop_loss: float,
-    take_profit: float,
-    exit_price: float,
-    pnl: float,
-    rr: float,
-    outcome: TradeOutcome,
-    timestamp: datetime,
-    notes: str = ""
-) -> TradeJournalEntry:
-    """
-    Pure, deterministic factory function using type-safe Enums.
-    """
-    return TradeJournalEntry(
-        signal_id=signal_id,
-        strategy_name=strategy_name,
-        signal_type=signal_type,
-        technical_score=technical_score,
-        ai_confidence=ai_confidence,
-        decision=decision,
-        entry=entry,
-        stop_loss=stop_loss,
-        take_profit=take_profit,
-        exit_price=exit_price,
-        pnl=pnl,
-        rr=rr,
-        outcome=outcome,
-        timestamp=timestamp,
-        notes=notes
-    )
+__all__ = ["TradeOutcome", "DecisionType", "TradeJournalEntry", "create_journal_entry"]

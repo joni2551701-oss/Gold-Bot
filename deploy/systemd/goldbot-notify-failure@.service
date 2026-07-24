@@ -1,0 +1,20 @@
+# GoldBot v0.3 -- crash/failure alert unit (Phase 58 monitoring
+# foundation).
+#
+# Templated unit, instantiated automatically by the OnFailure=
+# directive in goldbot-polling.service / goldbot-pipeline.service
+# (e.g. OnFailure=goldbot-notify-failure@%n.service). %i expands to
+# the name of the unit that failed, passed as $1 to
+# scripts/notify_failure.sh, which sends a Telegram alert to
+# TELEGRAM_OWNER_ID. Not meant to be started directly, though
+# `systemctl start goldbot-notify-failure@test.service` works for
+# testing the alert path.
+
+[Unit]
+Description=GoldBot crash/failure alert for %i
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/goldbot
+EnvironmentFile=/opt/goldbot/.env.production
+ExecStart=/opt/goldbot/scripts/notify_failure.sh %i

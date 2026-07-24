@@ -1,0 +1,26 @@
+# GoldBot v0.3 -- Trading pipeline unit (Phase 58).
+#
+# One-shot process (main.py): fetch data, run the pipeline once, exit.
+# Triggered on a schedule by goldbot-pipeline.timer, not by
+# `systemctl start` directly (though that works too, for manual runs).
+# Used only if you are NOT relying on GitHub Actions
+# (.github/workflows/trading_bot.yml) for the scheduled run -- the two
+# are alternatives, not meant to run at the same time against the same
+# database, to avoid double-cycle overlap.
+#
+# Install: see docs/production_setup.md "Process management" section.
+
+[Unit]
+Description=GoldBot Trading Pipeline (one-shot signal generation cycle)
+After=network-online.target
+Wants=network-online.target
+OnFailure=goldbot-notify-failure@%n.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/goldbot
+EnvironmentFile=/opt/goldbot/.env.production
+ExecStart=/opt/goldbot/venv/bin/python main.py
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=goldbot-pipeline

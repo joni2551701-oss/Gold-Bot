@@ -30,15 +30,16 @@ def detect_choch(candles: Sequence[Candle], structures: Sequence[StructurePoint]
     if len(structures) < 1:
         return choch_events
 
-    last_choch_index = -1
+    last_bullish_choch_index = -1
+    last_bearish_choch_index = -1
 
     for struct in structures:
         # Bullish CHoCH: Market breaks Lower High
         if struct.structure == StructureType.LOWER_HIGH:
             for j in range(struct.swing.index + 1, len(candles)):
-                if j <= last_choch_index:
+                if j <= last_bullish_choch_index:
                     continue
-                
+
                 if candles[j].close > struct.swing.price:
                     choch_events.append(ChochEvent(
                         index=j,
@@ -46,15 +47,15 @@ def detect_choch(candles: Sequence[Candle], structures: Sequence[StructurePoint]
                         direction=ChochDirection.BULLISH,
                         broken_structure=struct
                     ))
-                    last_choch_index = j
+                    last_bullish_choch_index = j
                     break
-        
+
         # Bearish CHoCH: Market breaks Higher Low
         elif struct.structure == StructureType.HIGHER_LOW:
             for j in range(struct.swing.index + 1, len(candles)):
-                if j <= last_choch_index:
+                if j <= last_bearish_choch_index:
                     continue
-                
+
                 if candles[j].close < struct.swing.price:
                     choch_events.append(ChochEvent(
                         index=j,
@@ -62,7 +63,7 @@ def detect_choch(candles: Sequence[Candle], structures: Sequence[StructurePoint]
                         direction=ChochDirection.BEARISH,
                         broken_structure=struct
                     ))
-                    last_choch_index = j
+                    last_bearish_choch_index = j
                     break
                 
     return choch_events
