@@ -32,6 +32,7 @@ from data.memory.candle_record import (
 )
 from data.memory.timeframe_memory import TimeframeMemory
 from data.memory.market_memory import MarketMemory
+from data.memory.memory_reader import MemoryReader
 from data.memory.market_memory_registry import (
     MarketMemoryRegistry,
     DuplicateAssetError,
@@ -47,6 +48,7 @@ __all__ = [
     "MemoryMode",
     "TimeframeMemory",
     "MarketMemory",
+    "MemoryReader",
     "MarketMemoryRegistry",
     "DuplicateAssetError",
     "UnknownAssetError",
