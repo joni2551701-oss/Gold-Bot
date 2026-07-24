@@ -69,6 +69,12 @@ These ten amend the Market Data Foundation architecture
 |----|----------|--------|
 | [DD-036](DD-036.md) | Branch strategy formalized (`feature/*`,`fix/*`,`hotfix/*` → PR → `main`) | Approved |
 | [DD-037](DD-037.md) | Market Data Foundation architecture FROZEN on approval | Approved |
+| [DD-053](DD-053.md) | Module Acceptance Registry (MA-xxx); DD reserved for architecture/governance | Approved |
+
+> **DD-038…DD-052** (Market Data Foundation amendments and process
+> decisions) are recorded on their respective module PRs; **module
+> acceptances** now live in the separate MA registry
+> (`docs/governance/module_acceptance/`, per DD-053), not as DD numbers.
 | [DD-038](DD-038.md) | Architecture-First Development flow (standard for all phases) | Approved |
 | [DD-039](DD-039.md) | Market Data Foundation is the Canonical Architecture (merged via PR #3) | Approved |
 
