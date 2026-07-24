@@ -76,7 +76,14 @@ class TimeframeMemory:
         volume: Optional[float],
         session: Optional[str],
         trading_day: Optional[date],
+        last_update: Optional[datetime] = None,
     ) -> CandleRecord:
+        # `last_update` lets a clock-independent writer (e.g. the Candle
+        # Builder, DD-044) pin last_update_time to an event timestamp
+        # instead of wall-clock, keeping records fully deterministic.
+        kwargs = {}
+        if last_update is not None:
+            kwargs["last_update_time"] = last_update
         return CandleRecord(
             timestamp=timestamp,
             open=o, high=h, low=low, close=c,
@@ -89,6 +96,7 @@ class TimeframeMemory:
             trading_day=trading_day or timestamp.date(),
             session=session,
             volume=volume,
+            **kwargs,
         )
 
     # -- writes ---------------------------------------------------------
@@ -117,21 +125,25 @@ class TimeframeMemory:
                     source: CandleSource = CandleSource.STREAM,
                     volume: Optional[float] = None,
                     session: Optional[str] = None,
-                    trading_day: Optional[date] = None) -> CandleRecord:
+                    trading_day: Optional[date] = None,
+                    when: Optional[datetime] = None) -> CandleRecord:
         """
         Open a new FORMING candle at `timestamp` seeded with `price`
         (O=H=L=C=price). If a forming candle already exists it is closed
         first (it should have been closed by the caller on a boundary;
-        this is a safety net). Returns a copy of the opened candle.
+        this is a safety net). `when` optionally pins last_update_time to
+        an event timestamp (DD-044 determinism); it defaults to now.
+        Returns a copy of the opened candle.
         """
         with self._lock:
             if self._forming is not None:
-                self._forming.close_candle(timestamp)
+                self._forming.close_candle(when or timestamp)
                 self._closed.append(self._forming)
                 self._forming = None
             rec = self._new_record(
                 timestamp, price, price, price, price,
-                CandleStatus.FORMING, source, volume, session, trading_day)
+                CandleStatus.FORMING, source, volume, session, trading_day,
+                last_update=when)
             self._forming = rec
             self._revision += 1
             return rec.copy()

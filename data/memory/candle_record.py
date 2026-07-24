@@ -35,10 +35,18 @@ class CandleStatus(Enum):
 
 
 class CandleSource(Enum):
-    """Where a candle's data originated."""
-    BOOTSTRAP = "bootstrap"   # one-time historical load
-    STREAM = "stream"         # live price stream
-    RECOVERY = "recovery"     # gap-fill / rebuild after a failure
+    """
+    Where a candle's data originated.
+
+    DD-043 (Source Traceability): STREAM, REPLAY and BOOTSTRAP are the
+    canonical Phase 1 values. RECOVERY is an additional, non-canonical
+    source used by the recovery/gap-fill path (module 5); further sources
+    may be added later without disturbing the canonical three.
+    """
+    STREAM = "stream"         # live price stream (canonical)
+    REPLAY = "replay"         # replay driver, module 8 (canonical)
+    BOOTSTRAP = "bootstrap"   # one-time historical load (canonical)
+    RECOVERY = "recovery"     # gap-fill / rebuild after a failure (additional)
 
 
 class MemoryMode(Enum):
