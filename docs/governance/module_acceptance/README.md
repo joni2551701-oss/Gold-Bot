@@ -16,6 +16,8 @@ holds acceptances, so the two numbering streams never collide (DD-053).
 | [MA-001](MA-001.md) | MarketMemory Core (v1.1 Phase 1, module 1) | #5 | ✅ | Accepted |
 | [MA-002](MA-002.md) | MemoryReader (module 2) | #6 | ✅ | Accepted |
 | [MA-003](MA-003.md) | Candle Builder + candle_clock (module 3) | #7 | ✅ | Accepted |
+| [MA-004](MA-004.md) | Price Stream (module 4) | #8 | ✅ | Accepted |
+| [MA-005](MA-005.md) | Historical Bootstrap (module 5) | #11 | ✅ | Accepted |
 
 Batch cadence (ORDER-049): acceptances are recorded in a batch governance
 PR roughly every 3–5 accepted modules.

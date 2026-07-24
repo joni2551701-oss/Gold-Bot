@@ -70,6 +70,7 @@ These ten amend the Market Data Foundation architecture
 | [DD-036](DD-036.md) | Branch strategy formalized (`feature/*`,`fix/*`,`hotfix/*` → PR → `main`) | Approved |
 | [DD-037](DD-037.md) | Market Data Foundation architecture FROZEN on approval | Approved |
 | [DD-053](DD-053.md) | Module Acceptance Registry (MA-xxx); DD reserved for architecture/governance | Approved |
+| [DD-072](DD-072.md) | Live Price Service Layer (collection vs presentation) | Approved |
 
 > **DD-038…DD-052** (Market Data Foundation amendments and process
 > decisions) are recorded on their respective module PRs; **module
