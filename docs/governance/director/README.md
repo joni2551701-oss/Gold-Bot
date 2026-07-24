@@ -63,6 +63,13 @@ not conflict with the Migration SSOT (`docs/governance/MIGRATION_PLAN.md`).
 These ten amend the Market Data Foundation architecture
 (`docs/architecture/MARKET_DATA_FOUNDATION.md`).
 
+### Process & freeze
+
+| ID | Decision | Status |
+|----|----------|--------|
+| [DD-036](DD-036.md) | Branch strategy formalized (`feature/*`,`fix/*`,`hotfix/*` → PR → `main`) | Approved |
+| [DD-037](DD-037.md) | Market Data Foundation architecture FROZEN on approval | Approved |
+
 ## Related
 
 - `docs/governance/roles/Director.md` — the Director role definition

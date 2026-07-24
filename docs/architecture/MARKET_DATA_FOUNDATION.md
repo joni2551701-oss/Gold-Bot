@@ -1,7 +1,9 @@
 # Market Data Foundation — GoldBot v1.1 Phase 1
 
-**Status:** Director-APPROVED architecture (design phase). Coding begins
-only after this document is approved and merged to `main`.
+**Status:** Director-APPROVED — **FROZEN** (DD-037). This is the official
+GoldBot v1.1 architecture. During implementation, significant architectural
+changes require a new Director Decision. Coding begins after this document
+is merged to `main` via PR (DD-036).
 **Scope:** Price Stream Foundation & Multi-Timeframe Memory Engine — the
 single Market Data Layer every future component reads from.
 **Governance:** incorporates Director amendments **DD-026 … DD-035**
