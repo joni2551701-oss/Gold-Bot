@@ -6,19 +6,38 @@ known, what's authorized to start next. `docs/changelog/CHANGELOG.md`
 and `docs/changelog/PHASE_HISTORY.md` are the permanent record; this
 document is only ever the current tip.
 
-## Phase: TASK-002F — Navigation Foundation Final Audit
+## Phase: Repository Recovery (ORDER-020) — Phase 1 done, Phase 2/3 gated
 
-**Status: 🟢 AUTHORIZED TO START.** Scope expanded by Director order
-beyond the original "Navigation Freeze": Architecture Audit (Constitution/
-ADR/Workflow compliance), Code Audit (Frozen Contracts, Public
-Interfaces, Dependency review), Documentation Audit, Test Audit,
-Future Audit (Telegram Mini App/Android/iOS/Desktop readiness), and a
-Security Audit built on ADR-011. Full scope:
-`communication/task_queue/TASK-002F.md`.
+**Status: 🟡 IN PROGRESS.** Engineering Governance v1.1 is **FROZEN**
+(all 9 GOV documents approved). The project has returned to Engineering
+Implementation, starting with Repository Recovery — fixing the single
+invisible U+2060 character in `strategies/strategy_manager.py` on `main`
+(diagnosed by `BRANCH-FORENSICS-001`) and creating the repository's
+first rollback anchors.
 
-**If successful**: Director will declare Platform Foundation — Phase 1
-(Navigation System) — **COMPLETE, Production Ready: YES** — the first
-major Platform Foundation milestone, and DEVOPS-001 unblocks.
+- **Phase 1 — Recovery Audit**: ✅ complete (read-only) — re-confirmed
+  fresh against live refs: single-file/single-character root cause,
+  zero code diff, zero existing tags.
+- **Phase 2 — Recovery** (rollback anchors → Unicode fix on `main` →
+  checkpoint tag) and **Phase 3 — Validation**: ⏸ **mutating**, gated on
+  Director approval of `docs/governance/MIGRATION_PLAN.md` (the single
+  Recovery+Migration control document) and confirmation of the
+  branch-operation authority (commit to `main`, push tags), per the
+  frozen `Repository_Policy.md` §5 Audit → Plan → **Approval** →
+  Execution discipline.
+
+**Next after Recovery is APPROVED**: Repository Migration (REPO-002) —
+the four-branch model (`main`/`develop`/`feature/core`/`feature/platform`),
+per `MIGRATION_PLAN.md`.
+
+## Superseded pointer (historical)
+
+The prior tip (TASK-002F — Navigation Foundation Final Audit) was
+paused when the Director redirected the project into the Governance
+v1.0 → Governance v1.1 → Repository Recovery/Migration sequence.
+Navigation Foundation (TASK-001…002E) remains Frozen; TASK-002F is
+still Pending and resumes when the Director returns to the Platform
+Tasks track.
 
 ## New governance this round
 

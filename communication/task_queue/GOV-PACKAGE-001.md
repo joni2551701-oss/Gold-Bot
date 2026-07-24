@@ -4,8 +4,13 @@
 **Title**: Governance v1.1 Final Package — GOV-005 through GOV-009
 **Track**: Governance v1.1 (per `docs/GOVERNANCE_V1_1_MASTER_PLAN.md`)
 **Priority**: Critical (completes Governance v1.1)
-**Status**: ✅ DELIVERED — awaiting one final Director package review
-(GOV-005/006/007/008/009 each → APPROVED, then Governance v1.1 → FROZEN).
+**Status**: ✅ APPROVED — GOV-005/006/007/008/009 each APPROVED as part
+of the Director's **Engineering Governance v1.1 FROZEN** declaration.
+The two surfaced decisions are resolved by that declaration: English
+stands as the engineering language (GOV-008, Uzbek-internal option not
+taken), and the "Founder" remains the informal principal above the
+chain. Engineering Governance v1.1 is COMPLETE and FROZEN (all 9 GOV
+documents approved).
 
 ## Deliverables (all 5 delivered)
 

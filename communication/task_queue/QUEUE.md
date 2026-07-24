@@ -83,13 +83,14 @@ GOV-PLAN-001            Governance v1.1 Master Plan (ORDER-013)      ✅ DELIVER
 GOV-001  Director.md                     ✅ APPROVED (ORDER-015)
 GOV-002  Core_Worker.md                  ✅ APPROVED (ORDER-016)
 GOV-003  Platform_Worker.md              ✅ APPROVED (ORDER-017)
-GOV-004  Collaboration_Rules.md          ✅ DELIVERED (ORDER-018) — verdict pending
-GOV-005  Repository_Policy.md            ✅ DELIVERED (ORDER-019, GOV-PACKAGE-001) — awaiting review
-GOV-006  Branch_Policy.md                ✅ DELIVERED (ORDER-019, GOV-PACKAGE-001) — awaiting review
-GOV-007  Branch_Protection_Policy.md     ✅ DELIVERED (ORDER-019, GOV-PACKAGE-001) — awaiting review
-GOV-008  Engineering_Language_Policy.md  ✅ DELIVERED (ORDER-019, GOV-PACKAGE-001) — awaiting review
-GOV-009  Git_Workflow_Standard.md        ✅ DELIVERED (ORDER-019, GOV-PACKAGE-001) — awaiting review
-    ↓  ("Governance v1.1 Frozen" only once all 9 above are individually APPROVED + Frozen)
+GOV-004  Collaboration_Rules.md          ✅ APPROVED (ORDER-018)
+GOV-005  Repository_Policy.md            ✅ APPROVED (ORDER-019, GOV-PACKAGE-001)
+GOV-006  Branch_Policy.md                ✅ APPROVED (ORDER-019, GOV-PACKAGE-001)
+GOV-007  Branch_Protection_Policy.md     ✅ APPROVED (ORDER-019, GOV-PACKAGE-001)
+GOV-008  Engineering_Language_Policy.md  ✅ APPROVED (ORDER-019, GOV-PACKAGE-001)
+GOV-009  Git_Workflow_Standard.md        ✅ APPROVED (ORDER-019, GOV-PACKAGE-001)
+    ↓
+Engineering Governance v1.1            ✅ FROZEN (all 9 GOV documents approved — Director declaration)
 ```
 
 | Task | Title | Status |
@@ -99,13 +100,13 @@ GOV-009  Git_Workflow_Standard.md        ✅ DELIVERED (ORDER-019, GOV-PACKAGE-0
 | GOV-001 | Director.md — Director Role Definition | ✅ APPROVED (ORDER-015) — `docs/governance/roles/Director.md`. Naming convention `GOV-001`..`GOV-009` confirmed final by Director (TASK-XXX reserved for Platform Tasks). |
 | GOV-002 | Core_Worker.md — Core Worker Role Definition | ✅ APPROVED (ORDER-016) — `docs/governance/roles/Core_Worker.md`. |
 | GOV-003 | Platform_Worker.md — Platform Worker Role Definition | ✅ APPROVED (ORDER-017) — `docs/governance/roles/Platform_Worker.md`. |
-| GOV-004 | Collaboration_Rules.md — Collaboration Standard | ✅ DELIVERED (ORDER-018) — `docs/governance/roles/Collaboration_Rules.md`. Verdict still pending (ORDER-019 issued before an explicit GOV-004 verdict; not silently marked APPROVED). |
-| GOV-005 | Repository_Policy.md | ✅ DELIVERED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Repository_Policy.md`. |
-| GOV-006 | Branch_Policy.md | ✅ DELIVERED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Branch_Policy.md`. |
-| GOV-007 | Branch_Protection_Policy.md | ✅ DELIVERED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Branch_Protection_Policy.md`. |
-| GOV-008 | Engineering_Language_Policy.md | ✅ DELIVERED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Engineering_Language_Policy.md`. English default surfaced for Director override. |
-| GOV-009 | Git_Workflow_Standard.md | ✅ DELIVERED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/standards/Git_Workflow_Standard.md`. |
-| — | Governance v1.1 whole-set | ⏳ FROZEN only once GOV-004..009 are each APPROVED (GOV-001/002/003 already APPROVED). Final package review pending. See `communication/task_queue/GOV-PACKAGE-001.md`. |
+| GOV-004 | Collaboration_Rules.md — Collaboration Standard | ✅ APPROVED (ORDER-018) — `docs/governance/roles/Collaboration_Rules.md`. Founder = informal principal above the chain (Director-confirmed via Freeze). |
+| GOV-005 | Repository_Policy.md | ✅ APPROVED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Repository_Policy.md`. |
+| GOV-006 | Branch_Policy.md | ✅ APPROVED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Branch_Policy.md`. |
+| GOV-007 | Branch_Protection_Policy.md | ✅ APPROVED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Branch_Protection_Policy.md`. |
+| GOV-008 | Engineering_Language_Policy.md | ✅ APPROVED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/policies/Engineering_Language_Policy.md`. English confirmed as the engineering language (Uzbek-internal option not taken). |
+| GOV-009 | Git_Workflow_Standard.md | ✅ APPROVED (ORDER-019 / GOV-PACKAGE-001) — `docs/governance/standards/Git_Workflow_Standard.md`. |
+| — | **Engineering Governance v1.1** | ✅ **FROZEN** — all 9 GOV documents approved (Director declaration). |
 
 ## Repository Engineering (separate track — `REPO-XXX`, never a `TASK-XXX`, `DEVOPS-XXX`, or `GOVERNANCE-REVIEW-XXX`)
 
@@ -115,21 +116,24 @@ first task on this track is explicitly the first Engineering task
 after Governance v1.0 is frozen, per Director order.
 
 ```
-REPO-001              Repository Engineering Migration (Audit + Plan)   ⏸ PAUSED by ORDER-009 — resumes only after Engineering Governance v1.1 Freeze
+REPO-001              Repository Engineering Migration (Audit + Plan)   ✅ Audit/Plan delivered — Migration unpaused (Governance v1.1 FROZEN)
     ↓
 BRANCH-FORENSICS-001  Repository History Forensics (ORDER-003)          ✅ APPROVED — root cause confirmed (F-008–F-013)
     ↓
-Repository Recovery   Unicode filename fix + rollback tags (ORDER-010)  📋 QUEUED (backlog) — first implementation item after Governance v1.1 Freeze
+MIGRATION_PLAN.md     Recovery + Migration control document              ✅ DELIVERED — awaiting Director approval + branch-op authority
     ↓
-REPO-002              Repository Migration Implementation               ⏳ Blocked — not authorized until Repository Recovery completes
+ORDER-020 Repository Recovery   Unicode fix + rollback tags              🟡 Phase 1 audit ✅ done; Phase 2/3 (mutating) gated on plan approval
+    ↓
+REPO-002              Repository Migration Implementation               ⏳ Blocked — starts only after Repository Recovery is APPROVED
 ```
 
 | Task | Title | Status |
 |---|---|---|
 | REPO-001 | Repository Engineering Migration | ⏸ PAUSED — Director ORDER-009: stays paused until Engineering Governance v1.1 is frozen. Audit + Plan themselves remain delivered and unchanged (`communication/task_queue/REPO-001.md`, `docs/REPO_001_REPOSITORY_ENGINEERING_MIGRATION.md`). |
 | BRANCH-FORENSICS-001 | Repository History Forensics | ✅ APPROVED — see `communication/task_queue/BRANCH-FORENSICS-001.md` and `docs/BRANCH_FORENSICS_001.md`. Director findings F-008 through F-013 confirmed: root cause is a single invisible Unicode character (U+2060) in one filename (`strategies/strategy_manager.py`), zero code difference; the `strategie/` typo was a separate, already self-corrected historical event, not the conflict cause. |
-| Repository Recovery | Unicode filename fix + rollback tags | 📋 QUEUED (backlog) — Director ORDER-008: not yet authorized; ORDER-010: moved to backlog, to become the first implementation item once Governance v1.1 is frozen. |
-| REPO-002 | Repository Migration Implementation | ⏳ Blocked — starts only after Repository Recovery completes. |
+| MIGRATION_PLAN.md | Recovery + Migration control document | ✅ DELIVERED — `docs/governance/MIGRATION_PLAN.md`. Single control document (Recovery phases, Migration phases, Rollback plan, Risk Analysis, Success/Exit Criteria, Recovery + Migration Checklists). Awaiting Director approval and branch-operation authority confirmation before any mutating step. |
+| ORDER-020 Repository Recovery | Unicode filename fix + rollback tags | 🟡 IN PROGRESS — Phase 1 (Recovery Audit) ✅ complete (read-only, findings in MIGRATION_PLAN.md). Phase 2 (rollback anchors, Unicode fix on `main`, checkpoint) and Phase 3 (validation) are mutating and gated on Director approval of the plan + confirmation of the `main`-operation/tag-push authority. |
+| REPO-002 | Repository Migration Implementation | ⏳ Blocked — starts only after Repository Recovery is APPROVED. |
 
 ## Governance v1.1 (upcoming, not yet an executable brief)
 
