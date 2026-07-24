@@ -41,7 +41,14 @@ order. Execution began and stopped at the first push:
 - **Local state**: the three anchor tags exist locally-only (unpushed).
   No mutating operation touched `main` (Step 2 was never reached).
 
-## Diagnostic Evidence — HTTP-trace confirmed (ORDER-022 / DOC-CORRECTION-001)
+## Diagnostic Evidence — HTTP-trace confirmed (ORDER-022 / DOC-CORRECTION-001 → ✅ APPROVED)
+
+*DOC-CORRECTION-001 (ORDER-022) was reviewed and **APPROVED** by the
+Director: root-cause attribution corrected to the Claude Code git-proxy,
+evidence/assumption separation confirmed, the `main`-blocked claim
+withdrawn (Not Tested), and Recovery/Migration logic verified unchanged.
+The recovery documentation is in its final, evidence-based state.*
+
 
 The push-source of the 403 was investigated with `GIT_TRACE_CURL` /
 `GIT_CURL_VERBOSE`. Facts are labelled **Confirmed** (HTTP evidence) or
