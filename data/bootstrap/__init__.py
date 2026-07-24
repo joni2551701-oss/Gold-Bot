@@ -27,6 +27,7 @@ from data.bootstrap.historical_provider import (
     HistoricalProvider, BootstrapCache, InMemoryBootstrapCache,
 )
 from data.bootstrap.gap_recovery import GapRecovery
+from data.bootstrap.bootstrap_events import BootstrapEventHook
 from data.bootstrap.historical_bootstrap import HistoricalBootstrap
 
 __all__ = [
@@ -38,5 +39,6 @@ __all__ = [
     "BootstrapCache",
     "InMemoryBootstrapCache",
     "GapRecovery",
+    "BootstrapEventHook",
     "HistoricalBootstrap",
 ]
