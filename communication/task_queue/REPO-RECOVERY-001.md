@@ -4,14 +4,25 @@
 **Title**: Repository Recovery — Unicode filename fix + rollback anchors
 **Track**: Repository Engineering (`REPO-XXX` family)
 **Priority**: Critical
-**Status**: ⛔ BLOCKED (Phase 2) — Director approval + authority granted
-(MIGRATION_PLAN.md APPROVED, ORDER-020 Phase 2 AUTHORIZED), but the
-execution is blocked by an **environment egress-policy denial**: the
-session's git proxy permits pushes to the designated working branch
-only and returns **HTTP 403** for pushing tags (and, by inference, for
-pushing to `main`). Phase 1 remains complete; Phase 2 cannot proceed
-from this session until the push scope is widened or the recovery is
-performed by a differently-scoped actor. **Escalated to Director.**
+**Status**: 🟢 READY FOR AUTHORIZED OPERATOR — Worker side complete.
+Director confirmed the one-file scope, updated the Exit Criteria, and
+**APPROVED** `docs/governance/RECOVERY_OPERATOR_RUNBOOK.md`. The
+Authorized Operator (Option 2, ORDER-021) executes the approved runbook;
+the Worker then verifies the returned results against the tested
+expected values and writes the Recovery Report for the Director's
+`APPROVED` / `CHANGES REQUIRED` verdict.
+
+**Egress-policy blocker (resolved by routing, not bypassed)**: this
+session's git proxy returns HTTP 403 for pushing tags/`main` (working
+branch only is pushable) — never retried or routed around; the Director
+chose Option 2 (a differently-scoped Authorized Operator) rather than
+weaken the policy. Recorded below.
+
+**Director-updated Exit Criteria** (ORDER-020, this decision): Recovery
+succeeds when — `strategy_manager.py` rename/rename conflict resolved;
+`main`↔production merge conflict = 0; `main`↔working merge conflict = 0;
+rollback tags created; `git fsck` passes. The other 8 Unicode filenames
+are out of scope (superseded by Migration; not renamed in Recovery).
 
 ## Phase 2 execution attempt — blocker record (STOP → AUDIT → Director Decision)
 

@@ -136,18 +136,25 @@ after — or the live scheduled trading pipeline breaks immediately.
 | Force-push / history rewrite | Eliminated by design | Recovery is a forward `git mv` commit; no rebase, no force-push (`Git_Workflow_Standard.md` §8). |
 | PR #1/#2 disruption | Low | PRs resolved only in Migration Phase 6, after verification, under explicit Order; PR #2 untouched until then. |
 
-## Success Criteria
+## Success Criteria (Director-updated, this decision)
 
 - Rollback anchors exist for every branch before any change (closes the
   zero-anchor gap).
-- `main`'s `strategy_manager.py` filename is byte-identical to
-  production's/working's; no U+2060 anywhere in the repository.
+- The `strategy_manager.py` **rename/rename conflict is resolved** —
+  `main`'s filename byte-identical to production's/working's (blob
+  `89a66416` preserved).
 - `git merge-tree main <production>` and `main <working>` report zero
   conflicts.
-- `git fsck` clean; working tree clean; no unintended change to any
-  other file.
+- `git fsck` clean.
 - A Recovery Report is delivered and the Director returns `Repository
   Recovery → APPROVED`.
+
+**Explicitly NOT a success criterion**: eliminating all Unicode
+filenames from `main`. A fresh sweep found 9 U+2060 filenames on `main`;
+testing proved fixing only `strategy_manager.py` yields 0 conflicts
+while fixing all 9 introduces 4. Per Director decision, the other 8 are
+**stale artifacts left to Migration** (superseded when `main` is
+reconciled from production) and are **not** renamed inside Recovery.
 
 ## Exit Criteria
 

@@ -122,7 +122,7 @@ BRANCH-FORENSICS-001  Repository History Forensics (ORDER-003)          ✅ APPR
     ↓
 MIGRATION_PLAN.md     Recovery + Migration control document              ✅ DELIVERED — awaiting Director approval + branch-op authority
     ↓
-ORDER-020/021 Repository Recovery   Unicode fix + rollback tags          🟠 Operator runbook prepared+tested (ORDER-021, Option 2); scope finding — 9 corrupted files on main but only 1 must be fixed (tested); awaiting Director scope confirmation + Authorized Operator execution
+ORDER-020/021 Repository Recovery   Unicode fix + rollback tags          🟢 Runbook APPROVED, scope confirmed (fix only strategy_manager.py); awaiting Authorized Operator execution, then Worker verifies + writes Recovery Report
     ↓
 REPO-002              Repository Migration Implementation               ⏳ Blocked — starts only after Repository Recovery is APPROVED
 ```
@@ -132,7 +132,7 @@ REPO-002              Repository Migration Implementation               ⏳ Bloc
 | REPO-001 | Repository Engineering Migration | ⏸ PAUSED — Director ORDER-009: stays paused until Engineering Governance v1.1 is frozen. Audit + Plan themselves remain delivered and unchanged (`communication/task_queue/REPO-001.md`, `docs/REPO_001_REPOSITORY_ENGINEERING_MIGRATION.md`). |
 | BRANCH-FORENSICS-001 | Repository History Forensics | ✅ APPROVED — see `communication/task_queue/BRANCH-FORENSICS-001.md` and `docs/BRANCH_FORENSICS_001.md`. Director findings F-008 through F-013 confirmed: root cause is a single invisible Unicode character (U+2060) in one filename (`strategies/strategy_manager.py`), zero code difference; the `strategie/` typo was a separate, already self-corrected historical event, not the conflict cause. |
 | MIGRATION_PLAN.md | Recovery + Migration control document | ✅ DELIVERED — `docs/governance/MIGRATION_PLAN.md`. Single control document (Recovery phases, Migration phases, Rollback plan, Risk Analysis, Success/Exit Criteria, Recovery + Migration Checklists). Awaiting Director approval and branch-operation authority confirmation before any mutating step. |
-| ORDER-020 Repository Recovery | Unicode filename fix + rollback tags | ⛔ BLOCKED — Director authorized (MIGRATION_PLAN APPROVED, Phase 2 AUTHORIZED), but the session's git egress proxy returns HTTP 403 for pushing tags (and, by inference, `main`); only the designated working branch ref is pushable. Phase 1 ✅ done; remote untouched; anchor tags created locally-only. Escalated to Director — see `communication/task_queue/REPO-RECOVERY-001.md` for resolution options. |
+| ORDER-020/021 Repository Recovery | Unicode filename fix + rollback tags | 🟢 READY FOR AUTHORIZED OPERATOR — Director confirmed the one-file scope, updated the Exit Criteria, and APPROVED `docs/governance/RECOVERY_OPERATOR_RUNBOOK.md`. Egress proxy blocks this session from pushing tags/`main` (403), so Option 2 (a differently-scoped Authorized Operator) executes the approved runbook; the Worker then verifies and writes the Recovery Report. See `communication/task_queue/REPO-RECOVERY-001.md`. |
 | REPO-002 | Repository Migration Implementation | ⏳ Blocked — starts only after Repository Recovery is APPROVED. |
 
 ## Governance v1.1 (upcoming, not yet an executable brief)

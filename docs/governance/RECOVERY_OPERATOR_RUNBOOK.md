@@ -1,5 +1,9 @@
 # Repository Recovery — Authorized Operator Runbook
 
+**Status: ✅ APPROVED by the Director** as the official execution guide
+for the Authorized Operator (ORDER-021; scope confirmed by the Director
+after the 9-file finding).
+
 Prepared by the Worker under **ORDER-021** (Director chose Option 2:
 recovery performed by an Authorized Operator with the required push
 scope, because this session's git egress proxy denies pushing tags and
@@ -9,12 +13,21 @@ of that test. The Worker does not push tags or `main`; the Authorized
 Operator executes the pushes, then the Worker verifies and writes the
 Recovery Report.
 
-**Scope (pending final Director confirmation — see the finding below)**:
-this runbook fixes **only** `strategies/strategy_manager.py` — the one
-file whose corrupted name causes the merge conflict. Testing proved
-this achieves zero merge conflicts, and proved that fixing the other 8
-corrupted filenames on `main` would *introduce* 4 new conflicts (they
-must be left alone). Do not extend this runbook to the other 8.
+**Scope (Director-confirmed, final)**: this runbook fixes **only**
+`strategies/strategy_manager.py` — the one file whose corrupted name
+causes the merge conflict. Testing proved this achieves zero merge
+conflicts, and proved that fixing the other 8 corrupted filenames on
+`main` would *introduce* 4 new conflicts. **The other 8 are explicitly
+out of Recovery scope** — they are stale artifacts that Migration
+supersedes when `main` is reconciled from production; renaming them
+inside Recovery is forbidden by Director decision. Do not extend this
+runbook to the other 8.
+
+**Updated ORDER-020 Exit Criteria (Director, this decision)** — Recovery
+succeeds when: the `strategy_manager.py` rename/rename conflict is
+resolved; `main`↔production merge conflict = 0; `main`↔working merge
+conflict = 0; rollback tags created; `git fsck` passes. The remaining 8
+Unicode filenames are **not** part of these criteria.
 
 ## Preconditions
 
@@ -131,11 +144,10 @@ new add/add conflicts. Those 8 are stale artifacts on `main` that
 **Repository Migration supersedes** when `main` is reconciled from
 production — so they are correctly left untouched by Recovery.
 
-This confirms the Director's original one-file scope and requires one
-Director confirmation: that the ORDER-020 Exit Criterion "Unicode
-filename problem resolved" means **the conflicting file fixed + zero
-merge conflicts** (achieved), with the 8 stale filenames documented as
-superseded-by-Migration rather than part of Recovery.
+This confirmed the Director's original one-file scope. **Director
+decision (final)**: the ORDER-020 Exit Criterion means the conflicting
+file fixed + zero merge conflicts (achieved); the 8 stale filenames are
+superseded-by-Migration and are **not** renamed inside Recovery.
 
 ## References
 
