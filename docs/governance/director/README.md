@@ -41,9 +41,34 @@ not conflict with the Migration SSOT (`docs/governance/MIGRATION_PLAN.md`).
 | [DD-024](DD-024.md) | Repository Consolidation & GoldBot v1.0.0 Release | Recovery SKIPPED (supersedes DD-001); Path 2 approved; `main` consolidated to v1.0.0 non-force; old branches archived; tag deferred | Approved / Executed |
 
 > **Numbering note:** DD-024 uses the identifier the Director assigned
-> directly from the decision stream; DD-005…DD-023 are reserved/unused in
-> this registry. The gap is intentional, recorded here per No Silent
-> Decisions rather than renumbered.
+> directly from the decision stream; DD-005…DD-023 and DD-025 are
+> reserved/unused in this registry. The gaps are intentional, recorded here
+> per No Silent Decisions rather than renumbered.
+
+### GoldBot v1.1 Phase 1 — Market Data Foundation amendments
+
+| ID | Decision | Status |
+|----|----------|--------|
+| [DD-026](DD-026.md) | M1 timeframe mandatory (all six TFs default ON) | Approved |
+| [DD-027](DD-027.md) | Extended candle memory model (id, seq, source, session, trading day, …) | Approved |
+| [DD-028](DD-028.md) | Memory Event System (OnNewCandle/Update/Close; no polling) | Approved |
+| [DD-029](DD-029.md) | Memory versioning (per-TF `revision`) | Approved |
+| [DD-030](DD-030.md) | `MarketMemory` not singleton → `MarketMemoryRegistry` (multi-asset) | Approved |
+| [DD-031](DD-031.md) | Full `MemoryReader` platform interface | Approved |
+| [DD-032](DD-032.md) | Chart support expansion (TradingView/Lightweight/Custom/Replay) | Approved |
+| [DD-033](DD-033.md) | Replay mode (LIVE / REPLAY) | Approved |
+| [DD-034](DD-034.md) | Snapshot API | Approved |
+| [DD-035](DD-035.md) | Future REST/WS API server (Memory stays internal) | Approved |
+
+These ten amend the Market Data Foundation architecture
+(`docs/architecture/MARKET_DATA_FOUNDATION.md`).
+
+### Process & freeze
+
+| ID | Decision | Status |
+|----|----------|--------|
+| [DD-036](DD-036.md) | Branch strategy formalized (`feature/*`,`fix/*`,`hotfix/*` → PR → `main`) | Approved |
+| [DD-037](DD-037.md) | Market Data Foundation architecture FROZEN on approval | Approved |
 
 ## Related
 
