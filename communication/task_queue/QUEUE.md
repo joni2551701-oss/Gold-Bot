@@ -122,7 +122,7 @@ BRANCH-FORENSICS-001  Repository History Forensics (ORDER-003)          ✅ APPR
     ↓
 MIGRATION_PLAN.md     Recovery + Migration control document              ✅ DELIVERED — awaiting Director approval + branch-op authority
     ↓
-ORDER-020 Repository Recovery   Unicode fix + rollback tags              ⛔ Phase 1 ✅; Phase 2 BLOCKED — egress-policy 403 denies pushing tags/main (escalated to Director)
+ORDER-020/021 Repository Recovery   Unicode fix + rollback tags          🟠 Operator runbook prepared+tested (ORDER-021, Option 2); scope finding — 9 corrupted files on main but only 1 must be fixed (tested); awaiting Director scope confirmation + Authorized Operator execution
     ↓
 REPO-002              Repository Migration Implementation               ⏳ Blocked — starts only after Repository Recovery is APPROVED
 ```

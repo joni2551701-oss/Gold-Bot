@@ -47,7 +47,39 @@ enforced at the infrastructure level: even with the Director's explicit
 authorization, the environment's proxy will not permit a push to `main`
 or to tag refs from this session.
 
-## Resolution options (for Director decision)
+## ORDER-021 — Operator handoff prepared + a scope finding (Worker preparation, no push)
+
+Per ORDER-021 (Director chose Option 2), the Worker prepared and
+**locally tested** the full recovery (throwaway branch, zero push):
+
+- `docs/governance/RECOVERY_OPERATOR_RUNBOOK.md` — exact, tested
+  commands for the Authorized Operator (anchor tags → single `git mv`
+  fix on `main` → checkpoint tag → validation), with verified expected
+  results (blob `89a66416` preserved; merge-tree `main`↔production and
+  `main`↔working both 0 conflicts; fsck clean).
+
+**Scope finding (No Silent Decisions — Director confirmation requested)**:
+a fresh full-tree sweep found **9** U+2060-corrupted filenames on `main`
+(the conflicting `strategy_manager.py` + 8 more: `ai/ai_prompt.py`,
+`ai/confidence_model.py`, `context/market_structure.py`,
+`database/signal_repository.py`, `signals/models.py`,
+`signals/signal_engine.py`, `strategies/amd_strategy.py`,
+`strategies/fvg_strategy.py`). Both scopes were tested locally:
+
+- Fix **only** `strategy_manager.py` → **0** merge conflicts (correct).
+- Fix **all 9** → **4** merge conflicts introduced (harmful).
+
+The 8 extra files have different content on `main` vs. production (171
+commits of divergence); renaming `main`'s stale copies to the clean
+names collides them with production's evolved versions. They are stale
+artifacts that Migration supersedes when `main` is reconciled from
+production. **Recommendation: fix only `strategy_manager.py`** (confirms
+the original scope) and leave the 8 to Migration. Requesting Director
+confirmation that the Exit Criterion "Unicode filename problem resolved"
+= the conflicting file fixed + 0 merge conflicts, with the 8 documented
+as superseded-by-Migration.
+
+## Resolution options (for the earlier push blocker — Director chose Option 2)
 
 1. **Widen this session's git push scope** (an environment/admin
    configuration change) to permit `refs/tags/*` and `refs/heads/main`,
