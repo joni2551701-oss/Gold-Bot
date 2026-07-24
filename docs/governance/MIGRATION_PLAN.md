@@ -163,17 +163,31 @@ after — or the live scheduled trading pipeline breaks immediately.
 
 ```
 Recovery Checklist
-□ Phase 1 audit complete (health / integrity / history / rollback readiness)   [✅ done]
-□ Director approval of this plan + branch-operation authority confirmed
-□ Rollback anchors created and pushed (pre-recovery-main/production/working)
-□ Unicode filename fixed on main (single git mv, forward commit, pushed)
-□ post-recovery-main checkpoint tag created and pushed
+☑ Phase 1 audit complete (health / integrity / history / rollback readiness)   [done]
+☑ Director approval of this plan + branch-operation authority confirmed          [MIGRATION_PLAN APPROVED; ORDER-020 Phase 2 AUTHORIZED]
+◐ Rollback anchors created ... and pushed   [created LOCALLY; push BLOCKED by egress-policy 403 — see blocker below]
+□ Unicode filename fixed on main (single git mv, forward commit, pushed)          [BLOCKED — main push denied by same policy]
+□ post-recovery-main checkpoint tag created and pushed                            [BLOCKED]
 □ git fsck clean; no U+2060 remains (ls-tree sweep)
 □ merge-tree main↔production = zero conflicts
 □ merge-tree main↔working = zero conflicts
 □ Recovery Report delivered
 □ Director verdict: Repository Recovery APPROVED
 ```
+
+### Phase 2 execution blocker (recorded)
+
+Phase 2 began under ORDER-020 and stopped at the first push: the
+session's git egress proxy returned **HTTP 403** for pushing tags.
+Branch pushes to the designated working branch succeed all session, so
+the policy is **ref-scoped** — working-branch ref allowed, `refs/tags/*`
+and (by inference) `refs/heads/main` denied. Per the proxy README, a
+403 policy denial is not retried or routed around. Remote is untouched
+(0 tags, `main` unchanged); the three anchor tags exist locally-only,
+ready to push if the scope is widened. Full record and resolution
+options: `communication/task_queue/REPO-RECOVERY-001.md`. This is an
+environment/authorization blocker, not a defect in the recovery plan —
+the plan itself is unchanged and correct.
 
 ## Migration Checklist
 

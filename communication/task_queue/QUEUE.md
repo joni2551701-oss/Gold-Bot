@@ -122,7 +122,7 @@ BRANCH-FORENSICS-001  Repository History Forensics (ORDER-003)          ✅ APPR
     ↓
 MIGRATION_PLAN.md     Recovery + Migration control document              ✅ DELIVERED — awaiting Director approval + branch-op authority
     ↓
-ORDER-020 Repository Recovery   Unicode fix + rollback tags              🟡 Phase 1 audit ✅ done; Phase 2/3 (mutating) gated on plan approval
+ORDER-020 Repository Recovery   Unicode fix + rollback tags              ⛔ Phase 1 ✅; Phase 2 BLOCKED — egress-policy 403 denies pushing tags/main (escalated to Director)
     ↓
 REPO-002              Repository Migration Implementation               ⏳ Blocked — starts only after Repository Recovery is APPROVED
 ```
@@ -132,7 +132,7 @@ REPO-002              Repository Migration Implementation               ⏳ Bloc
 | REPO-001 | Repository Engineering Migration | ⏸ PAUSED — Director ORDER-009: stays paused until Engineering Governance v1.1 is frozen. Audit + Plan themselves remain delivered and unchanged (`communication/task_queue/REPO-001.md`, `docs/REPO_001_REPOSITORY_ENGINEERING_MIGRATION.md`). |
 | BRANCH-FORENSICS-001 | Repository History Forensics | ✅ APPROVED — see `communication/task_queue/BRANCH-FORENSICS-001.md` and `docs/BRANCH_FORENSICS_001.md`. Director findings F-008 through F-013 confirmed: root cause is a single invisible Unicode character (U+2060) in one filename (`strategies/strategy_manager.py`), zero code difference; the `strategie/` typo was a separate, already self-corrected historical event, not the conflict cause. |
 | MIGRATION_PLAN.md | Recovery + Migration control document | ✅ DELIVERED — `docs/governance/MIGRATION_PLAN.md`. Single control document (Recovery phases, Migration phases, Rollback plan, Risk Analysis, Success/Exit Criteria, Recovery + Migration Checklists). Awaiting Director approval and branch-operation authority confirmation before any mutating step. |
-| ORDER-020 Repository Recovery | Unicode filename fix + rollback tags | 🟡 IN PROGRESS — Phase 1 (Recovery Audit) ✅ complete (read-only, findings in MIGRATION_PLAN.md). Phase 2 (rollback anchors, Unicode fix on `main`, checkpoint) and Phase 3 (validation) are mutating and gated on Director approval of the plan + confirmation of the `main`-operation/tag-push authority. |
+| ORDER-020 Repository Recovery | Unicode filename fix + rollback tags | ⛔ BLOCKED — Director authorized (MIGRATION_PLAN APPROVED, Phase 2 AUTHORIZED), but the session's git egress proxy returns HTTP 403 for pushing tags (and, by inference, `main`); only the designated working branch ref is pushable. Phase 1 ✅ done; remote untouched; anchor tags created locally-only. Escalated to Director — see `communication/task_queue/REPO-RECOVERY-001.md` for resolution options. |
 | REPO-002 | Repository Migration Implementation | ⏳ Blocked — starts only after Repository Recovery is APPROVED. |
 
 ## Governance v1.1 (upcoming, not yet an executable brief)

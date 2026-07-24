@@ -4,10 +4,61 @@
 **Title**: Repository Recovery — Unicode filename fix + rollback anchors
 **Track**: Repository Engineering (`REPO-XXX` family)
 **Priority**: Critical
-**Status**: 🟡 IN PROGRESS — Phase 1 (Recovery Audit) complete; Phase 2
-(Recovery, mutating) and Phase 3 (Validation) gated on Director approval
-of `docs/governance/MIGRATION_PLAN.md` and confirmation of the
-branch-operation authority.
+**Status**: ⛔ BLOCKED (Phase 2) — Director approval + authority granted
+(MIGRATION_PLAN.md APPROVED, ORDER-020 Phase 2 AUTHORIZED), but the
+execution is blocked by an **environment egress-policy denial**: the
+session's git proxy permits pushes to the designated working branch
+only and returns **HTTP 403** for pushing tags (and, by inference, for
+pushing to `main`). Phase 1 remains complete; Phase 2 cannot proceed
+from this session until the push scope is widened or the recovery is
+performed by a differently-scoped actor. **Escalated to Director.**
+
+## Phase 2 execution attempt — blocker record (STOP → AUDIT → Director Decision)
+
+The Director authorized Phase 2 (ORDER-020) with an explicit 5-step
+order. Execution began and stopped at the first push:
+
+- **Step 1 (rollback anchors)** — the three annotated tags
+  (`pre-recovery-main` @ `5618adec`, `pre-recovery-production` @
+  `d911b97`, `pre-recovery-working` @ `04b9223`) were created **locally**
+  and verified to point at the correct SHAs. Pushing them returned
+  **`HTTP 403` from the egress proxy** (`send-pack: unexpected
+  disconnect`).
+- **Diagnosis**: branch commits to `claude/trading-ai-arch-review-tgszrz`
+  have succeeded throughout this session; only the *tag* push is denied.
+  The agent proxy README maps 403 to "destination not allowed by your
+  organization's egress policy for this session — do not retry or route
+  around it, report it." Combined with the working-branch pushes
+  succeeding, the policy is **ref-scoped**: pushes are permitted to the
+  designated working branch ref only, and denied for `refs/tags/*` (and
+  therefore, by strong inference, for `refs/heads/main` — the Step 2
+  target). Not retried, not routed around (per proxy policy and per this
+  session's own governance).
+- **Remote state after the failure**: completely untouched — 0 tags on
+  the remote, `main` still `5618adec`, working branch still `04b9223`,
+  local working tree clean. Nothing partial reached the remote.
+- **Local state**: the three anchor tags exist locally-only (unpushed);
+  they are valid and ready to push if/when the policy is widened. No
+  mutating operation touched `main` (Step 2 was never reached).
+
+This constraint also coincides with this session's own standing rule
+("never push to a different branch without explicit permission") being
+enforced at the infrastructure level: even with the Director's explicit
+authorization, the environment's proxy will not permit a push to `main`
+or to tag refs from this session.
+
+## Resolution options (for Director decision)
+
+1. **Widen this session's git push scope** (an environment/admin
+   configuration change) to permit `refs/tags/*` and `refs/heads/main`,
+   then re-run Phase 2 from here — the local anchor tags are already
+   staged and ready.
+2. **Perform the recovery from a differently-scoped actor** — a session
+   or operator whose egress policy allows pushing tags and to `main`
+   (the fix itself is a single, content-neutral `git mv` on `main` plus
+   4 tags, fully specified in `docs/governance/MIGRATION_PLAN.md`).
+3. **Defer** Repository Recovery until the push-scope question is
+   resolved; Governance v1.1 remains FROZEN and the plan remains ready.
 **Context**: First implementation task after Engineering Governance v1.1
 was declared FROZEN. Executes the recovery diagnosed by
 `BRANCH-FORENSICS-001`, under the frozen v1.1 repository policies.
