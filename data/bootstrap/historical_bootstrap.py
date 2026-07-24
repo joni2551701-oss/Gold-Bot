@@ -27,6 +27,7 @@ from data.bootstrap.bootstrap_progress import BootstrapProgress
 from data.bootstrap.bootstrap_metrics import BootstrapMetrics
 from data.bootstrap.historical_provider import HistoricalProvider, BootstrapCache
 from data.bootstrap.gap_recovery import GapRecovery
+from data.bootstrap.bootstrap_events import BootstrapEventHook
 
 logger = setup_logger("HistoricalBootstrap")
 
@@ -38,12 +39,14 @@ class HistoricalBootstrap:
                  clock: Optional[CandleClock] = None,
                  cache: Optional[BootstrapCache] = None,
                  strategy: BootstrapStrategy = BootstrapStrategy.AUTO,
-                 depths: Optional[Mapping[str, int]] = None):
+                 depths: Optional[Mapping[str, int]] = None,
+                 event_hook: Optional[BootstrapEventHook] = None):
         self._memory = memory
         self._provider = provider
         self._clock = clock or CandleClock()
         self._cache = cache
         self._strategy = strategy
+        self._hook = event_hook or BootstrapEventHook()
         held = set(memory.timeframes())
         self._timeframes: List[str] = (
             [tf for tf in TIMEFRAME_ORDER if tf in held]
@@ -80,6 +83,7 @@ class HistoricalBootstrap:
         now = self._utc(now)
         if self._started_at is None:
             self._started_at = now
+            self._emit("on_bootstrap_started", self._memory.asset)
         for tf in self._timeframes:
             if self._cancelled:
                 break
@@ -94,6 +98,9 @@ class HistoricalBootstrap:
                 self._metrics.validation_errors += 1
                 logger.warning("Bootstrap[%s|%s] failed: %s",
                                self._memory.asset, tf, exc)
+            self._emit("on_timeframe_completed",
+                       self._memory.asset, tf, self._states[tf])
+            self._emit("on_progress_updated", self.progress(now))
         self._current_tf = None
         if self._cancelled and not self._all_ready():
             for tf in self._timeframes:
@@ -103,7 +110,30 @@ class HistoricalBootstrap:
         if self._all_ready():
             self._finished_at = now
         self._metrics.last_bootstrap = now
+        # terminal event (DD-066)
+        if self._cancelled and not self._all_ready():
+            self._emit("on_bootstrap_cancelled", self._memory.asset)
+        elif self._all_ready():
+            self._emit("on_bootstrap_completed", self._memory.asset)
+        elif any(s is BootstrapState.FAILED for s in self._states.values()):
+            self._emit("on_bootstrap_failed", self._memory.asset)
         return self.progress(now)
+
+    @property
+    def bootstrap_ready(self) -> bool:
+        """
+        Completion barrier (DD-063): True only when every configured
+        timeframe has completed its LOAD -> VALIDATE -> HYDRATE pipeline
+        (i.e. reached READY). Validation-passed and memory-hydrated are
+        implied by a timeframe reaching READY.
+        """
+        return self._all_ready()
+
+    def _emit(self, method: str, *args) -> None:
+        try:
+            getattr(self._hook, method)(*args)
+        except Exception:   # a bad subscriber must never break the bootstrap
+            logger.exception("Bootstrap event hook %s raised; ignoring", method)
 
     # -- per-timeframe --------------------------------------------------
     def _bootstrap_tf(self, tf: str, now: datetime) -> None:
