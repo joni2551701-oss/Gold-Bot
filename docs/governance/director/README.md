@@ -38,6 +38,12 @@ not conflict with the Migration SSOT (`docs/governance/MIGRATION_PLAN.md`).
 | [DD-002](DD-002.md) | Canonical Source | `claude/code-analysis-optimization-pwfo3q` (production) **= GoldBot v1**, the reference implementation | Approved |
 | [DD-003](DD-003.md) | `main` Branch Status | Current `main` is a temporary holding branch, not development/production/release | Approved |
 | [DD-004](DD-004.md) | Governance Records | Director decisions are persisted as controlled Decision Records; establishes this registry | Approved |
+| [DD-024](DD-024.md) | Repository Consolidation & GoldBot v1.0.0 Release | Recovery SKIPPED (supersedes DD-001); Path 2 approved; `main` consolidated to v1.0.0 non-force; old branches archived; tag deferred | Approved / Executed |
+
+> **Numbering note:** DD-024 uses the identifier the Director assigned
+> directly from the decision stream; DD-005…DD-023 are reserved/unused in
+> this registry. The gap is intentional, recorded here per No Silent
+> Decisions rather than renumbered.
 
 ## Related
 
