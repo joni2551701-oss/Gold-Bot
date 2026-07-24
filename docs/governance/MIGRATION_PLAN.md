@@ -172,9 +172,9 @@ reconciled from production) and are **not** renamed inside Recovery.
 Recovery Checklist
 ☑ Phase 1 audit complete (health / integrity / history / rollback readiness)   [done]
 ☑ Director approval of this plan + branch-operation authority confirmed          [MIGRATION_PLAN APPROVED; ORDER-020 Phase 2 AUTHORIZED]
-◐ Rollback anchors created ... and pushed   [created LOCALLY; push BLOCKED by egress-policy 403 — see blocker below]
-□ Unicode filename fixed on main (single git mv, forward commit, pushed)          [BLOCKED — main push denied by same policy]
-□ post-recovery-main checkpoint tag created and pushed                            [BLOCKED]
+◐ Rollback anchors created ... and pushed   [created LOCALLY; tag push CONFIRMED blocked by the Claude Code git-proxy — see Diagnostic Evidence below]
+□ Unicode filename fixed on main (single git mv, forward commit, pushed)          [not attempted from this session; main-push scope NOT independently tested]
+□ post-recovery-main checkpoint tag created and pushed                            [tag push CONFIRMED blocked]
 □ git fsck clean; no U+2060 remains (ls-tree sweep)
 □ merge-tree main↔production = zero conflicts
 □ merge-tree main↔working = zero conflicts
@@ -182,19 +182,48 @@ Recovery Checklist
 □ Director verdict: Repository Recovery APPROVED
 ```
 
-### Phase 2 execution blocker (recorded)
+### Phase 2 execution blocker — Diagnostic Evidence (HTTP-trace confirmed, ORDER-022)
 
-Phase 2 began under ORDER-020 and stopped at the first push: the
-session's git egress proxy returned **HTTP 403** for pushing tags.
-Branch pushes to the designated working branch succeed all session, so
-the policy is **ref-scoped** — working-branch ref allowed, `refs/tags/*`
-and (by inference) `refs/heads/main` denied. Per the proxy README, a
-403 policy denial is not retried or routed around. Remote is untouched
-(0 tags, `main` unchanged); the three anchor tags exist locally-only,
-ready to push if the scope is widened. Full record and resolution
-options: `communication/task_queue/REPO-RECOVERY-001.md`. This is an
-environment/authorization blocker, not a defect in the recovery plan —
-the plan itself is unchanged and correct.
+Phase 2 began under ORDER-020 and stopped at the first push. The
+push-source of the block was investigated with `GIT_TRACE_CURL`/
+`GIT_CURL_VERBOSE`; the following are **confirmed by HTTP trace**, and
+each earlier assumption is corrected below.
+
+**CONFIRMED (by HTTP trace):**
+- The git remote is a **Claude Code local git-proxy** at
+  `http://local_proxy@127.0.0.1:41729/...` (auth challenge:
+  `Www-Authenticate: Basic realm="Git Proxy"`), not github.com directly.
+- **GitHub accepted the receive-pack advertisement**: after auth,
+  `GET /info/refs?service=git-receive-pack` returns **200 OK**
+  (`agent=github/spokes-receive-pack…`). GitHub grants push capability.
+- **The 403 is returned on the ref-update `POST /git-receive-pack`**,
+  with body: `ERR push contains a ref outside refs/heads/*; only branch
+  updates are permitted.` The `Request-Id: req_011Cd…` header is the
+  Claude Code/Anthropic request-id format (not GitHub's
+  `X-GitHub-Request-Id`).
+- **Therefore: the 403 originates from the Claude Code git-proxy policy
+  layer, not from GitHub repository permissions.** The policy rejects
+  any push containing a ref **outside `refs/heads/*`** — so **tag pushes
+  are blocked** (`refs/tags/*` is outside `refs/heads/*`).
+
+**NOT TESTED / assumption withdrawn:**
+- A previous note said `refs/heads/main` was blocked "by inference."
+  **That inference is withdrawn.** No standalone push to
+  `refs/heads/main` was executed (it would be a real mutating commit,
+  and the session is in WAIT STATE). The policy message says branch
+  updates *are* permitted, so **no evidence currently exists that a
+  `main` push is itself rejected** — it is simply untested. Treat
+  "`main` push from this session" as **Not Tested**, neither confirmed
+  allowed nor confirmed blocked.
+
+**Impact on the plan (unchanged):** the safety sequence requires the
+rollback **anchor tags first**, and tag pushes are confirmed blocked
+from this session — so a plan-compliant recovery still requires the
+Authorized Operator (Option 2). Remote is untouched (0 tags, `main`
+unchanged). Per policy, the 403 was never retried-to-route-around; the
+repeated requests here were read-only diagnostics that mutated nothing.
+Full record: `communication/task_queue/REPO-RECOVERY-001.md`. This is an
+environment/authorization boundary, not a defect in the recovery plan.
 
 ## Migration Checklist
 

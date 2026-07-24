@@ -6,12 +6,19 @@ after the 9-file finding).
 
 Prepared by the Worker under **ORDER-021** (Director chose Option 2:
 recovery performed by an Authorized Operator with the required push
-scope, because this session's git egress proxy denies pushing tags and
-`main`). Every command below was **tested locally by the Worker** on a
-throwaway branch (no push); the expected results are the actual results
-of that test. The Worker does not push tags or `main`; the Authorized
-Operator executes the pushes, then the Worker verifies and writes the
-Recovery Report.
+scope). **Why this session cannot do it (HTTP-trace confirmed,
+ORDER-022):** the Claude Code git-proxy rejects any push containing a
+ref outside `refs/heads/*` with `HTTP 403` (body: `ERR push contains a
+ref outside refs/heads/*; only branch updates are permitted`), so
+**tag pushes are blocked**. Since the recovery's safety sequence needs
+the rollback **anchor tags first**, this session cannot perform a
+plan-compliant recovery. (Whether a `refs/heads/main` push would be
+permitted from this session was **not tested** — no standalone `main`
+push was executed; see the runbook's precondition note.) Every command
+below was **tested locally by the Worker** on a throwaway branch (no
+push); the expected results are the actual results of that test. The
+Authorized Operator executes the pushes, then the Worker verifies and
+writes the Recovery Report.
 
 **Scope (Director-confirmed, final)**: this runbook fixes **only**
 `strategies/strategy_manager.py` — the one file whose corrupted name
@@ -32,7 +39,10 @@ Unicode filenames are **not** part of these criteria.
 ## Preconditions
 
 - Actor has repository write permission and push scope for
-  `refs/tags/*` and `refs/heads/main`.
+  `refs/tags/*` and `refs/heads/main`. (Note: the Worker's own session
+  is **confirmed** to lack `refs/tags/*` push scope — the Claude Code
+  git-proxy blocks non-branch refs; the Worker's `refs/heads/main` push
+  scope was **not tested**. The Authorized Operator must hold both.)
 - A clean clone of `joni2551701-oss/Gold-Bot`.
 - Reference tips at preparation time (verify with `git fetch` first;
   `main`/production are stable, the working branch may have advanced):

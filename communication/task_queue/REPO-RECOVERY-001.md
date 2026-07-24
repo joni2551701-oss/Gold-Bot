@@ -12,11 +12,12 @@ the Worker then verifies the returned results against the tested
 expected values and writes the Recovery Report for the Director's
 `APPROVED` / `CHANGES REQUIRED` verdict.
 
-**Egress-policy blocker (resolved by routing, not bypassed)**: this
-session's git proxy returns HTTP 403 for pushing tags/`main` (working
-branch only is pushable) — never retried or routed around; the Director
-chose Option 2 (a differently-scoped Authorized Operator) rather than
-weaken the policy. Recorded below.
+**Push blocker (resolved by routing, not bypassed)**: the Claude Code
+git-proxy returns HTTP 403 for pushing **tags** (any ref outside
+`refs/heads/*`); a `refs/heads/main` push from this session was **not
+tested**. Never retried or routed around; the Director chose Option 2
+(a differently-scoped Authorized Operator) rather than weaken the
+policy. HTTP-trace-confirmed details below (ORDER-022 correction).
 
 **Director-updated Exit Criteria** (ORDER-020, this decision): Recovery
 succeeds when — `strategy_manager.py` rename/rename conflict resolved;
@@ -33,30 +34,52 @@ order. Execution began and stopped at the first push:
   (`pre-recovery-main` @ `5618adec`, `pre-recovery-production` @
   `d911b97`, `pre-recovery-working` @ `04b9223`) were created **locally**
   and verified to point at the correct SHAs. Pushing them returned
-  **`HTTP 403` from the egress proxy** (`send-pack: unexpected
-  disconnect`).
-- **Diagnosis**: branch commits to `claude/trading-ai-arch-review-tgszrz`
-  have succeeded throughout this session; only the *tag* push is denied.
-  The agent proxy README maps 403 to "destination not allowed by your
-  organization's egress policy for this session — do not retry or route
-  around it, report it." Combined with the working-branch pushes
-  succeeding, the policy is **ref-scoped**: pushes are permitted to the
-  designated working branch ref only, and denied for `refs/tags/*` (and
-  therefore, by strong inference, for `refs/heads/main` — the Step 2
-  target). Not retried, not routed around (per proxy policy and per this
-  session's own governance).
+  **`HTTP 403`** (`send-pack: unexpected disconnect`).
 - **Remote state after the failure**: completely untouched — 0 tags on
   the remote, `main` still `5618adec`, working branch still `04b9223`,
   local working tree clean. Nothing partial reached the remote.
-- **Local state**: the three anchor tags exist locally-only (unpushed);
-  they are valid and ready to push if/when the policy is widened. No
-  mutating operation touched `main` (Step 2 was never reached).
+- **Local state**: the three anchor tags exist locally-only (unpushed).
+  No mutating operation touched `main` (Step 2 was never reached).
 
-This constraint also coincides with this session's own standing rule
-("never push to a different branch without explicit permission") being
-enforced at the infrastructure level: even with the Director's explicit
-authorization, the environment's proxy will not permit a push to `main`
-or to tag refs from this session.
+## Diagnostic Evidence — HTTP-trace confirmed (ORDER-022 / DOC-CORRECTION-001)
+
+The push-source of the 403 was investigated with `GIT_TRACE_CURL` /
+`GIT_CURL_VERBOSE`. Facts are labelled **Confirmed** (HTTP evidence) or
+**Not Tested**; no assumption is labelled Confirmed.
+
+**Confirmed (by HTTP trace):**
+- The git remote is a **Claude Code local git-proxy** at
+  `http://local_proxy@127.0.0.1:41729/...`, not github.com directly —
+  its auth challenge self-identifies: `HTTP/1.1 401 Unauthorized`,
+  `Www-Authenticate: Basic realm="Git Proxy"`.
+- **GitHub accepted the receive-pack advertisement**: after auth,
+  `GET /info/refs?service=git-receive-pack` → **200 OK**,
+  `agent=github/spokes-receive-pack…`. GitHub advertised push capability.
+- **The 403 is returned on the ref-update `POST /git-receive-pack`**,
+  body: `ERR push contains a ref outside refs/heads/*; only branch
+  updates are permitted.` The `Request-Id: req_011Cd…` header is the
+  Claude Code/Anthropic format (not GitHub's `X-GitHub-Request-Id`).
+- **The 403 originates from the Claude Code git-proxy policy layer, not
+  from GitHub repository permissions.** No evidence indicates GitHub
+  repository permissions caused the rejection.
+- **Tag pushes are therefore blocked** — `refs/tags/*` is outside
+  `refs/heads/*`. Confirmed by the HTTP 403 response body.
+
+**Not Tested (assumption withdrawn):**
+- Whether a `refs/heads/main` push is rejected from this session is
+  **not known** — no standalone push to `refs/heads/main` was executed
+  (it would be a real mutating commit; the session is in WAIT STATE).
+  The earlier "by inference, `main` is blocked" claim is **withdrawn**.
+  The policy message states branch updates *are* permitted, so **no
+  evidence currently exists that a `main` push itself is rejected**.
+  Status: **Not Tested**.
+
+**Why the Authorized Operator is still required** (unchanged): the
+safety sequence needs the rollback **anchor tags first**, and tag
+pushes are confirmed blocked from this session — so a plan-compliant
+recovery cannot be performed here regardless of the `main` question. The
+repeated push requests during diagnosis were read-only (all denied;
+zero mutation), never retried to route around the policy.
 
 ## ORDER-021 — Operator handoff prepared + a scope finding (Worker preparation, no push)
 
@@ -93,13 +116,15 @@ as superseded-by-Migration.
 ## Resolution options (for the earlier push blocker — Director chose Option 2)
 
 1. **Widen this session's git push scope** (an environment/admin
-   configuration change) to permit `refs/tags/*` and `refs/heads/main`,
-   then re-run Phase 2 from here — the local anchor tags are already
-   staged and ready.
+   configuration change) to permit `refs/tags/*` (confirmed blocked)
+   — and `refs/heads/main` if not already permitted (untested) — then
+   re-run Phase 2 from here.
 2. **Perform the recovery from a differently-scoped actor** — a session
-   or operator whose egress policy allows pushing tags and to `main`
-   (the fix itself is a single, content-neutral `git mv` on `main` plus
-   4 tags, fully specified in `docs/governance/MIGRATION_PLAN.md`).
+   or operator whose git push scope allows tag pushes and a `main`
+   commit (the fix itself is a single, content-neutral `git mv` on
+   `main` plus 4 tags, fully specified in
+   `docs/governance/MIGRATION_PLAN.md`). **← Director chose this
+   (Option 2, ORDER-021).**
 3. **Defer** Repository Recovery until the push-scope question is
    resolved; Governance v1.1 remains FROZEN and the plan remains ready.
 **Context**: First implementation task after Engineering Governance v1.1
