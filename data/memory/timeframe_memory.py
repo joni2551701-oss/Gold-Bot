@@ -121,6 +121,34 @@ class TimeframeMemory:
             self._revision += 1
             return len(self._closed)
 
+    def merge_closed(self, candles: List[Candle],
+                     source: CandleSource = CandleSource.RECOVERY) -> int:
+        """
+        Insert CLOSED candles that are not already present (matched by open
+        timestamp), keeping existing candles and their provenance intact;
+        maintains sort order and capacity. Used by gap recovery (module 5)
+        to backfill missing windows without relabeling existing history.
+        Returns the number of candles inserted. One revision bump.
+        """
+        with self._lock:
+            present = {rec.timestamp for rec in self._closed}
+            if self._forming is not None:
+                present.add(self._forming.timestamp)
+            new = [c for c in candles if c.timestamp not in present]
+            if not new:
+                return 0
+            combined = list(self._closed)
+            for c in sorted(new, key=lambda x: x.timestamp):
+                combined.append(self._new_record(
+                    c.timestamp, c.open, c.high, c.low, c.close,
+                    CandleStatus.CLOSED, source, None, None, None))
+            combined.sort(key=lambda rec: rec.timestamp)
+            self._closed.clear()
+            for rec in combined[-self._capacity:]:
+                self._closed.append(rec)
+            self._revision += 1
+            return len(new)
+
     def open_candle(self, timestamp: datetime, price: float,
                     source: CandleSource = CandleSource.STREAM,
                     volume: Optional[float] = None,
