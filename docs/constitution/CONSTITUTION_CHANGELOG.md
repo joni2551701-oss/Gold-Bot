@@ -31,6 +31,9 @@ and the decision log ([`docs/changelog/DECISION_LOG.md`](../changelog/DECISION_L
     become non-normative; necessary content is consolidated here or migrated by
     future amendment.
   - Source packages: GB-CONST-001, GB-CONST-002, and GB-CONST-BATCH-01 … 05.
+  - The [Director Rulings Register](DIRECTOR_RULINGS_REGISTER.md) was backfilled with
+    DR-001 … DR-012, formalizing earlier approved decisions into the standard fields
+    (no new decisions; numbering pending Director confirmation).
 
 ---
 
