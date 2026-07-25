@@ -14,7 +14,7 @@
 > v1.0. Any change is made only via an ADR, the Amendment Process
 > ([Chapter 38](Chapter38_AmendmentProcess.md)), and Director approval.
 
-Related registers: [Decision Rulings Register](../DECISION_RULINGS.md) · [Constitution Change Log](../CONSTITUTION_CHANGELOG.md)
+Related registers: [Director Rulings Register](../DIRECTOR_RULINGS_REGISTER.md) · [Constitution Change Log](../CONSTITUTION_CHANGELOG.md)
 
 ---
 
@@ -108,3 +108,39 @@ The Constitution states **principles**. Operative detail is carried in the
 architecture docs, ADRs, standards, policies, and specifications, and is not
 duplicated here — each governance domain has one authoritative source, which the
 relevant chapters cross-link.
+
+## Reading Order
+
+- **First-time reader:** read the blocks in order, 01 → 40. The foundational block
+  (01–07) sets the vocabulary and intent every later chapter relies on; read
+  [Chapter 07](Chapter07_NonGoalsAndTerminology.md) (glossary of reserved terms)
+  before the architecture and domain blocks.
+- **Governance / process focus:** 08 → 17, then the compliance chapter
+  ([37](Chapter37_ComplianceFramework.md)) and the closing block (38–40).
+- **Engineering / architecture focus:** start at [18](Chapter18_CoreArchitecture.md),
+  then 19–27; consult 04 (Core Principles) and 09 (Architecture Philosophy) for the
+  reasoning behind the structure.
+- **Safety focus:** [07](Chapter07_NonGoalsAndTerminology.md) →
+  [28](Chapter28_AIArchitecture.md)/[29](Chapter29_AIGovernance.md) →
+  [36](Chapter36_RiskGovernance.md) → [40 §7](Chapter40_FinalProvisions.md) — the
+  non-amendable guarantees (DR-015) and where they are stated.
+- **In every case**, the closing block (38–40) explains how the document is amended,
+  where it is going, and how it takes effect.
+
+## Cross-reference Guidance
+
+- **Chapter-to-chapter references** are written in prose as "Chapter NN (Title)",
+  not as hyperlinks, so the meaning survives regardless of where a chapter is read.
+- **Operative detail** is referenced by a link to its single source of truth
+  (architecture docs, ADRs, standards, policies, contracts) under the chapter
+  header's *Operative sources* line — per DR-016, that source is authoritative and is
+  not restated in the chapter.
+- **Reserved terms** carry exactly the meaning defined in
+  [Chapter 07](Chapter07_NonGoalsAndTerminology.md); when a term is used, that
+  glossary is its definition.
+- **Rulings** are referenced by DR number and recorded in the
+  [Director Rulings Register](../DIRECTOR_RULINGS_REGISTER.md); **changes** are
+  recorded in the [Constitution Change Log](../CONSTITUTION_CHANGELOG.md).
+- One operative cross-reference — Chapter 09's link to the Core Gateway architecture
+  document — resolves once Module 10 (the Gateway) is merged to the main line
+  (milestone MA-010); until then it is referenced in prose.
