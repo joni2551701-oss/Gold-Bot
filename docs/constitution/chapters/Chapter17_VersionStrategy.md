@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 17: Version Strategy
 
-**Package:** GB-CONST-017 · **Document:** Chapter17_VersionStrategy.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-017 · **Document:** Chapter17_VersionStrategy.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Governance (Chapters 08–17)
 **Continuity:** Reuses the terminology of Chapters 01–16; does not contradict any approved chapter.
 **Operative sources:** [`docs/policies/VERSION_POLICY.md`](../../policies/VERSION_POLICY.md), [`docs/standards/RELEASE_STANDARD.md`](../../standards/RELEASE_STANDARD.md).

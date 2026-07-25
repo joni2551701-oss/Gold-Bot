@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 14: Quality Assurance
 
-**Package:** GB-CONST-014 · **Document:** Chapter14_QualityAssurance.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-014 · **Document:** Chapter14_QualityAssurance.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Governance (Chapters 08–17)
 **Continuity:** Reuses the terminology of Chapters 01–13; does not contradict any approved chapter.
 **Operative sources:** [`docs/policies/TESTING_POLICY.md`](../../policies/TESTING_POLICY.md), [`docs/standards/TEST_STANDARD.md`](../../standards/TEST_STANDARD.md), [`CLAUDE.md`](../../../CLAUDE.md) (commit protocol).

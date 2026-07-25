@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 09: Architecture Philosophy
 
-**Package:** GB-CONST-009 · **Document:** Chapter09_ArchitecturePhilosophy.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-009 · **Document:** Chapter09_ArchitecturePhilosophy.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Governance (Chapters 08–17)
 **Continuity:** Reuses the terminology of Chapters 01–08; does not contradict any approved chapter.
 **Operative sources:** [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md), [`docs/ARCHITECTURE_RULES.md`](../../ARCHITECTURE_RULES.md), [`docs/CORE_GATEWAY_ARCHITECTURE.md`](../../CORE_GATEWAY_ARCHITECTURE.md).

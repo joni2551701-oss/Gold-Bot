@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 13: Reviewer
 
-**Package:** GB-CONST-013 · **Document:** Chapter13_Reviewer.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-013 · **Document:** Chapter13_Reviewer.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Governance (Chapters 08–17)
 **Continuity:** Reuses the terminology of Chapters 01–12; does not contradict any approved chapter.
 **Operative source:** [`docs/standards/REVIEW_STANDARD.md`](../../standards/REVIEW_STANDARD.md), review records under [`communication/reviews/`](../../../communication/reviews/).

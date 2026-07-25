@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 15: Decision Process
 
-**Package:** GB-CONST-015 · **Document:** Chapter15_DecisionProcess.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-015 · **Document:** Chapter15_DecisionProcess.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Governance (Chapters 08–17)
 **Continuity:** Reuses the terminology of Chapters 01–14; does not contradict any approved chapter.
 **Operative sources:** [`docs/changelog/DECISION_LOG.md`](../../changelog/DECISION_LOG.md), ADRs under [`communication/decisions/`](../../../communication/decisions/).

@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 36: Risk Governance
 
-**Package:** GB-CONST-036 · **Document:** Chapter36_RiskGovernance.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-036 · **Document:** Chapter36_RiskGovernance.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Domain (Chapters 28–37)
 **Continuity:** Reuses the terminology of Chapters 01–35; does not contradict any approved chapter.
 **Operative sources:** [`contracts/risk_contract.md`](../../../contracts/risk_contract.md), the Risk Manager (`risk/risk_manager.py`), and the Trading Safety rules in [`CLAUDE.md`](../../../CLAUDE.md).

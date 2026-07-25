@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 33: Data Governance
 
-**Package:** GB-CONST-033 · **Document:** Chapter33_DataGovernance.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-033 · **Document:** Chapter33_DataGovernance.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Domain (Chapters 28–37)
 **Continuity:** Reuses the terminology of Chapters 01–32; does not contradict any approved chapter.
 **Operative sources:** [`docs/MARKET_DATA_ARCHITECTURE.md`](../../MARKET_DATA_ARCHITECTURE.md), [`data/`](../../../data/).

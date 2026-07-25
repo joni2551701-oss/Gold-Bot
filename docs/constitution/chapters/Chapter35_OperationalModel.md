@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 35: Operational Model
 
-**Package:** GB-CONST-035 · **Document:** Chapter35_OperationalModel.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-035 · **Document:** Chapter35_OperationalModel.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Domain (Chapters 28–37)
 **Continuity:** Reuses the terminology of Chapters 01–34; does not contradict any approved chapter.
 **Operative sources:** [`monitoring/`](../../../monitoring/), [`deploy/`](../../../deploy/), [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md).

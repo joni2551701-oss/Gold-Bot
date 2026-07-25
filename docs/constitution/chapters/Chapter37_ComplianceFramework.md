@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 37: Compliance Framework
 
-**Package:** GB-CONST-037 · **Document:** Chapter37_ComplianceFramework.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-037 · **Document:** Chapter37_ComplianceFramework.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Domain (Chapters 28–37)
 **Continuity:** Reuses the terminology of Chapters 01–36; does not contradict any approved chapter.
 **Operative sources:** [`docs/constitution/CONSTITUTION.md`](../CONSTITUTION.md), [`docs/standards/`](../../standards/), [`docs/AUDIT_REPORT.md`](../../AUDIT_REPORT.md).

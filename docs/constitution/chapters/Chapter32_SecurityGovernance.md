@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 32: Security Governance
 
-**Package:** GB-CONST-032 · **Document:** Chapter32_SecurityGovernance.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-032 · **Document:** Chapter32_SecurityGovernance.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Domain (Chapters 28–37)
 **Continuity:** Reuses the terminology of Chapters 01–31; does not contradict any approved chapter.
 **Operative sources:** [`docs/SECURITY.md`](../../SECURITY.md), [`docs/policies/SECURITY_POLICY.md`](../../policies/SECURITY_POLICY.md).

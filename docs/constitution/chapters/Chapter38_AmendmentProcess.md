@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 38: Amendment Process
 
-**Package:** GB-CONST-038 · **Document:** Chapter38_AmendmentProcess.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-038 · **Document:** Chapter38_AmendmentProcess.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Closing (Chapters 38–40)
 **Continuity:** Reuses the terminology of Chapters 01–37; does not contradict any approved chapter or Director ruling.
 **Operative sources:** [`docs/constitution/AMENDMENTS.md`](../AMENDMENTS.md), [`docs/changelog/DECISION_LOG.md`](../../changelog/DECISION_LOG.md).

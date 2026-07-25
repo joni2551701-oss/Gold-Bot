@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 12: Worker
 
-**Package:** GB-CONST-012 · **Document:** Chapter12_Worker.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-012 · **Document:** Chapter12_Worker.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Governance (Chapters 08–17)
 **Continuity:** Reuses the terminology of Chapters 01–11; does not contradict any approved chapter.
 **Operative source:** [`CLAUDE.md`](../../../CLAUDE.md) (Worker execution rules), [`docs/policies/DEVELOPMENT_POLICY.md`](../../policies/DEVELOPMENT_POLICY.md).

@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 01: Vision
 
-**Package:** GB-CONST-001 · **Document:** Chapter01_Vision.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-001 · **Document:** Chapter01_Vision.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition, GB-CONST-001 … GB-CONST-040)
 **Relationship to existing governance:** This chaptered Constitution edition
 **extends and consolidates** the in-force governance in

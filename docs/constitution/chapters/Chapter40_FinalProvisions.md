@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 40: Final Provisions
 
-**Package:** GB-CONST-040 · **Document:** Chapter40_FinalProvisions.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-040 · **Document:** Chapter40_FinalProvisions.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Closing (Chapters 38–40) — **final chapter**
 **Continuity:** Reuses the terminology of Chapters 01–39; does not contradict any approved chapter or Director ruling.
 **Operative sources:** [`docs/constitution/CONSTITUTION.md`](../CONSTITUTION.md), [`docs/constitution/ARTICLES.md`](../ARTICLES.md), [`docs/constitution/AMENDMENTS.md`](../AMENDMENTS.md).

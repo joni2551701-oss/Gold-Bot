@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 16: Documentation Governance
 
-**Package:** GB-CONST-016 · **Document:** Chapter16_DocumentationGovernance.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-016 · **Document:** Chapter16_DocumentationGovernance.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Governance (Chapters 08–17)
 **Continuity:** Reuses the terminology of Chapters 01–15; does not contradict any approved chapter.
 **Operative sources:** [`docs/standards/DOCUMENTATION_STANDARD.md`](../../standards/DOCUMENTATION_STANDARD.md), [`docs/policies/DOCUMENTATION_POLICY.md`](../../policies/DOCUMENTATION_POLICY.md).

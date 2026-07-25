@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 39: Roadmap & Evolution
 
-**Package:** GB-CONST-039 · **Document:** Chapter39_RoadmapAndEvolution.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-039 · **Document:** Chapter39_RoadmapAndEvolution.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Closing (Chapters 38–40)
 **Continuity:** Reuses the terminology of Chapters 01–38; does not contradict any approved chapter or Director ruling.
 **Operative sources:** [`docs/GOVERNANCE_V1_1_MASTER_PLAN.md`](../../GOVERNANCE_V1_1_MASTER_PLAN.md), and the Phase 2 Master Task (`docs/MASTER_TASK_PHASE2.md`, canonical once merged).

@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 02: Mission
 
-**Package:** GB-CONST-002 · **Document:** Chapter02_Mission.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-002 · **Document:** Chapter02_Mission.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition, GB-CONST-001 … GB-CONST-040)
 **Continuity:** This chapter follows and reuses the terminology established in
 Chapter 01 (Vision, GB-CONST-001) and does not contradict it. It extends the

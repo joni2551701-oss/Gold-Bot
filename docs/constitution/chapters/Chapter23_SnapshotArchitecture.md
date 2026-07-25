@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 23: Snapshot Architecture
 
-**Package:** GB-CONST-023 · **Document:** Chapter23_SnapshotArchitecture.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-023 · **Document:** Chapter23_SnapshotArchitecture.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Architecture (Chapters 18–27)
 **Continuity:** Reuses the terminology of Chapters 01–22; does not contradict any approved chapter.
 **Operative source:** [`docs/MARKET_DATA_ARCHITECTURE.md`](../../MARKET_DATA_ARCHITECTURE.md) (persistence and snapshot layers).

@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 06: Scope
 
-**Package:** GB-CONST-006 · **Document:** Chapter06_Scope.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-006 · **Document:** Chapter06_Scope.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition, GB-CONST-001 … GB-CONST-040)
 **Continuity:** Follows and reuses the terminology of Chapters 01–05; does not
 contradict any approved chapter. Extends the in-force

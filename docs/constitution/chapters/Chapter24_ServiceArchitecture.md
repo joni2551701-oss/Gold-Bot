@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 24: Service Architecture
 
-**Package:** GB-CONST-024 · **Document:** Chapter24_ServiceArchitecture.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-024 · **Document:** Chapter24_ServiceArchitecture.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Architecture (Chapters 18–27)
 **Continuity:** Reuses the terminology of Chapters 01–23; does not contradict any approved chapter.
 **Operative source:** the Core Gateway Layer service model, `docs/CORE_GATEWAY_ARCHITECTURE.md` (canonical once the Gateway is merged at the Core-complete milestone).

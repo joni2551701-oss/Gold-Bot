@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 27: Core Lifecycle
 
-**Package:** GB-CONST-027 · **Document:** Chapter27_CoreLifecycle.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-027 · **Document:** Chapter27_CoreLifecycle.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Architecture (Chapters 18–27)
 **Continuity:** Reuses the terminology of Chapters 01–26; does not contradict any approved chapter.
 **Operative sources:** [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md), [`docs/MARKET_DATA_ARCHITECTURE.md`](../../MARKET_DATA_ARCHITECTURE.md).

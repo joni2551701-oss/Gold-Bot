@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 03: Values
 
-**Package:** GB-CONST-003 · **Document:** Chapter03_Values.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-003 · **Document:** Chapter03_Values.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition, GB-CONST-001 … GB-CONST-040)
 **Continuity:** Follows and reuses the terminology of Chapter 01 (Vision) and
 Chapter 02 (Mission); does not contradict any approved chapter. Extends the

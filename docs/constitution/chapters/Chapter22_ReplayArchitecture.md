@@ -1,6 +1,6 @@
 # GoldBot Constitution — Chapter 22: Replay Architecture
 
-**Package:** GB-CONST-022 · **Document:** Chapter22_ReplayArchitecture.md · **Status:** Draft (pending Director review)
+**Package:** GB-CONST-022 · **Document:** Chapter22_ReplayArchitecture.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Architecture (Chapters 18–27)
 **Continuity:** Reuses the terminology of Chapters 01–21; does not contradict any approved chapter.
 **Operative source:** [`docs/MARKET_DATA_ARCHITECTURE.md`](../../MARKET_DATA_ARCHITECTURE.md) (Core time layer).
