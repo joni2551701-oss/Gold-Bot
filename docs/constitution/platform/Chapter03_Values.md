@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 03: Values
 
-**Package:** GB-PLATFORM-CONST-003 · **Document:** Chapter03_Values.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-003 · **Document:** Chapter03_Values.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Foundation (01–07)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).

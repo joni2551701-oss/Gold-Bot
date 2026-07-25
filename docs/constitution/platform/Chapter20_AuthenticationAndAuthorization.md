@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 20: Authentication and Authorization
 
-**Package:** GB-PLATFORM-CONST-020 · **Document:** Chapter20_AuthenticationAndAuthorization.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-020 · **Document:** Chapter20_AuthenticationAndAuthorization.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Architecture (18–27)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).

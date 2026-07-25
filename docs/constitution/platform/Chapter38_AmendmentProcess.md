@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 38: Amendment Process
 
-**Package:** GB-PLATFORM-CONST-038 · **Document:** Chapter38_AmendmentProcess.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-038 · **Document:** Chapter38_AmendmentProcess.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Closing (38–40)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never overrides Core governance; never weakens the

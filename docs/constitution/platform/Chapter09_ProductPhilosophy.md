@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 09: Product Philosophy
 
-**Package:** GB-PLATFORM-CONST-009 · **Document:** Chapter09_ProductPhilosophy.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-009 · **Document:** Chapter09_ProductPhilosophy.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Governance (08–17)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).

@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 24: Service Architecture
 
-**Package:** GB-PLATFORM-CONST-024 · **Document:** Chapter24_ServiceArchitecture.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-024 · **Document:** Chapter24_ServiceArchitecture.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Architecture (18–27)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).

@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 37: Compliance
 
-**Package:** GB-PLATFORM-CONST-037 · **Document:** Chapter37_Compliance.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-037 · **Document:** Chapter37_Compliance.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Domain (28–37)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).

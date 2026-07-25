@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 40: Final Provisions
 
-**Package:** GB-PLATFORM-CONST-040 · **Document:** Chapter40_FinalProvisions.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-040 · **Document:** Chapter40_FinalProvisions.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Closing (38–40) — **final chapter**
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never overrides Core governance; never weakens the

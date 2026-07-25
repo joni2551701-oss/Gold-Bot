@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 05: Long-Term Goals
 
-**Package:** GB-PLATFORM-CONST-005 · **Document:** Chapter05_LongTermGoals.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-005 · **Document:** Chapter05_LongTermGoals.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Foundation (01–07)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).

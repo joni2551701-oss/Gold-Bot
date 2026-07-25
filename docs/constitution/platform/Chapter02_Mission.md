@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 02: Mission
 
-**Package:** GB-PLATFORM-CONST-002 · **Document:** Chapter02_Mission.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-002 · **Document:** Chapter02_Mission.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Foundation (01–07)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).

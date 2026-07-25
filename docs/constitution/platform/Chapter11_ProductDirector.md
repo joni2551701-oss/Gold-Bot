@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 11: Product Director
 
-**Package:** GB-PLATFORM-CONST-011 · **Document:** Chapter11_ProductDirector.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-011 · **Document:** Chapter11_ProductDirector.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Governance (08–17)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).

@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 06: Scope
 
-**Package:** GB-PLATFORM-CONST-006 · **Document:** Chapter06_Scope.md · **Status:** Draft (pending Director review)
+**Package:** GB-PLATFORM-CONST-006 · **Document:** Chapter06_Scope.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Foundation (01–07)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).
