@@ -36,6 +36,24 @@ Constitution. It is distinct from the platform-product change log
 
 ---
 
+## v1.0 — Baseline Established on `main` (Freeze Confirmation)
+
+- **Version:** v1.0 (Frozen Baseline — established on `main`)
+- **Date:** 2026-07-26
+- **Summary:** The Platform Constitution v1.0 was merged to `main` via PR #20 (merge commit
+  `20e49a62`) and is hereby confirmed as the **official frozen baseline**, satisfying the baseline
+  precondition required by CORE-DCR-006 before any Platform identifier migration.
+- **Chapters Changed:** none (baseline confirmation; no normative content changed)
+- **Amendment Reference:** — (baseline establishment, not an amendment)
+- **Approved By:** Director (execution authorized)
+- **Notes:**
+  - The frozen baseline content is exactly what PR #20 landed; no chapter meaning changed.
+  - The platform non-amendable safety boundary and the DR-015 guarantees remain intact.
+  - The subsequent Platform identifier migration proceeds post-baseline as a governed amendment
+    (see the following entry and the Platform Rulings Register migration record).
+
+---
+
 ## Entry Format for Future Changes
 
 ```
