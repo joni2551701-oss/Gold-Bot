@@ -22,16 +22,16 @@ Constitution. It is distinct from the platform-product change log
   (Foundation, Governance, Architecture, Domain, Closing), subordinate to the GoldBot Constitution
   v1.0. Approved at Director Final Review (10.0 / 10), completed, and frozen as the platform baseline.
 - **Chapters Changed:** 01–40 (initial adoption of all chapters)
-- **Amendment Reference:** DPR-008 (Constitutional Hierarchy), DPR-009 (Platform Scope), DPR-010
-  (Platform Safety Boundary — non-amendable), DPR-011 (Amendment Rule)
+- **Amendment Reference:** PLATFORM-DCR-008 (Constitutional Hierarchy), PLATFORM-DCR-009 (Platform Scope), PLATFORM-DCR-010
+  (Platform Safety Boundary — non-amendable), PLATFORM-DCR-011 (Amendment Rule)
 - **Approved By:** Director
 - **Notes:**
   - Chapter `Status:` headers set to *Approved — Frozen Baseline* on adoption (metadata only; no
     normative content changed).
-  - The Platform Constitution is subordinate to the GoldBot Constitution v1.0 (DPR-008); where the
+  - The Platform Constitution is subordinate to the GoldBot Constitution v1.0 (PLATFORM-DCR-008); where the
     two meet, the GoldBot Constitution governs.
-  - The [Platform Director Rulings Register](PLATFORM_DIRECTOR_RULINGS_REGISTER.md) records DPR-008…011
-    verbatim; DPR-001…007 remain pending transcription from the Director's records.
+  - The [Platform Director Rulings Register](PLATFORM_DIRECTOR_RULINGS_REGISTER.md) records PLATFORM-DCR-008…011
+    verbatim; PLATFORM-DCR-001…007 remain pending transcription from the Director's records.
   - Source packages: GB-PLATFORM-CONST-BATCH-01 … 05.
 
 ---
@@ -52,6 +52,22 @@ Constitution. It is distinct from the platform-product change log
   - The subsequent Platform identifier migration proceeds post-baseline as a governed amendment
     (see the following entry and the Platform Rulings Register migration record).
 
+## v1.0.1 — Platform Identifier Migration (DPR → PLATFORM-DCR)
+
+- **Version:** v1.0.1 (post-baseline governed amendment — identifier migration)
+- **Date:** 2026-07-26
+- **Summary:** Migrated all Platform ruling identifiers 1:1 from `DPR-###` to `PLATFORM-DCR-###` per the
+  ratified Ruling Prefix Standard (CORE-DCR-001) and CORE-DCR-006, after the v1.0 baseline was
+  established on `main`. Identifier-only change: ruling text, rationale, category, related chapters,
+  effective dates, and status preserved; nothing invented or renumbered.
+- **Chapters Changed:** identifier references across chapters 01–40 and the register (no meaning changed)
+- **Amendment Reference:** CORE-DCR-001, CORE-DCR-006; Platform Amendment Process (Chapter 38)
+- **Approved By:** Director (execution authorized)
+- **Notes:**
+  - Old → new mapping and full traceability recorded in the Platform Rulings Register migration record.
+  - The PLATFORM-DCR-010 / DR-015 safety guarantees remain intact; no scope or status changed.
+  - No Core, Chart, GoldBot, Personal AI, or Media identifiers were changed.
+
 ---
 
 ## Entry Format for Future Changes
@@ -62,14 +78,14 @@ Constitution. It is distinct from the platform-product change log
 - Date:                <YYYY-MM-DD>
 - Summary:             <what changed and why, in brief>
 - Chapters Changed:    <chapter numbers/sections, or "none (extension)">
-- Amendment Reference: <DPR-xxx / ADR-xxx / Amendment id>
+- Amendment Reference: <PLATFORM-DCR-xxx / ADR-xxx / Amendment id>
 - Approved By:         Director
-- Notes:               <affirm DPR-010 / DR-015 safety guarantees intact; consistent with GoldBot Constitution>
+- Notes:               <affirm PLATFORM-DCR-010 / DR-015 safety guarantees intact; consistent with GoldBot Constitution>
 ```
 
 Conventions:
 - **Extension** (new chapters or material that does not change settled meaning):
   `Chapters Changed: none (extension)`.
 - **Amendment** (change to an approved chapter's meaning): list the chapters, cite the Amendment
-  Process authorization, and confirm consistency with the GoldBot Constitution (DPR-011).
-- Every entry must affirm that the DPR-010 / DR-015 safety guarantees remain intact.
+  Process authorization, and confirm consistency with the GoldBot Constitution (PLATFORM-DCR-011).
+- Every entry must affirm that the PLATFORM-DCR-010 / DR-015 safety guarantees remain intact.

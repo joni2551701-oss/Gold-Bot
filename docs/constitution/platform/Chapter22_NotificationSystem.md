@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 22: Notification System
 
-**Package:** GB-PLATFORM-CONST-022 · **Document:** Chapter22_NotificationSystem.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
+**Package:** GB-PLATFORM-CONST-022 · **Document:** Chapter22_NotificationSystem.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, PLATFORM-DCR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Architecture (18–27)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).

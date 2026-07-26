@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 08: Platform Governance
 
-**Package:** GB-PLATFORM-CONST-008 · **Document:** Chapter08_PlatformGovernance.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
+**Package:** GB-PLATFORM-CONST-008 · **Document:** Chapter08_PlatformGovernance.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, PLATFORM-DCR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Governance (08–17)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never overrides Core governance; never weakens the

@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 01: Vision
 
-**Package:** GB-PLATFORM-CONST-001 · **Document:** Chapter01_Vision.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
+**Package:** GB-PLATFORM-CONST-001 · **Document:** Chapter01_Vision.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, PLATFORM-DCR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Foundation (01–07)
 **Subordination:** This Platform Constitution is **subordinate to and consistent with** the
 GoldBot Constitution v1.0 (the primary governing document, ruling DR-013). It governs the

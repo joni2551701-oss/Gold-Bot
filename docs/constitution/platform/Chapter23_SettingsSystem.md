@@ -1,6 +1,6 @@
 # GoldBot Platform Constitution — Chapter 23: Settings System
 
-**Package:** GB-PLATFORM-CONST-023 · **Document:** Chapter23_SettingsSystem.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, DPR-008)
+**Package:** GB-PLATFORM-CONST-023 · **Document:** Chapter23_SettingsSystem.md · **Status:** Approved — GoldBot Platform Constitution v1.0 (Frozen Baseline, PLATFORM-DCR-008)
 **Part of:** GoldBot Platform Constitution v1.0 (chaptered edition) · **Block:** Architecture (18–27)
 **Subordination:** Subordinate to and consistent with the GoldBot Constitution v1.0 (DR-013);
 governs the Platform layer only; never weakens the non-amendable safety guarantees (DR-015).

@@ -3,15 +3,15 @@
 **Status:** Approved · Completed · **Frozen Baseline** · 40 / 40 chapters
 **Edition:** Chaptered Platform Constitution v1.0 — governs the Platform layer, **subordinate to** the GoldBot Constitution v1.0.
 
-> **Constitutional hierarchy (DPR-008):** the Platform Constitution is subordinate to the
+> **Constitutional hierarchy (PLATFORM-DCR-008):** the Platform Constitution is subordinate to the
 > [GoldBot Constitution v1.0](../chapters/README.md); it does not modify it and cannot conflict
 > with it. Where a matter is Core, trading, or safety, the GoldBot Constitution governs.
 >
-> **Platform scope (DPR-009):** the Platform layer governs User Experience, Accounts,
+> **Platform scope (PLATFORM-DCR-009):** the Platform layer governs User Experience, Accounts,
 > Subscriptions, Notifications, Payments, Analytics, Administration, and Services. **Trading
 > decisions remain the Core's authority.**
 >
-> **Platform safety boundary (DPR-010):** the Platform never creates a signal, evaluates a
+> **Platform safety boundary (PLATFORM-DCR-010):** the Platform never creates a signal, evaluates a
 > signal, computes risk, alters AI decisions, or bypasses Core logic. It only delivers to users
 > results the Core has already cleared (Chapter 31).
 
@@ -91,7 +91,7 @@ Related: [Platform Director Rulings Register](PLATFORM_DIRECTOR_RULINGS_REGISTER
 
 - **Chapter-to-chapter** references are prose ("Chapter NN (Title)"), not hyperlinks.
 - **GoldBot Constitution** references are by name; the GoldBot Constitution is the primary document
-  (DPR-008) and its chapters live in [`../chapters/`](../chapters/README.md).
+  (PLATFORM-DCR-008) and its chapters live in [`../chapters/`](../chapters/README.md).
 - **Operative detail** is linked to its single source of truth (platform docs, standards, policies);
   per the single-source-of-truth rule it is not restated here.
 - **Rulings** are recorded in the [Platform Director Rulings Register](PLATFORM_DIRECTOR_RULINGS_REGISTER.md);
@@ -99,6 +99,6 @@ Related: [Platform Director Rulings Register](PLATFORM_DIRECTOR_RULINGS_REGISTER
 
 ## Inherited non-amendable safety principles
 
-Per DPR-010 and the GoldBot Constitution's DR-015, the Platform layer may never: create or evaluate
+Per PLATFORM-DCR-010 and the GoldBot Constitution's DR-015, the Platform layer may never: create or evaluate
 a signal, compute risk, alter AI decisions, bypass Core logic, or deliver a signal the Core has not
 cleared. These are inherited and non-amendable at the platform level.
