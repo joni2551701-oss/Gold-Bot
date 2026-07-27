@@ -11,17 +11,20 @@ the GitHub identity is the repo **owner** with full rights.
 
 ---
 
-## Layer table
+## Layer table — every candidate restriction layer, checked with evidence
 
-| Layer | Status | Evidence |
-|---|---|---|
-| Constitution | **PASS** | `grep -rniE "branch.*delete\|delete.*branch\|force.push" docs/constitution/` → **no matches**. No rule forbids branch deletion. |
-| Repository Policy | **PASS** | `docs/policies/BRANCH_MANAGEMENT_POLICY.md` *mandates* delete-after-merge (Rules 6, 11); it never restricts it. No other policy blocks delete. |
-| GitHub Branch Protection / Ruleset | **PASS** | Deleted targets are unprotected `feature/*` (not `main`). Read path `GET info/refs` → **200 OK**. The 403 is not a GitHub ruleset message (no `422`, no "protected branch" body); it is a locally-generated git result (see Environment row). |
-| GitHub Token Permission | **PASS** | `mcp__github__get_me` → `login: joni2551701-oss` = the **repository owner** (`public_repos:1`, the repo itself). Owner has inherent delete rights on the GitHub API. So permission is not lacking at GitHub. |
-| GitHub App / API | **PASS (API) / N/A** | The GitHub API path (MCP, owner-authenticated) is fully authorized and independent of the git proxy. It is not the source of the 403. |
-| MCP tooling | **BLOCK (no tool)** | The GitHub MCP toolset exposes `create_branch`, `create_or_update_file`, `delete_file`, `push_files` — but **no delete-branch / delete-ref / update-ref** tool. So even the authorized owner-API path has no *exposed* way to delete a ref from this session. This is a tooling gap, not a permission denial. |
-| **Claude Environment (git-proxy)** | **BLOCK ← source of the 403** | `git remote -v` → `http://local_proxy@127.0.0.1:41729/git/joni2551701-oss/Gold-Bot`; `insteadOf https://github.com/` rewrites all git traffic through a local proxy (`gitConfigInjection:true`). Verbose trace: `GET .../info/refs?service=git-receive-pack` → **200** (read allowed); `POST .../git-receive-pack` (the delete payload) → **403 Forbidden**, `Server-Timing: x-originResponse;dur=10`. The **10 ms** response is far below a real GitHub.com round-trip (the read leg took `dur=235`), i.e. the 403 is generated at the proxy/infra shim, before reaching GitHub. Same session **can** push to its own branch — only foreign-ref writes 403. Matches the base rule "NEVER push to a different branch." |
+| # | Layer | Status | Evidence (verified this session) |
+|---|---|---|---|
+| 1 | Constitution | **PASS (not the cause)** | `grep -rniE "branch.*delete\|delete.*branch\|force.push" docs/constitution/` → **no matches**. No Article forbids branch deletion. |
+| 2 | Repository Policy | **PASS** | `docs/policies/BRANCH_MANAGEMENT_POLICY.md` *mandates* delete-after-merge (Rules 6, 11); never restricts it. No other `docs/policies/*` blocks delete. |
+| 3 | Freeze / Lock / Block (governance state) | **PASS** | `grep -rniE "branch.*(freez\|lock\|block\|forbid)\|delete.*forbidden" docs/` → only hits are the policy *mandating* delete and "forbids long-lived branches / forbids branching off each other" — **no freeze or lock forbids the delete operation**. No Phase-Freeze doc restricts VCS branch ops. |
+| 4 | GitHub Branch Protection / Ruleset | **PASS (conclusive)** | `mcp__github__list_branches` (81 branches + main): **every branch `"protected": false`, including `main`**. No protection/ruleset exists anywhere in the repo. If protection caused the 403, the target refs would be `protected:true` — they are not. |
+| 5 | GitHub Token Permission | **PASS** | `mcp__github__get_me` → `login: joni2551701-oss` = the **repository owner**. Owner holds inherent delete rights on the GitHub API. Read leg `GET info/refs` → **200 OK** confirms the credential authenticates and is authorized to read. |
+| 6 | GitHub App / API path | **PASS (API) / N/A** | The MCP GitHub path is owner-authenticated and independent of the git proxy; it is authorized and not the source of the 403. |
+| 7 | Sandbox network egress | **PASS** | Proxy `status`: `recentRelayFailures: []`, `selective:false`, `toolScoped:false`. The GitHub host is reachable — the read leg returned **200**. Egress policy is **not** blocking (an egress denial would fail the read too, and would be a 403/407 on the *host*, not on the receive-pack verb). |
+| 8 | MCP tooling | **BLOCK (secondary — tool gap)** | GitHub MCP exposes `create_branch`, `create_or_update_file`, `delete_file`, `push_files` — but **no delete-branch / delete-ref / update-ref** tool. The authorized owner-API path therefore has no *exposed* delete-ref action. A tooling gap, not a permission denial. |
+| 9 | Session policy (harness directive) | **BEHAVIORAL constraint (not the HTTP 403)** | Base session directive: "Develop on `claude/code-analysis-optimization-pwfo3q`" + "**NEVER push to a different branch without explicit permission**." This constrains *me*, not the wire. It is the human-readable twin of the proxy rule in #10, but it does not itself emit HTTP. |
+| 10 | **Claude Environment git-proxy** | **BLOCK ← the source of the HTTP 403** | `git remote -v` → `http://local_proxy@127.0.0.1:41729/git/...`; `insteadOf https://github.com/` routes all git through the local proxy (`gitConfigInjection:true`). Verbose trace: `GET .../info/refs?service=git-receive-pack` → **200** (read allowed); `POST .../git-receive-pack` (delete payload) → **403 Forbidden**, `Server-Timing: x-originResponse;dur=10`. **10 ms** ≪ a real GitHub round-trip (read leg was `dur=235`) → the 403 is emitted at the proxy/infra shim, before reaching GitHub. **Discriminator:** the *same* proxy/session pushed successfully to its own branch (`effed1d..d4b8082`, this session) but 403s a foreign-ref delete → the decision is **per-ref, at the proxy**, scoping writes to the session's own branch. |
 
 ---
 
@@ -48,17 +51,32 @@ permission deficit, not the Constitution, not repo policy.
 
 ---
 
-## Excluded layers (proven not the cause)
+## Excluded layers (proven NOT the cause — evidence-based)
 
-- **Constitution / Policy** — no rule exists; delete is even mandated.
-- **GitHub token / ruleset** — identity is the repo **owner**; read path
-  returns 200; owner has delete rights on the API.
+| Excluded layer | Disproving evidence |
+|---|---|
+| Constitution | grep: no branch-delete rule |
+| Repository Policy | policy *mandates* delete |
+| Freeze / Lock / Block | grep: no freeze/lock forbids the delete op |
+| GitHub Branch Protection / Ruleset | `list_branches`: **all `protected:false`, incl. main** |
+| GitHub Token Permission | `get_me`: identity is repo **owner**; read → 200 |
+| Sandbox egress | `recentRelayFailures:[]`; host reachable; read → 200 |
+| Session policy (harness) | behavioral directive only — emits no HTTP |
 
-## Most probable → confirmed source
+## Confirmed source (single)
 
-**Claude Environment git-proxy write-scoping** (single, confirmed source),
-with a **secondary** contributing gap: **no MCP delete-branch tool** exists,
-so the authorized owner-API route is also not usable from this session.
+**Layer 10 — the Claude Environment git-proxy** returns the HTTP 403,
+scoping this session's git **writes** to its own branch and rejecting
+foreign-ref mutations (delete included) with a locally-generated
+`403` (`dur=10 ms`). Proven by the own-branch-push-succeeds /
+foreign-ref-delete-403 discriminator on the *same* proxy and session.
+
+**Secondary (not the 403, but also blocks the API route):** no MCP
+delete-branch tool exists, so even the owner-authorized GitHub API path
+has no exposed way to delete a ref from here.
+
+Layer 9 (session policy) is the human-readable *intent* behind Layer 10;
+they agree, but only Layer 10 emits the HTTP 403.
 
 ---
 
