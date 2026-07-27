@@ -33,6 +33,7 @@ COMMANDS = {
     "strategy": "Change trading style",
     "timeframe": "Change timeframe",
     "signal": "Latest signal",
+    "price": "Current price",
     "history": "Signal history",
     "status": "Bot status",
     "about": "About GoldBot",

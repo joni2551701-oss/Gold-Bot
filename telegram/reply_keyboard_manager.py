@@ -106,6 +106,7 @@ _SECTION_BY_COMMAND = {
     "profile": SECTION_PROFILE,
     "subscription": SECTION_PROFILE,
     "signal": SECTION_SIGNALS,
+    "price": SECTION_SIGNALS,
     "history": SECTION_SIGNALS,
     "upgrade": SECTION_SIGNALS,
 }
@@ -145,6 +146,7 @@ _SECTION_LABEL_KEYS = {
     },
     SECTION_SIGNALS: {
         "signal": "rkm.signals.live",
+        "price": "rkm.signals.price",
         "history": "rkm.signals.history",
         "upgrade": "rkm.signals.premium",
     },
