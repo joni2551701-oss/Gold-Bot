@@ -28,7 +28,7 @@ from typing import Dict, List, Optional
 from uuid import uuid4
 
 from ai.content.broadcast_output import BroadcastReadyContent
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from broadcast.models import BroadcastAsset, BroadcastRequest, BroadcastStatus
 from broadcast.provider_manager import BroadcastProviderManager
 from broadcast.trigger_manager import BroadcastTriggerManager

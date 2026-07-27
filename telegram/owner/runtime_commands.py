@@ -40,7 +40,7 @@ from ai.audit.response_log import ResponseLog
 from ai.providers.circuit_breaker import ProviderCircuitBreaker
 from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_manager import ProviderManager
-from ai.runtime.event_bus import EventBus
+from ai.event_bus import EventBus
 from ai.runtime.runtime_manager import RuntimeManager
 from ai.runtime.runtime_profiles import RuntimeProfile
 from ai.runtime.runtime_state import RuntimeState

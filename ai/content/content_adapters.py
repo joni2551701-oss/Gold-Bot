@@ -11,7 +11,7 @@ Intelligence Pipeline, so reading their contracts is allowed --
 (all downstream).
 """
 
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from ai.content.models import ContentContext, ContentMetadata, ContentMode
 from ai.conversation.models import ConversationContext, ConversationMode
 from ai.explanation.explanation_output import ExplanationOutput

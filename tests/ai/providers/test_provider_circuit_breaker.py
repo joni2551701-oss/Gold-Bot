@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from ai.providers.circuit_breaker import CircuitBreakerConfig, CircuitState, ProviderCircuitBreaker
 from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_status import HealthStatus
-from ai.runtime.event_bus import EventBus, EventType
+from ai.event_bus import EventBus, EventType
 
 
 def test_fresh_provider_starts_closed():

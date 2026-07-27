@@ -13,8 +13,11 @@ depends on this path.
 from ai.journal.trade_journal import (
     TradeOutcome,
     DecisionType,
-    TradeJournalEntry,
+    TradeJournalRecord,
     create_journal_entry,
 )
 
-__all__ = ["TradeOutcome", "DecisionType", "TradeJournalEntry", "create_journal_entry"]
+# TASK-AI-000A (Stage 2): the completed-trade record class was renamed
+# TradeJournalEntry -> TradeJournalRecord to remove the duplicate class
+# name it shared with ai.trade_journal.models.TradeJournalEntry.
+__all__ = ["TradeOutcome", "DecisionType", "TradeJournalRecord", "create_journal_entry"]

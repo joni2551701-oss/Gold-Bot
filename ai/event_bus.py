@@ -1,6 +1,19 @@
 """
-AI Layer — Runtime Event Bus (Phase 61.6: AI Operations & Reliability
+AI Layer — Event Bus (Phase 61.6: AI Operations & Reliability
 Foundation, TASK 5).
+
+TASK-AI-000A (AI Architecture Cleanup, Stage 1): relocated from
+`ai/runtime/event_bus.py` to this neutral top-level `ai/event_bus.py`.
+It was the shared abstraction three subpackages (`ai/runtime/`,
+`ai/providers/`, `ai/audit/`) all depend on, but living inside
+`ai/runtime/` made providers/audit import *back up* into runtime while
+runtime imported *down* into them -- four real circular subpackage
+dependencies (runtime↔providers, audit↔runtime, the 3-node
+audit→runtime→router→audit). Moving the bus to a neutral module every
+consumer depends on *downward* removes all three at once (approved
+strategy #1/#2: shared-abstraction extraction / neutral module, no
+lazy import, no hack). The `EventBus`/`EventType`/`RuntimeEvent`
+public classes are unchanged -- only this module's import path moved.
 
 Genuinely new (Module Reuse Principle steps 1/2 both "no" — no
 pub/sub mechanism exists anywhere in `ai/` today). Its entire purpose

@@ -30,7 +30,7 @@ from typing import Optional
 from ai.chart_intelligence.models import ChartAnalysis
 from ai.content.content_adapter import ContentEngine
 from ai.content.content_schema import ContentResult
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from broadcast.broadcast_adapter import broadcast_asset_from_content_and_media
 from broadcast.broadcast_manager import BroadcastManager
 from broadcast.models import BroadcastAsset

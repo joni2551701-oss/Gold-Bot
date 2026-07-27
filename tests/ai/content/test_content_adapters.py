@@ -6,7 +6,7 @@ from ai.content.content_adapters import (
     content_context_from_conversation,
     content_context_from_explanation,
 )
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from ai.content.models import ContentMode
 from ai.conversation.models import ConversationContext, ConversationMode
 from ai.explanation.explanation_output import ExplanationOutput

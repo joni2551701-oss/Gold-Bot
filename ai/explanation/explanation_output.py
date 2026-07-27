@@ -26,7 +26,7 @@ or had its type changed.
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 
 
 @dataclass(frozen=True)
@@ -46,7 +46,7 @@ class ExplanationOutput:
         "ru") -- a plain string this phase, not yet validated against
         `translation/language_registry.py` (Phase 63.0 TASK 6, a
         separate, independent package).
-    content_type: which `ai.content.content_types.ContentType` this
+    content_type: which `ai.content_types.ContentType` this
         explanation is shaped for, if any.
     metadata: free-form, provider/generation-specific detail, same
         convention `ai.providers.base_provider.ProviderResult.metadata`

@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 
 from ai.content.broadcast_output import BroadcastReadyContent
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from broadcast.broadcast_manager import BroadcastManager
 from broadcast.models import BroadcastProviderStatus, BroadcastProviderType, BroadcastTrigger
 from broadcast.provider_manager import BroadcastProviderManager, build_broadcast_provider_registry
