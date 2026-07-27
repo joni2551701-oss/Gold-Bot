@@ -6,6 +6,13 @@ unmerged branch (Phase A), proposes a merge sequence (Phase B), and lists
 deletions gated on those merges (Phase C). Every call is justified from
 the branch's actual unmerged commits — no assumptions.
 
+**Director status:** ✅ **APPROVED with modifications** — (1) `core-004`
+→ MERGE; (2) `pwfo3q` → **REVIEW REQUIRED** (do not merge until the AI
+Worker confirms the branch is no longer required); (3) **no permanent
+HOLD branches** — every remaining branch is ultimately removed; any
+wanted documentation/governance is **migrated into `main` first, then the
+branch is deleted**. This revision reflects all three.
+
 **Baseline:** `origin/main = 20e49a6` — the most‑advanced line (+96 over
 the old DD‑002 canonical `pwfo3q`; contains the assembled
 `docs/constitution/`, `ai/` (182 files incl. `ai/chart_intelligence/`),
@@ -26,13 +33,16 @@ superseded, deletable after the gate in its Reason.
 | Branch | Commits | Decision | Reason |
 |---|---|---|---|
 | `feature/core-004-current-price-integration` | +2 | **MERGE** | Approved Current Price Phase 1 (CI #362/#363 green); the wanted production feature. Clean FF into main. |
-| `claude/code-analysis-optimization-pwfo3q` | +4 | **MERGE (AI track)** | `TASK-AI-000/000A/001` AI Foundation Activation + Constitution v2.0 Stage‑0 audit — the **ACTIVE AI Foundation** track's work. Wanted, but the merge is the **AI Worker's** call to coordinate, not a unilateral Core‑reset merge. |
+| `claude/code-analysis-optimization-pwfo3q` | +4 | **REVIEW REQUIRED** (Mod 2) | `TASK-AI-000/000A/001` AI Foundation Activation + Constitution v2.0 Stage‑0 audit — the **ACTIVE AI Foundation** track's work. **Do not merge** until the AI Worker confirms the branch is no longer required (is the AI Worker still developing on it, or are its wanted commits already elsewhere?). After that review: MERGE wanted commits → then the branch joins the deletion set (Mod 3, no permanent HOLD). |
 
-### A2 — KEEP (protected / pending; do NOT delete or merge yet)
-| Branch | Commits | Decision | Reason |
+### A2 — MIGRATE‑THEN‑DELETE (no permanent HOLD — Mod 3)
+These are not deleted immediately, but they are **not** permanent HOLD
+branches either: their wanted material is migrated into `main`, then the
+branch is deleted.
+| Branch | Commits | Decision | Reason & resolution |
 |---|---|---|---|
-| `claude/trading-ai-arch-review-tgszrz` | +3 | **KEEP** | DD‑005/DD‑006 governance + the TASK‑002F audit; the **Governance Reconciliation is DEFERRED by DD‑073**. Deleting or migrating it is blocked until that deferred reconciliation runs. |
-| `feature/gb-ai-constitution-v1` | +21 | **KEEP / REVIEW** | 21 commits of AI Constitution governance docs [Draft]. AI track is active; verify against main's `docs/constitution/` (which already has AI chapters) before any delete — an **AI‑track** decision, not this reset's. |
+| `claude/trading-ai-arch-review-tgszrz` | +3 | **MIGRATE‑THEN‑DELETE** | DD‑005/DD‑006 governance + TASK‑002F audit; the **Governance Reconciliation is DEFERRED by DD‑073**. Resolution: when that reconciliation runs, migrate the wanted governance records into `main` (per the accepted Governance Reconciliation Plan — DD‑006's substance may be dropped, DD‑005's Navigation freeze migrates as an MA record), **then delete the branch**. No permanent HOLD. |
+| `feature/gb-ai-constitution-v1` | +21 | **REVIEW → MIGRATE‑THEN‑DELETE** | 21 commits of AI Constitution docs [Draft]. AI‑track review: confirm whether its content is already in main's `docs/constitution/` (AI chapters exist). Migrate anything wanted into `main`, **then delete**. |
 
 ### A3 — MVP chain (DELETE conditional — see gate)
 | Branch | Commits | Decision | Reason |
@@ -67,16 +77,20 @@ loses nothing. Includes `archive/main-pre-v1`, `archive/claude-code-analysis`,
 ```
 1. feature/core-004-current-price-integration → main     (Current Price; approved; clean FF, +2)
         ↓  CI green + (operator) VPS/live-smoke
-2. [AI track] claude/code-analysis-optimization-pwfo3q → main   (AI Foundation; AI-Worker coordinated)
+2. Migrate wanted docs/governance into main BEFORE any deletion (Mod 3):
+     - reconciliation analysis (docs/architecture_reconciliation/, docs/mvp_release/)
+       from feature/gb-telegram-delivery-mvp-v1, if retained;
+     - the Governance Reconciliation content from claude/trading-ai-arch-review-tgszrz
+       (when the DD-073-deferred reconciliation runs).
         ↓
-3. [optional] preserve reconciliation analysis docs → main
-        (cherry-pick docs/architecture_reconciliation/ + docs/mvp_release/
-         from feature/gb-telegram-delivery-mvp-v1, if the Director wants them retained)
+3. [REVIEW REQUIRED — Mod 2] claude/code-analysis-optimization-pwfo3q:
+     merge its AI-Foundation commits into main ONLY after the AI Worker
+     confirms the branch is no longer required.
 ```
 
-Each merge: reason above; verify CI green before the next. `pwfo3q`
-(step 2) and the KEEP branches (A2) are **not** merged by this Core reset
-without the AI‑track / governance owners' sign‑off.
+Each merge: reason above; verify CI green before the next. Step 3 is
+gated on AI‑Worker confirmation; step 2's governance migration is gated on
+the DD‑073‑deferred reconciliation. Nothing here is executed by this plan.
 
 ---
 
@@ -93,12 +107,18 @@ Delete in tiers, each after its precondition:
   chart‑engine‑vision + media‑constitution + platform‑dcr‑migration +
   master‑task‑phase2 (+ core‑dcr‑system after its rulings are confirmed in
   main). Precondition: the per‑branch verifications noted in A4.
-- **HOLD (not deleted by this reset):** `claude/trading-ai-arch-review-tgszrz`
-  (governance reconciliation deferred), `feature/gb-ai-constitution-v1`
-  and `pwfo3q` (AI track — until their merges/decisions are done).
+- **Tier 4 — migrate‑then‑delete (A2, Mod 3 — no permanent HOLD):**
+  `claude/trading-ai-arch-review-tgszrz` and `feature/gb-ai-constitution-v1`
+  are deleted **after** their wanted governance/docs are migrated into
+  `main`. `pwfo3q` is deleted **after** the Mod‑2 AI‑Worker review (its
+  wanted AI‑Foundation commits merged first). None of these remains as a
+  standing branch.
 
-After Tiers 1–3 and the HOLD items are resolved, only `main` (+ any
-Director‑approved long‑lived branch) remains — the single source of truth.
+**End state:** only `main` remains, plus **temporary** `feature/<task>`
+branches that follow `main → feature → CI → merge → delete`. No
+`claude/*`, `archive/*`, `governance/*`, old `feature/*`, or `recovery/*`
+branch persists (Mod 3). A long‑lived branch exists only with explicit
+Director approval.
 
 ---
 
@@ -109,10 +129,14 @@ Director‑approved long‑lived branch) remains — the single source of truth.
    cleanup should follow them, as ordered.
 2. **Branch deletion is irreversible** — this plan never deletes an
    unmerged branch before its wanted commits are in `main`.
-3. **Three prior orders intersect this reset** and need an explicit call:
-   the **MVP‑keep** hold (A3), the **deferred governance reconciliation**
-   (A2 `claude/trading-ai`), and the **AI‑track independence** (A1/A2
-   pwfo3q + ai‑constitution). This plan holds them rather than overriding
-   silently.
-4. **Nothing executed.** Awaiting Director approval of this plan before any
-   merge; deletion authorized only per Phase C after merges + validation.
+3. **Three prior orders intersect this reset** — now resolved by the
+   Director's modifications: the **MVP‑keep** hold (A3) is lifted on
+   explicit MVP‑retirement approval (after Current Price merges); the
+   **deferred governance reconciliation** (A2 `claude/trading-ai`) ends in
+   migrate‑then‑delete, not a permanent HOLD (Mod 3); the **AI track**
+   (`pwfo3q`, `gb-ai-constitution`) is REVIEW‑gated on AI‑Worker
+   confirmation (Mod 2), then migrate‑then‑delete.
+4. **Nothing executed.** Plan APPROVED with modifications; deletion
+   authorized only per Phase C after the required merges + validation. The
+   first safe, no‑data‑loss executable steps on your go: merge `core-004`
+   → main, then Tier‑1 deletion of the 37 already‑merged branches.
