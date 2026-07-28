@@ -1,13 +1,24 @@
 # TASK-DEPLOY-003 REPORT — Production Deployment via GitHub Actions
 
-**Final Status:** ⏸ **READY-BUT-NOT-TRIGGERED — one blocking decision for
-the Director.** The GitHub Actions → SSH → VPS deployment pipeline
-**exists and is production-grade**, but it deploys the branch
-`claude/code-analysis-optimization-pwfo3q`, **not `main`** — a direct
-contradiction with this task's "deploy `main`". Per the task's own
-Director Note (document the real state, no fake SUCCESS/FAILED), the
-audit is reported and the actual trigger is held for the Director's
-branch decision. No production change was made.
+**Final Status:** ✅ **SUCCESS — `main` deployed to the Production VPS via
+GitHub Actions.** After the Director chose `main`, the deploy was
+verified feasible without any forbidden change: `workflow_dispatch` on
+the `main` ref (the `branches:` filter only gates the automatic `push`
+trigger, not manual dispatch), and `main` was re-verified to contain all
+production entrypoints (`telegram/polling.py`, `core/pipeline.py`,
+`main.py`, deploy scripts) — the earlier "main is stale" note is
+outdated. Run **#39** (`30318793728`) finished with **both jobs
+`success`**: `validate` (pyflakes/compileall/pytest) and `deploy`
+(rsync → SSH → VPS activation + restart + health check, no rollback).
+
+Deploy result (run 30318793728):
+- **validate:** success — pyflakes ✅ compileall ✅ pytest ✅
+- **deploy:** success — Install SSH key ✅ · known_hosts ✅ · Upload
+  release (rsync) ✅ · **Activate release ✅** (on-VPS `release_deploy.sh`:
+  venv + pre-activation smoke test + symlink switch + `systemctl restart
+  goldbot.service` + post-restart health check — all passed; auto-rollback
+  did NOT fire, i.e. health check green)
+- Rollback: NOT required.
 
 ---
 
@@ -99,19 +110,21 @@ branch decision below.
 ## Report fields
 
 - **Workflow Name:** GoldBot Production Deployment (`production_deploy.yml`)
-- **Workflow Status:** present, valid, not triggered this task
+- **Workflow Status:** ✅ SUCCESS (run #39, id 30318793728, both jobs green)
 - **Deployment Method:** GitHub Actions → rsync/SSH → VPS (release/symlink)
 - **Trigger:** `push` to `claude/code-analysis-optimization-pwfo3q` + `workflow_dispatch`
 - **Commit Hash:** claude-branch HEAD `fa3514d` (production branch per workflow); `origin/main` = `61bbcb5`
-- **Branch:** ⚠️ workflow deploys `claude/…`, task requested `main` (conflict)
+- **Branch:** `main` (deployed via workflow_dispatch on the main ref)
+- **Service Restart / Health Check:** ✅ passed (Activate release step green, no auto-rollback)
+- **Rollback Status:** not required (deploy healthy)
 - **Secrets Validation:** referenced correctly (VPS_HOST/PORT/USER/SSH_KEY/DEPLOY_PATH); existence verifiable only in repo/environment Settings — not from sandbox; values never read
 - **VPS Connection:** not testable from sandbox (runs inside Actions runner)
 - **Deploy Path:** `${{ secrets.DEPLOY_PATH }}` → `/opt/goldbot` (releases/shared/current)
 - **Service Restart:** `systemctl restart goldbot.service` (in `release_deploy.sh`)
 - **Health Check:** pre-activation smoke + post-restart is-active + auto-rollback
 - **Rollback Status:** implemented & automatic (`rollback.sh`)
-- **Errors:** none in the pipeline; blocker is the branch contradiction + unverifiable secrets from sandbox
-- **Final Status:** READY, NOT TRIGGERED — awaiting Director branch decision
+- **Errors:** none — both jobs `success`; secrets resolved at runtime inside the Actions `production` environment (VPS reachable, SSH + rsync + activation all succeeded)
+- **Final Status:** ✅ SUCCESS — `main` live on the Production VPS
 
 ## Decision needed
 
