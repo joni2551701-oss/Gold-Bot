@@ -1,0 +1,95 @@
+name: GoldBot Production Verify (temporary, read-only)
+
+# TASK-AI-002 -- temporary, READ-ONLY probe to pick a currently-supported
+# Gemini model to replace the deprecated gemini-1.5-flash. Runs from a
+# GitHub Actions runner, sources the production systemd environment
+# (shared/.env), and makes one real generateContent request per
+# candidate model using the SAME auth the provider uses (x-goog-api-key
+# header, POST). Prints only PASS/FAIL, HTTP status, latency, and a short
+# reply snippet per candidate -- never the API key. Read-only; removed
+# after the run per Director Production Operations policy.
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: production-verify
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 5
+    steps:
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Add VPS to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.VPS_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Probe candidate Gemini models (production env, no secrets printed)
+        run: |
+          ssh -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            bash -s -- "${{ secrets.DEPLOY_PATH }}" <<'REMOTE'
+          set +e
+          DP="$1"
+          PY_BIN="$DP/current/venv/bin/python"
+          [ -x "$PY_BIN" ] || PY_BIN="$(command -v python3)"
+          if [ -f "$DP/shared/.env" ]; then
+            set -a; . "$DP/shared/.env"; set +a
+            echo "env: shared/.env sourced"
+          else
+            echo "env: shared/.env NOT FOUND"
+          fi
+          cd "$DP/current"
+          "$PY_BIN" - <<'PY'
+          import os, json, time, urllib.request, urllib.error
+
+          gk = os.environ.get("GEMINI_API_KEY")
+          if not gk:
+              print("gemini: FAIL auth=NO_KEY (not in sourced environment)")
+              raise SystemExit(0)
+
+          candidates = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-flash-latest"]
+          payload = json.dumps({"contents": [{"parts": [{"text": "Reply with exactly: OK"}]}]}).encode()
+
+          for model in candidates:
+              url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+              # Same auth the provider uses: key in x-goog-api-key header, not the URL.
+              req = urllib.request.Request(
+                  url, data=payload, method="POST",
+                  headers={"x-goog-api-key": gk, "Content-Type": "application/json"},
+              )
+              t0 = time.monotonic()
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      status, body = getattr(r, "status", 200), r.read().decode("utf-8", "replace")
+              except urllib.error.HTTPError as e:
+                  status = e.code
+                  body = e.read().decode("utf-8", "replace") if hasattr(e, "read") else ""
+              except Exception as e:
+                  print(f"{model}: FAIL network {type(e).__name__}")
+                  continue
+              ms = (time.monotonic() - t0) * 1000
+              ok, summary = False, ""
+              try:
+                  j = json.loads(body)
+                  if status == 200 and j.get("candidates"):
+                      txt = j["candidates"][0]["content"]["parts"][0]["text"].strip()
+                      ok = bool(txt)
+                      summary = f"reply_snippet={txt[:40]!r}"
+                  elif j.get("error"):
+                      summary = f"api_error status={j['error'].get('status')} code={j['error'].get('code')}"
+                  else:
+                      summary = "unexpected response shape"
+              except Exception as pe:
+                  summary = f"parse_error {type(pe).__name__}"
+              print(f"{model}: {'PASS' if ok else 'FAIL'} http={status} latency_ms={ms:.0f} :: {summary}")
+          print("== done ==")
+          PY
+          REMOTE
