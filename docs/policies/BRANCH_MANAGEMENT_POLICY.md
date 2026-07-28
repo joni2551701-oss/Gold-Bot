@@ -129,20 +129,29 @@ No stage is skipped or reordered. A branch that has not passed CI is not
 reviewed; a branch not audited against `main` is not merged (Rule 11); a
 branch not approved is not merged; a merged branch is not retained.
 
-### Rule 6 — Mandatory Branch Deletion
+### Rule 6 — Mandatory Branch Deletion (temporary branches only)
 
-Immediately after a successful merge, the feature branch is deleted —
-**remote and local**. No completed feature branch may remain. Deletion
-is part of "done": a task is not complete until its branch is gone. (A
-merged branch's history is already preserved in `main`; the branch ref
+Immediately after a successful merge, a **temporary** branch
+(`feature/*`, `bugfix/*`, `hotfix/*`) is deleted — **remote and local**.
+No completed temporary branch may remain. Deletion is part of "done": a
+task is not complete until its temporary branch is gone. (A merged
+branch's history is already preserved in `main`; the temporary branch ref
 itself is redundant and is removed.)
+
+**Exception — the persistent primary development branch is NOT
+auto-deleted** (Rule 12, TASK-BRANCH-001). `claude/*` is a long-lived
+working branch: merging its work into `main` does **not** trigger its
+deletion. It is removed only by a separate written Director/Owner
+decision.
 
 ### Rule 7 — Long-lived Branches
 
-Long-lived branches are **prohibited**. The only exception is
-**explicit Director approval** (Rule 10). Absent that approval, every
-non-`main` branch is short-lived: it exists only for the span of one
-task's lifecycle (Rule 5) and is then deleted (Rule 6).
+Long-lived branches are **prohibited by default**. The exceptions are
+**explicit Director approval** (Rule 10) and the standing
+**persistent primary development branch** `claude/*` (Rule 12,
+TASK-BRANCH-001). Absent such approval, every non-`main` branch is
+short-lived: it exists only for the span of one task's lifecycle
+(Rule 5) and is then deleted (Rule 6).
 
 ### Rule 8 — Repository Cleanliness
 
@@ -222,6 +231,39 @@ The audit is a Worker responsibility to *perform and report*; the merge
 authorization itself remains the Director's (Rule 10). A Worker performs
 steps 1–4 and 6 and presents the result; the Director gives the step-5
 go-ahead.
+
+### Rule 12 — Persistent Primary Development Branch (TASK-BRANCH-001)
+
+Standing Director decision (TASK-BRANCH-001): the Claude Worker's main
+working branch, `claude/*` (currently
+`claude/code-analysis-optimization-pwfo3q`), is a **persistent Primary
+Development Branch**, not a temporary task branch. Concretely:
+
+1. **Not auto-deleted.** Merging its work into `main` does **not** delete
+   it (this overrides Rule 6's delete-after-merge *for this branch only*).
+2. **Long-lived by standing approval.** It is the standing Rule 7/Rule 10
+   exception — no per-task re-approval is needed to keep it.
+3. **One branch, many tasks.** Opening a new `feature/*` per task is **not
+   required**; ongoing work continues on `claude/*`. (This is the
+   Director-approved reconciliation of the Rule 9 `feature/<task>`
+   convention with the harness/agent workflow — see the Validation note.)
+4. **Deletion is Director/Owner-only.** `claude/*` may be deleted **only**
+   by a separate written Director or Repository-Owner decision — never
+   automatically, never by the Worker on its own initiative.
+
+Branch taxonomy (repository policy):
+
+| Branch | Role | Lifetime | Deleted |
+|---|---|---|---|
+| `main` | Production branch (single source of truth) | Permanent | never |
+| `claude/*` | **Primary Development Branch** (Worker) | **Persistent** | only by written Director/Owner decision |
+| `feature/*` | Temporary task branch | Short-lived | after merge (Rule 6) |
+| `bugfix/*` | Temporary fix branch | Short-lived | after merge (Rule 6) |
+| `hotfix/*` | Temporary urgent-fix branch | Short-lived | after merge (Rule 6) |
+
+Rules 1–11 continue to apply to the **temporary** branch classes.
+`main` and `claude/*` are the two persistent branches; every other branch
+is temporary and follows the full delete-after-merge lifecycle.
 
 ---
 
@@ -341,22 +383,21 @@ branches.
   default branch) are consistent with — and a subset of — this policy:
   one active branch per Worker, `main` as origin, delete/restart after
   merge.
-- **Environment-assigned branch names — Director-sanctioned temporary
-  exception (Rule 9 + Rule 10):** where the execution environment
-  automatically assigns a branch name (e.g. an agent/web session that
-  must run on `claude/<...>` rather than `feature/<task>`), that assigned
-  name is a **temporary exception** to Rule 9's naming convention. It is
-  an environmental constraint, not a policy defect, and it does not
-  weaken any other rule — the branch still obeys one Worker = one branch
-  (Rule 2), one branch = one task (Rule 4), the full lifecycle (Rule 5),
-  the pre-merge Repository Audit (Rule 11), and delete-after-merge
-  (Rule 6). The exception applies **only with Director approval** (Rule
-  10, which owns every deviation): the Director acknowledges the
-  environment's naming and the branch proceeds; the `feature/<task>`
-  convention remains the canonical standard for every workflow that can
-  choose its own branch name (human/CLI). This exception explicitly does
-  **not** authorize a Worker to invent arbitrary names — it covers only
-  the case where the environment itself fixes the name.
+- **Environment-assigned branch names — now a standing persistent-branch
+  decision (Rule 12, TASK-BRANCH-001; supersedes the earlier "temporary
+  exception" reading):** the `claude/*` branch the agent/web session runs
+  on is no longer treated as a temporary Rule 9 exception. Per
+  TASK-BRANCH-001 it is the **persistent Primary Development Branch**
+  (Rule 12): long-lived by standing Director approval, not auto-deleted at
+  merge, and not required to be re-cut per task. It still obeys the
+  merge-safety rules — pre-merge Repository Audit (Rule 11) and, when its
+  work reaches `main`, the same review/CI gate — but Rules 6 (mandatory
+  deletion) and the one-branch-per-task expectation do **not** apply to
+  it. The `feature/<task>` convention remains the canonical standard for
+  the *temporary* branch classes (`feature/*`, `bugfix/*`, `hotfix/*`);
+  this decision does **not** authorize a Worker to invent arbitrary
+  persistent names — only `main` and the Director-designated `claude/*`
+  are persistent.
 
 ### Supports the Repository Reset strategy
 
