@@ -17,13 +17,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # schedule/workflow_dispatch runs check out the repository's
-          # default branch unless a ref is pinned here. GoldBot v0.1
-          # stable (main.py -> core.pipeline.TradingPipeline, and every
-          # layer it wires) currently lives on this branch, not on the
-          # default branch -- pin explicitly so scheduled runs execute
-          # the real pipeline instead of the old skeleton main.py.
-          ref: claude/code-analysis-optimization-pwfo3q
+          # Pin `main` explicitly so the scheduled/dispatch runner always
+          # executes the production branch. As of TASK-CICD-001, `main`
+          # is the single production branch and holds the real pipeline
+          # (main.py -> core.pipeline.TradingPipeline, and every layer it
+          # wires); it is also the repository's default branch, so this
+          # pin matches the default -- it is kept explicit to make the
+          # production branch unambiguous and consistent with
+          # production_deploy.yml.
+          ref: main
 
       - name: Setup Python
         uses: actions/setup-python@v5

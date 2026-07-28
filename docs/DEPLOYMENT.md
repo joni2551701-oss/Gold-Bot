@@ -11,19 +11,20 @@ jobs green). `main` now contains the full production surface —
 pre-`TradingPipeline` snapshot" note is **obsolete** and has been
 removed; verified present on `main` at that commit.
 
-Deploy flow: **GitHub Actions → `workflow_dispatch` (ref: `main`) →
-rsync/SSH → VPS**. See `docs/deployment/PRODUCTION_DEPLOYMENT.md` for the
-full pipeline and `docs/deployment/TASK_DEPLOY_003_REPORT.md` for the
-deploy record.
+Deploy flow: **GitHub Actions → `push` to `main` *or* `workflow_dispatch`
+(ref: `main`) → rsync/SSH → VPS**. See
+`docs/deployment/PRODUCTION_DEPLOYMENT.md` for the full pipeline and
+`docs/deployment/TASK_DEPLOY_003_REPORT.md` for the deploy record.
 
-> **Reconciliation note (open, Director-gated):** the *automatic*
-> triggers still reference the old branch — `production_deploy.yml`'s
-> `push:` filter and `trading_bot.yml`'s scheduled pin both name
-> `claude/code-analysis-optimization-pwfo3q`. The `branches:` filter only
-> gates auto-`push` deploys, not manual `workflow_dispatch` (which is how
-> `main` was deployed), so it did not block this deploy. Repointing those
-> automatic triggers to `main` is a workflow/config change and is left as
-> an explicit Director decision, not made as part of this doc update.
+> **Reconciliation note (closed — TASK-CICD-001):** the *automatic*
+> triggers have been migrated to `main`. `production_deploy.yml`'s
+> `push:` filter now names `main`, and `trading_bot.yml`'s scheduled
+> checkout is now pinned to `ref: main`. Both the automatic and the
+> manual (`workflow_dispatch`) paths therefore deploy the same branch —
+> `main` — with no divergence. No workflow references
+> `claude/code-analysis-optimization-pwfo3q` any longer, except
+> `ci.yml`, which still validates `claude/**` development branches by
+> design (validation only, never a deploy or runtime target).
 
 GoldBot is two independent processes sharing one SQLite database file
 — see `docs/ARCHITECTURE.md`'s System Overview. Today, the trading

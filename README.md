@@ -4,15 +4,17 @@ AI-assisted, semi-automated trading signal system for XAUUSD, built on Smart Mon
 
 ## Production branch
 
-**`claude/code-analysis-optimization-pwfo3q` is the production
-branch** — not `main`. `.github/workflows/trading_bot.yml` checks it
-out explicitly (`ref: claude/code-analysis-optimization-pwfo3q`) for
-the scheduled trading pipeline, and it is the only branch containing
-`telegram/polling.py` at all. `main` is a stale, pre-`TradingPipeline`
-snapshot kept around as the repository's default branch; it is not
-read by any CI/CD path and should not be assumed current. See
-`docs/PHASE_BRANCH_SYNC_AUDIT.md` for the full branch-state audit
-behind this note.
+**`main` is the production branch** — and the repository's default
+branch. As of TASK-CICD-001 (CI/CD migration to `main`), every CI/CD
+path targets `main`: `.github/workflows/trading_bot.yml` checks it out
+explicitly (`ref: main`) for the scheduled trading pipeline, and
+`.github/workflows/production_deploy.yml` deploys `main` on both its
+automatic `push:` trigger and manual `workflow_dispatch`. `main` holds
+the full production surface (`telegram/polling.py`, `core/pipeline.py`,
+`main.py`, and `scripts/deploy/`). The `claude/**` development branches
+are validated by `ci.yml` but are no longer a deploy or runtime target.
+See `docs/DEPLOYMENT.md` for the current branch/deploy model and
+`docs/PHASE_BRANCH_SYNC_AUDIT.md` for the historical branch-state audit.
 
 ## Production deployment
 

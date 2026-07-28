@@ -9,19 +9,20 @@ name: GoldBot Production Deployment
 # VPS access (VPS_HOST/VPS_PORT/VPS_USER/VPS_SSH_KEY/DEPLOY_PATH) --
 # no plaintext credential appears anywhere in this file.
 #
-# Deploy branch: claude/code-analysis-optimization-pwfo3q -- this is
-# the repository's actual production branch (see
-# docs/DEPLOYMENT.md and docs/PHASE_BRANCH_SYNC_AUDIT.md, and
-# docs/PHASE_P1_AUDIT.md section 1 for why this phase adopted it over
-# the brief's literal "main"). `main` is a stale pre-TradingPipeline
-# snapshot never read by any other CI/CD job in this repository. If
-# this ever changes, update this `branches:` list and
-# docs/deployment/PRODUCTION_DEPLOYMENT.md together.
+# Deploy branch: main -- the single authoritative production branch.
+# As of TASK-CICD-001 (CI/CD migration to main), both the automatic
+# `push:` trigger and manual `workflow_dispatch` deploy `main`, so the
+# auto and manual paths always ship the same branch. `main` holds the
+# full production surface (telegram/polling.py, core/pipeline.py,
+# main.py, scripts/deploy/) -- see docs/DEPLOYMENT.md and
+# docs/deployment/PRODUCTION_DEPLOYMENT.md. If the production branch
+# ever changes, update this `branches:` list and those two docs
+# together.
 
 on:
   push:
     branches:
-      - claude/code-analysis-optimization-pwfo3q
+      - main
   workflow_dispatch:
 
 concurrency:

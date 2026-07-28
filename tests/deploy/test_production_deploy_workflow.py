@@ -34,18 +34,27 @@ def test_workflow_triggers_on_push_to_production_branch():
     text = _workflow_text()
     assert "on:" in text
     assert "push:" in text
-    assert "claude/code-analysis-optimization-pwfo3q" in text
+    # TASK-CICD-001: main is the single production branch -- the
+    # automatic push trigger deploys main.
+    assert "- main" in text
 
 
-def test_workflow_does_not_trigger_on_stale_main_branch():
+def test_workflow_does_not_trigger_on_stale_development_branch():
     """
-    docs/PHASE_P1_AUDIT.md section 1: main is a stale, pre-
-    TradingPipeline snapshot -- the trigger branch list must not
-    contain a bare `- main` entry.
+    TASK-CICD-001 (CI/CD migration to main): main is now the sole
+    production branch, so the trigger branch list must contain `- main`
+    and must NOT still name the old development branch
+    (claude/code-analysis-optimization-pwfo3q). This is the inverse of
+    the original Phase P1 contract, which is intentionally superseded.
     """
     text = _workflow_text()
-    branches_section = text.split("branches:")[1].split("workflow_dispatch:")[0]
-    assert "- main" not in branches_section
+    # Isolate the real `on:` trigger block (a top-level key, so it
+    # starts at column 0) rather than the first "branches:" substring,
+    # which can also appear inside the header comment.
+    on_block = text.split("\non:", 1)[1].split("\njobs:", 1)[0]
+    branches_section = on_block.split("branches:", 1)[1].split("workflow_dispatch:", 1)[0]
+    assert "- main" in branches_section
+    assert "claude/code-analysis-optimization-pwfo3q" not in branches_section
 
 
 def test_workflow_supports_manual_dispatch():

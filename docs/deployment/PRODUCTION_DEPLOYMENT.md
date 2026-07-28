@@ -14,9 +14,9 @@ Neither the Director nor the Worker deploys to the VPS by hand.
 ## Architecture
 
 ```
-workflow_dispatch (ref: main)   [production path, TASK-DEPLOY-003]
-    |   (push to claude/code-analysis-optimization-pwfo3q still auto-triggers
-    |    the same workflow; the branches: filter gates only auto-push, not dispatch)
+push to main  OR  workflow_dispatch (ref: main)   [production path]
+    |   (as of TASK-CICD-001 both triggers name main -- the automatic
+    |    push filter and manual dispatch deploy the same branch)
     v
 GitHub Actions: production_deploy.yml
     |
@@ -127,25 +127,24 @@ section for the incident).
 
 ## GitHub configuration
 
-**Production deploys run via manual `workflow_dispatch` on the `main`
-ref** — this is the current production path (TASK-DEPLOY-003, run #39,
-commit `61bbcb5`, both jobs green). `main` is the sole production branch;
-it holds the full production surface (`telegram/polling.py`,
-`core/pipeline.py`, `main.py`, `scripts/deploy/`). To deploy:
-GitHub → Actions → *GoldBot Production Deployment* → **Run workflow** →
-branch **`main`** (or API `workflow_dispatch` with `ref: main`).
+**Production deploys run against `main`, via either an automatic push to
+`main` or a manual `workflow_dispatch` on the `main` ref.** `main` is the
+sole production branch; it holds the full production surface
+(`telegram/polling.py`, `core/pipeline.py`, `main.py`, `scripts/deploy/`).
+To deploy manually: GitHub → Actions → *GoldBot Production Deployment* →
+**Run workflow** → branch **`main`** (or API `workflow_dispatch` with
+`ref: main`). The first `main` deploy was verified in TASK-DEPLOY-003
+(run #39, commit `61bbcb5`, both jobs green).
 
-`.github/workflows/production_deploy.yml` **also** still auto-triggers on
-push to `claude/code-analysis-optimization-pwfo3q` (a legacy trigger from
-Phase P1). That `push:` `branches:` filter gates only the *automatic*
-path — it does **not** affect `workflow_dispatch`, so dispatching on
-`main` deploys `main` without any workflow edit. Repointing/removing the
-legacy auto-trigger is a Director-gated config change, tracked in
-`docs/DEPLOYMENT.md`'s reconciliation note. The workflow reads exactly
-five repository
-secrets, all pre-configured per the Phase P1 brief — no plaintext
-credential appears anywhere in the workflow file or the deploy
-scripts:
+As of **TASK-CICD-001** (CI/CD migration to `main`),
+`.github/workflows/production_deploy.yml`'s `push:` `branches:` filter
+names **`main`** — so the automatic and the manual (`workflow_dispatch`)
+paths deploy the same branch, with no divergence. The legacy
+`claude/code-analysis-optimization-pwfo3q` auto-trigger has been removed;
+no workflow deploys or runs from the development branch any longer. The
+workflow reads exactly five repository secrets, all pre-configured per the
+Phase P1 brief — no plaintext credential appears anywhere in the workflow
+file or the deploy scripts:
 
 | Secret | Used for |
 |---|---|
