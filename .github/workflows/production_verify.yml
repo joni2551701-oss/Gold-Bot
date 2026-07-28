@@ -1,0 +1,154 @@
+name: GoldBot Production Verify (temporary, read-only)
+
+# TASK-OPS-002 -- temporary, READ-ONLY live external-API verification,
+# run from a GitHub Actions runner (the only environment holding the VPS
+# SSH credentials). Unlike a bare SSH shell, the remote step SOURCES the
+# production systemd environment (shared/.env) before probing, so it uses
+# the exact same API keys the running goldbot.service uses.
+#
+# It makes ONE real request to each external API (Twelve Data time_series
+# for XAU/USD -- the production candle path; Gemini gemini-1.5-flash
+# generateContent -- the production model) and prints only PASS/FAIL,
+# HTTP status, latency, and a NON-secret result summary (market close
+# price / a short model reply snippet). No API key or secret value is
+# ever printed: keys are read from the sourced environment, used only
+# inside the request URL/body, and never echoed. Read-only: nothing on
+# the VPS is written, restarted, or deployed.
+#
+# Per DIRECTOR POLICY (Production Operations) this workflow is temporary
+# and is removed once the verification has run.
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: production-verify
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 5
+    steps:
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Add VPS to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.VPS_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Live external API verification (production env, no secrets printed)
+        run: |
+          ssh -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            bash -s -- "${{ secrets.DEPLOY_PATH }}" <<'REMOTE'
+          set +e
+          DP="$1"
+          PY_BIN="$DP/current/venv/bin/python"
+          [ -x "$PY_BIN" ] || PY_BIN="$(command -v python3)"
+
+          # Load the SAME environment the systemd service uses. `set -x`
+          # is off, so nothing from the env file is echoed to the log.
+          if [ -f "$DP/shared/.env" ]; then
+            set -a
+            . "$DP/shared/.env"
+            set +a
+            echo "env: shared/.env sourced"
+          else
+            echo "env: shared/.env NOT FOUND"
+          fi
+
+          cd "$DP/current"
+          "$PY_BIN" - <<'PY'
+          import os, json, time, urllib.request, urllib.error
+
+          def _get(url, timeout=20):
+              t0 = time.monotonic()
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url, method="GET"), timeout=timeout) as r:
+                      return getattr(r, "status", 200), r.read().decode("utf-8", "replace"), (time.monotonic()-t0)*1000, None
+              except urllib.error.HTTPError as e:
+                  body = e.read().decode("utf-8", "replace") if hasattr(e, "read") else ""
+                  return e.code, body, (time.monotonic()-t0)*1000, None
+              except Exception as e:
+                  return None, "", (time.monotonic()-t0)*1000, type(e).__name__
+
+          def _post(url, payload, timeout=30):
+              data = json.dumps(payload).encode()
+              req = urllib.request.Request(url, data=data, method="POST",
+                                           headers={"Content-Type": "application/json"})
+              t0 = time.monotonic()
+              try:
+                  with urllib.request.urlopen(req, timeout=timeout) as r:
+                      return getattr(r, "status", 200), r.read().decode("utf-8", "replace"), (time.monotonic()-t0)*1000, None
+              except urllib.error.HTTPError as e:
+                  body = e.read().decode("utf-8", "replace") if hasattr(e, "read") else ""
+                  return e.code, body, (time.monotonic()-t0)*1000, None
+              except Exception as e:
+                  return None, "", (time.monotonic()-t0)*1000, type(e).__name__
+
+          # ---------- Twelve Data (production candle path) ----------
+          print("== TWELVE_DATA ==")
+          td = os.environ.get("TWELVE_DATA_API_KEY")
+          if not td:
+              print("twelve_data: FAIL auth=NO_KEY (not in sourced environment)")
+          else:
+              url = f"https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=1min&outputsize=1&apikey={td}"
+              status, body, ms, err = _get(url)
+              if err:
+                  print(f"twelve_data: FAIL http=- auth=? latency_ms={ms:.0f} :: network {err}")
+              else:
+                  ok, auth, summary = False, "CHECK", ""
+                  try:
+                      j = json.loads(body)
+                      if isinstance(j, dict) and j.get("status") == "ok" and j.get("values"):
+                          v = j["values"][0]
+                          ok = v.get("close") is not None
+                          auth = "OK" if ok else "CHECK"
+                          summary = f"XAU/USD close={v.get('close')} at {v.get('datetime')}"
+                      elif isinstance(j, dict) and (j.get("status") == "error" or j.get("code")):
+                          code = j.get("code")
+                          auth = "FAIL" if code in (401, 429) else "CHECK"
+                          summary = f"api_error code={code} msg={j.get('message')}"
+                      else:
+                          summary = "unexpected response shape"
+                  except Exception as pe:
+                      summary = f"parse_error {type(pe).__name__}"
+                  print(f"twelve_data: {'PASS' if ok else 'FAIL'} http={status} auth={auth} latency_ms={ms:.0f} :: {summary}")
+
+          # ---------- Gemini (production model) ----------
+          print("== GEMINI ==")
+          gk = os.environ.get("GEMINI_API_KEY")
+          if not gk:
+              print("gemini: FAIL auth=NO_KEY (not in sourced environment)")
+          else:
+              url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gk}"
+              payload = {"contents": [{"parts": [{"text": "Reply with exactly: OK"}]}]}
+              status, body, ms, err = _post(url, payload)
+              if err:
+                  print(f"gemini: FAIL http=- auth=? latency_ms={ms:.0f} :: network {err}")
+              else:
+                  ok, auth, summary = False, "CHECK", ""
+                  try:
+                      j = json.loads(body)
+                      if status == 200 and j.get("candidates"):
+                          txt = j["candidates"][0]["content"]["parts"][0]["text"].strip()
+                          ok = bool(txt)
+                          auth = "OK"
+                          summary = f"reply_snippet={txt[:40]!r}"
+                      elif j.get("error"):
+                          e = j["error"]
+                          auth = "FAIL" if e.get("code") in (401, 403, 429) else "CHECK"
+                          summary = f"api_error status={e.get('status')} code={e.get('code')}"
+                      else:
+                          summary = "unexpected response shape"
+                  except Exception as pe:
+                      summary = f"parse_error {type(pe).__name__}"
+                  print(f"gemini: {'PASS' if ok else 'FAIL'} http={status} auth={auth} latency_ms={ms:.0f} :: {summary}")
+
+          print("== done ==")
+          PY
+          REMOTE
