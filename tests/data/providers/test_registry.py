@@ -48,7 +48,11 @@ def test_register_twice_under_same_name_replaces_not_duplicates():
 def test_build_default_registry_registers_all_four_stubs_and_real_provider():
     registry = build_default_registry()
 
-    assert set(registry.all_names()) == {"twelvedata", "mt5", "binance", "fred"}
+    # TASK-CORE-003 added the Bitget + Keynorq stubs to the default
+    # catalog alongside the original TwelveData/MT5/Binance/FRED set.
+    assert set(registry.all_names()) == {
+        "twelvedata", "mt5", "binance", "bitget", "keynorq", "fred",
+    }
     assert isinstance(registry.get("twelvedata"), TwelveDataProvider)
     assert isinstance(registry.get("mt5"), MT5Provider)
     assert isinstance(registry.get("binance"), BinanceProvider)

@@ -16,9 +16,21 @@ from typing import Optional
 from config import Config
 from data.providers.base_provider import DataProvider, MarketCandle, MarketDataProvider, ProviderStatus
 from data.providers.binance_provider import BinanceProvider
+from data.providers.bitget_provider import BitgetProvider
 from data.providers.fred_provider import FredProvider
 from data.providers.fundamental_base import FundamentalDataPoint, FundamentalDataProvider, FundamentalSnapshot
+from data.providers.keynorq_provider import KeynorqProvider
 from data.providers.mt5_provider import MT5Provider
+from data.providers.provider_errors import (
+    ProviderAuthError,
+    ProviderError,
+    ProviderRateLimitError,
+    ProviderResponseError,
+    ProviderTimeoutError,
+    ProviderUnavailableError,
+    provider_error_for_status,
+)
+from data.providers.provider_manager import ProviderManager
 from data.providers.registry import ProviderRegistry, build_default_registry
 from data.providers.twelve_data_provider import TwelveDataProvider
 
@@ -30,12 +42,22 @@ __all__ = [
     "TwelveDataProvider",
     "MT5Provider",
     "BinanceProvider",
+    "BitgetProvider",
+    "KeynorqProvider",
     "FredProvider",
     "FundamentalDataPoint",
     "FundamentalDataProvider",
     "FundamentalSnapshot",
     "ProviderRegistry",
     "build_default_registry",
+    "ProviderManager",
+    "ProviderError",
+    "ProviderAuthError",
+    "ProviderTimeoutError",
+    "ProviderRateLimitError",
+    "ProviderResponseError",
+    "ProviderUnavailableError",
+    "provider_error_for_status",
     "get_provider",
 ]
 
