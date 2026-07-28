@@ -49,7 +49,7 @@ from core.secrets import Secrets
 
 logger = setup_logger("GeminiProvider")
 
-_GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+_GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 _REQUEST_TIMEOUT_SECONDS = 15
 
 
