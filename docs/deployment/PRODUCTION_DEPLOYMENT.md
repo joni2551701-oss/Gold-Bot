@@ -14,8 +14,9 @@ Neither the Director nor the Worker deploys to the VPS by hand.
 ## Architecture
 
 ```
-Push to claude/code-analysis-optimization-pwfo3q
-    |
+workflow_dispatch (ref: main)   [production path, TASK-DEPLOY-003]
+    |   (push to claude/code-analysis-optimization-pwfo3q still auto-triggers
+    |    the same workflow; the branches: filter gates only auto-push, not dispatch)
     v
 GitHub Actions: production_deploy.yml
     |
@@ -126,10 +127,22 @@ section for the incident).
 
 ## GitHub configuration
 
-`.github/workflows/production_deploy.yml` triggers on push to
-`claude/code-analysis-optimization-pwfo3q` (see
-`docs/PHASE_P1_AUDIT.md` section 1 for why this branch and not `main`)
-and on manual `workflow_dispatch`. It reads exactly five repository
+**Production deploys run via manual `workflow_dispatch` on the `main`
+ref** — this is the current production path (TASK-DEPLOY-003, run #39,
+commit `61bbcb5`, both jobs green). `main` is the sole production branch;
+it holds the full production surface (`telegram/polling.py`,
+`core/pipeline.py`, `main.py`, `scripts/deploy/`). To deploy:
+GitHub → Actions → *GoldBot Production Deployment* → **Run workflow** →
+branch **`main`** (or API `workflow_dispatch` with `ref: main`).
+
+`.github/workflows/production_deploy.yml` **also** still auto-triggers on
+push to `claude/code-analysis-optimization-pwfo3q` (a legacy trigger from
+Phase P1). That `push:` `branches:` filter gates only the *automatic*
+path — it does **not** affect `workflow_dispatch`, so dispatching on
+`main` deploys `main` without any workflow edit. Repointing/removing the
+legacy auto-trigger is a Director-gated config change, tracked in
+`docs/DEPLOYMENT.md`'s reconciliation note. The workflow reads exactly
+five repository
 secrets, all pre-configured per the Phase P1 brief — no plaintext
 credential appears anywhere in the workflow file or the deploy
 scripts:

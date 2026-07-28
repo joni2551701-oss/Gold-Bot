@@ -1,12 +1,29 @@
 # GoldBot Deployment Guide (v0.3)
 
-**Production branch: `claude/code-analysis-optimization-pwfo3q`, not
-`main`.** `.github/workflows/trading_bot.yml` pins this branch
-explicitly for the scheduled pipeline; `main` is a stale, pre-
-`TradingPipeline` snapshot with no `telegram/polling.py` at all and is
-never read by CI/CD. Any deployment (VPS, container, or otherwise)
-must clone/pull this branch, not `main`. Full audit:
-`docs/PHASE_BRANCH_SYNC_AUDIT.md`.
+**Production branch: `main`.** As of TASK-DEPLOY-003, `main` is the sole
+authoritative production branch and is deployed to the VPS through
+`.github/workflows/production_deploy.yml` via a manual
+`workflow_dispatch` on the `main` ref (GitHub Actions run #39,
+`30318793728`, deployed commit `61bbcb5`, both `validate` and `deploy`
+jobs green). `main` now contains the full production surface —
+`telegram/polling.py`, `core/pipeline.py`, `main.py`, and the
+`scripts/deploy/` release scripts — so the earlier "`main` is a stale
+pre-`TradingPipeline` snapshot" note is **obsolete** and has been
+removed; verified present on `main` at that commit.
+
+Deploy flow: **GitHub Actions → `workflow_dispatch` (ref: `main`) →
+rsync/SSH → VPS**. See `docs/deployment/PRODUCTION_DEPLOYMENT.md` for the
+full pipeline and `docs/deployment/TASK_DEPLOY_003_REPORT.md` for the
+deploy record.
+
+> **Reconciliation note (open, Director-gated):** the *automatic*
+> triggers still reference the old branch — `production_deploy.yml`'s
+> `push:` filter and `trading_bot.yml`'s scheduled pin both name
+> `claude/code-analysis-optimization-pwfo3q`. The `branches:` filter only
+> gates auto-`push` deploys, not manual `workflow_dispatch` (which is how
+> `main` was deployed), so it did not block this deploy. Repointing those
+> automatic triggers to `main` is a workflow/config change and is left as
+> an explicit Director decision, not made as part of this doc update.
 
 GoldBot is two independent processes sharing one SQLite database file
 — see `docs/ARCHITECTURE.md`'s System Overview. Today, the trading
