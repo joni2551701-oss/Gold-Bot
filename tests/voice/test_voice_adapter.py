@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 
 from ai.content.content_schema import ContentResult
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from ai.session.conversation_state import ConversationTurn
 from broadcast.models import BroadcastAsset, BroadcastStatus
 from media.media_types import MediaType

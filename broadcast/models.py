@@ -17,7 +17,7 @@ its own new `BroadcastTriggerType` enum; `BroadcastStatus`/
 `BroadcastAsset` are the two genuine new models
 `docs/PHASE63_8_AUDIT.md`'s Foundation Reuse Audit found -- no
 `BroadcastType` enum was created (see that audit's own naming
-resolution: `ai.content.content_types.ContentType`, already the type
+resolution: `ai.content_types.ContentType`, already the type
 `BroadcastTrigger.content_type` references, covers that vocabulary).
 """
 
@@ -27,7 +27,7 @@ from enum import Enum
 from typing import Any, Dict, Optional
 
 from ai.content.broadcast_output import BroadcastReadyContent
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 
 
 class BroadcastProviderType(Enum):
@@ -66,7 +66,7 @@ class BroadcastTriggerType(Enum):
 @dataclass(frozen=True)
 class BroadcastTrigger:
     """
-    content_type: which `ai.content.content_types.ContentType` this
+    content_type: which `ai.content_types.ContentType` this
         trigger watches for.
     enabled: Owner-set intent -- whether this trigger is armed. Never
         actually fires anything this phase; `TriggerManager.is_armed()`

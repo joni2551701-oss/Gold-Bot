@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Sequence
 
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 
 
 class ContentMode(Enum):

@@ -42,7 +42,7 @@ a replacement for them.
 
 from typing import List, Optional
 
-from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent
+from ai.event_bus import EventBus, EventType, RuntimeEvent
 from ai.runtime.runtime_events import RuntimeLifecycleEvent, create_lifecycle_event
 from ai.runtime.runtime_state import RuntimeState, is_valid_transition
 from core.logger import setup_logger

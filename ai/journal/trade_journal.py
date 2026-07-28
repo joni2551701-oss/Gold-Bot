@@ -17,9 +17,20 @@ class DecisionType(Enum):
 
 
 @dataclass(frozen=True)
-class TradeJournalEntry:
+class TradeJournalRecord:
     """
     An immutable, type-safe record of a completed trade.
+
+    TASK-AI-000A (AI Architecture Cleanup, Stage 2): renamed from
+    `TradeJournalEntry` to `TradeJournalRecord`. A second, unrelated
+    class named `TradeJournalEntry` (the Phase 66.2 *narrative* journal
+    entry) lives at `ai.trade_journal.models.TradeJournalEntry`; the
+    two shared a bare class name, a real duplicate-name hazard for any
+    reader importing by name alone. This older,
+    `signals.SignalType`-coupled *completed-trade record* takes the
+    `...Record` name; the newer narrative *entry* keeps
+    `TradeJournalEntry`. Fields and the `create_journal_entry()`
+    factory are unchanged -- only the class name.
     """
     signal_id: str
     strategy_name: str
@@ -54,11 +65,11 @@ def create_journal_entry(
     outcome: TradeOutcome,
     timestamp: datetime,
     notes: str = ""
-) -> TradeJournalEntry:
+) -> TradeJournalRecord:
     """
     Pure, deterministic factory function using type-safe Enums.
     """
-    return TradeJournalEntry(
+    return TradeJournalRecord(
         signal_id=signal_id,
         strategy_name=strategy_name,
         signal_type=signal_type,

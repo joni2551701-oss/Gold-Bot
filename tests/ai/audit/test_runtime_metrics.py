@@ -7,7 +7,7 @@ import pytest
 from ai.audit.provider_stats import RuntimeMetricsCollector, compute_requests_per_minute
 from ai.audit.request_log import AIRequestLogEntry
 from ai.capabilities.capability import Capability
-from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent
+from ai.event_bus import EventBus, EventType, RuntimeEvent
 
 
 def _request(created_at):

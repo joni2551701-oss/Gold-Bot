@@ -31,7 +31,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from ai.interfaces import MarketContext
-from ai.journal.trade_journal import TradeJournalEntry
+from ai.journal.trade_journal import TradeJournalRecord
 from ai.learning_context import LearningContext
 from ai.profiles.user_profile import AIUserProfile
 from signals.schema import SignalSchema
@@ -63,7 +63,7 @@ class AIContext:
     market_context: Optional[MarketContext] = None
     signal: Optional[SignalSchema] = None
     user_profile: Optional[AIUserProfile] = None
-    trade_history: List[TradeJournalEntry] = field(default_factory=list)
+    trade_history: List[TradeJournalRecord] = field(default_factory=list)
     learning_context: Optional[LearningContext] = None
     built_at: Optional[datetime] = None
     schema_version: str = "1.0"

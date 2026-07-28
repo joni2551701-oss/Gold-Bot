@@ -1,6 +1,6 @@
 """Phase 63.0 TASK 3 — ExplanationOutput contract. Pure data, no generation logic, not read by ExplanationEngine yet."""
 
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from ai.explanation.explanation_output import ExplanationOutput
 
 

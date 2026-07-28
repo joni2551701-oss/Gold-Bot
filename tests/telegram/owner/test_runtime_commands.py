@@ -3,7 +3,7 @@
 from ai.audit.provider_stats import RuntimeMetricsCollector
 from ai.providers.circuit_breaker import CircuitBreakerConfig, ProviderCircuitBreaker
 from ai.providers.provider_health import ProviderHealthTracker
-from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent
+from ai.event_bus import EventBus, EventType, RuntimeEvent
 from ai.runtime.runtime_manager import RuntimeManager
 from ai.runtime.runtime_profiles import PRODUCTION_PROFILE
 from ai.runtime.runtime_state import RuntimeState

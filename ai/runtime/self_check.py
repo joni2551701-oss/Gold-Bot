@@ -29,7 +29,7 @@ from ai.cache.response_cache import ResponseCache
 from ai.providers.circuit_breaker import ProviderCircuitBreaker
 from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_manager import ProviderManager
-from ai.runtime.event_bus import EventBus
+from ai.event_bus import EventBus
 from ai.runtime.runtime_manager import RuntimeManager
 from core.logger import setup_logger
 

@@ -40,7 +40,7 @@ both still in this same file:
   recorded anywhere in `request_log.py`/`response_log.py` today (a
   cache hit in `ai/runtime/ai_service.py` returns before either log is
   ever touched). `RuntimeMetricsCollector` subscribes to
-  `ai.runtime.event_bus.EventBus` (Phase 61.6 TASK 5) and accumulates
+  `ai.event_bus.EventBus` (Phase 61.6 TASK 5) and accumulates
   counts from the events `ai_service.py` now publishes at points that
   already existed in its control flow -- no new orchestration logic,
   only new event-publication calls at the cache-hit/cache-miss/
@@ -58,7 +58,7 @@ from typing import Dict, List, Optional
 
 from ai.audit.request_log import AIRequestLogEntry
 from ai.audit.response_log import AIResponseLogEntry
-from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent
+from ai.event_bus import EventBus, EventType, RuntimeEvent
 
 
 @dataclass(frozen=True)

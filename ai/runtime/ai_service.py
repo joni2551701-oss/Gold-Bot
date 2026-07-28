@@ -176,7 +176,7 @@ from ai.providers.runtime_errors import (
     record_provider_failure,
 )
 from ai.router.router import AIRouter
-from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent
+from ai.event_bus import EventBus, EventType, RuntimeEvent
 from ai.runtime.runtime_manager import RuntimeManager
 from ai.runtime.runtime_state import RuntimeState
 from ai.runtime.runtime_profiles import RuntimeProfile

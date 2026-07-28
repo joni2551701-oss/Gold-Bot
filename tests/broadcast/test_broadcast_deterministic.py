@@ -1,6 +1,6 @@
 """Phase 63.8 TASK 2 — BroadcastManager's deterministic asset surface (create_broadcast/validate_broadcast/prepare_broadcast/get_broadcast/list_broadcasts), all additive to the existing, LOCKed would_broadcast()/prepare()."""
 
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from broadcast.broadcast_manager import BroadcastManager
 from broadcast.models import BroadcastStatus
 

@@ -35,7 +35,7 @@ from ai.cache.cache_policy import compute_context_hash
 from ai.context.context_adapter import sanitize_market_context
 from ai.context.context_snapshot import AIContext
 from ai.interfaces import MarketContext
-from ai.journal.trade_journal import TradeJournalEntry
+from ai.journal.trade_journal import TradeJournalRecord
 from ai.learning_context import LearningContext
 from ai.profiles.user_profile import AIUserProfile
 from signals.schema import SignalSchema
@@ -45,7 +45,7 @@ def build_ai_context(
     market_context: Optional[MarketContext] = None,
     signal: Optional[SignalSchema] = None,
     user_profile: Optional[AIUserProfile] = None,
-    trade_history: Optional[List[TradeJournalEntry]] = None,
+    trade_history: Optional[List[TradeJournalRecord]] = None,
     learning_context: Optional[LearningContext] = None,
     context_version: str = "1.0",
 ) -> AIContext:

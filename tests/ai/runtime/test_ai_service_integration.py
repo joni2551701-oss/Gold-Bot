@@ -17,7 +17,7 @@ from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_manager import ProviderStatus
 from ai.providers.runtime_errors import ProviderTimeoutError
 from ai.runtime.ai_service import AIService
-from ai.runtime.event_bus import EventBus, EventType
+from ai.event_bus import EventBus, EventType
 from ai.runtime.runtime_manager import RuntimeManager
 from ai.runtime.runtime_profiles import DEVELOPMENT_PROFILE, PRODUCTION_PROFILE, TESTING_PROFILE
 from ai.runtime.runtime_request import RuntimeRequest

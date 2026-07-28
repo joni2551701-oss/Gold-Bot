@@ -25,7 +25,7 @@ Content-only path.
 from typing import Optional
 
 from ai.content.content_schema import ContentResult
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from ai.persona.persona import Persona
 from broadcast.broadcast_manager import BroadcastManager
 from broadcast.models import BroadcastAsset

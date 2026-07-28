@@ -4,7 +4,7 @@ Reliability Foundation, TASK 2).
 
 `RuntimeLifecycleEvent` is the record `runtime_manager.py`'s
 `RuntimeManager` appends to its own in-memory history on every state
-transition -- distinct from `ai/runtime/event_bus.py`'s
+transition -- distinct from `ai/event_bus.py`'s
 `RuntimeEvent`/`EventType` (TASK 5), which is a general-purpose
 cross-cutting pub/sub carrying `RuntimeStarted`/`RuntimeStopped` (among
 six other event types) to any subscriber. `RuntimeManager` is the one

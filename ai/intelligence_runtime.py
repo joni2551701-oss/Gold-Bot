@@ -38,7 +38,7 @@ from enum import Enum
 from typing import List, Optional
 
 from ai.content.content_adapter import ContentEngine
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from ai.conversation.conversation_engine import ConversationEngine
 from ai.explanation.explanation_builder import ExplanationBuilder
 from ai.explanation.explanation_input import ExplanationInput, ExplanationMode

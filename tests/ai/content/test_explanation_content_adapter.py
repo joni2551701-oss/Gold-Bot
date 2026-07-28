@@ -1,7 +1,7 @@
 """Phase 63.1 TASK 6 — Explanation-to-Content adapter. Reuses BroadcastReadyContent (Phase 61.5), never a new parallel model."""
 
 from ai.content.broadcast_output import BroadcastReadyContent
-from ai.explanation.explanation_content_adapter import explanation_to_broadcast_ready
+from ai.content.explanation_content_adapter import explanation_to_broadcast_ready
 from ai.explanation.explanation_output import ExplanationOutput
 
 

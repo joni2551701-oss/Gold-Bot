@@ -37,7 +37,8 @@ from datetime import datetime, timezone
 from typing import List, Optional, Sequence
 
 from ai.content.content_schema import ContentRequest, ContentResult
-from ai.content.content_types import ContentType, content_title, is_content_capability
+from ai.content.content_types import content_title, is_content_capability
+from ai.content_types import ContentType
 from ai.content.models import ContentMetadata
 from ai.runtime.ai_service import AIService
 from ai.runtime.runtime_request import RuntimeRequest

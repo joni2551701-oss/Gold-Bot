@@ -2,7 +2,7 @@
 AI Layer — Failure Analysis Foundation (Phase 59 Real Market
 Validation Foundation, TASK 7).
 
-Not the same thing as ai/journal/trade_journal.py's TradeJournalEntry:
+Not the same thing as ai/journal/trade_journal.py's TradeJournalRecord:
 that is a general, richer completed-trade record (pnl, rr, exit_price,
 ai_confidence, technical_score) covering WIN/LOSS/BREAK_EVEN alike.
 This module is narrower and failure-specific -- it records *why* a

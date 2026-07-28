@@ -1,7 +1,8 @@
 """Phase 61.5 TASK 5 — AI Content Types. No duplicate enum -- CONTENT_CAPABILITIES is a subset marker over the real ai.capabilities.capability.Capability enum."""
 
 from ai.capabilities.capability import Capability
-from ai.content.content_types import CONTENT_CAPABILITIES, ContentType, content_title, is_content_capability
+from ai.content.content_types import CONTENT_CAPABILITIES, content_title, is_content_capability
+from ai.content_types import ContentType
 
 
 def test_all_four_content_capabilities_are_marked():

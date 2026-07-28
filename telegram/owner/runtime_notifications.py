@@ -6,7 +6,7 @@ A genuinely different concern from every other `telegram/owner/
 *_commands.py` module (per this phase's own reuse audit, `docs/
 PHASE61_6_RUNTIME_OPERATIONS_AUDIT.md`): those are pull-based (a
 command handler calls a function, gets a message back). This module is
-push-based -- an `ai.runtime.event_bus.EventBus` subscriber that turns
+push-based -- an `ai.event_bus.EventBus` subscriber that turns
 a handful of already-existing/newly-added event types into queued
 `RuntimeAlert`s, plus a small `deliver_alerts()` that actually sends
 them, Owner-only, via the already-existing `telegram.notifier.
@@ -65,7 +65,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 from ai.audit.provider_stats import ProviderStats
-from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent
+from ai.event_bus import EventBus, EventType, RuntimeEvent
 from core.logger import setup_logger
 from core.secrets import Secrets
 from telegram.notifier import Notifier

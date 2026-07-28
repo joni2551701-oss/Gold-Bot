@@ -1,7 +1,7 @@
 """Phase 63.8 TASK 6 — broadcast/broadcast_adapter.py: Content/Media (upstream, type-only) integration, optional Persona reference."""
 
 from ai.content.content_schema import ContentResult
-from ai.content.content_types import ContentType
+from ai.content_types import ContentType
 from ai.persona.persona_registry import SENIOR_TRADING_AI
 from broadcast.broadcast_adapter import broadcast_asset_from_content_and_media
 from broadcast.broadcast_manager import BroadcastManager
