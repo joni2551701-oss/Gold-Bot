@@ -78,6 +78,8 @@ established this split.
 
 ## Related
 
+- `docs/architecture/LAYER_CONTRACT.md` — the one-page per-layer
+  Input / Output / Allowed / Forbidden contract.
 - `docs/architecture/ARCHITECTURE_MASTER.md` — the pipeline-order view
   of the same system.
 - `docs/architecture/MODULE_DEPENDENCIES.md` — the mechanically
