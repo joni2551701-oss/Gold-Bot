@@ -49,3 +49,31 @@ class FVGStrategy:
                 break
 
         return candidates
+
+
+# --- Setup layer (TASK-CORE-007) --------------------------------------------
+# Additive: reuses the frozen FVGStrategy.analyze() detection above.
+from strategies.base import SetupStrategy  # noqa: E402
+from strategies.result import StrategyResult  # noqa: E402
+
+
+class FVGSetupStrategy(SetupStrategy):
+    """Setup-layer view over the frozen FVGStrategy."""
+
+    def __init__(self) -> None:
+        self._inner = FVGStrategy()
+
+    def name(self) -> str:
+        return "FVG_SETUP"
+
+    def evaluate(self, context) -> StrategyResult:
+        guard = self._guard(context)
+        if guard:
+            return guard
+        try:
+            candidates = self._inner.analyze(context)
+        except AttributeError:
+            return StrategyResult.none(self.name(), "context missing fields for FVG")
+        if not candidates:
+            return StrategyResult.none(self.name(), "no FVG setup")
+        return StrategyResult.from_signal_candidate(candidates[0], strategy_name=self.name())

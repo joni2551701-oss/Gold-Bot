@@ -55,3 +55,33 @@ class AMDStrategy:
                     break
 
         return candidates
+
+
+# --- Setup layer (TASK-CORE-007) --------------------------------------------
+# Additive: reuses the frozen AMDStrategy.analyze() detection above and
+# adapts its first SignalCandidate into a StrategyResult. No detection
+# logic is duplicated; the live SignalCandidate path is untouched.
+from strategies.base import SetupStrategy  # noqa: E402
+from strategies.result import StrategyResult  # noqa: E402
+
+
+class AMDSetupStrategy(SetupStrategy):
+    """Setup-layer view over the frozen AMDStrategy."""
+
+    def __init__(self) -> None:
+        self._inner = AMDStrategy()
+
+    def name(self) -> str:
+        return "AMD_SETUP"
+
+    def evaluate(self, context) -> StrategyResult:
+        guard = self._guard(context)
+        if guard:
+            return guard
+        try:
+            candidates = self._inner.analyze(context)
+        except AttributeError:
+            return StrategyResult.none(self.name(), "context missing fields for AMD")
+        if not candidates:
+            return StrategyResult.none(self.name(), "no AMD distribution setup")
+        return StrategyResult.from_signal_candidate(candidates[0], strategy_name=self.name())
