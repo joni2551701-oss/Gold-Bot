@@ -155,3 +155,60 @@ A3 itself was one such explicitly-approved change. Natural future
 inputs to the same weighted-formula shape (not implemented in this
 phase): Signal Quality Score, Market Regime, Session Intelligence —
 see `docs/v0.3.5_SPECIFICATION.md` and `docs/FOUNDATION_GAP_ANALYSIS.md`.
+
+---
+
+## STEP-09 business-decision layer (TASK-CORE-009)
+
+Everything above describes the **live, FROZEN** path:
+`DecisionEngine.evaluate()` → `TradeDecision` with a `DecisionAction`
+(APPROVE / REJECT / NO_TRADE). That path is untouched.
+
+STEP-09 adds an **additive, parallel** business-decision layer
+(Director decision: *"Additive parallel + reuse-first"*) that consumes
+a **canonical signal** (`signals.schema.SignalSchema`) rather than a
+`SignalCandidate` + `AIAnalysisResult`, and produces the richer verdict
+vocabulary the roadmap calls for: **APPROVE / REJECT / HOLD / EXPIRE**.
+It **reuses** the frozen engine's verdict — it does not recompute the
+confidence blend.
+
+### Entry point
+`decision.decision_manager.DecisionManager.decide(signal, *, now=None,
+trade_decision=None)` → `DecisionOutcome`. Stateless, never raises
+(the signal is read duck-typed, so a None/partial signal yields a
+defined outcome).
+
+Named `decision_manager.py` — **not** `decision_engine.py`, which
+exists and is frozen — the same discipline STEP-08 used with
+`signals/manager.py` alongside the frozen `signal_engine.py`.
+
+### Reuse mapping (the fork point)
+The base status is the **reuse** of the frozen verdict, mapped into the
+richer vocabulary:
+
+| Source | Value | → `DecisionStatus` |
+|---|---|---|
+| frozen `DecisionAction` (via `trade_decision`) | `APPROVE` | `APPROVE` |
+| | `REJECT` | `REJECT` |
+| | `NO_TRADE` | **`HOLD`** |
+| canonical `SignalSchema.decision` (default source) | `APPROVED` | `APPROVE` |
+| | `REJECTED` | `REJECT` |
+| | `PENDING` / `None` | **`HOLD`** |
+
+`EXPIRE` is a **new** time-based status STEP-09 adds (a stale canonical
+signal); the frozen engine has no concept of it.
+
+### STEP-09 files
+| File | Does | Does NOT |
+|---|---|---|
+| `decision_status.py` | `DecisionStatus` vocab + reuse mappings (`from_decision_action`, `from_signal_decision`) | recompute a verdict |
+| `decision_model.py` | `DecisionOutcome` frozen dataclass (+ `to_dict`/`to_json`) | hold a risk figure |
+| `decision_rules.py` | pure decision rules (reject-invalid, expire-stale, hold-low-confidence) | size risk / stops |
+| `decision_router.py` | consumer route metadata (`RISK` only for APPROVE) | send anything |
+| `decision_manager.py` | orchestrate the STEP-09 pipeline | modify the frozen engine |
+
+### Boundary
+STEP-09 **does not**: compute risk, size a position, send an order,
+format a platform message, or modify `decision_engine.py` /
+`models.py`. It records a verdict and its justification only; risk
+sizing is STEP-10. See `docs/PHASE_DECISION.md` for the full map.
