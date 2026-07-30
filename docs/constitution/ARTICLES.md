@@ -1,6 +1,6 @@
 # GoldBot Constitution — Article Index
 
-A one-page lookup for all twelve Articles. This is a navigation aid,
+A one-page lookup for all thirteen Articles. This is a navigation aid,
 not a substitute — `docs/constitution/CONSTITUTION.md` is the single
 source of truth; if this index and the Constitution ever disagree, the
 Constitution wins and this file is corrected to match.
@@ -19,6 +19,7 @@ Constitution wins and this file is corrected to match.
 | 10 | Owner Override Law | Every critical module answers to the Owner through the Telegram Owner Panel. |
 | 11 | Foundation Reuse Law | Foundation/Manager/Contract/Model/Capability/Registry — the mandatory TASK 0 checklist. |
 | 12 | Architecture Evolution Law | Every phase reports its own New/Extended/Reused table. |
+| 13 | Future First Principle | Every Architecture accounts for all five target platforms, even the ones with no code yet. |
 
 ## By theme
 
@@ -28,7 +29,7 @@ Constitution wins and this file is corrected to match.
 
 **How a phase is planned and executed** — Articles 6, 7, 8, 11.
 
-**How the system stays stable as it grows** — Articles 9, 10, 12.
+**How the system stays stable as it grows** — Articles 9, 10, 12, 13.
 
 ## Related
 

@@ -375,6 +375,42 @@ Director Decision review of whether Article 11 was actually followed.
 
 ---
 
+## Article 13 — Future First Principle
+
+**Every Architecture accounts for every target platform, even before
+that platform has a single line of code.**
+
+Ratified following ADR-001 (`communication/decisions/ADR-001.md`):
+GoldBot Platform is not built around Telegram Bot with other clients
+bolted on later — Telegram Bot is one client among five, sitting below
+a Shared Platform Layer alongside Telegram Mini App, Android, iOS, and
+Desktop. An Architecture document that designs only for whichever
+platform happens to be `LIVE` today (per `platforms/platform_registry.py`)
+repeats the exact mistake this Article exists to prevent: a Navigation
+(or any other Platform component) built Telegram-first would require
+rewriting for every platform that comes after it.
+
+**In force**: from Navigation (TASK-002B) onward, every Platform
+Architecture document states, for every component it defines, its
+compatibility with all five platforms — Telegram Bot, Telegram Mini
+App, Android, iOS, Desktop — using `platforms/capability_model.py`'s
+existing `SupportStatus` contract (`SUPPORTED`/`NOT_SUPPORTED`/`PLANNED`,
+the latter two always carrying a `reason`). A platform having zero
+code today is not a reason to omit it from the compatibility statement
+— it is a reason the `reason` field says so honestly (see
+`platforms/cross_platform_checker.py`'s existing validation rule,
+already built for exactly this purpose in TASK-001).
+
+**Does not require writing platform code today.** This Article governs
+Architecture (design), not Implementation — it does not authorize or
+require building an Android/iOS/Desktop client now, and it does not
+relax Article 11's Reuse Audit or Article 8's Change Management order.
+It only requires that the design account for all five from the start,
+so a later platform's real requirements surface as "already considered,
+now implemented" rather than "not designed for, now a rewrite."
+
+---
+
 ## Amendment process
 
 This Constitution changes only by explicit Director instruction,
@@ -383,11 +419,12 @@ own dedicated phase (never as a side effect of an unrelated task). A
 Worker never amends this document on its own initiative, no matter
 how well-reasoned the change seems in the moment. `docs/constitution/AMENDMENTS.md`
 is the running log of every amendment made under this process,
-including this one (Phase 62.1a — Articles 8 through 12).
+including Phase 62.1a (Articles 8 through 12) and TASK-002B's own
+amendment (Article 13).
 
 ## Related documents
 
-- `docs/constitution/ARTICLES.md` — a one-page index of all twelve
+- `docs/constitution/ARTICLES.md` — a one-page index of all thirteen
   Articles above, for quick lookup without reading the full text.
 - `docs/constitution/AMENDMENTS.md` — the amendment history: which
   phase added which Article, and why.

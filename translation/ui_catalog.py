@@ -505,8 +505,18 @@ _CATALOG: dict = {
     "rkm.owner.reports": {"EN": "📋 Reports", "UZ": "📋 Hisobotlar", "RU": "📋 Отчёты"},
     "rkm.profile.profile": {"EN": "📄 Profile", "UZ": "📄 Profile", "RU": "📄 Профиль"},
     "rkm.signals.live": {"EN": "📈 Live Signals", "UZ": "📈 Live Signals", "RU": "📈 Живые сигналы"},
+    "rkm.signals.price": {"EN": "💰 Current Price", "UZ": "💰 Joriy narx", "RU": "💰 Текущая цена"},
     "rkm.signals.history": {"EN": "📜 History", "UZ": "📜 History", "RU": "📜 История"},
     "rkm.signals.premium": {"EN": "⭐ Premium", "UZ": "⭐ Premium", "RU": "⭐ Премиум"},
+    # Current Price feature (TASK-CORE-004 Phase 1) — informational only.
+    "price.title": {"EN": "📊 Current Price", "UZ": "📊 Joriy narx", "RU": "📊 Текущая цена"},
+    "price.price_label": {"EN": "Price", "UZ": "Narx", "RU": "Цена"},
+    "price.updated_label": {"EN": "Updated", "UZ": "Yangilangan", "RU": "Обновлено"},
+    "price.empty": {
+        "EN": "Price is not available yet.\nPlease wait for market data.",
+        "UZ": "Narx hali mavjud emas.\nIltimos, bozor ma'lumotini kuting.",
+        "RU": "Цена пока недоступна.\nПожалуйста, дождитесь рыночных данных.",
+    },
 }
 
 

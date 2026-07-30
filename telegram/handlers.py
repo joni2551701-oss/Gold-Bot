@@ -801,6 +801,23 @@ async def about_handler(telegram_id=None) -> str:
     return t("about.text", _current_language(telegram_id))
 
 
+async def price_handler(telegram_id=None) -> str:
+    """
+    /price -> the localized "Current Price" for the tracked asset
+    (TASK-CORE-004 Phase 1). Read-only and informational: reads the
+    existing production cache via CurrentPriceService -> CurrentPriceProvider
+    (never the cache directly, Director Decision 1), never fetches, and
+    never touches any signal/trade/risk/AI/strategy path (Director
+    Decision 2). Fail-safe: any error degrades to the empty-state string.
+    """
+    from telegram.current_price_service import CurrentPriceService
+    try:
+        return CurrentPriceService().render(_current_language(telegram_id))
+    except Exception as e:  # noqa: BLE001 -- never raise into the event loop
+        logger.warning(f"price_handler failed for telegram_id={telegram_id}: {e}")
+        return t("price.empty", _current_language(telegram_id))
+
+
 def _current_plan(telegram_id) -> str:
     """
     Best-effort plan lookup shared by profile_handler/userinfo_handler.
