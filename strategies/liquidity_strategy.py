@@ -49,3 +49,31 @@ class LiquidityStrategy:
                     break
 
         return candidates
+
+
+# --- Setup layer (TASK-CORE-007) --------------------------------------------
+# Additive: reuses the frozen LiquidityStrategy.analyze() detection above.
+from strategies.base import SetupStrategy  # noqa: E402
+from strategies.result import StrategyResult  # noqa: E402
+
+
+class LiquiditySetupStrategy(SetupStrategy):
+    """Setup-layer view over the frozen LiquidityStrategy."""
+
+    def __init__(self) -> None:
+        self._inner = LiquidityStrategy()
+
+    def name(self) -> str:
+        return "LIQUIDITY_SETUP"
+
+    def evaluate(self, context) -> StrategyResult:
+        guard = self._guard(context)
+        if guard:
+            return guard
+        try:
+            candidates = self._inner.analyze(context)
+        except AttributeError:
+            return StrategyResult.none(self.name(), "context missing fields for liquidity")
+        if not candidates:
+            return StrategyResult.none(self.name(), "no liquidity sweep setup")
+        return StrategyResult.from_signal_candidate(candidates[0], strategy_name=self.name())

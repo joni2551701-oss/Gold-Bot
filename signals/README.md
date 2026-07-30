@@ -175,3 +175,32 @@ unimplemented. For Signal Schema specifically, see
 Backtesting/Education/Analytics) and Phase A16 (Context Snapshot
 Foundation), the named next phase that gives `context_id` a real
 value to reference.
+
+## STEP-08 — Canonical Signal Layer (TASK-CORE-008)
+
+STEP-08 adds a canonical assembly pipeline **on top of** the modules
+above, taking a setup-layer `strategies.result.StrategyResult` and
+producing ONE canonical signal for every consumer. It REUSES the Phase
+A15 model rather than defining a second one (Director reuse-first
+decision): `CanonicalSignal` **is** `SignalSchema`.
+
+```
+StrategyResult -> SignalManager.build()
+  -> validate (schema.validate_signal + dedup + setup precheck)
+  -> quality  (SignalStrength: STRONG/GOOD/NORMAL/WEAK/INVALID)
+  -> enrich   (SignalEnrichment: price/spread/session/volatility/regime/build)
+  -> format   (SignalPresentation: title/summary/description/short_reason/tags)
+  -> serialize(dict/JSON, reuses SignalSchema.to_dict/to_json)
+  -> route    (SignalConsumer metadata; sends nothing)
+  -> lifecycle(CanonicalSignalStatus: CREATED->VALIDATED->ENRICHED->READY->PUBLISHED)
+  => CanonicalSignalResult
+```
+
+STEP-08 files: `signal.py` (canonical export), `base.py`
+(`SignalContract`), `registry.py` (`SignalKind`), `validator.py`,
+`quality.py`, `enricher.py`, `formatter.py`, `serializer.py`,
+`router.py`, `manager.py` (`SignalManager`), `lifecycle/`
+(`CanonicalSignalStatus`). It adds no analysis, no strategy choice, no
+risk, no decision, no platform API. The live
+`signal_engine.SignalEngine -> SignalCandidate` path stays FROZEN and
+untouched. Full contract + field mapping: `docs/PHASE_SIGNALS.md`.

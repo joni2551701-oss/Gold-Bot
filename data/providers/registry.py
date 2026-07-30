@@ -36,7 +36,9 @@ from typing import Dict, List, Optional
 
 from data.providers.base_provider import DataProvider
 from data.providers.binance_provider import BinanceProvider
+from data.providers.bitget_provider import BitgetProvider
 from data.providers.fred_provider import FredProvider
+from data.providers.keynorq_provider import KeynorqProvider
 from data.providers.mt5_provider import MT5Provider
 from data.providers.twelve_data_provider import TwelveDataProvider
 
@@ -89,7 +91,8 @@ class ProviderRegistry:
 def build_default_registry() -> ProviderRegistry:
     """
     Registers every provider this codebase has built so far --
-    TwelveData (real, live), MT5/Binance/FRED (honest, inert stubs).
+    TwelveData (real, live), MT5/Binance/Bitget/Keynorq/FRED (honest,
+    inert stubs).
     Each provider's own __init__ never raises (TwelveDataProvider's
     lazily-constructed TwelveDataClient() degrades to api_key=None
     rather than raising, see data/twelve_data_client.py; the three
@@ -100,5 +103,7 @@ def build_default_registry() -> ProviderRegistry:
     registry.register(TwelveDataProvider())
     registry.register(MT5Provider())
     registry.register(BinanceProvider())
+    registry.register(BitgetProvider())
+    registry.register(KeynorqProvider())
     registry.register(FredProvider())
     return registry
