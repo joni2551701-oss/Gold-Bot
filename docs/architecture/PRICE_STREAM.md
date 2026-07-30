@@ -55,11 +55,11 @@ of DD-048 provider abstraction).
 ## TASK-DATA-001 — Price Stream Service (latest-tick API)
 
 A second, independent sink on top of the same `PriceStream`/
-`StreamManager` (no changes to either): `data/price_stream_service.py`'s
+`StreamManager` (no changes to either): `data/stream/price_stream_service.py`'s
 `PriceStreamService` registers a `_PriceTickSink` per asset that converts
 each forwarded `StreamEvent` into a unified `PriceTick`
 (`data/stream/price_tick.py` — symbol/price/bid/ask/volume/timestamp/
-provider), stores the latest one per symbol in `data/price_cache.py`'s
+provider), stores the latest one per symbol in `data/stream/price_cache.py`'s
 `PriceCache`, and publishes `EventType.PRICE_UPDATED` on the existing
 `data/events/event_bus.py` `EventBus`. This is the **one sanctioned read
 API** for a live price:

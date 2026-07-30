@@ -20,7 +20,7 @@ reimplementing any of them:
   - `data.stream.twelve_data_provider.TwelveDataProvider` /
     `data.stream.bitget_price_source.BitgetPriceSource` -- vendor
     adapters (DD-048 provider abstraction).
-  - `data.price_cache.PriceCache` -- last-tick-per-symbol store.
+  - `data.stream.price_cache.PriceCache` -- last-tick-per-symbol store.
   - `data.events.event_bus.EventBus` -- publishes `PRICE.UPDATED`
     (`EventType.PRICE_UPDATED`) whenever a tick lands.
 
@@ -43,7 +43,7 @@ from typing import Any, Dict, Optional
 from core.logger import setup_logger
 from data.events.event_bus import EventBus
 from data.events.event_model import Event, EventType
-from data.price_cache import PriceCache
+from data.stream.price_cache import PriceCache
 from data.stream.price_stream import PriceStream
 from data.stream.price_tick import PriceTick
 from data.stream.provider import PriceProvider

@@ -1,13 +1,8 @@
-"""Unit tests for data/price_stream_service.py (TASK-DATA-001)."""
-
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent / "stream"))
+"""Unit tests for data/stream/price_stream_service.py (TASK-DATA-001)."""
 
 from data.events.event_bus import EventBus
 from data.events.event_model import EventType
-from data.price_stream_service import PriceStreamService
+from data.stream.price_stream_service import PriceStreamService
 from data.stream.stream_event import AssetClass
 
 from _fakes import FakeProvider, event, ts
