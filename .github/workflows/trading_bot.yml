@@ -68,3 +68,37 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python main.py
+
+      # TASK-PROD-001: this runner's data/.cache_state.json (populated by
+      # the fetch above) is the only place the live market cache exists --
+      # this job runs on an ephemeral GitHub Actions runner, so it is lost
+      # the moment the job ends. The VPS's goldbot.service (telegram/polling.py)
+      # never fetches itself, so it needs this file to serve 📈 Current
+      # Price. Publish it to the VPS's shared/data/ (same secrets pattern
+      # as production_deploy.yml); release_deploy.sh symlinks each new
+      # release's data/.cache_state.json to this shared file. Best-effort:
+      # a missing file or an unreachable VPS must not fail the trading run
+      # that already completed above.
+      - name: Publish current-price cache to VPS
+        if: always()
+        continue-on-error: true
+        run: |
+          if [[ ! -f data/.cache_state.json ]]; then
+            echo "No data/.cache_state.json produced this run -- skipping publish."
+            exit 0
+          fi
+          if [[ -z "${{ secrets.VPS_HOST }}" ]]; then
+            echo "VPS_HOST not configured -- skipping publish."
+            exit 0
+          fi
+
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -p "${{ secrets.VPS_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/id_deploy -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            "mkdir -p '${{ secrets.DEPLOY_PATH }}/shared/data'"
+          scp -i ~/.ssh/id_deploy -P "${{ secrets.VPS_PORT }}" \
+            data/.cache_state.json \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.DEPLOY_PATH }}/shared/data/.cache_state.json"

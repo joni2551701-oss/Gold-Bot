@@ -34,7 +34,7 @@ if [[ ! -d "$RELEASE_DIR" ]]; then
     exit 1
 fi
 
-mkdir -p "$DEPLOY_PATH/shared/database" "$DEPLOY_PATH/shared/logs" "$DEPLOY_PATH/backups"
+mkdir -p "$DEPLOY_PATH/shared/database" "$DEPLOY_PATH/shared/logs" "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/backups"
 
 if [[ ! -f "$DEPLOY_PATH/shared/.env" ]]; then
     echo "[deploy] FAILED: $DEPLOY_PATH/shared/.env does not exist." >&2
@@ -56,6 +56,18 @@ ln -sfn "$DEPLOY_PATH/shared/.env" "$RELEASE_DIR/.env"
 # persistent, so only that file is symlinked, not the whole directory.
 ln -sfn "$DEPLOY_PATH/shared/database/goldbot.db" "$RELEASE_DIR/database/goldbot.db"
 ln -sfn "$DEPLOY_PATH/shared/logs" "$RELEASE_DIR/logs"
+# TASK-PROD-001: data/.cache_state.json is SmartDataCache's persisted
+# last-price store, written by the trading_bot.yml pipeline run (a
+# separate, ephemeral GitHub Actions job) and published to
+# shared/data/ by that workflow's "Publish current-price cache to VPS"
+# step. Symlinking it here (instead of shipping a release-local copy)
+# is what lets goldbot.service's 📈 Current Price button -- which only
+# reads this file, never fetches -- see the latest price across
+# releases and restarts. If the shared file does not exist yet (first
+# deploy before any trading_bot.yml run has published one),
+# SmartDataCache's own `os.path.exists` check on load already handles
+# a missing/broken path -- an empty state, not a crash.
+ln -sfn "$DEPLOY_PATH/shared/data/.cache_state.json" "$RELEASE_DIR/data/.cache_state.json"
 
 echo "[deploy] Running pre-activation smoke test (startup verification only, no continuous execution)"
 set -a
