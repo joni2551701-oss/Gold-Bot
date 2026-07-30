@@ -5,8 +5,8 @@ Typed, immutable, namespaced events with version (DD amendment 1),
 correlation id (amendment 2) and minimal validation (amendment 3).
 
 Namespaces (amendment 6): MARKET / BOOTSTRAP / SYSTEM / STREAM / MEMORY /
-PLATFORM. Event values are "NAMESPACE.NAME" so 100+ event types stay
-manageable and namespace-wildcard subscription is possible.
+PLATFORM / PRICE. Event values are "NAMESPACE.NAME" so 100+ event types
+stay manageable and namespace-wildcard subscription is possible.
 
 This module never imports from any layer above data/.
 """
@@ -46,6 +46,8 @@ class EventType(Enum):
     STREAM_CONNECTED = "STREAM.CONNECTED"
     STREAM_DISCONNECTED = "STREAM.DISCONNECTED"
     STREAM_STATE_CHANGED = "STREAM.STATE_CHANGED"
+    # PRICE.*  (TASK-DATA-001, Price Stream Foundation)
+    PRICE_UPDATED = "PRICE.UPDATED"
     # REPLAY.*  (module 8, DD amendment 2)
     REPLAY_STARTED = "REPLAY.STARTED"
     REPLAY_PAUSED = "REPLAY.PAUSED"

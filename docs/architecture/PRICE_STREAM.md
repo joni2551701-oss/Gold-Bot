@@ -52,6 +52,39 @@ Each is a provider-side or ingestion-side enhancement; none change the
 `PriceProvider` contract or anything above the stream (that is the point
 of DD-048 provider abstraction).
 
+## TASK-DATA-001 — Price Stream Service (latest-tick API)
+
+A second, independent sink on top of the same `PriceStream`/
+`StreamManager` (no changes to either): `data/price_stream_service.py`'s
+`PriceStreamService` registers a `_PriceTickSink` per asset that converts
+each forwarded `StreamEvent` into a unified `PriceTick`
+(`data/stream/price_tick.py` — symbol/price/bid/ask/volume/timestamp/
+provider), stores the latest one per symbol in `data/price_cache.py`'s
+`PriceCache`, and publishes `EventType.PRICE_UPDATED` on the existing
+`data/events/event_bus.py` `EventBus`. This is the **one sanctioned read
+API** for a live price:
+
+```
+price_stream.get_price("XAUUSD")
+price_stream.get_price("BTCUSDT")
+```
+
+Sources registered by `build_default_price_stream_service()`:
+`TwelveDataProvider` (XAUUSD, already existed) and
+`data/stream/bitget_price_source.py`'s `BitgetPriceSource` (BTCUSDT — an
+adapter over the existing, still-inert `data/providers/bitget_provider.py`
+stub; starts working with no interface change once that stub gets a real
+exchange connection). A future Binance/CoinGecko/OANDA/Polygon source is
+one more `PriceProvider` adapter registered the same way — no
+architecture change (DD-048).
+
+Not wired into `core/pipeline.py`, `telegram/`, or any consumer in this
+phase — foundation only, same posture as `data_cache.py`/
+`session_filter.py` before it. Consumers must go through
+`PriceStreamService.get_price()`, never a provider directly (task
+requirement) — mirrors `current_price_provider.py`'s existing
+Telegram-facing seam.
+
 ## Boundaries
 - Reads from a provider; **writes memory only via the CandleBuilder** (never directly).
 - Vendor-agnostic (DD-048): swapping a provider changes nothing above the interface.
