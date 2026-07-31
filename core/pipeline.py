@@ -2,7 +2,8 @@ import time
 import uuid
 from typing import List, Optional
 
-from data.market_data import MarketDataNormalizer, MarketSnapshot
+from data.market_data import MarketSnapshot
+from data.market_data_service import MarketDataService
 from data.data_quality import assess_data_quality, DataQualityResult
 from context.context_orchestrator import build_context_snapshot
 from context.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
@@ -206,7 +207,16 @@ class TradingPipeline:
         self.send_notifications = send_notifications
         self.persist_signals = persist_signals
 
-        self.data_normalizer = MarketDataNormalizer()
+        # TASK-DATA-001 Phase 2: depends on MarketDataService (a thin,
+        # uncached facade over MarketDataNormalizer -- see
+        # data/market_data_service.py's docstring for why it is uncached
+        # in this phase and the Price Stream Service split). Attribute
+        # name kept as `data_normalizer` -- existing tests monkeypatch
+        # `pipeline.data_normalizer.get_candles`/`.get_snapshot` directly
+        # on this instance to avoid real API calls; MarketDataService
+        # exposes the identical two methods, so those patches still work
+        # unchanged.
+        self.data_normalizer = MarketDataService()
         self.signal_engine = SignalEngine()
         self.ai_analyzer = AIAnalyzer()
         self.decision_engine = DecisionEngine()

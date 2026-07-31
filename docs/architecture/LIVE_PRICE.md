@@ -5,6 +5,27 @@ and the **Live Price Service** layer that delivers it. This is the
 *presentation* side; the *collection* side is the Price Stream
 (`PRICE_STREAM.md`).
 
+## Related — Market Data Service (candles, not ticks)
+
+`data/market_data_service.py`'s `MarketDataService` is a sibling
+service, not part of this document's Price Stream/Live Price chain:
+it answers `TradingPipeline`'s need for multi-candle OHLC history
+(`get_candles()`/`get_snapshot()`/historical series), which a
+single-latest-tick `PriceStreamService` cannot supply. The two never
+depend on each other:
+
+```
+TradingPipeline        -> MarketDataService    (candles/snapshot/history)
+CurrentPriceProvider,      -> PriceStreamService (single latest tick)
+Telegram, Dashboard,
+future UI
+```
+
+`MarketDataService` is a thin, uncached facade over the existing
+`MarketDataNormalizer` in this phase (TASK-DATA-001 Phase 2) — see its
+own module docstring for why, and `PRICE_STREAM.md` for the
+`PriceStreamService` side of this split.
+
 ## Architecture — responsibility separation
 
 ```
