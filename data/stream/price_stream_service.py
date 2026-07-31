@@ -25,12 +25,26 @@ reimplementing any of them:
     (`EventType.PRICE_UPDATED`) whenever a tick lands.
 
 `PriceStream` normally forwards `StreamEvent`s to the CandleBuilder
-sink (module 3, candle aggregation) -- this service does NOT replace
-that consumer; it registers as an independent sink that only cares
-about the latest price, not candle building. `tick(now)` must be
-driven by a caller (a scheduler loop) exactly like `StreamManager`
-already requires; this service does not start a background thread of
-its own.
+sink (module 3, candle aggregation). `tick(now)` must be driven by a
+caller (a scheduler loop) exactly like `StreamManager` already
+requires; this service does not start a background thread of its own.
+
+Market Memory write path (TASK-DATA-004, opt-in): when a
+`MarketMemoryRegistry` is supplied, `register_source()` also builds one
+`data.candle_builder.CandleBuilder` per asset over that asset's
+`data.memory.MarketMemory`, and the sink forwards every `StreamEvent`
+to it -- so live ticks fold into the existing, Director-accepted
+MarketMemory (MA-001) via its documented SINGLE WRITER (CandleBuilder),
+not by a second, parallel write path. This reuses the frozen memory
+core rather than duplicating it. The `PriceCache` + `PRICE.UPDATED`
+behavior is unchanged and runs alongside it; the memory write is
+absolutely fail-safe (a CandleBuilder error never reaches the stream or
+the cache). With no registry supplied (the default, and what
+`build_default_price_stream_service()` still produces for the Phase 3
+`CurrentPriceProvider` path), behavior is byte-for-byte as before --
+no memory objects are constructed. Foundation only: no consumer reads
+the memory yet, and nothing drives `tick()` in production, so this
+changes no existing runtime behavior.
 
 This module never imports from any layer above data/.
 """
@@ -55,15 +69,18 @@ logger = setup_logger("PriceStreamService")
 
 class _PriceTickSink:
     """`PriceStream` sink adapter: converts each forwarded `StreamEvent`
-    into a `PriceTick`, stores it in `PriceCache`, and publishes
-    `PRICE.UPDATED` on the event bus. Isolated from `PriceStream`'s own
-    error handling -- it only ever receives already-validated events."""
+    into a `PriceTick`, stores it in `PriceCache`, publishes
+    `PRICE.UPDATED` on the event bus, and (when a `candle_builder` is
+    supplied) folds the tick into MarketMemory via that single writer.
+    Isolated from `PriceStream`'s own error handling -- it only ever
+    receives already-validated events."""
 
     def __init__(self, provider_name: str, cache: PriceCache,
-                 event_bus: Optional[EventBus]):
+                 event_bus: Optional[EventBus], candle_builder: Any = None):
         self._provider_name = provider_name
         self._cache = cache
         self._event_bus = event_bus
+        self._candle_builder = candle_builder
 
     def on_event(self, event: StreamEvent) -> None:
         tick = PriceTick(
@@ -83,15 +100,33 @@ class _PriceTickSink:
                 timestamp=datetime.now(timezone.utc),
                 source="PriceStreamService",
             ))
+        # TASK-DATA-004: fold the tick into MarketMemory via the single
+        # writer (CandleBuilder). Absolutely fail-safe -- a memory write
+        # failure must never disturb the cache/event path above, exactly
+        # like PriceStream isolates provider errors (DD-051).
+        if self._candle_builder is not None:
+            try:
+                self._candle_builder.on_event(event)
+            except Exception as e:  # noqa: BLE001 -- fail-safe memory write
+                logger.warning(
+                    "PriceStreamService memory write failed for %s: %s: %s",
+                    tick.symbol, type(e).__name__, str(e)[:200])
 
 
 class PriceStreamService:
     """The one Data Layer price-stream API every consumer reads through."""
 
     def __init__(self, cache: Optional[PriceCache] = None,
-                 event_bus: Optional[EventBus] = None):
+                 event_bus: Optional[EventBus] = None,
+                 memory_registry: Any = None):
+        # memory_registry: an optional data.memory.MarketMemoryRegistry.
+        # When supplied, register_source() builds a per-asset
+        # CandleBuilder over that registry's MarketMemory so live ticks
+        # fold into the existing MarketMemory (MA-001) via its single
+        # writer. Default None -> no memory writes, behavior unchanged.
         self._cache = cache or PriceCache()
         self._event_bus = event_bus
+        self._memory_registry = memory_registry
         self._manager = StreamManager()
 
     def register_source(self, symbol: str, provider: PriceProvider,
@@ -100,10 +135,30 @@ class PriceStreamService:
         """Register one asset's `PriceProvider` with the stream. Call once
         per symbol at startup (e.g. XAUUSD/TwelveDataProvider,
         BTCUSDT/BitgetPriceSource)."""
-        sink = _PriceTickSink(provider_name, self._cache, self._event_bus)
+        candle_builder = self._build_candle_builder(symbol)
+        sink = _PriceTickSink(provider_name, self._cache, self._event_bus,
+                              candle_builder=candle_builder)
         stream = PriceStream(asset=symbol, provider=provider, sink=sink,
                               asset_class=asset_class)
         return self._manager.add(stream)
+
+    def _build_candle_builder(self, symbol: str):
+        """Construct one CandleBuilder (the MarketMemory single writer)
+        for `symbol` over the injected registry's MarketMemory, or return
+        None when no registry was supplied. Fail-safe: any construction
+        problem degrades to None (no memory writes) rather than blocking
+        stream registration."""
+        if self._memory_registry is None:
+            return None
+        try:
+            from data.candle_builder import CandleBuilder
+            memory = self._memory_registry.get_or_create(symbol)
+            return CandleBuilder(symbol, memory)
+        except Exception as e:  # noqa: BLE001 -- fail-safe wiring
+            logger.warning(
+                "PriceStreamService could not wire MarketMemory for %s: %s: %s",
+                symbol, type(e).__name__, str(e)[:200])
+            return None
 
     def tick(self, now: Optional[datetime] = None) -> Dict[str, Any]:
         """Advance every registered stream by one step. A caller (a
@@ -130,13 +185,22 @@ class PriceStreamService:
         return self._manager.shutdown_all(now or datetime.now(timezone.utc))
 
 
-def build_default_price_stream_service() -> PriceStreamService:
+def build_default_price_stream_service(memory_registry: Any = None
+                                        ) -> PriceStreamService:
     """Production wiring: XAUUSD via TwelveData, BTCUSDT via Bitget
-    (currently an honest stub -- see `bitget_price_source.py`)."""
+    (currently an honest stub -- see `bitget_price_source.py`).
+
+    `memory_registry` (TASK-DATA-004): pass a shared
+    `data.memory.MarketMemoryRegistry` to also fold ticks into
+    MarketMemory (share the same instance with
+    `build_default_market_data_service()` for one source of truth).
+    Omitted by default so the Phase 3 `CurrentPriceProvider` path that
+    lazily builds this service is completely unchanged (no memory
+    objects constructed, no behavior change)."""
     from data.stream.bitget_price_source import BitgetPriceSource
     from data.stream.twelve_data_provider import TwelveDataProvider
 
-    service = PriceStreamService()
+    service = PriceStreamService(memory_registry=memory_registry)
     service.register_source("XAUUSD", TwelveDataProvider(asset="XAUUSD"),
                              provider_name="twelvedata",
                              asset_class=AssetClass.METAL)

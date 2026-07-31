@@ -85,6 +85,28 @@ phase — foundation only, same posture as `data_cache.py`/
 requirement) — mirrors `current_price_provider.py`'s existing
 Telegram-facing seam.
 
+### TASK-DATA-004 — MarketMemory write path (opt-in)
+
+Rather than build a new "market memory" (the Owner-approved reuse
+decision), `PriceStreamService` optionally writes into the **existing**,
+Director-accepted `MarketMemory` (MA-001, `data/memory/`). When a
+`MarketMemoryRegistry` is passed to the service (or its factory),
+`register_source()` builds one `data/candle_builder.py` `CandleBuilder`
+per asset over that asset's `MarketMemory`, and the sink forwards each
+`StreamEvent` to it. So live ticks fold into MarketMemory through its
+documented **single writer** (CandleBuilder) — not a second, parallel
+write path — preserving the frozen single-writer discipline. The
+`PriceCache` + `PRICE.UPDATED` path is untouched and runs alongside;
+the memory write is fully fail-safe. With no registry (the default, and
+what the Phase 3 `CurrentPriceProvider` path uses), no memory objects
+are constructed and behavior is unchanged. `MarketDataService` gains a
+symmetric opt-in write path — it `hydrate()`s the matching
+`TimeframeMemory` with fetched closed candles. Passing **one shared
+registry** to both factories makes MarketMemory the single source of
+truth. Still foundation only: no consumer reads memory yet, and the
+`TradingPipeline`'s bare `MarketDataService()` stays memory-less and
+unchanged.
+
 ## Boundaries
 - Reads from a provider; **writes memory only via the CandleBuilder** (never directly).
 - Vendor-agnostic (DD-048): swapping a provider changes nothing above the interface.
