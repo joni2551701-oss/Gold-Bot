@@ -29,18 +29,19 @@ contradicts it.
    references this task, `TASK-GOV-001.md`, `Collaboration_Rules.md`,
    and `Branch_Policy.md`.
 
-## 3. Path discrepancy (flagged, not silently changed)
+## 3. Path discrepancy (flagged at the time, since resolved)
 
-The brief names the file `docs/architecture/01_Ecosystem_Architecture.md`.
-The file actually exists at **`docs/01_Ecosystem_Architecture.md`** (added
-by commit `6666f62` on `claude/collaboration`, and independently by
-`4e92989` on `main`). This Worker did **not** move the file — a
-relocation is a repository action the brief did not request, and the
-Owner created the file at `docs/`. The Architecture Authority section
-was added to the file where it actually lives. If the Owner wants the
-file relocated under `docs/architecture/`, that is a separate,
-explicitly-authorized action (its references would then be updated in
-lockstep).
+At the time this task ran, the brief named the file
+`docs/architecture/01_Ecosystem_Architecture.md`, but the file actually
+lived at `docs/01_Ecosystem_Architecture.md` (added by commit `6666f62`
+on `claude/collaboration`, and independently by `4e92989` on `main`).
+This Worker did **not** move the file at the time — a relocation was a
+repository action this task's brief did not request. **Update
+(TASK-GOV-004):** the Owner later directed exactly this relocation as
+part of a broader `docs/architecture/` restructure; the file now lives
+at `docs/architecture/01_Ecosystem_Architecture.md` for real, and every
+reference in this document has been updated to match. See
+`TASK-GOV-004.md` for the restructure record.
 
 ## 4. Governance linkage
 
@@ -66,7 +67,7 @@ lockstep).
 ## 5. Deliverable checklist
 
 1. Architecture Authority section — added to
-   `docs/01_Ecosystem_Architecture.md`. ✅
+   `docs/architecture/01_Ecosystem_Architecture.md`. ✅
 2. Governance linkage — §4 above + the master doc's "Relationship to
    governance" block. ✅
 3. Cross-references between documents — master doc ⇄ this task ⇄
@@ -91,7 +92,7 @@ lockstep).
 ## 7. Handover
 
 1. **What was reviewed:** the master document
-   (`docs/01_Ecosystem_Architecture.md`), the frozen `TASK-GOV-001.md`,
+   (`docs/architecture/01_Ecosystem_Architecture.md`), the frozen `TASK-GOV-001.md`,
    `TASK-GOV-002.md`, and the branch state (`main` vs
    `claude/collaboration`).
 2. **What was accepted:** the master document as the single Architecture
@@ -103,7 +104,7 @@ lockstep).
 4. **What is left for the next Worker:**
    - **main ↔ collaboration reconciliation:** `main` (`4e92989`) and
      `claude/collaboration` (`6666f62`) each added
-     `docs/01_Ecosystem_Architecture.md` as a *separate* commit with
+     `docs/architecture/01_Ecosystem_Architecture.md` as a *separate* commit with
      identical 201-line content; `claude/collaboration` is 1 commit
      behind `main`. Reconciling the two branches is an Owner-approved
      merge (Law 11), not done here.
@@ -129,7 +130,7 @@ Forbidden:  Code changes; diagram changes; adding a module to the
 Allowed:    Governance/architecture-document authoring only.
 Input:      TASK-GOV-003 brief (Owner instruction).
 Output:     Architecture Authority section in
-            docs/01_Ecosystem_Architecture.md; this document.
+            docs/architecture/01_Ecosystem_Architecture.md; this document.
 Owner:      Worker (this session) -- task-assignee sense.
 Status:     SUPERSEDED -- see Section 9 below.
 Next step:  n/a -- corrected under TASK-ARCH-001.

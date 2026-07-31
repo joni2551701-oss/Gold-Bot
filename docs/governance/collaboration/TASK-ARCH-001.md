@@ -64,7 +64,7 @@ Owner Decision" section.
 ## 4. What was done
 
 1. **Corrected the Architecture Authority section** (Revision 2) in
-   `docs/01_Ecosystem_Architecture.md`: withdrew Revision 1's "single
+   `docs/architecture/01_Ecosystem_Architecture.md`: withdrew Revision 1's "single
    official Master Architecture, governs everything" claim, added a
    "Division of authority" diagram placing the Constitution supreme,
    `ARCHITECTURE_MASTER.md`+siblings authoritative for the Trading
@@ -115,12 +115,19 @@ Full detail in the document's own §21. Summary:
    outcome-learning loop in `learning/`, vs. this document's
    learner-facing Academy vision) — a documentation clarity risk, not
    a code contradiction.
-4. File location: this document lives at `docs/`, the Constitution-
-   governed set lives at `docs/architecture/` — a pre-existing,
-   unresolved discrepancy first flagged in `TASK-GOV-003.md` §3.
+4. File location: this document lived at `docs/`, the Constitution-
+   governed set lives at `docs/architecture/` — a pre-existing
+   discrepancy first flagged in `TASK-GOV-003.md` §3.
 
 None of these were changed, force-mapped, or silently reconciled by
-this Worker.
+this Worker within this task. **Update (TASK-GOV-004):** the Owner
+subsequently ruled on all four — 1 and 2 kept as "Accepted as Future
+Architecture"/"Accepted," 3 (Learning naming) resolved by a rename, and
+4 (file location) resolved by the `docs/architecture/` restructure
+(this document is now `docs/architecture/01_Ecosystem_Architecture.md`,
+split into `02_Data_Layer.md`…`11_Infrastructure.md`). See
+`TASK-GOV-004.md` for the full record — none of this was decided by a
+Worker alone; every ruling above is the Owner's.
 
 ## 6. Deliverable checklist (per brief)
 
@@ -198,7 +205,7 @@ Forbidden:  .py changes; logic changes; pipeline/provider/memory/core
             Section 21 conflicts unilaterally.
 Allowed:    Documentation authoring/audit only.
 Input:      TASK-ARCH-001 brief + Owner Decision (Sec 3 above).
-Output:     docs/01_Ecosystem_Architecture.md (Revision 2 + full
+Output:     docs/architecture/01_Ecosystem_Architecture.md (Revision 2 + full
             20-section set); this document; TASK-GOV-003.md correction.
 Owner:      Worker (this session) -- task-assignee sense.
 Status:     REVIEW -- awaiting Owner approval.
