@@ -12,8 +12,11 @@ from data.twelve_data_client import Candle
 from data.current_price_provider import (
     CurrentPrice,
     CurrentPriceProvider,
+    PriceStreamLastPriceSource,
     SmartCacheLastPriceSource,
+    build_default_current_price_provider,
 )
+from data.stream.price_tick import PriceTick
 
 BASE = datetime(2026, 1, 1, 14, 52, 8, tzinfo=timezone.utc)
 
@@ -99,3 +102,41 @@ def test_provider_failsafe_on_raising_source():
 
 def test_provider_returns_none_when_source_has_no_price():
     assert CurrentPriceProvider(source=_FakeSource(None)).get_current_price("XAUUSD") is None
+
+
+# ---------------- PriceStreamLastPriceSource (Phase 3 default) ----------------
+
+class _FakeStreamService:
+    """Mimics PriceStreamService: get_price() only, never fetches."""
+    def __init__(self, ticks):
+        self._ticks = ticks
+    def get_price(self, symbol):
+        return self._ticks.get(symbol)
+
+
+def test_price_stream_source_reads_tick_no_fetch():
+    tick = PriceTick(symbol="XAUUSD", price=3368.42, timestamp=BASE, provider="twelvedata")
+    service = _FakeStreamService({"XAUUSD": tick})
+    src = PriceStreamLastPriceSource(service=service)
+    cp = src.get_current_price("XAUUSD")
+    assert isinstance(cp, CurrentPrice)
+    assert cp.asset == "XAUUSD"
+    assert cp.price == 3368.42
+    assert cp.timestamp == BASE
+
+
+def test_price_stream_source_returns_none_when_no_tick_yet():
+    service = _FakeStreamService({})
+    assert PriceStreamLastPriceSource(service=service).get_current_price("XAUUSD") is None
+
+
+def test_price_stream_source_never_raises_on_broken_service():
+    class _Broken:
+        def get_price(self, symbol):
+            raise RuntimeError("boom")
+    assert PriceStreamLastPriceSource(service=_Broken()).get_current_price("XAUUSD") is None
+
+
+def test_default_provider_uses_price_stream_source():
+    provider = build_default_current_price_provider()
+    assert isinstance(provider._source, PriceStreamLastPriceSource)
