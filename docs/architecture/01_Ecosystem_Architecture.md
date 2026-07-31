@@ -340,6 +340,18 @@ Audit Logs
                     MASTER ARCHITECTURE DOCUMENTATION (TASK-ARCH-001)
 ══════════════════════════════════════════════════════════════════════════════
 
+Rodmap
+01. DATA LAYER
+02. GOLDBOT CORE
+03. APPLICATION SERVICES
+04. AI LAYER
+05. PLATFORM LAYER
+06. USER EXPERIENCE
+07. BUSINESS LAYER
+08. LEARNING LAYER
+09. MEDIA LAYER
+10. ECOSYSTEM ROADMAP
+
 Everything below expands the diagram and Golden Rules above into a full
 architecture document, per TASK-ARCH-001. Where a topic is already
 covered in depth by the Constitution-governed set
