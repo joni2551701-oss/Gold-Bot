@@ -249,8 +249,14 @@ unilaterally, it is edited only under an approved Architecture Task.
  Roles          ELITE          Billing
 
 ══════════════════════════════════════════════════════════════════════════════
-                              LEARNING LAYER
+                          ACADEMY LAYER (User Education)
 ══════════════════════════════════════════════════════════════════════════════
+
+Renamed from "LEARNING LAYER" (Owner ruling, TASK-ARCH-001 Conflict 3):
+this box is the user-facing education product. It is a distinct thing
+from "Learning Engine" — the real, existing `learning/` ML/feedback
+package inside GoldBot Core (Section 5) that learns from trade
+outcomes. Same word, two different systems; see Section 11.
 
 Academy
 │
@@ -567,19 +573,28 @@ Billing, and Referral were not found anywhere in the codebase. Future
 monetization (per the diagram) is therefore entirely a roadmap item
 (Section 19), not a present capability.
 
-## 11. Learning Layer
+## 11. Academy Layer (renamed from "Learning Layer" — Owner ruling, Conflict 3 RESOLVED)
 
-**Status: real as ML, not real as education.** `learning/`
-(`confidence.py`, `outcome_analyzer.py`, `pattern_detector.py`,
-`regime_memory.py`, `trade_event_bridge.py`) plus
-`database/learning_repository.py` and `ai/learning/`/
-`ai/learning_context.py` are a genuine adaptive-learning loop — the
-system learning from its own trade outcomes. This is a different thing
-from the diagram's Academy (Interactive Lessons, Simulator, AI Coach,
-Challenge, Tournament, PvP, Certification, Career Mode) — a
-learner-facing education product, which does not exist. The naming
-overlap ("Learning") between the real ML loop and the vision's Academy
-is itself worth flagging as a source of future confusion (Section 21).
+Two different things previously shared the word "Learning." Owner
+ruling separates them permanently:
+
+- **Learning Engine** — GoldBot Core's real, existing ML/feedback loop:
+  `learning/` (`confidence.py`, `outcome_analyzer.py`,
+  `pattern_detector.py`, `regime_memory.py`, `trade_event_bridge.py`)
+  plus `database/learning_repository.py` and `ai/learning/`/
+  `ai/learning_context.py`. The system learning from its own trade
+  outcomes. **Status: real, implemented.** Belongs conceptually to
+  GoldBot Core (Section 5) even though it has no dedicated diagram box
+  there yet (no box was added by this rename — see Section 21, adding
+  a diagram box is a separate decision from renaming one).
+- **Academy** — the diagram's user-facing education product
+  (Interactive Lessons, Simulator, AI Coach, Challenge, Tournament,
+  PvP, Certification, Career Mode). **Status: vision only, does not
+  exist.** This is this section's real subject now that the name no
+  longer collides with the Learning Engine.
+
+Conflict 3 (originally: same word, two systems) is **RESOLVED** by
+this rename, not merely flagged — see Section 21's updated entry.
 
 ## 12. Media Layer
 
@@ -820,40 +835,55 @@ Constitution Articles they don't duplicate) leave open:
 
 ## 21. Conflicts Requiring Owner Decision
 
-Per the Owner's explicit instruction: found, listed, not resolved.
+Found and listed per the Owner's original instruction (not resolved
+unilaterally). The Owner has since ruled on all four; each entry below
+records the ruling and its status.
 
-1. **Diagram pipeline-order mismatch.** This document's diagram (GoldBot
-   Core section) lists `Market Engine → Context Engine → Analysis
-   Engine → Strategy Engine → Confluence Engine → Decision Engine`.
-   `docs/architecture/ARCHITECTURE_MASTER.md`'s diagram lists
-   `Market Data → Context Engine → Strategy Engine → Signal Engine →
-   Decision Engine → Risk Manager → Execution → Trade Monitor` — a
-   different box set (no Market/Analysis/Confluence Engine; includes
-   Signal Engine, Risk Manager, Execution, Trade Monitor that this
-   document's diagram omits from that specific chain, though Signal/
-   Risk/Execution do appear elsewhere in this document's fuller
-   diagram). Both diagrams describe the same real code (Section 5's
-   table shows exactly which). Whether to ever reconcile the two
-   diagrams into one, and if so which one changes, is an Owner
-   decision — not made here.
-2. **AI Layer naming.** This document's diagram names Senior /
-   Seniorita / Trading AI / Learning AI / Voice AI / Vision AI as
-   separate boxes; `ARCHITECTURE_MASTER.md` and the real code organize
-   the same territory as one `ai/` package with five tracks
-   (Infrastructure/Runtime/Intelligence/Product/Broadcast) plus a
-   separate `voice/` package. Whether the ecosystem-vision naming is a
-   future intended restructuring or simply a different vocabulary for
-   the same tracks is an Owner decision.
-3. **"Learning" naming collision** (Section 11, Golden Rule 15) — same
-   word, two different systems (ML loop vs. Academy). Not a contradiction
-   in code, but a documentation clarity risk flagged for an Owner call
-   on whether to rename one of them in a future Architecture Task.
-4. **File location.** `01_Ecosystem_Architecture.md` lives at `docs/`;
-   `ARCHITECTURE_MASTER.md` and its siblings live at
-   `docs/architecture/`. Whether this document should move under
-   `docs/architecture/` for consistency (flagged already in
-   `TASK-GOV-003.md` §3) remains an open Owner decision, not acted on
-   here.
+1. **Diagram pipeline-order mismatch** (`Market Engine → Context Engine
+   → Analysis Engine → Strategy Engine → Confluence Engine → Decision
+   Engine` here vs. `ARCHITECTURE_MASTER.md`'s different chain for the
+   same real code — Section 5's table shows exactly which). **Owner
+   ruling: RETAINED, status "Accepted as Future Architecture."** This
+   diagram is the target architecture; the code has not reached it yet,
+   but the diagram is not lowered to match current code — the code is
+   expected to grow toward the diagram instead (per the Owner's own
+   words: "kod hali u darajaga yetmagan bo'lsa ham, diagrammani kodga
+   tushirib yubormaymiz"). No diagram edit made. Section 5's table
+   continues to show the real absorbed-elsewhere mapping honestly
+   alongside this status.
+2. **AI Layer naming** (Senior/Seniorita/Trading AI/Learning AI/Voice
+   AI/Vision AI here vs. one real `ai/` package with five tracks).
+   **Owner ruling: RETAINED, status "Accepted."** The six names are
+   **logical services**, not physical packages/folders — the diagram
+   was never claiming a 1:1 folder mapping, and Section 7's honest
+   "one real package, five tracks" status stands as the correct
+   implementation-level description underneath these logical names. No
+   diagram edit made.
+3. **"Learning" naming collision** (ML loop vs. Academy sharing one
+   name). **Owner ruling: renamed. Status: RESOLVED.** The diagram
+   section is now "ACADEMY LAYER (User Education)"; Section 11 is
+   retitled to match and explicitly names the real ML package "Learning
+   Engine" (part of GoldBot Core, Section 5) as the distinct other
+   thing. See Section 11 for the full split.
+4. **File location** (`01_Ecosystem_Architecture.md` at `docs/` vs.
+   the Constitution-governed set at `docs/architecture/`). **Owner
+   ruling: restructure to a single `docs/architecture/` directory,
+   numbered `01_Ecosystem_Architecture.md` (high-level) through
+   `11_Infrastructure.md` (per-layer detail), with `docs/constitution/
+   CONSTITUTION.md` staying separate at the governance tier above it.**
+   Status: **PLANNED, scope being clarified with the Owner before any
+   file is moved** — the open question is whether `02_Data_Layer.md`
+   `03_GoldBot_Core.md` etc. are new ecosystem-level summary documents
+   (splitting this document's own Sections 4–14 into separate files,
+   still cross-referencing `ARCHITECTURE_MASTER.md`/
+   `MODULE_DEPENDENCIES.md`/etc. for Trading-Core mechanical detail —
+   Division of Authority unchanged), or whether they are meant to
+   absorb/subsume that existing Constitution-governed content into the
+   new numbered family. The two have very different blast radii (a
+   pure file split/move vs. a content migration touching Constitution-
+   referenced documents), so this is confirmed with the Owner before
+   execution rather than guessed. Tracked in
+   `docs/governance/collaboration/TASK-GOV-004.md`.
 
 ## 22. Self-Test — "Can a new developer understand the system from this document alone?"
 
