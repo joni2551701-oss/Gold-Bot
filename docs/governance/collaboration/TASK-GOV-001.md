@@ -1,8 +1,11 @@
 # TASK-GOV-001 — `claude/collaboration` Working Rules
 
-**Revision 2** (supersedes Revision 1 of this same document — role name
-`Director` renamed to `Owner`, and the no-new-branch restriction made
-explicit, per the reissued task brief).
+**Revision 3 — APPROVED, FROZEN.** Approved by the Owner with three
+additional laws (§10.10–§10.12) folded in. Revision 3 supersedes
+Revision 2 (which renamed `Director` to `Owner` and made the
+no-new-branch restriction explicit) and Revision 1 (the original
+draft). This document is now FROZEN: further change requires a new,
+Owner-approved task (§14 Status), not a silent edit.
 
 Governance-only task. **No source code is written, read for editing, or
 modified by this task. No new branch is opened by this task.** This
@@ -74,6 +77,10 @@ Owner-approved task.
    branch.
 3. Two Workers never work at the same time.
 4. Every Worker reads the previous Handover before starting work.
+5. Before starting, every Worker audits `main`, `claude/collaboration`,
+   any active PR, and the most recent Handover (Law 10, §10.10) — a
+   Handover-read alone is not sufficient if the branch tip has moved
+   since it was written.
 
 ## 6. Task Flow
 
@@ -155,6 +162,18 @@ Next step
 7. Every task has one clear owner and one clear status.
 8. Every branch action is traceable.
 9. No new branch is opened without Owner approval.
+10. **Branch Audit First** — before starting work, every Worker checks
+    the current state of `main`, `claude/collaboration`, any active PR,
+    and the most recent Handover. This is mandatory, not optional, and
+    prevents branch drift (the exact kind of silent tip-move noted in
+    Revision 2's own Handover, §14).
+11. **Fast-Forward Only** — on `claude/collaboration`: force push is
+    forbidden; history rewrite is forbidden; a merge commit happens
+    only with Owner approval; ordinary work proceeds by fast-forward.
+12. **Branch Ownership** — `claude/collaboration` belongs to no Worker.
+    It is GoldBot's shared collaboration branch. Workers are temporary
+    occupants of the queue (§5); the branch's only owner is the Owner
+    role (§7).
 
 ## 11. Status Model
 
@@ -192,7 +211,36 @@ This task is considered done when:
 7. It is explicitly stated that a new branch opens only with Owner
    approval (§3.5, §3.6, §4.3, §10.9).
 
-## 14. Handover (Revision 2)
+## 14. Handover (Revision 3)
+
+1. **What was reviewed:** Revision 2, against the Owner's approval
+   message adding three laws (Branch Audit First, Fast-Forward Only,
+   Branch Ownership).
+2. **What was accepted:** all three laws, verbatim in substance —
+   added as Laws 10–12 (§10) and cross-referenced from the Worker
+   Queue section (§5.5) since Branch Audit First is procedurally a
+   queue-entry step, not just a standalone law.
+3. **What was rejected:** nothing — this revision is a pure addition,
+   no prior content was removed or reworded beyond the status/version
+   header.
+4. **What is left for the next Worker:** this document is now FROZEN
+   (§14 Status) — no further edit without a new Owner-approved task.
+   The Owner has proposed a next sequence (TASK-GOV-002: audit all
+   branches; sync `claude/collaboration` with `main`'s latest state;
+   inventory old worker branches; only then resume Data Layer work).
+   None of that is authorized by this document — TASK-GOV-002 needs
+   its own Goal/Rules/Forbidden/Deliverable and Owner approval (§6)
+   before any Worker executes it. It is recorded here as `PLANNED`
+   only so it isn't lost, not as authorization to begin.
+5. **FROZEN:** this document itself (Revision 3), plus everything
+   Revision 2 already listed as FROZEN (all `.py` source under
+   `data/`, `core/`, `context/`, `strategies/`, `signals/`, `decision/`,
+   `risk/`, `execution/`, and every other CLAUDE.md change-controlled
+   module).
+6. **Opens next:** TASK-GOV-002, once the Owner issues its full brief
+   and approves it per §6 — not before.
+
+## 14a. Handover (Revision 2, historical)
 
 1. **What was reviewed:** the Revision 1 document (single-commit
    history at the time) against the reissued brief; the repository's
@@ -228,18 +276,38 @@ This task is considered done when:
 ## 15. Status
 
 ```
-TASK-ID:    TASK-GOV-001 (Revision 2)
+TASK-ID:    TASK-GOV-001 (Revision 3)
 Goal:       Define the binding working order for claude/collaboration,
-            with Owner terminology and an explicit no-new-branch rule.
+            with Owner terminology, an explicit no-new-branch rule, and
+            Laws 10-12 (Branch Audit First, Fast-Forward Only, Branch
+            Ownership).
 Rules:      Sections 2, 4, 5, 6, 10 of this document.
 Forbidden:  Section 3 of this document.
 Allowed:    Governance/documentation authoring only (this file).
-Input:      TASK-GOV-001 reissued brief (Owner instruction).
+Input:      Owner approval message adding three laws.
 Output:     This document.
 Owner:      Worker (this session) -- task-assignee sense, see Section 9.
-Status:     REVIEW -- awaiting Owner approval.
-Next step:  Owner reviews and either APPROVES (task closes DONE) or
-            returns CHANGES REQUIRED with the specific correction.
+Status:     APPROVED, FROZEN.
+Next step:  TASK-GOV-002 (branch audit), once the Owner issues its full
+            brief -- see Section 14 item 4. Not yet started.
+```
+
+## 15a. TASK-GOV-002 (placeholder — not started)
+
+```
+TASK-ID:    TASK-GOV-002
+Goal:       Audit all branches; sync claude/collaboration with main's
+            latest state; inventory old worker branches.
+Rules:      Not yet written -- Owner has not issued a full brief.
+Forbidden:  Not yet written.
+Allowed:    Not yet written.
+Input:      Owner's roadmap note under this task's Handover (§14 item 4).
+Output:     Not started.
+Owner:      Unassigned.
+Status:     PLANNED.
+Next step:  Owner issues the full TASK-GOV-002 brief (Goal, Rules,
+            Forbidden, Deliverable) and approves it per Section 6
+            before any Worker begins.
 ```
 
 ## 16. References
