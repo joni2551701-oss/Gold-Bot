@@ -292,23 +292,14 @@ Next step:  TASK-GOV-002 (branch audit), once the Owner issues its full
             brief -- see Section 14 item 4. Not yet started.
 ```
 
-## 15a. TASK-GOV-002 (placeholder — not started)
+## 15a. TASK-GOV-002 (see `TASK-GOV-002.md`)
 
-```
-TASK-ID:    TASK-GOV-002
-Goal:       Audit all branches; sync claude/collaboration with main's
-            latest state; inventory old worker branches.
-Rules:      Not yet written -- Owner has not issued a full brief.
-Forbidden:  Not yet written.
-Allowed:    Not yet written.
-Input:      Owner's roadmap note under this task's Handover (§14 item 4).
-Output:     Not started.
-Owner:      Unassigned.
-Status:     PLANNED.
-Next step:  Owner issues the full TASK-GOV-002 brief (Goal, Rules,
-            Forbidden, Deliverable) and approves it per Section 6
-            before any Worker begins.
-```
+The Owner issued the full brief and it has been executed as an audit;
+see `docs/governance/collaboration/TASK-GOV-002.md` for the complete
+report. Status: `REVIEW` — audit complete, one sync action (merging
+`claude/goldbot-data-layer-architecture-f8dx8j` into
+`claude/collaboration`) pending explicit Owner approval before
+execution.
 
 ## 16. References
 
