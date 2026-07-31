@@ -340,7 +340,11 @@ Audit Logs
                     MASTER ARCHITECTURE DOCUMENTATION (TASK-ARCH-001)
 ══════════════════════════════════════════════════════════════════════════════
 
-Rodmap
+Owner's roadmap sketch (added directly, concurrently with this task's
+own restructure below — kept as-is, not overwritten; reconciled with
+what was actually built in "Layer Detail Documents" just below):
+
+Roadmap
 01. DATA LAYER
 02. GOLDBOT CORE
 03. APPLICATION SERVICES
@@ -351,6 +355,12 @@ Rodmap
 08. LEARNING LAYER
 09. MEDIA LAYER
 10. ECOSYSTEM ROADMAP
+
+(This sketch predates the Learning→Academy rename and the final
+`01_Ecosystem_Architecture.md`/`02`–`11` numbering below, where `01`
+itself is the high-level document rather than a numbered layer, and
+Infrastructure has its own file. Not force-reconciled here — flagged,
+per this branch's own Laws, for the Owner to confirm or adjust.)
 
 Everything below expands the diagram and Golden Rules above into a full
 architecture document, per TASK-ARCH-001. Where a topic is already
