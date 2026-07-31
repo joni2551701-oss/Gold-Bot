@@ -171,7 +171,53 @@ No other branches exist in the repository as of this audit
    the governance rules and the Data Layer engineering work, exactly as
    Law 12 intends.
 
-## 9. Status
+## 9. Owner Decisions (received)
+
+1. **`claude/code-analysis-optimization-pwfo3q` → RETIRED.** Owner
+   decision: no unique content vs. `main`, no longer an active
+   development line, no merge needed. Recorded as decided; the branch
+   itself was **not deleted** in this task (deletion is a separate
+   repository action this task's brief did not ask for — only the
+   working-branch status changes to retired/inert-by-decision).
+2. **`claude/goldbot-data-layer-architecture-f8dx8j` → merge into
+   `claude/collaboration`, APPROVED.** Executed — see §10.
+
+## 10. Merge Execution (Owner-approved, Law 11)
+
+`git merge --no-ff origin/claude/goldbot-data-layer-architecture-f8dx8j`
+on `claude/collaboration`, from tip `98244a4`.
+
+**Pre/post-merge checks (as required by the Owner's approval):**
+
+| Check | Result |
+|---|---|
+| Merge conflicts | None — `Merge made by the 'ort' strategy`, clean auto-merge |
+| Changed files | 15 files, exactly the Phase 1–3 diff (see below) — nothing unexpected |
+| Governance files preserved | Yes — `TASK-GOV-001.md`/`TASK-GOV-002.md` untouched, not in the changed-file list |
+| Unexpected `.py` changes | None — every `.py` change matches an already-approved Phase 1/2/3 commit |
+| Tests | `pytest tests/` — **5365 passed**, 0 failed |
+| `python main.py` | Ran successfully; log shape identical to pre-merge baseline |
+
+**Files changed by the merge:**
+`core/pipeline.py`, `data/current_price_provider.py`,
+`data/events/event_model.py`, `data/market_data_service.py` (new),
+`data/stream/bitget_price_source.py` (new),
+`data/stream/price_cache.py` (new),
+`data/stream/price_stream_service.py` (new),
+`data/stream/price_tick.py` (new), `docs/architecture/LIVE_PRICE.md`,
+`docs/architecture/PRICE_STREAM.md`, plus 5 new test files.
+
+**Merge commit:** `d568bdc` — pushed to `origin/claude/collaboration`
+(fast-forward push of the merge commit itself; no force, no history
+rewrite, per Law 11).
+
+`claude/collaboration` now contains: Governance (TASK-GOV-001,
+TASK-GOV-002), Branch Policy references, Phase 1 (Price Stream
+Foundation), Phase 2 (MarketDataService wiring), Phase 3
+(CurrentPriceProvider → PriceStreamService) — exactly the Owner's
+stated post-merge target.
+
+## 11. Status
 
 ```
 TASK-ID:    TASK-GOV-002
@@ -179,16 +225,15 @@ Goal:       Audit all branches; determine and (where approved) bring
             the latest approved flow into claude/collaboration.
 Rules:      TASK-GOV-001.md Laws 1-12 (unchanged, referenced not restated).
 Forbidden:  New branch; merge/delete/rename without Owner approval;
-            code changes; touching FROZEN layers.
-Allowed:    Read-only git/GitHub audit; this report.
-Input:      TASK-GOV-002 brief (Owner instruction).
-Output:     This document.
+            code changes beyond the Owner-approved merge; touching
+            FROZEN layers.
+Allowed:    Read-only git/GitHub audit; the one Owner-approved merge;
+            this report.
+Input:      TASK-GOV-002 brief + Owner Decision (merge approval, Law 11).
+Output:     This document; merge commit d568bdc on claude/collaboration.
 Owner:      Worker (this session) -- task-assignee sense.
-Status:     REVIEW -- audit complete; sync action (Sec 5) pending
-            explicit Owner approval.
-Next step:  Owner approves (or declines) merging
-            claude/goldbot-data-layer-architecture-f8dx8j into
-            claude/collaboration. On approval, the merge is executed
-            as its own commit, validated, and reported with its own
-            Handover.
+Status:     DONE.
+Next step:  TASK-GOV-003 (Collaboration branch validation), per the
+            Owner's stated next-sequence -- not started; awaiting its
+            own brief and approval per TASK-GOV-001.md Section 6.
 ```

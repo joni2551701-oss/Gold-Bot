@@ -294,12 +294,16 @@ Next step:  TASK-GOV-002 (branch audit), once the Owner issues its full
 
 ## 15a. TASK-GOV-002 (see `TASK-GOV-002.md`)
 
-The Owner issued the full brief and it has been executed as an audit;
-see `docs/governance/collaboration/TASK-GOV-002.md` for the complete
-report. Status: `REVIEW` — audit complete, one sync action (merging
+Status: `DONE`. Audit completed; Owner approved and this Worker
+executed the one sync action it identified — merging
 `claude/goldbot-data-layer-architecture-f8dx8j` into
-`claude/collaboration`) pending explicit Owner approval before
-execution.
+`claude/collaboration` (merge commit `d568bdc`, clean, all checks
+passed). `claude/goldbot-data-layer-architecture-f8dx8j` (now retired
+per the Owner) never had `claude/collaboration` or its governance
+documents merged back into it — it was a one-way merge as
+instructed. `claude/collaboration` now carries Governance + Phase 1–3
+Data Layer work together. Full report:
+`docs/governance/collaboration/TASK-GOV-002.md`.
 
 ## 16. References
 
