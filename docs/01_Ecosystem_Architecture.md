@@ -1,4 +1,79 @@
 ══════════════════════════════════════════════════════════════════════════════
+                            ARCHITECTURE AUTHORITY
+══════════════════════════════════════════════════════════════════════════════
+
+Status: MASTER ARCHITECTURE — the single official architecture document
+for the Senior Trading AI Ecosystem (GoldBot). Formalized by
+TASK-GOV-003 (docs/governance/collaboration/TASK-GOV-003.md).
+
+This document is the authority. The principles below are binding on
+every future task and every implementation:
+
+1. Master Architecture. This document (01_Ecosystem_Architecture.md) is
+   the single, official Master Architecture. Where any other document,
+   diagram, or code appears to describe the ecosystem's shape, this
+   document is the one that governs.
+
+2. Basis for all technical tasks. Every technical task derives from this
+   architecture. A task that cannot be located within the structure
+   below is not ready to execute — its place in the architecture is
+   established first.
+
+3. Placement before implementation. Every new module is first placed
+   into its position in this architecture (which layer it belongs to,
+   what it may read from, what may read from it) before any code for it
+   is written.
+
+4. No contradiction. No implementation may contradict this architecture.
+   Code that would violate a layer boundary, a data-flow direction, or a
+   Golden Architecture Rule below is rejected, not merged and
+   reconciled later.
+
+5. Change protocol (architecture-first). Changing the architecture is
+   itself a governed action, in this fixed order:
+      a. an Architecture Task is written and Owner-approved;
+      b. only then is the diagram/document updated;
+      c. only then does implementation against the change begin.
+   No implementation ever silently changes the architecture, and the
+   diagram is never edited ahead of an approved Architecture Task.
+
+Governance control chain (established by this authority):
+
+      01_Ecosystem_Architecture.md   (this document — the authority)
+                  │
+                  ▼
+          Architecture Tasks          (change the architecture, Owner-approved)
+                  │
+                  ▼
+           Technical Tasks            (derive from the approved architecture)
+                  │
+                  ▼
+          Implementation              (never contradicts the architecture)
+                  │
+                  ▼
+             Review                   (checks conformance to this document)
+                  │
+                  ▼
+             Merge                    (Owner-approved, per Branch rules)
+
+Relationship to governance:
+- docs/governance/collaboration/TASK-GOV-003.md — the task that
+  formalized this Architecture Authority section and its governance
+  linkage.
+- docs/governance/collaboration/TASK-GOV-001.md — the claude/collaboration
+  working rules (single dev branch, task lifecycle, Laws 1–12) under
+  which architecture-derived tasks are executed.
+- docs/governance/roles/Collaboration_Rules.md,
+  docs/governance/policies/Branch_Policy.md — the repository-wide
+  governance this authority sits alongside (Architecture First is
+  already a governance principle there; this document is the concrete
+  architecture it points to).
+
+The diagram below is the authoritative architecture and is unchanged by
+this section — per the change protocol (principle 5) it is edited only
+under an approved Architecture Task.
+
+══════════════════════════════════════════════════════════════════════════════
                          SENIOR TRADING AI ECOSYSTEM
 ══════════════════════════════════════════════════════════════════════════════
 
