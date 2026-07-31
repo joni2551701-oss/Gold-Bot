@@ -131,7 +131,37 @@ Input:      TASK-GOV-003 brief (Owner instruction).
 Output:     Architecture Authority section in
             docs/01_Ecosystem_Architecture.md; this document.
 Owner:      Worker (this session) -- task-assignee sense.
-Status:     REVIEW -- awaiting Owner approval.
-Next step:  Owner reviews and either APPROVES (task closes DONE) or
-            returns CHANGES REQUIRED with the specific correction.
+Status:     SUPERSEDED -- see Section 9 below.
+Next step:  n/a -- corrected under TASK-ARCH-001.
 ```
+
+## 9. Correction (recorded under TASK-ARCH-001)
+
+This task's central claim -- that `01_Ecosystem_Architecture.md` is
+"the single official Master Architecture... where any other document
+appears to describe the ecosystem's shape, this document is the one
+that governs" -- was **wrong** and has been withdrawn. It was written
+without checking for `docs/constitution/CONSTITUTION.md` (which
+predates this task and already states "This is the single
+highest-authority governance document in this repository") or
+`docs/architecture/ARCHITECTURE_MASTER.md` and its siblings
+(`LAYER_CONTRACT.md`, `MODULE_DEPENDENCIES.md`, `DATA_FLOW.md`,
+`SYSTEM_LAYERS.md`) -- an existing, Constitution-governed,
+code-verified architecture set covering most of what this task
+believed it was establishing for the first time. This was a
+Reuse-First failure (Constitution Article 7 / CLAUDE.md Module Reuse
+Principle) on this Worker's part.
+
+Corrected under `docs/governance/collaboration/TASK-ARCH-001.md`
+(Owner-directed): `01_Ecosystem_Architecture.md`'s Architecture
+Authority section is now Revision 2, scoped honestly as the
+**Ecosystem Architecture** document (the wider vision layers the
+Constitution-governed set does not cover) rather than a supreme
+authority over the whole repository. See that task's record for the
+full correction and the "Division of authority" section it added.
+
+This task (TASK-GOV-003) is marked **SUPERSEDED**, not DONE and not
+deleted -- its audit and cross-reference work stand, only its central
+authority claim is withdrawn. Kept in place per this branch's own Law
+4 (No hidden refactor) -- the record of the mistake stays visible
+rather than being quietly rewritten.
