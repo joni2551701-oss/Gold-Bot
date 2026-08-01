@@ -1,5 +1,15 @@
 # market/
 
+> **LEGACY (NON-CANONICAL) — TASK-ARCH-100.** The Owner has designated
+> `data/` as the canonical Data Layer (Owner decision 1). This `market/`
+> package is non-canonical. BUT its context→market-state projection
+> facade is a UNIQUE capability with no canonical equivalent today
+> (TASK-ARCH-100 Step 7): it is NOT deleted, NOT DEPRECATED, and must
+> not be moved into `data/` without Owner approval — its migration is an
+> OPEN proposal. The projection snapshot class formerly `MarketSnapshot`
+> is now `MarketStateSnapshot` (Step 8; a `MarketSnapshot` compat alias
+> remains). See `docs/governance/collaboration/TASK-ARCH-100.md`.
+
 ## Purpose
 `market/` (TASK-CORE-005) is GoldBot's **read-only market Facade
 Layer** (Director decision). It gives every future consumer — chart/,

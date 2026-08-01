@@ -1,8 +1,15 @@
 # TASK-ARCH-100 — PHASE-01: Data Layer Migration
 
-Branch: `claude/collaboration`. Priority: CRITICAL. Status: **Steps
-1–4 delivered (audit/mapping only); Step 5+ (actual code refactoring)
-NOT started — see "STOP before Step 5" below.**
+Branch: `claude/collaboration`. Priority: CRITICAL.
+
+**Status: Phase-01 audit (Steps 1–4) delivered; STEP-05 Owner-approved
+and PARTIAL-DONE — see the "STEP-05" section at the bottom of this
+document for what was executed (MarketSnapshot collision resolved;
+legacy packages marked) and what is proposed for follow-up sub-tasks
+(the two feature-migration gaps + the market/ projection migration).
+The "STOP before Step 5" section below is the original Phase-01 record;
+the Owner subsequently ruled on its open decision, which STEP-05
+executes.**
 
 This is a code-bearing task (the brief explicitly permits move/rename/
 merge/split under Step 5), governed by `TASK-GOV-001.md` Laws 1–12
@@ -246,4 +253,240 @@ Status:     BLOCKED -- Steps 1-4 delivered; Step 5 requires an Owner
 Next step:  Owner rules on Decision 1 (and 2, 3); Worker executes
             Step 5 onward under that ruling, as its own, separately
             validated commit(s) with full test coverage maintained.
+```
+
+═══════════════════════════════════════════════════════════════════════
+
+# TASK-ARCH-100 — STEP-05 — Canonical Data Layer Migration (Owner-APPROVED)
+
+The Owner approved Step-05 with four mandatory decisions:
+1. **Canonical Data Layer = `data/`.**
+2. **Canonical Live Stream = `data/stream/`.**
+3. **Canonical MarketSnapshot = `data.market_data.MarketSnapshot`** — no
+   other `MarketSnapshot` *class* may remain.
+4. **DELETE forbidden.** Only Migration / Compatibility / Refactoring /
+   Wrapper / Adapter. A legacy module reaches DEPRECATED only after its
+   functionality is fully migrated to canonical AND the Owner approves;
+   only a later phase may DELETE.
+
+Governing lens (Owner's Final Instruction): the goal is unification
+under one canonical architecture with **zero feature loss**, not code
+reduction.
+
+## What was executed this turn (concrete, reversible, no feature loss)
+
+### Step 8 — MarketSnapshot Refactor (DONE)
+`market/market_data.py`'s projection-snapshot class (a market-*state*
+summary: trend/liquidity/session/volatility/regime/structure primitives)
+was **renamed** `MarketSnapshot` → `MarketStateSnapshot`, with a
+backward-compatible `MarketSnapshot = MarketStateSnapshot` alias kept in
+the module. Result:
+- The only class in the repository literally *defined* as
+  `class MarketSnapshot` is now the canonical
+  `data.market_data.MarketSnapshot` (a multi-timeframe candle container
+  — a genuinely different shape) — satisfies Owner decision 3.
+- No delete; the projection class and every field/method are intact —
+  satisfies decision 4 and feature preservation.
+- `market/__init__.py` and `market/market_manager.py` updated to the new
+  canonical name; the `MarketSnapshot` alias is still exported.
+- The three `tests/market/*` suites that import `MarketSnapshot` from
+  `market.market_data` were deliberately left importing via the alias —
+  so they now actively **prove** the backward-compat shim works. All 108
+  `tests/market/` + `tests/stream/` tests pass unchanged.
+
+### Legacy status markers (DONE — status only, no behavior change)
+`stream/` and `market/` (both `__init__.py` docstrings + `README.md`)
+now carry a **LEGACY (NON-CANONICAL)** banner recording Owner decisions
+1 & 2. They are explicitly marked **NOT DEPRECATED** (per the Owner's
+staging rule) and **NOT deleted**. `market/`'s banner additionally
+records that its projection facade is a unique capability under an OPEN
+Migration Proposal (Step 7) that must not be moved without approval.
+
+## Step 1 — Legacy Module Audit
+
+| Module | Purpose | Consumer | Producer | Tests | Docs | Status |
+|---|---|---|---|---|---|---|
+| `stream/price_stream.py` (`PriceStream`) | Composition root: ingest/poll → validate → state → route | none (only `tests/stream/`) | `data/providers` (via poll) | `tests/stream/` | `stream/README.md` | LEGACY |
+| `stream/stream_event.py` (`StreamEvent`) | Transport shape + `from_candle()` | `stream/` internals | — | yes | README | LEGACY |
+| `stream/stream_validator.py` (`StreamValidator`) | `validate()`→`ValidationResult` (empty/OHLC/future ts/dup/out-of-seq) | `stream/price_stream.py` | — | yes | README | LEGACY — **unique validation contract** (see Step 3) |
+| `stream/stream_state.py` (`StreamState`) | Last price/event/ts/provider/mode runtime state | `stream/price_stream.py` | — | yes | README | LEGACY |
+| `stream/current_price.py` (`CurrentPrice`) | Fast single-value latest-price read | `stream/`, `market/current_price.py` | — | yes | README | LEGACY (canonical: `data.current_price_provider.CurrentPrice`) |
+| `stream/stream_mode.py` (`StreamMode`) | Forex 24×5 weekend/market-closed clock + `resolve_mode()` | `stream/`, `market/session_state.py` | — | yes | README | LEGACY — **unique Forex clock** (see Step 3) |
+| `stream/stream_router.py` (`StreamRouter`) | Fan-out to subscribers, per-subscriber fault isolation | `stream/price_stream.py` | — | yes | README | LEGACY (canonical: `data.events.EventBus`) |
+| `stream/stream_subscriber.py` (`StreamSubscriber`) | Subscriber ABC + `CallbackSubscriber` | `stream/` | — | yes | README | LEGACY (canonical: `EventBus` subscription) |
+| `market/market_manager.py` (`MarketManager`) | Facade entry: build/store current market view | none (only `tests/market/`) | `context/` snapshot + `stream/CurrentPrice` | `tests/market/` | `market/README.md` | LEGACY — **unique projection facade** |
+| `market/market_data.py` (`MarketData`, `MarketStateSnapshot`) | Aggregated read container + immutable projection snapshot | `market/` | — | yes | README | LEGACY; snapshot renamed (Step 8) |
+| `market/market_structure.py`, `trend_state.py`, `liquidity_state.py`, `session_state.py`, `volatility_state.py`, `regime_state.py` | Read-only projections of `context/` snapshot into typed view models | `market/market_manager.py` | `context.snapshot.ContextSnapshotSchema` | yes | README | LEGACY — **unique projection capability** |
+| `market/candle.py`, `ticker.py`, `orderbook.py`, `current_price.py` (`MarketPrice`) | Read models + adapters | `market/` | `stream/` / `data.providers` | yes | README | LEGACY |
+
+`data/` canonical modules (already inventoried in `02_Data_Layer.md` and
+Step 2 of this document's Phase-01 audit) are unchanged by this step.
+
+## Step 2 — Canonical Mapping
+
+| Legacy | Canonical equivalent | Relationship |
+|---|---|---|
+| `stream/price_stream.py` `PriceStream` | `data/stream/price_stream.py` `PriceStream` + `price_stream_service.py` | canonical is the lifecycle state machine + service |
+| `stream/current_price.py` `CurrentPrice` | `data/current_price_provider.py` `CurrentPrice` (wired to Telegram) | canonical has the real consumer |
+| `stream/stream_state.py` `StreamState` | `data/stream/price_cache.py` `PriceCache` | last-value runtime store |
+| `stream/stream_router.py` + `stream_subscriber.py` | `data/events/event_bus.py` `EventBus` (`PRICE.UPDATED`) | canonical uses pub/sub instead of router/subscriber |
+| `stream/stream_mode.py` `StreamMode` | `data/stream/price_stream.py` `MarketCalendar`/waiting-mode (DD-047) | **partial** — see Step 3 gap |
+| `stream/stream_validator.py` `StreamValidator` | `data/market_data.py` `_validate_and_clean` + `data/data_quality.py` | **partial** — see Step 3 gap |
+| `stream/stream_event.py` `StreamEvent` | `data/stream/stream_event.py` `StreamEvent` | same concept |
+| `market/*` projection facade | **none** | **no canonical equivalent — Step 7 proposal** |
+| `market/market_data.py` `MarketSnapshot` | `data.market_data.MarketSnapshot` (canonical) | resolved via rename+alias (Step 8) |
+
+## Step 3 — Feature Comparison (no feature may be lost)
+
+| Feature | Legacy home | Canonical equivalent | Gap? |
+|---|---|---|---|
+| Live tick ingest + lifecycle | `stream/PriceStream` | `data/stream/PriceStream`+service | none |
+| Latest-price single read | `stream/CurrentPrice` | `data/current_price_provider` | none |
+| Fan-out to consumers | `stream/StreamRouter`+`Subscriber` | `data/events/EventBus` | none (different shape, equivalent capability) |
+| Transport event shape | `stream/StreamEvent` | `data/stream/StreamEvent` | none |
+| **Tick validation contract** (`validate()`→`ValidationResult`: empty/OHLC/future-ts/duplicate/out-of-sequence, never raises) | `stream/StreamValidator` | `data/`'s validation is candle-list cleaning in `market_data._validate_and_clean` + `data_quality`; **no standalone stream-tick validator with this exact contract** | **PARTIAL GAP** — capability must be added to canonical before `stream/` can be deprecated |
+| **Forex 24×5 market clock** (`is_weekend`/`is_market_open`, Sun 22:00–Fri 22:00 UTC) | `stream/StreamMode` | `data/stream/` has a `MarketCalendar` protocol + `AlwaysOpenCalendar`; **no concrete Forex-session clock** | **PARTIAL GAP** — a concrete Forex `MarketCalendar` must exist in canonical before `stream/` can be deprecated |
+| **context→market-state projection** (trend/liquidity/session/volatility/regime/structure read models over a `ContextSnapshotSchema`) | `market/` (whole package) | **none** | **FULL GAP** — Step 7 Migration Proposal |
+
+No feature was removed this turn. The three gaps above are the exact
+work that must land in canonical *before* the corresponding legacy
+package may move to DEPRECATED (Owner's staging rule) — none of that is
+done here; it is proposed (Step 4/7) for separate, Owner-approved tasks.
+
+## Step 4 — Migration Plan (per legacy area)
+
+1. **`stream/` core (event/state/current-price/router/subscriber/price-stream):**
+   already have canonical equivalents → migration is **re-point + retire**,
+   no new code. Action when approved: none required in canonical; mark
+   these `stream/` modules DEPRECATED once the two PARTIAL gaps below are
+   closed (so the *whole* package can retire together, not piecemeal).
+2. **`stream/StreamValidator`:** ADD a canonical stream-tick validator
+   (new file in `data/stream/`, reusing `data_quality`'s existing checks
+   where possible — Reuse First) that reproduces the `ValidationResult`
+   contract. Then `stream/StreamValidator` → DEPRECATED.
+3. **`stream/StreamMode`:** ADD a concrete Forex `MarketCalendar`
+   implementation in `data/stream/` (the protocol already exists — this
+   is extending, not creating a new abstraction). Then `stream/StreamMode`
+   → DEPRECATED.
+4. **`market/` projection facade:** Step 7 Migration Proposal — do NOT
+   move without Owner approval.
+5. **`MarketSnapshot` collision:** DONE this turn (Step 8).
+
+Each of 2/3/4 is its own future Owner-approved sub-task with full tests;
+none is executed here.
+
+## Step 6 — Feature Preservation (verified this turn)
+
+| Feature | Migrated? | Verified? |
+|---|---|---|
+| `MarketSnapshot` (canonical candle container) | unchanged | ✅ 5375 tests pass |
+| `market/` projection snapshot (now `MarketStateSnapshot`) | preserved (renamed only) | ✅ 108 market/stream tests pass via alias |
+| Backward-compat `market.market_data.MarketSnapshot` import | preserved (alias) | ✅ tests import via alias and pass |
+| All `stream/` + `market/` behavior | preserved (status-only markers) | ✅ unchanged, tests pass |
+
+Nothing was migrated *away* this turn, so nothing could be lost. The
+gaps in Step 3 are documented as pre-conditions for future deprecation.
+
+## Step 7 — Market Projection Audit (Migration PROPOSAL — needs Owner approval)
+
+- **Capability:** read-only projection of an already-computed
+  `context.snapshot.ContextSnapshotSchema` (+ current price) into typed
+  view models (trend/liquidity/session/volatility/regime/structure) and
+  an immutable `MarketStateSnapshot`. No structure math (that is
+  `context/`, FROZEN) — pure projection.
+- **Responsibility:** give future consumers (chart/AI/telegram/monitoring)
+  one read surface, so none reach into `context/` internals.
+- **Dependencies:** `context.snapshot` (public contract only),
+  `stream/current_price` (legacy — would re-point to canonical
+  `data.current_price_provider`).
+- **Consumer:** none today.
+- **Future location (proposed):** a new read-facade under the canonical
+  Data Layer or as a consumer of `data/memory/MemoryReader` (MA-002),
+  which is the canonical read-only surface — the projection would read
+  the canonical snapshot + `MemoryReader` instead of `stream/`. This is
+  the Reuse-First-aligned target (build on MA-002, don't duplicate it).
+- **Proposal:** migrate `market/`'s projection to read canonical
+  (`MemoryReader` + `ContextSnapshotSchema`) as its own Owner-approved
+  sub-task; until then `market/` stays in place, LEGACY, not deleted,
+  not deprecated. **Not moved this turn.**
+
+## Step 9 — Import Report
+
+- Broken imports after this step: **0** (verified — all 657 modules
+  import cleanly; full suite green).
+- `market.market_data.MarketSnapshot` importers: still resolve (alias).
+- Canonical `data.market_data.MarketSnapshot` importers (`core/pipeline.py`,
+  `context/htf_bias.py`, `backtesting/`, many tests): unaffected — that
+  class was never touched.
+
+## Step 13 — Module Status
+
+| Status | Modules |
+|---|---|
+| **Canonical** | all of `data/` (incl. `data/stream/`, `data/memory/`, `data/events/`, `data/current_price_provider.py`, `data/market_data.py`) |
+| **Legacy (non-canonical, active, not deprecated)** | all of `stream/`, all of `market/` |
+| **Deprecated** | none (Owner staging rule — nothing migrated-and-approved yet) |
+| **Frozen** | `data/providers/` (per its own docs), `data/memory/` (MA-001), `context/` (Core layer) |
+| **Deleted** | none (DELETE forbidden) |
+
+## Repository Tree (Data-Layer-relevant, after this step)
+
+```
+data/                     CANONICAL Data Layer
+  ├── stream/             CANONICAL live stream
+  ├── memory/             CANONICAL MarketMemory (MA-001)
+  ├── events/             CANONICAL EventBus
+  ├── providers/          Historical + Live providers (FROZEN)
+  ├── bootstrap/          Bootstrap + Recovery
+  ├── persistence/ snapshots/ replay/ normalization/
+  ├── market_data.py      CANONICAL MarketSnapshot lives here
+  ├── market_data_service.py   HistoricalDataService (target name)
+  └── current_price_provider.py  CANONICAL CurrentPriceProvider (Telegram-wired)
+stream/                   LEGACY (non-canonical) — retire after gap-close
+market/                   LEGACY (non-canonical) — projection = OPEN proposal
+```
+
+## Known Issues
+
+1. Two PARTIAL feature gaps (StreamValidator contract; concrete Forex
+   `MarketCalendar`) must land in canonical before `stream/` can be
+   deprecated — Step 3/4.
+2. `market/`'s projection facade has no canonical home yet — Step 7
+   proposal, Owner approval required before any move.
+3. Pre-existing, unrelated `DeprecationWarning: invalid escape sequence
+   '\-'` in `market/__init__.py` line 1 (a docstring backslash) —
+   noted, not fixed (out of this step's scope; touching it is optional
+   cleanup, not migration).
+
+## Recommendations
+
+1. Approve the two small canonical additions (StreamValidator, Forex
+   `MarketCalendar`) as one focused sub-task — they are the only things
+   standing between `stream/` and a clean, whole-package deprecation.
+2. Approve the Step 7 projection migration target (recommend: rebuild
+   `market/`'s projection as a consumer of `MemoryReader` (MA-002) +
+   `ContextSnapshotSchema`, not a copy) as its own sub-task.
+3. Keep `stream/`/`market/` LEGACY (not deprecated) until 1 & 2 land and
+   are verified feature-complete — exactly the Owner's staging rule.
+
+## Status
+
+```
+TASK-ID:    TASK-ARCH-100 STEP-05 (Canonical Data Layer Migration)
+Status:     STEP-05 PARTIAL-DONE, REVIEW.
+Done:       MarketSnapshot collision resolved (Step 8, rename+alias, no
+            delete, backward compatible); stream/ + market/ marked
+            LEGACY (non-canonical, NOT deprecated); full audit/plan/
+            proposals (Steps 1-4, 6, 7, 9, 13) delivered.
+Not done:   The two canonical feature additions (StreamValidator, Forex
+            MarketCalendar) and the market/ projection migration -- each
+            proposed for its own Owner-approved sub-task, per the Owner's
+            "migrate-then-deprecate, never delete" staging rule.
+Verified:   5375 tests pass (no coverage loss), 0 broken imports across
+            657 modules, python main.py unchanged, no .py logic in
+            Core/Decision/Risk/Strategy/AI/Platform touched.
+Next step:  Owner approves the two feature-migration sub-tasks and the
+            Step 7 projection target; Worker executes each as its own
+            validated commit; only then do stream/ + market/ move to
+            DEPRECATED.
 ```

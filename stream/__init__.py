@@ -1,6 +1,24 @@
 """
 Stream Layer — real-time market data flow (TASK-CORE-004).
 
+═══════════════════════════════════════════════════════════════════════
+LEGACY (NON-CANONICAL) — TASK-ARCH-100, Owner decisions 1 & 2.
+
+The Owner has designated `data/` as the canonical Data Layer and
+`data/stream/` as the canonical live-stream implementation. This
+`stream/` package is therefore NON-CANONICAL: no new consumer should be
+built on it, and future live-stream development happens in
+`data/stream/`, not here.
+
+It is NOT deleted and NOT yet marked DEPRECATED. Per the Owner's staging
+rule, a legacy package moves to DEPRECATED only after its unique
+capabilities are fully migrated into the canonical layer AND the Owner
+approves. This package's own tests (`tests/stream/`) still pass; its
+behavior is unchanged. Migration status, the feature-preservation
+matrix, and the per-module canonical mapping are tracked in
+`docs/governance/collaboration/TASK-ARCH-100.md`.
+═══════════════════════════════════════════════════════════════════════
+
 stream/ sits between the FROZEN data/providers/ layer and every
 real-time consumer (Telegram, future chart, market, context,
 monitoring, platform). It receives provider output, standardises it

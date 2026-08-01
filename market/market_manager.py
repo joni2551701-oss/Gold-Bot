@@ -26,7 +26,7 @@ from typing import List, Optional
 from market.candle import Candle
 from market.current_price import MarketPrice, read_current_price
 from market.liquidity_state import LiquidityState
-from market.market_data import MarketData, MarketSnapshot
+from market.market_data import MarketData, MarketStateSnapshot
 from market.market_structure import MarketStructureView
 from market.regime_state import RegimeState
 from market.session_state import SessionState
@@ -38,7 +38,7 @@ from market.volatility_state import VolatilityLevel
 class MarketState:
     """The latest market view the façade is holding -- last MarketData + its MarketSnapshot. Volatile; not history."""
     data: Optional[MarketData] = None
-    snapshot: Optional[MarketSnapshot] = None
+    snapshot: Optional[MarketStateSnapshot] = None
 
 
 class MarketManager:
@@ -96,10 +96,10 @@ class MarketManager:
             regime=RegimeState.from_context(context_schema),
         )
 
-    def build_snapshot(self, context_schema, **kwargs) -> MarketSnapshot:
+    def build_snapshot(self, context_schema, **kwargs) -> MarketStateSnapshot:
         """Project a MarketData and summarise it into an immutable MarketSnapshot. Accepts the same kwargs as build_market_data()."""
         data = self.build_market_data(context_schema, **kwargs)
-        return MarketSnapshot.from_market_data(data)
+        return MarketStateSnapshot.from_market_data(data)
 
     def update(self, context_schema, **kwargs) -> MarketData:
         """
@@ -108,13 +108,13 @@ class MarketManager:
         "refresh the current market view" call.
         """
         data = self.build_market_data(context_schema, **kwargs)
-        self._state = MarketState(data=data, snapshot=MarketSnapshot.from_market_data(data))
+        self._state = MarketState(data=data, snapshot=MarketStateSnapshot.from_market_data(data))
         return data
 
     def current(self) -> Optional[MarketData]:
         """The last built MarketData, or None if update() hasn't run. Fast read for a consumer."""
         return self._state.data
 
-    def current_snapshot(self) -> Optional[MarketSnapshot]:
+    def current_snapshot(self) -> Optional[MarketStateSnapshot]:
         """The last built MarketSnapshot, or None. Fast serializable read for chart/ai/telegram/monitoring."""
         return self._state.snapshot

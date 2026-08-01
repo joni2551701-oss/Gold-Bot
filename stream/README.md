@@ -1,5 +1,13 @@
 # stream/
 
+> **LEGACY (NON-CANONICAL) — TASK-ARCH-100.** The Owner has designated
+> `data/stream/` as the canonical live-stream layer (Owner decisions 1
+> & 2). This `stream/` package is non-canonical: build no new consumer
+> on it; future live-stream work happens in `data/stream/`. It is NOT
+> deleted and NOT yet DEPRECATED — deprecation waits until its unique
+> features are migrated into the canonical layer and the Owner approves.
+> Migration tracked in `docs/governance/collaboration/TASK-ARCH-100.md`.
+
 ## Purpose
 `stream/` (TASK-CORE-004) is GoldBot's real-time market **data-flow**
 layer. It sits between the **FROZEN** `data/providers/` layer and every

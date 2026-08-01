@@ -62,11 +62,20 @@ class MarketData:
 
 
 @dataclass(frozen=True)
-class MarketSnapshot:
+class MarketStateSnapshot:
     """
     Immutable, serializable point-in-time summary of a MarketData --
     primitives only, safe to JSON/transport to any consumer. Built via
     from_market_data(); carries candle_count rather than the candle list.
+
+    Renamed from `MarketSnapshot` (TASK-ARCH-100 Step 8, Owner decision
+    3): the canonical class literally named `MarketSnapshot` is now
+    `data.market_data.MarketSnapshot` (a multi-timeframe candle
+    container -- a different shape from this market-state projection).
+    A backward-compatible `MarketSnapshot = MarketStateSnapshot` alias
+    is kept at the bottom of this module so existing importers of
+    `market.market_data.MarketSnapshot` keep working (no delete, per
+    the Owner's no-DELETE rule).
     """
     symbol: str
     timeframe: str
@@ -87,7 +96,7 @@ class MarketSnapshot:
     candle_count: int = 0
 
     @classmethod
-    def from_market_data(cls, data: MarketData, created_at: Optional[datetime] = None) -> "MarketSnapshot":
+    def from_market_data(cls, data: MarketData, created_at: Optional[datetime] = None) -> "MarketStateSnapshot":
         """Summarise a MarketData into an immutable snapshot of primitives. Never raises."""
         return cls(
             symbol=data.symbol,
@@ -130,3 +139,14 @@ class MarketSnapshot:
             "liquidity_type": self.liquidity_type,
             "candle_count": self.candle_count,
         }
+
+
+# Backward-compatibility alias (TASK-ARCH-100 Step 8, Owner decision 3 +
+# no-DELETE rule). The projection snapshot's canonical name is now
+# `MarketStateSnapshot`; `MarketSnapshot` here is the SAME object under
+# its old name so existing `from market.market_data import MarketSnapshot`
+# importers keep working. The only class literally *defined* as
+# `MarketSnapshot` in the repository is now the canonical
+# `data.market_data.MarketSnapshot`. This alias is a compatibility shim,
+# not a second class definition.
+MarketSnapshot = MarketStateSnapshot
