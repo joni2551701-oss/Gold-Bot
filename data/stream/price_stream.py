@@ -63,7 +63,8 @@ class PriceStream:
                  asset_class: AssetClass = AssetClass.METAL,
                  max_reconnect_attempts: int = 5,
                  backoff_base_seconds: float = 1.0,
-                 backoff_cap_seconds: float = 60.0):
+                 backoff_cap_seconds: float = 60.0,
+                 validator: Any = None):
         if provider is None:
             raise ValueError("provider must not be None")
         if sink is None or not hasattr(sink, "on_event"):
@@ -77,9 +78,15 @@ class PriceStream:
         self._max_attempts = max_reconnect_attempts
         self._backoff_base = backoff_base_seconds
         self._backoff_cap = backoff_cap_seconds
+        # TASK-ARCH-101: optional canonical StreamValidator. When
+        # supplied, an event failing validation is dropped (not
+        # forwarded), mirroring the legacy stream/'s drop-on-invalid
+        # behavior. Default None -> no validation, behavior unchanged.
+        self._validator = validator
 
         self._state = StreamState.INITIALIZING
         self._last_ts: Optional[datetime] = None      # DD-052 ordering
+        self._last_event: Optional[StreamEvent] = None  # for validator dup/seq
         self._reconnect_attempts = 0
         self._next_retry_at: Optional[datetime] = None
         self._waiting_since: Optional[datetime] = None
@@ -87,7 +94,7 @@ class PriceStream:
         self._stats: Dict[str, int] = {
             "forwarded": 0, "dropped_out_of_order": 0, "reads": 0,
             "connects": 0, "reconnects": 0, "provider_errors": 0,
-            "waiting_entries": 0,
+            "waiting_entries": 0, "dropped_invalid": 0,
         }
 
     # -- identity / introspection --------------------------------------
@@ -226,9 +233,26 @@ class PriceStream:
             if self._last_ts is not None and e.timestamp < self._last_ts:
                 self._stats["dropped_out_of_order"] += 1
                 continue
+            # TASK-ARCH-101: optional canonical validation. An invalid
+            # event is dropped (mirrors the legacy stream/ drop-on-invalid),
+            # and does not advance _last_ts/_last_event. Fully fail-safe:
+            # a validator error never blocks the stream.
+            if self._validator is not None and not self._is_valid(e):
+                self._stats["dropped_invalid"] += 1
+                continue
             self._sink.on_event(e)
             self._last_ts = e.timestamp
+            self._last_event = e
             self._stats["forwarded"] += 1
+
+    def _is_valid(self, event: StreamEvent) -> bool:
+        try:
+            result = self._validator.validate(event, previous=self._last_event)
+            return bool(result)
+        except Exception as exc:  # noqa: BLE001 -- validator must never block the stream
+            logger.warning("PriceStream[%s] validator error ignored: %s: %s",
+                           self._asset, type(exc).__name__, str(exc)[:200])
+            return True
 
     def _provider_market_closed(self) -> bool:
         try:

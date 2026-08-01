@@ -131,15 +131,27 @@ class PriceStreamService:
 
     def register_source(self, symbol: str, provider: PriceProvider,
                          provider_name: str,
-                         asset_class: AssetClass = AssetClass.METAL) -> PriceStream:
+                         asset_class: AssetClass = AssetClass.METAL,
+                         calendar: Any = None,
+                         validator: Any = None) -> PriceStream:
         """Register one asset's `PriceProvider` with the stream. Call once
         per symbol at startup (e.g. XAUUSD/TwelveDataProvider,
-        BTCUSDT/BitgetPriceSource)."""
+        BTCUSDT/BitgetPriceSource).
+
+        `calendar` (TASK-ARCH-101): an optional `MarketCalendar` (e.g.
+        `data.stream.market_calendar.ForexMarketCalendar`) driving
+        weekend/market-closed waiting mode. Default None -> the
+        `PriceStream` default (AlwaysOpenCalendar), behavior unchanged.
+        `validator` (TASK-ARCH-101): an optional
+        `data.stream.stream_validator.StreamValidator`; when supplied,
+        invalid ticks are dropped before forwarding. Default None ->
+        no validation, behavior unchanged."""
         candle_builder = self._build_candle_builder(symbol)
         sink = _PriceTickSink(provider_name, self._cache, self._event_bus,
                               candle_builder=candle_builder)
         stream = PriceStream(asset=symbol, provider=provider, sink=sink,
-                              asset_class=asset_class)
+                              asset_class=asset_class,
+                              calendar=calendar, validator=validator)
         return self._manager.add(stream)
 
     def _build_candle_builder(self, symbol: str):

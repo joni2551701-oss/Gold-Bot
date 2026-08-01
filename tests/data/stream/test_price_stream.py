@@ -162,3 +162,32 @@ def test_provider_agnostic_swap():
 def test_capabilities_exposed():
     p = FakeProvider()
     assert p.capabilities.supports_polling is True
+
+
+# ---------------- TASK-ARCH-101: optional validator integration ----------------
+
+def test_validator_drops_invalid_events():
+    from data.stream.stream_validator import StreamValidator
+    p = FakeProvider()
+    sink = RecordingSink()
+    s = _stream(provider=p, sink=sink, calendar=FakeCalendar(True),
+                validator=StreamValidator())
+    s.tick(ts(0)); s.tick(ts(1))            # -> STREAMING
+    # one valid event (price>0) and one invalid (price<=0)
+    p.batches.append([event(i=2, price=2400.0), event(i=3, price=0.0)])
+    s.tick(ts(4))
+    prices = [e.price for e in sink.events]
+    assert 2400.0 in prices
+    assert 0.0 not in prices                # invalid dropped
+    assert s.stats()["dropped_invalid"] == 1
+
+
+def test_no_validator_forwards_everything_unchanged():
+    p = FakeProvider()
+    sink = RecordingSink()
+    s = _stream(provider=p, sink=sink, calendar=FakeCalendar(True))  # validator=None
+    s.tick(ts(0)); s.tick(ts(1))
+    p.batches.append([event(i=2, price=2400.0)])
+    s.tick(ts(4))
+    assert len(sink.events) == 1
+    assert s.stats()["dropped_invalid"] == 0
