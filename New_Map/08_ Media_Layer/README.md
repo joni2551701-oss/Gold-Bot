@@ -1,4 +1,4 @@
-# Business Layer
+# Media Layer
 
 Status: CANONICAL
 
@@ -6,37 +6,37 @@ Status: CANONICAL
 
 # Purpose
 
-Business Layer — Senior Trading AI ekotizimining biznes, foydalanuvchi va monetizatsiya jarayonlarini boshqaruvchi qatlamidir.
+Media Layer — Senior Trading AI ekotizimining media, kontent yaratish va ommaviy axborot tarqatish qatlamidir.
 
-Uning asosiy vazifasi foydalanuvchilarni boshqarish, obunalarni nazorat qilish, to'lov tizimlari bilan ishlash va platformaning biznes logikasini yuritishdir.
+Uning asosiy vazifasi GoldBot va AI tomonidan yaratilgan bilim, tahlil va kontentni foydalanuvchilarga turli media platformalari orqali yetkazishdir.
 
-Business Layer hech qachon marketni tahlil qilmaydi va savdo qarorini hisoblamaydi.
+Media Layer hech qachon marketni tahlil qilmaydi va savdo qarorini hisoblamaydi.
 
 ---
 
 # Objective
 
-Business Layer quyidagi vazifalarni bajaradi:
+Media Layer quyidagi vazifalarni bajaradi:
 
-• Identity Management
+• YouTube Content
 
-• User Management
+• Telegram Broadcast
 
-• Subscription Management
+• TikTok Content
 
-• Payment Management
+• Shorts
 
-• Wallet Management
+• Podcast
 
-• Billing
+• Live Streaming
 
-• Referral System
+• Weekly Market Review
 
-• License Management
+• AI Content Studio
 
-• Access Control
+• Content Scheduling
 
-• Business Analytics
+• Multi Platform Publishing
 
 ---
 
@@ -50,6 +50,10 @@ Application Services
 
 ↓
 
+AI Layer
+
+↓
+
 Platform Layer
 
 ↓
@@ -58,197 +62,185 @@ User Experience Layer
 
 ↓
 
-BUSINESS LAYER
+MEDIA LAYER
 
 ↓
 
-User
+Community
 
 ---
 
 # Internal Structure
 
-Business_Layer/
+Media_Layer/
 
 ├── README.md
 │
-├── Identity/
+├── YouTube/
 │
-├── User_Profile/
+├── Telegram_Broadcast/
 │
-├── Subscription/
+├── TikTok/
 │
-├── Payment/
+├── Shorts/
 │
-├── Wallet/
+├── Podcast/
 │
-├── Billing/
+├── Weekly_Market_Review/
 │
-├── Referral/
+├── AI_Content_Studio/
 │
-├── License/
+├── Live_Streaming/
 │
-└── Access_Control/
+└── Content_Manager/
 
 ---
 
 # Module Overview
 
-## Identity
+## YouTube
 
-Foydalanuvchi identifikatsiyasi.
+Long-form video content.
 
-Global User ID.
+Market analysis.
 
-Authentication.
+Educational series.
 
-Authorization.
-
----
-
-## User_Profile
-
-Foydalanuvchi profili.
-
-Settings.
-
-Language.
-
-Preferences.
-
-Devices.
+Platform updates.
 
 ---
 
-## Subscription
+## Telegram_Broadcast
 
-Subscription boshqaruvi.
+Daily updates.
 
-Free.
+Signal broadcasts.
 
-Pro.
+Announcements.
 
-Elite.
-
-Trial.
-
-Expiration.
-
-Renewal.
+Community news.
 
 ---
 
-## Payment
+## TikTok
 
-To'lov tizimlari.
+Short educational videos.
 
-Payment Gateway.
+Trading tips.
 
-Invoices.
-
-Transaction History.
-
-Refund.
+Marketing content.
 
 ---
 
-## Wallet
+## Shorts
 
-Ichki balans.
+Quick market updates.
 
-Bonus.
+Educational clips.
 
-Credit.
-
-Reward.
-
-Virtual Wallet.
+Highlights.
 
 ---
 
-## Billing
+## Podcast
 
-Hisob-kitob.
+Audio discussions.
 
-Invoices.
+Market commentary.
 
-Subscription Billing.
+Interviews.
 
-Payment Status.
-
----
-
-## Referral
-
-Referal tizimi.
-
-Affiliate.
-
-Commission.
-
-Bonus.
-
-Partner Program.
+Educational episodes.
 
 ---
 
-## License
+## Weekly_Market_Review
 
-Product License.
+Weekly market summary.
 
-Activation.
+Performance review.
 
-Validation.
+Economic outlook.
 
-Device Binding.
+Trading recap.
 
 ---
 
-## Access_Control
+## AI_Content_Studio
 
-Foydalanuvchi ruxsatlari.
+AI-generated content.
 
-Feature Access.
+Scripts.
 
-Role Management.
+Voice generation.
 
-Permission System.
+Image generation.
+
+Video preparation.
+
+Translation.
+
+---
+
+## Live_Streaming
+
+Live market sessions.
+
+Q&A.
+
+Educational webinars.
+
+Community events.
+
+---
+
+## Content_Manager
+
+Content planning.
+
+Scheduling.
+
+Publishing.
+
+Archive management.
+
+Performance tracking.
 
 ---
 
 # Responsibilities
 
-Business Layer:
+Media Layer:
 
-✓ User Management
+✓ Content Creation
 
-✓ Authentication
+✓ Content Publishing
 
-✓ Authorization
+✓ Media Distribution
 
-✓ Subscription
+✓ AI Content Generation
 
-✓ Payment
+✓ Video Production
 
-✓ Wallet
+✓ Podcast Production
 
-✓ Billing
+✓ Live Streaming
 
-✓ Referral
+✓ Community Broadcast
 
-✓ License
+✓ Content Analytics
 
-✓ Access Control
+✓ Multi Platform Publishing
 
 ---
 
 # Not Responsible
 
-Business Layer:
+Media Layer:
 
 ✗ Historical Data
 
-✗ Live Stream
+✗ Live Stream Processing
 
 ✗ Market Memory
 
@@ -256,39 +248,25 @@ Business Layer:
 
 ✗ Context Calculation
 
-✗ Strategy
+✗ Strategy Calculation
 
-✗ Decision
+✗ Decision Engine
 
-✗ Risk Calculation
+✗ Risk Management
 
 ✗ Signal Generation
 
-✗ Chart Rendering
+✗ Trade Execution
 
-✗ AI Decision
+✗ Payment
+
+✗ Subscription
 
 ---
 
-# Business Flow
+# Media Flow
 
-User
-
-↓
-
-Authentication
-
-↓
-
-Identity
-
-↓
-
-Subscription
-
-↓
-
-Access Control
+GoldBot Core
 
 ↓
 
@@ -296,53 +274,69 @@ Application Services
 
 ↓
 
-Platform
+AI Layer
 
 ↓
 
-User
+Media Layer
+
+↓
+
+YouTube
+
+Telegram
+
+TikTok
+
+Podcast
+
+Live Stream
+
+↓
+
+Community
 
 ---
 
 # Golden Rules
 
-1. Business Layer faqat biznes logikasini boshqaradi.
+1. Media Layer kontent yaratadi, savdo qarorini yaratmaydi.
 
-2. Business Layer savdo qarorini hisoblamaydi.
+2. Media Layer faqat tasdiqlangan ma'lumotlardan foydalanadi.
 
-3. Subscription faqat Business Layer tomonidan boshqariladi.
+3. AI kontenti inson nazoratidan o'tishi mumkin.
 
-4. Payment faqat Business Layer orqali amalga oshiriladi.
+4. Har bir media platforma mustaqil modul hisoblanadi.
 
-5. Access Control yagona markazdan boshqariladi.
+5. Kontent platformaga mos formatda tayyorlanadi.
 
-6. Identity barcha platformalar uchun yagona bo'ladi.
+6. Media Layer GoldBot Core logikasiga aralashmaydi.
 
-7. Wallet va Billing bir-biridan mustaqil modullar hisoblanadi.
+7. Media Layer Business Layer'dan mustaqil ishlaydi.
 
-8. Business Layer GoldBot Core logikasiga aralashmaydi.
+8. Kontent rejalashtirilgan holda nashr qilinadi.
 
-9. Har bir biznes moduli Single Responsibility prinsipiga amal qiladi.
+9. Analytics orqali media samaradorligi kuzatiladi.
 
-10. Business Layer platformaning monetizatsiya markazi hisoblanadi.
+10. Media Layer Senior Trading AI brendining rasmiy media markazi hisoblanadi.
 
 ---
 
 # Repository Structure
 
-Business_Layer/
+Media_Layer/
 
 ├── README.md
 │
-├── Identity/
-├── User_Profile/
-├── Subscription/
-├── Payment/
-├── Wallet/
-├── Billing/
-├── Referral/
-├── License/
-└── Access_Control/
+├── YouTube/
+├── Telegram_Broadcast/
+├── TikTok/
+├── Shorts/
+├── Podcast/
+├── Weekly_Market_Review/
+├── AI_Content_Studio/
+├── Live_Streaming/
+└── Content_Manager/
 
 Har bir papka o'z README.md fayliga ega bo'lishi kerak.
 
@@ -352,7 +346,7 @@ Har bir .py fayl uchun mos specification (.md) mavjud bo'lishi kerak.
 
 # Refactoring Rule
 
-Repository Business Layer blueprint'iga moslashtiriladi.
+Repository Media Layer blueprint'iga moslashtiriladi.
 
 Kod blueprint'ga mos kelishi shart.
 
@@ -362,19 +356,16 @@ Blueprint kodga moslashtirilmaydi.
 
 # Summary
 
-Business Layer — Senior Trading AI ekotizimining biznes markazi hisoblanadi.
+Media Layer — Senior Trading AI ekotizimining media va kontent markazi hisoblanadi.
 
 Uning vazifasi:
 
-• foydalanuvchilarni boshqarish;
+• ta'limiy va analitik kontent yaratish;
 
-• obunalarni nazorat qilish;
+• AI yordamida media ishlab chiqarish;
 
-• to'lov va billing tizimlarini yuritish;
+• kontentni YouTube, Telegram, TikTok, Podcast va boshqa platformalarda tarqatish;
 
-• wallet va referral tizimlarini boshqarish;
+• foydalanuvchilar bilan media orqali aloqa o'rnatish.
 
-• platformadagi barcha biznes jarayonlarini yagona markazdan boshqarish.
-
-Business Layer hech qachon marketni tahlil qilmaydi va savdo qarorini hisoblamaydi. Uning vazifasi platformaning tijorat va foydalanuvchi boshqaruvi jarayonlarini ishonchli boshqarishdir.
-```
+Media Layer hech qachon marketni tahlil qilmaydi va savdo qarorini hisoblamaydi. Uning vazifasi GoldBot ekotizimidagi bilim va axborotni ommaviy tarzda yetkazishdir.
