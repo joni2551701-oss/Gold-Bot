@@ -9,8 +9,12 @@ MarketSnapshot view by READING two already-built inputs:
     - a context.snapshot.ContextSnapshotSchema (the market structure
       context/ already computed -- via context.snapshot.from_context_snapshot;
       FROZEN, never recomputed or modified here), and
-    - the latest price from a stream.current_price.CurrentPrice (or a
-      MarketPrice / raw float), plus any recent candles.
+    - the latest price from the Data Layer's data.memory.MemoryReader
+      (or an explicit MarketPrice), plus any recent candles.
+
+Canonical dependencies (Owner ruling, TASK-ARCH-101 PART-03, Option
+3A): MemoryReader (Data Layer market data) + ContextSnapshotSchema
+(GoldBot Core context). No `stream/` dependency remains.
 
 It performs NO market-structure math, NO signal, NO decision, NO risk,
 NO execution, NO Telegram/chart rendering, and NO provider-API call. It
@@ -63,7 +67,7 @@ class MarketManager:
         symbol: Optional[str] = None,
         timeframe: Optional[str] = None,
         current_price: Optional[MarketPrice] = None,
-        stream_current_price=None,
+        memory_reader=None,
         candles: Optional[List[Candle]] = None,
         now: Optional[datetime] = None,
     ) -> MarketData:
@@ -71,16 +75,15 @@ class MarketManager:
         Project a MarketData from an already-built ContextSnapshotSchema.
         symbol/timeframe default to the schema's own values. The latest
         price is taken from `current_price` if given, else read from a
-        `stream_current_price` (stream.current_price.CurrentPrice) by
-        symbol. Every state field is a READ-ONLY projection. Never
-        raises.
+        `memory_reader` (data.memory.MemoryReader) by symbol. Every state
+        field is a READ-ONLY projection. Never raises.
         """
         sym = symbol or getattr(context_schema, "symbol", None) or "UNKNOWN"
         tf = timeframe or getattr(context_schema, "timeframe", None) or "UNKNOWN"
 
         price = current_price
-        if price is None and stream_current_price is not None:
-            price = read_current_price(stream_current_price, sym)
+        if price is None and memory_reader is not None:
+            price = read_current_price(memory_reader, sym)
 
         return MarketData(
             symbol=sym,

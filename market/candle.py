@@ -1,17 +1,19 @@
 """
 Market Layer — Candle read model (TASK-CORE-005).
 
-A plain OHLCV container the market facade hands to consumers. It holds
-NO logic (no indicator, no structure math) -- it is a view adapted from
-an upstream candle/event. Adapters accept a stream.StreamEvent or a
-data.providers.MarketCandle (the FROZEN provider shape) without
+A plain OHLCV container the market projection hands to consumers. It
+holds NO logic (no indicator, no structure math) -- it is a view
+adapted from an upstream candle. Adapters accept a `data.memory`
+CandleRecord (from `MemoryReader`, the canonical read surface) or a
+`data.providers.MarketCandle` (the FROZEN provider shape) without
 importing either module's internals -- only their public attributes.
 
 This is deliberately a thin, separate view type (not a re-export) so a
-consumer of market/ never has to reach back into stream/ or
-data/providers/ to read a candle; the market layer is the single facade
-(Director decision: market/ is the Facade Layer). It reuses upstream
-values verbatim -- it never recomputes OHLCV.
+consumer of market/ never has to reach back into `data/` to read a
+candle; the market projection is the single facade. It reuses upstream
+values verbatim -- it never recomputes OHLCV. (TASK-ARCH-101 PART-03:
+re-pointed off the now-DEPRECATED `stream/`; a generic public-attribute
+adapter remains for any candle-shaped object.)
 """
 
 from dataclasses import asdict, dataclass
@@ -38,8 +40,23 @@ class Candle:
         return data
 
     @classmethod
+    def from_candle_record(cls, symbol: str, record) -> "Candle":
+        """Adapt a `data.memory` CandleRecord (from `MemoryReader`; public
+        attributes only) into a market Candle. The record carries its own
+        `timeframe`; `symbol` is supplied by the caller (CandleRecord is
+        keyed per-asset by the memory, not on the record itself)."""
+        return cls(
+            symbol=symbol, timeframe=record.timeframe, timestamp=record.timestamp,
+            open=record.open, high=record.high, low=record.low, close=record.close,
+            volume=getattr(record, "volume", None), provider=None,
+        )
+
+    @classmethod
     def from_stream_event(cls, event) -> "Candle":
-        """Adapt a stream.StreamEvent (public attributes only) into a market Candle."""
+        """Adapt any candle-shaped object exposing public
+        `symbol`/`timeframe`/`timestamp`/OHLC attributes into a market
+        Candle. Generic and duck-typed -- it imports nothing from
+        `stream/` (kept as a backward-compatible adapter name)."""
         return cls(
             symbol=event.symbol, timeframe=event.timeframe, timestamp=event.timestamp,
             open=event.open, high=event.high, low=event.low, close=event.close,

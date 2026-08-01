@@ -1,17 +1,17 @@
 # market/
 
-> **UPPER-LAYER COMPONENT — NOT A DATA LAYER MEMBER (Owner ruling,
-> TASK-ARCH-101 Part 3).** MarketProjection consumes the Data Layer (raw
-> price) and GoldBot Core (`context/` structure); it is not part of the
-> Data Layer, which handles only raw market data and knows nothing of
-> Context/Strategy/Decision. The earlier "Data Layer legacy duplicate"
-> framing is WITHDRAWN — `market/` is NOT folded into `data/`. It is NOT
-> deleted, NOT DEPRECATED. Its only Data-Layer-migration-relevant
-> coupling is reading price from the LEGACY `stream/`, which can be
-> re-pointed to canonical separately. The projection snapshot class
-> formerly `MarketSnapshot` is now `MarketStateSnapshot` (TASK-ARCH-100
-> Step 8; a `MarketSnapshot` compat alias remains). See
-> `docs/governance/collaboration/TASK-ARCH-101.md`.
+> **CANONICAL PROJECTION — Application-Services tier (Owner ruling,
+> TASK-ARCH-101 PART-03, L1 migration EXECUTED).** `market/` is the
+> single Canonical Market Projection: an upper-layer read-only projection
+> that consumes exactly two canonical inputs — `data.memory.MemoryReader`
+> (Data Layer market data) and `context.snapshot.ContextSnapshotSchema`
+> (GoldBot Core context) — and nothing else. Its coupling to the
+> now-DEPRECATED `stream/` is completely removed (zero `stream` imports).
+> Not a Data Layer member, not Core; dependency flows strictly downward.
+> The projection snapshot is `MarketStateSnapshot` (with a `MarketSnapshot`
+> compat alias); the canonical `MarketSnapshot` class is
+> `data.market_data.MarketSnapshot`. See
+> `docs/governance/collaboration/TASK-ARCH-101.md` PART-03.
 
 ## Purpose
 `market/` (TASK-CORE-005) is GoldBot's **read-only market Facade

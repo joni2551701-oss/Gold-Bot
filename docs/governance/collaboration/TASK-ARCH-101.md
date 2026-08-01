@@ -449,23 +449,55 @@ No feature is dropped; only the two Data-Layer input *sources* change
 from legacy `stream/` to canonical `MemoryReader`/`market_calendar`.
 The context-projection logic — the unique capability — is untouched.
 
+## PART-03 — L1 Migration EXECUTED (Owner selected L1)
+
+The Owner selected **L1** (keep top-level `market/`, re-point only its
+legacy `stream/` couplings). Executed exactly as the §5 plan, minimal,
+no logic rewrite, all features preserved:
+
+1. `market/session_state.py` — `from stream.stream_mode import
+   is_weekend` → `from data.stream.market_calendar import is_weekend`
+   (the canonical clock built in Part 2; identical semantics).
+2. `market/current_price.py` — `read_current_price` now reads the
+   freshest last candle from a `data.memory.MemoryReader` (was a
+   duck-typed `stream.CurrentPrice`). Added `MarketPrice.from_candle_record`.
+   Fail-safe (unknown asset → None).
+3. `market/market_manager.py` — `build_market_data(..., stream_current_price=)`
+   → `build_market_data(..., memory_reader=)`; reads price via the
+   canonical `MemoryReader`.
+4. `market/candle.py` — added `from_candle_record` (MemoryReader
+   CandleRecord adapter); `from_stream_event` kept as a generic,
+   duck-typed, `stream`-import-free adapter (backward-compatible name).
+5. Tests — `tests/market/test_market_current_price.py` rewritten to use
+   a real `MemoryReader` (hydrated `MarketMemory`) instead of a
+   `stream.CurrentPrice`; all other market tests unchanged.
+6. Markers — `market/` flipped **LEGACY → CANONICAL PROJECTION**;
+   `stream/` marker notes it now has **zero non-test importers**.
+
+**Result:** `market/` has **zero `stream` imports** (verified by grep);
+nothing outside `stream/`+`tests/stream/` imports `stream/` anymore. The
+projection reads exactly its two Owner-approved canonical inputs
+(`MemoryReader` + `ContextSnapshotSchema`) and nothing else. Every
+projection feature preserved; no logic rewritten; no new package; no
+Data-Layer↔Context coupling introduced (Application Services → Data
+Layer, → Core; strictly downward).
+
 ## PART-03 Status
 
 ```
-TASK-ID:    TASK-ARCH-101 PART-03 (Canonical Projection Architecture)
-Status:     Proposal delivered (7 deliverables); status flips done.
-Done:       stream/ -> DEPRECATED (no delete/feature loss); market/ ->
-            LEGACY (unchanged); full Architecture Proposal for the
-            Owner-approved Option 3A, with L1/L2/L3 location options
-            (L1 recommended), dependency + consumer diagrams, migration
-            plan, risk analysis, feature-preservation report.
-Not done:   Any projection code -- deliberately, per the Owner's
-            proposal-first order. No file moved, no dependency changed.
-Verified:   docs + status-marker-only changes; no .py logic touched;
-            tests unaffected.
-Next step:  Owner selects the canonical location (L1/L2/L3). Only then
-            does the Worker execute the §5 migration as its own
-            validated commit. If any step would cross a layer boundary,
-            the Worker STOPs and returns a fresh audit (Owner's Final
-            Instruction).
+TASK-ID:    TASK-ARCH-101 PART-03 (Canonical Market Projection)
+Status:     DONE. L1 migration executed; market/ is the Canonical
+            Market Projection; stream/ DEPRECATED with zero non-test
+            importers.
+Done:       market/ decoupled from stream/ (zero stream imports),
+            reads MemoryReader + ContextSnapshotSchema only; markers
+            LEGACY->CANONICAL PROJECTION; every feature preserved.
+Not done:   The stream/ DELETE -- a separate, later, Owner-authorized
+            phase (now unblocked: stream/ has no non-test importers).
+Verified:   Full suite passes (no coverage loss); market/ has 0 stream
+            imports; no logic rewritten; Forbidden list respected (no
+            new package, no Data-Layer/Context coupling, no feature
+            removed).
+Next step:  Owner may, when ready, authorize a separate task to DELETE
+            the DEPRECATED stream/ (no importers remain).
 ```

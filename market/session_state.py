@@ -3,18 +3,19 @@ Market Layer — Session State projection (TASK-CORE-005).
 
 SessionState is a READ-ONLY projection combining the trading session
 context/ already classified (context.session -> ContextSnapshotSchema.
-session.current_session) with stream/'s weekend clock
-(stream.stream_mode.is_weekend) -- so the market façade's session view
-agrees with the stream layer's weekend/pause behaviour (Director:
-"stream/ dagi weekend logic bilan mos ishlasin"). It performs NO
-session classification of its own.
+session.current_session) with the canonical Data Layer weekend clock
+(`data.stream.market_calendar.is_weekend`, TASK-ARCH-101 Part 2) -- so
+the projection's session view agrees with the canonical live-stream
+weekend/pause behaviour. Re-pointed off the now-DEPRECATED
+`stream.stream_mode` (TASK-ARCH-101 PART-03, Owner-approved L1
+migration). It performs NO session classification of its own.
 """
 
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from stream.stream_mode import is_weekend
+from data.stream.market_calendar import is_weekend
 
 
 @dataclass(frozen=True)

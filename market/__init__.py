@@ -2,16 +2,30 @@
 Market Layer — read-only market Facade (TASK-CORE-005).
 
 ═══════════════════════════════════════════════════════════════════════
-STATUS: LEGACY — UPPER-LAYER COMPONENT, NOT A DATA LAYER MEMBER
-(Owner ruling, TASK-ARCH-101 PART-03).
+STATUS: CANONICAL PROJECTION — Application-Services tier
+(Owner ruling, TASK-ARCH-101 PART-03, L1 migration EXECUTED).
 
-`market/` stays LEGACY and is NOT changed until its migration to a
-canonical upper-layer home is designed, Owner-approved, and executed.
-DELETE is forbidden. (Owner-approved Option 3A: the canonical
-projection will read market data from `MemoryReader` and context from
-`ContextSnapshotSchema` — see the proposal in
-`docs/governance/collaboration/TASK-ARCH-101.md` PART-03. No projection
-code is written until the Owner selects the canonical location.)
+`market/` is the single Canonical Market Projection component. It is an
+upper-layer (Application Services) read-only projection — NOT a Data
+Layer member and NOT GoldBot Core. Its LEGACY status is removed: the
+Owner-approved Option 3A / L1 migration is complete. `market/` now
+depends on exactly two canonical inputs and nothing else:
+  - `data.memory.MemoryReader` (Data Layer market data — current price /
+    candles), and
+  - `context.snapshot.ContextSnapshotSchema` (GoldBot Core context —
+    structure/regime/session/liquidity, read as-is, never recomputed).
+
+The coupling to the now-DEPRECATED `stream/` has been **completely
+removed** (zero `stream` imports): current price reads via
+`MemoryReader`; the weekend clock uses
+`data.stream.market_calendar.is_weekend`. Dependency direction is
+strictly downward (Application Services → Data Layer, → Core); nothing
+in `data/` or `context/` imports `market/`.
+
+The projection snapshot class is `MarketStateSnapshot` (a
+backward-compatible `MarketSnapshot` alias remains); the single
+canonical `MarketSnapshot` class is `data.market_data.MarketSnapshot`.
+═══════════════════════════════════════════════════════════════════════
 
 Architectural clarification (Owner): **MarketProjection is NOT part of
 the Data Layer.** It is an upper-layer component that CONSUMES the

@@ -23,9 +23,13 @@ DEPRECATED here means: build NO new code on this package; use the
 canonical equivalents above. Per the Owner's explicit rule, this
 package is **NOT deleted, no code is removed, and no feature is lost** —
 its tests (`tests/stream/`) still pass and its behavior is unchanged.
-Removal (DELETE) is a separate, later, Owner-authorized phase, only
-after every remaining importer (today: the LEGACY `market/`) has been
-migrated off it. Status and mapping: `TASK-ARCH-100.md`/`TASK-ARCH-101.md`.
+
+Migration complete (TASK-ARCH-101 PART-03): `market/` has been
+re-pointed off `stream/`, so this package now has **zero non-test
+importers** — nothing outside `stream/` and its own `tests/stream/`
+imports it. It is therefore eligible for the later, separate,
+Owner-authorized DELETE phase (not performed here). Status and mapping:
+`TASK-ARCH-100.md`/`TASK-ARCH-101.md`.
 ═══════════════════════════════════════════════════════════════════════
 
 stream/ sits between the FROZEN data/providers/ layer and every
