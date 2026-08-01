@@ -2,18 +2,31 @@
 Market Layer — read-only market Facade (TASK-CORE-005).
 
 ═══════════════════════════════════════════════════════════════════════
-LEGACY (NON-CANONICAL) — TASK-ARCH-100, Owner decisions 1 & 2.
+UPPER-LAYER COMPONENT — NOT A DATA LAYER MEMBER (Owner ruling,
+TASK-ARCH-101 Part 3).
 
-The Owner has designated `data/` as the canonical Data Layer. This
-`market/` package is NON-CANONICAL and no new consumer should be built
-on it. HOWEVER, its read-only context→market-state projection facade
-(trend/liquidity/session/volatility/regime/structure views over
-`context.snapshot.ContextSnapshotSchema`) is a UNIQUE capability that
-the canonical `data/` layer has NO equivalent for today (TASK-ARCH-100
-Step 7). It is therefore NOT deleted, NOT DEPRECATED, and its migration
-target is an OPEN Migration Proposal awaiting Owner approval — it must
-not be moved into `data/` without that approval. See
-`docs/governance/collaboration/TASK-ARCH-100.md` (Step 7).
+Architectural clarification (Owner): **MarketProjection is NOT part of
+the Data Layer.** It is an upper-layer component that CONSUMES the
+outputs of the Data Layer (raw price) and GoldBot Core (`context/`'s
+structure). The Data Layer works ONLY with raw market data and does not
+know about Context/Strategy/Decision objects — verified in code
+(`data/` imports none of them). This `market/` package reads
+`context.snapshot.ContextSnapshotSchema` (Core output), which is exactly
+why it cannot live in, and must not be folded into, `data/`.
+
+Consequences of the ruling:
+- The earlier TASK-ARCH-100 framing of `market/` as a "Data Layer legacy
+  duplicate" to be migrated into `data/`/`MemoryReader` is WITHDRAWN —
+  it was a mis-classification. `market/` is a distinct upper-layer
+  component (it maps to the ecosystem's Application Services / market-
+  view tier, not the Data Layer). It is NOT absorbed into `data/`.
+- `market/` is NOT deleted and NOT DEPRECATED. It stays as the (current)
+  home of the Market Projection capability until a proper upper-layer
+  home is built.
+- The only Data-Layer-migration-relevant coupling is that `market/`
+  currently reads its price from the LEGACY `stream/` (`stream.CurrentPrice`);
+  re-pointing that ONE dependency to the canonical current-price source
+  is a small, separate item — it does not require moving the projection.
 
 Note: the projection snapshot class formerly named `MarketSnapshot`
 here is now `MarketStateSnapshot` (TASK-ARCH-100 Step 8) so the single

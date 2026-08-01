@@ -11,6 +11,28 @@ owned by `ARCHITECTURE_MASTER.md`/`LAYER_CONTRACT.md`/
 `MODULE_DEPENDENCIES.md`/`DATA_FLOW.md` where this layer overlaps them
 — this file cross-references those, it does not restate them).
 
+## Data Layer boundary (Owner ruling, TASK-ARCH-101)
+
+**The Data Layer works ONLY with raw market data. It does not know
+about Context, Strategy, or Decision objects.** It fetches, validates,
+normalizes, streams, caches, and stores raw prices/candles — nothing
+above that. It never imports from `context/`, `strategies/`,
+`decision/`, `signals/`, or `risk/` (verified in code: zero such
+imports), and nothing above it is a Data Layer member merely because it
+reads market data.
+
+In particular, **Market Projection is NOT a Data Layer component.** A
+projection that reads `context/`'s `ContextSnapshotSchema` (market
+structure) to build trend/liquidity/session/volatility/regime views is
+an **upper-layer** component that CONSUMES Data Layer output (raw price)
+and GoldBot Core output (context structure) — it belongs to the
+Application Services / market-view tier (`04_Application_Services.md`),
+not here. Folding such a projection into `data/` would force the Data
+Layer to depend on Context, violating this boundary. (Historical note:
+TASK-ARCH-100 briefly mis-classified `market/` as a "Data Layer legacy
+duplicate"; the Owner corrected this in TASK-ARCH-101 Part 3 — `market/`
+is an upper-layer component and is not migrated into `data/`.)
+
 Full module-by-module detail already exists and is not restated here:
 `data/README.md`, `docs/architecture/MARKET_DATA_FOUNDATION.md`,
 `docs/architecture/PRICE_STREAM.md`, `docs/architecture/LIVE_PRICE.md`.

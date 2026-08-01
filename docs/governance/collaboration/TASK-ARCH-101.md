@@ -1,9 +1,9 @@
 # TASK-ARCH-101 — Canonical Live Data Completion
 
 Branch: `claude/collaboration`. Priority: CRITICAL. Owner-APPROVED
-(three decisions). Status: **Parts 1 & 2 DONE; Part 4 partially done
-(stream/ ready); Part 3 (market projection migration) presented with a
-design question, NOT executed — see §Part 3.**
+(three decisions). Status: **Parts 1 & 2 DONE; Part 3 RESOLVED by Owner ruling
+(MarketProjection is upper-layer, not Data Layer — no migration into
+`data/`); Part 4 partial (stream/ ready for deprecation review).**
 
 Governed by `TASK-GOV-001.md` Laws 1–12, Constitution Article 7 (Reuse
 Principle — mandatory for this task per the Owner's own rule), and the
@@ -123,8 +123,64 @@ Worker one:**
 `data/projection/` or `market_view/` under the Data Layer, or a
 consumer module beside `data/memory/`). Naming/placement is part of the
 same Owner decision. **Nothing in `market/` was moved or changed for
-Part 3** — it stays LEGACY, in place, not deleted, not deprecated,
-until the Owner picks 3A/3B/3C and the new home.
+Part 3** — it stays in place, not deleted, not deprecated, until the
+Owner rules.
+
+### Part 3 — RESOLVED by Owner ruling (all three options WITHDRAWN)
+
+The Owner's ruling supersedes the 3A/3B/3C options above — and does so
+by rejecting the premise all three shared:
+
+> "MarketProjection Data Layer tarkibiga kirmaydi. U Data Layer va
+> GoldBot Core natijalarini iste'mol qiluvchi yuqori qatlam komponenti
+> hisoblanadi. Data Layer faqat xom bozor ma'lumotlari (raw market data)
+> bilan ishlaydi va Context, Strategy yoki Decision obyektlarini
+> bilmaydi."
+
+**MarketProjection is NOT a Data Layer component.** It is an
+upper-layer component that consumes Data Layer output (raw price) and
+GoldBot Core output (`context/` structure). The Data Layer works only
+with raw market data and does not know Context/Strategy/Decision
+objects.
+
+This makes 3A/3B/3C all wrong: each would have placed the projection
+(which reads `context/`'s `ContextSnapshotSchema`) inside `data/`,
+forcing the Data Layer to depend on Context — the exact boundary the
+Owner is protecting. (This is why Part 3 was raised as a question, not
+executed — 3A would have imported `context/` from a Data-Layer module.)
+
+**Verified in code (this ruling already holds today):**
+- `data/` imports nothing from `context/`, `strategies/`, `decision/`,
+  `signals/`, or `risk/` (grep: zero) — the Data Layer is raw-market-
+  data-only, as the ruling requires.
+- `data/` imports nothing from `market/` or `stream/` (zero) — correct
+  dependency direction (lower never depends on upper).
+- `market/` DOES read `context.snapshot.ContextSnapshotSchema` — which
+  is precisely why it belongs above the Data Layer, not in it.
+
+**Resolution / actions taken (documentation only, no code logic):**
+- Part 3's "migrate the projection into the Data Layer / onto
+  `MemoryReader`" plan is **WITHDRAWN**. `market/` is **not** folded
+  into `data/`.
+- `market/` is **reclassified**: from the earlier (mistaken)
+  "Data Layer legacy duplicate" to an **upper-layer Market View /
+  Projection component** (maps to the ecosystem's Application Services /
+  market-view tier — see `04_Application_Services.md` / `01`'s layer
+  map). Its `__init__`/README markers were corrected accordingly.
+- `market/` remains: not deleted, not deprecated, out of the Data Layer
+  canonical migration scope. The **only** Data-Layer-migration-relevant
+  item left about it is that it currently reads price from the LEGACY
+  `stream/CurrentPrice`; re-pointing that one dependency to the
+  canonical current-price source (`data.current_price_provider`) is a
+  small, separate, future item — it does not require moving the
+  projection anywhere.
+- The Data Layer boundary principle ("Data Layer = raw market data only;
+  never knows Context/Strategy/Decision; Market Projection is an
+  upper-layer consumer") is recorded in `02_Data_Layer.md` so future
+  tasks don't repeat the mis-classification.
+
+Part 3 is therefore **DONE** (resolved by ruling); no code migration was
+needed or performed.
 
 ## Part 4 — Prepare legacy for DEPRECATED (partial)
 
@@ -165,9 +221,13 @@ No feature was removed. Nothing was deleted.
 
 ## Known Issues / Next
 
-1. Part 3 needs an Owner pick (3A/3B/3C + new location) before the
-   `market/` projection can migrate. 3A recommended.
-2. `stream/` is ready for the DEPRECATED flip on Owner confirmation.
+1. Part 3 — RESOLVED by Owner ruling (MarketProjection is upper-layer,
+   not Data Layer; no migration into `data/`). `market/` reclassified,
+   out of Data Layer scope. Remaining small item: re-point `market/`'s
+   price source from legacy `stream/` to canonical
+   `data.current_price_provider` — a separate future task, not blocking.
+2. `stream/` is ready for the DEPRECATED flip on Owner confirmation
+   (its two canonical gaps are closed by Parts 1 & 2).
 3. Pre-existing unrelated `DeprecationWarning` (`\-` escape) in
    `market/__init__.py` docstring — untouched, out of scope.
 
@@ -175,17 +235,22 @@ No feature was removed. Nothing was deleted.
 
 ```
 TASK-ID:    TASK-ARCH-101 (Canonical Live Data Completion)
-Status:     Parts 1 & 2 DONE; Part 4 partial (stream/ ready); Part 3
-            presented with a design question, not executed.
+Status:     Parts 1 & 2 DONE; Part 3 RESOLVED by Owner ruling; Part 4
+            partial (stream/ ready for deprecation review).
 Done:       Canonical StreamValidator + PriceStream integration;
             Canonical ForexMarketCalendar (impl of existing protocol);
-            stream/ marked canonical-feature-complete / deprecation-ready.
-Not done:   Part 3 market-projection migration (needs Owner pick
-            3A/3B/3C + new location); the stream/ + market/ DEPRECATED
-            flips (need Owner confirmation).
+            Part 3 resolved -- MarketProjection reclassified as an
+            upper-layer component, NOT Data Layer, no migration into
+            data/; market/ markers corrected; Data Layer boundary
+            principle recorded in 02_Data_Layer.md; stream/ marked
+            canonical-feature-complete / deprecation-ready.
+Not done:   The stream/ DEPRECATED flip (needs Owner confirmation);
+            re-pointing market/'s price source off legacy stream/ (small
+            separate future item, non-blocking).
 Verified:   5400 tests pass (no coverage loss), 0 broken imports across
-            659 modules, main.py unchanged, Forbidden list respected.
-Next step:  Owner (a) picks Part 3 approach + new location, and (b)
-            confirms flipping stream/ to DEPRECATED. Worker executes
-            each as its own validated commit.
+            659 modules, main.py unchanged, Forbidden list respected;
+            Data-Layer-independence principle verified in code (data/
+            imports no context/strategies/decision/signals/risk).
+Next step:  Owner confirms flipping stream/ to DEPRECATED. The market/
+            price-source re-point can be its own small task when wanted.
 ```

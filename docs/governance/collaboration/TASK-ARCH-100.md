@@ -450,9 +450,14 @@ market/                   LEGACY (non-canonical) — projection = OPEN proposal
 
 1. Two PARTIAL feature gaps (StreamValidator contract; concrete Forex
    `MarketCalendar`) must land in canonical before `stream/` can be
-   deprecated — Step 3/4.
-2. `market/`'s projection facade has no canonical home yet — Step 7
-   proposal, Owner approval required before any move.
+   deprecated — Step 3/4. **(CLOSED by TASK-ARCH-101 Parts 1 & 2.)**
+2. ~~`market/`'s projection facade has no canonical home yet — Step 7
+   proposal.~~ **CORRECTED (TASK-ARCH-101 Part 3, Owner ruling):
+   `market/` is NOT a Data Layer component and is NOT migrated into
+   `data/` — it is an upper-layer component consuming Data Layer + Core.
+   This Step-05 audit's treatment of `market/` as a Data-Layer
+   migration target was a mis-classification; see `TASK-ARCH-101.md`
+   Part 3 and `02_Data_Layer.md`'s "Data Layer boundary" section.**
 3. Pre-existing, unrelated `DeprecationWarning: invalid escape sequence
    '\-'` in `market/__init__.py` line 1 (a docstring backslash) —
    noted, not fixed (out of this step's scope; touching it is optional
