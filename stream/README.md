@@ -1,12 +1,14 @@
 # stream/
 
-> **LEGACY (NON-CANONICAL) — TASK-ARCH-100.** The Owner has designated
-> `data/stream/` as the canonical live-stream layer (Owner decisions 1
-> & 2). This `stream/` package is non-canonical: build no new consumer
-> on it; future live-stream work happens in `data/stream/`. It is NOT
-> deleted and NOT yet DEPRECATED — deprecation waits until its unique
-> features are migrated into the canonical layer and the Owner approves.
-> Migration tracked in `docs/governance/collaboration/TASK-ARCH-100.md`.
+> **DEPRECATED — Owner decision, TASK-ARCH-101 PART-03.** The canonical
+> live-stream layer is `data/stream/`; every capability here now has a
+> canonical equivalent (validator → `data/stream/stream_validator.py`,
+> Forex clock → `data/stream/market_calendar.py`, everything else →
+> `data/stream/` + `data/events/` + `data/current_price_provider.py`).
+> Build no new code on this package. **NOT deleted, no code removed, no
+> feature lost** — its tests still pass. DELETE is a separate later
+> Owner-authorized phase, only after `market/` (its last importer) is
+> migrated off it. See `docs/governance/collaboration/TASK-ARCH-101.md`.
 
 ## Purpose
 `stream/` (TASK-CORE-004) is GoldBot's real-time market **data-flow**

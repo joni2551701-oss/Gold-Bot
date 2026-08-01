@@ -1,9 +1,12 @@
 # TASK-ARCH-101 — Canonical Live Data Completion
 
-Branch: `claude/collaboration`. Priority: CRITICAL. Owner-APPROVED
-(three decisions). Status: **Parts 1 & 2 DONE; Part 3 RESOLVED by Owner ruling
-(MarketProjection is upper-layer, not Data Layer — no migration into
-`data/`); Part 4 partial (stream/ ready for deprecation review).**
+Branch: `claude/collaboration`. Priority: CRITICAL. Owner-APPROVED.
+Status: **Parts 1 & 2 DONE; Part 3 resolved (MarketProjection is
+upper-layer, not Data Layer) + PART-03 proposal delivered (Owner
+approved Option 3A's source pattern; location L1/L2/L3 awaiting Owner
+pick; NO projection code written per the proposal-first order);
+`stream/` flipped to DEPRECATED, `market/` LEGACY — both no-delete,
+no-feature-loss. See PART-03 at the bottom.**
 
 Governed by `TASK-GOV-001.md` Laws 1–12, Constitution Article 7 (Reuse
 Principle — mandatory for this task per the Owner's own rule), and the
@@ -179,8 +182,17 @@ executed — 3A would have imported `context/` from a Data-Layer module.)
   upper-layer consumer") is recorded in `02_Data_Layer.md` so future
   tasks don't repeat the mis-classification.
 
-Part 3 is therefore **DONE** (resolved by ruling); no code migration was
-needed or performed.
+This resolved the *placement* question (the projection does NOT go into
+`data/`). **Follow-up Owner decision (PART-03, this document's bottom
+section):** the Owner then APPROVED Option 3A's *data-source pattern* —
+the (upper-layer) projection reads market data from `MemoryReader` and
+context from `ContextSnapshotSchema`, with `MemoryReader` not extended
+and `ContextSnapshotSchema` not moved into `data/`. So there IS a
+migration after all, but to a canonical **upper-layer** home, not into
+the Data Layer — the two rulings are consistent. The full proposal (7
+deliverables, location options L1/L2/L3, diagrams, migration plan, risk,
+feature preservation) is in **PART-03** at the bottom of this document,
+and no projection code is written until the Owner selects a location.
 
 ## Part 4 — Prepare legacy for DEPRECATED (partial)
 
@@ -253,4 +265,207 @@ Verified:   5400 tests pass (no coverage loss), 0 broken imports across
             imports no context/strategies/decision/signals/risk).
 Next step:  Owner confirms flipping stream/ to DEPRECATED. The market/
             price-source re-point can be its own small task when wanted.
+```
+
+═══════════════════════════════════════════════════════════════════════
+
+# TASK-ARCH-101 PART-03 — Canonical Market Projection: Architecture Proposal
+
+Owner-APPROVED Option 3A and ordered a proposal-first workflow: **no
+projection code is written** until the Owner selects the canonical
+location. This section is that proposal (the 7 required deliverables).
+Also records the two status flips the Owner ordered this turn:
+`stream/` → DEPRECATED, `market/` → LEGACY (both no-delete, no-feature-
+loss; markers updated in `stream/`+`market/` `__init__.py`/README).
+
+Binding constraints (Owner): Data Layer never gains Context/Strategy/
+Decision; `MemoryReader` is NOT extended; `ContextSnapshotSchema` is
+NOT moved into the Data Layer; dependency flows top→down only
+(DATA LAYER → GOLDBOT CORE → APPLICATION SERVICES → PLATFORM); no new
+dependency without Owner approval; if any step would break a layer
+boundary in `01_Ecosystem_Architecture.md`, STOP and return to Owner.
+
+## 1. Market Projection Architecture Proposal
+
+Market Projection is an **Application-Services-tier** read-only
+component. It produces a market-*state* view (trend, liquidity,
+session, volatility, regime, structure presence + current price) by
+**projecting** two already-computed, canonical inputs — it computes no
+market structure of its own (that is `context/`, FROZEN):
+
+- **Market data** (current price / latest candle) ← `data/memory/`
+  `MemoryReader` (MA-002), the canonical Data Layer read surface. Used
+  as-is; not extended (Owner constraint).
+- **Context results** (BOS/CHoCH/OB/FVG/liquidity/regime/session) ←
+  `context.snapshot.ContextSnapshotSchema`, the canonical public Core
+  contract. Read as-is; not moved into the Data Layer (Owner
+  constraint).
+
+Output: the existing read models (`MarketStateSnapshot` + per-aspect
+view states), unchanged in shape — only their *price input source*
+changes from the legacy `stream.CurrentPrice` to `MemoryReader`, and
+their *weekend clock* from `stream.stream_mode.is_weekend` to the
+canonical `data.stream.market_calendar.is_weekend` (already built,
+TASK-ARCH-101 Part 2).
+
+This is Option 3A exactly: Projection = f(MemoryReader market data,
+ContextSnapshotSchema context) — no Data-Layer/Core boundary crossed,
+because Projection sits ABOVE both and depends downward on each.
+
+## 2. Canonical Location — recommendation (Owner selects)
+
+Constitution Article 7: a new top-level package is the highest-cost
+option; prefer reusing/relocating an existing one.
+
+- **L1 (RECOMMENDED) — keep the top-level `market/` package as the
+  canonical Market Projection home; only re-point its two legacy
+  `stream/` couplings to canonical.** `market/` is already a distinct,
+  top-level, Application-Services-tier component in the correct
+  dependency position (it reads Core's `ContextSnapshotSchema` + Data
+  Layer price; nothing in Data Layer or Core imports it). The only
+  non-canonical thing about it is *what it reads price from*. So the
+  "migration" is: swap `stream.CurrentPrice` → `MemoryReader` and
+  `stream.stream_mode.is_weekend` → `data.stream.market_calendar`. No
+  folder move, no new package (lowest cost, Article 7-aligned). The
+  package could optionally be renamed `market_view/` or
+  `market_projection/` for clarity, but that is cosmetic and separable.
+- **L2 — new top-level `market_projection/` (or `market_view/`)
+  package**, relocate the projection modules there, retire `market/`.
+  Cleaner name, but a new top-level package (highest cost) and a larger
+  move (every projection module + its tests) for no functional gain
+  over L1.
+- **L3 — under a new `application/` (or `services/`) grouping** that
+  would also house future Application-Services components. Most
+  structurally "correct" long-term, but requires establishing a new
+  top-level tier folder now, before other Application-Services members
+  exist — premature per Article 13 (Future First designs for it,
+  doesn't build the container before there are ≥2 occupants).
+
+**Recommendation: L1** (re-point in place; optional cosmetic rename
+later). It preserves every feature, moves no files, creates no new
+package, and fully satisfies Option 3A. **Owner selects L1/L2/L3.**
+
+## 3. Dependency Diagram
+
+```
+              APPLICATION SERVICES tier
+         ┌─────────────────────────────────┐
+         │        Market Projection        │   (market/, L1)
+         │  (MarketManager / *_state views │
+         │   / MarketStateSnapshot)        │
+         └───────┬───────────────┬─────────┘
+                 │ reads         │ reads
+                 ▼ (market data) ▼ (context results)
+      ┌────────────────────┐   ┌───────────────────────────┐
+      │  data/memory/      │   │ context.snapshot.         │
+      │  MemoryReader      │   │ ContextSnapshotSchema     │
+      │  (DATA LAYER, MA-2)│   │ (GOLDBOT CORE public      │
+      └─────────┬──────────┘   │  contract)                │
+                │              └───────────────────────────┘
+                ▼
+      ┌────────────────────┐
+      │  data/memory/      │
+      │  MarketMemory(MA-1) │
+      └────────────────────┘
+```
+
+Rules honored: every arrow points DOWN (Application Services → Data
+Layer, Application Services → Core). Nothing in `data/` or `context/`
+points up at Market Projection (verified: zero imports of `market/`
+from `data/` or `context/`). `MemoryReader` unchanged;
+`ContextSnapshotSchema` unchanged; no Data-Layer↔Context coupling
+introduced (Projection depends on BOTH separately — it does not make
+the Data Layer know Context).
+
+## 4. Consumer Diagram
+
+```
+                     Market Projection
+                           │  (one read-only market-state surface)
+   ┌──────────┬────────────┼────────────┬───────────────┐
+   ▼          ▼            ▼            ▼               ▼
+ Telegram   Chart        AI Layer   Monitoring      Web/Dashboard
+ (present)  Service     (explain)   (observe)       (future)
+```
+
+All consumers are Application-Services / Platform tier or above — they
+read Projection, Projection reads down. No consumer today (Projection
+is foundation); the diagram is the intended fan-out. Consumers never
+reach into `context/` or `data/` directly for a market-state view —
+that is the whole point of the projection (one surface).
+
+## 5. Migration Plan (L1; executed only after Owner selects a location)
+
+Per-file, re-point-only, no logic rewrite:
+
+1. `market/current_price.py` — read latest price from `MemoryReader`
+   (`get_last_candle(...).close` / forming candle) instead of
+   `stream.current_price.CurrentPrice`. Keep the `MarketPrice`
+   output shape.
+2. `market/session_state.py` — import `is_weekend` from
+   `data.stream.market_calendar` instead of `stream.stream_mode`.
+3. `market/market_manager.py` — its price input already comes via
+   `current_price.py`; update the type/source references accordingly.
+4. `market/candle.py` — adapt from `MemoryReader`'s `CandleRecord` /
+   canonical `data.stream.StreamEvent` instead of `stream.StreamEvent`.
+5. Everything reading `ContextSnapshotSchema` — UNCHANGED (already
+   canonical Core contract).
+6. Tests (`tests/market/`) — updated to the canonical price/clock
+   sources; coverage preserved.
+7. Once `market/` no longer imports `stream/`, `stream/` has no
+   importers left → it becomes eligible for the later Owner-authorized
+   DELETE phase (separate task; not part of this migration).
+
+Sequencing: this runs as its own Owner-approved commit AFTER the
+location decision; it does not touch Data Layer or Core.
+
+## 6. Risk Analysis
+
+| Risk | Likelihood | Impact | Mitigation |
+|---|---|---|---|
+| Data-Layer/Core boundary accidentally crossed | Low | High | Projection depends DOWN on each input separately; `data/` still imports no `context/` (CI-checkable grep); STOP-and-audit rule if any Data-Layer file would import Context |
+| `MemoryReader` current-price semantics differ from `stream.CurrentPrice` | Medium | Medium | Both resolve to "latest known price"; validate with a projection test asserting equal behavior before/after re-point; MemoryReader read is fail-safe (None → UNKNOWN, already the projection's missing-data contract) |
+| Feature loss during re-point | Low | High | Re-point only (no logic rewrite); Feature Preservation Report (§7) enumerates every projection field; tests updated not weakened |
+| `stream/` deleted too early (still imported by `market/`) | Low | High | DELETE is a separate later phase, explicitly gated on `market/` no longer importing `stream/` (§5.7); `stream/` is DEPRECATED (not deleted) now |
+| New top-level package cost (if L2/L3) | — | Medium | L1 recommended precisely to avoid it (Article 7) |
+
+## 7. Feature Preservation Report
+
+Every projection capability, and where it comes from after 3A:
+
+| Projection feature | Source before | Source after (3A) | Preserved? |
+|---|---|---|---|
+| Current price | `stream.CurrentPrice` | `MemoryReader` (latest candle/forming close) | ✅ re-point |
+| Trend state | `ContextSnapshotSchema.structure.trend` | same | ✅ unchanged |
+| Liquidity state | `ContextSnapshotSchema.liquidity` | same | ✅ unchanged |
+| Session state | context session + `stream.is_weekend` | context session + `data.stream.market_calendar.is_weekend` | ✅ re-point clock |
+| Volatility state | `ContextSnapshotSchema.regime` | same | ✅ unchanged |
+| Regime state | `ContextSnapshotSchema.regime` | same | ✅ unchanged |
+| Structure view (BOS/CHoCH/OB/FVG) | `ContextSnapshotSchema.structure/zones` | same | ✅ unchanged |
+| `MarketStateSnapshot` (serializable summary) | `market/market_data.py` | same (already renamed, Step 8) | ✅ unchanged |
+| Candle read model | `stream.StreamEvent` adapter | `MemoryReader` `CandleRecord` / canonical `StreamEvent` adapter | ✅ re-point |
+
+No feature is dropped; only the two Data-Layer input *sources* change
+from legacy `stream/` to canonical `MemoryReader`/`market_calendar`.
+The context-projection logic — the unique capability — is untouched.
+
+## PART-03 Status
+
+```
+TASK-ID:    TASK-ARCH-101 PART-03 (Canonical Projection Architecture)
+Status:     Proposal delivered (7 deliverables); status flips done.
+Done:       stream/ -> DEPRECATED (no delete/feature loss); market/ ->
+            LEGACY (unchanged); full Architecture Proposal for the
+            Owner-approved Option 3A, with L1/L2/L3 location options
+            (L1 recommended), dependency + consumer diagrams, migration
+            plan, risk analysis, feature-preservation report.
+Not done:   Any projection code -- deliberately, per the Owner's
+            proposal-first order. No file moved, no dependency changed.
+Verified:   docs + status-marker-only changes; no .py logic touched;
+            tests unaffected.
+Next step:  Owner selects the canonical location (L1/L2/L3). Only then
+            does the Worker execute the §5 migration as its own
+            validated commit. If any step would cross a layer boundary,
+            the Worker STOPs and returns a fresh audit (Owner's Final
+            Instruction).
 ```

@@ -2,35 +2,30 @@
 Stream Layer — real-time market data flow (TASK-CORE-004).
 
 ═══════════════════════════════════════════════════════════════════════
-LEGACY (NON-CANONICAL) — TASK-ARCH-100, Owner decisions 1 & 2.
+DEPRECATED — Owner decision, TASK-ARCH-101 PART-03.
 
-The Owner has designated `data/` as the canonical Data Layer and
-`data/stream/` as the canonical live-stream implementation. This
-`stream/` package is therefore NON-CANONICAL: no new consumer should be
-built on it, and future live-stream development happens in
-`data/stream/`, not here.
-
-It is NOT deleted and NOT yet marked DEPRECATED. Per the Owner's staging
-rule, a legacy package moves to DEPRECATED only after its unique
-capabilities are fully migrated into the canonical layer AND the Owner
-approves. This package's own tests (`tests/stream/`) still pass; its
-behavior is unchanged.
-
-TASK-ARCH-101 update: the two capabilities that had no canonical
-equivalent are now migrated into `data/stream/`:
+The canonical live-stream layer is `data/stream/`. Every capability this
+`stream/` package provided now has a canonical equivalent, so the Owner
+has flipped `stream/` to DEPRECATED:
+  - `stream/price_stream.py`/`stream_event.py`/`stream_state.py`/
+    `stream_router.py`/`stream_subscriber.py` -> `data/stream/`
+    (`PriceStream`/`StreamManager`/`PriceStreamService`) + `data/events/`
+    `EventBus` (fan-out).
+  - `stream/current_price.py` -> `data/current_price_provider.py`.
   - `stream/stream_validator.py` -> `data/stream/stream_validator.py`
-    (tick-level validation; OHLC-candle validation stays at its
-    canonical layer, `data/data_quality.py`).
+    (TASK-ARCH-101 Part 1; OHLC-candle validation stays at its canonical
+    layer, `data/data_quality.py`).
   - `stream/stream_mode.py` (Forex 24x5 clock) ->
-    `data/stream/market_calendar.py` `ForexMarketCalendar` (a concrete
-    impl of the pre-existing `data/stream` `MarketCalendar` protocol).
-`stream/` is therefore now considered CANONICAL-FEATURE-COMPLETE and
-READY FOR DEPRECATION REVIEW -- but is still deliberately NOT flipped to
-DEPRECATED here, because that flip requires explicit Owner confirmation
-(a Worker does not self-approve the migrate->deprecate transition).
-Migration status and the feature-preservation matrix are tracked in
-`docs/governance/collaboration/TASK-ARCH-100.md` and
-`TASK-ARCH-101.md`.
+    `data/stream/market_calendar.py` `ForexMarketCalendar` +
+    `is_weekend()`/`is_market_open()` (TASK-ARCH-101 Part 2).
+
+DEPRECATED here means: build NO new code on this package; use the
+canonical equivalents above. Per the Owner's explicit rule, this
+package is **NOT deleted, no code is removed, and no feature is lost** —
+its tests (`tests/stream/`) still pass and its behavior is unchanged.
+Removal (DELETE) is a separate, later, Owner-authorized phase, only
+after every remaining importer (today: the LEGACY `market/`) has been
+migrated off it. Status and mapping: `TASK-ARCH-100.md`/`TASK-ARCH-101.md`.
 ═══════════════════════════════════════════════════════════════════════
 
 stream/ sits between the FROZEN data/providers/ layer and every

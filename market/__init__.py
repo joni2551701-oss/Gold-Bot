@@ -2,8 +2,16 @@
 Market Layer — read-only market Facade (TASK-CORE-005).
 
 ═══════════════════════════════════════════════════════════════════════
-UPPER-LAYER COMPONENT — NOT A DATA LAYER MEMBER (Owner ruling,
-TASK-ARCH-101 Part 3).
+STATUS: LEGACY — UPPER-LAYER COMPONENT, NOT A DATA LAYER MEMBER
+(Owner ruling, TASK-ARCH-101 PART-03).
+
+`market/` stays LEGACY and is NOT changed until its migration to a
+canonical upper-layer home is designed, Owner-approved, and executed.
+DELETE is forbidden. (Owner-approved Option 3A: the canonical
+projection will read market data from `MemoryReader` and context from
+`ContextSnapshotSchema` — see the proposal in
+`docs/governance/collaboration/TASK-ARCH-101.md` PART-03. No projection
+code is written until the Owner selects the canonical location.)
 
 Architectural clarification (Owner): **MarketProjection is NOT part of
 the Data Layer.** It is an upper-layer component that CONSUMES the
