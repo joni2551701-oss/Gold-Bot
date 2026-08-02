@@ -1205,8 +1205,9 @@ Phase 2 — Module Audit Progress
 
 06_Signal_Layer              CLOSED (700/700)
 
-⏳ 07_AI_Layer
-⬜ 08_Decision_Layer
+07_AI_Layer                  CLOSED (3700/3700)
+
+⏳ 08_Decision_Layer
 ⬜ 09_Risk_Layer
 ⬜ 10_Execution_Layer
 ⬜ 11_Trade_Monitoring_Layer
@@ -1767,19 +1768,74 @@ Notably, this is the first Layer audited this session with **zero Critical findi
 
 ---
 
+## Director Review — 07_AI_Layer (full Layer, single-pass audit, 5 parallel sub-audits)
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+07_AI_Layer
+
+Status:
+CLOSED
+
+Modules:
+37 / 37 (5 core: AICoordinator, AIEngine, AIService, ConfidenceAI, ExplanationAI; FundamentalAI group + 4 sub-modules; KnowledgeAI group + 7 direct sub-modules + KnowledgeBase group + 2 sub-modules; PersonalAI group + 5 sub-modules; VisionAI group + 4 sub-modules; VoiceAI group + 4 sub-modules)
+
+Architecture Score:
+3700 / 3700
+
+Critical:
+8 (all resolved via Director Ruling)
+
+Major:
+~30
+
+Minor:
+~3
+
+Approved:
+100%
+
+This was the largest Layer audited to date (~155 files). AICoordinator, AIEngine, AIService, VisionAI group, ImageAnalysis, PatternRecognition, ProviderRouter, ValidationEngine, UserProfile, WakeWord, and LearningEngine's internal consistency all passed with zero findings on first audit. **No Trading Safety / AI Advisory Boundary violations were found anywhere** — every one of the 37 modules explicitly and consistently denies Decision Making, Signal Generation, Risk Calculation, and Trade Execution.
+
+Auto-fixed by Worker (rule-based, no Director decision needed):
+* Dependency Source of Truth Rule — missing "Platform Layer"/"Risk Layer"/"Execution Layer" entries and a handful of spurious/misnamed entries across ~20 modules spanning FundamentalAI (4 sub-modules), KnowledgeAI (7 sub-modules), PersonalAI (PersonaManager, Senior, Seniorita), and VisionAI (ChartVision, OCR).
+* A formatting typo (`#Forbidden Dependencies` missing a space) in MemorySearch/Contracts.md.
+* A naming standardization (Economic Calendar Provider → Calendar Provider) in EconomicCalendarAI.
+* Module Runtime Boundary Rule — trimmed InteractionManager/PersonaManager/Senior/Seniorita SequenceDiagrams to stop at their own Contract boundary instead of narrating downstream modules' internal steps.
+
+Director Ruling (8 Critical, architecture-affecting, resolved in one consolidated ruling):
+1. **ConfidenceAI → Decision Layer bypass.** ConfidenceAI's 4 docs routed output directly to Decision Layer, bypassing AIService's sole-exit boundary. Fixed: rerouted through AICoordinator (`ExplanationAI → ConfidenceAI → AICoordinator → AIEngine → AIService (Exit) → Decision Layer`); added ExplanationAI as upstream predecessor across all 4 docs.
+2. **ExplanationAI wrong pipeline position.** Was positioned post-decision (`Decision Engine → ExplanationAI → PersonalAI → User`), self-contradicting (Decision Engine listed as both input and Forbidden Dependency) and bypassing AIService. Fixed: repositioned pre-decision (`VoiceAI → ExplanationAI → ConfidenceAI`) across all 4 docs; removed Decision Engine input and User terminus.
+3. **AI Layer topology (parallel vs. sequential).** `Layer_DataFlow.md` depicted PersonalAI/KnowledgeAI/VoiceAI as parallel branches; `Layer_SequenceDiagram.md`/AICoordinator's own docs showed strict sequential order. Ruling: sequential is canonical (AI context enriches stage by stage) — `Layer_DataFlow.md` rewritten to match the linear chain. New ACR: **AI Sequential Processing Rule**.
+4. **FundamentalAI internal order.** README's Workflow (News→Calendar→Sentiment→Correlation) conflicted with its own SequenceDiagram (News→Sentiment→Economic→Correlation). Ruling: News→EconomicCalendarAI→SentimentAI→CorrelationAI is canonical (Calendar events provide context for Sentiment) — SequenceDiagram corrected to match README.
+5. **PersonalAI internal order.** Group SequenceDiagram placed PersonaManager before UserProfile, contradicted by all 5 sub-modules (UserProfile before PersonaManager). Ruling: the 5 sub-modules were correct — group SequenceDiagram and README Workflow (which omitted UserProfile entirely) both corrected to `InteractionManager → UserProfile → PersonaManager → Senior/Seniorita`.
+6. **AIEngine circular dependency.** InteractionManager, Senior, and Seniorita each listed AIEngine as an Allowed Dependency, despite AIEngine being PersonalAI's own orchestrator (a child module depending on its parent orchestrator is circular). Ruling: AIEngine removed from all 3 modules' Allowed Dependencies. New ACR: **Layer Direction Rule**.
+7. **KnowledgeAI canonical pipeline** (largest single ruling). Group SequenceDiagram omitted KnowledgeManager/KnowledgeBase entirely despite listing them as Internal Modules; individual sub-modules described a second, contradictory lifecycle chain. Ruling: established the 11-stage canonical pipeline `KnowledgeManager → KnowledgeBase → MemorySearch → MemoryManager → PersonalKnowledge → SystemKnowledge → RAG → ProviderRouter → ValidationEngine → LearningEngine → Knowledge Context`; all group docs and all 9 sub-modules' Position/Boundary/Allowed Dependencies realigned to this single chain. New ACR: **Knowledge Lifecycle Rule**.
+8. **VoiceCommands position.** VoiceAI group docs and SpeechToText's own docs skipped VoiceCommands entirely (`WakeWord → SpeechToText → InteractionManager`), while VoiceCommands' own docs insisted on a mandatory intermediate position. Ruling: VoiceCommands is a real pipeline stage — canonical order `WakeWord → SpeechToText → VoiceCommands → InteractionManager`; VoiceAI group docs and SpeechToText's 4 docs corrected to route through it. New ACR: **Command Interpretation Rule** (SpeechToText only produces text; command interpretation is exclusively VoiceCommands' responsibility).
+
+Four new Canonical Rules established (Architecture Decision Records), added to `Architecture_Audit_Plan.md` §9b:
+* **AI Sequential Processing Rule** — AI Layer's internal modules execute in strict sequential order (context enriches stage by stage), not in parallel; group-level Data Flow and Sequence Diagram must agree on this order.
+* **Layer Direction Rule** — lower layer/child modules must never depend on their own orchestrator; dependency direction is always orchestrator → child, never the reverse.
+* **Knowledge Lifecycle Rule** — the 11-stage canonical KnowledgeAI pipeline (KnowledgeManager → KnowledgeBase → MemorySearch → MemoryManager → PersonalKnowledge → SystemKnowledge → RAG → ProviderRouter → ValidationEngine → LearningEngine → Knowledge Context); KnowledgeManager and KnowledgeBase must be ready before any other sub-module can function.
+* **Command Interpretation Rule** — speech-to-text modules only produce text; command interpretation is exclusively the responsibility of a dedicated command-processing module (VoiceCommands).
+
+---
+
 ## Phase 2 Statistics (running)
 
 Groups/Layers Completed:
-11 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer + 04_Indicator_Layer + 05_Strategy_Layer + 06_Signal_Layer as full Layers)
+12 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer + 04_Indicator_Layer + 05_Strategy_Layer + 06_Signal_Layer + 07_AI_Layer as full Layers)
 
 Layers Completed:
-6 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer, 05_Strategy_Layer, 06_Signal_Layer)
+7 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer, 05_Strategy_Layer, 06_Signal_Layer, 07_AI_Layer)
 
 Modules Completed:
-90
+127
 
 Architecture Score:
-9000 / 9000
+12700 / 12700
 
 Critical Remaining:
 0

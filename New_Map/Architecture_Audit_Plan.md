@@ -473,6 +473,94 @@ and final outputs.
 ```
 Sabab: Strategy Execution Rule bilan bir vaqtda qo'shildi — u xususiy holatni (Strategy Layer) taqiqlaydi, bu qoida esa umumiy tamoyilni belgilaydi: algoritm/qoida ta'riflovchi modullar (masalan, StrategyLibrary strategiyalari) hech qachon runtime execution, coordination, aggregation yoki final output egaligini da'vo qilmasligi kerak — bu huquq har doim shu turdagi modullarni boshqaruvchi Runtime Engine'ga (masalan, StrategyEngine) tegishli. Bu tamoyil keyinchalik AI, Signal va Media Layerlarida ham xuddi shunday arxitektura standarti sifatida qo'llaniladi.
 ---
+## AI Sequential Processing Rule
+```text
+AI context enriches
+stage by stage.
+
+AI Layer's Internal Modules
+(PersonalAI, KnowledgeAI,
+FundamentalAI, VisionAI, VoiceAI,
+ExplanationAI, ConfidenceAI)
+execute in strict sequential
+order, not in parallel.
+
+Group-level Data Flow and
+Sequence Diagram must agree
+on this sequential order.
+
+Violation:
+→ Critical
+```
+Sabab: `07_AI_Layer/Layer_DataFlow.md` PersonalAI/KnowledgeAI/VoiceAI'ni AICoordinator'dan parallel fan-out qiladigan qilib ko'rsatgan, holbuki `Layer_SequenceDiagram.md` va `AICoordinator/SequenceDiagram.md` bu modullarni qat'iy ketma-ket ishga tushiradigan qilib ko'rsatgan (Critical, Runtime Architecture). Director Ruling: sequential pipeline canonical hisoblanadi, chunki AI context bosqichma-bosqich boyib boradi (`PersonalAI → KnowledgeAI → FundamentalAI → VisionAI → VoiceAI → ExplanationAI → ConfidenceAI → AICoordinator`) — har bir keyingi modul avvalgi modullar to'plagan kontekstdan foydalanadi. `Layer_DataFlow.md` parallel ko'rinishidan voz kechildi va `Layer_SequenceDiagram.md`ning qat'iy ketma-ket modeliga moslashtirildi.
+---
+## Layer Direction Rule
+```text
+Lower layer modules
+must never depend on
+their own orchestrator.
+
+AIEngine
+↓
+PersonalAI
+
+never
+
+PersonalAI
+↓
+AIEngine
+```
+Sabab: `07_AI_Layer/PersonalAI/InteractionManager`, `Senior`, va `Seniorita` o'z Allowed Dependencies ro'yxatida `AIEngine`'ni ko'rsatgan, holbuki guruh darajasidagi Contracts.md'ga ko'ra AIEngine PersonalAI'ning ustidagi orchestrator hisoblanadi (`AIEngine → PersonalAI`) — bu Circular Dependency naqshi (Critical, Runtime Ownership), chunki hech bir modul o'z chaqiruvchisiga (orchestrator) qarab dependency qila olmaydi. Director Ruling: uchala modulning ham Allowed Dependencies ro'yxatidan AIEngine olib tashlandi — bu qoida umumiy tamoyil sifatida qayd etildi: pastki (child) layer/modul hech qachon o'zini boshqaruvchi yuqori orchestrator'ga dependency qilmaydi, aloqa faqat yuqoridan pastga (orchestrator → child) yo'nalishida bo'ladi.
+---
+## Knowledge Lifecycle Rule
+```text
+KnowledgeManager
+↓
+KnowledgeBase
+↓
+MemorySearch
+↓
+MemoryManager
+↓
+PersonalKnowledge
+↓
+SystemKnowledge
+↓
+RAG
+↓
+ProviderRouter
+↓
+ValidationEngine
+↓
+LearningEngine
+↓
+Knowledge Context
+
+KnowledgeManager and KnowledgeBase
+must be ready before any other
+KnowledgeAI sub-module can function.
+```
+Sabab: `07_AI_Layer/KnowledgeAI`'ning guruh darajasidagi Canonical Sequence hujjati KnowledgeManager va KnowledgeBase'ni butunlay tashlab qo'ygan (Internal Modules ro'yxatida bo'lsa-da), individual sub-modullar esa bir-biriga zid ikkinchi bir lifecycle zanjirini tasvirlagan (Critical, Runtime Pipeline). Director Ruling: yuqoridagi 11 bosqichli chiziqli pipeline canonical deb belgilandi — KnowledgeManager va KnowledgeBase avval tayyor bo'lmasa, qolgan modullar ishlay olmaydi; MemorySearch bazadan qidiradi; MemoryManager natijani boshqaradi; RAG valid knowledge yig'adi; Validation tekshiradi; Learning oxirida feedback qiladi. Guruh va barcha 9 sub-modul (KnowledgeManager, KnowledgeBase, MemorySearch, MemoryManager, PersonalKnowledge, SystemKnowledge, RAG, ProviderRouter, ValidationEngine, LearningEngine) shu pipeline'ga moslashtirildi.
+---
+## Command Interpretation Rule
+```text
+SpeechToText
+only produces text.
+
+Command interpretation
+is exclusively
+VoiceCommands' responsibility.
+
+WakeWord
+↓
+SpeechToText
+↓
+VoiceCommands
+↓
+InteractionManager
+```
+Sabab: `07_AI_Layer/VoiceAI`ning guruh darajasidagi hujjatlari VoiceCommands'ni Internal Module sifatida ro'yxatga olgan, ammo o'z Workflow/SequenceDiagram'ida hech qachon chaqirmagan; `SpeechToText`ning o'z hujjatlari ham to'g'ridan-to'g'ri InteractionManager'ga o'tib ketgan, holbuki `VoiceCommands`ning o'z hujjatlari o'zini SpeechToText bilan InteractionManager orasida majburiy bosqich sifatida ko'rsatgan (Critical, Runtime Pipeline). Director Ruling: VoiceCommands haqiqiy pipeline stage hisoblanadi va hech qachon tashlab yuborilmaydi — canonical tartib `WakeWord → SpeechToText → VoiceCommands → InteractionManager`. SpeechToText faqat matn yaratadi; ovozli buyruqni talqin qilish (Command Interpretation) faqat VoiceCommands vazifasi. VoiceAI guruh hujjatlari va SpeechToText'ning barcha hujjatlari shu tartibga moslashtirildi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.
