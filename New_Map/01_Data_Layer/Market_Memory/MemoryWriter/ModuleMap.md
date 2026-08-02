@@ -227,6 +227,12 @@ MemoryWriter quyidagilar bilan ishlashi mumkin emas.
 
 ✗ Business Layer
 
+✗ Learning Layer
+
+✗ Media Layer
+
+✗ Future Expansion Layer
+
 ---
 
 # Input
