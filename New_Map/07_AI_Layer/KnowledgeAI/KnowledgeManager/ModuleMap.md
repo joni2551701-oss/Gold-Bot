@@ -52,9 +52,10 @@ Knowledge ID va Reference boshqaradi.
 # Forbidden Dependencies
 ✗ MemoryManager
 ✗ MemorySearch
-✗ RAG
 ✗ ProviderRouter
 ✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 KnowledgeManager Knowledge Lifecycle boshqaruvchi Canonical modul hisoblanadi.

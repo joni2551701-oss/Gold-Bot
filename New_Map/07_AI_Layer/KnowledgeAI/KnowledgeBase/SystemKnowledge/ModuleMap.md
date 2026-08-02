@@ -57,6 +57,8 @@ Knowledge indekslari.
 ✗ LearningEngine
 ✗ ProviderRouter
 ✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 SystemKnowledge barcha umumiy bilimlarni saqlovchi Canonical Repository hisoblanadi.

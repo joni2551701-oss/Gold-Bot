@@ -54,6 +54,7 @@ Yakuniy Memory Result yaratadi.
 ✗ ProviderRouter
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 MemorySearch AI Memory Retrieval jarayonini boshqaruvchi Canonical modul hisoblanadi.

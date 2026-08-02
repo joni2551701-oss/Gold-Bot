@@ -54,6 +54,7 @@ Tez-tez ishlatiladigan Retrieval natijalarini vaqtincha saqlaydi.
 ✗ ValidationEngine
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 RAG GoldBot AI ichidagi hujjatlar va Knowledge Repository'lardan ma'lumot topuvchi Canonical Retrieval Engine hisoblanadi.

@@ -54,6 +54,8 @@ Eski Memory'larni arxivlaydi.
 ✗ ValidationEngine
 ✗ ProviderRouter
 ✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 MemoryManager Shared Memory va Personal Memory Lifecycle boshqaruvchi Canonical modul hisoblanadi.

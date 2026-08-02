@@ -20,8 +20,6 @@ UserProfile
 ↓
 PersonaManager
 ↓
-KnowledgeAI
-↓
 AIEngine
 ```
 ---

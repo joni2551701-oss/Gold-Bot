@@ -45,7 +45,7 @@ MemoryManager
 ✓ MemoryManager
 ✓ KnowledgeBase
 ---
-#Forbidden Dependencies
+# Forbidden Dependencies
 ✗ LearningEngine
 ✗ ValidationEngine
 ✗ ProviderRouter

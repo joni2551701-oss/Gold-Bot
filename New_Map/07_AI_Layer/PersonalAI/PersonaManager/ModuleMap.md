@@ -58,6 +58,7 @@ Persona konfiguratsiyasini boshqaradi.
 ✗ LearningEngine
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 PersonaManager foydalanuvchi tanlagan Persona'ni boshqaruvchi Canonical Routing moduli hisoblanadi.

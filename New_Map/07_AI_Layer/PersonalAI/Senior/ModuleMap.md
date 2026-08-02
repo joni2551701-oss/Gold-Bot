@@ -48,6 +48,7 @@ Kelajakdagi ovozli yordamchi Personasi.
 # Forbidden Dependencies
 ✗ MemoryManager
 ✗ LearningEngine
+✗ FundamentalAI
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer

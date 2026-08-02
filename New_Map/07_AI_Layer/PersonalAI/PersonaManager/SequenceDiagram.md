@@ -21,8 +21,6 @@ PersonaManager
 Senior
 or
 Seniorita
-↓
-KnowledgeAI
 ```
 ---
 # Runtime Rules
@@ -53,5 +51,3 @@ User
 PersonaManager
 ↓
 Senior / Seniorita
-↓
-KnowledgeAI

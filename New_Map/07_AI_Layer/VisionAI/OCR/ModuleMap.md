@@ -57,6 +57,7 @@ OCR Metadata yaratadi.
 ✗ PatternRecognition
 ✗ KnowledgeAI
 ✗ Decision Layer
+✗ Risk Layer
 ✗ Execution Layer
 ---
 # Summary

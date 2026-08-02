@@ -19,8 +19,6 @@ Seniorita
 KnowledgeAI
 ↓
 Generate Response
-↓
-AICoordinator
 ```
 ---
 # Runtime Rules

@@ -61,6 +61,7 @@ AI uchun standart Chart Context yaratadi.
 ✗ PatternRecognition
 ✗ KnowledgeAI
 ✗ Decision Layer
+✗ Risk Layer
 ✗ Execution Layer
 ---
 # Summary

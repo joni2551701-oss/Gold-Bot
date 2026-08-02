@@ -54,6 +54,7 @@ Repository boshqaruvini amalga oshiradi.
 ✗ ProviderRouter
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 KnowledgeBase GoldBot AI uchun markaziy Knowledge Repository hisoblanadi.
