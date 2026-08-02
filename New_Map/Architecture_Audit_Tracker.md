@@ -520,6 +520,130 @@ Bu naqshlar AI Layer'da rasmiy tasdiqlangan va boshqa murakkab Layer'lar (Decisi
 
 ---
 
+# Director Review — 08_Decision_Layer
+
+## Audit Result
+
+```text
+Layer: 08_Decision_Layer
+Architecture Score:
+100 / 100
+Problems:
+0
+Warnings:
+0
+Suggestions:
+0
+Status:
+APPROVED
+```
+
+## Baholash
+
+Oldingi auditdagi yagona Critical muammo — DecisionService'ning Layer Boundary (Entry/Exit) hujjatlar orasida mos kelmasligi — to'liq bartaraf etilgan.
+
+* ✅ DecisionService yagona Boundary Gateway sifatida ishlaydi.
+* ✅ Layer'ga kirish ham, chiqish ham faqat DecisionService orqali amalga oshadi.
+* ✅ DecisionEngine faqat Decision ishlab chiqaradi.
+* ✅ DecisionLogger faqat Audit va History uchun javobgar.
+* ✅ DecisionLogger Layer tashqarisiga chiqmaydi.
+* ✅ Runtime Pipeline barcha hujjatlarda bir xil.
+* ✅ Allowed/Forbidden Dependencies izchil.
+* ✅ Circular Dependency topilmagan.
+* ✅ Layer Boundary toza.
+
+## Layer Status
+
+```text
+08_Decision_Layer
+Status:
+CLOSED
+Architecture Version:
+Freeze v1.0
+Audit:
+PASSED
+Score:
+100/100
+```
+
+---
+
+# GoldBot Canonical Design Patterns (08 Layer auditidan keyin mustahkamlangan)
+
+## 1. Engine Pattern
+```text
+Engine
+↓
+Runtime Orchestration
+↓
+Business Logic Modules
+```
+
+## 2. Manager Pattern
+```text
+Discovery
+↓
+Selection
+↓
+Configuration
+↓
+Activation
+```
+
+## 3. Coordinator Pattern
+```text
+Run Modules
+↓
+Collect Results
+↓
+Merge Results
+```
+
+## 4. Service Pattern
+```text
+Public Entry
+↓
+Boundary Gateway
+↓
+Public Exit
+↓
+No Business Logic
+```
+
+## 5. Provider Pattern
+```text
+Factory
+↓
+Interface
+↓
+Provider
+↓
+Lifecycle
+↓
+Flow
+```
+
+## 6. Boundary Gateway Pattern
+```text
+Previous Layer
+      │
+      ▼
+Service
+      │
+      ▼
+Internal Layer
+      │
+      ▼
+Service
+      │
+      ▼
+Next Layer
+```
+
+Bu naqshlar ketma-ket auditlar davomida tekshirildi, tuzatildi va barcha qatlamlarda bir xil qo'llanmoqda — GoldBot Canonical Architecture v1.0 uchun mustahkam dizayn tamoyillari.
+
+---
+
 # Audit Tracker
 
 ```text
@@ -531,7 +655,7 @@ Architecture Audit Progress
 ✅ 05_Strategy_Layer            CLOSED (100/100)
 ✅ 06_Signal_Layer              CLOSED (100/100)
 ✅ 07_AI_Layer                  CLOSED (100/100)
-⏳ 08_Decision_Layer
+✅ 08_Decision_Layer            CLOSED (100/100)
 ⏳ 09_Risk_Layer
 ⏳ 10_Execution_Layer
 ⏳ 11_Trade_Monitoring_Layer
