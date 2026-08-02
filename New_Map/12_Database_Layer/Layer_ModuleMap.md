@@ -1,0 +1,73 @@
+# Database Layer Module Map
+Status: CANONICAL
+---
+# Layer Architecture
+```text
+12_Database_Layer
+│
+├── DatabaseService
+│
+├── DatabaseManager
+│
+├── TradeRepository
+│
+├── UserRepository
+│
+├── MarketRepository
+│
+├── JournalRepository
+│
+├── CacheManager
+│
+├── BackupManager
+│
+└── Database Storage
+```
+---
+# Processing Pipeline
+```text
+DatabaseService
+        │
+        ▼
+DatabaseManager
+        │
+        ├──────────────┬──────────────┬──────────────┐
+        ▼              ▼              ▼              ▼
+TradeRepository  UserRepository  MarketRepository  JournalRepository
+        │              │              │              │
+        └──────────────┴──────────────┴──────────────┘
+                       │
+                       ▼
+                 CacheManager
+                       │
+                       ▼
+                 BackupManager
+```
+---
+# Module Responsibilities
+## DatabaseService
+Database Layer Gateway.
+---
+## DatabaseManager
+Database Infrastructure boshqaradi.
+---
+## TradeRepository
+Trade va Position ma'lumotlarini boshqaradi.
+---
+## UserRepository
+User va Settings ma'lumotlarini boshqaradi.
+---
+## MarketRepository
+Market Data va Context ma'lumotlarini boshqaradi.
+---
+## JournalRepository
+AI Journal va Audit ma'lumotlarini boshqaradi.
+---
+## CacheManager
+Cache Infrastructure boshqaradi.
+---
+## BackupManager
+Backup va Disaster Recovery boshqaradi.
+---
+# Summary
+Database Layer GoldBot arxitekturasidagi Canonical Persistent Storage Layer hisoblanadi.
