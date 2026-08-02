@@ -1192,8 +1192,8 @@ Phase 2 — Module Audit Progress
 ✅ Live_Data            CLOSED (800/800)
 ✅ Market_Memory        CLOSED (600/600)
 ✅ Event_System         CLOSED (600/600)
-⏳ Data_Validation
-⬜ Providers
+✅ Data_Validation      CLOSED (600/600)
+⏳ Providers
 ```
 
 ---
@@ -1317,16 +1317,66 @@ Process change (Director-authorized, in force from this group onward): Worker au
 
 ---
 
+## Director Review — 01_Data_Layer / Data_Validation
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+01_Data_Layer
+
+Group:
+Data_Validation
+
+Status:
+CLOSED
+
+Modules:
+6 / 6
+
+Architecture Score:
+600 / 600
+
+Critical:
+0
+
+Major:
+0
+
+Warnings:
+0
+
+Approved:
+100%
+
+Module Results:
+
+| Module | Status | Score |
+|---|---|---|
+| ValidationService | CLOSED, APPROVED | 100/100 |
+| DataValidator | CLOSED, APPROVED | 100/100 |
+| SchemaValidator | CLOSED, APPROVED | 100/100 |
+| QualityValidator | CLOSED, APPROVED | 100/100 |
+| IntegrityValidator | CLOSED, APPROVED | 100/100 |
+| ValidationLifecycle | CLOSED, APPROVED | 100/100 |
+
+Findings fixed during this group's audit (full-group pass under the updated Phase 2 workflow; all self-fixed by Worker, no architecture-affecting issues found):
+
+* Data_Validation (group-level) README.md — stale module list (DataValidation, TickValidation, CandleValidation, DataQuality, ValidationFlow no longer match the 6 Canonical modules) rebuilt (Major, Group README Rule); Layer Position/Validation Flow corrected from a fixed "Historical Data + Live Data -> Data Validation -> Market Memory -> GoldBot Core" pipeline to the Canonical "Runtime Data -> Data Validation Layer -> Validated Data" model matching Layer_Contracts.md/Layer_DataFlow.md (Major, Runtime Documentation Consistency).
+* ValidationService, DataValidator, SchemaValidator, QualityValidator, IntegrityValidator, ValidationLifecycle — same bidirectional Dependency Source of Truth pattern in all six ModuleMap.md files (missing several Layer entries present in Contracts.md, extra "Trading Logic" not in Contracts.md), self-fixed across all six in one batch.
+
+---
+
 ## Phase 2 Statistics (running)
 
 Groups Completed:
-4
+5
 
 Modules Completed:
-26
+32
 
 Architecture Score:
-2600 / 2600
+3200 / 3200
 
 Critical Remaining:
 0
