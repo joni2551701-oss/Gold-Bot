@@ -65,8 +65,10 @@ SchemaValidator
 # Forbidden Dependencies
 ✗ Strategy Layer
 ✗ Decision Layer
+✗ Risk Layer
 ✗ AI Layer
-✗ Trading Logic
+✗ Platform Layer
+✗ Business Layer
 ---
 # Ownership
 DataValidator egalik qiladi.

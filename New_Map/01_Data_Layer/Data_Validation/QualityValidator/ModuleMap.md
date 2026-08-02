@@ -70,8 +70,9 @@ IntegrityValidator
 # Forbidden Dependencies
 ✗ Strategy Layer
 ✗ Decision Layer
+✗ Risk Layer
 ✗ AI Layer
-✗ Trading Logic
+✗ Business Layer
 ---
 # Ownership
 QualityValidator egalik qiladi.

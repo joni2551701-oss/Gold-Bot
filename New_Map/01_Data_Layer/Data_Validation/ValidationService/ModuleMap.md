@@ -87,13 +87,16 @@ ValidationLifecycle
 ✓ Configuration Layer
 ---
 # Forbidden Dependencies
+✗ Context Layer
 ✗ Strategy Layer
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ AI Layer
 ✗ Platform Layer
 ✗ Business Layer
-✗ Trading Logic
+✗ Learning Layer
+✗ Media Layer
+✗ Future Expansion Layer
 ---
 # Ownership
 ValidationService egalik qiladi.

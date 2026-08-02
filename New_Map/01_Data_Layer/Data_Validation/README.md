@@ -38,23 +38,15 @@ Data Validation quyidagi vazifalarni bajaradi:
 
 # Layer Position
 
-Historical Data
-
-+
-
-Live Data
+Runtime Data
 
 ↓
 
-Data Validation
+Data Validation Layer
 
 ↓
 
-Market Memory
-
-↓
-
-GoldBot Core
+Validated Data
 
 ---
 
@@ -63,92 +55,55 @@ GoldBot Core
 Data_Validation/
 
 ├── README.md
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+├── Layer_Contracts.md
 │
-├── DataValidation.md
-├── TickValidation.md
-├── CandleValidation.md
-├── DataQuality.md
-├── ValidationFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── ValidationService/
+├── DataValidator/
+├── SchemaValidator/
+├── QualityValidator/
+├── IntegrityValidator/
+└── ValidationLifecycle/
 
 ---
 
 # Module Overview
 
-## DataValidation
+## ValidationService
 
-Validation jarayonining markaziy boshqaruvchisi.
-
-Barcha Validation modullarini boshqaradi.
+Data Validation Layer'ning markaziy Orchestrator'i.
 
 ---
 
-## TickValidation
+## DataValidator
 
-Har bir Live Tick ma'lumotini tekshiradi.
-
-Narx.
-
-Timestamp.
-
-Asset.
-
-Duplicate Tick.
-
-Sequence.
+Birinchi (Primary) Validation bosqichi.
 
 ---
 
-## CandleValidation
+## SchemaValidator
 
-Har bir OHLC Candle ma'lumotini tekshiradi.
-
-Open.
-
-High.
-
-Low.
-
-Close.
-
-Volume.
-
-Timeframe.
+Data strukturasi va Schema'sini tekshiradi.
 
 ---
 
-## DataQuality
+## QualityValidator
 
-Market ma'lumotlari sifatini baholaydi.
-
-Missing Data.
-
-Corrupted Data.
-
-Gap Detection.
-
-Consistency Check.
-
-Quality Score.
+Data sifatini tekshiradi.
 
 ---
 
-## ValidationFlow
+## IntegrityValidator
 
-Validation jarayonining to'liq oqimini tavsiflaydi.
-
----
-
-## SequenceDiagram
-
-Validation ishlash ketma-ketligini ko'rsatadi.
+Data yaxlitligini tekshiradi.
 
 ---
 
-## ModuleMap
+## ValidationLifecycle
 
-Validation modullari orasidagi bog'lanishni ko'rsatadi.
+Barcha Validation jarayonlarining Lifecycle'ini kuzatadi.
 
 ---
 
@@ -200,27 +155,35 @@ Data Validation:
 
 # Validation Flow
 
-Historical Data
-
-+
-
-Live Data
+Runtime Data
 
 ↓
 
-Data Validation
+ValidationService
 
 ↓
 
-Validation Result
+DataValidator
 
 ↓
 
-Market Memory
+SchemaValidator
 
 ↓
 
-GoldBot Core
+QualityValidator
+
+↓
+
+IntegrityValidator
+
+↓
+
+ValidationLifecycle
+
+↓
+
+Validated Data
 
 ---
 
@@ -253,15 +216,19 @@ GoldBot Core
 Data_Validation/
 
 ├── README.md
-├── DataValidation.md
-├── TickValidation.md
-├── CandleValidation.md
-├── DataQuality.md
-├── ValidationFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+├── Layer_Contracts.md
+│
+├── ValidationService/
+├── DataValidator/
+├── SchemaValidator/
+├── QualityValidator/
+├── IntegrityValidator/
+└── ValidationLifecycle/
 
-Har bir modul o'z specification hujjatiga ega bo'lishi kerak.
+Har bir modul o'z README.md, Contracts.md, ModuleMap.md va SequenceDiagram.md hujjatlariga ega bo'lishi kerak.
 
 ---
 
