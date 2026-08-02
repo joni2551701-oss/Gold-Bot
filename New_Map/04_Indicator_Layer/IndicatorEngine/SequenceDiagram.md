@@ -15,26 +15,32 @@ IndicatorEngine
 Load Configuration
 ↓
 Resolve Dependencies
-↓
-Execute Trend Indicators
-↓
-Execute Momentum Indicators
-↓
-Execute Volatility Indicators
-↓
-Execute Volume Indicators
-↓
-Execute MarketStructure Indicators
-↓
-Execute SmartMoney Indicators
-↓
-Execute Custom Indicators
-↓
-Validate Results
-↓
-IndicatorService
-↓
-Indicator Context
+        │
+        ├──────── Execute Trend Indicators
+        ├──────── Execute Momentum Indicators
+        ├──────── Execute Volatility Indicators
+        └──────── Execute Volume Indicators
+                 │
+                 ▼
+          Synchronization Point
+                 │
+                 ▼
+      Execute MarketStructure Indicators
+                 │
+                 ▼
+      Execute SmartMoney Indicators
+                 │
+                 ▼
+         Execute Custom Indicators
+                 │
+                 ▼
+           Validate Results
+                 │
+                 ▼
+            IndicatorService
+                 │
+                 ▼
+           Indicator Context
 ```
 ---
 # Update Sequence
@@ -51,9 +57,10 @@ Publish Indicator Context
 # Runtime Rules
 1. Market Context tayyor bo'lishi kerak.
 2. Dependency tekshiriladi.
-3. Indicator modullari ketma-ket ishga tushadi.
-4. Validation Publish'dan oldin bajariladi.
-5. Circular Dependency taqiqlanadi.
+3. Trend, Momentum, Volatility, Volume Indicators bir-birining natijasiga bog'liq emas va parallel ishga tushadi.
+4. MarketStructure, SmartMoney, Custom Indicators Synchronization Point'dan keyin ketma-ket ishga tushadi.
+5. Validation Publish'dan oldin bajariladi.
+6. Circular Dependency taqiqlanadi.
 ---
 # State Flow
 ```text

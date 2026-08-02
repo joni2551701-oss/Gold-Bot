@@ -420,6 +420,26 @@ Violation:
 ```
 Sabab: `03_Context_Layer/ContextEngine/Contracts.md` o'zining README.md hujjati va ContextService'ning egaligi bilan ziddiyatda "✓ Market Context Generation" / Output Contract "Market Context" / "✓ Market Context yaratadi" kabi da'volarni o'z ichiga olgani aniqlangan (ContextEngine/README.md esa aniq: "Yakuniy Market Context obyektini faqat ContextService yaratadi"). Director Ruling: ContextEngine faqat orchestrates, coordinates, executes order, collects outputs, forwards outputs qiladi; Market Context yaratish huquqi faqat ContextService'ga tegishli. ContextEngine/Contracts.md tuzatildi — Market Context yaratish da'volari olib tashlandi va "Context Analysis Results" bilan almashtirildi.
 ---
+## Parallel Execution Rule
+```text
+Independent analysis modules
+that have no data dependency
+between each other
+must be documented
+as parallel runtime branches.
+
+Sequential execution
+is used only where
+a downstream module
+requires upstream output.
+
+Conflict between group-level
+Data Flow and Sequence Diagram
+on execution topology:
+→ Critical
+```
+Sabab: `04_Indicator_Layer/Layer_DataFlow.md` TrendIndicators, MomentumIndicators, VolatilityIndicators, VolumeIndicators'ni IndicatorEngine'dan parallel fan-out qiladigan, so'ng MarketStructureIndicators'dan oldin fan-in bo'ladigan tarzda ko'rsatgan, holbuki `Layer_SequenceDiagram.md` va `IndicatorEngine/SequenceDiagram.md` bu to'rtta modulni qat'iy ketma-ket (Trend → Momentum → Volatility → Volume) ishga tushiriladigan qilib ko'rsatgan — bu ikki guruh hujjat o'rtasidagi Runtime Architecture darajasidagi ziddiyat (Critical). Director Ruling: Trend/Momentum/Volatility/Volume Indicators bir-birining natijasiga bog'liq emas, shuning uchun parallel execution canonical hisoblanadi (kechikishni kamaytiradi va arxitekturaga mos keladi); MarketStructureIndicators/SmartMoneyIndicators/CustomIndicators esa avvalgi natijalarni birlashtirgani uchun ketma-ket qoladi. `Layer_DataFlow.md` Canonical Source sifatida qabul qilindi; `Layer_SequenceDiagram.md` va `IndicatorEngine/SequenceDiagram.md` parallel-fan-out/Synchronization-Point modeliga moslashtirildi. Bu qoida keyingi Layerlardagi (masalan AI, Risk, Media) o'zaro bog'liq bo'lmagan parallel modullar uchun ham qo'llaniladi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.

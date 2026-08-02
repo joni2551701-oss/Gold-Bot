@@ -1199,8 +1199,9 @@ Phase 2 — Module Audit Progress
 
 03_Context_Layer             CLOSED (1100/1100)
 
-⏳ 04_Indicator_Layer
-⬜ 05_Strategy_Layer
+04_Indicator_Layer           CLOSED (900/900)
+
+⏳ 05_Strategy_Layer
 ⬜ 06_Signal_Layer
 ⬜ 07_AI_Layer
 ⬜ 08_Decision_Layer
@@ -1584,19 +1585,80 @@ Two new Canonical Rules established (Architecture Decision Records), added to `A
 
 ---
 
+## Director Review — 04_Indicator_Layer (full Layer, single-pass audit)
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+04_Indicator_Layer
+
+Status:
+CLOSED
+
+Modules:
+9 / 9
+
+Architecture Score:
+900 / 900
+
+Critical:
+1 (resolved via Director Ruling)
+
+Major:
+11
+
+Minor:
+1 (Accepted as intentional, not fixed — see below)
+
+Approved:
+100%
+
+Module Results:
+
+| Module | Status | Score |
+|---|---|---|
+| CustomIndicators | CLOSED, APPROVED | 100/100 |
+| IndicatorEngine | CLOSED, APPROVED | 100/100 |
+| IndicatorService | CLOSED, APPROVED | 100/100 |
+| MarketStructureIndicators | CLOSED, APPROVED | 100/100 |
+| MomentumIndicators | CLOSED, APPROVED | 100/100 |
+| SmartMoneyIndicators | CLOSED, APPROVED | 100/100 |
+| TrendIndicators | CLOSED, APPROVED | 100/100 |
+| VolatilityIndicators | CLOSED, APPROVED | 100/100 |
+| VolumeIndicators | CLOSED, APPROVED | 100/100 |
+
+Findings fixed during this Layer's audit (full-Layer single-pass audit):
+
+Auto-fixed by Worker (rule-based, no Director decision needed):
+* Dependency Source of Truth Rule — missing "✗ Platform Layer" in ModuleMap.md Forbidden Dependencies across all 9 modules (Major).
+* Module Runtime Ownership Rule — IndicatorEngine/Contracts.md claimed "✓ Indicator Context Preparation" / "✓ Indicator Context yaratiladi", contradicting its own ModuleMap.md and IndicatorService's exclusive ownership of Indicator Context (Layer Golden Rule: IndicatorService yagona publish nuqtasi). Reworded to "Result Handoff to IndicatorService" (Major).
+* Staleness — CustomIndicators/README.md listed "Senior Trend Score" in Objective/Output, absent from both Contracts.md and ModuleMap.md (which agree with each other on 6 named indices + state). README corrected to match canonical list (Major).
+
+Director Ruling (1 Critical, architecture-affecting):
+* **Indicator Execution Topology.** `Layer_DataFlow.md` depicted TrendIndicators/MomentumIndicators/VolatilityIndicators/VolumeIndicators as four parallel branches fanning out from IndicatorEngine and fanning back in before MarketStructureIndicators; `Layer_SequenceDiagram.md` and `IndicatorEngine/SequenceDiagram.md` instead depicted a strict sequential chain (Trend → Momentum → Volatility → Volume). Ruling: parallel execution is canonical — these four modules have no data dependency on each other, so parallel execution reduces latency and matches the architecture; MarketStructureIndicators/SmartMoneyIndicators/CustomIndicators remain sequential since each consumes prior results. `Layer_DataFlow.md` accepted as the Canonical Source; `Layer_SequenceDiagram.md` and `IndicatorEngine/SequenceDiagram.md` updated to the parallel-fan-out/Synchronization-Point model.
+
+Accepted as intentional (Minor, not fixed):
+* CustomIndicators lists `✓ Indicator Context` as an Allowed Dependency while its Input Contract separately lists `Market Context` — Director Ruling: these may be two distinct artifacts; not auto-fixed. If Phase 3 Module Audit confirms this is a genuine naming error, it will be handled via a separate ACR.
+
+One new Canonical Rule established (Architecture Decision Record), added to `Architecture_Audit_Plan.md` §9b:
+* **Parallel Execution Rule** — independent analysis modules with no data dependency between each other must be documented as parallel runtime branches; sequential execution is used only where a downstream module requires upstream output. Applies to future Layers (AI, Risk, Media, etc.) with similarly independent parallel modules.
+
+---
+
 ## Phase 2 Statistics (running)
 
 Groups/Layers Completed:
-8 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer as full Layers)
+9 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer + 04_Indicator_Layer as full Layers)
 
 Layers Completed:
-3 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer)
+4 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer)
 
 Modules Completed:
-58
+67
 
 Architecture Score:
-5800 / 5800
+6700 / 6700
 
 Critical Remaining:
 0
