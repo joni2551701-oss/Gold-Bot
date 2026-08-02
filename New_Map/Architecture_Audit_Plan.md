@@ -300,6 +300,20 @@ Violation:
 → Critical
 ```
 Sabab: har bir modulning SequenceDiagram'i faqat o'z javobgarlik chegarasini ko'rsatadi; keyingi modulning ichki jarayoni boshqa modul hujjatlarida tasvirlanmaydi. Bu qoida `01_Data_Layer/Historical_Data/HistoricalDatabase` modulida "Validation Sequence" va yopilish Summary'sining Historical Database'ning o'z Forbidden Dependencies'iga (Data Validation, Market Memory) qaramay ushbu modullarning runtime'iga davom etgani aniqlanganidan keyin qo'shildi (Critical, Ownership Overlap / Runtime Boundary Violation) — Bootstrap va Recovery auditlarida tasdiqlangan Module Runtime Ownership Rule'ning yana bir ko'rinishi sifatida.
+
+## Group README Rule
+```text
+Every canonical module declared in
+Layer_ModuleMap must also appear in:
+• Internal Structure
+• Module Overview
+• Repository Structure
+of the Group README.
+
+Missing module:
+→ Major
+```
+Sabab: Group README bo'lim ichidagi barcha modullarning to'liq va aniq ro'yxatini taqdim etishi shart; agar Layer_ModuleMap.md'da rasmiy Orchestrator yoki boshqa har qanday modul sifatida e'lon qilingan modul Group README'ning Internal Structure/Module Overview/Repository Structure bo'limlarida ko'rsatilmasa, bu Canonical Module Identity buzilishi hisoblanadi. Bu qoida `01_Data_Layer/Live_Data` guruhida README.md'ning LiveDataService'ni (Layer_ModuleMap.md'da e'lon qilingan markaziy Orchestrator) uchala bo'limdan ham tushirib qoldirgani aniqlanganidan keyin qo'shildi (Major, Canonical Module Identity).
 ---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.

@@ -67,20 +67,31 @@ GoldBot Core
 Live_Data/
 
 ├── README.md
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+├── Layer_Contracts.md
 │
-├── PriceStreamService.md
-├── CurrentPriceProvider.md
-├── CandleBuilder.md
-├── StreamValidator.md
-├── MarketCalendar.md
-├── LiveProviders.md
-├── LiveDataFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── LiveDataService/
+├── MarketCalendar/
+├── PriceStreamService/
+├── LiveProviders/
+├── CurrentPriceProvider/
+├── StreamValidator/
+├── CandleBuilder/
+└── LiveDataFlow/
 
 ---
 
 # Module Overview
+
+## LiveDataService
+
+Live Data bo'limining markaziy Orchestrator'i.
+
+Barcha modullarni boshqaradi va Layer'ning Runtime Lifecycle, Pipeline Management va Recovery jarayonlarini muvofiqlashtiradi.
+
+---
 
 ## PriceStreamService
 
@@ -202,11 +213,11 @@ PriceStreamService
 
 ↓
 
-StreamValidator
+CurrentPriceProvider
 
 ↓
 
-CurrentPriceProvider
+StreamValidator
 
 ↓
 
@@ -251,17 +262,21 @@ GoldBot Core
 Live_Data/
 
 ├── README.md
-├── PriceStreamService.md
-├── CurrentPriceProvider.md
-├── CandleBuilder.md
-├── StreamValidator.md
-├── MarketCalendar.md
-├── LiveProviders.md
-├── LiveDataFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+├── Layer_Contracts.md
+│
+├── LiveDataService/
+├── MarketCalendar/
+├── PriceStreamService/
+├── LiveProviders/
+├── CurrentPriceProvider/
+├── StreamValidator/
+├── CandleBuilder/
+└── LiveDataFlow/
 
-Har bir modul o'z specification hujjatiga ega bo'lishi kerak.
+Har bir modul o'z README.md, Contracts.md, ModuleMap.md va SequenceDiagram.md hujjatlariga ega bo'lishi kerak.
 
 ---
 
