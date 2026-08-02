@@ -115,15 +115,11 @@ Historical Database
 
         │
         ▼
-Data Validation
+Return Validation Result
 
         │
         ▼
-Validation Passed
-
-        │
-        ▼
-Market Memory
+HistoricalDataService
 ```
 
 ---
@@ -342,10 +338,6 @@ Return Result
 
 ↓
 
-Data Validation
-
-↓
-
-Market Memory
+HistoricalDataService
 
 Ushbu ketma-ketlik Historical Database moduli uchun yagona rasmiy Runtime Sequence hisoblanadi.

@@ -288,6 +288,18 @@ Any mismatch:
 → Major
 ```
 Sabab: Contracts.md modulning rasmiy interfeysi va arxitektura shartnomasini belgilaydi; ModuleMap.md esa shu shartnomani vizual/strukturaviy aks ettirishi kerak. Agar Allowed/Forbidden Dependencies ro'yxati ikkala hujjatda turlicha bo'lsa, Contracts.md ustun hisoblanadi va ModuleMap.md unga moslashtiriladi. Bu qoida `01_Data_Layer/Historical_Data/HistoricalProviders` modulida ModuleMap.md'ning Allowed Dependencies'da Network Layer'ni va Forbidden Dependencies'da Event System/Future Expansion Layer'ni Contracts.md'ga nisbatan tushirib qoldirgani aniqlanganidan keyin qo'shildi (Major, Documentation Consistency).
+
+## Module Runtime Boundary Rule
+```text
+A module's SequenceDiagram must terminate
+at its own output or at the caller.
+It must never continue into the runtime
+of downstream modules.
+
+Violation:
+→ Critical
+```
+Sabab: har bir modulning SequenceDiagram'i faqat o'z javobgarlik chegarasini ko'rsatadi; keyingi modulning ichki jarayoni boshqa modul hujjatlarida tasvirlanmaydi. Bu qoida `01_Data_Layer/Historical_Data/HistoricalDatabase` modulida "Validation Sequence" va yopilish Summary'sining Historical Database'ning o'z Forbidden Dependencies'iga (Data Validation, Market Memory) qaramay ushbu modullarning runtime'iga davom etgani aniqlanganidan keyin qo'shildi (Critical, Ownership Overlap / Runtime Boundary Violation) — Bootstrap va Recovery auditlarida tasdiqlangan Module Runtime Ownership Rule'ning yana bir ko'rinishi sifatida.
 ---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
