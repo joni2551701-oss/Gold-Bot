@@ -329,6 +329,21 @@ or formatting:
 → Minor
 ```
 Sabab: bitta modulning turli hujjatlarda turlicha yozilishi (masalan "HistoricalDatabase" va "Historical Database") implementatsiyaga bevosita ta'sir qilmaydi, lekin hujjatlar va arxitekturaning izchilligini buzadi hamda kelajakda Dependency ro'yxatlarini solishtirishni chalkashtiradi. Bu qoida `01_Data_Layer/Live_Data/CandleBuilder` modulida ModuleMap.md'ning "Historical Database" (bo'sh joy bilan) deb yozgani, Contracts.md va boshqa barcha modullarning dependency ro'yxatlari esa "HistoricalDatabase" (bo'sh joysiz, papka/modul nomiga mos) deb yozgani aniqlanganidan keyin qo'shildi (Minor, Canonical Naming Consistency).
+
+## Layer Naming Rule
+```text
+Architecture documents must
+reference architectural layers
+using their canonical Layer names.
+
+"Layer" is canonical.
+"Engine" must not be used when
+referring to architectural layers.
+
+Violation:
+→ Minor
+```
+Sabab: Phase 1 Architecture Freeze v1.0'ga ko'ra GoldBot arxitekturasi Layer Architecture hisoblanadi; shuning uchun Context/Analysis/Strategy/Decision/Risk/Signal kabi arxitektura qatlamlariga murojaat qilinganda faqat "Layer" suffiksi ishlatiladi, "Engine" emas. Bu qoida `01_Data_Layer/Market_Memory/MemoryStorage` modulida Contracts.md "Context Layer, Analysis Layer, Strategy Layer, Decision Layer, Risk Layer, Signal Layer" deb yozgan bo'lsa, ModuleMap.md xuddi shu olti obyektni "Context Engine, Analysis Engine, Strategy Engine, Decision Engine, Risk Engine, Signal Engine" deb yozgani aniqlanganidan keyin qo'shildi (Minor, Canonical Naming Rule / Layer va Engine tushunchalarining aralashib ketishi).
 ---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
