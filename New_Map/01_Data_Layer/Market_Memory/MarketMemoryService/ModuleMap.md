@@ -169,8 +169,6 @@ GoldBot Core
 
 # Forbidden Dependencies
 
-✗ Live Data Layer
-
 ✗ Context Layer
 
 ✗ Strategy Layer
@@ -182,6 +180,14 @@ GoldBot Core
 ✗ AI Layer
 
 ✗ Platform Layer
+
+✗ Business Layer
+
+✗ Learning Layer
+
+✗ Media Layer
+
+✗ Future Expansion Layer
 
 ---
 
