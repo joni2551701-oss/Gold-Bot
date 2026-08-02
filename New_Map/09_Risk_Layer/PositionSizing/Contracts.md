@@ -52,7 +52,10 @@ MoneyManagement
 ✗ DrawdownManager
 ✗ ExposureManager
 ✗ PortfolioManager
+✗ Decision Layer
 ✗ Execution Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Risk Amount hisoblanishi shart.

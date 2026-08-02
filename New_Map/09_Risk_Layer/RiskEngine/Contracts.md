@@ -22,7 +22,7 @@ RiskEngine bajarmaydi.
 ---
 # Module Boundary
 ```text
-Decision Layer
+RiskService
 ↓
 RiskEngine
 ↓
@@ -30,7 +30,7 @@ PositionSizing
 ```
 ---
 # Input Contract
-• Final Decision
+• Validated Risk Request
 • Account Information
 • Market Context
 • Symbol Information
@@ -43,6 +43,7 @@ PositionSizing
 • Risk Metadata
 ---
 # Allowed Dependencies
+✓ RiskService
 ✓ PositionSizing
 ✓ MoneyManagement
 ---
@@ -53,7 +54,7 @@ PositionSizing
 ✗ Platform Layer
 ---
 # Runtime Contract
-1. Faqat APPROVED Decision qabul qilinadi.
+1. Faqat RiskService orqali kelgan Validated Risk Request qabul qilinadi.
 2. Account Information tekshirilishi shart.
 3. Risk Context yaratilishi shart.
 4. Risk Package standart formatda yaratilishi shart.
@@ -62,7 +63,7 @@ PositionSizing
 7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
-✓ Decision qabul qilinadi.
+✓ Validated Risk Request qabul qilinadi.
 ✓ Account tekshiriladi.
 ✓ Risk Context yaratiladi.
 ✓ Risk Report yaratiladi.

@@ -53,6 +53,8 @@ Money Metadata yaratadi.
 ✗ PortfolioManager
 ✗ Execution Layer
 ✗ Decision Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 MoneyManagement GoldBot Risk Layer ichidagi Capital Management va Risk Policy boshqaruvini amalga oshiruvchi Canonical modul hisoblanadi.

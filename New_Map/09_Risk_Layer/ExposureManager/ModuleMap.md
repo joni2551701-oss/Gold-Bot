@@ -57,6 +57,7 @@ Exposure Metadata yaratadi.
 ✗ Execution Layer
 ✗ Decision Layer
 ✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 ExposureManager GoldBot Risk Layer ichidagi Exposure Monitoring va Exposure Validation jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

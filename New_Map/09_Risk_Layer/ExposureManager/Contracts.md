@@ -51,6 +51,7 @@ PortfolioManager
 ✗ Execution Layer
 ✗ Decision Layer
 ✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Barcha Open Positionlar hisobga olinishi shart.

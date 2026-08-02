@@ -52,6 +52,8 @@ DrawdownManager
 ✗ PortfolioManager
 ✗ Execution Layer
 ✗ Decision Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Risk Policy tekshirilishi shart.

@@ -6,7 +6,7 @@ Ushbu hujjat RiskEngine ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-Decision Layer
+RiskService
 ↓
 RiskEngine
 ↓
@@ -27,7 +27,7 @@ RiskEngine
 ---
 # Internal Components
 ## Input Validator
-Decision va Account ma'lumotlarini tekshiradi.
+Validated Risk Request va Account ma'lumotlarini tekshiradi.
 ---
 ## Account Analyzer
 Balans, Equity va Margin holatini tahlil qiladi.
@@ -45,6 +45,7 @@ Keyingi modullar uchun Risk Package yaratadi.
 Risk Metadata yaratadi.
 ---
 # Allowed Dependencies
+✓ RiskService
 ✓ PositionSizing
 ✓ MoneyManagement
 ---

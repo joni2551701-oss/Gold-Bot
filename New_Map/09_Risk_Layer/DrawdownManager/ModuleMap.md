@@ -53,6 +53,8 @@ Drawdown Metadata yaratadi.
 ✗ RiskValidator
 ✗ Execution Layer
 ✗ Decision Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 DrawdownManager GoldBot Risk Layer ichidagi Drawdown Monitoring va Capital Protection jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

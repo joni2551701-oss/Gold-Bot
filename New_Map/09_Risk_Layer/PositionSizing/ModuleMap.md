@@ -52,7 +52,10 @@ Position Metadata yaratadi.
 ✗ DrawdownManager
 ✗ ExposureManager
 ✗ PortfolioManager
+✗ Decision Layer
 ✗ Execution Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 PositionSizing GoldBot Risk Layer ichidagi barcha Position Size Calculation jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

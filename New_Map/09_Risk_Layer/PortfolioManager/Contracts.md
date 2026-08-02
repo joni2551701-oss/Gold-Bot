@@ -51,6 +51,7 @@ RiskValidator
 ✗ Decision Layer
 ✗ Execution Layer
 ✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Portfolio Risk hisoblanishi shart.

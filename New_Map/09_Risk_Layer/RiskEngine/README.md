@@ -19,7 +19,7 @@ RiskEngine quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-Decision Layer
+RiskService
 ↓
 RiskEngine
 ↓
@@ -30,7 +30,7 @@ MoneyManagement
 ---
 # Responsibilities
 RiskEngine
-✓ Decision ma'lumotlarini qabul qiladi
+✓ Validated Risk Request qabul qiladi
 ✓ Account holatini tekshiradi
 ✓ Risk Context yaratadi
 ✓ Risk Pipeline'ni boshlaydi
@@ -48,7 +48,7 @@ RiskEngine
 ---
 # Input
 RiskEngine qabul qiladi.
-• Final Decision
+• Validated Risk Request
 • Account Information
 • Symbol Information
 • Market Context
@@ -63,7 +63,7 @@ RiskEngine yaratadi.
 ---
 # Workflow
 ```text
-Receive Decision
+Receive Validated Risk Request
 ↓
 Validate Inputs
 ↓
@@ -75,7 +75,7 @@ PositionSizing
 ```
 ---
 # Golden Rules
-1. RiskEngine faqat APPROVED Decision bilan ishlaydi.
+1. RiskEngine faqat RiskService orqali kelgan Validated Risk Request bilan ishlaydi.
 2. RiskEngine Decision'ni o'zgartirmaydi.
 3. Risk Pipeline yagona Risk Context bilan ishlaydi.
 4. Risk Assessment standart formatda yaratiladi.

@@ -57,6 +57,7 @@ Portfolio Metadata yaratadi.
 ✗ Decision Layer
 ✗ Execution Layer
 ✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 PortfolioManager GoldBot Risk Layer ichidagi Portfolio Risk Analysis va Diversification nazoratini amalga oshiruvchi Canonical modul hisoblanadi.

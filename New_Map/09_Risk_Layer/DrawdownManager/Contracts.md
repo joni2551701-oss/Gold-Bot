@@ -52,6 +52,8 @@ ExposureManager
 ✗ RiskValidator
 ✗ Execution Layer
 ✗ Decision Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Current Drawdown hisoblanishi shart.
