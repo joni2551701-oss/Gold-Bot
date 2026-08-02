@@ -1050,3 +1050,93 @@ PHASE 1 — LAYER AUDIT: COMPLETE (13/13, 1300/1300)
 # Summary
 
 Ushbu hujjat GoldBot Canonical Architecture'ning Layer Audit progressini rasman qayd etadi. Har bir Layer yakunlangach, ushbu hujjat yangilanadi, toki barcha Layer'lar CLOSED holatiga o'tguncha — shu nuqtada Canonical GoldBot Architecture v1.0 to'liq auditdan o'tgan hisoblanadi.
+
+---
+
+# Phase 2 — Module Audit
+
+## Director Review — 01_Data_Layer / Historical_Data
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+01_Data_Layer
+
+Group:
+Historical_Data
+
+Status:
+CLOSED
+
+Modules:
+6 / 6
+
+Architecture Score:
+600 / 600
+
+Critical:
+0
+
+Major:
+0
+
+Warnings:
+0
+
+Approved:
+100%
+
+Module Results:
+
+| Module | Status | Score |
+|---|---|---|
+| HistoricalDataService | CLOSED, APPROVED | 100/100 |
+| Bootstrap | CLOSED, APPROVED | 100/100 |
+| Recovery | CLOSED, APPROVED | 100/100 |
+| HistoricalProviders | CLOSED, APPROVED | 100/100 |
+| HistoricalDatabase | CLOSED, APPROVED | 100/100 |
+| HistoricalDataFlow | CLOSED, APPROVED | 100/100 |
+
+Findings fixed during this group's audit (all Director-authorized, all pushed):
+
+* Historical_Data (group-level) README.md — stale Internal/Repository Structure (Major, Stale Documentation).
+* HistoricalDataService — Bootstrap/Recovery sequential vs parallel model mismatch (Major); Memory Reader / Event Bus Allowed Dependency mismatch (Major).
+* Bootstrap — Recovery Sequence documented inside Bootstrap's own SequenceDiagram (Critical, Ownership Overlap).
+* Recovery — "Resume Live Stream" documented inside Recovery's own SequenceDiagram (Critical, Ownership Overlap / Forbidden Dependency in Runtime Workflow).
+* HistoricalProviders — ModuleMap vs Contracts dependency list mismatch (Major, Documentation Consistency).
+* HistoricalDatabase — SequenceDiagram continuing into Data Validation / Market Memory runtime (Critical, Ownership Overlap / Runtime Boundary Violation).
+* HistoricalDataFlow — ModuleMap vs Contracts dependency list mismatch (Major, Documentation Consistency).
+
+Canonical rules established during this group's audit (added to `Architecture_Audit_Plan.md` section 9b):
+
+* Module Audit Rule (severity mapping) + Module Audit Tekshiruv Ro'yxati.
+* Module Runtime Ownership Rule.
+* Dependency Source of Truth Rule.
+* Module Runtime Boundary Rule.
+
+---
+
+## Phase 2 Audit Tracker
+
+```text
+Phase 2 — Module Audit Progress
+01_Data_Layer
+✅ Historical_Data      CLOSED (600/600)
+⏳ Live_Data
+⬜ Market_Memory
+⬜ Event_System
+⬜ Data_Validation
+⬜ Providers
+```
+
+---
+
+# Phase 2 Process (per Module)
+
+1. Audit (README, Contracts, ModuleMap, SequenceDiagram cross-check per the 9-point Module Audit Checklist).
+2. Kamchilik topilsa — Director ruling, so'ng darhol tuzatish.
+3. Re-audit.
+4. APPROVED.
+5. CLOSED.
+6. Keyingi Module. Group ichidagi barcha Module'lar CLOSED bo'lgach — Group CLOSED, keyingi Group.
