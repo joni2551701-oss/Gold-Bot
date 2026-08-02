@@ -1187,13 +1187,27 @@ Canonical rules established or reinforced during this group's audit (added to `A
 
 ```text
 Phase 2 — Module Audit Progress
-01_Data_Layer
+01_Data_Layer                CLOSED (3800/3800)
 ✅ Historical_Data      CLOSED (600/600)
 ✅ Live_Data            CLOSED (800/800)
 ✅ Market_Memory        CLOSED (600/600)
 ✅ Event_System         CLOSED (600/600)
 ✅ Data_Validation      CLOSED (600/600)
-⏳ Providers
+✅ Providers            CLOSED (600/600)
+
+02_Core_Layer                CLOSED (900/900)
+
+⏳ 03_Context_Layer
+⬜ 04_Indicator_Layer
+⬜ 05_Strategy_Layer
+⬜ 06_Signal_Layer
+⬜ 07_AI_Layer
+⬜ 08_Decision_Layer
+⬜ 09_Risk_Layer
+⬜ 10_Execution_Layer
+⬜ 11_Trade_Monitoring_Layer
+⬜ 12_Database_Layer
+⬜ 13_Platform_Layer
 ```
 
 ---
@@ -1367,16 +1381,152 @@ Findings fixed during this group's audit (full-group pass under the updated Phas
 
 ---
 
-## Phase 2 Statistics (running)
+## Director Review — 01_Data_Layer / Providers
 
-Groups Completed:
-5
+Phase:
+Phase 2 — Module Audit
 
-Modules Completed:
-32
+Layer:
+01_Data_Layer
+
+Group:
+Providers
+
+Status:
+CLOSED
+
+Modules:
+6 / 6
 
 Architecture Score:
-3200 / 3200
+600 / 600
+
+Critical:
+1 (resolved)
+
+Major:
+0
+
+Warnings:
+0
+
+Approved:
+100%
+
+Module Results:
+
+| Module | Status | Score |
+|---|---|---|
+| ProviderFactory | CLOSED, APPROVED | 100/100 |
+| ProviderInterface | CLOSED, APPROVED | 100/100 |
+| TwelveData | CLOSED, APPROVED | 100/100 |
+| Bitget | CLOSED, APPROVED | 100/100 |
+| ProviderLifecycle | CLOSED, APPROVED | 100/100 |
+| ProviderFlow | CLOSED, APPROVED | 100/100 |
+
+Findings fixed during this group's audit:
+
+* Group-level docs and 5 of 6 modules (ProviderFactory, ProviderInterface, TwelveData, Bitget, ProviderFlow) — fully consistent on first audit, no findings.
+* ProviderLifecycle — its own README/Contracts/ModuleMap/SequenceDiagram all placed it as "ProviderFactory -> ProviderLifecycle -> ProviderInterface", contradicting the group-level Canonical Pipeline agreed by all five group-level documents ("ProviderFactory -> ProviderInterface -> Concrete Provider -> ProviderLifecycle -> ProviderFlow") (Critical, Runtime Architecture; Director-ruled). Aligned to the group-level Canonical Pipeline.
+
+Canonical rule established during this group's audit (added to `Architecture_Audit_Plan.md` section 9b):
+
+* Runtime Pipeline Rule (group-level runtime architecture is canonical; module documentation must not redefine or contradict it; conflict = Critical, group-level wins).
+
+---
+
+## 01_Data_Layer — Phase 2 Module Audit: COMPLETE
+
+01_Data_Layer is the first Layer to fully complete Phase 2 — Module Audit.
+
+```text
+01_Data_Layer
+✅ Historical_Data      CLOSED (600/600)
+✅ Live_Data            CLOSED (800/800)
+✅ Market_Memory        CLOSED (600/600)
+✅ Event_System         CLOSED (600/600)
+✅ Data_Validation      CLOSED (600/600)
+✅ Providers            CLOSED (600/600)
+
+Groups:            6 / 6
+Modules:           38 / 38
+Architecture Score: 3800 / 3800
+Critical Remaining: 0
+Major Remaining:    0
+Minor Remaining:    0
+Status:            CLOSED (Phase 2)
+```
+
+Canonical rules established across 01_Data_Layer's Phase 2 audit (all recorded in `Architecture_Audit_Plan.md` section 9b): Module Audit Rule + 9-point checklist, Module Runtime Ownership Rule, Dependency Source of Truth Rule, Module Runtime Boundary Rule, Group README Rule, Canonical Naming Rule, Layer Naming Rule, Cross-Cutting Layer Rule, Runtime Pipeline Rule.
+
+---
+
+## Director Review — 02_Core_Layer (full Layer, single-pass audit)
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+02_Core_Layer
+
+Status:
+CLOSED
+
+Modules:
+9 / 9
+
+Architecture Score:
+900 / 900
+
+Critical:
+0
+
+Major:
+8
+
+Minor:
+3
+
+Approved:
+100%
+
+Module Results:
+
+| Module | Status | Score |
+|---|---|---|
+| Configuration | CLOSED, APPROVED | 100/100 |
+| CoreEngine | CLOSED, APPROVED | 100/100 |
+| CoreService | CLOSED, APPROVED | 100/100 |
+| HealthMonitor | CLOSED, APPROVED | 100/100 |
+| Pipeline | CLOSED, APPROVED | 100/100 |
+| Scheduler | CLOSED, APPROVED | 100/100 |
+| ServiceRegistry | CLOSED, APPROVED | 100/100 |
+| Shutdown | CLOSED, APPROVED | 100/100 |
+| Startup | CLOSED, APPROVED | 100/100 |
+
+Findings fixed during this Layer's audit (full-Layer single-pass audit under the updated Phase 2 workflow; all self-fixed by Worker, no architecture-affecting issues found):
+
+* Group-level docs (README, Layer_ModuleMap, Layer_Contracts, Layer_SequenceDiagram, Layer_DataFlow) — fully consistent on first audit, no findings.
+* All 9 modules' ModuleMap.md Forbidden Dependencies — Dependency Source of Truth Rule mismatches against each module's own Contracts.md (mostly a missing "Platform Layer" entry; Startup and Shutdown had more extensive mismatches including an extra "Strategy Layer" not present in Contracts) (Major).
+* CoreEngine, CoreService, Pipeline — Canonical Naming Rule violations in ModuleMap.md's Forbidden Dependencies wording ("... Logic" / inconsistent "internals" suffix vs. Contracts.md's exact wording) (Minor).
+
+No new canonical rules required — all findings resolved under existing Phase 2 rules (Dependency Source of Truth Rule, Canonical Naming Rule).
+
+---
+
+## Phase 2 Statistics (running)
+
+Groups/Layers Completed:
+7 (6 groups in 01_Data_Layer + 02_Core_Layer as a full Layer)
+
+Layers Completed:
+1 (01_Data_Layer)
+
+Modules Completed:
+47
+
+Architecture Score:
+4700 / 4700
 
 Critical Remaining:
 0
