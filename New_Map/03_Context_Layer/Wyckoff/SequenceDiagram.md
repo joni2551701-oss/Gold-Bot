@@ -14,8 +14,6 @@ Read Market Structure
 ↓
 Read Liquidity
 ↓
-Read Volume Profile
-↓
 Detect Market Phase
 ↓
 Detect Spring
@@ -45,9 +43,8 @@ Publish Wyckoff State
 # Runtime Rules
 1. Market Structure avval tayyor bo'lishi kerak.
 2. Liquidity hisobga olinadi.
-3. Volume Profile hisobga olinadi.
-4. Market Phase birinchi aniqlanadi.
-5. Circular Dependency taqiqlanadi.
+3. Market Phase birinchi aniqlanadi.
+4. Circular Dependency taqiqlanadi.
 ---
 # State Flow
 ```text

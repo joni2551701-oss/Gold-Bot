@@ -389,6 +389,37 @@ Violation:
 ```
 Sabab: guruh darajasidagi hujjatlar (Group README, Layer_ModuleMap, Layer_Contracts, Layer_SequenceDiagram, Layer_DataFlow) butun guruh bo'yicha kelishilgan yagona Canonical Runtime Pipeline'ni belgilaydi; alohida modul o'z hujjatlarida shu tartibni qayta belgilab, undan farq qiladigan boshqa bir tartib taqdim etsa, bu Runtime Architecture darajasidagi ziddiyat hisoblanadi va Critical toifasiga kiradi (oddiy hujjat nomuvofiqligidan farqli, chunki bu haqiqiy bajarilish tartibiga aloqador). Bu qoida `01_Data_Layer/Providers/ProviderLifecycle` modulida uning o'z README/Contracts/ModuleMap/SequenceDiagram hujjatlari "ProviderFactory -> ProviderLifecycle -> ProviderInterface" tartibini ko'rsatgani, guruh darajasidagi barcha besh Canonical hujjat esa "ProviderFactory -> ProviderInterface -> Concrete Provider -> ProviderLifecycle -> ProviderFlow" tartibini belgilagani aniqlanganidan keyin qo'shildi (Critical, Runtime Architecture). ProviderLifecycle'ning o'z Input Contract'i ("Provider Instance") ham guruh darajasidagi tartibni tasdiqlaydi, chunki Provider Instance faqat Factory+Interface+Concrete implementatsiyadan keyin mavjud bo'ladi.
 ---
+## Context Analysis Order Rule
+```text
+Analysis modules must not depend on
+later analysis modules unless
+explicitly approved by Director.
+
+Canonical group pipeline is the
+source of truth for execution order.
+
+Violation:
+→ Critical
+```
+Sabab: `03_Context_Layer/AMD` va `03_Context_Layer/Wyckoff` modullarining o'z 4 ta hujjati mos ravishda "Session AMD'dan oldin ishlaydi" va "VolumeProfile Wyckoff'dan oldin ishlaydi" deb ko'rsatgani aniqlangan, holbuki guruh darajasidagi Canonical Pipeline (`MarketStructure -> Liquidity -> OrderBlock -> FairValueGap -> Wyckoff -> AMD -> Session -> Trend -> VolumeProfile -> ContextService`) buning aksini belgilaydi. Director Ruling: AMD Accumulation/Manipulation/Distribution modelini aniqlaydi va Session (vaqt konteksti) buning uchun prerequisite emas; xuddi shunday, VolumeProfile barcha oldingi kontekst natijalaridan foydalanishi mumkin bo'lgan oxirgi analiz moduli bo'lib, Wyckoff VolumeProfile natijasiga bog'liq bo'lmasligi kerak. Har ikkala holatda ham guruh darajasidagi pipeline o'zgarmadi — modul hujjatlari canonical tartibga moslashtirildi (AMD'dan Session dependency, Wyckoff'dan VolumeProfile dependency olib tashlandi). Bu qoida Runtime Pipeline Rule'ni to'ldiradi: u guruh-darajasidagi ziddiyatni umumiy tarzda qamrab oladi, bu qoida esa xususiy holatni — keyingi analiz moduliga bog'liqlik — aniq taqiqlaydi.
+---
+## Context Ownership Rule
+```text
+ContextEngine:
+Orchestrates only.
+
+ContextService:
+Creates the only Canonical
+Market Context.
+
+No other module may claim
+Market Context ownership.
+
+Violation:
+→ Critical
+```
+Sabab: `03_Context_Layer/ContextEngine/Contracts.md` o'zining README.md hujjati va ContextService'ning egaligi bilan ziddiyatda "✓ Market Context Generation" / Output Contract "Market Context" / "✓ Market Context yaratadi" kabi da'volarni o'z ichiga olgani aniqlangan (ContextEngine/README.md esa aniq: "Yakuniy Market Context obyektini faqat ContextService yaratadi"). Director Ruling: ContextEngine faqat orchestrates, coordinates, executes order, collects outputs, forwards outputs qiladi; Market Context yaratish huquqi faqat ContextService'ga tegishli. ContextEngine/Contracts.md tuzatildi — Market Context yaratish da'volari olib tashlandi va "Context Analysis Results" bilan almashtirildi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.

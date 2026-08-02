@@ -1197,8 +1197,9 @@ Phase 2 — Module Audit Progress
 
 02_Core_Layer                CLOSED (900/900)
 
-⏳ 03_Context_Layer
-⬜ 04_Indicator_Layer
+03_Context_Layer             CLOSED (1100/1100)
+
+⏳ 04_Indicator_Layer
 ⬜ 05_Strategy_Layer
 ⬜ 06_Signal_Layer
 ⬜ 07_AI_Layer
@@ -1514,19 +1515,84 @@ No new canonical rules required — all findings resolved under existing Phase 2
 
 ---
 
+## Director Review — 03_Context_Layer (full Layer, single-pass audit)
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+03_Context_Layer
+
+Status:
+CLOSED
+
+Modules:
+11 / 11
+
+Architecture Score:
+1100 / 1100
+
+Critical:
+3 (all resolved via Director Ruling)
+
+Major:
+13
+
+Minor:
+6
+
+Approved:
+100%
+
+Module Results:
+
+| Module | Status | Score |
+|---|---|---|
+| AMD | CLOSED, APPROVED | 100/100 |
+| ContextEngine | CLOSED, APPROVED | 100/100 |
+| ContextService | CLOSED, APPROVED | 100/100 |
+| FairValueGap | CLOSED, APPROVED | 100/100 |
+| Liquidity | CLOSED, APPROVED | 100/100 |
+| MarketStructure | CLOSED, APPROVED | 100/100 |
+| OrderBlock | CLOSED, APPROVED | 100/100 |
+| Session | CLOSED, APPROVED | 100/100 |
+| Trend | CLOSED, APPROVED | 100/100 |
+| VolumeProfile | CLOSED, APPROVED | 100/100 |
+| Wyckoff | CLOSED, APPROVED | 100/100 |
+
+Findings fixed during this Layer's audit (full-Layer single-pass audit):
+
+Auto-fixed by Worker (rule-based, no Director decision needed):
+* Dependency Source of Truth Rule — missing "✗ Platform Layer" in ModuleMap.md Forbidden Dependencies across 10 modules (AMD, ContextEngine, FairValueGap, Liquidity, MarketStructure, OrderBlock, Session, Trend, VolumeProfile, Wyckoff) (Major).
+* Rule 8 internal staleness — Liquidity README/ModuleMap Module Position missing MarketStructure; Trend README/ModuleMap Module Position missing Session (both corrected to match their own Contracts.md/Dependency Map) (Major).
+* Canonical Naming Rule — ContextEngine, ContextService, FairValueGap, MarketStructure, OrderBlock, VolumeProfile README.md titles standardized from spaced human-readable form to the compact module-identifier form used in Contracts/ModuleMap/SequenceDiagram (Minor).
+* Layer_DataFlow.md — MarketStructure/Liquidity parallel-branch depiction corrected to a linear chain, matching Layer_SequenceDiagram.md/Layer_ModuleMap.md/README.md (Major).
+* ContextEngine/Contracts.md — stray unmatched code-fence in Module Boundary section removed (formatting).
+
+Director Ruling (3 Critical, architecture-affecting — resolved by Director):
+1. **AMD ↔ Session Pipeline Order.** AMD's own docs claimed Session precedes AMD; canonical group pipeline places AMD before Session. Ruling: group-level pipeline unchanged (AMD is not dependent on Session — AMD detects the Accumulation/Manipulation/Distribution cycle, Session only adds time-of-day context and is not a prerequisite for it). AMD's 4 docs (README, Contracts, ModuleMap, SequenceDiagram) corrected to remove the Session dependency entirely.
+2. **Wyckoff ↔ VolumeProfile Pipeline Order.** Wyckoff's own docs claimed VolumeProfile precedes Wyckoff; canonical group pipeline places VolumeProfile last (after Wyckoff/AMD/Session/Trend). Ruling: group-level pipeline unchanged (VolumeProfile is the last analysis module able to use all prior context results; Wyckoff must not depend on VolumeProfile's result). Wyckoff's 4 docs corrected to remove the VolumeProfile dependency entirely.
+3. **ContextEngine Ownership.** ContextEngine/Contracts.md claimed "✓ Market Context Generation" / Output Contract "Market Context" / "✓ Market Context yaratadi", contradicting ContextEngine's own README.md and overlapping ContextService's ownership. Ruling: ContextEngine only orchestrates, coordinates, executes order, collects outputs, and forwards outputs — it never creates Market Context. ContextEngine/Contracts.md corrected to remove all Market-Context-creation claims; output renamed to "Context Analysis Results", fully aligned with README.md. Market Context creation remains ContextService's exclusive ownership.
+
+Two new Canonical Rules established (Architecture Decision Records), added to `Architecture_Audit_Plan.md` §9b:
+* **Context Analysis Order Rule** — analysis modules must not depend on later analysis modules unless explicitly approved by Director; canonical group pipeline is the source of truth for execution order (Critical if violated).
+* **Context Ownership Rule** — ContextEngine orchestrates only; ContextService creates the only Canonical Market Context; no other module may claim Market Context ownership (Critical if violated).
+
+---
+
 ## Phase 2 Statistics (running)
 
 Groups/Layers Completed:
-7 (6 groups in 01_Data_Layer + 02_Core_Layer as a full Layer)
+8 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer as full Layers)
 
 Layers Completed:
-1 (01_Data_Layer)
+3 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer)
 
 Modules Completed:
-47
+58
 
 Architecture Score:
-4700 / 4700
+5800 / 5800
 
 Critical Remaining:
 0

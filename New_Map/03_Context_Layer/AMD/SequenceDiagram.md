@@ -14,8 +14,6 @@ Read Market Structure
 ↓
 Read Liquidity
 ↓
-Read Session
-↓
 Detect Accumulation
 ↓
 Detect Manipulation
@@ -43,9 +41,8 @@ Publish Context
 # Runtime Rules
 1. Market Structure avval tayyor bo'lishi kerak.
 2. Liquidity hisobga olinadi.
-3. Session hisobga olinadi.
-4. Phase ketma-ketligi tekshiriladi.
-5. Circular Dependency taqiqlanadi.
+3. Phase ketma-ketligi tekshiriladi.
+4. Circular Dependency taqiqlanadi.
 ---
 # State Flow
 ```text

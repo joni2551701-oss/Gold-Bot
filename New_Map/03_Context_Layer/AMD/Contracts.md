@@ -29,8 +29,6 @@ MarketStructure
 ↓
 Liquidity
 ↓
-Session
-↓
 AMD
 ↓
 ContextService
@@ -41,7 +39,6 @@ Boundary End
 • OHLC Data
 • Market Structure
 • Liquidity State
-• Session State
 ---
 # Output Contract
 • AMD Phase
@@ -55,7 +52,6 @@ Boundary End
 ✓ ContextEngine
 ✓ MarketStructure
 ✓ Liquidity
-✓ Session
 ✓ ContextService
 ✓ Event System
 ---

@@ -6,11 +6,11 @@ Ushbu hujjat Wyckoff modulining ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-ContextEngine
+FairValueGap
 ↓
 Wyckoff
 ↓
-ContextService
+AMD
 ```
 ---
 # Module Architecture
@@ -58,8 +58,6 @@ MarketStructure
 ↓
 Liquidity
 ↓
-VolumeProfile
-↓
 Wyckoff
 ↓
 ContextService
@@ -69,7 +67,6 @@ ContextService
 ✓ ContextEngine
 ✓ MarketStructure
 ✓ Liquidity
-✓ VolumeProfile
 ✓ ContextService
 ✓ Event System
 ---

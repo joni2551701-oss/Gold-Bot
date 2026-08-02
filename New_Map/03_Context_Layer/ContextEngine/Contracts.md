@@ -11,10 +11,10 @@ ContextEngine quyidagilar uchun javobgar.
 ✓ Module Coordination
 ✓ Context Aggregation
 ✓ Context Validation
-✓ Market Context Generation
 ✓ Runtime State Management
 ✓ Context Event Generation
 ContextEngine bajarmaydi.
+✗ Yakuniy Market Context obyektini yaratish (ContextService vazifasi)
 ✗ Indicator Calculation
 ✗ Strategy Execution
 ✗ Signal Generation
@@ -42,7 +42,7 @@ Boundary End
 - Module Results
 ---
 # Output Contract
-- Market Context
+- Context Analysis Results
 - Context Status
 - Context Events
 - Runtime Context
@@ -83,7 +83,7 @@ Boundary End
 1. ContextEngine Context Layer ichidagi yagona Canonical Orchestrator hisoblanadi.
 2. Har bir Context modul mustaqil bajarilishi shart.
 3. ContextEngine faqat koordinatsiya qiladi.
-4. Market Context barcha modullar tugagandan keyin yaratiladi.
+4. Context Analysis Results barcha modullar tugagandan keyin ContextService'ga uzatiladi.
 5. Validation majburiy bosqich hisoblanadi.
 6. Indicator va Signal hisoblash taqiqlanadi.
 7. Circular Dependency qat'iyan taqiqlanadi.
@@ -92,10 +92,11 @@ Boundary End
 ContextEngine:
 ✓ Context modullarini ishga tushiradi.
 ✓ Natijalarni yig'adi.
-✓ Market Context yaratadi.
+✓ Context Analysis Results'ni ContextService'ga uzatadi.
 ✓ Context State boshqaradi.
 ✓ Context Event yaratadi.
 ContextEngine:
+✗ Yakuniy Market Context obyektini yaratmaydi.
 ✗ Indicator hisoblamaydi.
 ✗ Strategy bajarmaydi.
 ✗ Signal yaratmaydi.
@@ -104,7 +105,7 @@ ContextEngine:
 ---
 # Acceptance Criteria
 ✓ Context modullar koordinatsiya qilinadi.
-✓ Market Context muvaffaqiyatli yaratiladi.
+✓ Context Analysis Results muvaffaqiyatli ContextService'ga uzatiladi.
 ✓ Validation ishlaydi.
 ✓ Runtime State boshqariladi.
 ✓ Context Events yaratiladi.
@@ -112,4 +113,4 @@ ContextEngine:
 ---
 # Summary
 ContextEngine Contract GoldBot Context Layer markaziy Orchestrator komponentining rasmiy arxitektura shartnomasi hisoblanadi.
-ContextEngine Market Context yaratish uchun barcha Context modullarini yagona Canonical Runtime Pipeline orqali boshqaradi.
+ContextEngine barcha Context modullarini yagona Canonical Runtime Pipeline orqali boshqaradi va Context Analysis Results'ni ContextService'ga uzatadi. Yakuniy Market Context obyektini faqat ContextService yaratadi.

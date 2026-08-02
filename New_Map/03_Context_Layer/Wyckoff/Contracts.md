@@ -32,8 +32,6 @@ MarketStructure
 ↓
 Liquidity
 ↓
-VolumeProfile
-↓
 Wyckoff
 ↓
 ContextService
@@ -44,7 +42,6 @@ Boundary End
 • OHLC Data
 • Market Structure
 • Liquidity State
-• Volume Profile
 ---
 # Output Contract
 • Market Phase
@@ -58,7 +55,6 @@ Boundary End
 ✓ ContextEngine
 ✓ MarketStructure
 ✓ Liquidity
-✓ VolumeProfile
 ✓ ContextService
 ✓ Event System
 ---

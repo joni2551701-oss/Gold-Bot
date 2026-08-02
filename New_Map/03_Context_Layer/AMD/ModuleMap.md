@@ -6,11 +6,11 @@ Ushbu hujjat AMD modulining ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-ContextEngine
+Wyckoff
 ↓
 AMD
 ↓
-ContextService
+Session
 ```
 ---
 # Module Architecture
@@ -58,8 +58,6 @@ MarketStructure
 ↓
 Liquidity
 ↓
-Session
-↓
 AMD
 ↓
 ContextService
@@ -69,7 +67,6 @@ ContextService
 ✓ ContextEngine
 ✓ MarketStructure
 ✓ Liquidity
-✓ Session
 ✓ ContextService
 ✓ Event System
 ---

@@ -59,7 +59,6 @@ AMD qabul qiladi:
 • OHLC Data
 • Market Structure
 • Liquidity State
-• Session State
 ---
 # Output
 AMD yaratadi:
@@ -77,8 +76,6 @@ Market Data
 Market Structure
 ↓
 Liquidity
-↓
-Session
 ↓
 Detect Accumulation
 ↓

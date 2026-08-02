@@ -64,7 +64,6 @@ Wyckoff qabul qiladi:
 • OHLC Data
 • Market Structure
 • Liquidity State
-• Volume Profile
 ---
 # Output
 Wyckoff yaratadi:
@@ -82,8 +81,6 @@ Market Data
 Market Structure
 ↓
 Liquidity
-↓
-Volume Profile
 ↓
 Detect Market Phase
 ↓
