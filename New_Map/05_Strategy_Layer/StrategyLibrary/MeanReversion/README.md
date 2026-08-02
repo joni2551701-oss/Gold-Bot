@@ -3,7 +3,7 @@ Status: CANONICAL
 ---
 # Purpose
 Mean Reversion Strategy GoldBot Strategy Library ichidagi Canonical Trading Strategy hisoblanadi.
-Uning asosiy vazifasi narxning o'zining muvozanat (Mean Value) atrofida harakatlanish xususiyatidan foydalanib, ekstremal og'ishlardan keyingi qaytish ehtimolini aniqlash hamda Strategy Result yaratishdir.
+Uning asosiy vazifasi narxning o'zining muvozanat (Mean Value) atrofida harakatlanish xususiyatidan foydalanib, ekstremal og'ishlardan keyingi qaytish ehtimolini aniqlash hamda Execution Output yaratishdir.
 Mean Reversion Strategy signal yaratmaydi.
 Mean Reversion Strategy trade ochmaydi.
 Mean Reversion Strategy AI ishlatmaydi.
@@ -19,7 +19,7 @@ Mean Reversion Strategy quyidagi vazifalarni bajaradi.
 • Momentum Confirmation
 • Volume Confirmation
 • Mean Reversion Confluence
-• Strategy Result Generation
+• Execution Output Generation
 ---
 # Layer Position
 ```text
@@ -29,7 +29,7 @@ Indicator Context
 ↓
 Mean Reversion Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Responsibilities
@@ -42,7 +42,7 @@ Mean Reversion Strategy:
 ✓ Momentum baholaydi
 ✓ Volume tasdiqlaydi
 ✓ Mean Reversion Confluence yaratadi
-✓ Strategy Result yaratadi
+✓ Execution Output yaratadi
 ---
 # Not Responsible
 Mean Reversion Strategy:
@@ -81,15 +81,15 @@ Confluence
 ↓
 Strategy Validation
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Golden Rules
 1. Mean Reversion faqat Range yoki muvozanatli bozorlarda qo'llaniladi.
 2. Kuchli trendda qo'llashdan oldin qo'shimcha tasdiqlash talab qilinadi.
-3. Strategy Result immutable hisoblanadi.
+3. Execution Output immutable hisoblanadi.
 4. Signal yaratilmaydi.
 5. AI ishlatilmaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.

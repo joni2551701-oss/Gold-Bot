@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 SMC Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Module Architecture
@@ -62,12 +62,12 @@ SMC Confluence yaratadi.
 Strategy natijasini tekshiradi.
 ---
 ## Result Builder
-SMC Strategy Result yaratadi.
+SMC Execution Output yaratadi.
 ---
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

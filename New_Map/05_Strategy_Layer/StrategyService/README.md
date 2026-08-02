@@ -20,7 +20,9 @@ StrategyService quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-StrategyManager
+Signal Layer
+↓
+StrategyService
 ↓
 StrategyEngine
 ↓

@@ -440,6 +440,39 @@ on execution topology:
 ```
 Sabab: `04_Indicator_Layer/Layer_DataFlow.md` TrendIndicators, MomentumIndicators, VolatilityIndicators, VolumeIndicators'ni IndicatorEngine'dan parallel fan-out qiladigan, so'ng MarketStructureIndicators'dan oldin fan-in bo'ladigan tarzda ko'rsatgan, holbuki `Layer_SequenceDiagram.md` va `IndicatorEngine/SequenceDiagram.md` bu to'rtta modulni qat'iy ketma-ket (Trend → Momentum → Volatility → Volume) ishga tushiriladigan qilib ko'rsatgan — bu ikki guruh hujjat o'rtasidagi Runtime Architecture darajasidagi ziddiyat (Critical). Director Ruling: Trend/Momentum/Volatility/Volume Indicators bir-birining natijasiga bog'liq emas, shuning uchun parallel execution canonical hisoblanadi (kechikishni kamaytiradi va arxitekturaga mos keladi); MarketStructureIndicators/SmartMoneyIndicators/CustomIndicators esa avvalgi natijalarni birlashtirgani uchun ketma-ket qoladi. `Layer_DataFlow.md` Canonical Source sifatida qabul qilindi; `Layer_SequenceDiagram.md` va `IndicatorEngine/SequenceDiagram.md` parallel-fan-out/Synchronization-Point modeliga moslashtirildi. Bu qoida keyingi Layerlardagi (masalan AI, Risk, Media) o'zaro bog'liq bo'lmagan parallel modullar uchun ham qo'llaniladi.
 ---
+## Strategy Execution Rule
+```text
+StrategyLibrary modules
+implement strategy algorithms.
+
+StrategyEngine
+is the only runtime executor
+and owner of
+Strategy Result.
+
+StrategyLibrary modules
+must never claim ownership
+of the final Strategy Result.
+
+Violation:
+→ Critical
+```
+Sabab: `05_Strategy_Layer`ning barcha 7 ta StrategyLibrary modulida (AMD, Breakout, ICT, LiquiditySweep, MeanReversion, SMC, TrendFollowing, Wyckoff) o'z 4 ta hujjati "Strategy Result yaratadi" va natijani to'g'ridan-to'g'ri StrategyManager'ga uzatadi deb ko'rsatgani aniqlangan, holbuki StrategyEngine'ning o'z hujjatlari xuddi shu "Strategy Execution"/"Strategy Result Aggregation" huquqini yagona egasi sifatida da'vo qilgan va guruh darajasidagi `Layer_DataFlow.md`/`Layer_SequenceDiagram.md` StrategyEngine'ni (StrategyManager emas) context'ni iste'mol qiluvchi ijro modul sifatida ko'rsatgan — bu Runtime Ownership Overlap va Runtime Pipeline ziddiyati (Critical). Director Ruling: Option A tasdiqlandi — StrategyEngine yagona Strategy Execution va Strategy Result egasi hisoblanadi; StrategyLibrary modullari esa strategiya implementatsiyasi (algorithm definitions) bo'lib, faqat Execution Output/Candidate Output yaratadi va uni StrategyEngine'ga uzatadi (StrategyManager'ga emas). Barcha 7 StrategyLibrary modulining 4 tadan hujjati va StrategyEngine'ning o'z hujjatlari shu modelga moslashtirildi (StrategyEngine endi StrategyLibrary algoritmini bevosita chaqiradi).
+---
+## Algorithm vs Runtime Rule
+```text
+Algorithm Modules
+define how a computation
+is performed.
+
+Runtime Engines
+own execution,
+coordination,
+aggregation,
+and final outputs.
+```
+Sabab: Strategy Execution Rule bilan bir vaqtda qo'shildi — u xususiy holatni (Strategy Layer) taqiqlaydi, bu qoida esa umumiy tamoyilni belgilaydi: algoritm/qoida ta'riflovchi modullar (masalan, StrategyLibrary strategiyalari) hech qachon runtime execution, coordination, aggregation yoki final output egaligini da'vo qilmasligi kerak — bu huquq har doim shu turdagi modullarni boshqaruvchi Runtime Engine'ga (masalan, StrategyEngine) tegishli. Bu tamoyil keyinchalik AI, Signal va Media Layerlarida ham xuddi shunday arxitektura standarti sifatida qo'llaniladi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.

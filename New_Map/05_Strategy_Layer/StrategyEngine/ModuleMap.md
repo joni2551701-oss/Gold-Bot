@@ -27,7 +27,7 @@ StrategyEngine
 ---
 # Internal Components
 ## Execution Manager
-StrategyManager tomonidan faollashtirilgan strategiyani bajaradi.
+StrategyManager tomonidan faollashtirilgan strategiyaning StrategyLibrary algoritmini bevosita chaqirib bajaradi.
 ---
 ## Pipeline Coordinator
 Strategy bajarilish jarayonini muvofiqlashtiradi.
@@ -55,12 +55,12 @@ StrategyService
 ---
 # Allowed Dependencies
 ✓ StrategyManager
+✓ StrategyLibrary
 ✓ Indicator Layer
 ✓ Context Layer
 ✓ Event System
 ---
 # Forbidden Dependencies
-✗ StrategyLibrary (to'g'ridan-to'g'ri)
 ✗ StrategyProfiles (to'g'ridan-to'g'ri)
 ✗ Signal Layer
 ✗ AI Layer
@@ -83,7 +83,7 @@ StrategyEngine egalik qilmaydi.
 ---
 # Module Rules
 1. StrategyEngine faqat Strategy Execution, Coordination va Result Aggregation uchun yagona orchestrator hisoblanadi.
-2. StrategyLibrary va StrategyProfiles bilan StrategyEngine to'g'ridan-to'g'ri ishlamaydi — bular StrategyManager orqali boshqariladi.
+2. StrategyEngine faollashtirilgan strategiyaning StrategyLibrary algoritmini bevosita chaqiradi; StrategyProfiles bilan esa to'g'ridan-to'g'ri ishlamaydi — bu StrategyManager orqali boshqariladi.
 3. StrategyEngine faqat StrategyManager tomonidan faollashtirilgan strategiyani qabul qiladi.
 4. Circular Dependency taqiqlanadi.
 ---

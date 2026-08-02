@@ -30,9 +30,9 @@ Volume Confirmation
 ↓
 Wyckoff Confluence
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Runtime Rules
@@ -65,6 +65,6 @@ Indicator Context
 ↓
 Wyckoff Strategy
 ↓
-Strategy Result
+Execution Output
 ↓
-StrategyManager
+StrategyEngine

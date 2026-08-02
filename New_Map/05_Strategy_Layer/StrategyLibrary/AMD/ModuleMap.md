@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 AMD Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Module Architecture
@@ -54,12 +54,12 @@ AMD Confluence yaratadi.
 Strategy natijasini tekshiradi.
 ---
 ## Result Builder
-AMD Strategy Result yaratadi.
+AMD Execution Output yaratadi.
 ---
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

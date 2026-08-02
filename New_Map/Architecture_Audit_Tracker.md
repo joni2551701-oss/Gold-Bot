@@ -1201,8 +1201,9 @@ Phase 2 — Module Audit Progress
 
 04_Indicator_Layer           CLOSED (900/900)
 
-⏳ 05_Strategy_Layer
-⬜ 06_Signal_Layer
+05_Strategy_Layer            CLOSED (1600/1600)
+
+⏳ 06_Signal_Layer
 ⬜ 07_AI_Layer
 ⬜ 08_Decision_Layer
 ⬜ 09_Risk_Layer
@@ -1646,19 +1647,86 @@ One new Canonical Rule established (Architecture Decision Record), added to `Arc
 
 ---
 
+## Director Review — 05_Strategy_Layer (full Layer, single-pass audit)
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+05_Strategy_Layer
+
+Status:
+CLOSED
+
+Modules:
+16 / 16
+
+Architecture Score:
+1600 / 1600
+
+Critical:
+1 (resolved via Director Ruling)
+
+Major:
+22
+
+Minor:
+2
+
+Approved:
+100%
+
+Module Results:
+
+| Module | Status | Score |
+|---|---|---|
+| StrategyEngine | CLOSED, APPROVED | 100/100 |
+| StrategyManager | CLOSED, APPROVED | 100/100 |
+| StrategyService | CLOSED, APPROVED | 100/100 |
+| StrategyLibrary/AMD | CLOSED, APPROVED | 100/100 |
+| StrategyLibrary/Breakout | CLOSED, APPROVED | 100/100 |
+| StrategyLibrary/ICT | CLOSED, APPROVED | 100/100 |
+| StrategyLibrary/LiquiditySweep | CLOSED, APPROVED | 100/100 |
+| StrategyLibrary/MeanReversion | CLOSED, APPROVED | 100/100 |
+| StrategyLibrary/SMC | CLOSED, APPROVED | 100/100 |
+| StrategyLibrary/TrendFollowing | CLOSED, APPROVED | 100/100 |
+| StrategyLibrary/Wyckoff | CLOSED, APPROVED | 100/100 |
+| StrategyProfiles/Filters | CLOSED, APPROVED | 100/100 |
+| StrategyProfiles/Presets | CLOSED, APPROVED | 100/100 |
+| StrategyProfiles/RiskProfiles | CLOSED, APPROVED | 100/100 |
+| StrategyProfiles/Sessions | CLOSED, APPROVED | 100/100 |
+| StrategyProfiles/Timeframes | CLOSED, APPROVED | 100/100 |
+| StrategyProfiles/TradingStyles | CLOSED, APPROVED | 100/100 |
+
+Findings fixed during this Layer's audit (full-Layer single-pass audit, largest Layer to date at 16 modules / 69 files):
+
+Auto-fixed by Worker (rule-based, no Director decision needed):
+* Dependency Source of Truth Rule — missing "Platform Layer"/"Platform Layer Logic" in ModuleMap.md Forbidden Dependencies across all 16 modules, plus Layer_ModuleMap.md missing "Monitoring Layer"/"Database Layer" vs. Layer_Contracts.md (Major, ×19).
+* Canonical Naming Rule — RiskProfiles/README.md and TradingStyles/README.md titles standardized from spaced human-readable form to the compact module-identifier form used in Contracts/ModuleMap/SequenceDiagram (Minor, ×2).
+* Staleness (Rule 10) — CustomIndicators-style stray output claim carried over from prior layer pattern check found none new here; no additional Major staleness beyond the dependency-mirroring defects.
+
+Director Ruling (1 Critical, architecture-affecting, spanning StrategyEngine + all 7 StrategyLibrary modules):
+* **Strategy Execution Ownership/Topology.** The 7 StrategyLibrary modules (AMD, Breakout, ICT, LiquiditySweep, MeanReversion, SMC, TrendFollowing, Wyckoff) each documented themselves performing Strategy Execution/Validation/Result Generation and delivering the final "Strategy Result" directly to StrategyManager — contradicting StrategyEngine's own docs, which claimed that same Execution/Result-Aggregation ownership exclusively, and contradicting the group-level `Layer_DataFlow.md`/`Layer_SequenceDiagram.md`, which place StrategyEngine (not StrategyManager) as the execution consumer of context. Ruling: **Option A** — StrategyEngine is the sole runtime executor and owner of the final Strategy Result; StrategyLibrary modules are algorithm/rule definitions only. Applied: all 7 StrategyLibrary modules' 4 docs each changed their terminal step from "Generate Strategy Result → StrategyManager" to "Generate Execution Output → StrategyEngine" (with "Strategy Result" renamed to "Execution Output" throughout each module's own docs, and their Allowed Dependency on StrategyManager replaced with StrategyEngine). StrategyEngine's own 4 docs updated in the reverse direction — moved StrategyLibrary from Forbidden to Allowed Dependencies and added explicit Runtime Contract/Module Rule/Workflow steps stating StrategyEngine directly calls the StrategyLibrary algorithm (previously StrategyEngine's docs incorrectly forbade direct StrategyLibrary access). StrategyManager's docs required no change (already correctly scoped to Discovery/Selection/Activation only, no Execution/Result ownership claims). StrategyService/README.md's "Layer Position" corrected from a stale linear model to the round-trip Boundary Gateway model already used by its own ModuleMap.md/SequenceDiagram.md (`Signal Layer → StrategyService → StrategyEngine → StrategyService → Signal Layer`).
+
+Two new Canonical Rules established (Architecture Decision Records), added to `Architecture_Audit_Plan.md` §9b:
+* **Strategy Execution Rule** — StrategyLibrary modules implement strategy algorithms; StrategyEngine is the only runtime executor and owner of Strategy Result; StrategyLibrary modules must never claim ownership of the final Strategy Result (Critical if violated).
+* **Algorithm vs Runtime Rule** — algorithm/rule-defining modules must never claim runtime execution, coordination, aggregation, or final-output ownership; that ownership always belongs to the Runtime Engine that invokes them. Applies to future Layers (AI, Signal, Media) with a similar algorithm-module/runtime-engine split.
+
+---
+
 ## Phase 2 Statistics (running)
 
 Groups/Layers Completed:
-9 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer + 04_Indicator_Layer as full Layers)
+10 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer + 04_Indicator_Layer + 05_Strategy_Layer as full Layers)
 
 Layers Completed:
-4 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer)
+5 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer, 05_Strategy_Layer)
 
 Modules Completed:
-67
+83
 
 Architecture Score:
-6700 / 6700
+8300 / 8300
 
 Critical Remaining:
 0

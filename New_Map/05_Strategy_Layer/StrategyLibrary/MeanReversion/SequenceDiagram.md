@@ -26,9 +26,9 @@ Volume Confirmation
 ↓
 Mean Reversion Confluence
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Runtime Rules
@@ -62,6 +62,6 @@ Indicator Context
 ↓
 Mean Reversion Strategy
 ↓
-Strategy Result
+Execution Output
 ↓
-StrategyManager
+StrategyEngine

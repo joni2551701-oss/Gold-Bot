@@ -69,6 +69,8 @@ Receive Activated Strategy (StrategyManager)
 ↓
 Receive Context
 ↓
+Call StrategyLibrary Algorithm
+↓
 Execute Strategy
 ↓
 Coordinate Pipeline
@@ -86,10 +88,11 @@ StrategyService
 1. StrategyEngine faqat Strategy Layer ichida ishlaydi.
 2. Strategy tanlash va Profile yuklash StrategyManager vazifasi — StrategyEngine bu ishlarni bajarmaydi.
 3. StrategyEngine faqat StrategyManager tomonidan faollashtirilgan strategiyani ishga tushiradi.
-4. Strategy Result immutable hisoblanadi.
-5. Signal yaratish taqiqlanadi.
-6. AI ishlatilmaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+4. StrategyEngine faollashtirilgan strategiyaning StrategyLibrary algoritmini bevosita chaqiradi va yagona Strategy Result egasi hisoblanadi.
+5. Strategy Result immutable hisoblanadi.
+6. Signal yaratish taqiqlanadi.
+7. AI ishlatilmaydi.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents
 ```text

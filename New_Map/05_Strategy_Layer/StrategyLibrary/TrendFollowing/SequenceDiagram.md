@@ -26,9 +26,9 @@ Continuation Analysis
 ↓
 Trend Confluence
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Runtime Rules
@@ -61,6 +61,6 @@ Indicator Context
 ↓
 Trend Following Strategy
 ↓
-Strategy Result
+Execution Output
 ↓
-StrategyManager
+StrategyEngine

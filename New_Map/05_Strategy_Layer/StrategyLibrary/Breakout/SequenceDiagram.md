@@ -26,9 +26,9 @@ Retest Analysis
 ↓
 Breakout Confluence
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Runtime Rules
@@ -61,6 +61,6 @@ Indicator Context
 ↓
 Breakout Strategy
 ↓
-Strategy Result
+Execution Output
 ↓
-StrategyManager
+StrategyEngine

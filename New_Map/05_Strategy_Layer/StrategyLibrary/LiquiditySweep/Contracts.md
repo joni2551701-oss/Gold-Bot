@@ -14,7 +14,7 @@ Liquidity Sweep Strategy quyidagilar uchun javobgar.
 ✓ Sweep Confirmation
 ✓ Rejection Analysis
 ✓ Liquidity Confluence
-✓ Strategy Result Generation
+✓ Execution Output Generation
 Liquidity Sweep Strategy bajarmaydi.
 ✗ Signal Generation
 ✗ AI Analysis
@@ -30,7 +30,7 @@ Indicator Context
 ↓
 Liquidity Sweep Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Input Contract
@@ -47,7 +47,7 @@ StrategyManager
 # Allowed Dependencies
 ✓ Context Layer
 ✓ Indicator Layer
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies
@@ -62,7 +62,7 @@ StrategyManager
 1. Market Context mavjud bo'lishi shart.
 2. Indicator Context mavjud bo'lishi shart.
 3. Liquidity Sweep qoidalari deterministik bajarilishi kerak.
-4. Strategy Result immutable bo'lishi kerak.
+4. Execution Output immutable bo'lishi kerak.
 5. Signal yaratish taqiqlanadi.
 6. AI ishlatish taqiqlanadi.
 7. Circular Dependency qat'iyan taqiqlanadi.
@@ -74,7 +74,7 @@ StrategyManager
 ✓ False Breakout baholanadi.
 ✓ Sweep Confirmation bajariladi.
 ✓ Liquidity Confluence yaratiladi.
-✓ Strategy Result yaratiladi.
+✓ Execution Output yaratiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

@@ -14,7 +14,7 @@ Wyckoff Strategy quyidagilar uchun javobgar.
 ✓ Upthrust Detection
 ✓ Volume Confirmation
 ✓ Wyckoff Confluence
-✓ Strategy Result Generation
+✓ Execution Output Generation
 Wyckoff Strategy bajarmaydi.
 ✗ Signal Generation
 ✗ AI Analysis
@@ -30,7 +30,7 @@ Indicator Context
 ↓
 Wyckoff Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Input Contract
@@ -39,7 +39,7 @@ StrategyManager
 • Strategy Profile
 ---
 # Output Contract
-• Wyckoff Strategy Result
+• Wyckoff Execution Output
 • Wyckoff Score
 • Wyckoff Confidence
 • Wyckoff Metadata
@@ -47,7 +47,7 @@ StrategyManager
 # Allowed Dependencies
 ✓ Context Layer
 ✓ Indicator Layer
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies
@@ -62,7 +62,7 @@ StrategyManager
 1. Market Context mavjud bo'lishi shart.
 2. Indicator Context mavjud bo'lishi shart.
 3. Wyckoff qoidalari qat'iy bajarilishi kerak.
-4. Strategy Result immutable bo'lishi kerak.
+4. Execution Output immutable bo'lishi kerak.
 5. Signal yaratish taqiqlanadi.
 6. AI ishlatish taqiqlanadi.
 7. Circular Dependency qat'iyan taqiqlanadi.
@@ -74,7 +74,7 @@ StrategyManager
 ✓ Spring va Upthrust tekshiriladi.
 ✓ Volume Confirmation bajariladi.
 ✓ Wyckoff Confluence yaratiladi.
-✓ Strategy Result yaratiladi.
+✓ Execution Output yaratiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

@@ -20,7 +20,7 @@ Breakout Strategy quyidagi vazifalarni bajaradi.
 • Retest Analysis
 • Volume Confirmation
 • Breakout Confluence
-• Strategy Result Generation
+• Execution Output Generation
 ---
 # Layer Position
 ```text
@@ -30,7 +30,7 @@ Indicator Context
 ↓
 Breakout Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Responsibilities
@@ -43,7 +43,7 @@ Breakout Strategy:
 ✓ Retest tekshiradi
 ✓ Volume Confirmation bajaradi
 ✓ Breakout Confluence yaratadi
-✓ Strategy Result yaratadi
+✓ Execution Output yaratadi
 ---
 # Not Responsible
 Breakout Strategy:
@@ -61,7 +61,7 @@ Breakout Strategy qabul qiladi.
 ---
 # Output
 Breakout Strategy yaratadi.
-• Breakout Strategy Result
+• Breakout Execution Output
 • Breakout Score
 • Breakout Confidence
 • Breakout Metadata
@@ -82,15 +82,15 @@ Confluence
 ↓
 Strategy Validation
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Golden Rules
 1. Breakout faqat Context va Indicator Context bilan ishlaydi.
 2. False Breakout imkon qadar filtrlanadi.
-3. Strategy Result immutable hisoblanadi.
+3. Execution Output immutable hisoblanadi.
 4. Signal yaratilmaydi.
 5. AI ishlatilmaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.

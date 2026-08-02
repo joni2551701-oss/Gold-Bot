@@ -3,7 +3,7 @@ Status: CANONICAL
 ---
 # Purpose
 SMC (Smart Money Concepts) GoldBot Strategy Library ichidagi Canonical Trading Strategy hisoblanadi.
-Uning asosiy vazifasi Smart Money Concepts metodologiyasi asosida yuqori ehtimollikdagi trade imkoniyatlarini aniqlash hamda Strategy Result yaratishdir.
+Uning asosiy vazifasi Smart Money Concepts metodologiyasi asosida yuqori ehtimollikdagi trade imkoniyatlarini aniqlash hamda Execution Output yaratishdir.
 SMC Strategy signal yaratmaydi.
 SMC Strategy trade ochmaydi.
 SMC Strategy AI ishlatmaydi.
@@ -20,7 +20,7 @@ SMC Strategy quyidagi vazifalarni bajaradi.
 • Imbalance Analysis
 • Premium / Discount Analysis
 • Confluence Analysis
-• Strategy Result Generation
+• Execution Output Generation
 ---
 # Layer Position
 ```text
@@ -30,7 +30,7 @@ Indicator Context
 ↓
 SMC Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Responsibilities
@@ -44,7 +44,7 @@ SMC Strategy:
 ✓ Imbalance baholaydi
 ✓ Premium / Discount baholaydi
 ✓ SMC Confluence yaratadi
-✓ Strategy Result yaratadi
+✓ Execution Output yaratadi
 ---
 # Not Responsible
 SMC Strategy:
@@ -62,7 +62,7 @@ SMC Strategy qabul qiladi.
 ---
 # Output
 SMC Strategy yaratadi.
-• SMC Strategy Result
+• SMC Execution Output
 • SMC Score
 • SMC Confidence
 • SMC Metadata
@@ -79,15 +79,15 @@ SMC Confluence
 ↓
 Strategy Validation
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Golden Rules
 1. SMC faqat Context va Indicator Context bilan ishlaydi.
 2. SMC qoidalari deterministik bo'lishi kerak.
-3. Strategy Result immutable hisoblanadi.
+3. Execution Output immutable hisoblanadi.
 4. Signal yaratilmaydi.
 5. AI ishlatilmaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.

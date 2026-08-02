@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 Mean Reversion Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Module Architecture
@@ -63,7 +63,7 @@ Mean Reversion Result yaratadi.
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

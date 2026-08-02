@@ -28,9 +28,9 @@ Session Analysis
 ↓
 ICT Confluence
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Runtime Rules
@@ -63,6 +63,6 @@ Indicator Context
 ↓
 ICT Strategy
 ↓
-Strategy Result
+Execution Output
 ↓
-StrategyManager
+StrategyEngine

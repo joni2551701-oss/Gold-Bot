@@ -13,7 +13,7 @@ Trend Following Strategy quyidagilar uchun javobgar.
 ✓ Momentum Confirmation
 ✓ Volume Confirmation
 ✓ Trend Confluence
-✓ Strategy Result Generation
+✓ Execution Output Generation
 Trend Following Strategy bajarmaydi.
 ✗ Signal Generation
 ✗ AI Analysis
@@ -29,7 +29,7 @@ Indicator Context
 ↓
 Trend Following Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Input Contract
@@ -46,7 +46,7 @@ StrategyManager
 # Allowed Dependencies
 ✓ Context Layer
 ✓ Indicator Layer
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies
@@ -62,7 +62,7 @@ StrategyManager
 2. Indicator Context mavjud bo'lishi shart.
 3. Trend yo'nalishi aniqlanishi kerak.
 4. Pullback tasdiqlanishi kerak.
-5. Strategy Result immutable bo'lishi kerak.
+5. Execution Output immutable bo'lishi kerak.
 6. Signal yaratish taqiqlanadi.
 7. AI ishlatish taqiqlanadi.
 8. Circular Dependency qat'iyan taqiqlanadi.
@@ -73,7 +73,7 @@ StrategyManager
 ✓ Pullback tekshiriladi.
 ✓ Momentum va Volume tasdiqlanadi.
 ✓ Trend Confluence yaratiladi.
-✓ Strategy Result yaratiladi.
+✓ Execution Output yaratiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

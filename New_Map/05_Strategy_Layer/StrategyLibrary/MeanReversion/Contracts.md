@@ -14,7 +14,7 @@ Mean Reversion Strategy quyidagilar uchun javobgar.
 ✓ Momentum Confirmation
 ✓ Volume Confirmation
 ✓ Mean Reversion Confluence
-✓ Strategy Result Generation
+✓ Execution Output Generation
 Mean Reversion Strategy bajarmaydi.
 ✗ Signal Generation
 ✗ AI Analysis
@@ -30,7 +30,7 @@ Indicator Context
 ↓
 Mean Reversion Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Input Contract
@@ -47,7 +47,7 @@ StrategyManager
 # Allowed Dependencies
 ✓ Context Layer
 ✓ Indicator Layer
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies
@@ -63,7 +63,7 @@ StrategyManager
 2. Indicator Context mavjud bo'lishi shart.
 3. Mean Value aniqlanishi kerak.
 4. Reversal tasdiqlanishi kerak.
-5. Strategy Result immutable bo'lishi kerak.
+5. Execution Output immutable bo'lishi kerak.
 6. Signal yaratish taqiqlanadi.
 7. AI ishlatish taqiqlanadi.
 8. Circular Dependency qat'iyan taqiqlanadi.
@@ -75,7 +75,7 @@ StrategyManager
 ✓ Reversal tasdiqlanadi.
 ✓ Momentum va Volume tasdiqlanadi.
 ✓ Mean Reversion Confluence yaratiladi.
-✓ Strategy Result yaratiladi.
+✓ Execution Output yaratiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

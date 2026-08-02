@@ -15,7 +15,7 @@ Breakout Strategy quyidagilar uchun javobgar.
 ✓ Retest Analysis
 ✓ Volume Confirmation
 ✓ Breakout Confluence
-✓ Strategy Result Generation
+✓ Execution Output Generation
 Breakout Strategy bajarmaydi.
 ✗ Signal Generation
 ✗ AI Analysis
@@ -31,7 +31,7 @@ Indicator Context
 ↓
 Breakout Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Input Contract
@@ -40,7 +40,7 @@ StrategyManager
 • Strategy Profile
 ---
 # Output Contract
-• Breakout Strategy Result
+• Breakout Execution Output
 • Breakout Score
 • Breakout Confidence
 • Breakout Metadata
@@ -48,7 +48,7 @@ StrategyManager
 # Allowed Dependencies
 ✓ Context Layer
 ✓ Indicator Layer
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies
@@ -64,7 +64,7 @@ StrategyManager
 2. Indicator Context mavjud bo'lishi shart.
 3. Breakout tasdiqlanishi kerak.
 4. False Breakout imkon qadar filtrlanishi kerak.
-5. Strategy Result immutable bo'lishi kerak.
+5. Execution Output immutable bo'lishi kerak.
 6. Signal yaratish taqiqlanadi.
 7. AI ishlatish taqiqlanadi.
 8. Circular Dependency qat'iyan taqiqlanadi.
@@ -76,7 +76,7 @@ StrategyManager
 ✓ Volume Confirmation bajariladi.
 ✓ Retest baholanadi.
 ✓ Breakout Confluence yaratiladi.
-✓ Strategy Result yaratiladi.
+✓ Execution Output yaratiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

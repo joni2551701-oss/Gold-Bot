@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 Trend Following Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Module Architecture
@@ -59,7 +59,7 @@ Trend Following Result yaratadi.
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

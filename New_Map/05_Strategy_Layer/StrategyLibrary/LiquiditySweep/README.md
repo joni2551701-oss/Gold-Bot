@@ -18,7 +18,7 @@ Liquidity Sweep Strategy quyidagi vazifalarni bajaradi.
 • Sweep Confirmation
 • Rejection Analysis
 • Confluence Analysis
-• Strategy Result Generation
+• Execution Output Generation
 ---
 # Layer Position
 ```text
@@ -28,7 +28,7 @@ Indicator Context
 ↓
 Liquidity Sweep Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Responsibilities
@@ -41,7 +41,7 @@ Liquidity Sweep Strategy:
 ✓ Sweep Confirmation bajaradi
 ✓ Rejection baholaydi
 ✓ Liquidity Confluence yaratadi
-✓ Strategy Result yaratadi
+✓ Execution Output yaratadi
 ---
 # Not Responsible
 Liquidity Sweep Strategy:
@@ -78,15 +78,15 @@ Confluence
 ↓
 Strategy Validation
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Golden Rules
 1. Strategy faqat Context va Indicator Context bilan ishlaydi.
 2. Liquidity qoidalari deterministik bo'lishi kerak.
-3. Strategy Result immutable hisoblanadi.
+3. Execution Output immutable hisoblanadi.
 4. Signal yaratilmaydi.
 5. AI ishlatilmaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.

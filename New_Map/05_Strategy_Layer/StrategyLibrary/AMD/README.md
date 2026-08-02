@@ -18,7 +18,7 @@ AMD Strategy quyidagi vazifalarni bajaradi.
 • Session Analysis
 • Expansion Analysis
 • AMD Confluence
-• Strategy Result Generation
+• Execution Output Generation
 ---
 # Layer Position
 ```text
@@ -28,7 +28,7 @@ Indicator Context
 ↓
 AMD Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Responsibilities
@@ -40,7 +40,7 @@ AMD Strategy:
 ✓ Session mosligini baholaydi
 ✓ Expansion baholaydi
 ✓ AMD Confluence yaratadi
-✓ Strategy Result yaratadi
+✓ Execution Output yaratadi
 ---
 # Not Responsible
 AMD Strategy:
@@ -58,7 +58,7 @@ AMD Strategy qabul qiladi.
 ---
 # Output
 AMD Strategy yaratadi.
-• AMD Strategy Result
+• AMD Execution Output
 • AMD Score
 • AMD Confidence
 • AMD Metadata
@@ -79,15 +79,15 @@ AMD Confluence
 ↓
 Strategy Validation
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Golden Rules
 1. AMD faqat Context va Indicator Context bilan ishlaydi.
 2. AMD qoidalari deterministik bo'lishi kerak.
-3. Strategy Result immutable hisoblanadi.
+3. Execution Output immutable hisoblanadi.
 4. Signal yaratilmaydi.
 5. AI ishlatilmaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.

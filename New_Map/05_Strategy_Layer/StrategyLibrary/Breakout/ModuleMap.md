@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 Breakout Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Module Architecture
@@ -58,12 +58,12 @@ Breakout Confluence yaratadi.
 Natijani tekshiradi.
 ---
 ## Result Builder
-Breakout Strategy Result yaratadi.
+Breakout Execution Output yaratadi.
 ---
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

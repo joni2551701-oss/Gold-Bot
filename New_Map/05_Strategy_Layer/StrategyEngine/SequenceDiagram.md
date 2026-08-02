@@ -16,6 +16,8 @@ Indicator Context
 ↓
 StrategyEngine
 ↓
+Call StrategyLibrary Algorithm
+↓
 Execute Strategy
 ↓
 Coordinate Pipeline
@@ -45,8 +47,9 @@ Publish Strategy Result
 2. Context tayyor bo'lishi kerak.
 3. Indicator Context tayyor bo'lishi kerak.
 4. Strategy Discovery, Selection va Profile Loading bu sequence'da bajarilmaydi (StrategyManager'da bajarilgan).
-5. Validation Publish'dan oldin bajariladi.
-6. Circular Dependency taqiqlanadi.
+5. StrategyEngine faollashtirilgan strategiyaning StrategyLibrary algoritmini bevosita chaqiradi.
+6. Validation Publish'dan oldin bajariladi.
+7. Circular Dependency taqiqlanadi.
 ---
 # State Flow
 ```text

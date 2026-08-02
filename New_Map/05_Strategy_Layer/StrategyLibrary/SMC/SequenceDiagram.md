@@ -32,9 +32,9 @@ Premium / Discount Analysis
 ↓
 SMC Confluence
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Runtime Rules
@@ -67,6 +67,6 @@ Indicator Context
 ↓
 SMC Strategy
 ↓
-Strategy Result
+Execution Output
 ↓
-StrategyManager
+StrategyEngine

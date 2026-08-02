@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 Wyckoff Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Module Architecture
@@ -58,12 +58,12 @@ Wyckoff Confluence yaratadi.
 Natijani tekshiradi.
 ---
 ## Result Builder
-Wyckoff Strategy Result yaratadi.
+Wyckoff Execution Output yaratadi.
 ---
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyManager
+✓ StrategyEngine
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

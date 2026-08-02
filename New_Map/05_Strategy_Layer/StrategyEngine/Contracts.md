@@ -45,12 +45,12 @@ StrategyService
 ---
 # Allowed Dependencies
 ✓ StrategyManager
+✓ StrategyLibrary
 ✓ Context Layer
 ✓ Indicator Layer
 ✓ Event System
 ---
 # Forbidden Dependencies
-✗ StrategyLibrary (to'g'ridan-to'g'ri)
 ✗ StrategyProfiles (to'g'ridan-to'g'ri)
 ✗ Signal Layer
 ✗ AI Layer
@@ -70,11 +70,12 @@ StrategyService
 1. StrategyEngine faqat StrategyManager tomonidan faollashtirilgan strategiyani qabul qiladi.
 2. Context mavjud bo'lishi shart.
 3. Indicator Context mavjud bo'lishi shart.
-4. Strategy Discovery, Selection va Profile Loading StrategyEngine tomonidan bajarilmaydi.
-5. Strategy Result immutable bo'lishi kerak.
-6. Signal yaratish taqiqlanadi.
-7. AI ishlatish taqiqlanadi.
-8. Circular Dependency qat'iyan taqiqlanadi.
+4. StrategyEngine faollashtirilgan strategiyaning StrategyLibrary algoritmini bevosita chaqiradi.
+5. Strategy Discovery, Selection va Profile Loading StrategyEngine tomonidan bajarilmaydi.
+6. Strategy Result immutable bo'lishi kerak.
+7. Signal yaratish taqiqlanadi.
+8. AI ishlatish taqiqlanadi.
+9. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Faollashtirilgan Strategiya StrategyManager'dan qabul qilinadi.

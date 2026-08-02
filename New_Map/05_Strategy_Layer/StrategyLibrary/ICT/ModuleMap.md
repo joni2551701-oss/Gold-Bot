@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 ICT Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Module Architecture
@@ -54,12 +54,12 @@ ICT Confluence yaratadi.
 Strategy natijasini tekshiradi.
 ---
 ## Result Builder
-ICT Strategy Result yaratadi.
+ICT Execution Output yaratadi.
 ---
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyManager
+✓ StrategyEngine
 ✓ Strategy Profiles
 ---
 # Forbidden Dependencies

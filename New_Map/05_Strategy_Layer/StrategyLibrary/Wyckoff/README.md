@@ -19,7 +19,7 @@ Wyckoff Strategy quyidagi vazifalarni bajaradi.
 • Upthrust Detection
 • Volume Confirmation
 • Wyckoff Confluence
-• Strategy Result Generation
+• Execution Output Generation
 ---
 # Layer Position
 ```text
@@ -29,7 +29,7 @@ Indicator Context
 ↓
 Wyckoff Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Responsibilities
@@ -42,7 +42,7 @@ Wyckoff Strategy:
 ✓ Upthrust tekshiradi
 ✓ Volume Confirmation bajaradi
 ✓ Wyckoff Confluence yaratadi
-✓ Strategy Result yaratadi
+✓ Execution Output yaratadi
 ---
 # Not Responsible
 Wyckoff Strategy:
@@ -60,7 +60,7 @@ Wyckoff Strategy qabul qiladi.
 ---
 # Output
 Wyckoff Strategy yaratadi.
-• Wyckoff Strategy Result
+• Wyckoff Execution Output
 • Wyckoff Score
 • Wyckoff Confidence
 • Wyckoff Metadata
@@ -77,15 +77,15 @@ Wyckoff Confluence
 ↓
 Strategy Validation
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Golden Rules
 1. Wyckoff faqat Context va Indicator Context bilan ishlaydi.
 2. Wyckoff qoidalari deterministik bo'lishi kerak.
-3. Strategy Result immutable hisoblanadi.
+3. Execution Output immutable hisoblanadi.
 4. Signal yaratilmaydi.
 5. AI ishlatilmaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.

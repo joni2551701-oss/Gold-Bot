@@ -3,7 +3,7 @@ Status: CANONICAL
 ---
 # Purpose
 ICT (Inner Circle Trader) GoldBot Strategy Library ichidagi Canonical Trading Strategy hisoblanadi.
-Uning asosiy vazifasi Smart Money Concept va ICT metodologiyasi asosida yuqori ehtimollikdagi trade imkoniyatlarini aniqlash hamda Strategy Result yaratishdir.
+Uning asosiy vazifasi Smart Money Concept va ICT metodologiyasi asosida yuqori ehtimollikdagi trade imkoniyatlarini aniqlash hamda Execution Output yaratishdir.
 ICT Strategy signal yaratmaydi.
 ICT Strategy trade ochmaydi.
 ICT Strategy AI ishlatmaydi.
@@ -18,7 +18,7 @@ ICT Strategy quyidagi vazifalarni bajaradi.
 • Premium / Discount Analysis
 • Session Analysis
 • Confluence Analysis
-• Strategy Result Generation
+• Execution Output Generation
 ---
 # Layer Position
 ```text
@@ -28,7 +28,7 @@ Indicator Context
 ↓
 ICT Strategy
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Responsibilities
@@ -39,7 +39,7 @@ ICT Strategy:
 ✓ Fair Value Gap tekshiradi
 ✓ Premium / Discount baholaydi
 ✓ ICT Confluence yaratadi
-✓ Strategy Result yaratadi
+✓ Execution Output yaratadi
 ---
 # Not Responsible
 ICT Strategy:
@@ -57,7 +57,7 @@ ICT Strategy qabul qiladi.
 ---
 # Output
 ICT Strategy yaratadi.
-• ICT Strategy Result
+• ICT Execution Output
 • ICT Score
 • ICT Confidence
 • ICT Metadata
@@ -74,15 +74,15 @@ ICT Confluence
 ↓
 Strategy Validation
 ↓
-Generate Strategy Result
+Generate Execution Output
 ↓
-StrategyManager
+StrategyEngine
 ```
 ---
 # Golden Rules
 1. ICT faqat Context va Indicator Context bilan ishlaydi.
 2. ICT qoidalari deterministik bo'lishi kerak.
-3. Strategy Result immutable hisoblanadi.
+3. Execution Output immutable hisoblanadi.
 4. Signal yaratilmaydi.
 5. AI ishlatilmaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
