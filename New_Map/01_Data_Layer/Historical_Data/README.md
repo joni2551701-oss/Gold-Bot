@@ -61,15 +61,17 @@ GoldBot Core
 Historical_Data/
 
 ├── README.md
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+├── Layer_Contracts.md
 │
-├── HistoricalDataService.md
-├── Bootstrap.md
-├── Recovery.md
-├── HistoricalProviders.md
-├── HistoricalDatabase.md
-├── HistoricalDataFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── HistoricalDataService/
+├── Bootstrap/
+├── Recovery/
+├── HistoricalProviders/
+├── HistoricalDatabase/
+└── HistoricalDataFlow/
 
 ---
 
@@ -234,16 +236,19 @@ GoldBot Core
 Historical_Data/
 
 ├── README.md
-├── HistoricalDataService.md
-├── Bootstrap.md
-├── Recovery.md
-├── HistoricalProviders.md
-├── HistoricalDatabase.md
-├── HistoricalDataFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+├── Layer_Contracts.md
+│
+├── HistoricalDataService/
+├── Bootstrap/
+├── Recovery/
+├── HistoricalProviders/
+├── HistoricalDatabase/
+└── HistoricalDataFlow/
 
-Har bir modul o'z specification hujjatiga ega bo'lishi kerak.
+Har bir modul o'z README.md, Contracts.md, ModuleMap.md va SequenceDiagram.md hujjatlariga ega bo'lishi kerak.
 
 ---
 
