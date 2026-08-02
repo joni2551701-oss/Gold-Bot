@@ -68,11 +68,14 @@ CoreEngine
 ✓ CoreEngine
 ---
 # Forbidden Dependencies
-✗ Strategy Layer
+✗ Data Layer internals
+✗ Context Layer
+✗ Signal Layer
+✗ AI Layer
 ✗ Decision Layer
 ✗ Risk Layer
-✗ AI Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 Startup egalik qiladi.

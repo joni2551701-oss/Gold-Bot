@@ -73,12 +73,13 @@ GoldBot Layers
 ---
 # Forbidden Dependencies
 ✗ Data Layer internals
-✗ Context Logic
-✗ Signal Logic
-✗ AI Logic
-✗ Decision Logic
-✗ Risk Logic
-✗ Execution Logic
+✗ Context Layer
+✗ Signal Layer
+✗ AI Layer
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 CoreEngine egalik qiladi.

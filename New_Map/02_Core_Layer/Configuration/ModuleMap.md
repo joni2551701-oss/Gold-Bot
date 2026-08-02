@@ -79,6 +79,7 @@ GoldBot Layers
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 Configuration egalik qiladi.

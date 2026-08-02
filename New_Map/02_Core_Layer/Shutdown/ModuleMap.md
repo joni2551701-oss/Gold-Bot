@@ -70,11 +70,14 @@ GoldBot Runtime
 ✓ Configuration
 ---
 # Forbidden Dependencies
-✗ Strategy Layer
-✗ Decision Layer
+✗ Data Layer
+✗ Context Layer
+✗ Signal Layer
 ✗ AI Layer
+✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 Shutdown egalik qiladi.

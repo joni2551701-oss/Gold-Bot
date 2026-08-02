@@ -75,6 +75,7 @@ CoreEngine
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 HealthMonitor egalik qiladi.

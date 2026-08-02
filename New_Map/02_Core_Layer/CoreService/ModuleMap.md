@@ -85,12 +85,13 @@ Shutdown
 ---
 # Forbidden Dependencies
 ✗ Data Layer internals
-✗ Context Layer internals
-✗ Signal Layer internals
-✗ AI Layer internals
-✗ Decision Layer internals
-✗ Risk Layer internals
-✗ Execution Layer internals
+✗ Context Layer
+✗ Signal Layer
+✗ AI Layer
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 CoreService egalik qiladi.

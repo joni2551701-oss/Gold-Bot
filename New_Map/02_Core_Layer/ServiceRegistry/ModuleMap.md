@@ -75,6 +75,7 @@ All Services
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 ServiceRegistry egalik qiladi.
