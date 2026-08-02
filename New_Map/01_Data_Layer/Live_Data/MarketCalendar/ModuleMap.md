@@ -299,6 +299,8 @@ MarketCalendar quyidagilar bilan ishlashi mumkin.
 
 ✓ Exchange Calendar
 
+✓ Holiday Calendar
+
 ---
 
 # Forbidden Dependencies
@@ -320,6 +322,8 @@ MarketCalendar quyidagilar bilan ishlashi mumkin emas.
 ✗ CandleBuilder
 
 ✗ Market Memory
+
+✗ Memory Reader
 
 ✗ Context Engine
 
