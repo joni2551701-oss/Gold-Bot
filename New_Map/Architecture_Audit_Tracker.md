@@ -216,6 +216,91 @@ Arxitekturaning o'zi mustahkam; topilgan muammolar asosan hujjatlashtirish va mo
 
 ---
 
+# Director Review — 05_Strategy_Layer
+
+## Audit Result
+
+```text
+Layer: 05_Strategy_Layer
+Architecture Score:
+100 / 100
+Problems:
+0
+Warnings:
+0
+Suggestions:
+0
+Status:
+APPROVED
+```
+
+## Baholash
+
+Bu audit oldingilariga qaraganda muhimroq edi, chunki muammo hujjat matni emas, balki ichki arxitektura va ownership bilan bog'liq edi.
+
+Topilgan barcha qarama-qarshiliklar bartaraf etilgan:
+
+* ✅ Canonical Data Flow yagona ko'rinishga keltirilgan.
+* ✅ StrategyLibrary → StrategyProfiles → StrategyManager → StrategyEngine → StrategyService oqimi barcha hujjatlarda bir xil.
+* ✅ StrategyManager yagona Strategy Discovery, Selection va Profile Loading egasi.
+* ✅ StrategyEngine faqat Execution, Coordination va Pipeline uchun javobgar.
+* ✅ StrategyService faqat Service Boundary vazifasini bajaradi.
+* ✅ StrategyLibrary va StrategyProfiles endi faqat StrategyManager bilan ishlaydi.
+* ✅ Circular Dependency topilmagan.
+* ✅ Boundary toza.
+
+## Layer Status
+
+```text
+05_Strategy_Layer
+Status:
+CLOSED
+Architecture Version:
+Freeze v1.0
+Audit:
+PASSED
+Score:
+100/100
+```
+
+---
+
+# Kuzatuv (01-05 Layer bo'yicha naqsh)
+
+* 01_Data_Layer → Strukturaviy nomuvofiqlik.
+* 02_Core_Layer → Eski (stale) README.
+* 03_Context_Layer → Engine ↔ Service ownership.
+* 04_Indicator_Layer → Engine ↔ Service ownership.
+* 05_Strategy_Layer → Ichki Data Flow va Ownership arxitektura ziddiyati.
+
+Umumiy tamoyil shakllandi:
+
+```text
+Library
+    ↓
+Profiles
+    ↓
+Manager
+    ↓
+Engine
+    ↓
+Service
+```
+
+yoki unga mos keluvchi:
+
+```text
+Analysis Modules
+    ↓
+Engine (Orchestrator)
+    ↓
+Service (Aggregator / Public API)
+```
+
+Bu naqsh GoldBot arxitekturasi bo'ylab izchil qo'llanmoqda va kelajakdagi Layer'lar uchun standart hisoblanadi.
+
+---
+
 # Audit Tracker
 
 ```text
@@ -224,7 +309,7 @@ Architecture Audit Progress
 ✅ 02_Core_Layer                CLOSED (100/100)
 ✅ 03_Context_Layer             CLOSED (100/100)
 ✅ 04_Indicator_Layer           CLOSED (100/100)
-⏳ 05_Strategy_Layer
+✅ 05_Strategy_Layer            CLOSED (100/100)
 ⏳ 06_Signal_Layer
 ⏳ 07_AI_Layer
 ⏳ 08_Decision_Layer
