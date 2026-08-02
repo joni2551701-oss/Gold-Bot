@@ -2,17 +2,16 @@
 Status: CANONICAL
 ---
 # Purpose
-ContextEngine Context Layer ichidagi markaziy Orchestrator hisoblanadi.
-U barcha Context modullarini boshqaradi va yakuniy Market Context obyektini yaratadi.
+ContextEngine barcha Context Analysis modullarining ishlash tartibini boshqaradi va ularning natijalarini ContextService'ga uzatadi. U yakuniy Market Context obyektini yaratmaydi.
 ContextEngine Context hisoblamaydi.
 Har bir modul o'z Context qismini yaratadi.
-ContextEngine ularni birlashtiradi.
+Yakuniy Market Context obyektini faqat ContextService yaratadi.
 ---
 # Objective
 ContextEngine quyidagi vazifalarni bajaradi:
 • Context Orchestration
 • Module Coordination
-• Context Aggregation
+• Result Forwarding (ContextService'ga)
 • Runtime Coordination
 • Context Lifecycle
 • Context Validation
@@ -40,14 +39,16 @@ ContextService
 # Responsibilities
 ContextEngine:
 ✓ Context modullarini boshqaradi
-✓ Context yaratadi
+✓ Module Execution Order'ni belgilaydi
 ✓ Context Validation
 ✓ Context Lifecycle
 ✓ Runtime Coordination
 ✓ Module Coordination
+✓ Natijalarni ContextService'ga uzatadi
 ---
 # Not Responsible
 ContextEngine:
+✗ Yakuniy Market Context obyektini yaratish (ContextService vazifasi)
 ✗ Indicator Calculation
 ✗ Strategy
 ✗ Signal
@@ -65,10 +66,11 @@ ContextEngine qabul qiladi:
 ---
 # Output
 ContextEngine yaratadi:
-• Market Context
+• Module Execution Order
 • Context Events
 • Context Status
 • Runtime Context
+• Module Results (ContextService uchun)
 ---
 # Managed Modules
 • MarketStructure
@@ -92,18 +94,19 @@ Run Context Modules
 ↓
 Collect Results
 ↓
-Build Market Context
+Forward Results
 ↓
-ContextService
+ContextService (Builds Final Market Context)
 ```
 ---
 # Golden Rules
 1. ContextEngine Context Layer ichidagi yagona Orchestrator.
 2. Har bir Context modul mustaqil ishlaydi.
-3. ContextEngine barcha natijalarni birlashtiradi.
-4. ContextEngine Indicator hisoblamaydi.
-5. ContextEngine Signal yaratmaydi.
-6. Circular Dependency taqiqlanadi.
+3. ContextEngine faqat orchestration va coordination bilan shug'ullanadi; yakuniy Market Context obyektini yaratmaydi.
+4. Yakuniy Market Context obyektini faqat ContextService yaratadi.
+5. ContextEngine Indicator hisoblamaydi.
+6. ContextEngine Signal yaratmaydi.
+7. Circular Dependency taqiqlanadi.
 ---
 # Related Documents
 ```text
@@ -115,4 +118,4 @@ ContextEngine/
 ```
 ---
 # Summary
-ContextEngine GoldBot Context Layer ichidagi barcha Context modullarini boshqaruvchi yagona Canonical Orchestrator hisoblanadi.
+ContextEngine GoldBot Context Layer ichidagi barcha Context modullarining ishlash tartibini boshqaruvchi yagona Canonical Orchestrator hisoblanadi. Yakuniy Market Context obyektini u emas, ContextService yaratadi.
