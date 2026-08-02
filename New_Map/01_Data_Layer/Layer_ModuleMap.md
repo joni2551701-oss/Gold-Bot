@@ -37,11 +37,11 @@ Bu yerda implementatsiya emas, balki modul chegaralari va bog'lanishlari ko'rsat
                          ▼
                   Market_Memory
                          │
-                 ┌───────┴────────┐
-                 ▼                ▼
-          MemoryReader        Event_System
-                 │                │
-                 └───────┬────────┘
+                         ├── MemoryReader (submodule)
+                         │
+                         ▼
+                   Event_System
+                         │
                          ▼
                     GoldBot Core
 ```

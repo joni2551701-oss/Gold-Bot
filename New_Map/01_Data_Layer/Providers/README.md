@@ -76,14 +76,19 @@ Providers/
 
 ├── README.md
 │
-├── ProviderFactory.md
-├── ProviderInterface.md
-├── TwelveData.md
-├── Bitget.md
-├── ProviderLifecycle.md
-├── ProviderFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── ProviderFactory/
+├── ProviderInterface/
+├── TwelveData/
+├── Bitget/
+├── ProviderLifecycle/
+├── ProviderFlow/
+│
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+└── Layer_Contracts.md
+
+Har bir modul o'z README.md, SequenceDiagram.md, ModuleMap.md va Contracts.md fayllariga ega.
 
 ---
 
@@ -149,19 +154,7 @@ Monitoring.
 
 ## ProviderFlow
 
-Providerlardan Data Layer'ga ma'lumot qanday kelishini tavsiflaydi.
-
----
-
-## SequenceDiagram
-
-Provider ishlash ketma-ketligini ko'rsatadi.
-
----
-
-## ModuleMap
-
-Provider modullari orasidagi bog'lanishni ko'rsatadi.
+Providerlardan Historical_Data va Live_Data'ga ma'lumot qanday yo'naltirilishini tavsiflaydi.
 
 ---
 
@@ -274,16 +267,18 @@ Market Memory
 Providers/
 
 ├── README.md
-├── ProviderFactory.md
-├── ProviderInterface.md
-├── TwelveData.md
-├── Bitget.md
-├── ProviderLifecycle.md
-├── ProviderFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── ProviderFactory/
+├── ProviderInterface/
+├── TwelveData/
+├── Bitget/
+├── ProviderLifecycle/
+├── ProviderFlow/
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+└── Layer_Contracts.md
 
-Har bir provider o'z specification hujjatiga ega bo'lishi kerak.
+Har bir provider modul (README.md, SequenceDiagram.md, ModuleMap.md, Contracts.md) o'z papkasida saqlanadi — boshqa 5 sub-guruh (Historical_Data, Live_Data, Market_Memory, Event_System, Data_Validation) bilan bir xil standartda.
 
 ---
 
