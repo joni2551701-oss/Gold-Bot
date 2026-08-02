@@ -22,7 +22,7 @@ KnowledgeManager bajarmaydi.
 ---
 # Module Boundary
 ```text
-ValidationEngine
+KnowledgeAI
 ↓
 KnowledgeManager
 ↓
@@ -41,8 +41,6 @@ KnowledgeBase
 • Knowledge Reference
 ---
 # Allowed Dependencies
-✓ ValidationEngine
-✓ LearningEngine
 ✓ KnowledgeBase
 ---
 # Forbidden Dependencies

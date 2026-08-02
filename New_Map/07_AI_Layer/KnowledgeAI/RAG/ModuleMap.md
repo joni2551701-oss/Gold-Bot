@@ -6,7 +6,7 @@ Ushbu hujjat RAG ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-KnowledgeAI
+SystemKnowledge
 ↓
 RAG
 ↓
@@ -45,7 +45,7 @@ AI uchun Context yaratadi.
 Tez-tez ishlatiladigan Retrieval natijalarini vaqtincha saqlaydi.
 ---
 # Allowed Dependencies
-✓ KnowledgeBase
+✓ SystemKnowledge
 ✓ ProviderRouter
 ---
 # Forbidden Dependencies

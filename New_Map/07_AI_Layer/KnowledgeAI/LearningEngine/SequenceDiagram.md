@@ -45,6 +45,4 @@ ValidationEngine
 ↓
 LearningEngine
 ↓
-KnowledgeManager
-↓
-MemoryManager
+Knowledge Context

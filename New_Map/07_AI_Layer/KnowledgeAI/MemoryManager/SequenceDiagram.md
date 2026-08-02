@@ -6,7 +6,7 @@ Ushbu hujjat MemoryManager Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
 ```text
-LearningEngine
+MemorySearch
 ↓
 MemoryManager
 ↓

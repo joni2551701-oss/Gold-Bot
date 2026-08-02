@@ -22,7 +22,7 @@ ProviderRouter bajarmaydi.
 ---
 # Module Boundary
 ```text
-KnowledgeAI
+RAG
 ↓
 ProviderRouter
 ↓
@@ -44,6 +44,7 @@ ValidationEngine
 • Provider Metadata
 ---
 # Allowed Dependencies
+✓ RAG
 ✓ ValidationEngine
 ---
 # Forbidden Dependencies

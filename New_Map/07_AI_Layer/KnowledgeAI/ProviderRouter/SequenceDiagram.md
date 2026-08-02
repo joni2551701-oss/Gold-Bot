@@ -6,7 +6,7 @@ Ushbu hujjat ProviderRouter Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
 ```text
-KnowledgeAI
+RAG
 ↓
 ProviderRouter
 ↓

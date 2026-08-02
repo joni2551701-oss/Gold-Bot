@@ -19,11 +19,11 @@ PersonalKnowledge quyidagi ma'lumotlarni saqlaydi.
 • AI Learned Knowledge
 ---
 # Layer Position
-KnowledgeManager
+MemoryManager
 ↓
 PersonalKnowledge
 ↓
-MemorySearch
+SystemKnowledge
 ---
 # Responsibilities
 PersonalKnowledge

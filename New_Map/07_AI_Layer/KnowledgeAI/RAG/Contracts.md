@@ -22,7 +22,7 @@ RAG bajarmaydi.
 ---
 # Module Boundary
 ```text
-KnowledgeAI
+SystemKnowledge
 ↓
 RAG
 ↓
@@ -42,7 +42,7 @@ ProviderRouter
 • Context Metadata
 ---
 # Allowed Dependencies
-✓ KnowledgeBase
+✓ SystemKnowledge
 ✓ ProviderRouter
 ---
 # Forbidden Dependencies

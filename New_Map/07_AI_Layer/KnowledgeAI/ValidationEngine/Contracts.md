@@ -44,7 +44,6 @@ LearningEngine
 # Allowed Dependencies
 ✓ ProviderRouter
 ✓ LearningEngine
-✓ KnowledgeManager
 ---
 # Forbidden Dependencies
 ✗ MemoryManager

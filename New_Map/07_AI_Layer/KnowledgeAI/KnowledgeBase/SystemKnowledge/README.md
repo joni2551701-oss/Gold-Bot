@@ -20,11 +20,11 @@ SystemKnowledge quyidagi bilimlarni saqlaydi.
 • System Policies
 ---
 # Layer Position
-KnowledgeManager
+PersonalKnowledge
 ↓
 SystemKnowledge
 ↓
-MemorySearch
+RAG
 ---
 # Responsibilities
 SystemKnowledge

@@ -6,7 +6,7 @@ Ushbu hujjat KnowledgeManager Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
 ```text
-ValidationEngine
+KnowledgeAI
 ↓
 KnowledgeManager
 ↓

@@ -57,14 +57,15 @@ AICoordinator
 ✗ Platform Layer
 ---
 # Runtime Contract
-1. Memory birinchi tekshirilishi shart.
-2. Personal Knowledge System Knowledge'dan ustun.
-3. RAG ichki hujjatlar uchun ishlatiladi.
-4. External Provider faqat zarurat bo'lsa chaqiriladi.
-5. Validation majburiy.
-6. Learning faqat Validation muvaffaqiyatli o'tgandan keyin ishlaydi.
-7. Shared Memory barcha Persona uchun umumiy.
-8. Circular Dependency qat'iyan taqiqlanadi.
+1. KnowledgeManager va KnowledgeBase birinchi tayyor bo'lishi shart — bo'lmasa qolgan modullar ishlay olmaydi.
+2. Memory KnowledgeBase'dan keyin tekshirilishi shart.
+3. Personal Knowledge System Knowledge'dan ustun.
+4. RAG ichki hujjatlar uchun ishlatiladi.
+5. External Provider faqat zarurat bo'lsa chaqiriladi.
+6. Validation majburiy.
+7. Learning oxirida feedback sifatida ishlaydi (Validation muvaffaqiyatli o'tgandan keyin).
+8. Shared Memory barcha Persona uchun umumiy.
+9. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Memory Search ishlaydi.

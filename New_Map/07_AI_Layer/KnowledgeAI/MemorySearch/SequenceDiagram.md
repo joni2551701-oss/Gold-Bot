@@ -6,7 +6,7 @@ Ushbu hujjat MemorySearch Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
 ```text
-User Request
+KnowledgeBase
 ↓
 MemorySearch
 ↓

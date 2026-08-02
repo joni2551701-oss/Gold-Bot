@@ -5,9 +5,7 @@ Status: CANONICAL
 Ushbu hujjat PersonalKnowledge Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
-KnowledgeManager
-↓
-Validated Personal Knowledge
+MemoryManager
 ↓
 PersonalKnowledge
 ↓

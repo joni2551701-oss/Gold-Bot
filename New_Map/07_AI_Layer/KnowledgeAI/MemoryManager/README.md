@@ -19,7 +19,7 @@ MemoryManager quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-LearningEngine
+MemorySearch
 ↓
 MemoryManager
 ↓

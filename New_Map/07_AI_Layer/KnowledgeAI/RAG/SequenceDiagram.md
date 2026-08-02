@@ -6,7 +6,7 @@ Ushbu hujjat RAG Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
 ```text
-User Request
+SystemKnowledge
 ↓
 RAG
 ↓

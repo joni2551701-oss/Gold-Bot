@@ -5,11 +5,11 @@ Status: CANONICAL
 Ushbu hujjat PersonalKnowledge ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
-KnowledgeManager
+MemoryManager
 ↓
 PersonalKnowledge
 ↓
-MemorySearch
+SystemKnowledge
 ---
 # Module Architecture
 PersonalKnowledge
@@ -49,11 +49,10 @@ Knowledge Metadata.
 Knowledge indekslari.
 ---
 # Allowed Dependencies
-✓ KnowledgeManager
-✓ MemorySearch
+✓ MemoryManager
+✓ SystemKnowledge
 ---
 # Forbidden Dependencies
-✗ SystemKnowledge
 ✗ ProviderRouter
 ✗ Decision Layer
 ✗ Risk Layer

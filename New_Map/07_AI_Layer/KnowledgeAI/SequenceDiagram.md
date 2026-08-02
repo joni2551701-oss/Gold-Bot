@@ -12,7 +12,13 @@ User Request
 ↓
 KnowledgeAI
 ↓
+KnowledgeManager
+↓
+KnowledgeBase
+↓
 MemorySearch
+↓
+MemoryManager
 ↓
 PersonalKnowledge
 ↓
@@ -26,20 +32,19 @@ ValidationEngine
 ↓
 LearningEngine
 ↓
-MemoryManager
-↓
 Knowledge Context
 ↓
 AICoordinator
 ```
 ---
 # Runtime Rules
-1. Memory har doim birinchi tekshiriladi.
-2. Personal Knowledge System Knowledge'dan ustun.
-3. RAG faqat kerak bo'lganda ishlatiladi.
-4. External Provider oxirgi bosqich hisoblanadi.
-5. Validation majburiy.
-6. Learning faqat Validation muvaffaqiyatli o'tgandan keyin ishlaydi.
+1. KnowledgeManager va KnowledgeBase birinchi tayyor bo'lishi kerak — bo'lmasa qolgan modullar ishlay olmaydi.
+2. Memory KnowledgeBase'dan keyin tekshiriladi.
+3. Personal Knowledge System Knowledge'dan ustun.
+4. RAG faqat kerak bo'lganda ishlatiladi.
+5. External Provider oxirgi bosqich hisoblanadi.
+6. Validation majburiy.
+7. Learning oxirida feedback sifatida ishlaydi (Validation muvaffaqiyatli o'tgandan keyin).
 ---
 # State Flow
 ```text
@@ -64,6 +69,8 @@ Failed
 User Request
 ↓
 KnowledgeAI
+↓
+KnowledgeManager / KnowledgeBase
 ↓
 Memory
 ↓

@@ -2,7 +2,7 @@
 Status: CANONICAL
 ---
 # Purpose
-ProviderRouter GoldBot KnowledgeAI ichidagi Canonical AI Provider Orchestration moduli hisoblanadi.
+ProviderRouter GoldBot RAG ichidagi Canonical AI Provider Orchestration moduli hisoblanadi.
 Uning asosiy vazifasi AI so'rovlarini eng mos AI Provider'ga yuborish, javoblarni qabul qilish va yagona standart formatga keltirishdir.
 ProviderRouter AI qaror qabul qilmaydi.
 ProviderRouter Knowledge saqlamaydi.
@@ -20,7 +20,7 @@ ProviderRouter quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-KnowledgeAI
+RAG
 ↓
 ProviderRouter
 ↓

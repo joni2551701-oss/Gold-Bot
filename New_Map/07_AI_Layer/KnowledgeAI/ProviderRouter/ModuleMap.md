@@ -6,7 +6,7 @@ Ushbu hujjat ProviderRouter ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-KnowledgeAI
+RAG
 ↓
 ProviderRouter
 ↓
@@ -45,6 +45,7 @@ Barcha javoblarni yagona formatga o'tkazadi.
 Mavjud AI Provider'lar ro'yxatini boshqaradi.
 ---
 # Allowed Dependencies
+✓ RAG
 ✓ ValidationEngine
 ---
 # Forbidden Dependencies

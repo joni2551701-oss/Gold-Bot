@@ -25,9 +25,7 @@ ValidationEngine
 ↓
 LearningEngine
 ↓
-KnowledgeManager
-↓
-MemoryManager
+Knowledge Context
 ```
 ---
 # Input Contract
@@ -43,12 +41,12 @@ MemoryManager
 ---
 # Allowed Dependencies
 ✓ ValidationEngine
-✓ KnowledgeManager
-✓ MemoryManager
 ---
 # Forbidden Dependencies
 ✗ ProviderRouter
 ✗ MemorySearch
+✗ KnowledgeManager
+✗ MemoryManager
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer

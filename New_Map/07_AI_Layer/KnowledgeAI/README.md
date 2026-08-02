@@ -89,7 +89,13 @@ KnowledgeAI yaratadi.
 ```text
 User Request
 ↓
+Knowledge Manager
+↓
+Knowledge Base
+↓
 Memory Search
+↓
+Memory Manager
 ↓
 Personal Knowledge
 ↓
@@ -103,20 +109,20 @@ Validation
 ↓
 Learning
 ↓
-Memory Update
-↓
 Knowledge Context
 ```
 ---
 # Golden Rules
-1. Avval Memory tekshiriladi.
-2. Keyin Personal Knowledge tekshiriladi.
-3. Keyin System Knowledge tekshiriladi.
-4. Keyin RAG ishlatiladi.
-5. Oxirida External Provider chaqiriladi.
-6. Har qanday yangi bilim Validation'dan o'tishi shart.
-7. Tasdiqlangan bilim Learning orqali saqlanadi.
-8. Circular Dependency qat'iyan taqiqlanadi.
+1. KnowledgeManager Knowledge Lifecycle'ni boshqaradi va birinchi ishga tushadi.
+2. KnowledgeBase KnowledgeManager'siz ishlay olmaydi.
+3. Memory KnowledgeBase'dan keyin tekshiriladi.
+4. Keyin Personal Knowledge tekshiriladi.
+5. Keyin System Knowledge tekshiriladi.
+6. Keyin RAG ishlatiladi.
+7. Oxirida External Provider chaqiriladi.
+8. Har qanday yangi bilim Validation'dan o'tishi shart.
+9. Tasdiqlangan bilim Learning orqali saqlanadi (feedback bosqichi).
+10. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents
 ```text

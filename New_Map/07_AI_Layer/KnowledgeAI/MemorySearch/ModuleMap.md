@@ -6,7 +6,7 @@ Ushbu hujjat MemorySearch ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-KnowledgeAI
+KnowledgeBase
 ↓
 MemorySearch
 ↓

@@ -23,7 +23,7 @@ MemoryManager bajarmaydi.
 ---
 # Module Boundary
 ```text
-LearningEngine
+MemorySearch
 ↓
 MemoryManager
 ↓
@@ -42,11 +42,10 @@ PersonalKnowledge
 • Memory Reference
 ---
 # Allowed Dependencies
-✓ LearningEngine
+✓ MemorySearch
 ✓ PersonalKnowledge
 ---
 # Forbidden Dependencies
-✗ MemorySearch
 ✗ KnowledgeManager
 ✗ ValidationEngine
 ✗ ProviderRouter

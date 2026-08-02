@@ -5,9 +5,7 @@ Status: CANONICAL
 Ushbu hujjat SystemKnowledge Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
-KnowledgeManager
-↓
-Validated Knowledge
+PersonalKnowledge
 ↓
 SystemKnowledge
 ↓

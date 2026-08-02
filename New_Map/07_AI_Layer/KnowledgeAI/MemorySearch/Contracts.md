@@ -22,7 +22,7 @@ MemorySearch bajarmaydi.
 ---
 # Module Boundary
 ```text
-KnowledgeAI
+KnowledgeBase
 ↓
 MemorySearch
 ↓

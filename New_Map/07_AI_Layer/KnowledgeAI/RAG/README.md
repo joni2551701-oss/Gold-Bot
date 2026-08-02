@@ -20,13 +20,9 @@ RAG quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-User Request
+SystemKnowledge
 ↓
 RAG
-↓
-KnowledgeBase
-↓
-Knowledge Context
 ↓
 ProviderRouter
 ```

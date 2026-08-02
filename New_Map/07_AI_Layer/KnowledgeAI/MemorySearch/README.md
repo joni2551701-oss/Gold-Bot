@@ -20,7 +20,7 @@ MemorySearch quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-User Request
+KnowledgeBase
 ↓
 MemorySearch
 ↓

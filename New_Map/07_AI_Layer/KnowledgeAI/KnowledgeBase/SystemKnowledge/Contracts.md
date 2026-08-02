@@ -20,11 +20,11 @@ SystemKnowledge bajarmaydi.
 ✗ AI Analysis
 ---
 # Module Boundary
-KnowledgeManager
+PersonalKnowledge
 ↓
 SystemKnowledge
 ↓
-MemorySearch
+RAG
 ---
 # Input Contract
 • Validated Knowledge
@@ -37,11 +37,10 @@ MemorySearch
 • Knowledge Index
 ---
 # Allowed Dependencies
-✓ KnowledgeManager
-✓ MemorySearch
+✓ PersonalKnowledge
+✓ RAG
 ---
 # Forbidden Dependencies
-✗ PersonalKnowledge
 ✗ LearningEngine
 ✗ ProviderRouter
 ✗ Decision Layer

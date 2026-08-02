@@ -6,7 +6,7 @@ KnowledgeManager ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-LearningEngine
+KnowledgeAI
 ↓
 KnowledgeManager
 ↓
@@ -46,8 +46,6 @@ Knowledge ID va Reference boshqaradi.
 ---
 # Allowed Dependencies
 ✓ KnowledgeBase
-✓ ValidationEngine
-✓ LearningEngine
 ---
 # Forbidden Dependencies
 ✗ MemoryManager

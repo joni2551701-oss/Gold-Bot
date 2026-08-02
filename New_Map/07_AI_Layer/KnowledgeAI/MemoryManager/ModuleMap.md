@@ -6,7 +6,7 @@ Ushbu hujjat MemoryManager ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-LearningEngine
+MemorySearch
 ↓
 MemoryManager
 ↓
@@ -45,11 +45,10 @@ Memory hayotiy siklini boshqaradi.
 Eski Memory'larni arxivlaydi.
 ---
 # Allowed Dependencies
-✓ LearningEngine
+✓ MemorySearch
 ✓ PersonalKnowledge
 ---
 # Forbidden Dependencies
-✗ MemorySearch
 ✗ KnowledgeManager
 ✗ ValidationEngine
 ✗ ProviderRouter

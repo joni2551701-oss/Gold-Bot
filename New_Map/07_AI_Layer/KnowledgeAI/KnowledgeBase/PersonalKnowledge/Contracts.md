@@ -21,11 +21,11 @@ PersonalKnowledge bajarmaydi.
 ✗ Decision Making
 ---
 # Module Boundary
-KnowledgeManager
+MemoryManager
 ↓
 PersonalKnowledge
 ↓
-MemorySearch
+SystemKnowledge
 ---
 # Input Contract
 • User ID
@@ -39,11 +39,10 @@ MemorySearch
 • Knowledge Index
 ---
 # Allowed Dependencies
-✓ KnowledgeManager
-✓ MemorySearch
+✓ MemoryManager
+✓ SystemKnowledge
 ---
 # Forbidden Dependencies
-✗ SystemKnowledge
 ✗ ProviderRouter
 ✗ Decision Layer
 ✗ Risk Layer

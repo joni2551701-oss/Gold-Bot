@@ -20,7 +20,7 @@ KnowledgeManager quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-LearningEngine
+KnowledgeAI
 ↓
 KnowledgeManager
 ↓

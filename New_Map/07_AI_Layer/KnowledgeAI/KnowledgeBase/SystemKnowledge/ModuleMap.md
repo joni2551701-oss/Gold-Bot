@@ -5,11 +5,11 @@ Status: CANONICAL
 Ushbu hujjat SystemKnowledge ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
-KnowledgeManager
+PersonalKnowledge
 ↓
 SystemKnowledge
 ↓
-MemorySearch
+RAG
 ---
 # Module Architecture
 SystemKnowledge
@@ -49,11 +49,10 @@ Knowledge Metadata.
 Knowledge indekslari.
 ---
 # Allowed Dependencies
-✓ KnowledgeManager
-✓ MemorySearch
+✓ PersonalKnowledge
+✓ RAG
 ---
 # Forbidden Dependencies
-✗ PersonalKnowledge
 ✗ LearningEngine
 ✗ ProviderRouter
 ✗ Decision Layer
