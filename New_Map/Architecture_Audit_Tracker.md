@@ -1117,18 +1117,106 @@ Canonical rules established during this group's audit (added to `Architecture_Au
 
 ---
 
+## Director Review — 01_Data_Layer / Live_Data
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+01_Data_Layer
+
+Group:
+Live_Data
+
+Status:
+CLOSED
+
+Modules:
+8 / 8
+
+Architecture Score:
+800 / 800
+
+Critical:
+0
+
+Major:
+0
+
+Warnings:
+0
+
+Approved:
+100%
+
+Module Results:
+
+| Module | Status | Score |
+|---|---|---|
+| LiveDataService | CLOSED, APPROVED | 100/100 |
+| MarketCalendar | CLOSED, APPROVED | 100/100 |
+| PriceStreamService | CLOSED, APPROVED | 100/100 |
+| LiveProviders | CLOSED, APPROVED | 100/100 |
+| CurrentPriceProvider | CLOSED, APPROVED | 100/100 |
+| StreamValidator | CLOSED, APPROVED | 100/100 |
+| CandleBuilder | CLOSED, APPROVED | 100/100 |
+| LiveDataFlow | CLOSED, APPROVED | 100/100 |
+
+Findings fixed during this group's audit (all Director-authorized, all pushed):
+
+* Live_Data (group-level) README.md — stale Internal/Repository Structure, missing LiveDataService, Workflow order mismatch (3x Major).
+* LiveDataService — Market Memory Allowed Dependency mismatch (Major); README Workflow missing MarketCalendar (Major).
+* MarketCalendar — ModuleMap vs Contracts dependency list mismatch (Major).
+* PriceStreamService — Workflow order self-contradicting own Golden Rule (Major); ModuleMap vs Contracts dependency list mismatch (Major).
+* LiveProviders — ModuleMap vs Contracts dependency list mismatch (Major).
+* CurrentPriceProvider — ModuleMap vs Contracts dependency list mismatch, 4 entries (Major).
+* StreamValidator — ModuleMap vs Contracts dependency list mismatch (Major).
+* CandleBuilder — ModuleMap vs Contracts dependency list mismatch (Major); naming inconsistency "Historical Database" vs "HistoricalDatabase" (Minor).
+* LiveDataFlow — no findings, fully consistent on first audit.
+
+Canonical rules established or reinforced during this group's audit (added to `Architecture_Audit_Plan.md` section 9b):
+
+* Group README Rule.
+* Dependency Source of Truth Rule (reinforced across HistoricalProviders, HistoricalDataFlow, LiveDataService, MarketCalendar, PriceStreamService, LiveProviders, CurrentPriceProvider, StreamValidator, CandleBuilder).
+* Module Runtime Boundary Rule (strengthened with "module boundary ends at its own output").
+* Canonical Naming Rule.
+
+---
+
 ## Phase 2 Audit Tracker
 
 ```text
 Phase 2 — Module Audit Progress
 01_Data_Layer
 ✅ Historical_Data      CLOSED (600/600)
-⏳ Live_Data
-⬜ Market_Memory
+✅ Live_Data            CLOSED (800/800)
+⏳ Market_Memory
 ⬜ Event_System
 ⬜ Data_Validation
 ⬜ Providers
 ```
+
+---
+
+## Phase 2 Statistics (running)
+
+Groups Completed:
+2
+
+Modules Completed:
+14
+
+Architecture Score:
+1400 / 1400
+
+Critical Remaining:
+0
+
+Major Remaining:
+0
+
+Minor Remaining:
+0
 
 ---
 
