@@ -76,6 +76,7 @@ SMC Strategy Result yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 SMC Strategy GoldBot ichidagi Canonical Smart Money Concepts Analysis modulidir.

@@ -72,6 +72,7 @@ Wyckoff Strategy Result yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 Wyckoff Strategy GoldBot ichidagi Canonical Wyckoff Analysis modulidir.

@@ -72,6 +72,7 @@ Mean Reversion Result yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 Mean Reversion Strategy GoldBot ichidagi Canonical Mean Reversion Analysis modulidir.

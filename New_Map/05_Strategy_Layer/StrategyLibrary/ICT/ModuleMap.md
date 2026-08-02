@@ -68,6 +68,7 @@ ICT Strategy Result yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 ICT Strategy GoldBot ichidagi Canonical ICT Analysis modulidir.

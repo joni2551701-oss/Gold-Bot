@@ -56,6 +56,7 @@ Yakuniy javobni tayyorlaydi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer Logic
 ---
 # Summary
 StrategyService GoldBot Strategy Layer uchun tashqi Service API vazifasini bajaradi.

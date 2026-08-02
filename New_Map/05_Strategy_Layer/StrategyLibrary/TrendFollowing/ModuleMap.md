@@ -68,6 +68,7 @@ Trend Following Result yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 Trend Following Strategy GoldBot ichidagi Canonical Trend Analysis modulidir.

@@ -58,6 +58,8 @@ Output
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Monitoring Layer
+✗ Database Layer
 ---
 # Summary
 Strategy Layer GoldBot ichidagi barcha Strategy modullarining yagona Canonical xaritasi hisoblanadi.

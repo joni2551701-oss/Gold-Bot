@@ -62,6 +62,7 @@ Manager holatini boshqaradi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer Logic
 ---
 # Summary
 StrategyManager GoldBot ichidagi barcha Strategy va Profile boshqaruvini amalga oshiruvchi Canonical Manager hisoblanadi.

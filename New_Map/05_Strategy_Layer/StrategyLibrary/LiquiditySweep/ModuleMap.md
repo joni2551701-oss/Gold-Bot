@@ -72,6 +72,7 @@ Liquidity Sweep Result yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 Liquidity Sweep Strategy GoldBot ichidagi Canonical Liquidity Sweep Analysis modulidir.

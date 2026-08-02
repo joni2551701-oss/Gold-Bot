@@ -68,6 +68,7 @@ AMD Strategy Result yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 AMD Strategy GoldBot ichidagi Canonical AMD Analysis modulidir.

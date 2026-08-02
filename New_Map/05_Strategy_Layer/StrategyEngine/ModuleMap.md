@@ -67,6 +67,7 @@ StrategyService
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 StrategyEngine egalik qiladi.
