@@ -314,6 +314,21 @@ Missing module:
 → Major
 ```
 Sabab: Group README bo'lim ichidagi barcha modullarning to'liq va aniq ro'yxatini taqdim etishi shart; agar Layer_ModuleMap.md'da rasmiy Orchestrator yoki boshqa har qanday modul sifatida e'lon qilingan modul Group README'ning Internal Structure/Module Overview/Repository Structure bo'limlarida ko'rsatilmasa, bu Canonical Module Identity buzilishi hisoblanadi. Bu qoida `01_Data_Layer/Live_Data` guruhida README.md'ning LiveDataService'ni (Layer_ModuleMap.md'da e'lon qilingan markaziy Orchestrator) uchala bo'limdan ham tushirib qoldirgani aniqlanganidan keyin qo'shildi (Major, Canonical Module Identity).
+
+## Canonical Naming Rule
+```text
+Every module has exactly one
+canonical identifier.
+
+README, Contracts, ModuleMap,
+SequenceDiagram must all use
+the same name.
+
+Different spellings, spacing,
+or formatting:
+→ Minor
+```
+Sabab: bitta modulning turli hujjatlarda turlicha yozilishi (masalan "HistoricalDatabase" va "Historical Database") implementatsiyaga bevosita ta'sir qilmaydi, lekin hujjatlar va arxitekturaning izchilligini buzadi hamda kelajakda Dependency ro'yxatlarini solishtirishni chalkashtiradi. Bu qoida `01_Data_Layer/Live_Data/CandleBuilder` modulida ModuleMap.md'ning "Historical Database" (bo'sh joy bilan) deb yozgani, Contracts.md va boshqa barcha modullarning dependency ro'yxatlari esa "HistoricalDatabase" (bo'sh joysiz, papka/modul nomiga mos) deb yozgani aniqlanganidan keyin qo'shildi (Minor, Canonical Naming Consistency).
 ---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
