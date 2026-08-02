@@ -1,4 +1,4 @@
-# Context Service
+# ContextService
 Status: CANONICAL
 ---
 # Purpose

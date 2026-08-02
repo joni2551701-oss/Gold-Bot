@@ -6,7 +6,7 @@ Ushbu hujjat Liquidity modulining ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-ContextEngine
+MarketStructure
 ↓
 Liquidity
 ↓
@@ -75,6 +75,7 @@ ContextService
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 Liquidity egalik qiladi.

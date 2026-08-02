@@ -81,6 +81,7 @@ ContextService
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 AMD egalik qiladi.

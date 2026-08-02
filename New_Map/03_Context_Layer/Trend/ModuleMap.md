@@ -6,7 +6,9 @@ Ushbu hujjat Trend modulining ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-ContextEngine
+MarketStructure
+↓
+Session
 ↓
 Trend
 ↓
@@ -82,6 +84,7 @@ ContextService
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 Trend egalik qiladi.

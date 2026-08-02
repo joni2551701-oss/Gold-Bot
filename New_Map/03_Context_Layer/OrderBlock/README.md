@@ -1,4 +1,4 @@
-# Order Block
+# OrderBlock
 Status: CANONICAL
 ---
 # Purpose

@@ -1,4 +1,4 @@
-# Volume Profile
+# VolumeProfile
 Status: CANONICAL
 ---
 # Purpose

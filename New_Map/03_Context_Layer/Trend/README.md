@@ -27,6 +27,8 @@ Market Data
 ↓
 MarketStructure
 ↓
+Session
+↓
 Trend
 ↓
 ContextService

@@ -1,4 +1,4 @@
-# Fair Value Gap
+# FairValueGap
 Status: CANONICAL
 ---
 # Purpose

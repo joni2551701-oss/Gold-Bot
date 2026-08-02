@@ -1,4 +1,4 @@
-# Context Engine
+# ContextEngine
 Status: CANONICAL
 ---
 # Purpose

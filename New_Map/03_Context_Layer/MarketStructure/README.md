@@ -1,4 +1,4 @@
-# Market Structure
+# MarketStructure
 Status: CANONICAL
 ---
 # Purpose

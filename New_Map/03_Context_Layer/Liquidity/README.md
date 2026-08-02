@@ -25,7 +25,7 @@ Liquidity quyidagi vazifalarni bajaradi:
 ```text
 Market Data
 ↓
-ContextEngine
+MarketStructure
 ↓
 Liquidity
 ↓

@@ -33,7 +33,6 @@ Context Modules
 ContextService
 ↓
 Boundary End
-```
 ---
 # Input Contract
 - Context Request

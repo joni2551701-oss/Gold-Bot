@@ -13,13 +13,14 @@ Validated Market Data
         ▼
 ContextEngine
         │
-        ├──────────────┐
-        ▼              ▼
-MarketStructure   Liquidity
-        │              │
-        └──────┬───────┘
-               ▼
-         OrderBlock
+        ▼
+MarketStructure
+        │
+        ▼
+     Liquidity
+        │
+        ▼
+     OrderBlock
                │
                ▼
         FairValueGap
