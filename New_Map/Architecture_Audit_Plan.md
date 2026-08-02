@@ -205,6 +205,27 @@ Final Report
 Architecture Freeze
 ```
 ---
+# 9a. Architecture Lock (Audit davomida)
+Audit boshlanganidan (Layer Audit) to Final Report yakunlanguncha, `New_Map/` arxitekturasiga o'zgartirish kiritish taqiqlanadi.
+```text
+Architecture Freeze v1.0
+↓
+Architecture Audit
+↓
+Final Report
+↓
+Agar kerak bo'lsa ACR
+↓
+Version 1.1
+```
+Audit davomida (Architecture Lock kuchda bo'lgan paytda):
+* yangi modul qo'shilmaydi;
+* modul nomi o'zgarmaydi;
+* Data Flow o'zgarmaydi;
+* Contracts o'zgarmaydi.
+
+Sabab: aks holda audit mezoni va audit obyekti bir vaqtning o'zida o'zgarib, natijalar taqqoslanmaydigan bo'lib qoladi. Zarurat tug'ilsa, o'zgartirish faqat audit yakunlanib Final Report chiqqandan so'ng, ACR orqali (masalan Version 1.1 sifatida) amalga oshiriladi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.
@@ -296,7 +317,36 @@ Scoring System va Acceptance Criteria ataylab shu bosqichda muzlatildi (audit bo
 
 Ushbu hujjat Architecture Freeze v1.0 tarkibiga kiradi. Shu sababli, bundan buyon Layer nomi, Modul nomi, Data Flow, Contract yoki ushbu Audit metodologiyasining o'zi faqat Architecture Change Request (ACR) jarayoni orqali o'zgartiriladi (masalan, Version 1.1 sifatida).
 
-Metodologiya tasdiqlangani sababli, Layer Audit (1-bosqich) boshlanishi mumkin.
+Metodologiya tasdiqlangani sababli, Layer Audit (1-bosqich) boshlanishi mumkin. Audit boshlangan lahzadan Final Report yakunlanguncha 9a-bo'limdagi Architecture Lock kuchda bo'ladi.
+
+Phase 1 — Layer Audit tartibi (`New_Map/` dagi haqiqiy papka nomlari bo'yicha):
+```text
+01_Data_Layer
+↓
+02_Core_Layer
+↓
+03_Context_Layer
+↓
+04_Indicator_Layer
+↓
+05_Strategy_Layer
+↓
+06_Signal_Layer
+↓
+07_AI_Layer
+↓
+08_Decision_Layer
+↓
+09_Risk_Layer
+↓
+10_Execution_Layer
+↓
+11_Trade_Monitoring_Layer
+↓
+12_Database_Layer
+↓
+13_Platform_Layer
+```
 ---
 # Summary
 Architecture Audit Plan GoldBot Canonical Architecture'ning barcha Layer, Module va Cross-Layer aloqalarini, shuningdek nomlash standartlarini yagona metodologiya asosida tekshirish, natijalarni standart Scoring System va Severity Levels bo'yicha baholash, va yakunda Architecture Freeze orqali loyihani "konstitutsiya" darajasidagi spetsifikatsiya sifatida muzlatishni belgilovchi rasmiy reja hisoblanadi. Freeze'dan keyingi har qanday o'zgarish faqat Architecture Change Request (ACR) jarayoni orqali amalga oshiriladi.
