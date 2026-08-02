@@ -236,6 +236,8 @@ Historical Data Flow quyidagilar bilan ishlashi mumkin.
 
 ✓ Memory Reader
 
+✓ Event Bus
+
 ---
 
 # Forbidden Dependencies
@@ -275,6 +277,10 @@ Historical Data Flow quyidagilar bilan ishlashi mumkin emas.
 ✗ Media Layer
 
 ✗ Future Expansion Layer
+
+✗ StreamValidator
+
+✗ MarketCalendar
 
 ---
 
