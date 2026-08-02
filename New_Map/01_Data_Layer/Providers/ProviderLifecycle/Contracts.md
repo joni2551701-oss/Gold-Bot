@@ -21,11 +21,13 @@ ProviderLifecycle bajarmaydi.
 ---
 # Module Boundary
 ```text
-ProviderFactory
+ProviderInterface
+↓
+Concrete Provider
 ↓
 ProviderLifecycle
 ↓
-ProviderInterface
+ProviderFlow
 ```
 ---
 # Input Contract

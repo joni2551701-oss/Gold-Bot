@@ -6,11 +6,13 @@ Ushbu hujjat ProviderLifecycle modulining ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-ProviderFactory
+ProviderInterface
+↓
+Concrete Provider
 ↓
 ProviderLifecycle
 ↓
-ProviderInterface
+ProviderFlow
 ```
 ---
 # Module Architecture

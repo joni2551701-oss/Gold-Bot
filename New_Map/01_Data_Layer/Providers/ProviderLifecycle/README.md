@@ -21,11 +21,13 @@ ProviderLifecycle quyidagi vazifalarni bajaradi.
 ```text
 ProviderFactory
 ↓
-ProviderLifecycle
-↓
 ProviderInterface
 ↓
-Concrete Providers
+Concrete Provider
+↓
+ProviderLifecycle
+↓
+ProviderFlow
 ```
 ---
 # Responsibilities

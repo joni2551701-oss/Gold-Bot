@@ -8,7 +8,9 @@ Ushbu hujjat ProviderLifecycle Runtime Sequence'ni tavsiflaydi.
 ```text
 ProviderFactory
 ↓
-Create Provider
+ProviderInterface
+↓
+Concrete Provider Created
 ↓
 ProviderLifecycle
 ↓
@@ -21,6 +23,8 @@ Health Monitoring
 Reconnect (if required)
 ↓
 Shutdown
+↓
+ProviderFlow
 ```
 ---
 # Runtime Rules
@@ -45,8 +49,10 @@ Stopped
 ```
 ---
 # Summary
-ProviderFactory
+ProviderInterface
+↓
+Concrete Provider
 ↓
 ProviderLifecycle
 ↓
-Provider Ready
+ProviderFlow
