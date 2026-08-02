@@ -138,6 +138,8 @@ MemoryReader
 
 ✗ AI Layer
 
+✗ Platform Layer
+
 ---
 
 # Ownership
