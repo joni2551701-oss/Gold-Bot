@@ -1,295 +1,127 @@
 # Platform Layer
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-Platform Layer — Senior Trading AI ekotizimining barcha platformalarini birlashtiruvchi qatlamdir.
-
-Uning asosiy vazifasi GoldBot xizmatlarini turli platformalar orqali foydalanuvchilarga taqdim etishdir.
-
-Platform Layer hech qanday market tahlili yoki savdo qarorini hisoblamaydi.
-
+Platform Layer GoldBot arxitekturasidagi Canonical User Interaction Layer hisoblanadi.
+Uning asosiy vazifasi foydalanuvchi va GoldBot tizimi o'rtasidagi barcha aloqalarni boshqarish, platformalardan kelgan so'rovlarni qabul qilish, autentifikatsiya qilish, kerakli Service'ga yo'naltirish va javobni foydalanuvchiga yetkazishdir.
+Platform Layer Trading Decision qabul qilmaydi.
+Platform Layer AI Analysis bajarmaydi.
+Platform Layer Order Execution bajarmaydi.
+Platform Layer faqat User Interface, Authentication, Routing va Notification bilan shug'ullanadi.
 ---
-
 # Objective
-
-Platform Layer quyidagi vazifalarni bajaradi:
-
-• Telegram Platform
-
-• Mobile Application
-
-• Desktop Application
-
-• Web Platform
-
-• Public API
-
-• Authentication
-
-• User Session
-
-• Request Routing
-
-• Platform Integration
-
+Platform Layer quyidagi vazifalarni bajaradi.
+• User Registration
+• User Authentication
+• Session Management
+• Platform Routing
+• User Notification
+• Multi-Platform Communication
 ---
-
 # Layer Position
-
-GoldBot Core
-
+```text
+Database Layer
 ↓
-
-Application Services
-
+Platform Layer
 ↓
-
-AI Layer
-
-↓
-
-PLATFORM LAYER
-
-↓
-
 User
-
+```
 ---
-
-# Internal Structure
-
-Platform_Layer/
-
-├── README.md
-│
-├── Telegram/
-│
-├── Mobile/
-│
-├── Desktop/
-│
-├── Web/
-│
-└── Public_API/
-
+# Internal Modules
+```text
+Platform Layer
+├── PlatformService
+├── Authentication
+├── NotificationCenter
+├── Telegram
+├── MobileAPI
+├── WebAPI
+└── DesktopAPI
+```
 ---
-
-# Module Overview
-
-## Telegram
-
-Telegram Bot.
-
-Telegram Mini App.
-
-Telegram Commands.
-
-Telegram Notifications.
-
----
-
-## Mobile
-
-Android.
-
-iOS.
-
-Push Notifications.
-
-Offline Cache.
-
----
-
-## Desktop
-
-Windows.
-
-macOS.
-
-Linux.
-
-Desktop Client.
-
----
-
-## Web
-
-Web Dashboard.
-
-Trading Panel.
-
-Analytics Dashboard.
-
-Administration Panel.
-
----
-
-## Public_API
-
-REST API.
-
-WebSocket API.
-
-SDK Integration.
-
-Third-party Integration.
-
----
-
 # Responsibilities
-
-Platform Layer:
-
-✓ User Interface
-
-✓ User Requests
-
+Platform Layer
+✓ User Register
+✓ User Login
 ✓ Authentication
-
-✓ Authorization
-
 ✓ Session Management
-
-✓ API Routing
-
-✓ Platform Communication
-
-✓ Push Notifications
-
-✓ Device Integration
-
+✓ Platform Routing
+✓ Notification Delivery
+✓ Multi-Platform Support
 ---
-
 # Not Responsible
-
-Platform Layer:
-
-✗ Historical Download
-
-✗ Live Stream
-
-✗ Market Memory
-
+Platform Layer
 ✗ Market Analysis
-
-✗ Context Calculation
-
-✗ Strategy
-
-✗ Confluence
-
-✗ Decision
-
+✗ AI Analysis
+✗ Signal Generation
+✗ Trading Decision
 ✗ Risk Calculation
-
-✗ Signal Calculation
-
-✗ AI Decision
-
+✗ Order Execution
+✗ Position Monitoring
+✗ Database Management
 ---
-
-# Platform Flow
-
-User
-
-↓
-
-Platform
-
-↓
-
-Platform Layer
-
-↓
-
-Application Services
-
-↓
-
-GoldBot Core
-
-↓
-
-Application Services
-
-↓
-
-Platform Layer
-
-↓
-
-User
-
+# Input
+Platform Layer qabul qiladi.
+• User Request
+• Authentication Request
+• API Request
+• Notification Event
+• Platform Events
 ---
-
+# Output
+Platform Layer yaratadi.
+• User Response
+• Authentication Result
+• Notification
+• API Response
+• Session Metadata
+---
+# Supported Platforms
+• Telegram
+• Mobile
+• Web
+• Desktop
+---
+# Workflow
+```text
+Receive User Request
+↓
+Authentication
+↓
+PlatformService
+↓
+Internal Services
+↓
+NotificationCenter
+↓
+Return Response
+```
+---
 # Golden Rules
-
-1. Platform Layer hech qachon Core bilan to'g'ridan-to'g'ri ishlamaydi.
-
-2. Platform Layer faqat Application Services orqali ishlaydi.
-
-3. Platform Layer hisob-kitob qilmaydi.
-
-4. Platform Layer Decision chiqarmaydi.
-
-5. Platform Layer Risk hisoblamaydi.
-
-6. Platform Layer Signal yaratmaydi.
-
-7. Platform Layer AI o'rniga javob bermaydi.
-
-8. Har bir platforma mustaqil rivojlantirilishi mumkin.
-
-9. Barcha platformalar yagona API standartidan foydalanadi.
-
-10. Platform Layer faqat foydalanuvchi va tizim o'rtasidagi aloqa qatlamidir.
-
+1. Platform Layer barcha foydalanuvchi so'rovlarining yagona kirish nuqtasi hisoblanadi.
+2. Har bir foydalanuvchi noyob User ID bilan ishlaydi.
+3. Authentication barcha Protected Request'lar uchun majburiy.
+4. Platform Layer Business Logic bajarmaydi.
+5. Platform Layer faqat Routing va User Communication bilan shug'ullanadi.
+6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
-# Repository Structure
-
-Platform_Layer/
-
+# Related Documents
+```text
+13_Platform_Layer/
 ├── README.md
-│
+├── PlatformService/
+├── Authentication/
+├── NotificationCenter/
 ├── Telegram/
-├── Mobile/
-├── Desktop/
-├── Web/
-└── Public_API/
-
-Har bir platforma o'z README.md fayliga ega bo'lishi kerak.
-
-Har bir .py fayl uchun mos specification (.md) mavjud bo'lishi kerak.
-
+├── MobileAPI/
+├── WebAPI/
+├── DesktopAPI/
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+└── Layer_Contracts.md
+```
 ---
-
-# Refactoring Rule
-
-Repository Platform Layer blueprint'iga moslashtiriladi.
-
-Kod blueprint'ga mos kelishi shart.
-
-Blueprint kodga moslashtirilmaydi.
-
----
-
 # Summary
-
-Platform Layer — foydalanuvchi ishlatadigan barcha platformalarni birlashtiruvchi qatlamdir.
-
-Uning vazifasi:
-
-• GoldBot xizmatlarini platformalarga yetkazish;
-
-• foydalanuvchi so'rovlarini qabul qilish;
-
-• autentifikatsiya va sessiyalarni boshqarish;
-
-• yagona API orqali barcha platformalarni ishlatish.
-
-Platform Layer hech qachon marketni tahlil qilmaydi, savdo qarorini hisoblamaydi yoki signal yaratmaydi. U faqat Application Services orqali GoldBot imkoniyatlarini foydalanuvchiga taqdim etadi.
+Platform Layer GoldBot arxitekturasidagi Canonical User Interaction Layer hisoblanadi.
+U foydalanuvchilarni autentifikatsiya qiladi, ularga noyob User ID taqdim etadi, barcha platformalardan kelgan so'rovlarni kerakli Service'larga yo'naltiradi va natijalarni foydalanuvchiga xavfsiz hamda standart formatda yetkazadi.
