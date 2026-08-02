@@ -8,7 +8,7 @@ Ushbu hujjat Execution Layer Runtime Sequence'ni tavsiflaydi.
 ```text
 Risk Layer
 ↓
-ExecutionService
+ExecutionService (Entry)
 ↓
 ExecutionEngine
 ↓
@@ -22,16 +22,19 @@ BrokerGateway
 ↓
 ExecutionMonitor
 ↓
+ExecutionService (Exit)
+↓
 Trade Monitoring Layer
 ```
 ---
 # Runtime Rules
 1. Risk Approval mavjud bo'lishi shart.
-2. Order Validation muvaffaqiyatli o'tishi shart.
-3. Broker Authentication bajarilishi shart.
-4. Broker Response olinishi shart.
-5. ExecutionMonitor yakuniy Status yaratadi.
-6. Trade Monitoring Layer Execution Result qabul qiladi.
+2. ExecutionService Execution Layer'ning yagona Entry va Exit nuqtasi hisoblanadi.
+3. Order Validation muvaffaqiyatli o'tishi shart.
+4. Broker Authentication bajarilishi shart.
+5. Broker Response olinishi shart.
+6. ExecutionMonitor yakuniy Status yaratadi, lekin Layer tashqarisiga chiqmaydi.
+7. Trade Monitoring Layer Execution Result'ni ExecutionService orqali qabul qiladi.
 ---
 # State Flow
 ```text

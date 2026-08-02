@@ -2,89 +2,98 @@
 Status: CANONICAL
 ---
 # Purpose
-ExecutionService GoldBot Execution Layer ichidagi Canonical Public Execution Interface moduli hisoblanadi.
-Uning asosiy vazifasi Execution Layer uchun yagona Service Gateway bo'lish va barcha tashqi Layer'lar bilan standart Execution API orqali ishlashdir.
+ExecutionService GoldBot Execution Layer uchun Canonical Boundary Gateway hisoblanadi.
+Uning asosiy vazifasi Execution Layer'ning yagona Public Entry Point va Public Exit Point bo'lishidir — Risk Layer'dan kelgan so'rovlarni ExecutionEngine'ga kiritish va ExecutionMonitor'dan qaytgan yakuniy Execution Result'ni Trade Monitoring Layer'ga chiqarish.
 ExecutionService Order yubormaydi.
 ExecutionService Trading Decision qabul qilmaydi.
-ExecutionService faqat Execution Layer Service Gateway hisoblanadi.
+ExecutionService faqat Entry/Exit Boundary, Validation va Serialization vazifalarini bajaradi.
 ---
 # Objective
 ExecutionService quyidagi vazifalarni bajaradi.
-• Execution Request Management
-• Execution API Gateway
+• Public Entry Point
+• Public Exit Point
 • Request Validation
-• Response Standardization
-• Execution Session Management
-• Execution Layer Integration
+• Response Serialization
+• Session Management
+• API Boundary Enforcement
 ---
 # Layer Position
 ```text
 Risk Layer
 ↓
-ExecutionService
+ExecutionService (Entry)
 ↓
 ExecutionEngine
 ↓
+OrderValidator
+↓
+OrderManager
+↓
+OrderRouter
+↓
+BrokerGateway
+↓
 ExecutionMonitor
+↓
+ExecutionService (Exit)
 ↓
 Trade Monitoring Layer
 ```
 ---
 # Responsibilities
 ExecutionService
-✓ Execution Request qabul qiladi
+✓ Risk Layer'dan Execution Request qabul qiladi (Entry)
 ✓ Request formatini tekshiradi
 ✓ ExecutionEngine'ga uzatadi
-✓ Execution natijasini qabul qiladi
+✓ ExecutionMonitor'dan Execution Result qabul qiladi
 ✓ Standard Response yaratadi
-✓ Trade Monitoring Layer'ga uzatadi
+✓ Trade Monitoring Layer'ga uzatadi (Exit)
 ---
 # Not Responsible
 ExecutionService
 ✗ Trading Decision
 ✗ Risk Validation
 ✗ Order Validation
+✗ Order Management
 ✗ Order Routing
 ✗ Broker Communication
-✗ Position Monitoring
+✗ Execution Monitoring
 ---
 # Input
 ExecutionService qabul qiladi.
-• Risk Approval
-• Position Package
-• Execution Request
+• Risk Approval (Risk Layer'dan)
+• Execution Result (ExecutionMonitor'dan)
 • Session Metadata
 ---
 # Output
 ExecutionService yaratadi.
-• Execution Response
+• Validated Execution Request (ExecutionEngine'ga)
+• Execution Response (Trade Monitoring Layer'ga)
 • Standard Response
-• Execution Status
 • Service Metadata
 ---
 # Workflow
 ```text
-Receive Request
+Receive Request (Risk Layer)
 ↓
 Validate Request
 ↓
-ExecutionEngine
+Forward To ExecutionEngine
 ↓
-ExecutionMonitor
-↓
-Receive Execution Result
+Receive Execution Result (ExecutionMonitor)
 ↓
 Standardize Response
 ↓
-Trade Monitoring Layer
+Return Response (Trade Monitoring Layer)
 ```
 ---
 # Golden Rules
-1. Execution Layer'ga barcha kirishlar ExecutionService orqali amalga oshiriladi.
-2. ExecutionService Business Logic bajarmaydi.
-3. Har bir Request Validation'dan o'tadi.
-4. Response yagona formatda qaytariladi.
-5. Circular Dependency qat'iyan taqiqlanadi.
+1. ExecutionService Execution Layer'ning yagona Entry Point va yagona Exit Point hisoblanadi.
+2. Business Logic ExecutionService ichida bajarilmaydi.
+3. Response yagona formatga o'tkaziladi.
+4. Execution Layer tashqarisiga faqat ExecutionService orqali kiriladi va chiqiladi.
+5. ExecutionMonitor Layer tashqarisiga chiqmaydi.
+6. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents
 ```text
@@ -96,4 +105,4 @@ ExecutionService/
 ```
 ---
 # Summary
-ExecutionService GoldBot Execution Layer uchun yagona Public Interface va Service Gateway hisoblanadi.
+ExecutionService GoldBot Execution Layer uchun ikki tomonlama (bidirectional) Boundary Gateway hisoblanadi — Risk Layer'dan Execution Layer'ga kirish va Execution Layer'dan Trade Monitoring Layer'ga chiqish uchun yagona nuqta.

@@ -8,11 +8,21 @@ Ushbu hujjat ExecutionService ichki arxitekturasini tavsiflaydi.
 ```text
 Risk Layer
 ↓
-ExecutionService
+ExecutionService (Entry)
 ↓
 ExecutionEngine
 ↓
+OrderValidator
+↓
+OrderManager
+↓
+OrderRouter
+↓
+BrokerGateway
+↓
 ExecutionMonitor
+↓
+ExecutionService (Exit)
 ↓
 Trade Monitoring Layer
 ```
@@ -31,7 +41,7 @@ ExecutionService
 ---
 # Internal Components
 ## Request Receiver
-Execution Request'larni qabul qiladi.
+Risk Layer'dan Execution Request'larni qabul qiladi.
 ---
 ## Request Validator
 Request formatini tekshiradi.
@@ -43,7 +53,7 @@ Execution Session'ni boshqaradi.
 ExecutionEngine'ga Request yuboradi.
 ---
 ## Response Formatter
-Execution natijasini standart formatga o'tkazadi.
+ExecutionMonitor'dan qaytgan Execution Result'ni standart formatga o'tkazadi va Trade Monitoring Layer'ga uzatadi.
 ---
 ## Service Monitor
 ExecutionService holatini kuzatadi.
@@ -53,10 +63,12 @@ ExecutionService holatini kuzatadi.
 ✓ ExecutionMonitor
 ---
 # Forbidden Dependencies
-✗ BrokerGateway
-✗ OrderRouter
+✗ OrderValidator (to'g'ridan-to'g'ri)
+✗ OrderManager (to'g'ridan-to'g'ri)
+✗ OrderRouter (to'g'ridan-to'g'ri)
+✗ BrokerGateway (to'g'ridan-to'g'ri)
 ✗ Decision Layer
 ✗ Database Layer
 ---
 # Summary
-ExecutionService GoldBot Execution Layer uchun yagona Service Gateway va Public API modulidir.
+ExecutionService GoldBot Execution Layer uchun ikki tomonlama Boundary Gateway va Public API modulidir.

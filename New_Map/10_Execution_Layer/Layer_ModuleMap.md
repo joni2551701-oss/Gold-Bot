@@ -17,14 +17,15 @@ Status: CANONICAL
 │
 ├── BrokerGateway
 │
-├── ExecutionMonitor
-│
-└── Execution Result
+└── ExecutionMonitor
 ```
 ---
 # Processing Pipeline
 ```text
-ExecutionService
+Risk Layer
+        │
+        ▼
+ExecutionService (Entry)
         │
         ▼
 ExecutionEngine
@@ -43,11 +44,17 @@ BrokerGateway
         │
         ▼
 ExecutionMonitor
+        │
+        ▼
+ExecutionService (Exit)
+        │
+        ▼
+Trade Monitoring Layer
 ```
 ---
 # Module Responsibilities
 ## ExecutionService
-Execution Layer Gateway.
+Execution Layer'ning ikki tomonlama (bidirectional) Boundary Gateway'i — Entry va Exit.
 ---
 ## ExecutionEngine
 Execution Pipeline boshqaradi.
@@ -65,7 +72,7 @@ Broker yoki Exchange tanlaydi.
 Tashqi API bilan ishlaydi.
 ---
 ## ExecutionMonitor
-Execution Status va Event'larni kuzatadi.
+Execution Status va Event'larni kuzatadi. Layer tashqarisiga chiqmaydi — natijani ExecutionService orqali uzatadi.
 ---
 # Summary
 Execution Layer GoldBot arxitekturasidagi Canonical Trade Execution Layer hisoblanadi.

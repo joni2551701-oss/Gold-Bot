@@ -41,7 +41,7 @@ Execution Layer yaratadi.
 ---
 # Layer Pipeline
 ```text
-ExecutionService
+ExecutionService (Entry)
 ↓
 ExecutionEngine
 ↓
@@ -54,6 +54,8 @@ OrderRouter
 BrokerGateway
 ↓
 ExecutionMonitor
+↓
+ExecutionService (Exit)
 ↓
 Trade Monitoring Layer
 ```

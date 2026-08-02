@@ -99,7 +99,7 @@ FAILED
 ```text
 Receive Risk Approval
 ↓
-ExecutionService
+ExecutionService (Entry)
 ↓
 ExecutionEngine
 ↓
@@ -112,6 +112,8 @@ OrderRouter
 BrokerGateway
 ↓
 ExecutionMonitor
+↓
+ExecutionService (Exit)
 ↓
 Trade Monitoring Layer
 ```

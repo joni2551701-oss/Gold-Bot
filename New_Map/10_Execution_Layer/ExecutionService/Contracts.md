@@ -6,40 +6,59 @@ Ushbu hujjat ExecutionService modulining rasmiy Architecture Contract hujjati hi
 ---
 # Module Responsibility
 ExecutionService quyidagilar uchun javobgar.
-✓ Execution Request Management
+✓ Public Entry Point (Risk Layer'dan Execution Layer'ga kirish)
+✓ Public Exit Point (Execution Layer'dan Trade Monitoring Layer'ga chiqish)
 ✓ Request Validation
-✓ Execution Layer Gateway
+✓ Response Serialization
 ✓ Session Management
-✓ Response Formatting
-✓ Service Monitoring
+✓ API Boundary Enforcement
 ExecutionService bajarmaydi.
 ✗ Trading Decision
 ✗ Risk Validation
 ✗ Order Validation
+✗ Order Management
 ✗ Order Routing
 ✗ Broker Communication
-✗ Position Monitoring
+✗ Execution Monitoring
 ---
 # Module Boundary
 ```text
 Risk Layer
 ↓
-ExecutionService
+ExecutionService (Entry)
 ↓
 ExecutionEngine
 ↓
+OrderValidator
+↓
+OrderManager
+↓
+OrderRouter
+↓
+BrokerGateway
+↓
 ExecutionMonitor
+↓
+ExecutionService (Exit)
 ↓
 Trade Monitoring Layer
 ```
 ---
 # Input Contract
+Kirish tomonida (Risk Layer'dan):
 • Risk Approval
 • Position Package
 • Execution Request
 • Session Metadata
+
+Chiqish tomonida (ExecutionMonitor'dan):
+• Execution Result
 ---
 # Output Contract
+Kirish tomonida (ExecutionEngine'ga):
+• Validated Execution Request
+
+Chiqish tomonida (Trade Monitoring Layer'ga):
 • Execution Response
 • Execution Status
 • Standard Response
@@ -50,28 +69,30 @@ Trade Monitoring Layer
 ✓ ExecutionMonitor
 ---
 # Forbidden Dependencies
-✗ BrokerGateway
-✗ OrderRouter
+✗ OrderValidator (to'g'ridan-to'g'ri)
+✗ OrderManager (to'g'ridan-to'g'ri)
+✗ OrderRouter (to'g'ridan-to'g'ri)
+✗ BrokerGateway (to'g'ridan-to'g'ri)
 ✗ Decision Layer
 ✗ Database Layer
 ---
 # Runtime Contract
-1. Execution Layer'ga barcha kirishlar ExecutionService orqali amalga oshirilishi shart.
-2. Har bir Request Validation'dan o'tishi shart.
-3. ExecutionService Business Logic bajarmaydi.
+1. Execution Layer'ga barcha kirish va chiqishlar ExecutionService orqali amalga oshirilishi shart (Boundary Gateway).
+2. Har bir kirish Request Validation'dan o'tishi shart.
+3. ExecutionService Business Logic bajarmaydi — faqat Entry/Exit Boundary vazifasini bajaradi.
 4. Response standart formatda qaytarilishi shart.
-5. Execution Result Trade Monitoring Layer'ga uzatilishi shart.
+5. ExecutionMonitor Layer tashqarisiga chiqmaydi — faqat ExecutionService orqali chiqadi.
 6. Session holati boshqarilishi shart.
 7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
-✓ Request qabul qilinadi.
+✓ Risk Layer'dan Request qabul qilinadi.
 ✓ Validation bajariladi.
-✓ ExecutionEngine ishga tushiriladi.
-✓ Execution natijasi olinadi.
+✓ ExecutionEngine'ga uzatiladi.
+✓ ExecutionMonitor'dan Execution Result qabul qilinadi.
 ✓ Response standartlashtiriladi.
 ✓ Trade Monitoring Layer'ga uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-ExecutionService Contract GoldBot Execution Layer uchun yagona Public Interface va Service Gateway sifatida ishlashni, barcha Execution so'rovlarini boshqarishni, Execution natijalarini standart formatga o'tkazishni va Trade Monitoring Layer'ga uzatishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.
+ExecutionService Contract GoldBot Execution Layer uchun ikki tomonlama (bidirectional) Boundary Gateway sifatida ishlashini — Risk Layer'dan kirish va Trade Monitoring Layer'ga chiqishni — belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

@@ -10,7 +10,7 @@ Execution Layer Risk Layer tomonidan APPROVED qilingan Trade'ni Broker yoki Exch
 Risk Layer
         │
         ▼
-ExecutionService
+ExecutionService (Entry)
         │
         ▼
 ExecutionEngine
@@ -29,6 +29,9 @@ BrokerGateway
         │
         ▼
 ExecutionMonitor
+        │
+        ▼
+ExecutionService (Exit)
         │
         ▼
 Trade Monitoring Layer
@@ -53,8 +56,9 @@ Trade Monitoring Layer
 1. Execution Layer faqat APPROVED Risk qabul qiladi.
 2. Order Validation BrokerGateway'dan oldin bajarilishi shart.
 3. BrokerGateway barcha tashqi aloqalarni boshqaradi.
-4. ExecutionMonitor barcha Execution Event'larni kuzatadi.
-5. Trade Monitoring Layer faqat Execution Result oladi.
+4. ExecutionMonitor barcha Execution Event'larni kuzatadi, lekin Layer tashqarisiga chiqmaydi.
+5. Execution Result ExecutionService orqali Trade Monitoring Layer'ga uzatiladi.
+6. Trade Monitoring Layer faqat Execution Result oladi.
 ---
 # Summary
 Execution Layer GoldBot arxitekturasidagi Canonical Trade Execution Pipeline hisoblanadi.

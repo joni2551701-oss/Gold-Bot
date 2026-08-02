@@ -8,7 +8,7 @@ Ushbu hujjat ExecutionService Runtime Sequence'ni tavsiflaydi.
 ```text
 Risk Layer
 ↓
-ExecutionService
+ExecutionService (Entry)
 ↓
 Validate Request
 ↓
@@ -24,7 +24,7 @@ BrokerGateway
 ↓
 ExecutionMonitor
 ↓
-Receive Execution Result
+ExecutionService (Exit)
 ↓
 Standardize Response
 ↓
@@ -35,7 +35,8 @@ Trade Monitoring Layer
 1. Risk Approval mavjud bo'lishi shart.
 2. Request Validation bajarilishi shart.
 3. Execution Pipeline muvaffaqiyatli yakunlanishi shart.
-4. Standard Response yaratilishi shart.
+4. ExecutionMonitor natijasi ExecutionService orqali Trade Monitoring Layer'ga uzatiladi.
+5. Standard Response yaratilishi shart.
 ---
 # State Flow
 ```text
