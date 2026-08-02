@@ -71,6 +71,7 @@ Strategy Filter Profile yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer Logic
 ---
 # Summary
 Filters foydalanuvchi tanlagan filtrlarni StrategyManager uchun tayyorlaydi.

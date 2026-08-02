@@ -1,4 +1,4 @@
-# Trading Styles
+# TradingStyles
 Status: CANONICAL
 ---
 # Purpose

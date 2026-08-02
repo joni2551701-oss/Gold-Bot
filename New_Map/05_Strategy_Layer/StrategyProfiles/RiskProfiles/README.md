@@ -1,4 +1,4 @@
-# Risk Profiles
+# RiskProfiles
 Status: CANONICAL
 ---
 # Purpose

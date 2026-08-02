@@ -51,6 +51,7 @@ Strategiya va Timeframe mosligini tekshiradi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer Logic
 ---
 # Summary
 Timeframes foydalanuvchi tanlagan timeframe konfiguratsiyasini StrategyManager uchun tayyorlaydi.

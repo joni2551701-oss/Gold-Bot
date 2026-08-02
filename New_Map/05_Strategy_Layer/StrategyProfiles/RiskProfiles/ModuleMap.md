@@ -47,6 +47,7 @@ Strategiya bilan mosligini tekshiradi.
 ✗ AI Layer
 ✗ Decision Layer
 ✗ Execution Layer
+✗ Platform Layer Logic
 ---
 # Summary
 RiskProfiles foydalanuvchi tanlagan Risk konfiguratsiyasini StrategyManager uchun tayyorlaydi.

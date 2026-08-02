@@ -59,6 +59,7 @@ Strategy Session Profile yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer Logic
 ---
 # Summary
 Sessions foydalanuvchi tanlagan Trading Session konfiguratsiyasini StrategyManager uchun tayyorlaydi.

@@ -51,6 +51,7 @@ Strategy Profile yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer Logic
 ---
 # Summary
 TradingStyles foydalanuvchi tanlagan Trading Style konfiguratsiyasini StrategyManager uchun tayyorlaydi.

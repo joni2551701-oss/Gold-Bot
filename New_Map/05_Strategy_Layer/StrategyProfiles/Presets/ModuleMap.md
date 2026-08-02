@@ -55,6 +55,7 @@ Strategy Profile yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer Logic
 ---
 # Summary
 Presets foydalanuvchi va tizim tomonidan yaratilgan Strategy Configuration'larni StrategyManager uchun tayyorlaydi.
