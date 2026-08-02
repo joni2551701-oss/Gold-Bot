@@ -1,0 +1,60 @@
+# Knowledge Manager Module Map
+Status: CANONICAL
+---
+# Purpose
+KnowledgeManager ichki arxitekturasini tavsiflaydi.
+---
+# Module Position
+```text
+LearningEngine
+↓
+KnowledgeManager
+↓
+KnowledgeBase
+```
+---
+# Module Architecture
+```text
+KnowledgeManager
+        │
+        ├── Knowledge Registrar
+        ├── Classification Engine
+        ├── Version Manager
+        ├── Metadata Manager
+        ├── Lifecycle Manager
+        └── Reference Manager
+```
+---
+# Internal Components
+## Knowledge Registrar
+Knowledge ro'yxatdan o'tkazadi.
+---
+## Classification Engine
+Knowledge turini aniqlaydi.
+---
+## Version Manager
+Knowledge versiyalarini boshqaradi.
+---
+## Metadata Manager
+Metadata yaratadi.
+---
+## Lifecycle Manager
+Knowledge hayotiy siklini boshqaradi.
+---
+## Reference Manager
+Knowledge ID va Reference boshqaradi.
+---
+# Allowed Dependencies
+✓ KnowledgeBase
+✓ ValidationEngine
+✓ LearningEngine
+---
+# Forbidden Dependencies
+✗ MemoryManager
+✗ MemorySearch
+✗ RAG
+✗ ProviderRouter
+✗ Decision Layer
+---
+# Summary
+KnowledgeManager Knowledge Lifecycle boshqaruvchi Canonical modul hisoblanadi.
