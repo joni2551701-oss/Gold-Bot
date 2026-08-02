@@ -79,6 +79,7 @@ IndicatorService
 ✗ Risk Layer
 ✗ Execution Layer
 ✗ Monitoring Layer
+✗ Platform Layer
 ---
 # Ownership
 IndicatorEngine egalik qiladi.

@@ -83,6 +83,7 @@ IndicatorService
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Ownership
 MarketStructureIndicators egalik qiladi.

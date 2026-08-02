@@ -11,13 +11,12 @@ CustomIndicators faqat GoldBot indikatorlarini hisoblaydi.
 ---
 # Objective
 CustomIndicators quyidagi vazifalarni bajaradi:
-• Senior Trend Score
+• Composite Market Score
 • Market Confidence Index
 • Liquidity Pressure Index
 • Institutional Strength Index
 • Smart Trend Index
 • Risk Environment Index
-• Composite Market Score
 • Custom Indicator State Generation
 ---
 # Layer Position
@@ -61,13 +60,12 @@ CustomIndicators qabul qiladi:
 ---
 # Output
 CustomIndicators yaratadi:
-• Senior Trend Score
+• Composite Market Score
 • Market Confidence Index
 • Liquidity Pressure Index
 • Institutional Strength Index
 • Smart Trend Index
 • Risk Environment Index
-• Composite Market Score
 • Custom Indicator State
 ---
 # Workflow

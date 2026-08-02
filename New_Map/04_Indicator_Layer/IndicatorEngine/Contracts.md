@@ -12,7 +12,7 @@ IndicatorEngine quyidagilar uchun javobgar.
 ✓ Dependency Resolution
 ✓ Runtime State Management
 ✓ Validation Trigger
-✓ Indicator Context Preparation
+✓ Result Handoff to IndicatorService
 ✓ Runtime Event Generation
 IndicatorEngine bajarmaydi.
 ✗ Indicator Calculation
@@ -95,7 +95,7 @@ IndicatorEngine:
 ✓ Pipeline muvaffaqiyatli ishga tushadi.
 ✓ Barcha Indicator modullari bajariladi.
 ✓ Validation muvaffaqiyatli yakunlanadi.
-✓ Indicator Context yaratiladi.
+✓ Natijalar IndicatorService'ga uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
