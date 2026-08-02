@@ -368,6 +368,26 @@ Violation:
 → Major
 ```
 Sabab: Event System kabi infratuzilma qatlamlari GoldBot'ning barcha biznes Layer'lari (Data, Context, Indicator, Strategy, Signal, AI, Decision, Risk, Execution, Monitoring, Database, Platform) tomonidan foydalaniladigan umumiy xizmatlardir; ularni bitta qat'iy biznes pipeline bosqichi sifatida (masalan, faqat Market Memory bilan GoldBot Core orasida) hujjatlashtirish noto'g'ri Layer Position tasvirlaydi va real foydalanish doirasini soxtalashtiradi. Bu qoida `01_Data_Layer/Event_System` guruhida README.md'ning Layer Position'ni "Historical Data + Live Data -> Market Memory -> Event System -> GoldBot Core -> Application Services" qat'iy bosqich sifatida ko'rsatgani, Layer_Contracts.md va Layer_DataFlow.md esa "Source/GoldBot Modules -> Event System Layer -> Target Modules" umumiy modelini belgilagani aniqlanganidan keyin qo'shildi (Major, Runtime Documentation Consistency).
+
+## Runtime Pipeline Rule
+```text
+Group-level runtime architecture
+is the canonical execution order.
+
+Individual module documentation
+must not redefine or contradict
+the group-level pipeline.
+
+If a conflict exists:
+Group-level documentation wins.
+Module documentation must be
+aligned to the group-level
+canonical runtime.
+
+Violation:
+→ Critical
+```
+Sabab: guruh darajasidagi hujjatlar (Group README, Layer_ModuleMap, Layer_Contracts, Layer_SequenceDiagram, Layer_DataFlow) butun guruh bo'yicha kelishilgan yagona Canonical Runtime Pipeline'ni belgilaydi; alohida modul o'z hujjatlarida shu tartibni qayta belgilab, undan farq qiladigan boshqa bir tartib taqdim etsa, bu Runtime Architecture darajasidagi ziddiyat hisoblanadi va Critical toifasiga kiradi (oddiy hujjat nomuvofiqligidan farqli, chunki bu haqiqiy bajarilish tartibiga aloqador). Bu qoida `01_Data_Layer/Providers/ProviderLifecycle` modulida uning o'z README/Contracts/ModuleMap/SequenceDiagram hujjatlari "ProviderFactory -> ProviderLifecycle -> ProviderInterface" tartibini ko'rsatgani, guruh darajasidagi barcha besh Canonical hujjat esa "ProviderFactory -> ProviderInterface -> Concrete Provider -> ProviderLifecycle -> ProviderFlow" tartibini belgilagani aniqlanganidan keyin qo'shildi (Critical, Runtime Architecture). ProviderLifecycle'ning o'z Input Contract'i ("Provider Instance") ham guruh darajasidagi tartibni tasdiqlaydi, chunki Provider Instance faqat Factory+Interface+Concrete implementatsiyadan keyin mavjud bo'ladi.
 ---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
