@@ -49,6 +49,7 @@ Standard Signal obyektini yaratadi.
 Yakuniy Signal Result yaratadi.
 ---
 # Allowed Dependencies
+✓ SignalEngine
 ✓ Strategy Result
 ✓ Confluence Engine
 ✓ Signal Model
@@ -59,6 +60,7 @@ Yakuniy Signal Result yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 SignalBuilder Signal Result obyektini yaratadigan Canonical Builder modulidir.

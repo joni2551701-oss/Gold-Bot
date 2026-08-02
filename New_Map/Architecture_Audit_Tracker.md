@@ -1203,8 +1203,9 @@ Phase 2 — Module Audit Progress
 
 05_Strategy_Layer            CLOSED (1600/1600)
 
-⏳ 06_Signal_Layer
-⬜ 07_AI_Layer
+06_Signal_Layer              CLOSED (700/700)
+
+⏳ 07_AI_Layer
 ⬜ 08_Decision_Layer
 ⬜ 09_Risk_Layer
 ⬜ 10_Execution_Layer
@@ -1714,19 +1715,71 @@ Two new Canonical Rules established (Architecture Decision Records), added to `A
 
 ---
 
+## Director Review — 06_Signal_Layer (full Layer, single-pass audit)
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+06_Signal_Layer
+
+Status:
+CLOSED
+
+Modules:
+7 / 7
+
+Architecture Score:
+700 / 700
+
+Critical:
+0
+
+Major:
+15
+
+Minor:
+0
+
+Approved:
+100%
+
+Module Results:
+
+| Module | Status | Score |
+|---|---|---|
+| ConfluenceEngine | CLOSED, APPROVED | 100/100 |
+| SignalBuilder | CLOSED, APPROVED | 100/100 |
+| SignalEngine | CLOSED, APPROVED | 100/100 |
+| SignalFormatter | CLOSED, APPROVED | 100/100 |
+| SignalScoring | CLOSED, APPROVED | 100/100 |
+| SignalService | CLOSED, APPROVED | 100/100 |
+| SignalValidator | CLOSED, APPROVED | 100/100 |
+
+Findings fixed during this Layer's audit (full-Layer single-pass audit; no Critical findings, no Director decision required):
+
+Auto-fixed by Worker (rule-based, no Director decision needed):
+* Dependency Source of Truth Rule — missing "✗ Platform Layer" in ModuleMap.md Forbidden Dependencies across all 7 modules plus Layer_ModuleMap.md (Major, ×8).
+* Dependency Source of Truth Rule — missing "✓ SignalEngine" in ModuleMap.md Allowed Dependencies for SignalBuilder, SignalFormatter, SignalScoring, SignalValidator (Major, ×4).
+* Dependency Source of Truth Rule — SignalService/ModuleMap.md used the looser "✗ AI Layer" where Contracts.md specifies "✗ AI Layer Internal Modules"; Layer_ModuleMap.md was also missing "✗ AI Layer Internal Modules" entirely vs. Layer_Contracts.md (Major, ×2).
+
+Notably, this is the first Layer audited this session with **zero Critical findings and zero ownership overlap** — SignalEngine's own docs correctly exclude "Signal Result" from its Output/claims (explicitly listing "Signal Build qilish (SignalBuilder vazifasi)" under Not Responsible), and SignalService correctly only "forwards" the Signal Result rather than claiming to create it. No new Canonical Rules required.
+
+---
+
 ## Phase 2 Statistics (running)
 
 Groups/Layers Completed:
-10 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer + 04_Indicator_Layer + 05_Strategy_Layer as full Layers)
+11 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer + 04_Indicator_Layer + 05_Strategy_Layer + 06_Signal_Layer as full Layers)
 
 Layers Completed:
-5 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer, 05_Strategy_Layer)
+6 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer, 05_Strategy_Layer, 06_Signal_Layer)
 
 Modules Completed:
-83
+90
 
 Architecture Score:
-8300 / 8300
+9000 / 9000
 
 Critical Remaining:
 0

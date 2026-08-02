@@ -74,11 +74,13 @@ Output
 • AI Layer
 ---
 # Forbidden Dependencies
+✗ AI Layer Internal Modules
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
 ✗ Monitoring Layer
 ✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 Signal Layer GoldBot ichidagi barcha Technical Signal Generation modullarining yagona Canonical xaritasi hisoblanadi.

@@ -49,6 +49,7 @@ Validation xatolarini yig'adi.
 Validation natijasini yaratadi.
 ---
 # Allowed Dependencies
+✓ SignalEngine
 ✓ SignalBuilder
 ✓ Signal Model
 ✓ Validation Rules
@@ -59,6 +60,7 @@ Validation natijasini yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 SignalValidator GoldBot Signal Layer ichidagi barcha Signal Result obyektlarini tekshiruvchi Canonical Validation moduli hisoblanadi.

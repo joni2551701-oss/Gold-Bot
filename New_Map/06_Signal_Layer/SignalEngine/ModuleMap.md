@@ -53,6 +53,7 @@ Coordination Event yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 SignalEngine Signal Layer ichidagi Pipeline Orchestration, Module Coordination va Runtime Control'ni boshqaruvchi Canonical Orchestrator hisoblanadi. Har bir pipeline bosqichining ichki hisob-kitobi o'z modulida bajariladi.

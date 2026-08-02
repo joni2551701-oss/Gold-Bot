@@ -49,6 +49,7 @@ Formatning to'g'riligini tekshiradi.
 Yakuniy Formatted Signal yaratadi.
 ---
 # Allowed Dependencies
+✓ SignalEngine
 ✓ SignalScoring
 ✓ Signal Model
 ---
@@ -58,6 +59,7 @@ Yakuniy Formatted Signal yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 SignalFormatter GoldBot Signal Layer ichidagi barcha Signal Result obyektlarini standart ko'rinishga o'tkazuvchi Canonical Formatter hisoblanadi.

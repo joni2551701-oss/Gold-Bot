@@ -54,10 +54,11 @@ Keyingi Layer bilan aloqani boshqaradi.
 ✓ Signal Model
 ---
 # Forbidden Dependencies
-✗ AI Layer
+✗ AI Layer Internal Modules
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 SignalService GoldBot Signal Layer uchun tashqi Service API vazifasini bajaruvchi Canonical Service modulidir.

@@ -63,6 +63,7 @@ Confluence Metadata yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 ConfluenceEngine GoldBot Signal Layer ichidagi barcha texnik natijalarni yagona Confluence obyektiga birlashtiruvchi Canonical Engine hisoblanadi.

@@ -49,6 +49,7 @@ Score Metadata yaratadi.
 Yakuniy Scoring Result yaratadi.
 ---
 # Allowed Dependencies
+✓ SignalEngine
 ✓ SignalValidator
 ✓ ConfluenceEngine
 ✓ Signal Model
@@ -59,6 +60,7 @@ Yakuniy Scoring Result yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 SignalScoring GoldBot Signal Layer ichidagi barcha Signal Result obyektlari uchun Technical Score va Confidence hisoblovchi Canonical Evaluation moduli hisoblanadi.
