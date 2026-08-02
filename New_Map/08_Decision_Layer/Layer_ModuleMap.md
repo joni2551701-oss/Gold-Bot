@@ -20,7 +20,10 @@ Status: CANONICAL
 ---
 # Processing Pipeline
 ```text
-DecisionService
+AI Layer
+        │
+        ▼
+DecisionService (Entry)
         │
         ▼
 DecisionConfidence
@@ -36,11 +39,17 @@ DecisionEngine
         │
         ▼
 DecisionLogger
+        │
+        ▼
+DecisionService (Exit)
+        │
+        ▼
+Risk Layer
 ```
 ---
 # Module Responsibilities
 ## DecisionService
-Decision Layer Gateway.
+Decision Layer'ning ikki tomonlama (bidirectional) Boundary Gateway'i — Entry va Exit.
 ---
 ## DecisionConfidence
 Decision Confidence Score hisoblaydi.

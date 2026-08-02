@@ -7,7 +7,7 @@ Signal Layer
 ↓
 AI Layer
 ↓
-DecisionService
+DecisionService (Entry)
 ↓
 DecisionConfidence
 ↓
@@ -19,17 +19,19 @@ DecisionEngine
 ↓
 DecisionLogger
 ↓
+DecisionService (Exit)
+↓
 Decision Response
 ↓
 Risk Layer
 ```
 ---
 # Runtime Rules
-1. DecisionService har doim birinchi ishlaydi.
+1. DecisionService Decision Layer'ning yagona Entry va Exit nuqtasi hisoblanadi.
 2. DecisionConfidence RuleEngine'dan oldin ishlaydi.
 3. ApprovalEngine Rule natijasiga asoslanadi.
 4. DecisionEngine faqat Approval'dan keyin ishlaydi.
-5. DecisionLogger har doim oxirida ishlaydi.
+5. DecisionLogger Layer tashqarisiga chiqmaydi — natija DecisionService orqali Risk Layer'ga uzatiladi.
 ---
 # State Flow
 ```text

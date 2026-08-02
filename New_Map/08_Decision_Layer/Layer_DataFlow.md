@@ -13,7 +13,7 @@ Signal Layer
 AI Layer
         │
         ▼
-DecisionService
+DecisionService (Entry)
         │
         ▼
 DecisionConfidence
@@ -29,6 +29,9 @@ DecisionEngine
         │
         ▼
 DecisionLogger
+        │
+        ▼
+DecisionService (Exit)
         │
         ▼
 Decision Response

@@ -6,72 +6,90 @@ Ushbu hujjat DecisionService modulining rasmiy Architecture Contract hujjati his
 ---
 # Module Responsibility
 DecisionService quyidagilar uchun javobgar.
-✓ Decision Request Management
+✓ Public Entry Point (AI Layer'dan Decision Layer'ga kirish)
+✓ Public Exit Point (Decision Layer'dan Risk Layer'ga chiqish)
 ✓ Request Validation
-✓ Decision Layer Gateway
+✓ Response Serialization
 ✓ Session Management
-✓ Response Formatting
-✓ Service Monitoring
+✓ API Boundary Enforcement
 DecisionService bajarmaydi.
 ✗ Decision Making
 ✗ Rule Validation
+✗ Approval
 ✗ Confidence Calculation
+✗ Logging
 ✗ Trade Execution
 ✗ Database Management
-✗ Logging
 ---
 # Module Boundary
 ```text
-External Layers
+AI Layer
 ↓
-DecisionService
+DecisionService (Entry)
+↓
+DecisionConfidence
+↓
+RuleEngine
+↓
+ApprovalEngine
 ↓
 DecisionEngine
 ↓
 DecisionLogger
 ↓
+DecisionService (Exit)
+↓
 Risk Layer
 ```
 ---
 # Input Contract
+Kirish tomonida (AI Layer'dan):
 • Decision Request
 • Signal Package
 • AI Package
 • Session Metadata
+
+Chiqish tomonida (DecisionLogger'dan):
+• Logged Final Decision
 ---
 # Output Contract
+Kirish tomonida (DecisionConfidence'ga):
+• Validated Decision Request
+
+Chiqish tomonida (Risk Layer'ga):
 • Decision Response
 • Standard Response
 • Decision Metadata
-• Service Metadata
 ---
 # Allowed Dependencies
-✓ DecisionEngine
+✓ DecisionConfidence
 ✓ DecisionLogger
 ---
 # Forbidden Dependencies
-✗ RuleEngine
-✗ Risk Layer
+✗ RuleEngine (to'g'ridan-to'g'ri)
+✗ ApprovalEngine (to'g'ridan-to'g'ri)
+✗ DecisionEngine (to'g'ridan-to'g'ri)
+✗ Risk Layer'dan boshqa tashqi Layer
 ✗ Execution Layer
 ✗ Database Layer
 ---
 # Runtime Contract
-1. Decision Layer'ga barcha kirishlar DecisionService orqali amalga oshirilishi shart.
-2. Har bir Request Validation'dan o'tishi shart.
-3. DecisionService Decision yaratmaydi.
+1. Decision Layer'ga barcha kirish va chiqishlar DecisionService orqali amalga oshirilishi shart (Boundary Gateway).
+2. Har bir kirish Request Validation'dan o'tishi shart.
+3. DecisionService Decision yaratmaydi — faqat Entry/Exit Boundary vazifasini bajaradi.
 4. Decision javobi standart formatga o'tkazilishi shart.
-5. Session holati boshqarilishi shart.
-6. Service Monitoring doimiy ishlashi shart.
+5. DecisionLogger Layer tashqarisiga chiqmaydi — faqat DecisionService orqali chiqadi.
+6. Session holati boshqarilishi shart.
 7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
-✓ Request qabul qilinadi.
+✓ AI Layer'dan Request qabul qilinadi.
 ✓ Validation bajariladi.
-✓ DecisionEngine'ga uzatiladi.
-✓ DecisionLogger Logging bajaradi.
+✓ DecisionConfidence'ga uzatiladi.
+✓ DecisionLogger'dan yakuniy natija qabul qilinadi.
 ✓ Response standartlashtiriladi.
 ✓ Risk Layer'ga uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-DecisionService Contract GoldBot Decision Layer uchun yagona Public Interface va Service Gateway sifatida ishlashni, barcha Decision so'rovlarini boshqarishni va standart javoblarni Risk Layer hamda boshqa tashqi qatlamlarga uzatishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.
+DecisionService Contract GoldBot Decision Layer uchun ikki tomonlama (bidirectional) Boundary Gateway sifatida ishlashini — AI Layer'dan kirish va Risk Layer'ga chiqishni — belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

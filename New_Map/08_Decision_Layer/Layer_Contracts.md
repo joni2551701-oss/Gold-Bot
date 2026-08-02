@@ -38,7 +38,7 @@ Decision Layer yaratadi.
 ---
 # Layer Pipeline
 ```text
-DecisionService
+DecisionService (Entry)
 ↓
 DecisionConfidence
 ↓
@@ -49,6 +49,8 @@ ApprovalEngine
 DecisionEngine
 ↓
 DecisionLogger
+↓
+DecisionService (Exit)
 ↓
 Risk Layer
 ```

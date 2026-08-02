@@ -6,13 +6,23 @@ Ushbu hujjat DecisionService ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-External Layers
+AI Layer
 ↓
-DecisionService
+DecisionService (Entry)
+↓
+DecisionConfidence
+↓
+RuleEngine
+↓
+ApprovalEngine
 ↓
 DecisionEngine
 ↓
 DecisionLogger
+↓
+DecisionService (Exit)
+↓
+Risk Layer
 ```
 ---
 # Module Architecture
@@ -29,7 +39,7 @@ DecisionService
 ---
 # Internal Components
 ## Request Receiver
-Decision Request'larni qabul qiladi.
+AI Layer'dan Decision Request'larni qabul qiladi.
 ---
 ## Request Validator
 Request formatini tekshiradi.
@@ -38,23 +48,24 @@ Request formatini tekshiradi.
 Decision Session holatini boshqaradi.
 ---
 ## Request Dispatcher
-Request'ni DecisionEngine'ga uzatadi.
+Request'ni DecisionConfidence'ga uzatadi.
 ---
 ## Response Formatter
-Decision javobini standart formatga o'tkazadi.
+DecisionLogger'dan qaytgan Decision javobini standart formatga o'tkazadi va Risk Layer'ga uzatadi.
 ---
 ## Service Monitor
 Decision Service holatini kuzatadi.
 ---
 # Allowed Dependencies
-✓ DecisionEngine
+✓ DecisionConfidence
 ✓ DecisionLogger
 ---
 # Forbidden Dependencies
-✗ RuleEngine
-✗ Risk Layer
+✗ RuleEngine (to'g'ridan-to'g'ri)
+✗ ApprovalEngine (to'g'ridan-to'g'ri)
+✗ DecisionEngine (to'g'ridan-to'g'ri)
 ✗ Execution Layer
 ✗ Database Layer
 ---
 # Summary
-DecisionService GoldBot Decision Layer uchun yagona Service Gateway va Public API moduli hisoblanadi.
+DecisionService GoldBot Decision Layer uchun ikki tomonlama Boundary Gateway va Public API moduli hisoblanadi.

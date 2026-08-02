@@ -2,87 +2,99 @@
 Status: CANONICAL
 ---
 # Purpose
-DecisionService GoldBot Decision Layer ichidagi Canonical Public Decision Interface moduli hisoblanadi.
-Uning asosiy vazifasi Decision Layer uchun yagona Service Gateway bo'lish va boshqa Layer'larga standart Decision API taqdim etishdir.
+DecisionService GoldBot Decision Layer uchun Canonical Boundary Gateway hisoblanadi.
+Uning asosiy vazifasi Decision Layer'ning yagona Public Entry Point va Public Exit Point bo'lishidir — AI Layer'dan kelgan so'rovlarni Decision Pipeline'ga kiritish va DecisionLogger'dan qaytgan yakuniy natijani Risk Layer'ga chiqarish.
 DecisionService Decision yaratmaydi.
 DecisionService Rule tekshirmaydi.
-DecisionService faqat Decision Layer Service Gateway hisoblanadi.
+DecisionService Approval bermaydi.
+DecisionService Logger emas.
+DecisionService faqat Entry/Exit Boundary, Validation va Serialization vazifalarini bajaradi.
 ---
 # Objective
 DecisionService quyidagi vazifalarni bajaradi.
-• Decision Request Management
-• Decision API Gateway
+• Public Entry Point
+• Public Exit Point
 • Request Validation
-• Response Standardization
-• Decision Session Management
-• Decision Layer Integration
+• Response Serialization
+• Session Management
+• API Boundary Enforcement
 ---
 # Layer Position
 ```text
-External Layers
+AI Layer
 ↓
-DecisionService
+DecisionService (Entry)
+↓
+DecisionConfidence
+↓
+RuleEngine
+↓
+ApprovalEngine
 ↓
 DecisionEngine
 ↓
 DecisionLogger
+↓
+DecisionService (Exit)
 ↓
 Risk Layer
 ```
 ---
 # Responsibilities
 DecisionService
-✓ Decision Request qabul qiladi
+✓ AI Layer'dan Decision Request qabul qiladi (Entry)
 ✓ Request formatini tekshiradi
-✓ DecisionEngine'ga uzatadi
-✓ Decision Response standartlashtiradi
+✓ DecisionConfidence'ga uzatadi
+✓ DecisionLogger'dan yakuniy natijani qabul qiladi
+✓ Decision Response'ni standartlashtiradi
+✓ Risk Layer'ga uzatadi (Exit)
 ✓ Session boshqaradi
-✓ Public API vazifasini bajaradi
 ---
 # Not Responsible
 DecisionService
 ✗ Decision Making
 ✗ Rule Validation
+✗ Approval
 ✗ Confidence Calculation
+✗ Logging
 ✗ Trade Execution
 ✗ Database Management
-✗ Logging
 ---
 # Input
 DecisionService qabul qiladi.
-• Decision Request
-• Signal Package
-• AI Package
+• Decision Request (AI Layer'dan)
+• Logged Final Decision (DecisionLogger'dan)
 • Session Metadata
 ---
 # Output
 DecisionService yaratadi.
-• Decision Response
+• Validated Decision Request (DecisionConfidence'ga)
+• Decision Response (Risk Layer'ga)
 • Standard Response
-• Decision Metadata
 • Service Metadata
 ---
 # Workflow
 ```text
-Receive Request
+Receive Request (AI Layer)
 ↓
 Validate Request
 ↓
-DecisionEngine
+Forward To DecisionConfidence
 ↓
-DecisionLogger
+Receive Logged Decision (DecisionLogger)
 ↓
 Standardize Response
 ↓
-Risk Layer
+Return Response (Risk Layer)
 ```
 ---
 # Golden Rules
-1. Decision Layer'ga barcha kirishlar DecisionService orqali amalga oshiriladi.
-2. DecisionService Decision yaratmaydi.
-3. Response yagona formatga o'tkaziladi.
-4. Decision Layer tashqarisiga faqat DecisionService chiqadi.
-5. Circular Dependency qat'iyan taqiqlanadi.
+1. DecisionService Decision Layer'ning yagona Entry Point va yagona Exit Point hisoblanadi.
+2. Decision Logic DecisionService ichida bajarilmaydi.
+3. Decision javoblari standart formatga o'tkaziladi.
+4. Decision Layer tashqarisiga faqat DecisionService orqali kiriladi va chiqiladi.
+5. DecisionLogger Layer tashqarisiga chiqmaydi.
+6. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents
 ```text
@@ -94,4 +106,4 @@ DecisionService/
 ```
 ---
 # Summary
-DecisionService GoldBot Decision Layer uchun yagona Public Interface va Service Gateway hisoblanadi.
+DecisionService GoldBot Decision Layer uchun ikki tomonlama (bidirectional) Boundary Gateway hisoblanadi — AI Layer'dan Decision Layer'ga kirish va Decision Layer'dan Risk Layer'ga chiqish uchun yagona nuqta.
