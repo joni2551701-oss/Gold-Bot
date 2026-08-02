@@ -1,67 +1,61 @@
 # Provider Flow Module Map
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-Ushbu hujjat ProviderFlow modulining ichki tuzilishini tavsiflaydi.
-
+Ushbu hujjat ProviderFlow modulining ichki arxitekturasini tavsiflaydi.
 ---
-
 # Module Position
-
 ```text
 ProviderInterface
 ↓
 ProviderFlow
 ↓
-Historical_Data / Live_Data
+Historical_Data
+Live_Data
 ```
-
 ---
-
 # Module Architecture
-
 ```text
 ProviderFlow
         │
-        ├── Historical Route
-        └── Live Route
+        ├── Flow Receiver
+        ├── Flow Validator
+        ├── Route Manager
+        ├── Event Generator
+        ├── Flow Monitor
+        └── Metadata Generator
 ```
-
 ---
-
 # Internal Components
-
-## Historical Route
-TwelveData'dan kelgan ma'lumotni Historical_Data'ga yo'naltiradi.
-
+## Flow Receiver
+Provider ma'lumotlarini qabul qiladi.
 ---
-
-## Live Route
-Bitget'dan kelgan ma'lumotni Live_Data'ga yo'naltiradi.
-
+## Flow Validator
+Flow yaxlitligini tekshiradi.
 ---
-
+## Route Manager
+Ma'lumotni Historical_Data yoki Live_Data moduliga yo'naltiradi.
+---
+## Event Generator
+Flow Event yaratadi.
+---
+## Flow Monitor
+Ma'lumot oqimini kuzatadi.
+---
+## Metadata Generator
+Flow Metadata yaratadi.
+---
 # Allowed Dependencies
-
 ✓ ProviderInterface
-✓ TwelveData
-✓ Bitget
-
+✓ Historical_Data
+✓ Live_Data
+✓ Event_System
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
 ✗ Market_Memory
-✗ Context
-✗ Strategy
-
+✗ Context Layer
+✗ Strategy Layer
+✗ Decision Layer
 ---
-
 # Summary
-
-ProviderFlow Providers bo'limi ichidagi Historical va Live ma'lumot yo'nalishlarini ajratuvchi Canonical modul hisoblanadi.
+ProviderFlow GoldBot Data Layer ichidagi barcha Provider ma'lumotlarini standart Data Pipeline bo'yicha marshrutlovchi Canonical modul hisoblanadi.

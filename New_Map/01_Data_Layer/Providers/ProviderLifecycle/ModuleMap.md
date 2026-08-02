@@ -1,78 +1,57 @@
 # Provider Lifecycle Module Map
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-Ushbu hujjat ProviderLifecycle modulining ichki tuzilishini tavsiflaydi.
-
+Ushbu hujjat ProviderLifecycle modulining ichki arxitekturasini tavsiflaydi.
 ---
-
 # Module Position
-
 ```text
 ProviderFactory
 ↓
 ProviderLifecycle
 ↓
-TwelveData / Bitget
+ProviderInterface
 ```
-
 ---
-
 # Module Architecture
-
 ```text
 ProviderLifecycle
         │
-        ├── Startup Manager
-        ├── Reconnect Manager
+        ├── Initialization Manager
+        ├── Connection Monitor
+        ├── Health Checker
+        ├── Recovery Manager
         ├── Shutdown Manager
-        └── Health Monitor
+        └── Metadata Generator
 ```
-
 ---
-
 # Internal Components
-
-## Startup Manager
-Provider'ni ishga tushiradi va boshlang'ich ulanishni o'rnatadi.
-
+## Initialization Manager
+Provider ishga tushirilishini boshqaradi.
 ---
-
-## Reconnect Manager
-Ulanish uzilganda qayta ulanishni boshqaradi.
-
+## Connection Monitor
+Provider ulanishini kuzatadi.
 ---
-
+## Health Checker
+Provider sog'ligini tekshiradi.
+---
+## Recovery Manager
+Reconnect va Recovery jarayonini boshqaradi.
+---
 ## Shutdown Manager
 Provider'ni xavfsiz to'xtatadi.
-
 ---
-
-## Health Monitor
-Provider holatini muntazam tekshiradi.
-
+## Metadata Generator
+Lifecycle Metadata yaratadi.
 ---
-
 # Allowed Dependencies
-
-✓ TwelveData
-✓ Bitget
-
+✓ ProviderInterface
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
-✗ Market_Memory
 ✗ Historical_Data
-✗ Live_Data (to'g'ridan-to'g'ri)
-
+✗ Live_Data
+✗ Market_Memory
+✗ Decision Layer
 ---
-
 # Summary
-
-ProviderLifecycle Providers bo'limidagi barcha provider'larning ishga tushirish, qayta ulanish va to'xtatish jarayonlarini boshqaruvchi Canonical modul hisoblanadi.
+ProviderLifecycle GoldBot ichidagi barcha Provider'larning hayot siklini boshqaruvchi Canonical Lifecycle Manager hisoblanadi.

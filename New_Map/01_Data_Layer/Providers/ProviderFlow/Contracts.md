@@ -1,91 +1,71 @@
 # Provider Flow Contracts
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat ProviderFlow modulining rasmiy Architecture Contract hujjati hisoblanadi.
-
 ---
-
 # Module Responsibility
-
 ProviderFlow quyidagilar uchun javobgar.
-
-✓ Historical va Live ma'lumot oqimlarini ajratish
-✓ Har bir oqimni to'g'ri manzilga yo'naltirish
-
+✓ Provider Data Reception
+✓ Data Flow Validation
+✓ Data Routing
+✓ Flow Event Generation
+✓ Flow Monitoring
+✓ Data Distribution
 ProviderFlow bajarmaydi.
-
-✗ Ma'lumot yuklash
-✗ Ma'lumotni tekshirish
-✗ Ma'lumotni saqlash
-
+✗ Provider Creation
+✗ API Communication
+✗ Data Validation
+✗ Market Analysis
+✗ Trading Logic
 ---
-
 # Module Boundary
-
 ```text
 ProviderInterface
 ↓
 ProviderFlow
 ↓
-Historical_Data / Live_Data
+Historical_Data
+Live_Data
 ```
-
 ---
-
 # Input Contract
-
-• TwelveData chiqishi
-• Bitget chiqishi
-
+• Provider Response
+• Provider Event
+• Flow Metadata
 ---
-
 # Output Contract
-
-• Historical_Data'ga yo'naltirilgan oqim
-• Live_Data'ga yo'naltirilgan oqim
-
+• Historical Data
+• Live Data
+• Flow Event
+• Routing Metadata
 ---
-
 # Allowed Dependencies
-
 ✓ ProviderInterface
-✓ TwelveData
-✓ Bitget
-
+✓ Historical_Data
+✓ Live_Data
+✓ Event_System
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
 ✗ Market_Memory
-✗ Context
-✗ Strategy
-✗ Decision
-✗ AI
-
+✗ Context Layer
+✗ Strategy Layer
+✗ Decision Layer
 ---
-
 # Runtime Contract
-
-1. Historical va Live oqim hech qachon aralashtirilmaydi.
-2. Har bir oqim ProviderInterface Contract'iga mos bo'lishi shart.
-3. ProviderFlow marketni tahlil qilmaydi.
-
+1. Har bir Provider Response ProviderFlow orqali o'tishi shart.
+2. Data Routing standart Data Flow qoidalariga mos bo'lishi shart.
+3. Historical va Live Data oqimlari aniq ajratilishi shart.
+4. Flow Event yaratilishi shart.
+5. ProviderFlow Business Logic bajarmaydi.
+6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Acceptance Criteria
-
-✓ Historical oqim to'g'ri yo'naltiriladi.
-✓ Live oqim to'g'ri yo'naltiriladi.
+✓ Provider Data qabul qilinadi.
+✓ Routing muvaffaqiyatli bajariladi.
+✓ Flow Event yaratiladi.
+✓ Historical_Data va Live_Data modullariga ma'lumot uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
-
 ---
-
 # Summary
-
-ProviderFlow Contract Providers bo'limi ichidagi Historical va Live ma'lumot oqimlarini to'g'ri yo'naltirish bo'yicha rasmiy Canonical Architecture Contract hisoblanadi.
+ProviderFlow Contract GoldBot Data Layer ichidagi barcha Market Data Provider'laridan kelayotgan ma'lumotlarni standart oqim bo'yicha marshrutlash, tegishli Data Layer modullariga uzatish va Flow Event yaratish qoidalarini belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

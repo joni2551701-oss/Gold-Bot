@@ -1,86 +1,79 @@
 # Provider Interface
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-ProviderInterface — Providers bo'limidagi har bir provider bajarishi shart bo'lgan yagona standart interfeys hisoblanadi.
-
-Uning asosiy vazifasi barcha provider'lar (TwelveData, Bitget va kelajakdagi boshqalar) bir xil Contract asosida ishlashini ta'minlashdir.
-
-ProviderInterface o'zi ma'lumot yuklamaydi — u faqat standartni belgilaydi.
-
+ProviderInterface GoldBot Data Layer ichidagi Canonical Provider Contract moduli hisoblanadi.
+Uning asosiy vazifasi barcha Market Data Provider'lar bajarishi shart bo'lgan yagona interfeys va standart xatti-harakatlarni belgilashdir.
+ProviderInterface Provider yaratmaydi.
+ProviderInterface API bilan bog'lanmaydi.
+ProviderInterface faqat Contract va Standard Behavior'ni belgilaydi.
 ---
-
 # Objective
-
-ProviderInterface quyidagi vazifalarni bajaradi:
-
-• Standart Provider Metodlarini belgilash
-• Historical va Live Provider uchun umumiy Contract
-• Provider almashtirilishini soddalashtirish
-
+ProviderInterface quyidagi vazifalarni bajaradi.
+• Provider Contract
+• Standard API Definition
+• Common Data Model
+• Standard Response Format
+• Error Contract
+• Lifecycle Contract
 ---
-
 # Layer Position
-
 ```text
 ProviderFactory
-
-        │
-        ▼
+↓
 ProviderInterface
-
-        │
-        ▼
-TwelveData / Bitget
+↓
+TwelveData
+Bitget
+Future Providers
 ```
-
 ---
-
 # Responsibilities
-
-ProviderInterface:
-
-✓ Standart metodlarni belgilaydi (connect, disconnect, fetch, subscribe)
-✓ Har bir provider uchun majburiy Contract'ni belgilaydi
-
+ProviderInterface
+✓ Common Interface belgilaydi
+✓ Standard Method'larni belgilaydi
+✓ Standard Response Format belgilaydi
+✓ Error Contract belgilaydi
+✓ Provider Lifecycle Contract belgilaydi
 ---
-
 # Not Responsible
-
-ProviderInterface:
-
-✗ Ma'lumot yuklash
-✗ Ulanishni amalga oshirish
-✗ Ma'lumotni tekshirish
-
+ProviderInterface
+✗ Provider Creation
+✗ API Communication
+✗ Market Data Retrieval
+✗ Data Validation
+✗ Trading Logic
 ---
-
 # Input
-
-ProviderInterface'ni provider'lar implement qiladi — o'zi input qabul qilmaydi.
-
+ProviderInterface qabul qiladi.
+• Provider Implementation
+• Interface Contract
 ---
-
 # Output
-
-ProviderInterface standart Contract'ni belgilaydi — o'zi output yaratmaydi.
-
+ProviderInterface yaratadi.
+• Standard Provider Contract
+• Standard Response Structure
+• Provider Metadata Contract
 ---
-
+# Workflow
+```text
+Define Interface
+↓
+Implement Provider
+↓
+Validate Contract
+↓
+Ready for Factory
+```
+---
 # Golden Rules
-
-1. Barcha provider'lar ProviderInterface'ni implement qiladi.
-2. Interface o'zgarishi barcha provider'larga bir xil ta'sir qiladi.
-3. Interface'siz provider ProviderFactory tomonidan qabul qilinmaydi.
-
+1. Har bir Provider ProviderInterface'ni implement qilishi shart.
+2. Interface barcha Provider'lar uchun yagona bo'lishi shart.
+3. Interface Provider turiga bog'liq bo'lmasligi shart.
+4. Interface faqat Contract belgilaydi.
+5. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Related Documents
-
 ```text
 ProviderInterface/
 ├── README.md
@@ -88,9 +81,6 @@ ProviderInterface/
 ├── ModuleMap.md
 └── Contracts.md
 ```
-
 ---
-
 # Summary
-
-ProviderInterface Providers bo'limidagi barcha provider'lar uchun yagona standart Contract'ni belgilovchi Canonical modul hisoblanadi.
+ProviderInterface GoldBot Data Layer ichidagi barcha Market Data Provider'lar uchun yagona Contract va standart xatti-harakatlarni belgilovchi Canonical modul hisoblanadi.

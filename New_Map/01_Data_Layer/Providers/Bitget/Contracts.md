@@ -1,94 +1,71 @@
 # Bitget Contracts
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat Bitget modulining rasmiy Architecture Contract hujjati hisoblanadi.
-
 ---
-
 # Module Responsibility
-
 Bitget quyidagilar uchun javobgar.
-
-✓ Tick Stream yetkazish
-✓ Current Price yetkazish
-✓ WebSocket ulanishini boshqarish
-
+✓ API Connection
+✓ Historical Data Retrieval
+✓ Live Data Retrieval
+✓ Response Standardization
+✓ Error Handling
+✓ Provider Health Reporting
 Bitget bajarmaydi.
-
-✗ Historical Data
-✗ Candle Building
-✗ Ma'lumotni tekshirish
+✗ Provider Selection
+✗ Data Validation
 ✗ Market Analysis
-
+✗ Signal Generation
+✗ Trading Decision
 ---
-
 # Module Boundary
-
 ```text
-LiveProviders
+ProviderFactory
 ↓
 ProviderInterface
 ↓
 Bitget
+↓
+Historical_Data
+Live_Data
 ```
-
 ---
-
 # Input Contract
-
+• Provider Request
 • Symbol
-• Subscription so'rovi
-
+• Timeframe
+• Data Request
 ---
-
 # Output Contract
-
-• Live Tick
-• Current Price
-
+• Standard Market Data
+• Provider Status
+• Response Metadata
+• Error Response
 ---
-
 # Allowed Dependencies
-
 ✓ ProviderInterface
-
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
-✗ Market_Memory
+✗ ProviderFactory
 ✗ Historical_Data
-✗ Context
-✗ Strategy
-✗ Decision
-✗ AI
-
+✗ Live_Data
+✗ Market_Memory
 ---
-
 # Runtime Contract
-
-1. Bitget faqat ProviderInterface orqali chaqiriladi.
-2. Har bir Subscription Symbol bilan birga bo'lishi shart.
-3. Ulanish uzilganda ProviderLifecycle Reconnect siyosatini qo'llaydi.
-4. Bitget Data Validation bosqichini o'tkazib yubormaydi.
-
+1. Bitget ProviderInterface'ni implement qilishi shart.
+2. API Response standart formatga o'tkazilishi shart.
+3. Error Response umumiy Error Contract'ga mos bo'lishi shart.
+4. API Authentication xavfsiz boshqarilishi shart.
+5. Business Logic bajarilishi taqiqlanadi.
+6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Acceptance Criteria
-
-✓ Live Tick qaytariladi.
-✓ Current Price qaytariladi.
-✓ ProviderInterface Contract'iga mos javob beriladi.
+✓ API ulanishi ishlaydi.
+✓ Historical Data olinadi.
+✓ Live Data olinadi.
+✓ Standard Response qaytariladi.
 ✓ Architecture Boundary buzilmaydi.
-
 ---
-
 # Summary
-
-Bitget Contract Providers bo'limidagi Live Data uchun tashqi integratsiyaning rasmiy shartnomasi hisoblanadi.
+Bitget Contract GoldBot Data Layer ichidagi Bitget Provider implementatsiyasining API ulanishi, ma'lumot olish, standart javob qaytarish va ProviderInterface talablariga rioya qilish qoidalarini belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

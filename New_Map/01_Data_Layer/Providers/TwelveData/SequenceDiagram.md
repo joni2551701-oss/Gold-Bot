@@ -1,59 +1,52 @@
-# TwelveData Sequence Diagram
-
+# Twelve Data Sequence Diagram
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat TwelveData Runtime Sequence'ni tavsiflaydi.
-
 ---
-
 # Runtime Sequence
-
 ```text
-HistoricalProviders So'rovi
+ProviderFactory
 ↓
 ProviderInterface
 ↓
 TwelveData
 ↓
-Historical Candle / OHLC Qaytariladi
+Connect API
 ↓
-HistoricalDatabase'ga Uzatiladi
+Request Market Data
+↓
+Receive Response
+↓
+Standardize Response
+↓
+Return Data
 ```
-
 ---
-
 # Runtime Rules
-
-1. So'rov Symbol va Timeframe bilan birga kelishi shart.
-2. TwelveData ProviderInterface Contract'iga mos javob qaytaradi.
-3. Xato holatida ProviderLifecycle orqali Retry ishga tushadi.
-
+1. ProviderFactory orqali yaratilishi shart.
+2. ProviderInterface implement qilinishi shart.
+3. API Response standartlashtirilishi shart.
+4. Error holatlari Contract bo'yicha qaytarilishi shart.
 ---
-
 # State Flow
-
 ```text
 Idle
 ↓
+Connecting
+↓
 Requesting
 ↓
-Fetching
+Receiving
 ↓
-Returning Data
+Formatting
 ↓
 Completed
 ```
-
 ---
-
 # Summary
-
-HistoricalProviders
+ProviderFactory
 ↓
 TwelveData
 ↓
-Historical Candle / OHLC
+Historical_Data / Live_Data

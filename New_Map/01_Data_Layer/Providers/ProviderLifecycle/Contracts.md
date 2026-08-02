@@ -1,94 +1,68 @@
 # Provider Lifecycle Contracts
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat ProviderLifecycle modulining rasmiy Architecture Contract hujjati hisoblanadi.
-
 ---
-
 # Module Responsibility
-
 ProviderLifecycle quyidagilar uchun javobgar.
-
-✓ Provider Startup
-✓ Provider Reconnect
-✓ Provider Shutdown
-✓ Provider Health Check
-
+✓ Provider Initialization
+✓ Connection Monitoring
+✓ Health Checking
+✓ Recovery Management
+✓ Reconnection
+✓ Graceful Shutdown
 ProviderLifecycle bajarmaydi.
-
-✗ Ma'lumot yuklash
-✗ Ma'lumotni tekshirish
-✗ Ma'lumotni saqlash
-
+✗ Provider Creation
+✗ Market Data Retrieval
+✗ Data Validation
+✗ Market Analysis
+✗ Trading Logic
 ---
-
 # Module Boundary
-
 ```text
 ProviderFactory
 ↓
 ProviderLifecycle
 ↓
-TwelveData / Bitget
+ProviderInterface
 ```
-
 ---
-
 # Input Contract
-
 • Provider Instance
-• Lifecycle Event (Start, Stop, Reconnect)
-
+• Connection Event
+• Health Event
+• Shutdown Request
 ---
-
 # Output Contract
-
 • Provider Status
-• Health Report
-
+• Health Status
+• Recovery Event
+• Lifecycle Metadata
 ---
-
 # Allowed Dependencies
-
-✓ TwelveData
-✓ Bitget
-
+✓ ProviderInterface
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
+✗ Historical_Data
+✗ Live_Data
 ✗ Market_Memory
-✗ Context
-✗ Strategy
-✗ Decision
-✗ AI
-
+✗ Decision Layer
 ---
-
 # Runtime Contract
-
-1. Har bir Provider Startup Health Check bilan yakunlanishi shart.
-2. Ulanish uzilishi avtomatik Reconnect'ni ishga tushirishi shart.
-3. Provider nosozligi GoldBot Core ishlashini to'xtatmasligi kerak.
-4. Shutdown har doim to'liq Disconnect bilan yakunlanishi shart.
-
+1. Har bir Provider Initialization'dan o'tishi shart.
+2. Connection doim kuzatilishi shart.
+3. Failure aniqlansa Recovery avtomatik boshlanishi shart.
+4. Graceful Shutdown qo'llab-quvvatlanishi shart.
+5. Lifecycle Business Logic bajarmaydi.
+6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Acceptance Criteria
-
-✓ Provider muvaffaqiyatli ishga tushadi.
-✓ Ulanish uzilganda Reconnect ishlaydi.
-✓ Health Check muntazam bajariladi.
+✓ Initialization ishlaydi.
+✓ Connection Monitoring ishlaydi.
+✓ Recovery ishlaydi.
+✓ Shutdown ishlaydi.
 ✓ Architecture Boundary buzilmaydi.
-
 ---
-
 # Summary
-
-ProviderLifecycle Contract Providers bo'limidagi barcha provider'larning hayotiy siklini boshqarish bo'yicha rasmiy Canonical Architecture Contract hisoblanadi.
+ProviderLifecycle Contract GoldBot Data Layer ichidagi barcha Market Data Provider'larning hayot sikli, monitoringi, recovery va shutdown jarayonlarini boshqarish qoidalarini belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

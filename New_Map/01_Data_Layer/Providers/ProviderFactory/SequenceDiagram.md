@@ -1,61 +1,49 @@
 # Provider Factory Sequence Diagram
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat ProviderFactory Runtime Sequence'ni tavsiflaydi.
-
 ---
-
 # Runtime Sequence
-
 ```text
-Configuration
+Data Request
 ↓
 ProviderFactory
 ↓
-Provider Turi Aniqlanadi
+Read Configuration
 ↓
-Provider Instance Yaratiladi
+Select Provider
 ↓
-ProviderInterface orqali Registratsiya
+Create Provider
 ↓
-Historical_Data / Live_Data'ga Uzatiladi
+Initialize Provider
+↓
+Return Provider Instance
 ```
-
 ---
-
 # Runtime Rules
-
-1. Configuration mavjud bo'lishi shart.
-2. Provider turi (Historical / Live) aniqlanishi shart.
-3. Yaratilgan provider ProviderInterface'ga mos bo'lishi shart.
-4. Provider Registry'ga qayd etilishi shart.
-
+1. Provider Request mavjud bo'lishi shart.
+2. Provider Configuration o'qilishi shart.
+3. Faqat ro'yxatdan o'tgan Provider yaratilishi mumkin.
+4. ProviderInterface qaytarilishi shart.
 ---
-
 # State Flow
-
 ```text
 Idle
 ↓
-Reading Configuration
+Receiving
 ↓
-Creating Provider
+Selecting
 ↓
-Registering
+Creating
 ↓
-Ready
+Initializing
+↓
+Completed
 ```
-
 ---
-
 # Summary
-
-Configuration
+Provider Request
 ↓
 ProviderFactory
 ↓

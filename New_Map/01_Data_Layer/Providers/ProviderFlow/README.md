@@ -1,100 +1,85 @@
 # Provider Flow
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-ProviderFlow — Providers bo'limi ichidagi ma'lumot oqimini (Data Flow) tavsiflovchi hujjat-modul hisoblanadi.
-
-Uning asosiy vazifasi tashqi provider'lardan (TwelveData, Bitget) kelgan ma'lumot Historical_Data va Live_Data modullariga qanday yetib borishini standartlashtirishdir.
-
-Bu implementatsiya emas — bu Providers bo'limining Canonical Data Flow Blueprint komponenti.
-
+ProviderFlow GoldBot Data Layer ichidagi Canonical Provider Data Routing moduli hisoblanadi.
+Uning asosiy vazifasi barcha Market Data Provider'lardan kelayotgan ma'lumotlarni standart oqim (Flow) bo'yicha Historical_Data va Live_Data modullariga uzatishdir.
+ProviderFlow Market Data yaratmaydi.
+ProviderFlow Market Analysis bajarmaydi.
+ProviderFlow faqat Data Flow boshqaruvi bilan shug'ullanadi.
 ---
-
 # Objective
-
-ProviderFlow quyidagi jarayonlarni tavsiflaydi:
-
-• External Provider'dan ma'lumot olish
-• ProviderInterface orqali standartlashtirish
-• Historical_Data / Live_Data'ga uzatish
-
+ProviderFlow quyidagi vazifalarni bajaradi.
+• Provider Data Routing
+• Standard Data Flow
+• Flow Validation
+• Data Distribution
+• Event Generation
+• Flow Monitoring
 ---
-
 # Layer Position
-
 ```text
-External Provider
-
-        │
-        ▼
-ProviderFactory
-
-        │
-        ▼
 ProviderInterface
-
-        │
-        ▼
+↓
 ProviderFlow
-
-        │
-        ▼
-Historical_Data / Live_Data
+↓
+Historical_Data
+Live_Data
 ```
-
 ---
-
 # Responsibilities
-
-ProviderFlow:
-
-✓ Provider'dan kelgan ma'lumotning yo'nalishini belgilaydi
-✓ Historical va Live oqimlarni ajratadi
-
+ProviderFlow
+✓ Provider Data qabul qiladi
+✓ Data Routing bajaradi
+✓ Standard Flow saqlaydi
+✓ Flow Event yaratadi
+✓ Flow Monitoring bajaradi
+✓ Data Distribution boshqaradi
 ---
-
 # Not Responsible
-
-ProviderFlow:
-
-✗ Ma'lumot yuklash
-✗ Ma'lumotni tekshirish
-✗ Ma'lumotni saqlash
-
+ProviderFlow
+✗ API Communication
+✗ Provider Creation
+✗ Data Validation
+✗ Market Analysis
+✗ Trading Decision
 ---
-
 # Input
-
-ProviderFlow qabul qiladi (hujjat darajasida tavsiflaydi):
-
-• TwelveData chiqishi
-• Bitget chiqishi
-
+ProviderFlow qabul qiladi.
+• Provider Response
+• Provider Event
+• Flow Metadata
 ---
-
 # Output
-
-ProviderFlow yo'naltiradi:
-
-• Historical_Data'ga (TwelveData orqali)
-• Live_Data'ga (Bitget orqali)
-
+ProviderFlow yaratadi.
+• Historical Data
+• Live Data
+• Flow Event
+• Routing Metadata
 ---
-
+# Workflow
+```text
+Receive Provider Data
+↓
+Validate Flow
+↓
+Determine Target
+↓
+Route Data
+↓
+Generate Event
+↓
+Forward Data
+```
+---
 # Golden Rules
-
-1. Historical va Live oqimlar bir-birini kesib o'tmaydi.
-2. Har bir oqim ProviderInterface orqali standartlashtiriladi.
-3. ProviderFlow marketni tahlil qilmaydi.
-
+1. Barcha Provider Data ProviderFlow orqali o'tishi shart.
+2. Data faqat standart formatda uzatilishi shart.
+3. Flow tartibi buzilmasligi shart.
+4. ProviderFlow Business Logic bajarmaydi.
+5. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Related Documents
-
 ```text
 ProviderFlow/
 ├── README.md
@@ -102,9 +87,6 @@ ProviderFlow/
 ├── ModuleMap.md
 └── Contracts.md
 ```
-
 ---
-
 # Summary
-
-ProviderFlow Providers bo'limi ichidagi ma'lumot oqimini — tashqi provider'lardan Historical_Data va Live_Data'gacha — belgilovchi Canonical modul hisoblanadi.
+ProviderFlow GoldBot Data Layer ichidagi Canonical Data Routing moduli bo'lib, barcha Provider'lardan kelayotgan Market Data oqimini standartlashtiradi va tegishli Data Layer modullariga uzatadi.

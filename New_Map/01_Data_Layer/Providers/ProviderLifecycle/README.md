@@ -1,96 +1,87 @@
 # Provider Lifecycle
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-ProviderLifecycle — Providers bo'limidagi barcha provider'larning hayotiy siklini (ishga tushirish, qayta ulanish, to'xtatish, sog'liqni tekshirish) boshqaruvchi komponent hisoblanadi.
-
-Uning asosiy vazifasi TwelveData va Bitget kabi provider'larning ishonchli ishlashini ta'minlashdir.
-
-ProviderLifecycle marketni tahlil qilmaydi.
-
+ProviderLifecycle GoldBot Data Layer ichidagi Canonical Provider Lifecycle Management moduli hisoblanadi.
+Uning asosiy vazifasi barcha Market Data Provider'larning hayot siklini (Lifecycle) boshqarish, ulanish holatini nazorat qilish va uzilishlarda avtomatik tiklash (Recovery) jarayonlarini amalga oshirishdir.
+ProviderLifecycle Market Data yuklamaydi.
+ProviderLifecycle Provider yaratmaydi.
+ProviderLifecycle faqat Provider holatini boshqaradi.
 ---
-
 # Objective
-
-ProviderLifecycle quyidagi vazifalarni bajaradi:
-
-• Provider Startup
-• Provider Reconnect
-• Provider Shutdown
-• Provider Health Check
-• Provider Monitoring
-
+ProviderLifecycle quyidagi vazifalarni bajaradi.
+• Provider Initialization
+• Connection Management
+• Health Monitoring
+• Reconnection
+• Shutdown Management
+• Failure Recovery
 ---
-
 # Layer Position
-
 ```text
 ProviderFactory
-
-        │
-        ▼
+↓
 ProviderLifecycle
-
-        │
-        ▼
-TwelveData / Bitget
+↓
+ProviderInterface
+↓
+Concrete Providers
 ```
-
 ---
-
 # Responsibilities
-
-ProviderLifecycle:
-
-✓ Provider'ni ishga tushiradi
-✓ Ulanish uzilganda qayta ulaydi
-✓ Provider'ni to'xtatadi
-✓ Sog'liqni tekshiradi (Health Check)
-
+ProviderLifecycle
+✓ Provider ishga tushiradi
+✓ Connection kuzatadi
+✓ Health Check bajaradi
+✓ Reconnect boshqaradi
+✓ Shutdown boshqaradi
+✓ Failure Recovery bajaradi
 ---
-
 # Not Responsible
-
-ProviderLifecycle:
-
-✗ Ma'lumot yuklash
-✗ Ma'lumotni tekshirish
-✗ Ma'lumotni saqlash
-
+ProviderLifecycle
+✗ Provider Creation
+✗ Market Data Retrieval
+✗ Market Analysis
+✗ Signal Generation
+✗ Trading Decision
 ---
-
 # Input
-
-ProviderLifecycle qabul qiladi:
-
+ProviderLifecycle qabul qiladi.
 • Provider Instance
-• Lifecycle Event (Start, Stop, Reconnect)
-
+• Connection Event
+• Health Event
+• Shutdown Request
 ---
-
 # Output
-
-ProviderLifecycle yaratadi:
-
+ProviderLifecycle yaratadi.
 • Provider Status
-• Health Report
-
+• Health Status
+• Lifecycle Event
+• Recovery Event
 ---
-
+# Workflow
+```text
+Provider Created
+↓
+Initialize
+↓
+Connect
+↓
+Monitor
+↓
+Reconnect (if needed)
+↓
+Shutdown
+```
+---
 # Golden Rules
-
-1. Har bir provider ProviderLifecycle orqali boshqariladi.
-2. Ulanish uzilishi avtomatik Reconnect'ni ishga tushiradi.
-3. Provider nosozligi GoldBot Core ishlashini to'xtatmasligi kerak.
-
+1. Har bir Provider Lifecycle nazoratida bo'lishi shart.
+2. Connection Failure avtomatik aniqlanishi shart.
+3. Reconnect boshqarilishi shart.
+4. Graceful Shutdown qo'llab-quvvatlanishi shart.
+5. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Related Documents
-
 ```text
 ProviderLifecycle/
 ├── README.md
@@ -98,9 +89,6 @@ ProviderLifecycle/
 ├── ModuleMap.md
 └── Contracts.md
 ```
-
 ---
-
 # Summary
-
-ProviderLifecycle Providers bo'limidagi barcha provider'larning hayotiy siklini boshqaruvchi Canonical modul hisoblanadi.
+ProviderLifecycle GoldBot Data Layer ichidagi Canonical Lifecycle Management moduli bo'lib, barcha Provider'larning ulanishi, monitoringi, reconnect va shutdown jarayonlarini boshqaradi.

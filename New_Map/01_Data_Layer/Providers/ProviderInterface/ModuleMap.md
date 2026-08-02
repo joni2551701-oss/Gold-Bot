@@ -1,84 +1,58 @@
 # Provider Interface Module Map
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-Ushbu hujjat ProviderInterface modulining ichki tuzilishini tavsiflaydi.
-
+Ushbu hujjat ProviderInterface modulining ichki arxitekturasini tavsiflaydi.
 ---
-
 # Module Position
-
 ```text
 ProviderFactory
 ↓
 ProviderInterface
 ↓
-TwelveData / Bitget
+Concrete Providers
 ```
-
 ---
-
 # Module Architecture
-
 ```text
 ProviderInterface
         │
-        ├── connect()
-        ├── disconnect()
-        ├── fetchHistorical()
-        ├── subscribeLive()
-        └── healthCheck()
+        ├── Connection Contract
+        ├── Request Contract
+        ├── Response Contract
+        ├── Error Contract
+        ├── Lifecycle Contract
+        └── Metadata Contract
 ```
-
 ---
-
 # Internal Components
-
-## connect()
-Providerga ulanishni belgilaydi.
-
+## Connection Contract
+Provider ulanish standartini belgilaydi.
 ---
-
-## disconnect()
-Providerdan uzilishni belgilaydi.
-
+## Request Contract
+Request formatini belgilaydi.
 ---
-
-## fetchHistorical()
-Tarixiy ma'lumot so'rovini belgilaydi (Historical provider'lar uchun).
-
+## Response Contract
+Response formatini belgilaydi.
 ---
-
-## subscribeLive()
-Live oqimga obuna bo'lishni belgilaydi (Live provider'lar uchun).
-
+## Error Contract
+Xatolarni qaytarish standartini belgilaydi.
 ---
-
-## healthCheck()
-Provider holatini tekshirishni belgilaydi.
-
+## Lifecycle Contract
+Provider Lifecycle standartini belgilaydi.
 ---
-
+## Metadata Contract
+Metadata formatini belgilaydi.
+---
 # Allowed Dependencies
-
-✓ TwelveData (implement qiladi)
-✓ Bitget (implement qiladi)
-
+✓ None
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
-✗ Market_Memory
+✗ ProviderFactory
+✗ TwelveData
+✗ Bitget
 ✗ Historical_Data
 ✗ Live_Data
-
 ---
-
 # Summary
-
-ProviderInterface Providers bo'limidagi barcha provider'lar uchun majburiy standart Contract'ni belgilovchi Canonical modul hisoblanadi.
+ProviderInterface barcha Market Data Provider'lari implement qilishi shart bo'lgan yagona Canonical Contract hisoblanadi.

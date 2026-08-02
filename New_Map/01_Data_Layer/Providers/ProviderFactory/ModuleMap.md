@@ -1,79 +1,60 @@
 # Provider Factory Module Map
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat ProviderFactory modulining ichki arxitekturasini tavsiflaydi.
-
 ---
-
 # Module Position
-
 ```text
-Configuration
+Data Request
 ↓
 ProviderFactory
 ↓
 ProviderInterface
+↓
+Concrete Providers
 ```
-
 ---
-
 # Module Architecture
-
 ```text
 ProviderFactory
         │
-        ├── Configuration Reader
-        ├── Provider Selector
+        ├── Configuration Loader
         ├── Provider Registry
-        └── Instance Builder
+        ├── Provider Selector
+        ├── Instance Creator
+        ├── Initialization Manager
+        └── Metadata Generator
 ```
-
 ---
-
 # Internal Components
-
-## Configuration Reader
-Configuration'dan kerakli provider sozlamalarini o'qiydi.
-
+## Configuration Loader
+Provider konfiguratsiyasini yuklaydi.
 ---
-
-## Provider Selector
-Historical yoki Live provider turini aniqlaydi.
-
----
-
 ## Provider Registry
-Yaratilgan provider'larni ro'yxatga oladi.
-
+Ro'yxatdan o'tgan Provider'larni saqlaydi.
 ---
-
-## Instance Builder
-ProviderInterface'ga mos provider Instance yaratadi.
-
+## Provider Selector
+Mos Provider'ni tanlaydi.
 ---
-
+## Instance Creator
+Provider obyektini yaratadi.
+---
+## Initialization Manager
+Provider'ni ishga tayyorlaydi.
+---
+## Metadata Generator
+Provider Metadata yaratadi.
+---
 # Allowed Dependencies
-
 ✓ ProviderInterface
-✓ TwelveData
-✓ Bitget
-
+✓ ProviderLifecycle
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
-✗ Market_Memory
-✗ Historical_Data (to'g'ridan-to'g'ri)
-✗ Live_Data (to'g'ridan-to'g'ri)
-
+✗ TwelveData
+✗ Bitget
+✗ Historical_Data
+✗ Live_Data
 ---
-
 # Summary
-
-ProviderFactory Providers bo'limi ichidagi provider yaratish va ro'yxatga olish jarayonlarini boshqaruvchi Canonical modul hisoblanadi.
+ProviderFactory Provider yaratish va boshqarish uchun Canonical Factory Pattern modulidir.

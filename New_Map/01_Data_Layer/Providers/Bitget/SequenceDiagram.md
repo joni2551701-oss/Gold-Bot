@@ -1,61 +1,52 @@
 # Bitget Sequence Diagram
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat Bitget Runtime Sequence'ni tavsiflaydi.
-
 ---
-
 # Runtime Sequence
-
 ```text
-LiveProviders Subscription So'rovi
+ProviderFactory
 ↓
 ProviderInterface
 ↓
 Bitget
 ↓
-WebSocket Ulanish
+Connect API
 ↓
-Tick Stream Qabul Qilinadi
+Request Market Data
 ↓
-LiveProviders'ga Uzatiladi
+Receive Response
+↓
+Standardize Response
+↓
+Return Data
 ```
-
 ---
-
 # Runtime Rules
-
-1. Subscription Symbol bilan birga kelishi shart.
-2. Bitget ProviderInterface Contract'iga mos Tick qaytaradi.
-3. Ulanish uzilganda ProviderLifecycle Reconnect'ni boshqaradi.
-
+1. ProviderFactory orqali yaratilishi shart.
+2. ProviderInterface implement qilinishi shart.
+3. API Response standartlashtirilishi shart.
+4. Error holatlari Contract bo'yicha qaytarilishi shart.
 ---
-
 # State Flow
-
 ```text
 Idle
 ↓
 Connecting
 ↓
-Subscribed
+Requesting
 ↓
-Streaming
+Receiving
 ↓
-Disconnected (agar ulanish uzilsa)
+Formatting
+↓
+Completed
 ```
-
 ---
-
 # Summary
-
-LiveProviders
+ProviderFactory
 ↓
 Bitget
 ↓
-Live Tick / Current Price
+Historical_Data / Live_Data

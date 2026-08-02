@@ -1,54 +1,41 @@
 # Provider Interface Sequence Diagram
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-Ushbu hujjat ProviderInterface qanday qo'llanilishini tavsiflaydi.
-
+Ushbu hujjat ProviderInterface Runtime Sequence'ni tavsiflaydi.
 ---
-
 # Runtime Sequence
-
 ```text
-ProviderFactory
-↓
-Provider Instance Yaratiladi
-↓
-ProviderInterface Metodlari Chaqiriladi (connect, fetch, subscribe)
-↓
-Provider (TwelveData / Bitget) O'z Implementatsiyasini Bajaradi
-```
-
----
-
-# Runtime Rules
-
-1. Har bir chaqiruv ProviderInterface orqali amalga oshadi.
-2. ProviderFactory faqat Interface metodlarini biladi, provider ichki detallarini bilmaydi.
-
----
-
-# State Flow
-
-```text
-Idle
-↓
-Interface Chaqirilmoqda
-↓
-Provider Implementatsiyasi Bajarilmoqda
-↓
-Natija Qaytarilmoqda
-```
-
----
-
-# Summary
-
 ProviderFactory
 ↓
 ProviderInterface
 ↓
-Provider Implementatsiyasi
+Concrete Provider
+↓
+Contract Validation
+↓
+Provider Ready
+```
+---
+# Runtime Rules
+1. Har bir Provider Interface'ni implement qilishi shart.
+2. Contract Validation muvaffaqiyatli o'tishi shart.
+3. Factory faqat Interface orqali Provider bilan ishlashi shart.
+---
+# State Flow
+```text
+Defined
+↓
+Implemented
+↓
+Validated
+↓
+Ready
+```
+---
+# Summary
+ProviderFactory
+↓
+ProviderInterface
+↓
+Concrete Provider

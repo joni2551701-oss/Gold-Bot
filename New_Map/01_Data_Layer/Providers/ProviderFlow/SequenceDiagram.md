@@ -1,54 +1,49 @@
 # Provider Flow Sequence Diagram
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat ProviderFlow Runtime Sequence'ni tavsiflaydi.
-
 ---
-
-# Historical Flow Sequence
-
+# Runtime Sequence
 ```text
-TwelveData
-↓
 ProviderInterface
+↓
+Concrete Provider
 ↓
 ProviderFlow
 ↓
-HistoricalProviders (Historical_Data)
+Validate Flow
+↓
+Determine Destination
+↓
+Historical_Data / Live_Data
+↓
+Generate Flow Event
 ```
-
 ---
-
-# Live Flow Sequence
-
-```text
-Bitget
-↓
-ProviderInterface
-↓
-ProviderFlow
-↓
-LiveProviders (Live_Data)
-```
-
----
-
 # Runtime Rules
-
-1. Historical va Live oqim alohida yo'naltiriladi.
-2. Har ikkala oqim ham ProviderInterface orqali standartlashtiriladi.
-3. ProviderFlow oqimlarni aralashtirmaydi.
-
+1. Provider Response mavjud bo'lishi shart.
+2. Data Flow tekshirilishi shart.
+3. Routing faqat bitta maqsadga yoki kerak bo'lsa ikkala modulga amalga oshirilishi shart.
+4. Flow Event yaratilishi shart.
 ---
-
+# State Flow
+```text
+Idle
+↓
+Receiving
+↓
+Validating
+↓
+Routing
+↓
+Forwarding
+↓
+Completed
+```
+---
 # Summary
-
-TwelveData / Bitget
+Concrete Provider
 ↓
 ProviderFlow
 ↓

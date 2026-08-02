@@ -1,95 +1,71 @@
-# TwelveData Contracts
-
+# Twelve Data Contracts
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat TwelveData modulining rasmiy Architecture Contract hujjati hisoblanadi.
-
 ---
-
 # Module Responsibility
-
 TwelveData quyidagilar uchun javobgar.
-
-✓ Historical Candle yetkazish
-✓ Historical OHLC yetkazish
-✓ Bootstrap va Recovery so'rovlariga javob berish
-
+✓ API Connection
+✓ Historical Data Retrieval
+✓ Live Data Retrieval
+✓ Response Standardization
+✓ Error Handling
+✓ Provider Health Reporting
 TwelveData bajarmaydi.
-
-✗ Live Data
-✗ Ma'lumotni tekshirish
-✗ Ma'lumotni saqlash
+✗ Provider Selection
+✗ Data Validation
 ✗ Market Analysis
-
+✗ Signal Generation
+✗ Trading Decision
 ---
-
 # Module Boundary
-
 ```text
-HistoricalProviders
+ProviderFactory
 ↓
 ProviderInterface
 ↓
 TwelveData
+↓
+Historical_Data
+Live_Data
 ```
-
 ---
-
 # Input Contract
-
+• Provider Request
 • Symbol
 • Timeframe
-• Sana Oralig'i
-
+• Data Request
 ---
-
 # Output Contract
-
-• Historical Candle
-• Historical OHLC
-
+• Standard Market Data
+• Provider Status
+• Response Metadata
+• Error Response
 ---
-
 # Allowed Dependencies
-
 ✓ ProviderInterface
-
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
-✗ Market_Memory
+✗ ProviderFactory
+✗ Historical_Data
 ✗ Live_Data
-✗ Context
-✗ Strategy
-✗ Decision
-✗ AI
-
+✗ Market_Memory
 ---
-
 # Runtime Contract
-
-1. TwelveData faqat ProviderInterface orqali chaqiriladi.
-2. Har bir so'rov Symbol va Timeframe bilan birga bo'lishi shart.
-3. Xato holatida ProviderLifecycle Retry siyosatini qo'llaydi.
-4. TwelveData Data Validation bosqichini o'tkazib yubormaydi.
-
+1. TwelveData ProviderInterface'ni implement qilishi shart.
+2. API Response standart formatga o'tkazilishi shart.
+3. Error Response umumiy Error Contract'ga mos bo'lishi shart.
+4. API Authentication xavfsiz boshqarilishi shart.
+5. Business Logic bajarilishi taqiqlanadi.
+6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Acceptance Criteria
-
-✓ Historical Candle qaytariladi.
-✓ Historical OHLC qaytariladi.
-✓ ProviderInterface Contract'iga mos javob beriladi.
+✓ API ulanishi ishlaydi.
+✓ Historical Data olinadi.
+✓ Live Data olinadi.
+✓ Standard Response qaytariladi.
 ✓ Architecture Boundary buzilmaydi.
-
 ---
-
 # Summary
-
-TwelveData Contract Providers bo'limidagi Historical Data uchun tashqi integratsiyaning rasmiy shartnomasi hisoblanadi.
+TwelveData Contract GoldBot Data Layer ichidagi Twelve Data Provider implementatsiyasining API ulanishi, ma'lumot olish, standart javob qaytarish va ProviderInterface talablariga rioya qilish qoidalarini belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

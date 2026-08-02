@@ -1,107 +1,55 @@
 # Providers Layer Sequence Diagram
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-Ushbu hujjat Providers bo'limi ishga tushganda modullar qanday ketma-ketlikda ishlashini ko'rsatadi.
-
-Bu Runtime Sequence bo'lib, implementatsiya emas.
-
+Ushbu hujjat Providers Group Runtime Sequence'ni tavsiflaydi.
 ---
-
-# Startup Sequence
-
+# Runtime Sequence
 ```text
-GoldBot Start
-      │
-      ▼
-Configuration Layer
-      │
-      ▼
+Data Request
+↓
 ProviderFactory
-      │
-      ▼
+↓
 ProviderInterface
-      │
-      ▼
-TwelveData / Bitget
-      │
-      ▼
-ProviderLifecycle (Health Check)
-      │
-      ▼
+↓
+Concrete Provider
+↓
+ProviderLifecycle
+↓
 ProviderFlow
-      │
-      ▼
+↓
 Historical_Data / Live_Data
 ```
-
 ---
-
-# Module Interaction
-
-```text
-ProviderFactory
-        │
-        ▼
-ProviderInterface
-        │
-        ▼
-TwelveData / Bitget
-        │
-        ▼
-ProviderLifecycle
-        │
-        ▼
-ProviderFlow
-```
-
----
-
-# Failure Sequence
-
-```text
-Provider Error
-↓
-ProviderLifecycle Aniqlaydi
-↓
-Reconnect / Retry
-↓
-Muvaffaqiyatli bo'lsa — Streaming davom etadi
-↓
-Muvaffaqiyatsiz bo'lsa — Health Report Xato Holatini Qayd Etadi
-```
-
----
-
 # Runtime Rules
-
-1. ProviderFactory har doim jarayonni boshlaydi.
-2. Har bir provider ProviderInterface orqali ishlaydi.
-3. ProviderLifecycle barcha ulanish holatlarini kuzatadi.
-4. ProviderFlow Historical va Live oqimlarni ajratadi.
-
+1. ProviderFactory Provider yaratadi.
+2. ProviderInterface Contract tekshiriladi.
+3. Concrete Provider API bilan ishlaydi.
+4. ProviderLifecycle ulanishni nazorat qiladi.
+5. ProviderFlow ma'lumotni marshrutlaydi.
 ---
-
+# State Flow
+```text
+Idle
+↓
+Creating
+↓
+Connecting
+↓
+Receiving
+↓
+Monitoring
+↓
+Routing
+↓
+Completed
+```
+---
 # Summary
-
 ProviderFactory
-
 ↓
-
-ProviderInterface
-
+Concrete Provider
 ↓
-
-TwelveData / Bitget
-
-↓
-
 ProviderFlow
-
 ↓
-
 Historical_Data / Live_Data

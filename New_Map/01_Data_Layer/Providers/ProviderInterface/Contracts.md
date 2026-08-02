@@ -1,88 +1,66 @@
 # Provider Interface Contracts
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat ProviderInterface modulining rasmiy Architecture Contract hujjati hisoblanadi.
-
 ---
-
 # Module Responsibility
-
 ProviderInterface quyidagilar uchun javobgar.
-
-✓ Standart Provider Contract'ni belgilash
-✓ Har bir provider uchun majburiy metodlarni belgilash
-
+✓ Provider Contract
+✓ Common API Definition
+✓ Standard Request Structure
+✓ Standard Response Structure
+✓ Error Handling Contract
+✓ Lifecycle Contract
 ProviderInterface bajarmaydi.
-
-✗ Ma'lumot yuklash
-✗ Ulanishni amalga oshirish
-✗ Ma'lumotni saqlash
-
+✗ Provider Creation
+✗ API Communication
+✗ Market Data Retrieval
+✗ Data Validation
+✗ Trading Logic
 ---
-
 # Module Boundary
-
 ```text
 ProviderFactory
 ↓
 ProviderInterface
 ↓
-TwelveData / Bitget
+Concrete Providers
 ```
-
 ---
-
 # Input Contract
-
-ProviderInterface o'zi Runtime Input qabul qilmaydi — u Contract ta'riflaydi.
-
+• Provider Implementation
+• Interface Definition
 ---
-
 # Output Contract
-
-ProviderInterface o'zi Output yaratmaydi — implementatsiya (TwelveData/Bitget) natija qaytaradi.
-
+• Standard Provider Contract
+• Request Contract
+• Response Contract
+• Error Contract
+• Lifecycle Contract
 ---
-
 # Allowed Dependencies
-
-✓ TwelveData
-✓ Bitget
-
+✓ None
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
-✗ Market_Memory
-✗ Context
-✗ Strategy
-✗ Decision
-✗ AI
-
+✗ ProviderFactory
+✗ TwelveData
+✗ Bitget
+✗ Historical_Data
+✗ Live_Data
 ---
-
 # Runtime Contract
-
-1. Har bir provider ProviderInterface'ning barcha metodlarini implement qilishi shart.
-2. ProviderInterface'siz provider ProviderFactory tomonidan yaratilmaydi.
-3. Interface metodlari o'zgarganda barcha provider'lar mos yangilanishi shart.
-
+1. Har bir Provider ProviderInterface'ni implement qilishi shart.
+2. Interface Provider implementatsiyasidan mustaqil bo'lishi shart.
+3. ProviderFactory faqat ProviderInterface orqali ishlashi shart.
+4. Barcha Provider'lar bir xil Request va Response Contract'lariga rioya qilishi shart.
+5. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Acceptance Criteria
-
-✓ Barcha provider'lar Interface'ga mos.
-✓ Yangi provider qo'shilganda mavjud Interface o'zgarmaydi.
+✓ Interface to'liq aniqlangan.
+✓ Barcha Provider'lar implement qila oladi.
+✓ Standard Contract saqlanadi.
 ✓ Architecture Boundary buzilmaydi.
-
 ---
-
 # Summary
-
-ProviderInterface Contract Providers bo'limidagi barcha provider'lar uchun yagona, majburiy standart hisoblanadi.
+ProviderInterface Contract GoldBot Data Layer ichidagi barcha Market Data Provider'lari bajarishi shart bo'lgan yagona interfeys, standart Request/Response modeli va umumiy arxitektura qoidalarini belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

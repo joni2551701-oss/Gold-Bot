@@ -1,78 +1,60 @@
-# TwelveData Module Map
-
+# Twelve Data Module Map
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-Ushbu hujjat TwelveData modulining ichki tuzilishini tavsiflaydi.
-
+Ushbu hujjat TwelveData modulining ichki arxitekturasini tavsiflaydi.
 ---
-
 # Module Position
-
 ```text
 ProviderFactory
 ↓
-TwelveData (ProviderInterface orqali)
+ProviderInterface
 ↓
-HistoricalProviders
+TwelveData
+↓
+Historical_Data
+Live_Data
 ```
-
 ---
-
 # Module Architecture
-
 ```text
 TwelveData
         │
-        ├── Authentication
-        ├── Historical Fetcher
-        ├── Rate Limiter
-        └── Response Mapper
+        ├── Connection Manager
+        ├── Authentication Manager
+        ├── Request Builder
+        ├── Response Parser
+        ├── Error Handler
+        └── Metadata Generator
 ```
-
 ---
-
 # Internal Components
-
-## Authentication
-TwelveData API bilan autentifikatsiyani boshqaradi.
-
+## Connection Manager
+API ulanishini boshqaradi.
 ---
-
-## Historical Fetcher
-Symbol va Timeframe bo'yicha tarixiy ma'lumot so'raydi.
-
+## Authentication Manager
+API Key va autentifikatsiyani boshqaradi.
 ---
-
-## Rate Limiter
-API so'rovlar chegarasini boshqaradi.
-
+## Request Builder
+API Request yaratadi.
 ---
-
-## Response Mapper
-TwelveData javobini ProviderInterface formatiga o'giradi.
-
+## Response Parser
+API javobini standart formatga o'tkazadi.
 ---
-
+## Error Handler
+API xatolarini qayta ishlaydi.
+---
+## Metadata Generator
+Provider Metadata yaratadi.
+---
 # Allowed Dependencies
-
 ✓ ProviderInterface
-
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
-✗ Market_Memory
+✗ ProviderFactory
+✗ Historical_Data
 ✗ Live_Data
-✗ Context
-✗ Strategy
-
+✗ Market_Memory
 ---
-
 # Summary
-
-TwelveData Providers bo'limidagi Historical Data uchun tashqi integratsiya nuqtasi hisoblanadi.
+TwelveData GoldBot uchun Canonical Twelve Data Provider implementatsiyasi hisoblanadi.

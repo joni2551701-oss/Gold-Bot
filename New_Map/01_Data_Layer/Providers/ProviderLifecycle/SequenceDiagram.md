@@ -1,77 +1,52 @@
 # Provider Lifecycle Sequence Diagram
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat ProviderLifecycle Runtime Sequence'ni tavsiflaydi.
-
 ---
-
-# Startup Sequence
-
+# Runtime Sequence
 ```text
 ProviderFactory
 ↓
-Provider Instance Yaratildi
+Create Provider
 ↓
 ProviderLifecycle
+↓
+Initialize
 ↓
 Connect
 ↓
-Health Check
+Health Monitoring
 ↓
-Ready
+Reconnect (if required)
+↓
+Shutdown
 ```
-
 ---
-
-# Reconnect Sequence
-
-```text
-Connection Lost
-↓
-ProviderLifecycle
-↓
-Detect Failure
-↓
-Retry Connect
-↓
-Health Check
-↓
-Ready
-```
-
----
-
-# Shutdown Sequence
-
-```text
-Shutdown So'rovi
-↓
-ProviderLifecycle
-↓
-Disconnect
-↓
-Idle
-```
-
----
-
 # Runtime Rules
-
-1. Har bir Provider Startup Health Check bilan yakunlanadi.
-2. Ulanish uzilishi avtomatik Reconnect'ni ishga tushiradi.
-3. Shutdown har doim Disconnect bilan yakunlanadi.
-
+1. Har bir Provider Initialization'dan o'tishi shart.
+2. Connection holati doim kuzatilishi shart.
+3. Failure aniqlansa Recovery ishga tushishi shart.
+4. Shutdown xavfsiz bajarilishi shart.
 ---
-
+# State Flow
+```text
+Created
+↓
+Initializing
+↓
+Connected
+↓
+Monitoring
+↓
+Recovering
+↓
+Stopped
+```
+---
 # Summary
-
-Provider Instance
+ProviderFactory
 ↓
 ProviderLifecycle
 ↓
-Ready / Reconnecting / Idle
+Provider Ready

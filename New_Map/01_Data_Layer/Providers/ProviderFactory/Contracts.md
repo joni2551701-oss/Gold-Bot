@@ -1,95 +1,66 @@
 # Provider Factory Contracts
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
 Ushbu hujjat ProviderFactory modulining rasmiy Architecture Contract hujjati hisoblanadi.
-
 ---
-
 # Module Responsibility
-
 ProviderFactory quyidagilar uchun javobgar.
-
-✓ Provider Instantiation
-✓ Provider Configuration
-✓ Provider Registry Boshqaruvi
-
+✓ Provider Selection
+✓ Provider Creation
+✓ Provider Initialization
+✓ Provider Registration
+✓ Provider Instance Management
 ProviderFactory bajarmaydi.
-
-✗ Ma'lumot yuklash
-✗ Ma'lumotni tekshirish
-✗ Ma'lumotni saqlash
-✗ Market Analysis
-
+✗ API Communication
+✗ Market Data Retrieval
+✗ Data Validation
+✗ Trading Logic
 ---
-
 # Module Boundary
-
 ```text
-Configuration
+Data Request
 ↓
 ProviderFactory
 ↓
 ProviderInterface
+↓
+Concrete Providers
 ```
-
 ---
-
 # Input Contract
-
+• Provider Request
+• Provider Name
 • Configuration
-• Provider turi (Historical / Live)
-
 ---
-
 # Output Contract
-
 • Provider Instance
-
+• Initialization Status
+• Provider Metadata
 ---
-
 # Allowed Dependencies
-
 ✓ ProviderInterface
-✓ TwelveData
-✓ Bitget
-
+✓ ProviderLifecycle
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
-✗ Market_Memory
-✗ Context
-✗ Strategy
-✗ Decision
-✗ AI
-
+✗ TwelveData
+✗ Bitget
+✗ Historical_Data
+✗ Live_Data
 ---
-
 # Runtime Contract
-
-1. Har bir provider ProviderInterface'ga mos yaratilishi shart.
-2. Bitta provider turi uchun bitta Instance Registry'da bo'lishi shart.
-3. ProviderFactory Historical va Live provider'larni aralashtirmaydi.
-4. Circular Dependency qat'iyan taqiqlanadi.
-
+1. Provider faqat ProviderFactory orqali yaratilishi shart.
+2. Factory faqat ProviderInterface qaytarishi shart.
+3. ProviderFactory Concrete Provider logikasini bajarmaydi.
+4. Factory yangi Provider qo'shilganda mavjud Provider'larni o'zgartirmasligi kerak (Open/Closed Principle).
+5. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Acceptance Criteria
-
-✓ Configuration to'g'ri o'qiladi.
-✓ To'g'ri provider turi tanlanadi.
+✓ Provider muvaffaqiyatli tanlanadi.
 ✓ Provider Instance yaratiladi.
-✓ Registry yangilanadi.
+✓ ProviderInterface qaytariladi.
+✓ Initialization muvaffaqiyatli bajariladi.
 ✓ Architecture Boundary buzilmaydi.
-
 ---
-
 # Summary
-
-ProviderFactory Contract Providers bo'limining yagona provider yaratish nuqtasi sifatida ishlashini belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.
+ProviderFactory Contract GoldBot Data Layer ichidagi barcha Market Data Provider'larni yaratish va boshqarish uchun yagona Factory mexanizmini belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

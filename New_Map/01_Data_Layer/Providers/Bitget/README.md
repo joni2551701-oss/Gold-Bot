@@ -1,95 +1,94 @@
 # Bitget
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-Bitget — Providers bo'limidagi jonli (Live) market ma'lumotlarini taqdim etuvchi provider hisoblanadi.
-
-Uning asosiy vazifasi WebSocket orqali Tick Stream va Current Price ma'lumotlarini ProviderInterface orqali Live_Data moduliga yetkazishdir.
-
-Bitget marketni tahlil qilmaydi.
-
+Bitget GoldBot Data Layer ichidagi Canonical Market Data Provider moduli hisoblanadi.
+Uning asosiy vazifasi Bitget API orqali Market Data olish va uni GoldBot ProviderInterface standartiga mos formatda taqdim etishdir.
+Bitget Market Analysis bajarmaydi.
+Bitget Signal yaratmaydi.
+Bitget faqat Market Data Provider hisoblanadi.
 ---
-
 # Objective
-
-Bitget quyidagi vazifalarni bajaradi:
-
-• Tick Stream yetkazish
-• Current Price yetkazish
-• Live Candle uchun xom ma'lumot yetkazish
-• WebSocket ulanishini boshqarish
-
+Bitget quyidagi vazifalarni bajaradi.
+• API Connection
+• Historical Data Retrieval
+• Live Market Data Retrieval
+• Provider Health Check
+• Response Standardization
+• Error Handling
 ---
-
 # Layer Position
-
 ```text
 ProviderFactory
-
-        │
-        ▼
-Bitget (ProviderInterface orqali)
-
-        │
-        ▼
-LiveProviders
+↓
+ProviderInterface
+↓
+Bitget
+↓
+Historical_Data
+Live_Data
 ```
-
 ---
-
 # Responsibilities
-
-Bitget:
-
-✓ Tick Stream'ga ulanadi
-✓ Current Price yetkazadi
-✓ WebSocket orqali real vaqt ma'lumot beradi
-
+Bitget
+✓ Bitget API bilan bog'lanadi
+✓ Historical Data oladi
+✓ Live Market Data oladi
+✓ Standard Response qaytaradi
+✓ Connection Status kuzatadi
 ---
-
 # Not Responsible
-
-Bitget:
-
-✗ Historical Data
-✗ Candle Building
-✗ Ma'lumotni tekshirish
+Bitget
+✗ Provider Selection
+✗ Data Validation
 ✗ Market Analysis
-
+✗ Signal Generation
+✗ Trading Decision
 ---
-
 # Input
-
-Bitget qabul qiladi:
-
+Bitget qabul qiladi.
+• Provider Request
 • Symbol
-• Subscription so'rovi
-
+• Timeframe
+• Data Request
 ---
-
 # Output
-
-Bitget yaratadi:
-
-• Live Tick
-• Current Price
-
+Bitget yaratadi.
+• Standard Market Data
+• Provider Status
+• Response Metadata
+• Error Response
 ---
-
+# Supported Features
+• Historical OHLCV
+• Live Price
+• Multi Timeframe
+• Symbol Search
+• Health Check
+---
+# Workflow
+```text
+Receive Request
+↓
+Connect API
+↓
+Request Market Data
+↓
+Receive Response
+↓
+Standardize Response
+↓
+Return Market Data
+```
+---
 # Golden Rules
-
-1. Bitget faqat ProviderInterface orqali chaqiriladi.
-2. Bitget faqat Live ma'lumot beradi.
-3. Bitget marketni tahlil qilmaydi.
-
+1. Bitget ProviderInterface'ni implement qilishi shart.
+2. Response standart formatda qaytarilishi shart.
+3. API xatolari Error Contract bo'yicha qaytarilishi shart.
+4. Business Logic bajarilmaydi.
+5. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Related Documents
-
 ```text
 Bitget/
 ├── README.md
@@ -97,9 +96,6 @@ Bitget/
 ├── ModuleMap.md
 └── Contracts.md
 ```
-
 ---
-
 # Summary
-
-Bitget Providers bo'limidagi Live Data uchun tashqi ma'lumot manbai bo'lib, real vaqt Tick Stream va Current Price'ni ta'minlaydi.
+Bitget GoldBot Data Layer ichidagi Canonical Market Data Provider bo'lib, Bitget API orqali Market Data olib, ProviderInterface standartiga mos ravishda tizimga uzatadi.

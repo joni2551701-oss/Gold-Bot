@@ -1,78 +1,60 @@
 # Bitget Module Map
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-Ushbu hujjat Bitget modulining ichki tuzilishini tavsiflaydi.
-
+Ushbu hujjat Bitget modulining ichki arxitekturasini tavsiflaydi.
 ---
-
 # Module Position
-
 ```text
 ProviderFactory
 ↓
-Bitget (ProviderInterface orqali)
+ProviderInterface
 ↓
-LiveProviders
+Bitget
+↓
+Historical_Data
+Live_Data
 ```
-
 ---
-
 # Module Architecture
-
 ```text
 Bitget
         │
-        ├── WebSocket Connection
-        ├── Subscription Manager
-        ├── Tick Receiver
-        └── Response Mapper
+        ├── Connection Manager
+        ├── Authentication Manager
+        ├── Request Builder
+        ├── Response Parser
+        ├── Error Handler
+        └── Metadata Generator
 ```
-
 ---
-
 # Internal Components
-
-## WebSocket Connection
-Bitget WebSocket serveriga ulanishni boshqaradi.
-
+## Connection Manager
+API ulanishini boshqaradi.
 ---
-
-## Subscription Manager
-Symbol bo'yicha obunalarni boshqaradi.
-
+## Authentication Manager
+API Key va autentifikatsiyani boshqaradi.
 ---
-
-## Tick Receiver
-Kelayotgan Tick ma'lumotlarini qabul qiladi.
-
+## Request Builder
+API Request yaratadi.
 ---
-
-## Response Mapper
-Bitget javobini ProviderInterface formatiga o'giradi.
-
+## Response Parser
+API javobini standart formatga o'tkazadi.
 ---
-
+## Error Handler
+API xatolarini qayta ishlaydi.
+---
+## Metadata Generator
+Provider Metadata yaratadi.
+---
 # Allowed Dependencies
-
 ✓ ProviderInterface
-
 ---
-
 # Forbidden Dependencies
-
-✗ Data_Validation
-✗ Market_Memory
+✗ ProviderFactory
 ✗ Historical_Data
-✗ Context
-✗ Strategy
-
+✗ Live_Data
+✗ Market_Memory
 ---
-
 # Summary
-
-Bitget Providers bo'limidagi Live Data uchun tashqi integratsiya nuqtasi hisoblanadi.
+Bitget GoldBot uchun Canonical Bitget Provider implementatsiyasi hisoblanadi.

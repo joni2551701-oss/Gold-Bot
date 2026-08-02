@@ -1,97 +1,86 @@
 # Provider Factory
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-ProviderFactory — Providers bo'limining barcha provider'larni yaratish va boshqarish komponentidir.
-
-Uning asosiy vazifasi Configuration asosida kerakli Historical va Live provider'larni ishga tushirish hamda ularni Historical_Data va Live_Data modullariga taqdim etishdir.
-
-ProviderFactory marketni tahlil qilmaydi va savdo qarorini hisoblamaydi.
-
+ProviderFactory GoldBot Data Layer ichidagi Canonical Provider Creation va Provider Selection moduli hisoblanadi.
+Uning asosiy vazifasi konfiguratsiya va so'rov talablariga mos ravishda kerakli Market Data Provider'ni yaratish va taqdim etishdir.
+ProviderFactory Market Data yuklamaydi.
+ProviderFactory API bilan bevosita ishlamaydi.
+ProviderFactory faqat Provider Instance yaratadi va boshqaradi.
 ---
-
 # Objective
-
-ProviderFactory quyidagi vazifalarni bajaradi:
-
-• Provider Instantiation
+ProviderFactory quyidagi vazifalarni bajaradi.
+• Provider Selection
+• Provider Creation
+• Provider Initialization
+• Provider Registration
 • Provider Configuration
-• Historical Provider Yaratish
-• Live Provider Yaratish
-• Provider Registry Boshqaruvi
-
+• Provider Lifecycle Integration
 ---
-
 # Layer Position
-
 ```text
-Configuration
-
-        │
-        ▼
+Data Request
+↓
 ProviderFactory
-
-        │
-        ▼
-ProviderInterface (TwelveData / Bitget)
+↓
+ProviderInterface
+↓
+TwelveData
+Bitget
 ```
-
 ---
-
 # Responsibilities
-
-ProviderFactory:
-
-✓ Configuration'ni o'qiydi
-✓ Kerakli provider'ni yaratadi
-✓ Provider Registry'ni yuritadi
-✓ Historical va Live provider'larni ajratadi
-
+ProviderFactory
+✓ Provider tanlaydi
+✓ Provider yaratadi
+✓ Provider konfiguratsiyasini yuklaydi
+✓ Provider Instance qaytaradi
+✓ Provider Lifecycle bilan integratsiyalashadi
 ---
-
 # Not Responsible
-
-ProviderFactory:
-
-✗ Ma'lumot yuklash
-✗ Ma'lumotni tekshirish
-✗ Ma'lumotni saqlash
+ProviderFactory
+✗ API Request
+✗ Market Data Retrieval
+✗ Data Validation
 ✗ Market Analysis
-
+✗ Signal Generation
+✗ Trading Decision
 ---
-
 # Input
-
-ProviderFactory qabul qiladi:
-
+ProviderFactory qabul qiladi.
+• Provider Request
+• Provider Name
 • Configuration
-• Provider turi (Historical / Live)
-
 ---
-
 # Output
-
-ProviderFactory yaratadi:
-
-• Provider Instance (ProviderInterface'ga mos)
-
+ProviderFactory yaratadi.
+• Provider Instance
+• Provider Metadata
+• Initialization Status
 ---
-
+# Workflow
+```text
+Receive Provider Request
+↓
+Read Configuration
+↓
+Select Provider
+↓
+Create Provider
+↓
+Initialize Provider
+↓
+Return Provider Instance
+```
+---
 # Golden Rules
-
-1. ProviderFactory yagona provider yaratish nuqtasi hisoblanadi.
-2. Har bir provider ProviderInterface'ga mos bo'lishi shart.
-3. ProviderFactory marketni tahlil qilmaydi.
-4. Yangi provider qo'shish mavjud arxitekturani buzmasligi kerak.
-
+1. Har bir Provider ProviderInterface'ni implement qilishi shart.
+2. Provider faqat ProviderFactory orqali yaratiladi.
+3. ProviderFactory Provider Logic bajarmaydi.
+4. ProviderFactory Provider turiga bog'liq kod yozmaydi.
+5. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Related Documents
-
 ```text
 ProviderFactory/
 ├── README.md
@@ -99,9 +88,6 @@ ProviderFactory/
 ├── ModuleMap.md
 └── Contracts.md
 ```
-
 ---
-
 # Summary
-
-ProviderFactory Providers bo'limining yagona provider yaratish nuqtasi bo'lib, Configuration asosida kerakli Historical yoki Live provider'ni ishga tushiradi.
+ProviderFactory GoldBot Data Layer ichidagi Canonical Factory moduli bo'lib, barcha Market Data Provider'larni yaratish, tanlash va ishga tushirish uchun yagona kirish nuqtasi hisoblanadi.

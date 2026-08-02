@@ -1,143 +1,53 @@
 # Providers Layer Data Flow
-
 Status: CANONICAL
-
 ---
-
 # Purpose
-
-Ushbu hujjat Providers bo'limi ichidagi barcha Runtime Data Flow'ni tavsiflaydi.
-
-Providers bo'limi tashqi market ma'lumotlari manbalarini (TwelveData, Bitget) boshqaradi va standart interfeys orqali Historical_Data hamda Live_Data modullariga ma'lumot yetkazadi.
-
-Bu implementatsiya emas.
-
-Bu Providers bo'limining Canonical Runtime Data Flow hujjati hisoblanadi.
-
+Ushbu hujjat Providers Group ichidagi barcha Provider modullari o'rtasidagi Data Flow'ni tavsiflaydi.
+Providers tashqi Market Data Provider'lardan ma'lumot olib, standart oqim orqali Data Layer ichiga uzatadi.
 ---
-
-# Layer Position
-
+# Data Flow
 ```text
-Configuration Layer
-
-        │
-        ▼
-Providers
-
-        │
-        ▼
-Historical_Data / Live_Data
-```
-
----
-
-# Complete Data Flow
-
-```text
-Configuration
-
+Data Request
         │
         ▼
 ProviderFactory
-
         │
         ▼
 ProviderInterface
-
         │
-        ▼
-TwelveData / Bitget
-
-        │
-        ▼
-ProviderFlow
-
-        │
-        ▼
-Historical_Data / Live_Data
+        ├──────────────┐
+        ▼              ▼
+   TwelveData      Bitget
+        │              │
+        └──────┬───────┘
+               ▼
+      ProviderLifecycle
+               │
+               ▼
+         ProviderFlow
+               │
+        ┌──────┴──────┐
+        ▼             ▼
+Historical_Data   Live_Data
 ```
-
 ---
-
-# Pipeline Flow
-
-```text
-Configuration
-
-↓
-
-ProviderFactory Provider Turini Aniqlaydi
-
-↓
-
-ProviderInterface Orqali Provider Yaratiladi
-
-↓
-
-ProviderLifecycle Ulanishni Boshqaradi
-
-↓
-
-TwelveData / Bitget Ma'lumot Beradi
-
-↓
-
-ProviderFlow Yo'naltiradi
-
-↓
-
-Historical_Data / Live_Data
-```
-
+# Input
+• Data Request
+• Provider Configuration
+• Connection Event
 ---
-
-# Runtime Rules
-
-1. Pipeline har doim ProviderFactory bilan boshlanadi.
-2. Har bir provider ProviderInterface'ga mos bo'lishi shart.
-3. ProviderLifecycle barcha provider ulanishlarini boshqaradi.
-4. ProviderFlow Historical va Live oqimlarni aralashtirmaydi.
-5. Circular Data Flow qat'iyan taqiqlanadi.
-
+# Output
+• Historical Market Data
+• Live Market Data
+• Provider Events
+• Provider Status
 ---
-
-# Layer Boundaries
-
-Providers qabul qiladi:
-
-• Configuration
-• External Provider ma'lumotlari
-
-Providers uzatadi:
-
-• Historical Candle / OHLC (TwelveData orqali)
-• Live Tick / Current Price (Bitget orqali)
-
+# Data Flow Rules
+1. Provider faqat ProviderFactory orqali yaratiladi.
+2. Har bir Provider ProviderInterface'ni implement qiladi.
+3. Barcha ma'lumotlar ProviderFlow orqali uzatiladi.
+4. ProviderLifecycle Provider holatini nazorat qiladi.
+5. Circular Dependency qat'iyan taqiqlanadi.
 ---
-
 # Summary
-
-Providers Layer Data Flow hujjati Providers bo'limi ichidagi barcha Runtime ma'lumot oqimini belgilaydi.
-
-Canonical Layer Flow:
-
-ProviderFactory
-
-↓
-
-ProviderInterface
-
-↓
-
-TwelveData / Bitget
-
-↓
-
-ProviderFlow
-
-↓
-
-Historical_Data / Live_Data
-
-Ushbu Data Flow GoldBot Providers bo'limi uchun yagona Canonical Runtime Pipeline hisoblanadi.
+Providers Group tashqi Provider'lardan Market Data olib, standart Data Pipeline orqali Historical_Data va Live_Data modullariga uzatadi.
