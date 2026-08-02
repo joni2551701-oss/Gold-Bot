@@ -10,7 +10,7 @@ Trade Monitoring Layer Execution Layer tomonidan muvaffaqiyatli ochilgan Positio
 Execution Layer
         │
         ▼
-MonitoringService
+MonitoringService (Entry)
         │
         ▼
 PositionMonitor
@@ -32,6 +32,9 @@ PartialClose
         │
         ▼
 RecoveryManager
+        │
+        ▼
+MonitoringService (Exit)
         │
         ▼
 Database Layer
@@ -58,7 +61,8 @@ Database Layer
 2. Broker Position asosiy ma'lumot manbai hisoblanadi.
 3. Har bir Monitoring Event ketma-ket qayta ishlanadi.
 4. Recovery faqat Restart holatida ishga tushadi.
-5. Monitoring natijalari Database Layer'ga uzatiladi.
+5. RecoveryManager Layer tashqarisiga chiqmaydi — natija MonitoringService orqali uzatiladi.
+6. Monitoring natijalari Database Layer'ga uzatiladi.
 ---
 # Summary
 Trade Monitoring Layer GoldBot arxitekturasidagi Canonical Position Lifecycle Monitoring Pipeline hisoblanadi.

@@ -8,11 +8,23 @@ Ushbu hujjat MonitoringService ichki arxitekturasini tavsiflaydi.
 ```text
 Execution Layer
 ↓
-MonitoringService
+MonitoringService (Entry)
 ↓
 PositionMonitor
 ↓
+TradeLifecycleManager
+↓
+SLTPMonitor
+↓
+BreakevenManager
+↓
+TrailingStop
+↓
+PartialClose
+↓
 RecoveryManager
+↓
+MonitoringService (Exit)
 ↓
 Database Layer
 ```
@@ -31,7 +43,7 @@ MonitoringService
 ---
 # Internal Components
 ## Request Receiver
-Monitoring Request'larni qabul qiladi.
+Execution Layer'dan Monitoring Request'larni qabul qiladi.
 ---
 ## Request Validator
 Request formatini tekshiradi.
@@ -43,7 +55,7 @@ Monitoring Session'ni boshqaradi.
 PositionMonitor'ga Request yuboradi.
 ---
 ## Response Formatter
-Monitoring natijasini standart formatga o'tkazadi.
+RecoveryManager'dan qaytgan Monitoring Result'ni standart formatga o'tkazadi va Database Layer'ga uzatadi.
 ---
 ## Service Monitor
 MonitoringService holatini kuzatadi.
@@ -53,10 +65,15 @@ MonitoringService holatini kuzatadi.
 ✓ RecoveryManager
 ---
 # Forbidden Dependencies
+✗ TradeLifecycleManager (to'g'ridan-to'g'ri)
+✗ SLTPMonitor (to'g'ridan-to'g'ri)
+✗ BreakevenManager (to'g'ridan-to'g'ri)
+✗ TrailingStop (to'g'ridan-to'g'ri)
+✗ PartialClose (to'g'ridan-to'g'ri)
 ✗ ExecutionEngine
 ✗ BrokerGateway
 ✗ Decision Layer
 ✗ Risk Layer
 ---
 # Summary
-MonitoringService GoldBot Trade Monitoring Layer uchun yagona Service Gateway va Public API modulidir.
+MonitoringService GoldBot Trade Monitoring Layer uchun ikki tomonlama Boundary Gateway va Public API modulidir.

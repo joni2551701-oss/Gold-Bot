@@ -44,7 +44,7 @@ Trade Monitoring Layer yaratadi.
 ---
 # Layer Pipeline
 ```text
-MonitoringService
+MonitoringService (Entry)
 ↓
 PositionMonitor
 ↓
@@ -59,6 +59,8 @@ TrailingStop
 PartialClose
 ↓
 RecoveryManager
+↓
+MonitoringService (Exit)
 ↓
 Database Layer
 ```

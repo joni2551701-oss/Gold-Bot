@@ -8,7 +8,7 @@ Ushbu hujjat MonitoringService Runtime Sequence'ni tavsiflaydi.
 ```text
 Execution Layer
 ↓
-MonitoringService
+MonitoringService (Entry)
 ↓
 Validate Request
 ↓
@@ -26,7 +26,7 @@ PartialClose
 ↓
 RecoveryManager
 ↓
-Receive Monitoring Result
+MonitoringService (Exit)
 ↓
 Standardize Response
 ↓
@@ -37,7 +37,8 @@ Database Layer
 1. Execution Result mavjud bo'lishi shart.
 2. Request Validation bajarilishi shart.
 3. Monitoring Pipeline muvaffaqiyatli yakunlanishi shart.
-4. Standard Response yaratilishi shart.
+4. RecoveryManager natijasi MonitoringService orqali Database Layer'ga uzatiladi.
+5. Standard Response yaratilishi shart.
 ---
 # State Flow
 ```text

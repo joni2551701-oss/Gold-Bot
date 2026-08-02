@@ -19,14 +19,15 @@ Status: CANONICAL
 │
 ├── PartialClose
 │
-├── RecoveryManager
-│
-└── Monitoring Result
+└── RecoveryManager
 ```
 ---
 # Processing Pipeline
 ```text
-MonitoringService
+Execution Layer
+        │
+        ▼
+MonitoringService (Entry)
         │
         ▼
 PositionMonitor
@@ -48,11 +49,17 @@ PartialClose
         │
         ▼
 RecoveryManager
+        │
+        ▼
+MonitoringService (Exit)
+        │
+        ▼
+Database Layer
 ```
 ---
 # Module Responsibilities
 ## MonitoringService
-Monitoring Layer Gateway.
+Trade Monitoring Layer'ning ikki tomonlama (bidirectional) Boundary Gateway'i — Entry va Exit.
 ---
 ## PositionMonitor
 Open Position'larni kuzatadi.
@@ -73,7 +80,7 @@ Dynamic Stop Loss boshqaradi.
 Position'ni qisman yopadi.
 ---
 ## RecoveryManager
-Restart Recovery va State Restoration bajaradi.
+Restart Recovery va State Restoration bajaradi. Layer tashqarisiga chiqmaydi — natijani MonitoringService orqali uzatadi.
 ---
 # Summary
 Trade Monitoring Layer GoldBot arxitekturasidagi Canonical Trade Lifecycle Management Layer hisoblanadi.

@@ -96,7 +96,7 @@ CLOSED
 ```text
 Receive Execution Result
 ↓
-MonitoringService
+MonitoringService (Entry)
 ↓
 PositionMonitor
 ↓
@@ -111,6 +111,8 @@ TrailingStop
 PartialClose
 ↓
 RecoveryManager
+↓
+MonitoringService (Exit)
 ↓
 Database Layer
 ```

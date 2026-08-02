@@ -8,7 +8,7 @@ Ushbu hujjat Trade Monitoring Layer Runtime Sequence'ni tavsiflaydi.
 ```text
 Execution Layer
 ↓
-MonitoringService
+MonitoringService (Entry)
 ↓
 PositionMonitor
 ↓
@@ -24,17 +24,20 @@ PartialClose
 ↓
 RecoveryManager
 ↓
+MonitoringService (Exit)
+↓
 Database Layer
 ```
 ---
 # Runtime Rules
 1. Execution Result mavjud bo'lishi shart.
-2. Position Monitoring boshlanishi shart.
-3. Trade Lifecycle boshqarilishi shart.
-4. SL/TP Trigger tekshirilishi shart.
-5. Break Even va Trailing ketma-ket ishlashi shart.
-6. Recovery faqat Restart holatida ishlaydi.
-7. Monitoring natijalari Database Layer'ga uzatiladi.
+2. MonitoringService Trade Monitoring Layer'ning yagona Entry va Exit nuqtasi hisoblanadi.
+3. Position Monitoring boshlanishi shart.
+4. Trade Lifecycle boshqarilishi shart.
+5. SL/TP Trigger tekshirilishi shart.
+6. Break Even va Trailing ketma-ket ishlashi shart.
+7. Recovery faqat Restart holatida ishlaydi, lekin Layer tashqarisiga chiqmaydi.
+8. Monitoring natijalari MonitoringService orqali Database Layer'ga uzatiladi.
 ---
 # State Flow
 ```text
