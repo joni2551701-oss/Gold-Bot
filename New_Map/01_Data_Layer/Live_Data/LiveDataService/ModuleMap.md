@@ -317,8 +317,6 @@ LiveDataService quyidagilar bilan ishlashi mumkin.
 
 ✓ LiveDataFlow
 
-✓ Market Memory
-
 ✓ Event Bus
 
 ---
