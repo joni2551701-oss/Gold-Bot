@@ -3,7 +3,7 @@ Status: CANONICAL
 ---
 # Purpose
 IndicatorEngine Indicator Layer ichidagi barcha indikator modullarini boshqaruvchi Canonical Orchestrator hisoblanadi.
-Uning asosiy vazifasi Indicator Pipeline'ni boshqarish, indikatorlarni to'g'ri ketma-ketlikda ishga tushirish va IndicatorService uchun tayyor Indicator Context yaratishdir.
+Uning asosiy vazifasi indikator natijalarini yig'ish, boshqarish va ularni IndicatorService'ga uzatishdir.
 IndicatorEngine indikator formulalarini hisoblamaydi.
 IndicatorEngine signal yaratmaydi.
 IndicatorEngine AI ishlatmaydi.
@@ -18,7 +18,7 @@ IndicatorEngine quyidagi vazifalarni bajaradi:
 • Indicator Validation Trigger
 • Runtime State Management
 • Error Handling
-• Indicator Context Preparation
+• Indicator Result Coordination
 ---
 # Layer Position
 ```text
