@@ -25,7 +25,7 @@ User Voice
 ↓
 SpeechToText
 ↓
-InteractionManager
+VoiceCommands
 ```
 ---
 # Input Contract
@@ -41,10 +41,11 @@ InteractionManager
 • Recognition Metadata
 ---
 # Allowed Dependencies
-✓ InteractionManager
+✓ VoiceCommands
 ---
 # Forbidden Dependencies
 ✗ TextToSpeech
+✗ InteractionManager
 ✗ KnowledgeAI
 ✗ Decision Layer
 ✗ Risk Layer
@@ -65,8 +66,8 @@ InteractionManager
 ✓ Language aniqlanadi.
 ✓ Transcript yaratiladi.
 ✓ Confidence Score hisoblanadi.
-✓ InteractionManager'ga uzatiladi.
+✓ VoiceCommands'ga uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-SpeechToText Contract GoldBot VoiceAI ichidagi barcha Speech Recognition jarayonlarini boshqaruvchi rasmiy Canonical Architecture Contract hisoblanadi.
+SpeechToText Contract GoldBot VoiceAI ichidagi barcha Speech Recognition jarayonlarini boshqaruvchi rasmiy Canonical Architecture Contract hisoblanadi. SpeechToText faqat matn yaratadi — Command interpretatsiyasi VoiceCommands vazifasi.

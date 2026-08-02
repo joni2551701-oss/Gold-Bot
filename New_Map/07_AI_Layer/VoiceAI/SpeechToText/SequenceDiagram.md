@@ -16,7 +16,7 @@ Recognize Speech
 ↓
 Generate Transcript
 ↓
-InteractionManager
+VoiceCommands
 ```
 ---
 # Runtime Rules
@@ -47,4 +47,4 @@ SpeechToText
 ↓
 Recognized Text
 ↓
-InteractionManager
+VoiceCommands

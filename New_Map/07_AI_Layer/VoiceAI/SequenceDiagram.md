@@ -14,6 +14,8 @@ WakeWord
 ↓
 SpeechToText
 ↓
+VoiceCommands
+↓
 InteractionManager
 ↓
 PersonalAI
@@ -26,8 +28,9 @@ Voice Output
 # Runtime Rules
 1. Wake Word tekshirilishi mumkin.
 2. STT birinchi ishlaydi.
-3. AI javobi matn ko'rinishida olinadi.
-4. TTS oxirida ishlaydi.
+3. STT natijasi VoiceCommands orqali AI Command'ga aylantiriladi.
+4. AI javobi matn ko'rinishida olinadi.
+5. TTS oxirida ishlaydi.
 ---
 # State Flow
 ```text

@@ -78,6 +78,8 @@ Wake Word
 ↓
 Speech To Text
 ↓
+Voice Commands
+↓
 InteractionManager
 ↓
 PersonalAI

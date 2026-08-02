@@ -23,7 +23,7 @@ User Voice
 ↓
 SpeechToText
 ↓
-InteractionManager
+VoiceCommands
 ```
 ---
 # Responsibilities
@@ -69,7 +69,7 @@ Generate Transcript
 ↓
 Return Text
 ↓
-InteractionManager
+VoiceCommands
 ```
 ---
 # Golden Rules

@@ -10,7 +10,7 @@ VoiceAI
 ↓
 SpeechToText
 ↓
-InteractionManager
+VoiceCommands
 ```
 ---
 # Module Architecture
@@ -45,10 +45,11 @@ Aniqlik darajasini hisoblaydi.
 Recognition Metadata yaratadi.
 ---
 # Allowed Dependencies
-✓ InteractionManager
+✓ VoiceCommands
 ---
 # Forbidden Dependencies
 ✗ TextToSpeech
+✗ InteractionManager
 ✗ KnowledgeAI
 ✗ Decision Layer
 ✗ Risk Layer
