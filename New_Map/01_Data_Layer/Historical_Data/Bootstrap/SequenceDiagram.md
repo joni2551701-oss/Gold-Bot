@@ -181,35 +181,11 @@ GoldBot Startup Aborted
 
 ---
 
-# Recovery Sequence
+# Recovery
 
-```text
-Bootstrap Failed
+Recovery handled by Recovery module.
 
-↓
-
-Recovery Requested
-
-↓
-
-Historical Provider
-
-↓
-
-Missing Data Download
-
-↓
-
-Validation
-
-↓
-
-Market Memory Updated
-
-↓
-
-Bootstrap Completed
-```
+Bootstrap does not document Recovery's runtime sequence — see `Recovery/SequenceDiagram.md`.
 
 ---
 

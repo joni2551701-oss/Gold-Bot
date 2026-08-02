@@ -259,6 +259,17 @@ Bu qoida Phase 1 — Layer Audit davomida eng ko'p uchragan xato turlarini (Boun
 7. **Data Flow** — Input → Processing → Output hamma hujjatda bir xilmi?
 8. **Naming** — README, ModuleMap, Contracts, SequenceDiagram bir xil nom ishlatganmi?
 9. **Documentation** — Eski matn, Stale Diagram yoki Broken Link qolmaganmi?
+
+## Module Runtime Ownership Rule
+```text
+A module may reference another module,
+but may never document that module's
+runtime algorithm, workflow, or sequence.
+
+Violation:
+→ Critical
+```
+Sabab: har bir modul faqat o'zining runtime'ini hujjatlashtiradi. Boshqa modulning lifecycle/sequence'ini o'z hujjatiga yozish Ownership Overlap hisoblanadi — ikkala modul mustaqil ravishda audit qilinishi va mustaqil ravishda o'zgarishi kerak bo'lgan alohida Canonical hujjatlar hisoblanadi. Bu qoida `01_Data_Layer/Historical_Data/Bootstrap` modulida Recovery'ning runtime ketma-ketligi Bootstrap'ning o'z SequenceDiagram'i ichida hujjatlashtirilgani aniqlanganidan keyin qo'shildi (Critical, Ownership Overlap).
 ---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
