@@ -301,6 +301,127 @@ Bu naqsh GoldBot arxitekturasi bo'ylab izchil qo'llanmoqda va kelajakdagi Layer'
 
 ---
 
+# Director Review — 06_Signal_Layer
+
+## Audit Result
+
+```text
+Layer: 06_Signal_Layer
+Architecture Score:
+100 / 100
+Problems:
+0
+Warnings:
+0
+Suggestions:
+0
+Status:
+APPROVED
+```
+
+## Baholash
+
+Bu Layer audit jarayonidagi eng muhim arxitektura tuzatishlaridan biri bo'ldi. Oldingi auditdagi asosiy muammo — SignalEngine hujjatlarda mavjud, lekin Layer Runtime Pipeline'da yo'q edi — to'liq bartaraf etilgan.
+
+* ✅ SignalEngine barcha Canonical hujjatlarda Pipeline Orchestrator sifatida ko'rsatilgan.
+* ✅ Runtime Pipeline yagona ko'rinishga keltirilgan.
+* ✅ SignalEngine faqat Orchestration, Coordination va Runtime Control uchun javobgar.
+* ✅ ConfluenceEngine, SignalBuilder, SignalValidator, SignalScoring va SignalFormatter o'z vazifalarini saqlab qolgan.
+* ✅ SignalService endi Signal yaratmaydi, faqat Publish/Forward qiladi.
+* ✅ Ownership aniq.
+* ✅ Dependency izchil.
+* ✅ Circular Dependency topilmagan.
+* ✅ Layer Boundary toza.
+
+## Layer Status
+
+```text
+06_Signal_Layer
+Status:
+CLOSED
+Architecture Version:
+Freeze v1.0
+Audit:
+PASSED
+Score:
+100/100
+```
+
+---
+
+# GoldBot Canonical Architecture Principles (01-06 Layer auditidan shakllangan)
+
+Birinchi 6 ta Layer auditidan so'ng quyidagi naqshlar rasman tasdiqlangan GoldBot Canonical Architecture Principles hisoblanadi.
+
+## 1. Engine Pattern
+```text
+Engine
+↓
+Orchestrates
+↓
+Coordinates
+↓
+Controls Runtime
+↓
+Does NOT perform business logic
+```
+
+## 2. Service Pattern
+```text
+Service
+↓
+Aggregates
+↓
+Builds Final Object
+↓
+Publishes / Exposes API
+↓
+Does NOT perform business logic
+```
+
+## 3. Manager Pattern
+```text
+Manager
+↓
+Discovery
+↓
+Selection
+↓
+Loading
+↓
+Configuration
+↓
+Activation
+```
+
+## 4. Library Pattern
+```text
+Library
+↓
+Stores reusable components
+↓
+No execution
+↓
+No orchestration
+```
+
+## 5. Provider Pattern
+```text
+Factory
+↓
+Interface
+↓
+Provider
+↓
+Lifecycle
+↓
+Flow
+```
+
+Bu naqshlar tasodifiy emas — audit orqali tekshirilgan va izchil qo'llangan bo'lib, keyingi Layer'larni audit qilishda mezon sifatida ishlatiladi.
+
+---
+
 # Audit Tracker
 
 ```text
@@ -310,7 +431,7 @@ Architecture Audit Progress
 ✅ 03_Context_Layer             CLOSED (100/100)
 ✅ 04_Indicator_Layer           CLOSED (100/100)
 ✅ 05_Strategy_Layer            CLOSED (100/100)
-⏳ 06_Signal_Layer
+✅ 06_Signal_Layer              CLOSED (100/100)
 ⏳ 07_AI_Layer
 ⏳ 08_Decision_Layer
 ⏳ 09_Risk_Layer
