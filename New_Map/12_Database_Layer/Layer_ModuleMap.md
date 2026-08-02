@@ -19,14 +19,15 @@ Status: CANONICAL
 │
 ├── CacheManager
 │
-├── BackupManager
-│
-└── Database Storage
+└── BackupManager
 ```
 ---
 # Processing Pipeline
 ```text
-DatabaseService
+Trade Monitoring Layer
+        │
+        ▼
+DatabaseService (Entry)
         │
         ▼
 DatabaseManager
@@ -42,11 +43,17 @@ TradeRepository  UserRepository  MarketRepository  JournalRepository
                        │
                        ▼
                  BackupManager
+                       │
+                       ▼
+                 DatabaseService (Exit)
+                       │
+                       ▼
+                 Platform Layer
 ```
 ---
 # Module Responsibilities
 ## DatabaseService
-Database Layer Gateway.
+Database Layer'ning ikki tomonlama (bidirectional) Boundary Gateway'i — Entry va Exit.
 ---
 ## DatabaseManager
 Database Infrastructure boshqaradi.
@@ -67,7 +74,7 @@ AI Journal va Audit ma'lumotlarini boshqaradi.
 Cache Infrastructure boshqaradi.
 ---
 ## BackupManager
-Backup va Disaster Recovery boshqaradi.
+Backup va Disaster Recovery boshqaradi. Layer tashqarisiga chiqmaydi — natijani DatabaseService orqali uzatadi.
 ---
 # Summary
 Database Layer GoldBot arxitekturasidagi Canonical Persistent Storage Layer hisoblanadi.

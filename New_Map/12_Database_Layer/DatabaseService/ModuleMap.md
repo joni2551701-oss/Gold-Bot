@@ -8,11 +8,19 @@ Ushbu hujjat DatabaseService ichki arxitekturasini tavsiflaydi.
 ```text
 Trade Monitoring Layer
 ↓
-DatabaseService
+DatabaseService (Entry)
 ↓
 DatabaseManager
 ↓
-Repositories
+TradeRepository / UserRepository / MarketRepository / JournalRepository
+↓
+CacheManager
+↓
+BackupManager
+↓
+DatabaseService (Exit)
+↓
+Platform Layer
 ```
 ---
 # Module Architecture
@@ -29,7 +37,7 @@ DatabaseService
 ---
 # Internal Components
 ## Request Receiver
-Database Request'larni qabul qiladi.
+Trade Monitoring Layer'dan Database Request'larni qabul qiladi.
 ---
 ## Request Validator
 Request formatini tekshiradi.
@@ -41,25 +49,24 @@ Database Session'ni boshqaradi.
 DatabaseManager'ga Request yuboradi.
 ---
 ## Response Formatter
-Repository natijalarini standart formatga o'tkazadi.
+BackupManager'dan qaytgan natijani standart formatga o'tkazadi va Platform Layer'ga uzatadi.
 ---
 ## Service Monitor
 DatabaseService holatini kuzatadi.
 ---
 # Allowed Dependencies
 ✓ DatabaseManager
-✓ TradeRepository
-✓ UserRepository
-✓ MarketRepository
-✓ JournalRepository
-✓ CacheManager
 ✓ BackupManager
 ---
 # Forbidden Dependencies
-✗ Platform Layer
+✗ TradeRepository (to'g'ridan-to'g'ri)
+✗ UserRepository (to'g'ridan-to'g'ri)
+✗ MarketRepository (to'g'ridan-to'g'ri)
+✗ JournalRepository (to'g'ridan-to'g'ri)
+✗ CacheManager (to'g'ridan-to'g'ri)
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
 ---
 # Summary
-DatabaseService GoldBot Database Layer uchun yagona Service Gateway va Public API modulidir.
+DatabaseService GoldBot Database Layer uchun ikki tomonlama Boundary Gateway va Public API modulidir.

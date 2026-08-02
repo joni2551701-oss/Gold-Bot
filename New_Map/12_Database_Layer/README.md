@@ -96,7 +96,7 @@ Backup
 ```text
 Receive Database Request
 ↓
-DatabaseService
+DatabaseService (Entry)
 ↓
 DatabaseManager
 ↓
@@ -105,6 +105,8 @@ Repository Processing
 Cache Update
 ↓
 Backup Check
+↓
+DatabaseService (Exit)
 ↓
 Return Response
 ↓

@@ -45,7 +45,7 @@ Database Layer yaratadi.
 ---
 # Layer Pipeline
 ```text
-DatabaseService
+DatabaseService (Entry)
 ↓
 DatabaseManager
 ↓
@@ -61,11 +61,13 @@ CacheManager
 ↓
 BackupManager
 ↓
+DatabaseService (Exit)
+↓
 Platform Layer
 ```
 ---
 # Layer Rules
-1. Database Layer'ga barcha kirishlar DatabaseService orqali amalga oshiriladi.
+1. Database Layer'ga barcha kirish va chiqishlar DatabaseService orqali amalga oshiriladi.
 2. DatabaseManager barcha Connection va Transaction'larni boshqarishi shart.
 3. Repository modullari faqat o'z Domain ma'lumotlari bilan ishlashi shart.
 4. Cache Database bilan doim sinxron bo'lishi shart.

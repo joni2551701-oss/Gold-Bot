@@ -6,15 +6,15 @@ Ushbu hujjat DatabaseService modulining rasmiy Architecture Contract hujjati his
 ---
 # Module Responsibility
 DatabaseService quyidagilar uchun javobgar.
-✓ Database Request Management
+✓ Public Entry Point (Trade Monitoring Layer'dan Database Layer'ga kirish)
+✓ Public Exit Point (Database Layer'dan Platform Layer'ga chiqish)
 ✓ Request Validation
-✓ Database Layer Gateway
+✓ Response Serialization
 ✓ Session Management
-✓ Response Formatting
-✓ Service Monitoring
+✓ API Boundary Enforcement
 DatabaseService bajarmaydi.
 ✗ Database Connection
-✗ Repository Logic
+✗ Repository Logic (CRUD)
 ✗ Cache Management
 ✗ Backup Management
 ✗ Business Logic
@@ -23,20 +23,36 @@ DatabaseService bajarmaydi.
 ```text
 Trade Monitoring Layer
 ↓
-DatabaseService
+DatabaseService (Entry)
 ↓
 DatabaseManager
 ↓
-Repositories
+TradeRepository / UserRepository / MarketRepository / JournalRepository
+↓
+CacheManager
+↓
+BackupManager
+↓
+DatabaseService (Exit)
+↓
+Platform Layer
 ```
 ---
 # Input Contract
+Kirish tomonida (Trade Monitoring Layer'dan):
 • Database Request
 • Repository Request
 • Query Request
 • Session Metadata
+
+Chiqish tomonida (BackupManager'dan):
+• Database Records
 ---
 # Output Contract
+Kirish tomonida (DatabaseManager'ga):
+• Validated Database Request
+
+Chiqish tomonida (Platform Layer'ga):
 • Database Response
 • Query Result
 • Standard Response
@@ -44,36 +60,36 @@ Repositories
 ---
 # Allowed Dependencies
 ✓ DatabaseManager
-✓ TradeRepository
-✓ UserRepository
-✓ MarketRepository
-✓ JournalRepository
-✓ CacheManager
 ✓ BackupManager
 ---
 # Forbidden Dependencies
-✗ Platform Layer
+✗ TradeRepository (to'g'ridan-to'g'ri)
+✗ UserRepository (to'g'ridan-to'g'ri)
+✗ MarketRepository (to'g'ridan-to'g'ri)
+✗ JournalRepository (to'g'ridan-to'g'ri)
+✗ CacheManager (to'g'ridan-to'g'ri)
+✗ Platform Layer'dan boshqa tashqi Layer
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
 ---
 # Runtime Contract
-1. Database Layer'ga barcha kirishlar DatabaseService orqali amalga oshirilishi shart.
-2. Har bir Request Validation'dan o'tishi shart.
-3. DatabaseService Business Logic bajarmaydi.
+1. Database Layer'ga barcha kirish va chiqishlar DatabaseService orqali amalga oshirilishi shart (Boundary Gateway).
+2. Har bir kirish Request Validation'dan o'tishi shart.
+3. DatabaseService Business Logic bajarmaydi — faqat Entry/Exit Boundary vazifasini bajaradi.
 4. Response standart formatda qaytarilishi shart.
-5. Repository natijalari o'zgartirilmasdan qaytarilishi shart.
+5. BackupManager Layer tashqarisiga chiqmaydi — faqat DatabaseService orqali chiqadi.
 6. Session holati boshqarilishi shart.
 7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
-✓ Request qabul qilinadi.
+✓ Trade Monitoring Layer'dan Request qabul qilinadi.
 ✓ Validation bajariladi.
-✓ DatabaseManager ishga tushiriladi.
-✓ Repository natijasi olinadi.
+✓ DatabaseManager'ga uzatiladi.
+✓ BackupManager'dan Database Records qabul qilinadi.
 ✓ Response standartlashtiriladi.
 ✓ Platform Layer'ga uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-DatabaseService Contract GoldBot Database Layer uchun yagona Public Interface va Service Gateway sifatida ishlashni, barcha Database so'rovlarini boshqarishni, Repository natijalarini standart formatga o'tkazishni va Platform Layer'ga uzatishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.
+DatabaseService Contract GoldBot Database Layer uchun ikki tomonlama (bidirectional) Boundary Gateway sifatida ishlashini — Trade Monitoring Layer'dan kirish va Platform Layer'ga chiqishni — belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

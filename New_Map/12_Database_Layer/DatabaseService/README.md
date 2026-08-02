@@ -2,40 +2,48 @@
 Status: CANONICAL
 ---
 # Purpose
-DatabaseService GoldBot Database Layer ichidagi Canonical Public Database Interface moduli hisoblanadi.
-Uning asosiy vazifasi Database Layer uchun yagona Service Gateway bo'lish va barcha tashqi Layer'lar bilan standart Database API orqali ishlashdir.
+DatabaseService GoldBot Database Layer uchun Canonical Boundary Gateway hisoblanadi.
+Uning asosiy vazifasi Database Layer'ning yagona Public Entry Point va Public Exit Point bo'lishidir — Trade Monitoring Layer'dan kelgan so'rovlarni DatabaseManager'ga kiritish va BackupManager'dan qaytgan yakuniy natijani Platform Layer'ga chiqarish.
 DatabaseService Database Query yozmaydi.
-DatabaseService Business Logic bajarmaydi.
-DatabaseService faqat Database Layer Service Gateway hisoblanadi.
+DatabaseService Repository Logic bajarmaydi.
+DatabaseService faqat Entry/Exit Boundary, Validation va Serialization vazifalarini bajaradi.
 ---
 # Objective
 DatabaseService quyidagi vazifalarni bajaradi.
-• Database Request Management
-• Database API Gateway
+• Public Entry Point
+• Public Exit Point
 • Request Validation
-• Response Standardization
-• Database Session Management
-• Database Layer Integration
+• Response Serialization
+• Session Management
+• API Boundary Enforcement
 ---
 # Layer Position
 ```text
 Trade Monitoring Layer
 ↓
-DatabaseService
+DatabaseService (Entry)
 ↓
 DatabaseManager
 ↓
-Repositories
+TradeRepository / UserRepository / MarketRepository / JournalRepository
+↓
+CacheManager
+↓
+BackupManager
+↓
+DatabaseService (Exit)
+↓
+Platform Layer
 ```
 ---
 # Responsibilities
 DatabaseService
-✓ Database Request qabul qiladi
+✓ Trade Monitoring Layer'dan Database Request qabul qiladi (Entry)
 ✓ Request formatini tekshiradi
 ✓ DatabaseManager'ga uzatadi
-✓ Repository natijalarini qabul qiladi
+✓ BackupManager'dan yakuniy natijani qabul qiladi
 ✓ Standard Response yaratadi
-✓ Platform Layer'ga uzatadi
+✓ Platform Layer'ga uzatadi (Exit)
 ---
 # Not Responsible
 DatabaseService
@@ -48,41 +56,39 @@ DatabaseService
 ---
 # Input
 DatabaseService qabul qiladi.
-• Database Request
-• Repository Request
-• Query Request
+• Database Request (Trade Monitoring Layer'dan)
+• Database Records (BackupManager'dan)
 • Session Metadata
 ---
 # Output
 DatabaseService yaratadi.
-• Database Response
+• Validated Database Request (DatabaseManager'ga)
+• Database Response (Platform Layer'ga)
 • Query Result
-• Standard Response
 • Service Metadata
 ---
 # Workflow
 ```text
-Receive Request
+Receive Request (Trade Monitoring Layer)
 ↓
 Validate Request
 ↓
-DatabaseManager
+Forward To DatabaseManager
 ↓
-Repositories
-↓
-Receive Repository Result
+Receive Database Records (BackupManager)
 ↓
 Standardize Response
 ↓
-Platform Layer
+Return Response (Platform Layer)
 ```
 ---
 # Golden Rules
-1. Database Layer'ga barcha kirishlar DatabaseService orqali amalga oshiriladi.
-2. DatabaseService Business Logic bajarmaydi.
-3. Har bir Request Validation'dan o'tadi.
-4. Response yagona formatda qaytariladi.
-5. Circular Dependency qat'iyan taqiqlanadi.
+1. DatabaseService Database Layer'ning yagona Entry Point va yagona Exit Point hisoblanadi.
+2. Business Logic DatabaseService ichida bajarilmaydi.
+3. Response yagona formatga o'tkaziladi.
+4. Database Layer tashqarisiga faqat DatabaseService orqali kiriladi va chiqiladi.
+5. BackupManager Layer tashqarisiga chiqmaydi.
+6. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents
 ```text
@@ -94,4 +100,4 @@ DatabaseService/
 ```
 ---
 # Summary
-DatabaseService GoldBot Database Layer uchun yagona Public Interface va Service Gateway hisoblanadi.
+DatabaseService GoldBot Database Layer uchun ikki tomonlama (bidirectional) Boundary Gateway hisoblanadi — Trade Monitoring Layer'dan Database Layer'ga kirish va Database Layer'dan Platform Layer'ga chiqish uchun yagona nuqta.

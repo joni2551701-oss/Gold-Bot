@@ -8,7 +8,7 @@ Ushbu hujjat Database Layer Runtime Sequence'ni tavsiflaydi.
 ```text
 Trade Monitoring Layer
 ↓
-DatabaseService
+DatabaseService (Entry)
 ↓
 DatabaseManager
 ↓
@@ -24,17 +24,20 @@ CacheManager
 ↓
 BackupManager
 ↓
+DatabaseService (Exit)
+↓
 Platform Layer
 ```
 ---
 # Runtime Rules
 1. Database Request mavjud bo'lishi shart.
-2. Request Validation bajarilishi shart.
-3. Database Connection mavjud bo'lishi shart.
-4. Repository Transaction muvaffaqiyatli bajarilishi shart.
-5. Cache sinxronlashtirilishi shart.
-6. Backup kerak bo'lsa yaratilishi shart.
-7. Standard Response qaytarilishi shart.
+2. DatabaseService Database Layer'ning yagona Entry va Exit nuqtasi hisoblanadi.
+3. Request Validation bajarilishi shart.
+4. Database Connection mavjud bo'lishi shart.
+5. Repository Transaction muvaffaqiyatli bajarilishi shart.
+6. Cache sinxronlashtirilishi shart.
+7. Backup kerak bo'lsa yaratilishi shart, lekin Layer tashqarisiga chiqmaydi.
+8. Standard Response DatabaseService orqali qaytarilishi shart.
 ---
 # State Flow
 ```text

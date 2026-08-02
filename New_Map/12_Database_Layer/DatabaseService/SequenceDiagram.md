@@ -8,7 +8,7 @@ Ushbu hujjat DatabaseService Runtime Sequence'ni tavsiflaydi.
 ```text
 Trade Monitoring Layer
 ↓
-DatabaseService
+DatabaseService (Entry)
 ↓
 Validate Request
 ↓
@@ -26,7 +26,7 @@ CacheManager
 ↓
 BackupManager
 ↓
-Receive Repository Result
+DatabaseService (Exit)
 ↓
 Standardize Response
 ↓
@@ -37,7 +37,8 @@ Platform Layer
 1. Database Request mavjud bo'lishi shart.
 2. Request Validation bajarilishi shart.
 3. Repository Processing muvaffaqiyatli yakunlanishi shart.
-4. Standard Response yaratilishi shart.
+4. BackupManager natijasi DatabaseService orqali Platform Layer'ga uzatiladi.
+5. Standard Response yaratilishi shart.
 ---
 # State Flow
 ```text

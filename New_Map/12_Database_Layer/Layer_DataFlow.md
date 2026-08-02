@@ -10,7 +10,7 @@ Database Layer GoldBot tizimidagi barcha Persistent Data'ni qabul qiladi, saqlay
 Trade Monitoring Layer
         │
         ▼
-DatabaseService
+DatabaseService (Entry)
         │
         ▼
 DatabaseManager
@@ -26,6 +26,9 @@ TradeRepository  UserRepository  MarketRepository  JournalRepository
                        │
                        ▼
                  BackupManager
+                       │
+                       ▼
+                 DatabaseService (Exit)
                        │
                        ▼
                  Platform Layer
@@ -54,6 +57,7 @@ TradeRepository  UserRepository  MarketRepository  JournalRepository
 3. Repository faqat o'z Domain Data'si bilan ishlaydi.
 4. Cache Database bilan sinxron bo'lishi shart.
 5. Backup faqat Persistent Data'dan yaratiladi.
+6. BackupManager Layer tashqarisiga chiqmaydi — natija DatabaseService orqali Platform Layer'ga uzatiladi.
 ---
 # Summary
 Database Layer GoldBot arxitekturasidagi Canonical Persistent Storage Pipeline hisoblanadi.
