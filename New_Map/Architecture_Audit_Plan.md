@@ -14,7 +14,16 @@ Audit'ning maqsadi:
 * Nomlash standarti (Engine/Manager/Service/Repository/Validator/Gateway/Coordinator) barcha modullarda bir xil qo'llanganini tasdiqlash.
 * Auditdan o'tgan arxitekturani Architecture Freeze v1.0 sifatida rasmiylashtirish va kod implementatsiyasi uchun yagona asos qilib belgilash.
 ---
-# 2. Audit Scope
+# 2. Audit Principles
+1. Architecture first.
+2. Evidence first.
+3. No assumptions.
+4. No implementation review.
+5. Consistency over preference.
+6. Every finding must include evidence.
+7. Every recommendation must include rationale.
+---
+# 3. Audit Scope
 Audit qilinadi
 * Layer Architecture
 * Module Architecture
@@ -34,14 +43,14 @@ Audit qilinmaydi
 * Trading Strategy sifati
 * AI Prompt sifati
 ---
-# 3. Audit Rules
+# 4. Audit Rules
 * Auditor taxmin qilmaydi.
 * Faqat hujjat asosida baho beradi.
 * Har bir xulosa dalil bilan yoziladi.
 * Tavsiya va xato alohida yoziladi.
 * Hech bir Layer boshqa Layer vazifasini bajarmasligi kerak.
 ---
-# 4. Audit Stages
+# 5. Audit Stages
 ## Layer Audit
 Har bir Layer alohida tekshiriladi.
 
@@ -140,7 +149,8 @@ Misollar:
 * Gateway — tashqi tizim bilan ishlaydi.
 * Coordinator — bir nechta modulni muvofiqlashtiradi.
 ---
-# 5. Scoring System
+# 6. Scoring System
+Status: Temporary
 100 ballik tizim o'rniga kategoriya bo'yicha baholash qo'llanadi.
 ```text
 Layer Responsibility      20
@@ -155,7 +165,7 @@ Jami:
 ```
 Chegaralar keyinchalik birgalikda aniqlanadi.
 ---
-# 6. Severity Levels
+# 7. Severity Levels
 ```text
 Critical
 Architecture ishlamaydi
@@ -167,7 +177,8 @@ Suggestion
 Faqat tavsiya
 ```
 ---
-# 7. Acceptance Criteria
+# 8. Acceptance Criteria
+Status: Temporary
 ```text
 95–100
 APPROVED
@@ -180,7 +191,7 @@ REJECTED
 ```
 Bu faqat misol. Chegaralarni keyin birgalikda aniqlash mumkin.
 ---
-# 8. Freeze Procedure
+# 9. Freeze Procedure
 Freeze quyidagi ketma-ketlik yakunlangandan so'ng beriladi.
 ```text
 Layer Audit tugaydi
@@ -196,7 +207,7 @@ Final Report
 Architecture Freeze
 ```
 ---
-# 9. Change Management
+# 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.
 * Yangi modul qo'shish.
@@ -221,28 +232,42 @@ New Version
 ```
 ACR'siz Freeze'dan keyingi hech qanday Layer nomi, Modul nomi, Data Flow yoki Contract o'zgartirilmaydi.
 ---
-# 10. Audit Report Template
+# 11. Audit Report Template
 Har bir Layer uchun quyidagi shablon bo'yicha hisobot chiqariladi.
 ```text
+Layer:
 <Layer Nomi>
+
+Architecture Score:
 Layer Responsibility:   <ball> / 20
 Module Consistency:     <ball> / 20
 Data Flow:              <ball> / 20
 Dependency:             <ball> / 20
 Documentation:          <ball> / 20
 Total Score:            <ball> / 100
-Critical:
-<son>
-Major:
-<son>
-Minor:
-<son>
-Suggestion:
-<son>
+
+Strengths:
+<topilgan kuchli tomonlar ro'yxati>
+
+Problems:
+<Critical va Major toifasidagi topilmalar, dalil bilan>
+
+Warnings:
+<Minor toifasidagi topilmalar, dalil bilan>
+
+Suggestions:
+<Suggestion toifasidagi tavsiyalar, asos bilan>
+
+Dependencies:
+<tekshirilgan Allowed/Forbidden Dependencies natijasi>
+
+Boundary Check:
+<Layer boshqa Layer mas'uliyatini bajarmaganligi bo'yicha xulosa>
+
 Status:
 <APPROVED | APPROVED WITH NOTES | REVISION REQUIRED | REJECTED>
 ```
-Bu shablon ham misol tariqasida keltirilgan bo'lib, 5–7-bo'limlar bilan birga yakuniy tahrirga ochiq.
+Bu shablon 6–8-bo'limlar (Scoring, Severity, Acceptance) bilan birga yakuniy tahrirga ochiq.
 ---
 # Audit Sequence
 ```text
@@ -268,7 +293,15 @@ Architecture Freeze
 ```
 ---
 # Note on Status
-Ushbu hujjat hozircha DRAFT holatida. Barcha bo'limlar (ayniqsa 5–7: Scoring, Severity, Acceptance) Director tomonidan ko'rib chiqilib, kerakli chegaralar aniqlangandan so'nggina bu hujjat CANONICAL deb tasdiqlanadi. Faqat shundan keyin Layer Audit boshlanadi. Hujjat CANONICAL deb tasdiqlangach, unga ham Freeze qo'llaniladi — shundan keyin ushbu metodologiyaning o'zi ham ACR'siz o'zgartirilmaydi.
+Ushbu hujjat hozircha DRAFT holatida.
+
+Tasdiqlangan bo'limlar: Audit Objective, Audit Principles, Audit Scope, Audit Rules, Audit Stages, Severity Levels, Freeze Procedure, Change Management (ACR).
+
+Hali "Temporary" statusidagi bo'limlar: Scoring System (6-bo'lim), Acceptance Criteria (8-bo'lim) — audit davomida kuzatilgan natijalar asosida chegaralar aniqlanadi.
+
+Audit Report Template (11-bo'lim) Scoring va Acceptance bilan birga yakuniy tahrirga ochiq.
+
+Barcha bo'limlar yakuniy tasdiqlangandan so'nggina bu hujjat CANONICAL deb belgilanadi. Faqat shundan keyin Layer Audit boshlanadi. Hujjat CANONICAL deb tasdiqlangach, unga ham Freeze qo'llaniladi — shundan keyin ushbu metodologiyaning o'zi ham ACR'siz o'zgartirilmaydi.
 ---
 # Summary
 Architecture Audit Plan GoldBot Canonical Architecture'ning barcha Layer, Module va Cross-Layer aloqalarini, shuningdek nomlash standartlarini yagona metodologiya asosida tekshirish, natijalarni standart Scoring System va Severity Levels bo'yicha baholash, va yakunda Architecture Freeze orqali loyihani "konstitutsiya" darajasidagi spetsifikatsiya sifatida muzlatishni belgilovchi rasmiy reja hisoblanadi. Freeze'dan keyingi har qanday o'zgarish faqat Architecture Change Request (ACR) jarayoni orqali amalga oshiriladi.
