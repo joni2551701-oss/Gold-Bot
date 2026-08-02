@@ -1207,8 +1207,9 @@ Phase 2 — Module Audit Progress
 
 07_AI_Layer                  CLOSED (3700/3700)
 
-⏳ 08_Decision_Layer
-⬜ 09_Risk_Layer
+08_Decision_Layer            CLOSED (600/600)
+
+⏳ 09_Risk_Layer
 ⬜ 10_Execution_Layer
 ⬜ 11_Trade_Monitoring_Layer
 ⬜ 12_Database_Layer
@@ -1823,19 +1824,63 @@ Four new Canonical Rules established (Architecture Decision Records), added to `
 
 ---
 
+## Director Review — 08_Decision_Layer (full Layer, single-pass audit)
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+08_Decision_Layer
+
+Status:
+CLOSED
+
+Modules:
+6 / 6 (ApprovalEngine, DecisionConfidence, DecisionEngine, DecisionLogger, DecisionService, RuleEngine)
+
+Architecture Score:
+600 / 600
+
+Critical:
+0 (3 apparent Critical findings resolved as Worker auto-fixes — see below)
+
+Major:
+7
+
+Minor:
+1
+
+Approved:
+100%
+
+This Layer's 3 apparent Critical findings (RuleEngine, ApprovalEngine, and DecisionEngine each listing stale "Signal Package"/"AI Package" direct inputs) were assessed and resolved without Director escalation: all 3 modules' own Position/Boundary diagrams and Allowed Dependencies already unanimously agreed with the 3 group-level canonical docs on a single-entry pipeline (Signal/AI data enters only once, at DecisionConfidence) — only the Input/Input Contract/Responsibilities lists were stale carryovers. This was Runtime Documentation Consistency, not a genuine architecture ambiguity, so it was auto-fixed under the existing rule-based authority rather than raised as a Director question.
+
+Auto-fixed by Worker (rule-based, no Director decision needed):
+* Rule 11 (staleness) — removed stale "Signal Package"/"AI Package" from RuleEngine, ApprovalEngine, DecisionEngine's Input/Input Contract (README.md + Contracts.md) to match their own already-correct Position/Boundary/Allowed Dependencies (Major, ×3).
+* Rule 11 — DecisionEngine's Purpose/Responsibilities/Acceptance Criteria corrected to reference its actual predecessors (ApprovalEngine/DecisionConfidence/RuleEngine) instead of Signal Layer/AI Layer; README's "✗ Database Logging" aligned to Contracts.md's "✗ Decision Logging" (Major).
+* Rule 3 (Module Runtime Boundary) — DecisionEngine/SequenceDiagram.md trimmed to stop at its own boundary (DecisionLogger) instead of narrating one hop further into DecisionService (Major).
+* Rule 1 (Dependency Source of Truth) — DecisionConfidence was missing "✓ Signal Layer" in Allowed Dependencies despite its own Purpose/Position/Input already establishing Signal Layer as a legitimate predecessor (Major).
+* Rule 3 — DecisionLogger's README/Contracts/SequenceDiagram trimmed to stop at DecisionService instead of narrating two hops further into Database Layer (ModuleMap.md was already correctly scoped) (Major).
+* Rule 5 (Canonical Naming, Minor) — DecisionLogger's Forbidden Dependencies wording standardized ("(Direct Access)" → "(to'g'ridan-to'g'ri)") to match ModuleMap.md.
+* Rule 1 — DecisionService/ModuleMap.md was missing "✗ Risk Layer'dan boshqa tashqi Layer" present in Contracts.md (Major).
+
+**Trading Safety check: PASS.** DecisionEngine remains the sole module permitted to produce APPROVE/REJECT/HOLD/WAIT; no module bypasses the Risk Manager or routes REJECT/BLOCKED signals directly to Telegram; AI Layer input correctly enters only via the AI Layer's public boundary (through DecisionConfidence), never through individual AI sub-modules. No new Canonical Rules required.
+
+---
+
 ## Phase 2 Statistics (running)
 
 Groups/Layers Completed:
-12 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer + 04_Indicator_Layer + 05_Strategy_Layer + 06_Signal_Layer + 07_AI_Layer as full Layers)
+13 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer + 04_Indicator_Layer + 05_Strategy_Layer + 06_Signal_Layer + 07_AI_Layer + 08_Decision_Layer as full Layers)
 
 Layers Completed:
-7 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer, 05_Strategy_Layer, 06_Signal_Layer, 07_AI_Layer)
+8 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer, 05_Strategy_Layer, 06_Signal_Layer, 07_AI_Layer, 08_Decision_Layer)
 
 Modules Completed:
-127
+133
 
 Architecture Score:
-12700 / 12700
+13300 / 13300
 
 Critical Remaining:
 0
