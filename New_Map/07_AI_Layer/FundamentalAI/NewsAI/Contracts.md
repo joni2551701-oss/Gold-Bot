@@ -51,6 +51,7 @@ FundamentalAI
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. News ishonchli manbalardan olinishi kerak.

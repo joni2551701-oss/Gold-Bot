@@ -49,10 +49,10 @@ Sentiment Context yaratadi.
 ✓ NewsAI
 ---
 # Forbidden Dependencies
-✗ Technical Analysis
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 SentimentAI GoldBot AI Layer ichidagi Market Sentiment Analysis jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

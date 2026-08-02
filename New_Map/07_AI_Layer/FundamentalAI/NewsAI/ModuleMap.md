@@ -54,6 +54,7 @@ News Context yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 NewsAI GoldBot AI Layer ichidagi barcha News Analysis jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

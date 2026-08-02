@@ -53,6 +53,7 @@ Correlation Context yaratadi.
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 CorrelationAI aktivlar o'rtasidagi bog'liqlikni tahlil qiluvchi va Correlation Context yaratuvchi Canonical modul hisoblanadi.

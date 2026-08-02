@@ -48,10 +48,10 @@ Economic Context yaratadi.
 ✓ FundamentalAI
 ---
 # Forbidden Dependencies
-✗ NewsAI
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
+✗ Platform Layer
 ---
 # Summary
 EconomicCalendarAI iqtisodiy voqealarni tahlil qiluvchi va Economic Context yaratuvchi Canonical modul hisoblanadi.

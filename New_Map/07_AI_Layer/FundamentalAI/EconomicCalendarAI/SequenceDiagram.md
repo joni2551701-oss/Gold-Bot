@@ -8,7 +8,7 @@ Bu Canonical Runtime Blueprint hisoblanadi.
 ---
 # Runtime Sequence
 ```text
-Economic Calendar Provider
+Calendar Provider
 ↓
 EconomicCalendarAI
 ↓

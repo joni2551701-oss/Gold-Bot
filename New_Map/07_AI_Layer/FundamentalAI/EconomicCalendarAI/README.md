@@ -21,7 +21,7 @@ EconomicCalendarAI quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-Economic Calendar Provider
+Calendar Provider
 ↓
 EconomicCalendarAI
 ↓
