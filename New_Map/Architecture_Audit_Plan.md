@@ -226,6 +226,40 @@ Audit davomida (Architecture Lock kuchda bo'lgan paytda):
 
 Sabab: aks holda audit mezoni va audit obyekti bir vaqtning o'zida o'zgarib, natijalar taqqoslanmaydigan bo'lib qoladi. Zarurat tug'ilsa, o'zgartirish faqat audit yakunlanib Final Report chiqqandan so'ng, ACR orqali (masalan Version 1.1 sifatida) amalga oshiriladi.
 ---
+# 9b. Module Audit Rule (Phase 2, ACR amendment)
+Har bir modul faqat o'zi uchun javobgar.
+
+```text
+Agar modul ichida boshqa modulning
+responsibility aniqlansa:
+→ Critical
+
+Agar ownership overlap aniqlansa:
+→ Critical
+
+Agar stale documentation topilsa:
+→ Major
+
+Agar diagram va Contracts mos kelmasa:
+→ Major
+
+Agar naming farq qilsa:
+→ Minor
+```
+
+Bu qoida Phase 1 — Layer Audit davomida eng ko'p uchragan xato turlarini (Boundary Gateway ziddiyati, Ownership overlap, Artifact ≠ Module, stale README) Module Audit darajasida ham izchil baholash uchun qo'llaniladi.
+
+## Module Audit Tekshiruv Ro'yxati
+1. **Module Identity** — Purpose, Objective, Responsibility, Not Responsible bir martalik va aniqmi?
+2. **Internal Structure** — ModuleMap ↔ README ↔ Contracts bir xil narsani aytyaptimi?
+3. **Workflow** — SequenceDiagram ↔ README Workflow ↔ Contracts Runtime Flow bir xilmi?
+4. **Contracts** — Allowed/Forbidden Dependencies, Input, Output, Boundary to'g'rimi?
+5. **Ownership** — Har bir vazifaning bitta egasi bormi (masalan ContextEngine ↔ ContextService, StrategyManager ↔ StrategyEngine)?
+6. **Dependency** — Circular yoki Hidden Dependency bormi?
+7. **Data Flow** — Input → Processing → Output hamma hujjatda bir xilmi?
+8. **Naming** — README, ModuleMap, Contracts, SequenceDiagram bir xil nom ishlatganmi?
+9. **Documentation** — Eski matn, Stale Diagram yoki Broken Link qolmaganmi?
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.
@@ -282,6 +316,42 @@ Dependencies:
 
 Boundary Check:
 <Layer boshqa Layer mas'uliyatini bajarmaganligi bo'yicha xulosa>
+
+Status:
+<APPROVED | APPROVED WITH NOTES | REVISION REQUIRED | REJECTED>
+```
+---
+# 11a. Module Audit Report Template (Phase 2, ACR amendment)
+Har bir modul uchun quyidagi shablon bo'yicha hisobot chiqariladi.
+```text
+Module:
+<Modul Nomi>
+
+Architecture Score:
+Responsibility:   <ball> / 20
+Consistency:      <ball> / 20
+Data Flow:        <ball> / 20
+Dependency:       <ball> / 20
+Documentation:    <ball> / 20
+Total Score:      <ball> / 100
+
+Strengths:
+<topilgan kuchli tomonlar ro'yxati>
+
+Problems:
+<Critical va Major toifasidagi topilmalar, dalil bilan>
+
+Warnings:
+<Minor toifasidagi topilmalar, dalil bilan>
+
+Suggestions:
+<Suggestion toifasidagi tavsiyalar, asos bilan>
+
+Dependencies:
+<tekshirilgan Allowed/Forbidden Dependencies natijasi>
+
+Boundary Check:
+<modul boshqa modul mas'uliyatini bajarmaganligi bo'yicha xulosa>
 
 Status:
 <APPROVED | APPROVED WITH NOTES | REVISION REQUIRED | REJECTED>
