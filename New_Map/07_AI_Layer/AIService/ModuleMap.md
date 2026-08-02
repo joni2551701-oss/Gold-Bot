@@ -6,13 +6,19 @@ Ushbu hujjat AIService ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-External Layers
+Signal Layer
 ↓
-AIService
+AIService (Entry)
 ↓
 AIEngine
 ↓
 AICoordinator
+↓
+AIEngine
+↓
+AIService (Exit)
+↓
+Decision Layer
 ```
 ---
 # Module Architecture
@@ -29,7 +35,7 @@ AIService
 ---
 # Internal Components
 ## Request Receiver
-AI so'rovlarini qabul qiladi.
+Signal Layer'dan AI so'rovlarini qabul qiladi.
 ---
 ## Request Validator
 So'rov formatini tekshiradi.
@@ -41,20 +47,20 @@ AI Session holatini boshqaradi.
 Request'ni AIEngine'ga uzatadi.
 ---
 ## Response Formatter
-AI javobini standart formatga o'tkazadi.
+AIEngine'dan qaytgan AI javobini standart formatga o'tkazadi va Decision Layer'ga uzatadi.
 ---
 ## Service Monitor
 Service holati va ishlashini kuzatadi.
 ---
 # Allowed Dependencies
 ✓ AIEngine
-✓ AICoordinator
 ---
 # Forbidden Dependencies
-✗ Decision Layer
+✗ AICoordinator (to'g'ridan-to'g'ri)
+✗ PersonalAI / FundamentalAI / KnowledgeAI / VoiceAI / VisionAI / ExplanationAI / ConfidenceAI (to'g'ridan-to'g'ri)
 ✗ Risk Layer
 ✗ Execution Layer
 ✗ Database Layer
 ---
 # Summary
-AIService GoldBot AI Layer uchun yagona Service Gateway va Public API moduli hisoblanadi.
+AIService GoldBot AI Layer uchun ikki tomonlama Boundary Gateway va Public API moduli hisoblanadi.

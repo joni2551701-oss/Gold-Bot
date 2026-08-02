@@ -6,26 +6,28 @@ Ushbu hujjat AIService Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
 ```text
-External Layer
+Signal Layer
 ↓
-AIService
+AIService (Entry)
 ↓
 Validate Request
 ↓
 AIEngine
 ↓
-AICoordinator
+AICoordinator (Module Execution)
 ↓
-Receive AI Package
+AIEngine
+↓
+AIService (Exit)
 ↓
 Standardize Response
 ↓
-Return Response
+Decision Layer
 ```
 ---
 # Runtime Rules
 1. Har bir Request tekshirilishi shart.
-2. AIEngine yagona Processing markazi.
+2. AIService AICoordinator yoki AI modullari bilan to'g'ridan-to'g'ri ishlamaydi — faqat AIEngine orqali.
 3. Response standart formatga o'tkaziladi.
 4. Service Metadata qo'shiladi.
 ---
@@ -39,16 +41,20 @@ Validating
 ↓
 Forwarding
 ↓
+Waiting (AIEngine)
+↓
 Receiving Response
 ↓
 Completed
 ```
 ---
 # Summary
-External Layer
+Signal Layer
 ↓
 AIService
 ↓
 AIEngine
 ↓
-AI Response
+AIService
+↓
+Decision Layer

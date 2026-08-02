@@ -41,7 +41,7 @@ AI Layer yaratadi.
 ---
 # Layer Pipeline
 ```text
-AIService
+AIService (Entry)
 ↓
 AIEngine
 ↓
@@ -54,6 +54,12 @@ ExplanationAI
 ConfidenceAI
 ↓
 AI Package
+↓
+AICoordinator
+↓
+AIEngine
+↓
+AIService (Exit)
 ```
 ---
 # Layer Rules

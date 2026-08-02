@@ -24,17 +24,21 @@ AIEngine
 ↓
 AICoordinator
 ↓
-Decision Layer
+PersonalAI / FundamentalAI / KnowledgeAI / VisionAI / VoiceAI / ExplanationAI / ConfidenceAI
+↓
+AICoordinator
+↓
+AIEngine
 ```
 ---
 # Responsibilities
 AICoordinator
-✓ AI modullarini ishga tushiradi
+✓ AI modullarining yagona bevosita chaqiruvchisi (Module Execution Owner)
 ✓ Pipeline ketma-ketligini boshqaradi
 ✓ Contextlarni birlashtiradi
 ✓ AI natijalarini yig'adi
 ✓ ConfidenceAI'ga uzatadi
-✓ Decision Layer uchun AI Package yaratadi
+✓ AIEngine uchun AI Package yaratadi
 ---
 # Not Responsible
 AICoordinator
@@ -47,10 +51,12 @@ AICoordinator
 ---
 # Input
 AICoordinator qabul qiladi.
+• AI Request (AIEngine'dan)
 • Personal Context
 • Knowledge Context
 • Fundamental Context
 • Vision Context
+• Voice Context
 • User Request
 ---
 # Output
@@ -62,7 +68,7 @@ AICoordinator yaratadi.
 ---
 # Workflow
 ```text
-Receive Context
+Receive Request (AIEngine)
 ↓
 Run Required AI Modules
 ↓
@@ -74,7 +80,7 @@ Run ConfidenceAI
 ↓
 Build AI Package
 ↓
-Decision Layer
+Return to AIEngine
 ```
 ---
 # Golden Rules

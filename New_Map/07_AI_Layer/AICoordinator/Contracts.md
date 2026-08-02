@@ -6,8 +6,8 @@ Ushbu hujjat AICoordinator modulining rasmiy Architecture Contract hujjati hisob
 ---
 # Module Responsibility
 AICoordinator quyidagilar uchun javobgar.
+✓ AI Module Execution (yagona egasi)
 ✓ AI Workflow Management
-✓ Module Orchestration
 ✓ Context Aggregation
 ✓ Result Collection
 ✓ AI Package Generation
@@ -26,14 +26,20 @@ AIEngine
 ↓
 AICoordinator
 ↓
-Decision Layer
+PersonalAI / FundamentalAI / KnowledgeAI / VisionAI / VoiceAI / ExplanationAI / ConfidenceAI
+↓
+AICoordinator
+↓
+AIEngine
 ```
 ---
 # Input Contract
+• AI Request (AIEngine'dan)
 • Personal Context
 • Knowledge Context
 • Fundamental Context
 • Vision Context
+• Voice Context
 • User Request
 ---
 # Output Contract
@@ -43,10 +49,12 @@ Decision Layer
 • Confidence Report
 ---
 # Allowed Dependencies
+✓ AIEngine
 ✓ PersonalAI
 ✓ FundamentalAI
 ✓ KnowledgeAI
 ✓ VisionAI
+✓ VoiceAI
 ✓ ExplanationAI
 ✓ ConfidenceAI
 ---
@@ -57,22 +65,23 @@ Decision Layer
 ✗ Database Layer
 ---
 # Runtime Contract
-1. Har bir AI Request uchun faqat kerakli modullar ishga tushirilishi shart.
-2. AI modullar natijalari standart formatga o'tkazilishi shart.
-3. Context Aggregation bajarilishi shart.
-4. ConfidenceAI AI Package yaratilishidan oldin ishlashi shart.
-5. AI Package yagona formatda Decision Layer'ga uzatilishi shart.
-6. AICoordinator yangi Signal yoki Decision yaratmaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+1. AICoordinator AI modullarining yagona to'g'ridan-to'g'ri chaqiruvchisi hisoblanadi.
+2. Har bir AI Request uchun faqat kerakli modullar ishga tushirilishi shart.
+3. AI modullar natijalari standart formatga o'tkazilishi shart.
+4. Context Aggregation bajarilishi shart.
+5. ConfidenceAI AI Package yaratilishidan oldin ishlashi shart.
+6. AI Package yagona formatda AIEngine'ga qaytarilishi shart (Decision Layer'ga emas — bu AIService orqali amalga oshadi).
+7. AICoordinator yangi Signal yoki Decision yaratmaydi.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
-✓ AI Workflow ishga tushadi.
+✓ AIEngine'dan Request qabul qilinadi.
 ✓ Kerakli modullar ishlaydi.
 ✓ Natijalar yig'iladi.
 ✓ Unified AI Context yaratiladi.
 ✓ Confidence Report qo'shiladi.
-✓ AI Package Decision Layer'ga uzatiladi.
+✓ AI Package AIEngine'ga qaytariladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-AICoordinator Contract GoldBot AI Layer ichidagi barcha AI modullarini orkestratsiya qilish, ularning natijalarini birlashtirish va Decision Layer uchun yagona AI Package yaratishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.
+AICoordinator Contract GoldBot AI Layer ichidagi barcha AI modullarini bevosita ishga tushiruvchi yagona egasi bo'lib, ularning natijalarini birlashtirish va AIEngine uchun yagona AI Package yaratishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

@@ -8,28 +8,29 @@ Bu Canonical Runtime Blueprint hisoblanadi.
 ---
 # Runtime Sequence
 ```text
-Signal Layer / User
+AIService
 ↓
 AIEngine
 ↓
 Analyze Request
 ↓
-Route AI Modules
+Control Pipeline
 ↓
-Execute Modules
+Route to AICoordinator
 ↓
-Collect Results
+AICoordinator (Module Execution)
 ↓
-AICoordinator
+Receive AI Package
 ↓
-AIService
+Return to AIService
 ```
 ---
 # Runtime Rules
-1. Har bir Request AIEngine orqali o'tadi.
-2. Faqat kerakli AI modullari ishga tushiriladi.
-3. Natijalar AICoordinator orqali birlashtiriladi.
-4. Circular Dependency taqiqlanadi.
+1. Har bir Request AIService orqali AIEngine'ga yetib keladi.
+2. AIEngine AI modullarini bevosita ishga tushirmaydi.
+3. Module Execution to'liq AICoordinator zimmasida.
+4. Natija o'zgartirilmasdan AIService'ga qaytariladi.
+5. Circular Dependency taqiqlanadi.
 ---
 # State Flow
 ```text
@@ -39,9 +40,9 @@ Receiving
 ↓
 Routing
 ↓
-Executing
+Waiting (AICoordinator)
 ↓
-Collecting
+Returning
 ↓
 Completed
 or
@@ -49,10 +50,12 @@ Failed
 ```
 ---
 # Summary
-Request
+AIService
 ↓
 AIEngine
 ↓
-AI Modules
-↓
 AICoordinator
+↓
+AIEngine
+↓
+AIService

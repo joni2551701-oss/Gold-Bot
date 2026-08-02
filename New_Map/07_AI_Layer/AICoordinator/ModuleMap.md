@@ -10,7 +10,11 @@ AIEngine
 ↓
 AICoordinator
 ↓
-Decision Layer
+AI Modules (PersonalAI / FundamentalAI / KnowledgeAI / VisionAI / VoiceAI / ExplanationAI / ConfidenceAI)
+↓
+AICoordinator
+↓
+AIEngine
 ```
 ---
 # Module Architecture
@@ -39,16 +43,18 @@ Barcha AI Context'larni birlashtiradi.
 AI natijalarini yig'adi.
 ---
 ## AI Package Builder
-Decision Layer uchun AI Package yaratadi.
+AIEngine uchun AI Package yaratadi.
 ---
 ## Pipeline Monitor
 AI Pipeline holatini kuzatadi.
 ---
 # Allowed Dependencies
+✓ AIEngine
 ✓ PersonalAI
 ✓ FundamentalAI
 ✓ KnowledgeAI
 ✓ VisionAI
+✓ VoiceAI
 ✓ ExplanationAI
 ✓ ConfidenceAI
 ---

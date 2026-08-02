@@ -2,26 +2,25 @@
 Status: CANONICAL
 ---
 # Purpose
-AIEngine GoldBot AI Layer ichidagi asosiy Orchestrator hisoblanadi.
-Uning asosiy vazifasi AI Layer ichidagi barcha AI modullarini boshqarish, AI Pipeline'ni orchestration qilish va AI Lifecycle'ni nazorat qilishdir.
+AIEngine GoldBot AI Layer ichidagi Entry Orchestrator hisoblanadi.
+Uning asosiy vazifasi AIService orqali kelgan AI Request'ni qabul qilish, Runtime Pipeline'ni boshqarish va so'rovni AICoordinator'ga yo'naltirishdir.
+AIEngine AI modullarini bevosita chaqirmaydi — bu AICoordinator vazifasi.
 AIEngine AI tahlilini o'zi bajarmaydi.
 AIEngine signal yaratmaydi.
 AIEngine yakuniy trading qarorini qabul qilmaydi.
-AIEngine faqat AI Layer boshqaruvchisi hisoblanadi.
+AIEngine faqat Request Routing va Runtime Pipeline Control bilan shug'ullanadi.
 ---
 # Objective
 AIEngine quyidagi vazifalarni bajaradi.
-• AI Pipeline Management
-• AI Module Orchestration
+• Entry Orchestration
+• Request Routing
+• Runtime Pipeline Control
 • AI Lifecycle Management
-• AI Request Routing
 • AI State Management
-• AI Result Collection
-• AI Execution Coordination
 ---
 # Layer Position
 ```text
-Signal Layer
+AIService
 ↓
 AIEngine
 ↓
@@ -30,16 +29,15 @@ AICoordinator
 ---
 # Responsibilities
 AIEngine
-✓ AI Pipeline boshqaradi
-✓ AI modullarini ishga tushiradi
-✓ Request Routing bajaradi
-✓ AI Lifecycle boshqaradi
-✓ AI State boshqaradi
-✓ AI Result yig'adi
-✓ AICoordinator'ga uzatadi
+✓ AIService'dan Request qabul qiladi
+✓ Runtime Pipeline'ni boshqaradi
+✓ AICoordinator'ga yo'naltiradi
+✓ AI Lifecycle'ni nazorat qiladi
+✓ AI State'ni boshqaradi
 ---
 # Not Responsible
 AIEngine
+✗ AI Module Execution (AICoordinator vazifasi)
 ✗ Personal AI
 ✗ News Analysis
 ✗ Sentiment Analysis
@@ -54,36 +52,33 @@ AIEngine
 ---
 # Input
 AIEngine qabul qiladi.
-• Signal Result
-• User Request
-• AI Request
+• AI Request (AIService'dan)
 • Context
 ---
 # Output
 AIEngine yaratadi.
-• AI Tasks
 • AI Execution Plan
-• AI Results
+• Runtime Status
 ---
 # Workflow
 ```text
-Receive Request
+Receive Request (AIService)
 ↓
 Analyze Request
 ↓
-Route Modules
+Control Pipeline
 ↓
-Execute Pipeline
+Route to AICoordinator
 ↓
-Collect Results
+Receive AI Package (AICoordinator)
 ↓
-AICoordinator
+Return to AIService
 ```
 ---
 # Golden Rules
 1. AIEngine AI modullarining o'rniga ishlamaydi.
-2. Har bir modul mustaqil ishlaydi.
-3. AIEngine faqat orchestration qiladi.
+2. AIEngine AI modullarini bevosita chaqirmaydi — faqat AICoordinator'ga yo'naltiradi.
+3. AIEngine faqat Request Routing va Pipeline Control bajaradi.
 4. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents
@@ -96,4 +91,4 @@ AIEngine/
 ```
 ---
 # Summary
-AIEngine GoldBot AI Layer ichidagi barcha AI modullarini boshqaruvchi Canonical Orchestrator hisoblanadi.
+AIEngine GoldBot AI Layer ichidagi Entry Orchestration, Request Routing va Runtime Pipeline Control'ni boshqaruvchi Canonical Orchestrator hisoblanadi. AI modullarining bevosita ishga tushirilishi AICoordinator vakolatida qoladi.

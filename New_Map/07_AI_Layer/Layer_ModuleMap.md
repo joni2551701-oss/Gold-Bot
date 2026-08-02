@@ -52,11 +52,15 @@ Status: CANONICAL
 ```
 ---
 # Core Modules
-AIService
+AIService (Entry)
 ↓
 AIEngine
 ↓
 AICoordinator
+↓
+AIEngine
+↓
+AIService (Exit)
 ---
 # Intelligence Modules
 • PersonalAI

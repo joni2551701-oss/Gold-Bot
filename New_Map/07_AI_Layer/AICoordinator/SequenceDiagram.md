@@ -18,13 +18,15 @@ FundamentalAI
 ↓
 VisionAI
 ↓
+VoiceAI
+↓
 ExplanationAI
 ↓
 ConfidenceAI
 ↓
 Build AI Package
 ↓
-Decision Layer
+AIEngine
 ```
 ---
 # Runtime Rules
@@ -32,7 +34,7 @@ Decision Layer
 2. Modullar parallel yoki ketma-ket ishlashi mumkin.
 3. Natijalar yagona formatga birlashtiriladi.
 4. ConfidenceAI oxirida ishlaydi.
-5. AI Package Decision Layer'ga uzatiladi.
+5. AI Package AIEngine'ga qaytariladi (Decision Layer'ga emas).
 ---
 # State Flow
 ```text
@@ -54,6 +56,8 @@ AIEngine
 ↓
 AICoordinator
 ↓
+AI Modules
+↓
 AI Package
 ↓
-Decision Layer
+AIEngine

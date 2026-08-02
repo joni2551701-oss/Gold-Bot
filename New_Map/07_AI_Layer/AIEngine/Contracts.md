@@ -6,13 +6,13 @@ Ushbu hujjat AIEngine modulining rasmiy Architecture Contract hujjati hisoblanad
 ---
 # Module Responsibility
 AIEngine quyidagilar uchun javobgar.
-✓ AI Pipeline Management
-✓ AI Module Routing
-✓ AI Execution Coordination
+✓ Entry Orchestration
+✓ Request Routing
+✓ Runtime Pipeline Control
 ✓ AI Lifecycle Management
 ✓ AI State Management
-✓ AI Result Collection
 AIEngine bajarmaydi.
+✗ AI Module Execution (AICoordinator vazifasi)
 ✗ AI Analysis
 ✗ Personal Memory
 ✗ News Analysis
@@ -25,57 +25,54 @@ AIEngine bajarmaydi.
 ---
 # Module Boundary
 ```text
-Signal Layer
+AIService
 ↓
 AIEngine
-↓
-AI Modules
 ↓
 AICoordinator
 ```
 ---
 # Input Contract
-• Signal Result
-• User Request
-• AI Request
+• AI Request (AIService'dan)
 • Context
 ---
 # Output Contract
-• AI Tasks
 • AI Execution Plan
-• AI Results
+• Runtime Status
+
+AICoordinator'dan qaytgandan so'ng:
+• AI Result (AIService'ga uzatish uchun)
 ---
 # Allowed Dependencies
-✓ PersonalAI
-✓ FundamentalAI
-✓ KnowledgeAI
-✓ VoiceAI
-✓ VisionAI
-✓ ExplanationAI
-✓ ConfidenceAI
+✓ AIService
 ✓ AICoordinator
 ---
 # Forbidden Dependencies
+✗ PersonalAI (to'g'ridan-to'g'ri)
+✗ FundamentalAI (to'g'ridan-to'g'ri)
+✗ KnowledgeAI (to'g'ridan-to'g'ri)
+✗ VoiceAI (to'g'ridan-to'g'ri)
+✗ VisionAI (to'g'ridan-to'g'ri)
+✗ ExplanationAI (to'g'ridan-to'g'ri)
+✗ ConfidenceAI (to'g'ridan-to'g'ri)
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
 ✗ Platform Layer
 ---
 # Runtime Contract
-1. Har bir AI Request AIEngine orqali o'tishi shart.
-2. AIEngine faqat orchestration bajaradi.
-3. Har bir AI modul mustaqil ishlaydi.
-4. AI natijalari AICoordinator orqali birlashtiriladi.
-5. AIEngine AI Logic bajarmaydi.
-6. Circular Dependency qat'iyan taqiqlanadi.
+1. Har bir AI Request AIService orqali AIEngine'ga yetib keladi.
+2. AIEngine faqat Request Routing va Pipeline Control bajaradi.
+3. AI modullarini bevosita chaqirish taqiqlanadi — bu AICoordinator vazifasi.
+4. AICoordinator'dan qaytgan natija o'zgartirilmasdan AIService'ga uzatiladi.
+5. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
-✓ Request qabul qilinadi.
-✓ Kerakli AI modullari tanlanadi.
-✓ Pipeline bajariladi.
-✓ Natijalar yig'iladi.
+✓ Request AIService'dan qabul qilinadi.
+✓ Pipeline Control bajariladi.
 ✓ AICoordinator'ga uzatiladi.
+✓ Natija AIService'ga qaytariladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-AIEngine Contract GoldBot AI Layer ichidagi barcha AI modullarining ishlashini boshqaruvchi rasmiy Canonical Architecture Contract hisoblanadi.
+AIEngine Contract GoldBot AI Layer ichidagi Entry Orchestration, Request Routing va Runtime Pipeline Control'ni boshqaruvchi rasmiy Canonical Architecture Contract hisoblanadi. AI modullarining bevosita ishga tushirilishi AICoordinator vakolatida qoladi.

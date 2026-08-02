@@ -3,9 +3,9 @@ Status: CANONICAL
 ---
 # Runtime Sequence
 ```text
-External Layer
+Signal Layer
 ↓
-AIService
+AIService (Entry)
 ↓
 AIEngine
 ↓
@@ -19,21 +19,29 @@ FundamentalAI
 ↓
 VisionAI
 ↓
+VoiceAI
+↓
 ExplanationAI
 ↓
 ConfidenceAI
 ↓
 AI Package
 ↓
+AICoordinator
+↓
+AIEngine
+↓
+AIService (Exit)
+↓
 Decision Layer
 ```
 ---
 # Runtime Rules
-1. AIService har doim birinchi.
-2. AIEngine Pipeline boshlaydi.
-3. AICoordinator modullarni boshqaradi.
+1. AIService AI Layer'ning yagona Entry va Exit nuqtasi hisoblanadi.
+2. AIEngine Pipeline'ni boshqaradi, AI modullarini bevosita chaqirmaydi.
+3. AICoordinator AI modullarining yagona bevosita chaqiruvchisi hisoblanadi.
 4. ConfidenceAI oxirida ishlaydi.
-5. Decision Layer AI Package qabul qiladi.
+5. AI Package AIEngine va AIService orqali Decision Layer'ga uzatiladi.
 ---
 # State Flow
 ```text

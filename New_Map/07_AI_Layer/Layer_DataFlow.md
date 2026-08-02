@@ -7,11 +7,10 @@ AI Layer barcha AI modullarini yagona Pipeline sifatida ishlatadi va Decision La
 ---
 # Layer Data Flow
 ```text
-External Layers
-(Data / Context / Signal)
+Signal Layer
         │
         ▼
-AIService
+AIService (Entry)
         │
         ▼
 AIEngine
@@ -19,20 +18,26 @@ AIEngine
         ▼
 AICoordinator
         │
-        ├──────────────┐
-        ▼              ▼
-PersonalAI      KnowledgeAI
-        │              │
-        ▼              ▼
-FundamentalAI   VisionAI
-        │              │
-        └──────┬───────┘
+        ├──────────────┬──────────────┐
+        ▼              ▼              ▼
+PersonalAI      KnowledgeAI       VoiceAI
+        │              │              │
+        ▼              ▼              │
+FundamentalAI   VisionAI               │
+        │              │              │
+        └──────┬───────┴──────────────┘
                ▼
 ExplanationAI
                ▼
 ConfidenceAI
                ▼
 AI Package
+               ▼
+AICoordinator
+               ▼
+AIEngine
+               ▼
+AIService (Exit)
                ▼
 Decision Layer
 ```

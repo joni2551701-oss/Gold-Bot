@@ -107,21 +107,19 @@ Memory Update
 ```text
 Signal Layer
 ↓
+AI Service (Entry)
+↓
 AI Engine
 ↓
 AI Coordinator
 ↓
-Personal AI
+Personal AI / Fundamental AI / Knowledge AI / Vision AI / Voice AI / Explanation AI / Confidence AI
 ↓
-Fundamental AI
+AI Coordinator
 ↓
-Knowledge AI
+AI Engine
 ↓
-Explanation AI
-↓
-Confidence AI
-↓
-AI Service
+AI Service (Exit)
 ↓
 Decision Layer
 ```

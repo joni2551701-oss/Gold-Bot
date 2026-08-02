@@ -6,11 +6,9 @@ Ushbu hujjat AIEngine ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-Signal Layer
+AIService
 ↓
 AIEngine
-↓
-AI Modules
 ↓
 AICoordinator
 ```
@@ -20,51 +18,44 @@ AICoordinator
 AIEngine
         │
         ├── Request Manager
-        ├── Pipeline Manager
-        ├── Module Router
-        ├── Execution Manager
+        ├── Pipeline Controller
+        ├── Routing Manager
         ├── State Manager
-        ├── Result Collector
         └── Event Publisher
 ```
 ---
 # Internal Components
 ## Request Manager
-AI Request'larni qabul qiladi.
+AIService'dan kelgan AI Request'larni qabul qiladi.
 ---
-## Pipeline Manager
-AI Pipeline'ni boshqaradi.
+## Pipeline Controller
+Runtime Pipeline'ni boshqaradi.
 ---
-## Module Router
-Kerakli AI modullarini tanlaydi.
----
-## Execution Manager
-AI modullarini ishga tushiradi.
+## Routing Manager
+So'rovni AICoordinator'ga yo'naltiradi.
 ---
 ## State Manager
-AI holatini boshqaradi.
----
-## Result Collector
-AI natijalarini yig'adi.
+AI Lifecycle holatini boshqaradi.
 ---
 ## Event Publisher
-AI Event yaratadi.
+AI Runtime Event yaratadi.
 ---
 # Allowed Dependencies
-✓ PersonalAI
-✓ FundamentalAI
-✓ KnowledgeAI
-✓ VoiceAI
-✓ VisionAI
-✓ ExplanationAI
-✓ ConfidenceAI
+✓ AIService
 ✓ AICoordinator
 ---
 # Forbidden Dependencies
+✗ PersonalAI (to'g'ridan-to'g'ri)
+✗ FundamentalAI (to'g'ridan-to'g'ri)
+✗ KnowledgeAI (to'g'ridan-to'g'ri)
+✗ VoiceAI (to'g'ridan-to'g'ri)
+✗ VisionAI (to'g'ridan-to'g'ri)
+✗ ExplanationAI (to'g'ridan-to'g'ri)
+✗ ConfidenceAI (to'g'ridan-to'g'ri)
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer
 ✗ Platform Layer
 ---
 # Summary
-AIEngine GoldBot AI Layer ichidagi barcha AI modullarini boshqaruvchi Canonical Orchestrator hisoblanadi.
+AIEngine GoldBot AI Layer ichidagi Entry Orchestration, Request Routing va Runtime Pipeline Control'ni boshqaruvchi Canonical Orchestrator hisoblanadi. AI modullarini bevosita chaqirmaydi — bu AICoordinator vazifasi.
