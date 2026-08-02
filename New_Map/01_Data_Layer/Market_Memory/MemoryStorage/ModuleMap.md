@@ -247,23 +247,23 @@ MemoryStorage quyidagilar bilan ishlashi mumkin emas.
 
 ✗ PriceStreamService
 
+✗ CurrentPriceProvider
+
 ✗ StreamValidator
 
 ✗ CandleBuilder
 
-✗ Context Engine
+✗ Context Layer
 
-✗ Analysis Engine
+✗ Analysis Layer
 
-✗ Strategy Engine
+✗ Strategy Layer
 
-✗ Confluence Engine
+✗ Decision Layer
 
-✗ Decision Engine
+✗ Risk Layer
 
-✗ Risk Engine
-
-✗ Signal Engine
+✗ Signal Layer
 
 ✗ AI Layer
 
