@@ -43,6 +43,7 @@ Signal Validator
 • Metadata
 ---
 # Allowed Dependencies
+✓ SignalEngine
 ✓ Strategy Result
 ✓ Confluence Engine
 ✓ Signal Model

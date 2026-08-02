@@ -55,9 +55,11 @@ SignalService qabul qiladi.
 • Signal Metadata
 ---
 # Output
-SignalService yaratadi.
+SignalService uzatadi.
+• Published Signal
 • Signal Response
-• Signal Result
+• Forwarded Signal Result
+• Delivery Metadata
 • Signal Status
 • Signal Event
 ---

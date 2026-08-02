@@ -20,11 +20,13 @@ ConfluenceEngine quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
+Strategy Layer
+↓
+SignalEngine
+↓
 Context Layer
 ↓
 Indicator Layer
-↓
-Strategy Layer
 ↓
 ConfluenceEngine
 ↓

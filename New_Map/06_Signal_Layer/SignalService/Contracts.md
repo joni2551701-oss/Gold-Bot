@@ -38,7 +38,8 @@ AI Layer
 ---
 # Output Contract
 • Signal Response
-• Signal Result
+• Forwarded Signal Result
+• Delivery Metadata
 • Signal Status
 • Signal Event
 ---

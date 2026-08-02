@@ -2,21 +2,19 @@
 Status: CANONICAL
 ---
 # Purpose
-SignalEngine GoldBot Signal Layer ichidagi barcha Signal Generation jarayonini boshqaruvchi Canonical Engine hisoblanadi.
-Uning asosiy vazifasi Confluence natijasidan standart Signal Result yaratish va Signal Layer ichidagi barcha modullarni orchestration qilishdir.
+SignalEngine GoldBot Signal Layer ichidagi Pipeline Orchestrator hisoblanadi, xuddi Core Layer'dagi CoreEngine, Context Layer'dagi ContextEngine va Indicator Layer'dagi IndicatorEngine kabi.
+Uning asosiy vazifasi Strategy Result kelganidan so'ng ConfluenceEngine, SignalBuilder, SignalValidator, SignalScoring va SignalFormatter'ni to'g'ri ketma-ketlikda ishga tushirish va Runtime'ni boshqarishdir.
+SignalEngine Confluence hisoblamaydi, Signal Build qilmaydi, Validation, Scoring yoki Formatting bajarmaydi — bularning har biri o'z modulining vazifasi.
 SignalEngine AI ishlatmaydi.
 SignalEngine yakuniy trading qarorini qabul qilmaydi.
-SignalEngine trade ochmaydi.
-SignalEngine faqat texnik Signal Pipeline'ni boshqaradi.
+SignalEngine faqat Pipeline Orchestration, Module Coordination, Execution Order va Runtime Control bilan shug'ullanadi.
 ---
 # Objective
 SignalEngine quyidagi vazifalarni bajaradi.
-• Signal Pipeline Management
-• Confluence Processing
-• Signal Generation
-• Signal Validation
-• Signal Scoring
-• Signal Formatting
+• Pipeline Orchestration
+• Module Coordination
+• Execution Order Management
+• Runtime Control
 • Signal Lifecycle Management
 ---
 # Layer Position
@@ -25,20 +23,26 @@ Strategy Layer
 ↓
 SignalEngine
 ↓
+ConfluenceEngine → SignalBuilder → SignalValidator → SignalScoring → SignalFormatter
+↓
 Signal Service
 ```
 ---
 # Responsibilities
 SignalEngine
-✓ Signal Pipeline boshqaradi
-✓ SignalBuilder'ni ishga tushiradi
-✓ SignalValidator'ni boshqaradi
-✓ SignalScoring'ni ishga tushiradi
-✓ SignalFormatter'ni boshqaradi
-✓ Signal Result yaratadi
+✓ Pipeline bosqichlarini to'g'ri ketma-ketlikda ishga tushiradi
+✓ ConfluenceEngine, SignalBuilder, SignalValidator, SignalScoring, SignalFormatter'ni muvofiqlashtiradi
+✓ Runtime holatini boshqaradi
+✓ Execution Order'ni belgilaydi
+✓ Signal Lifecycle'ni boshqaradi
 ---
 # Not Responsible
 SignalEngine
+✗ Technical Confluence yaratish (ConfluenceEngine vazifasi)
+✗ Signal Build qilish (SignalBuilder vazifasi)
+✗ Signal Validation (SignalValidator vazifasi)
+✗ Signal Scoring (SignalScoring vazifasi)
+✗ Signal Formatting (SignalFormatter vazifasi)
 ✗ Market Analysis
 ✗ Context Analysis
 ✗ Indicator Calculation
@@ -51,37 +55,37 @@ SignalEngine
 # Input
 SignalEngine qabul qiladi.
 • Strategy Result
-• Technical Confluence
 • Strategy Metadata
 ---
 # Output
 SignalEngine yaratadi.
-• Signal Result
-• Technical Score
-• Technical Confidence
-• Signal Metadata
+• Pipeline Execution Order
+• Runtime Status
+• Coordination Events
 ---
 # Workflow
 ```text
 Receive Strategy Result
 ↓
-Load Confluence
+Initiate Pipeline
 ↓
-Build Signal
+Invoke ConfluenceEngine
 ↓
-Validate Signal
+Invoke SignalBuilder
 ↓
-Calculate Score
+Invoke SignalValidator
 ↓
-Format Signal
+Invoke SignalScoring
 ↓
-Signal Service
+Invoke SignalFormatter
+↓
+Forward Result to SignalService
 ```
 ---
 # Golden Rules
 1. SignalEngine faqat Signal Layer ichida ishlaydi.
-2. Har bir Signal Validation'dan o'tishi shart.
-3. Signal Result immutable hisoblanadi.
+2. SignalEngine hech qanday bosqichning ichki hisob-kitobini o'zi bajarmaydi — faqat ketma-ketlikni boshqaradi.
+3. Har bir bosqich natijasi keyingisiga o'zgartirilmasdan uzatiladi.
 4. AI ishlatilmaydi.
 5. Decision qabul qilinmaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
@@ -96,4 +100,4 @@ SignalEngine/
 ```
 ---
 # Summary
-SignalEngine GoldBot Signal Layer ichidagi barcha Signal Generation Pipeline'ni boshqaruvchi Canonical Engine hisoblanadi.
+SignalEngine GoldBot Signal Layer ichidagi Pipeline Orchestration, Module Coordination va Runtime Control'ni boshqaruvchi Canonical Engine hisoblanadi. Confluence, Build, Validation, Scoring va Formatting har biri o'z modulida bajariladi, SignalEngine faqat ularning bajarilish ketma-ketligini boshqaradi.

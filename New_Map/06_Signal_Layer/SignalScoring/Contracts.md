@@ -42,6 +42,7 @@ Signal Formatter
 • Score Metadata
 ---
 # Allowed Dependencies
+✓ SignalEngine
 ✓ SignalValidator
 ✓ ConfluenceEngine
 ✓ Signal Model

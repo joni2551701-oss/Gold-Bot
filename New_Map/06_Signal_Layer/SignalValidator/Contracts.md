@@ -41,6 +41,7 @@ Signal Scoring
 • Valid Signal Result
 ---
 # Allowed Dependencies
+✓ SignalEngine
 ✓ SignalBuilder
 ✓ Signal Model
 ✓ Validation Rules

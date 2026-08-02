@@ -8,11 +8,13 @@ Bu Canonical Runtime Blueprint hisoblanadi.
 ---
 # Runtime Sequence
 ```text
+Strategy Layer
+↓
+SignalEngine (Pipeline Orchestration)
+↓
 Context Layer
 ↓
 Indicator Layer
-↓
-Strategy Layer
 ↓
 ConfluenceEngine
 ↓

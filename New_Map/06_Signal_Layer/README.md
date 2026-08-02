@@ -88,6 +88,8 @@ Signal Layer yaratadi.
 ```text
 Strategy Result
 ↓
+Signal Engine (Pipeline Orchestration)
+↓
 Confluence Engine
 ↓
 Signal Builder

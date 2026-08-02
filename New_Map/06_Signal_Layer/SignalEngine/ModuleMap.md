@@ -17,36 +17,28 @@ Signal Service
 ```text
 SignalEngine
         │
-        ├── Confluence Loader
-        ├── Signal Builder
-        ├── Validation Manager
-        ├── Scoring Manager
-        ├── Formatter Manager
+        ├── Pipeline Coordinator
+        ├── Execution Order Manager
+        ├── Runtime Controller
         ├── State Manager
         └── Event Publisher
 ```
 ---
 # Internal Components
-## Confluence Loader
-Technical Confluence'ni qabul qiladi.
+## Pipeline Coordinator
+ConfluenceEngine, SignalBuilder, SignalValidator, SignalScoring, SignalFormatter'ni to'g'ri ketma-ketlikda chaqiradi.
 ---
-## Signal Builder
-Signal obyektini yaratadi.
+## Execution Order Manager
+Pipeline bosqichlarining bajarilish tartibini belgilaydi.
 ---
-## Validation Manager
-Signal'ni tekshiradi.
----
-## Scoring Manager
-Technical Score va Confidence hisoblaydi.
----
-## Formatter Manager
-Signal formatini yaratadi.
+## Runtime Controller
+Pipeline Runtime holatini nazorat qiladi.
 ---
 ## State Manager
 Signal Lifecycle'ni boshqaradi.
 ---
 ## Event Publisher
-Signal Event yaratadi.
+Coordination Event yaratadi.
 ---
 # Allowed Dependencies
 ✓ ConfluenceEngine
@@ -63,4 +55,4 @@ Signal Event yaratadi.
 ✗ Execution Layer
 ---
 # Summary
-SignalEngine Signal Layer ichidagi barcha Signal Pipeline'ni boshqaruvchi Canonical Orchestrator hisoblanadi.
+SignalEngine Signal Layer ichidagi Pipeline Orchestration, Module Coordination va Runtime Control'ni boshqaruvchi Canonical Orchestrator hisoblanadi. Har bir pipeline bosqichining ichki hisob-kitobi o'z modulida bajariladi.

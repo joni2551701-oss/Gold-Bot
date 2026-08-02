@@ -8,11 +8,13 @@ Bu Canonical Runtime Blueprint hisoblanadi.
 ---
 # Runtime Sequence
 ```text
+Strategy Result
+↓
+SignalEngine
+↓
 Market Context
 ↓
 Indicator Context
-↓
-Strategy Result
 ↓
 ConfluenceEngine
 ↓
@@ -48,11 +50,9 @@ Failed
 ```
 ---
 # Summary
-Context
+SignalEngine
 ↓
-Indicators
-↓
-Strategy
+Context / Indicators / Strategy
 ↓
 ConfluenceEngine
 ↓

@@ -42,6 +42,7 @@ SignalService
 • Formatted Metadata
 ---
 # Allowed Dependencies
+✓ SignalEngine
 ✓ SignalScoring
 ✓ Signal Model
 ---

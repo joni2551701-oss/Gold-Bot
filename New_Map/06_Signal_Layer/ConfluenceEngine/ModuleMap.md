@@ -8,6 +8,8 @@ Ushbu hujjat ConfluenceEngine ichki arxitekturasini tavsiflaydi.
 ```text
 Strategy Layer
 ↓
+SignalEngine
+↓
 ConfluenceEngine
 ↓
 SignalBuilder
@@ -49,6 +51,7 @@ Technical Confluence yaratadi.
 Confluence Metadata yaratadi.
 ---
 # Allowed Dependencies
+✓ SignalEngine
 ✓ Context Layer
 ✓ Indicator Layer
 ✓ Strategy Layer

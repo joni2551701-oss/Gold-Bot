@@ -23,11 +23,13 @@ ConfluenceEngine bajarmaydi.
 ---
 # Module Boundary
 ```text
+Strategy Layer
+↓
+SignalEngine
+↓
 Context Layer
 ↓
 Indicator Layer
-↓
-Strategy Layer
 ↓
 ConfluenceEngine
 ↓
@@ -46,6 +48,7 @@ SignalBuilder
 • Confluence Metadata
 ---
 # Allowed Dependencies
+✓ SignalEngine
 ✓ Context Layer
 ✓ Indicator Layer
 ✓ Strategy Layer

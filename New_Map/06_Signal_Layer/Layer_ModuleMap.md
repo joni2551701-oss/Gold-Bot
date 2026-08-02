@@ -25,11 +25,14 @@ Signal Layer
 ---
 # Dependency Flow
 ```text
+Strategy Layer
+        │
+        ▼
+SignalEngine (Pipeline Orchestration)
+        │
 Context Layer
         │
 Indicator Layer
-        │
-Strategy Layer
         │
         ▼
 ConfluenceEngine

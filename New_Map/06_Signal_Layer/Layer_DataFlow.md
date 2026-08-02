@@ -21,11 +21,14 @@ Bu GoldBot Signal Layer uchun rasmiy Data Flow Blueprint hisoblanadi.
 ---
 # Data Flow
 ```text
+Strategy Result
+        │
+        ▼
+Signal Engine (Pipeline Orchestration)
+        │
 Market Context
         │
 Indicator Context
-        │
-Strategy Result
         │
         ▼
 Confluence Engine

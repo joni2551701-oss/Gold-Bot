@@ -10,9 +10,9 @@ Bu Canonical Runtime Blueprint hisoblanadi.
 ```text
 Strategy Result
 ↓
-Confluence Engine
+SignalEngine (Initiate Pipeline)
 ↓
-SignalEngine
+Confluence Engine
 ↓
 Signal Builder
 ↓
