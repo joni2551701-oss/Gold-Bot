@@ -250,6 +250,8 @@ PriceStreamService quyidagilar bilan ishlashi mumkin emas.
 
 ✗ Historical Database
 
+✗ HistoricalDataService
+
 ✗ Context Engine
 
 ✗ Analysis Engine

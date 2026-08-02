@@ -170,7 +170,7 @@ PriceStreamService quyidagi modullarni boshqaradi:
 # Workflow
 
 ```text
-Live Provider
+MarketCalendar
 
 ↓
 
@@ -178,15 +178,19 @@ PriceStreamService
 
 ↓
 
+LiveProviders
+
+↓
+
 Current Price Provider
 
 ↓
 
-Candle Builder
+Stream Validator
 
 ↓
 
-Stream Validator
+Candle Builder
 
 ↓
 
