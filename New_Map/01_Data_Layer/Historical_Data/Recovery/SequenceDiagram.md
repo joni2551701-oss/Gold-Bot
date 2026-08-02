@@ -203,7 +203,7 @@ Market Memory
 
 ↓
 
-Resume Live Stream
+Recovery Completed
 ```
 
 ---
