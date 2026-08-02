@@ -45,6 +45,7 @@ Yakuniy Decision Confidence hisoblaydi.
 Confidence Report yaratadi.
 ---
 # Allowed Dependencies
+✓ Signal Layer
 ✓ AI Layer
 ✓ RuleEngine
 ---

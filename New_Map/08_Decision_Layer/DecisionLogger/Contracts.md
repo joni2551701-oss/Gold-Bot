@@ -27,8 +27,6 @@ DecisionEngine
 DecisionLogger
 ↓
 DecisionService
-↓
-Database Layer
 ```
 ---
 # Input Contract
@@ -52,7 +50,7 @@ Database Layer
 ✗ RuleEngine
 ✗ Risk Layer
 ✗ Execution Layer
-✗ Database Layer (Direct Access)
+✗ Database Layer (to'g'ridan-to'g'ri)
 ---
 # Runtime Contract
 1. Har bir Final Decision log qilinishi shart.

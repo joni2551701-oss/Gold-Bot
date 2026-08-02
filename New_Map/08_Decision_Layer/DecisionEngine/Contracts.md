@@ -30,8 +30,6 @@ DecisionLogger
 ```
 ---
 # Input Contract
-• Signal Package
-• AI Package
 • Approval Result
 • Decision Confidence
 • Rule Results
@@ -65,7 +63,7 @@ DecisionLogger
 ---
 # Acceptance Criteria
 ✓ Input tekshiriladi.
-✓ Signal va AI natijalari birlashtiriladi.
+✓ Approval, Confidence va Rule natijalari birlashtiriladi.
 ✓ Final Decision yaratiladi.
 ✓ Decision Status belgilanadi.
 ✓ Decision Context yaratiladi.

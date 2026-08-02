@@ -24,8 +24,6 @@ DecisionEngine
 DecisionLogger
 ↓
 DecisionService
-↓
-Database Layer
 ```
 ---
 # Responsibilities
@@ -72,8 +70,6 @@ Generate Metadata
 Write Log
 ↓
 DecisionService
-↓
-Database Layer
 ```
 ---
 # Golden Rules

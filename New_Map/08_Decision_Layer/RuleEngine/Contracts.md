@@ -30,8 +30,6 @@ ApprovalEngine
 ```
 ---
 # Input Contract
-• Signal Package
-• AI Package
 • Decision Confidence
 • Market Context
 • Risk Context

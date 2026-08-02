@@ -46,8 +46,6 @@ RuleEngine
 ---
 # Input
 RuleEngine qabul qiladi.
-• Signal Package
-• AI Package
 • Decision Confidence
 • Market Context
 • Risk Context

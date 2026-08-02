@@ -3,7 +3,7 @@ Status: CANONICAL
 ---
 # Purpose
 DecisionEngine GoldBot Decision Layer ichidagi Canonical Final Decision moduli hisoblanadi.
-Uning asosiy vazifasi Signal Layer, AI Layer va RuleEngine natijalarini birlashtirib yakuniy Trading Decision yaratishdir.
+Uning asosiy vazifasi ApprovalEngine, DecisionConfidence va RuleEngine natijalarini birlashtirib yakuniy Trading Decision yaratishdir.
 DecisionEngine GoldBot ichida Trade Decision chiqarishga ruxsat berilgan yagona modul hisoblanadi.
 ---
 # Objective
@@ -28,8 +28,8 @@ DecisionService
 ---
 # Responsibilities
 DecisionEngine
-✓ Signal Package qabul qiladi
-✓ AI Package qabul qiladi
+✓ Approval Result qabul qiladi
+✓ Decision Confidence qabul qiladi
 ✓ Rule natijalarini qabul qiladi
 ✓ Approval Status tekshiradi
 ✓ Yakuniy Decision yaratadi
@@ -42,12 +42,10 @@ DecisionEngine
 ✗ Rule Validation
 ✗ Risk Calculation
 ✗ Trade Execution
-✗ Database Logging
+✗ Decision Logging
 ---
 # Input
 DecisionEngine qabul qiladi.
-• Signal Package
-• AI Package
 • Approval Result
 • Decision Confidence
 • Rule Results

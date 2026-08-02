@@ -64,6 +64,7 @@ Decision Service holatini kuzatadi.
 ✗ RuleEngine (to'g'ridan-to'g'ri)
 ✗ ApprovalEngine (to'g'ridan-to'g'ri)
 ✗ DecisionEngine (to'g'ridan-to'g'ri)
+✗ Risk Layer'dan boshqa tashqi Layer
 ✗ Execution Layer
 ✗ Database Layer
 ---

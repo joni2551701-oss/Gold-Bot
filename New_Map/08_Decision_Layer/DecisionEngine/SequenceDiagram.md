@@ -6,10 +6,6 @@ Ushbu hujjat DecisionEngine Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
 ```text
-Signal Package
-↓
-AI Package
-↓
 ApprovalEngine
 ↓
 DecisionEngine
@@ -21,14 +17,12 @@ Aggregate Results
 Create Final Decision
 ↓
 DecisionLogger
-↓
-DecisionService
 ```
 ---
 # Runtime Rules
-1. Signal Package mavjud bo'lishi shart.
-2. AI Package mavjud bo'lishi shart.
-3. Approval Result mavjud bo'lishi shart.
+1. Approval Result mavjud bo'lishi shart.
+2. Decision Confidence mavjud bo'lishi shart.
+3. Rule Results mavjud bo'lishi shart.
 4. Decision faqat bir marta yaratiladi.
 ---
 # State Flow
@@ -47,7 +41,7 @@ Completed
 ```
 ---
 # Summary
-Signal + AI
+Approval + Confidence + Rules
 ↓
 DecisionEngine
 ↓

@@ -19,15 +19,13 @@ Generate Metadata
 Write Log
 ↓
 DecisionService
-↓
-Database Layer
 ```
 ---
 # Runtime Rules
 1. Final Decision mavjud bo'lishi shart.
 2. Audit Record yaratilishi shart.
 3. Timestamp yozilishi shart.
-4. DecisionService orqali Database Layer'ga uzatiladi.
+4. Log DecisionService'ga uzatiladi (Database Layer'ga faqat DecisionService orqali yetadi).
 ---
 # State Flow
 ```text
@@ -49,4 +47,4 @@ DecisionLogger
 ↓
 Audit Record
 ↓
-Database Layer
+DecisionService

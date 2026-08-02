@@ -43,6 +43,7 @@ RuleEngine
 • Confidence Metadata
 ---
 # Allowed Dependencies
+✓ Signal Layer
 ✓ AI Layer
 ✓ RuleEngine
 ---

@@ -34,8 +34,6 @@ DecisionEngine
 # Input Contract
 • Rule Results
 • Decision Confidence
-• Signal Package
-• AI Package
 ---
 # Output Contract
 • Approval Status

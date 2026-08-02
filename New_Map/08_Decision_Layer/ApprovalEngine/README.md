@@ -50,8 +50,6 @@ ApprovalEngine
 ApprovalEngine qabul qiladi.
 • Rule Results
 • Decision Confidence
-• Signal Package
-• AI Package
 ---
 # Output
 ApprovalEngine yaratadi.
