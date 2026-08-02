@@ -276,6 +276,18 @@ Violation:
 → Critical
 ```
 Sabab: har bir modul faqat o'zining runtime'ini hujjatlashtiradi va faqat o'z output'i bilan tugaydi. Boshqa modulning lifecycle/sequence'ini yoki keyingi modulning runtime harakatlarini o'z hujjatiga yozish Ownership Overlap (Forbidden Dependency in Runtime Workflow) hisoblanadi — har bir modul mustaqil ravishda audit qilinishi va mustaqil ravishda o'zgarishi kerak bo'lgan alohida Canonical hujjat hisoblanadi. Bu qoida ikki marta aniqlandi: `01_Data_Layer/Historical_Data/Bootstrap` modulida Recovery'ning runtime ketma-ketligi Bootstrap'ning o'z SequenceDiagram'i ichida hujjatlashtirilgani (Critical, Ownership Overlap), va `01_Data_Layer/Historical_Data/Recovery` modulida "Resume Live Stream" (Live_Data modulining lifecycle harakati) Recovery'ning o'z SequenceDiagram'i ichida hujjatlashtirilgani (Critical, Ownership Overlap / Forbidden Dependency in Runtime Workflow) aniqlanganidan keyin qo'shildi.
+
+## Dependency Source of Truth Rule
+```text
+Contracts.md is the canonical source
+for module dependencies.
+ModuleMap.md must always mirror
+Contracts.md exactly.
+
+Any mismatch:
+→ Major
+```
+Sabab: Contracts.md modulning rasmiy interfeysi va arxitektura shartnomasini belgilaydi; ModuleMap.md esa shu shartnomani vizual/strukturaviy aks ettirishi kerak. Agar Allowed/Forbidden Dependencies ro'yxati ikkala hujjatda turlicha bo'lsa, Contracts.md ustun hisoblanadi va ModuleMap.md unga moslashtiriladi. Bu qoida `01_Data_Layer/Historical_Data/HistoricalProviders` modulida ModuleMap.md'ning Allowed Dependencies'da Network Layer'ni va Forbidden Dependencies'da Event System/Future Expansion Layer'ni Contracts.md'ga nisbatan tushirib qoldirgani aniqlanganidan keyin qo'shildi (Major, Documentation Consistency).
 ---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.

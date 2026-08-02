@@ -222,6 +222,8 @@ Historical Providers quyidagilar bilan ishlashi mumkin.
 
 ✓ External Provider APIs
 
+✓ Network Layer
+
 ---
 
 # Forbidden Dependencies
@@ -261,6 +263,10 @@ Historical Providers quyidagilar bilan ishlashi mumkin emas.
 ✗ Learning Layer
 
 ✗ Media Layer
+
+✗ Event System
+
+✗ Future Expansion Layer
 
 ---
 
