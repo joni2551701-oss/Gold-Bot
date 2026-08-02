@@ -38,15 +38,7 @@ Market Memory quyidagi vazifalarni bajaradi:
 
 # Layer Position
 
-Historical Data
-
-+
-
-Live Data
-
-↓
-
-Data Validation
+Live Data Layer
 
 ↓
 
@@ -56,10 +48,6 @@ Market Memory
 
 GoldBot Core
 
-↓
-
-Application Services
-
 ---
 
 # Internal Structure
@@ -67,25 +55,49 @@ Application Services
 Market_Memory/
 
 ├── README.md
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+├── Layer_Contracts.md
 │
-├── MarketMemory.md
-├── MemoryReader.md
-├── MemoryRegistry.md
-├── TimeframeMemory.md
-├── CachePolicy.md
-├── MemoryDataFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── MarketMemoryService/
+├── MemoryWriter/
+├── MemoryStorage/
+├── MemoryCache/
+├── MemoryLifecycle/
+└── MemoryReader/
 
 ---
 
 # Module Overview
 
-## MarketMemory
+## MarketMemoryService
 
-Data Layer ichidagi barcha market ma'lumotlarini saqlovchi asosiy xotira.
+Market Memory Layer'ning markaziy Orchestrator'i.
 
-Single Source of Truth.
+---
+
+## MemoryWriter
+
+Market Memory'ga yagona Write Interface.
+
+---
+
+## MemoryStorage
+
+Market Memory'ning yagona Persistent Storage'i.
+
+---
+
+## MemoryCache
+
+Market Memory'ning Runtime Cache'i.
+
+---
+
+## MemoryLifecycle
+
+Market Memory'ning Runtime Lifecycle va Recovery boshqaruvchisi.
 
 ---
 
@@ -94,64 +106,6 @@ Single Source of Truth.
 Market Memory'dan xavfsiz va Read-Only ma'lumot olish interfeysi.
 
 Hech qachon yozmaydi.
-
----
-
-## MemoryRegistry
-
-Barcha instrument va timeframe Memory obyektlarini boshqaradi.
-
-Memory Lifecycle'ni nazorat qiladi.
-
----
-
-## TimeframeMemory
-
-Har bir timeframe uchun OHLC Candle tarixini saqlaydi.
-
-Masalan:
-
-• M1
-
-• M5
-
-• M15
-
-• H1
-
-• H4
-
-• D1
-
----
-
-## CachePolicy
-
-Memory hajmini va eski ma'lumotlarni boshqaradi.
-
-Retention Policy.
-
-Cleanup Strategy.
-
-Performance Optimization.
-
----
-
-## MemoryDataFlow
-
-Market Memory ichidagi ma'lumot oqimini tavsiflaydi.
-
----
-
-## SequenceDiagram
-
-Market Memory ishlash ketma-ketligini ko'rsatadi.
-
----
-
-## ModuleMap
-
-Market Memory modullari orasidagi bog'lanishni ko'rsatadi.
 
 ---
 
@@ -205,15 +159,7 @@ Market Memory:
 
 # Memory Flow
 
-Historical Data
-
-↓
-
-Live Data
-
-↓
-
-Data Validation
+Live Data Layer
 
 ↓
 
@@ -221,15 +167,7 @@ Market Memory
 
 ↓
 
-MemoryReader
-
-↓
-
 GoldBot Core
-
-↓
-
-Application Services
 
 ---
 
@@ -262,16 +200,19 @@ Application Services
 Market_Memory/
 
 ├── README.md
-├── MarketMemory.md
-├── MemoryReader.md
-├── MemoryRegistry.md
-├── TimeframeMemory.md
-├── CachePolicy.md
-├── MemoryDataFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+├── Layer_Contracts.md
+│
+├── MarketMemoryService/
+├── MemoryWriter/
+├── MemoryStorage/
+├── MemoryCache/
+├── MemoryLifecycle/
+└── MemoryReader/
 
-Har bir modul o'z specification hujjatiga ega bo'lishi kerak.
+Har bir modul o'z README.md, Contracts.md, ModuleMap.md va SequenceDiagram.md hujjatlariga ega bo'lishi kerak.
 
 ---
 
