@@ -230,9 +230,17 @@ CurrentPriceProvider quyidagilar bilan ishlashi mumkin emas.
 
 ✗ Historical Database
 
+✗ HistoricalDataService
+
+✗ Bootstrap
+
+✗ Recovery
+
 ✗ Candle Builder
 
 ✗ Market Memory
+
+✗ Memory Reader
 
 ✗ Context Engine
 
