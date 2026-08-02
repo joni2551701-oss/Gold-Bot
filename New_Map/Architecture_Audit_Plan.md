@@ -344,6 +344,30 @@ Violation:
 → Minor
 ```
 Sabab: Phase 1 Architecture Freeze v1.0'ga ko'ra GoldBot arxitekturasi Layer Architecture hisoblanadi; shuning uchun Context/Analysis/Strategy/Decision/Risk/Signal kabi arxitektura qatlamlariga murojaat qilinganda faqat "Layer" suffiksi ishlatiladi, "Engine" emas. Bu qoida `01_Data_Layer/Market_Memory/MemoryStorage` modulida Contracts.md "Context Layer, Analysis Layer, Strategy Layer, Decision Layer, Risk Layer, Signal Layer" deb yozgan bo'lsa, ModuleMap.md xuddi shu olti obyektni "Context Engine, Analysis Engine, Strategy Engine, Decision Engine, Risk Engine, Signal Engine" deb yozgani aniqlanganidan keyin qo'shildi (Minor, Canonical Naming Rule / Layer va Engine tushunchalarining aralashib ketishi).
+
+## Cross-Cutting Layer Rule
+```text
+Infrastructure Layers
+(Event System, Logging,
+Notification, Monitoring
+Infrastructure, etc.)
+must not be documented as
+fixed pipeline stages.
+
+They are shared services
+used by multiple layers.
+
+Their canonical position is:
+Source Modules
+↓
+Infrastructure Layer
+↓
+Target Modules
+
+Violation:
+→ Major
+```
+Sabab: Event System kabi infratuzilma qatlamlari GoldBot'ning barcha biznes Layer'lari (Data, Context, Indicator, Strategy, Signal, AI, Decision, Risk, Execution, Monitoring, Database, Platform) tomonidan foydalaniladigan umumiy xizmatlardir; ularni bitta qat'iy biznes pipeline bosqichi sifatida (masalan, faqat Market Memory bilan GoldBot Core orasida) hujjatlashtirish noto'g'ri Layer Position tasvirlaydi va real foydalanish doirasini soxtalashtiradi. Bu qoida `01_Data_Layer/Event_System` guruhida README.md'ning Layer Position'ni "Historical Data + Live Data -> Market Memory -> Event System -> GoldBot Core -> Application Services" qat'iy bosqich sifatida ko'rsatgani, Layer_Contracts.md va Layer_DataFlow.md esa "Source/GoldBot Modules -> Event System Layer -> Target Modules" umumiy modelini belgilagani aniqlanganidan keyin qo'shildi (Major, Runtime Documentation Consistency).
 ---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
