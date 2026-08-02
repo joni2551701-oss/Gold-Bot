@@ -159,6 +159,63 @@ Bu shuni anglatadiki, arxitekturaning o'zi mustahkam, topilgan muammolar esa aso
 
 ---
 
+# Director Review — 04_Indicator_Layer
+
+## Audit Result
+
+```text
+Layer: 04_Indicator_Layer
+Architecture Score:
+100 / 100
+Problems:
+0
+Warnings:
+0
+Suggestions:
+0
+Status:
+APPROVED
+```
+
+## Baholash
+
+Oldingi auditdagi yagona muammo — IndicatorEngine va IndicatorService o'rtasidagi ownership noaniqligi — to'liq bartaraf etilgan.
+
+* ✅ IndicatorEngine faqat orchestration va coordination bilan shug'ullanadi.
+* ✅ IndicatorService yagona Indicator Context Builder hisoblanadi.
+* ✅ Ownership bitta modulga tegishli.
+* ✅ Workflow va Layer Data Flow o'zgarmagan.
+* ✅ Contracts va ModuleMap bilan mos.
+* ✅ Circular Dependency topilmagan.
+* ✅ Layer Boundary toza.
+
+## Layer Status
+
+```text
+04_Indicator_Layer
+Status:
+CLOSED
+Architecture Version:
+Freeze v1.0
+Audit:
+PASSED
+Score:
+100/100
+```
+
+---
+
+# Kuzatuv (01-04 Layer bo'yicha naqsh)
+
+* 01_Data_Layer → Strukturaviy nomuvofiqlik.
+* 02_Core_Layer → Eski (stale) README.
+* 03_Context_Layer → Engine ↔ Service ownership.
+* 04_Indicator_Layer → Engine ↔ Service ownership.
+
+Arxitekturaning o'zi mustahkam; topilgan muammolar asosan hujjatlashtirish va modul mas'uliyatini aniq ifodalash bilan bog'liq bo'lgan. Keyingi Layer'larda Engine ↔ Service juftliklariga alohida e'tibor berish tavsiya etiladi.
+
+---
+
 # Audit Tracker
 
 ```text
@@ -166,8 +223,9 @@ Architecture Audit Progress
 ✅ 01_Data_Layer                CLOSED (100/100)
 ✅ 02_Core_Layer                CLOSED (100/100)
 ✅ 03_Context_Layer             CLOSED (100/100)
-⏳ 04_Strategy_Layer
-⏳ 05_Signal_Layer
+✅ 04_Indicator_Layer           CLOSED (100/100)
+⏳ 05_Strategy_Layer
+⏳ 06_Signal_Layer
 ⏳ 07_AI_Layer
 ⏳ 08_Decision_Layer
 ⏳ 09_Risk_Layer
