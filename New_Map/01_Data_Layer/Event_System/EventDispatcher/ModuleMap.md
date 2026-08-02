@@ -67,11 +67,13 @@ Target Module
 ---
 # Forbidden Dependencies
 ✗ EventPublisher
+✗ Context Layer
 ✗ Strategy Layer
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ AI Layer
-✗ Trading Logic
+✗ Platform Layer
+✗ Business Layer
 ---
 # Ownership
 EventDispatcher egalik qiladi.

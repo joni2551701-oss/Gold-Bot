@@ -126,6 +126,8 @@ Subscriber
 
 # Forbidden Dependencies
 
+✗ Context Layer
+
 ✗ Strategy Layer
 
 ✗ Decision Layer
@@ -134,9 +136,9 @@ Subscriber
 
 ✗ AI Layer
 
-✗ Business Layer
+✗ Platform Layer
 
-✗ Trading Logic
+✗ Business Layer
 
 ---
 

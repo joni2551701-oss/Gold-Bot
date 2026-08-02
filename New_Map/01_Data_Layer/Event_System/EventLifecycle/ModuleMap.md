@@ -77,12 +77,13 @@ EventLifecycle
 ✓ Configuration Layer
 ---
 # Forbidden Dependencies
+✗ Context Layer
 ✗ Strategy Layer
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ AI Layer
+✗ Platform Layer
 ✗ Business Layer
-✗ Trading Logic
 ---
 # Ownership
 EventLifecycle egalik qiladi.
