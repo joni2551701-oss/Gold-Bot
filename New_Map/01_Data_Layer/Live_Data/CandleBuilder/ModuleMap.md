@@ -249,11 +249,13 @@ CandleBuilder quyidagilar bilan ishlashi mumkin emas.
 
 ✗ Historical Data
 
-✗ Historical Database
+✗ HistoricalDatabase
 
 ✗ HistoricalDataService
 
 ✗ Live Providers
+
+✗ Market Calendar
 
 ✗ Context Engine
 
