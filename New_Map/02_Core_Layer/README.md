@@ -1,4 +1,4 @@
-# GoldBot Core
+# Core Layer
 
 Status: CANONICAL
 
@@ -6,336 +6,286 @@ Status: CANONICAL
 
 # Purpose
 
-GoldBot Core — Senior Trading AI ekotizimining yuragi hisoblanadi.
+Core Layer — GoldBot Runtime'ning markaziy boshqaruv qatlami hisoblanadi.
 
-Uning yagona vazifasi Data Layer'dan kelgan market ma'lumotlarini tahlil qilish, barcha hisob-kitoblarni bajarish va yakuniy savdo qarorini ishlab chiqishdir.
+Uning yagona vazifasi GoldBot tizimini ishga tushirish, barcha Layer'lar orasidagi Runtime Pipeline'ni boshqarish, Service'larni ro'yxatga olish, tizim sog'ligini kuzatish va tizimni xavfsiz to'xtatishdir.
 
-GoldBot Core tashqi providerlar bilan ishlamaydi va foydalanuvchi interfeysini boshqarmaydi.
+Core Layer marketni tahlil qilmaydi, savdo qarorini chiqarmaydi va Trading Logic bilan ishlamaydi.
 
 ---
 
 # Objective
 
-GoldBot Core quyidagi vazifalarni bajaradi:
+Core Layer quyidagi vazifalarni bajaradi:
 
-• Market Structure hisoblash
+• Runtime Orchestration
 
-• Market Context yaratish
+• Startup Coordination
 
-• Technical Analysis bajarish
+• Configuration Management
 
-• Trading Strategy ishlatish
+• Service Registration
 
-• Confluence hisoblash
+• Runtime Scheduling
 
-• Decision chiqarish
+• Runtime Pipeline Management
 
-• Risk hisoblash
+• Health Monitoring
 
-• Signal yaratish
-
-• Monitoring
-
-• Simulation
+• Shutdown Coordination
 
 ---
 
 # Layer Position
 
-Data Layer
+```text
+System Runtime
 
 ↓
 
-GOLDBOT CORE
+CORE LAYER
 
 ↓
 
-Application Services
-
-↓
-
-Platform Layer
-
-↓
-
-User
+All GoldBot Layers (Data, Context, Strategy, Signal, AI, Decision, Risk, Execution, Monitoring, Database, Platform)
+```
 
 ---
 
 # Internal Structure
 
-GoldBot_Core/
+Core_Layer/
 
 ├── README.md
 │
-├── Market_Engine/
+├── Startup/
 │
-├── Context_Engine/
+├── Configuration/
 │
-├── Analysis_Engine/
+├── ServiceRegistry/
 │
-├── Strategy_Engine/
+├── CoreEngine/
 │
-├── Confluence_Engine/
+├── CoreService/
 │
-├── Decision_Engine/
+├── Scheduler/
 │
-├── Risk_Engine/
+├── Pipeline/
 │
-├── Signal_Engine/
+├── HealthMonitor/
 │
-├── Monitoring/
-│
-└── Simulation/
+└── Shutdown/
 
 ---
 
 # Module Overview
 
-## Market_Engine
+## Startup
 
-Bozorning asosiy holatini hisoblaydi.
+Tizimni ishga tushirish jarayonini boshqaradi.
 
----
-
-## Context_Engine
-
-Market Context yaratadi.
-
-Trend, Liquidity, Session va boshqa omillarni aniqlaydi.
+Runtime Initialization.
 
 ---
 
-## Analysis_Engine
+## Configuration
 
-Texnik analizlarni bajaradi.
+Yagona Configuration manbai.
 
-SMC, ICT, Wyckoff, AMD va boshqa analiz modullari shu yerda joylashadi.
-
----
-
-## Strategy_Engine
-
-Trading strategiyalarini boshqaradi.
-
-Strategiyalarni ishga tushiradi va natijalarini tayyorlaydi.
+Barcha Runtime sozlamalarini yuklaydi va taqdim etadi.
 
 ---
 
-## Confluence_Engine
+## ServiceRegistry
 
-Turli analiz va strategiya natijalarini birlashtirib yagona baho hosil qiladi.
-
----
-
-## Decision_Engine
-
-BUY
-
-SELL
-
-NONE
-
-yakuniy qarorni ishlab chiqadi.
+Barcha Runtime Service'larini ro'yxatga oladi va topib beradi.
 
 ---
 
-## Risk_Engine
+## CoreEngine
 
-Risk Management.
+GoldBot Runtime'ning yagona yuragi.
 
-Lot Size.
-
-Position Size.
-
-Risk/Reward.
-
-Capital Protection.
+Runtime Management, Layer Orchestration, Module Coordination, Recovery Coordination.
 
 ---
 
-## Signal_Engine
+## CoreService
 
-Yakuniy signal obyektini yaratadi.
-
-Signal hali foydalanuvchiga yuborilmaydi.
+Core modullarni koordinatsiya qiluvchi Service Orchestrator.
 
 ---
 
-## Monitoring
+## Scheduler
 
-Ichki monitoring.
-
-Performance.
-
-Health.
-
-Diagnostics.
+Runtime Trigger va vaqt asosidagi jarayonlarni boshqaradi.
 
 ---
 
-## Simulation
+## Pipeline
 
-Backtesting.
+Barcha Layer'lar orasidagi Runtime Flow'ni boshqaradi.
 
-Replay.
+---
 
-Simulation.
+## HealthMonitor
 
-Strategy Testing.
+Runtime sog'ligini kuzatadi.
+
+Performance, Health, Diagnostics.
+
+---
+
+## Shutdown
+
+Tizimni xavfsiz va tartibli to'xtatadi.
+
+Runtime Finalization.
 
 ---
 
 # Responsibilities
 
-GoldBot Core:
+Core Layer:
 
-✓ Market Analysis
+✓ Runtime Orchestration
 
-✓ Context Calculation
+✓ Startup Coordination
 
-✓ Technical Analysis
+✓ Configuration Management
 
-✓ Strategy Execution
+✓ Service Registration
 
-✓ Confluence
+✓ Runtime Scheduling
 
-✓ Decision
+✓ Runtime Pipeline Management
 
-✓ Risk Calculation
+✓ Health Monitoring
 
-✓ Signal Generation
-
-✓ Monitoring
-
-✓ Simulation
+✓ Shutdown Coordination
 
 ---
 
 # Not Responsible
 
-GoldBot Core:
+Core Layer:
 
-✗ Historical Download
+✗ Market Analysis
 
-✗ Live Stream
+✗ Context Analysis
 
-✗ Provider Connection
+✗ Strategy
 
-✗ Data Validation
+✗ Signal Generation
 
-✗ Market Memory
+✗ AI Analysis
 
-✗ Telegram
+✗ Decision
 
-✗ Mobile
+✗ Risk
 
-✗ Desktop
+✗ Execution
 
-✗ Web
+✗ Monitoring Logic (Trade Monitoring)
 
-✗ AI Chat
-
-✗ User Interface
-
-✗ Payment
-
-✗ Subscription
+✗ Database
 
 ---
 
 # Core Flow
 
-Data Layer
+```text
+System Boot
 
 ↓
 
-Market Engine
+Startup
 
 ↓
 
-Context Engine
+Configuration
 
 ↓
 
-Analysis Engine
+ServiceRegistry
 
 ↓
 
-Strategy Engine
+CoreEngine
 
 ↓
 
-Confluence Engine
+CoreService
 
 ↓
 
-Decision Engine
+Scheduler
 
 ↓
 
-Risk Engine
+Pipeline
 
 ↓
 
-Signal Engine
+Target Layer
 
 ↓
 
-GoldBot Core API
+HealthMonitor
+
+↓
+
+Shutdown
+```
 
 ---
 
 # Golden Rules
 
-1. Core faqat hisoblaydi.
+1. Core Layer faqat Runtime'ni boshqaradi.
 
-2. Core providerlar bilan ishlamaydi.
+2. Core Layer Business Logic bajarmaydi.
 
-3. Core UI haqida bilmaydi.
+3. Core Layer Trading qarori chiqarmaydi.
 
-4. Core Telegram haqida bilmaydi.
+4. Startup har doim birinchi ishlaydi, Shutdown har doim oxirgi bosqich hisoblanadi.
 
-5. Core AI bilan bog'lanmaydi.
+5. CoreEngine GoldBot Runtime'ning yagona yuragi hisoblanadi.
 
-6. Core faqat Data Layer ma'lumotlarini ishlatadi.
+6. Barcha Layer'lar CoreEngine va Pipeline orqali ishga tushadi hamda muvofiqlashtiriladi.
 
-7. Har bir Engine faqat bitta vazifaga ega.
+7. Configuration yagona sozlama manbai hisoblanadi.
 
-8. Decision faqat Decision Engine tomonidan chiqariladi.
+8. ServiceRegistry yagona Service Registry hisoblanadi.
 
-9. Risk faqat Risk Engine tomonidan hisoblanadi.
+9. HealthMonitor Runtime sog'ligini uzluksiz kuzatadi.
 
-10. Signal faqat Signal Engine tomonidan yaratiladi.
+10. Circular Dependency qat'iyan taqiqlanadi.
 
 ---
 
 # Repository Structure
 
-GoldBot_Core/
+Core_Layer/
 
 ├── README.md
-│
-├── Market_Engine/
-├── Context_Engine/
-├── Analysis_Engine/
-├── Strategy_Engine/
-├── Confluence_Engine/
-├── Decision_Engine/
-├── Risk_Engine/
-├── Signal_Engine/
-├── Monitoring/
-└── Simulation/
+├── Startup/
+├── Configuration/
+├── ServiceRegistry/
+├── CoreEngine/
+├── CoreService/
+├── Scheduler/
+├── Pipeline/
+├── HealthMonitor/
+└── Shutdown/
 
-Har bir papka o'z README.md fayliga ega bo'lishi kerak.
-
-Har bir .py fayl uchun mos specification (.md) mavjud bo'lishi kerak.
+Har bir papka o'z README.md, SequenceDiagram.md, ModuleMap.md va Contracts.md fayllariga ega bo'lishi kerak.
 
 ---
 
 # Refactoring Rule
 
-Repository GoldBot Core blueprint'iga moslashtiriladi.
+Repository Core Layer blueprint'iga moslashtiriladi.
 
 Kod blueprint'ga mos kelishi shart.
 
@@ -345,18 +295,20 @@ Blueprint kodga moslashtirilmaydi.
 
 # Summary
 
-GoldBot Core — GoldBot tizimining hisoblash markazi hisoblanadi.
+Core Layer — GoldBot Runtime'ning markaziy boshqaruv qatlami hisoblanadi.
 
 Uning vazifasi:
 
-• marketni tahlil qilish;
+• tizimni ishga tushirish;
 
-• context yaratish;
+• Configuration'ni yuklash;
 
-• strategiyalarni bajarish;
+• Service'larni ro'yxatga olish;
 
-• riskni hisoblash;
+• Runtime Pipeline'ni barcha Layer'lar bo'ylab boshqarish;
 
-• yakuniy signalni ishlab chiqish.
+• tizim sog'ligini kuzatish;
 
-GoldBot Core tashqi providerlar, platformalar va foydalanuvchi interfeysi bilan ishlamaydi. Uning yagona vazifasi ishonchli va mustaqil hisob-kitoblarni bajarishdir.
+• tizimni xavfsiz to'xtatish.
+
+Core Layer marketni tahlil qilmaydi, signal yaratmaydi, savdo qarori chiqarmaydi va risk hisoblamaydi. Uning yagona vazifasi GoldBot Runtime'ining ishonchli va izchil ishlashini ta'minlashdir.
