@@ -7,7 +7,7 @@ Platform Layer
 ↓
 RiskProfiles
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -39,7 +39,7 @@ Strategiya bilan mosligini tekshiradi.
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Risk Layer
@@ -49,4 +49,4 @@ Strategiya bilan mosligini tekshiradi.
 ✗ Execution Layer
 ---
 # Summary
-RiskProfiles foydalanuvchi tanlagan Risk konfiguratsiyasini StrategyEngine uchun tayyorlaydi.
+RiskProfiles foydalanuvchi tanlagan Risk konfiguratsiyasini StrategyManager uchun tayyorlaydi.

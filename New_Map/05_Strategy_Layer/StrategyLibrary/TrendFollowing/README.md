@@ -28,7 +28,7 @@ Indicator Context
 ↓
 Trend Following Strategy
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Responsibilities
@@ -81,7 +81,7 @@ Strategy Validation
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Golden Rules

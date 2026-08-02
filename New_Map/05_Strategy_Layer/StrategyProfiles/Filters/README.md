@@ -61,7 +61,7 @@ Validate Filters
 ↓
 Build Filter Profile
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Golden Rules

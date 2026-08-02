@@ -30,7 +30,7 @@ Indicator Context
 ↓
 Wyckoff Strategy
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Input Contract
@@ -47,7 +47,7 @@ StrategyEngine
 # Allowed Dependencies
 ✓ Context Layer
 ✓ Indicator Layer
-✓ StrategyEngine
+✓ StrategyManager
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

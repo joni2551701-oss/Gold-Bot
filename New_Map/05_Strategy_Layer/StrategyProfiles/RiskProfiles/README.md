@@ -55,7 +55,7 @@ Validate Configuration
 ↓
 Build Risk Profile
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Golden Rules

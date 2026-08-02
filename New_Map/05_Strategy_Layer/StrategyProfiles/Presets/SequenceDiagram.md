@@ -18,7 +18,7 @@ Save
 ↓
 Load
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -47,4 +47,4 @@ User Configuration
 ↓
 Preset
 ↓
-StrategyEngine
+StrategyManager

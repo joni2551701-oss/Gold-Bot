@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 Breakout Strategy
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -63,7 +63,7 @@ Breakout Strategy Result yaratadi.
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyEngine
+✓ StrategyManager
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

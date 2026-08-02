@@ -57,7 +57,7 @@ User Configuration
 ↓
 Trading Style
 ↓
-StrategyEngine
+StrategyManager
 ↓
 Strategy Result
 ```

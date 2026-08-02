@@ -34,7 +34,7 @@ SMC Confluence
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -69,4 +69,4 @@ SMC Strategy
 ↓
 Strategy Result
 ↓
-StrategyEngine
+StrategyManager

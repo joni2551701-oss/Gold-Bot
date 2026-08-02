@@ -41,7 +41,7 @@ Har bir Preset quyidagilarni saqlashi mumkin.
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -64,7 +64,7 @@ Har bir Preset quyidagilarni saqlashi mumkin.
 ✓ Validation muvaffaqiyatli bajariladi.
 ✓ Preset saqlanadi.
 ✓ Preset yuklanadi.
-✓ StrategyEngine konfiguratsiyani qabul qiladi.
+✓ StrategyManager konfiguratsiyani qabul qiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

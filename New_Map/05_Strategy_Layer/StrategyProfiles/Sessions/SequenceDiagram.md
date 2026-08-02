@@ -16,7 +16,7 @@ Validate Session
 ↓
 Apply Session Filter
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -45,4 +45,4 @@ User Configuration
 ↓
 Trading Session
 ↓
-StrategyEngine
+StrategyManager

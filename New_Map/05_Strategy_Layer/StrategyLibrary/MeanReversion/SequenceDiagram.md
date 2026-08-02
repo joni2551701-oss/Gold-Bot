@@ -28,7 +28,7 @@ Mean Reversion Confluence
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -64,4 +64,4 @@ Mean Reversion Strategy
 ↓
 Strategy Result
 ↓
-StrategyEngine
+StrategyManager

@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 AMD Strategy
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -59,7 +59,7 @@ AMD Strategy Result yaratadi.
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyEngine
+✓ StrategyManager
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

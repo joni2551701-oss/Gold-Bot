@@ -16,7 +16,7 @@ Build Timeframe Profile
 ↓
 Apply Configuration
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -45,4 +45,4 @@ User Configuration
 ↓
 Timeframes
 ↓
-StrategyEngine
+StrategyManager

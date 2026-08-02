@@ -7,7 +7,7 @@ Platform Layer
 ↓
 Timeframes
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -43,7 +43,7 @@ Strategiya va Timeframe mosligini tekshiradi.
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -53,4 +53,4 @@ Strategiya va Timeframe mosligini tekshiradi.
 ✗ Execution Layer
 ---
 # Summary
-Timeframes foydalanuvchi tanlagan timeframe konfiguratsiyasini StrategyEngine uchun tayyorlaydi.
+Timeframes foydalanuvchi tanlagan timeframe konfiguratsiyasini StrategyManager uchun tayyorlaydi.

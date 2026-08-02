@@ -31,7 +31,7 @@ Presets
 ✓ Preset yuklaydi
 ✓ Preset yangilaydi
 ✓ Preset Validation bajaradi
-✓ StrategyEngine uchun tayyor konfiguratsiya beradi
+✓ StrategyManager uchun tayyor konfiguratsiya beradi
 ---
 # Not Responsible
 Presets
@@ -63,7 +63,7 @@ Save
 ↓
 Load
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Golden Rules

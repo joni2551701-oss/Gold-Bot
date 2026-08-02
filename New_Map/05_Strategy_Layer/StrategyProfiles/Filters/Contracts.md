@@ -41,7 +41,7 @@ Filters bajarmaydi.
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -64,7 +64,7 @@ Filters bajarmaydi.
 ✓ Filter tanlanadi.
 ✓ Configuration yaratiladi.
 ✓ Validation muvaffaqiyatli bajariladi.
-✓ StrategyEngine konfiguratsiyani qabul qiladi.
+✓ StrategyManager konfiguratsiyani qabul qiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

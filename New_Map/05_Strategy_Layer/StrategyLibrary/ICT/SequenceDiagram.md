@@ -30,7 +30,7 @@ ICT Confluence
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -65,4 +65,4 @@ ICT Strategy
 ↓
 Strategy Result
 ↓
-StrategyEngine
+StrategyManager

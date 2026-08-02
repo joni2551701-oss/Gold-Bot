@@ -38,7 +38,7 @@ Months
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -61,7 +61,7 @@ Months
 ✓ Multi-Timeframe qo'llab-quvvatlanadi.
 ✓ Configuration yaratiladi.
 ✓ Validation muvaffaqiyatli bajariladi.
-✓ StrategyEngine konfiguratsiyani qabul qiladi.
+✓ StrategyManager konfiguratsiyani qabul qiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

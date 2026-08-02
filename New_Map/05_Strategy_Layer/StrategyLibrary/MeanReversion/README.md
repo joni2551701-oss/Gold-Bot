@@ -29,7 +29,7 @@ Indicator Context
 ↓
 Mean Reversion Strategy
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Responsibilities
@@ -83,7 +83,7 @@ Strategy Validation
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Golden Rules

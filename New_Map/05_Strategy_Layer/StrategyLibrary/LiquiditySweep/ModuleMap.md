@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 Liquidity Sweep Strategy
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -63,7 +63,7 @@ Liquidity Sweep Result yaratadi.
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyEngine
+✓ StrategyManager
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

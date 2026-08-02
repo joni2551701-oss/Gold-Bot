@@ -20,15 +20,13 @@ StrategyService quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-Signal Layer
-↓
-StrategyService
+StrategyManager
 ↓
 StrategyEngine
 ↓
-StrategyManager
+StrategyService
 ↓
-Strategy Library
+Signal Layer
 ```
 ---
 # Responsibilities

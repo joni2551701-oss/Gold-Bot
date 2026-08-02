@@ -28,7 +28,7 @@ AMD Confluence
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -63,4 +63,4 @@ AMD Strategy
 ↓
 Strategy Result
 ↓
-StrategyEngine
+StrategyManager

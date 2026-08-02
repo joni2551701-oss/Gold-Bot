@@ -56,7 +56,7 @@ Load Session Configuration
 ↓
 Apply Session Filter
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Golden Rules

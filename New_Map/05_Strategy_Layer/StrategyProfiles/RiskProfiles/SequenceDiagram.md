@@ -16,7 +16,7 @@ Validate
 ↓
 Build Risk Profile
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -45,4 +45,4 @@ User Configuration
 ↓
 Risk Profile
 ↓
-StrategyEngine
+StrategyManager

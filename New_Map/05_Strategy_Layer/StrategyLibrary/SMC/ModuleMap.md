@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 SMC Strategy
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -67,7 +67,7 @@ SMC Strategy Result yaratadi.
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyEngine
+✓ StrategyManager
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies

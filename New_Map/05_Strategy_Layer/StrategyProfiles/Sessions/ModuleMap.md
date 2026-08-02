@@ -7,7 +7,7 @@ Platform Layer
 ↓
 Sessions
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -51,7 +51,7 @@ Strategy Session Profile yaratadi.
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -61,4 +61,4 @@ Strategy Session Profile yaratadi.
 ✗ Execution Layer
 ---
 # Summary
-Sessions foydalanuvchi tanlagan Trading Session konfiguratsiyasini StrategyEngine uchun tayyorlaydi.
+Sessions foydalanuvchi tanlagan Trading Session konfiguratsiyasini StrategyManager uchun tayyorlaydi.

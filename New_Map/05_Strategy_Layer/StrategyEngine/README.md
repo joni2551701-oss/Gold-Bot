@@ -2,45 +2,46 @@
 Status: CANONICAL
 ---
 # Purpose
-StrategyEngine Strategy Layer ichidagi barcha Strategy modullarini boshqaruvchi Canonical Engine hisoblanadi.
-Uning asosiy vazifasi Strategy Library ichidagi strategiyalarni ishga tushirish, Strategy Profile'larni qo'llash va Strategy Result yaratishdir.
+StrategyEngine Strategy Layer ichidagi barcha Strategy Execution jarayonini boshqaruvchi Canonical Engine hisoblanadi.
+Uning asosiy vazifasi StrategyManager tomonidan faollashtirilgan strategiyani ishga tushirish, bajarilishini muvofiqlashtirish va Strategy Result yaratishdir.
+StrategyEngine strategiya tanlamaydi va Profile yuklamaydi — bu StrategyManager vazifasi.
 StrategyEngine signal yaratmaydi.
 StrategyEngine trade ochmaydi.
 StrategyEngine AI ishlatmaydi.
-StrategyEngine faqat Strategy Execution boshqaruvini amalga oshiradi.
+StrategyEngine faqat Strategy Execution, Coordination, Pipeline va Result Aggregation bilan shug'ullanadi.
 ---
 # Objective
 StrategyEngine quyidagi vazifalarni bajaradi.
-• Strategy Discovery
-• Strategy Selection
 • Strategy Execution
-• Strategy Profile Loading
+• Strategy Coordination
+• Strategy Pipeline Management
+• Strategy Result Collection
 • Strategy Validation
-• Strategy Orchestration
-• Strategy Result Generation
+• Strategy Result Aggregation
 ---
 # Layer Position
 ```text
-Context Layer
-↓
-Indicator Layer
+StrategyManager
 ↓
 StrategyEngine
 ↓
-Strategy Service
+StrategyService
 ```
 ---
 # Responsibilities
 StrategyEngine:
-✓ Strategy tanlaydi
-✓ Strategy ishga tushiradi
-✓ Strategy Profile yuklaydi
-✓ Strategy bajarilishini boshqaradi
-✓ Strategy Result yaratadi
-✓ Strategy Lifecycle boshqaradi
+✓ Faollashtirilgan Strategiyani ishga tushiradi
+✓ Strategy bajarilishini muvofiqlashtiradi (Coordination)
+✓ Strategy Pipeline'ni boshqaradi
+✓ Strategy natijalarini yig'adi (Result Collection)
+✓ Strategy Result'ni tekshiradi (Validation)
+✓ Strategy Result'ni birlashtiradi (Aggregation)
 ---
 # Not Responsible
 StrategyEngine:
+✗ Strategy Discovery
+✗ Strategy Selection
+✗ Strategy Profile Loading
 ✗ Context Analysis
 ✗ Indicator Calculation
 ✗ Signal Generation
@@ -51,10 +52,9 @@ StrategyEngine:
 ---
 # Input
 StrategyEngine qabul qiladi.
+• Faollashtirilgan Strategiya (StrategyManager'dan)
 • Market Context
 • Indicator Context
-• Strategy Configuration
-• Strategy Profile
 ---
 # Output
 StrategyEngine yaratadi.
@@ -65,28 +65,31 @@ StrategyEngine yaratadi.
 ---
 # Workflow
 ```text
+Receive Activated Strategy (StrategyManager)
+↓
 Receive Context
-↓
-Load Strategy
-↓
-Load Strategy Profile
 ↓
 Execute Strategy
 ↓
+Coordinate Pipeline
+↓
+Collect Result
+↓
 Validate Result
 ↓
-Generate Strategy Result
+Aggregate Strategy Result
 ↓
 StrategyService
 ```
 ---
 # Golden Rules
 1. StrategyEngine faqat Strategy Layer ichida ishlaydi.
-2. Strategy tanlash deterministik bo'lishi kerak.
-3. Strategy Result immutable hisoblanadi.
-4. Signal yaratish taqiqlanadi.
-5. AI ishlatilmaydi.
-6. Circular Dependency qat'iyan taqiqlanadi.
+2. Strategy tanlash va Profile yuklash StrategyManager vazifasi — StrategyEngine bu ishlarni bajarmaydi.
+3. StrategyEngine faqat StrategyManager tomonidan faollashtirilgan strategiyani ishga tushiradi.
+4. Strategy Result immutable hisoblanadi.
+5. Signal yaratish taqiqlanadi.
+6. AI ishlatilmaydi.
+7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents
 ```text
@@ -98,4 +101,4 @@ StrategyEngine/
 ```
 ---
 # Summary
-StrategyEngine GoldBot Strategy Layer ichidagi barcha strategiyalarni boshqaruvchi Canonical Engine hisoblanadi.
+StrategyEngine GoldBot Strategy Layer ichidagi Strategy Execution, Coordination va Result Aggregation'ni boshqaruvchi Canonical Engine hisoblanadi. Strategy tanlash va Profile yuklash StrategyManager vakolatida qoladi.

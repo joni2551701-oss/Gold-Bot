@@ -19,24 +19,21 @@ Bu GoldBot Strategy Layer uchun rasmiy Data Flow Blueprint hisoblanadi.
 ---
 # Data Flow
 ```text
+Strategy Library
+        │
+        ▼
+Strategy Profiles
+        │
+        ▼
+Strategy Manager (Discovery, Selection, Profile Loading, Activation)
+        │
+        ▼
 Market Context
         │
 Indicator Context
         │
         ▼
-Strategy Manager
-        │
-        ▼
-Strategy Profile
-        │
-        ▼
-Strategy Engine
-        │
-        ▼
-Strategy Library
-        │
-        ▼
-Selected Strategy
+Strategy Engine (Execution, Coordination, Result Aggregation)
         │
         ▼
 Strategy Result

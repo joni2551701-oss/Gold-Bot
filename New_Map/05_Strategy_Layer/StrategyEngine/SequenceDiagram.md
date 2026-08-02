@@ -8,21 +8,23 @@ Bu Canonical Runtime Blueprint hisoblanadi.
 ---
 # Runtime Sequence
 ```text
+StrategyManager (Activated Strategy)
+↓
 Market Context
 ↓
 Indicator Context
 ↓
 StrategyEngine
 ↓
-Load Strategy
-↓
-Load Strategy Profile
-↓
 Execute Strategy
+↓
+Coordinate Pipeline
+↓
+Collect Result
 ↓
 Validate Strategy Result
 ↓
-Generate Strategy Result
+Aggregate Strategy Result
 ↓
 StrategyService
 ```
@@ -31,7 +33,7 @@ StrategyService
 ```text
 Context Updated
 ↓
-Reload Strategy
+Re-Execute Strategy
 ↓
 Recalculate Strategy
 ↓
@@ -39,11 +41,12 @@ Publish Strategy Result
 ```
 ---
 # Runtime Rules
-1. Context tayyor bo'lishi kerak.
-2. Indicator Context tayyor bo'lishi kerak.
-3. Strategy Profile yuklanishi kerak.
-4. Validation Publish'dan oldin bajariladi.
-5. Circular Dependency taqiqlanadi.
+1. StrategyManager tomonidan faollashtirilgan Strategiya mavjud bo'lishi kerak.
+2. Context tayyor bo'lishi kerak.
+3. Indicator Context tayyor bo'lishi kerak.
+4. Strategy Discovery, Selection va Profile Loading bu sequence'da bajarilmaydi (StrategyManager'da bajarilgan).
+5. Validation Publish'dan oldin bajariladi.
+6. Circular Dependency taqiqlanadi.
 ---
 # State Flow
 ```text
@@ -64,9 +67,7 @@ Failed
 ---
 # Summary
 Canonical Runtime Sequence
-Market Context
-↓
-Indicator Context
+StrategyManager (Activated Strategy)
 ↓
 StrategyEngine
 ↓

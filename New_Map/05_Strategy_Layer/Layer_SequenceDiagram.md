@@ -6,21 +6,17 @@ Ushbu hujjat Strategy Layer Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
 ```text
+StrategyLibrary
+↓
+StrategyProfiles
+↓
+StrategyManager (Discovery, Selection, Profile Loading, Activation)
+↓
 Context Layer
 ↓
 Indicator Layer
 ↓
-StrategyService
-↓
-StrategyManager
-↓
-StrategyProfiles
-↓
-StrategyEngine
-↓
-StrategyLibrary
-↓
-Selected Strategy
+StrategyEngine (Execution, Coordination, Result Aggregation)
 ↓
 Strategy Result
 ↓

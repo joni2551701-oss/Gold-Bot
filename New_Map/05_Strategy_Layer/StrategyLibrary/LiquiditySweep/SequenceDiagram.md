@@ -28,7 +28,7 @@ Liquidity Confluence
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -63,4 +63,4 @@ Liquidity Sweep Strategy
 ↓
 Strategy Result
 ↓
-StrategyEngine
+StrategyManager

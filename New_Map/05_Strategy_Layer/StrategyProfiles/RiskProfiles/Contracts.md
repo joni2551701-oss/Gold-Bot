@@ -35,7 +35,7 @@ RiskProfiles bajarmaydi.
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Risk Layer
@@ -57,7 +57,7 @@ RiskProfiles bajarmaydi.
 ✓ Risk Profile tanlanadi.
 ✓ Configuration yaratiladi.
 ✓ Validation muvaffaqiyatli bajariladi.
-✓ StrategyEngine konfiguratsiyani qabul qiladi.
+✓ StrategyManager konfiguratsiyani qabul qiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

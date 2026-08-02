@@ -36,7 +36,7 @@ Sessions bajarmaydi.
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -57,7 +57,7 @@ Sessions bajarmaydi.
 ✓ Session tanlanadi.
 ✓ Session Configuration yaratiladi.
 ✓ Session Validation muvaffaqiyatli yakunlanadi.
-✓ StrategyEngine Session Configuration'ni qabul qiladi.
+✓ StrategyManager Session Configuration'ni qabul qiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

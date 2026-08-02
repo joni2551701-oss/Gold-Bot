@@ -16,13 +16,13 @@ Validate Filters
 ↓
 Build Filter Profile
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
 1. Bir yoki bir nechta Filter tanlanishi mumkin.
 2. Validation majburiy.
-3. Filterlar StrategyEngine'ga uzatiladi.
+3. Filterlar StrategyManager'ga uzatiladi.
 4. Circular Dependency taqiqlanadi.
 ---
 # State Flow
@@ -45,4 +45,4 @@ User Configuration
 ↓
 Filters
 ↓
-StrategyEngine
+StrategyManager

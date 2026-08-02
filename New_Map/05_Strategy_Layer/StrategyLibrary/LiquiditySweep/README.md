@@ -28,7 +28,7 @@ Indicator Context
 ↓
 Liquidity Sweep Strategy
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Responsibilities
@@ -80,7 +80,7 @@ Strategy Validation
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Golden Rules

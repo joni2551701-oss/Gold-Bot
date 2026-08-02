@@ -32,7 +32,7 @@ Wyckoff Confluence
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -67,4 +67,4 @@ Wyckoff Strategy
 ↓
 Strategy Result
 ↓
-StrategyEngine
+StrategyManager

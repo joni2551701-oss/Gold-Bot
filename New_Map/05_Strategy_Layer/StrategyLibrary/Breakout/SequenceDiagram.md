@@ -28,7 +28,7 @@ Breakout Confluence
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -63,4 +63,4 @@ Breakout Strategy
 ↓
 Strategy Result
 ↓
-StrategyEngine
+StrategyManager

@@ -34,11 +34,11 @@ StrategyService bajarmaydi.
 ---
 # Allowed Dependencies
 ✓ StrategyEngine
-✓ StrategyManager
-✓ StrategyLibrary
-✓ StrategyProfiles
 ---
 # Forbidden Dependencies
+✗ StrategyManager (to'g'ridan-to'g'ri)
+✗ StrategyLibrary (to'g'ridan-to'g'ri)
+✗ StrategyProfiles (to'g'ridan-to'g'ri)
 ✗ AI Layer
 ✗ Decision Layer
 ✗ Risk Layer

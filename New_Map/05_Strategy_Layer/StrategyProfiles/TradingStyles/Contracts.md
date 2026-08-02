@@ -33,7 +33,7 @@ TradingStyles bajarmaydi.
 • Strategy Profile
 ---
 # Allowed Dependencies
-✓ StrategyEngine
+✓ StrategyManager
 ✓ StrategyProfiles
 ---
 # Forbidden Dependencies
@@ -54,7 +54,7 @@ TradingStyles bajarmaydi.
 # Acceptance Criteria
 ✓ Trading Style tanlanadi.
 ✓ Configuration yaratiladi.
-✓ StrategyEngine konfiguratsiyani qabul qiladi.
+✓ StrategyManager konfiguratsiyani qabul qiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

@@ -14,13 +14,13 @@ Load Trading Profile
 ↓
 Apply Configuration
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
 1. Trading Style foydalanuvchi tomonidan tanlanadi.
 2. Strategy Logic o'zgarmaydi.
-3. Configuration StrategyEngine'ga uzatiladi.
+3. Configuration StrategyManager'ga uzatiladi.
 4. Circular Dependency taqiqlanadi.
 ---
 # State Flow
@@ -41,4 +41,4 @@ User Configuration
 ↓
 Trading Style
 ↓
-StrategyEngine
+StrategyManager

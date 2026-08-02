@@ -28,7 +28,7 @@ Trend Confluence
 ↓
 Generate Strategy Result
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Runtime Rules
@@ -63,4 +63,4 @@ Trend Following Strategy
 ↓
 Strategy Result
 ↓
-StrategyEngine
+StrategyManager

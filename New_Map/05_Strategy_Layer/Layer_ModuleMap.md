@@ -35,15 +35,13 @@ Strategy Layer
 ---
 # Dependency Flow
 ```text
+StrategyLibrary
+↓
 StrategyProfiles
 ↓
 StrategyManager
 ↓
 StrategyEngine
-↓
-StrategyLibrary
-↓
-Strategy Result
 ↓
 StrategyService
 ```

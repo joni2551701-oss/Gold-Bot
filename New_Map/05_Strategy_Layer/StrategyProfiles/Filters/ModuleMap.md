@@ -7,7 +7,7 @@ Platform Layer
 ↓
 Filters
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -63,7 +63,7 @@ Strategy Filter Profile yaratadi.
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -73,4 +73,4 @@ Strategy Filter Profile yaratadi.
 ✗ Execution Layer
 ---
 # Summary
-Filters foydalanuvchi tanlagan filtrlarni StrategyEngine uchun tayyorlaydi.
+Filters foydalanuvchi tanlagan filtrlarni StrategyManager uchun tayyorlaydi.

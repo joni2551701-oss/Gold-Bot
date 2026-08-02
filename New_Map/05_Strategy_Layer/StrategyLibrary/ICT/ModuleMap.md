@@ -10,7 +10,7 @@ Indicator Layer
 ↓
 ICT Strategy
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -59,7 +59,7 @@ ICT Strategy Result yaratadi.
 # Allowed Dependencies
 ✓ Market Context
 ✓ Indicator Context
-✓ StrategyEngine
+✓ StrategyManager
 ✓ Strategy Profiles
 ---
 # Forbidden Dependencies

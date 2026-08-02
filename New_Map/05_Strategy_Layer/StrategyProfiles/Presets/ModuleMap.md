@@ -7,7 +7,7 @@ Platform Layer
 ↓
 Presets
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -47,7 +47,7 @@ Strategy Profile yaratadi.
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -57,4 +57,4 @@ Strategy Profile yaratadi.
 ✗ Execution Layer
 ---
 # Summary
-Presets foydalanuvchi va tizim tomonidan yaratilgan Strategy Configuration'larni StrategyEngine uchun tayyorlaydi.
+Presets foydalanuvchi va tizim tomonidan yaratilgan Strategy Configuration'larni StrategyManager uchun tayyorlaydi.

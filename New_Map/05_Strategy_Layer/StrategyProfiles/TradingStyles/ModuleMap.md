@@ -7,7 +7,7 @@ Platform Layer
 ↓
 TradingStyles
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Module Architecture
@@ -43,7 +43,7 @@ Strategy Profile yaratadi.
 ---
 # Allowed Dependencies
 ✓ StrategyProfiles
-✓ StrategyEngine
+✓ StrategyManager
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -53,4 +53,4 @@ Strategy Profile yaratadi.
 ✗ Execution Layer
 ---
 # Summary
-TradingStyles foydalanuvchi tanlagan Trading Style konfiguratsiyasini StrategyEngine uchun tayyorlaydi.
+TradingStyles foydalanuvchi tanlagan Trading Style konfiguratsiyasini StrategyManager uchun tayyorlaydi.

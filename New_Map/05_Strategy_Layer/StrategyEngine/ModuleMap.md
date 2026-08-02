@@ -6,7 +6,7 @@ Ushbu hujjat StrategyEngine ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-Indicator Layer
+StrategyManager
 ↓
 StrategyEngine
 ↓
@@ -17,10 +17,8 @@ StrategyService
 ```text
 StrategyEngine
         │
-        ├── Strategy Loader
-        ├── Strategy Selector
-        ├── Profile Loader
         ├── Execution Manager
+        ├── Pipeline Coordinator
         ├── Validation Manager
         ├── Result Builder
         ├── State Manager
@@ -28,23 +26,17 @@ StrategyEngine
 ```
 ---
 # Internal Components
-## Strategy Loader
-Strategy Library'dan strategiyani yuklaydi.
----
-## Strategy Selector
-Qaysi strategiya ishlashini aniqlaydi.
----
-## Profile Loader
-Trading Style, Session, Timeframe, Risk va Filter konfiguratsiyasini yuklaydi.
----
 ## Execution Manager
-Strategiyani bajaradi.
+StrategyManager tomonidan faollashtirilgan strategiyani bajaradi.
+---
+## Pipeline Coordinator
+Strategy bajarilish jarayonini muvofiqlashtiradi.
 ---
 ## Validation Manager
 Natijani tekshiradi.
 ---
 ## Result Builder
-Strategy Result yaratadi.
+Strategy Result'ni yig'adi va birlashtiradi (Aggregation).
 ---
 ## State Manager
 StrategyEngine holatini boshqaradi.
@@ -54,9 +46,7 @@ Strategy Event yaratadi.
 ---
 # Dependency Map
 ```text
-Strategy Library
-↓
-Strategy Profiles
+StrategyManager
 ↓
 StrategyEngine
 ↓
@@ -64,13 +54,14 @@ StrategyService
 ```
 ---
 # Allowed Dependencies
-✓ StrategyLibrary
-✓ StrategyProfiles
+✓ StrategyManager
 ✓ Indicator Layer
 ✓ Context Layer
 ✓ Event System
 ---
 # Forbidden Dependencies
+✗ StrategyLibrary (to'g'ridan-to'g'ri)
+✗ StrategyProfiles (to'g'ridan-to'g'ri)
 ✗ Signal Layer
 ✗ AI Layer
 ✗ Decision Layer
@@ -79,15 +70,21 @@ StrategyService
 ---
 # Ownership
 StrategyEngine egalik qiladi.
-✓ Strategy Lifecycle
-✓ Strategy Result
+✓ Strategy Execution
+✓ Strategy Pipeline Coordination
+✓ Strategy Result Aggregation
 ✓ Strategy State
+
+StrategyEngine egalik qilmaydi.
+✗ Strategy Discovery
+✗ Strategy Selection
+✗ Strategy Profile Loading
 ---
 # Module Rules
-1. StrategyEngine barcha strategiyalar uchun yagona orchestrator hisoblanadi.
-2. StrategyLibrary faqat StrategyEngine orqali ishlaydi.
-3. StrategyProfiles faqat StrategyEngine tomonidan qo'llaniladi.
+1. StrategyEngine faqat Strategy Execution, Coordination va Result Aggregation uchun yagona orchestrator hisoblanadi.
+2. StrategyLibrary va StrategyProfiles bilan StrategyEngine to'g'ridan-to'g'ri ishlamaydi — bular StrategyManager orqali boshqariladi.
+3. StrategyEngine faqat StrategyManager tomonidan faollashtirilgan strategiyani qabul qiladi.
 4. Circular Dependency taqiqlanadi.
 ---
 # Summary
-StrategyEngine GoldBot Strategy Layer ichidagi barcha strategiyalarni boshqaruvchi Canonical Orchestrator hisoblanadi.
+StrategyEngine GoldBot Strategy Layer ichidagi Strategy Execution, Coordination va Result Aggregation'ni boshqaruvchi Canonical Orchestrator hisoblanadi. Strategy Discovery, Selection va Profile Loading StrategyManager vakolatida qoladi.

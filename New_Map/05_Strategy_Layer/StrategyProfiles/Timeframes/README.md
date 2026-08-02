@@ -92,7 +92,7 @@ Validate Timeframe
 ↓
 Build Timeframe Profile
 ↓
-StrategyEngine
+StrategyManager
 ```
 ---
 # Golden Rules
