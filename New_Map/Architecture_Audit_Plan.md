@@ -1,5 +1,5 @@
 # Architecture Audit Plan
-Status: DRAFT (metodologiya loyihasi — Director tomonidan hali tasdiqlanmagan)
+Status: CANONICAL
 ---
 # Purpose
 Ushbu hujjat GoldBot Canonical Architecture (`New_Map/`) uchun rasmiy Audit Metodologiyasini belgilaydi.
@@ -150,7 +150,7 @@ Misollar:
 * Coordinator — bir nechta modulni muvofiqlashtiradi.
 ---
 # 6. Scoring System
-Status: Temporary
+Status: CANONICAL
 100 ballik tizim o'rniga kategoriya bo'yicha baholash qo'llanadi.
 ```text
 Layer Responsibility      20
@@ -163,7 +163,6 @@ Jami:
 ```text
 100 points
 ```
-Chegaralar keyinchalik birgalikda aniqlanadi.
 ---
 # 7. Severity Levels
 ```text
@@ -178,7 +177,7 @@ Faqat tavsiya
 ```
 ---
 # 8. Acceptance Criteria
-Status: Temporary
+Status: CANONICAL
 ```text
 95–100
 APPROVED
@@ -189,7 +188,6 @@ REVISION REQUIRED
 0–69
 REJECTED
 ```
-Bu faqat misol. Chegaralarni keyin birgalikda aniqlash mumkin.
 ---
 # 9. Freeze Procedure
 Freeze quyidagi ketma-ketlik yakunlangandan so'ng beriladi.
@@ -267,7 +265,6 @@ Boundary Check:
 Status:
 <APPROVED | APPROVED WITH NOTES | REVISION REQUIRED | REJECTED>
 ```
-Bu shablon 6–8-bo'limlar (Scoring, Severity, Acceptance) bilan birga yakuniy tahrirga ochiq.
 ---
 # Audit Sequence
 ```text
@@ -293,15 +290,13 @@ Architecture Freeze
 ```
 ---
 # Note on Status
-Ushbu hujjat hozircha DRAFT holatida.
+Ushbu hujjat Director tomonidan to'liq ko'rib chiqilgan va tasdiqlangan — barcha 11 bo'lim (Audit Objective, Audit Principles, Audit Scope, Audit Rules, Audit Stages, Scoring System, Severity Levels, Acceptance Criteria, Freeze Procedure, Change Management/ACR, Audit Report Template) `Status: CANONICAL` hisoblanadi.
 
-Tasdiqlangan bo'limlar: Audit Objective, Audit Principles, Audit Scope, Audit Rules, Audit Stages, Severity Levels, Freeze Procedure, Change Management (ACR).
+Scoring System va Acceptance Criteria ataylab shu bosqichda muzlatildi (audit boshlanishidan oldin), toki barcha 13 Layer bir xil mezon bilan baholansin va natijalar taqqoslanadigan bo'lsin.
 
-Hali "Temporary" statusidagi bo'limlar: Scoring System (6-bo'lim), Acceptance Criteria (8-bo'lim) — audit davomida kuzatilgan natijalar asosida chegaralar aniqlanadi.
+Ushbu hujjat Architecture Freeze v1.0 tarkibiga kiradi. Shu sababli, bundan buyon Layer nomi, Modul nomi, Data Flow, Contract yoki ushbu Audit metodologiyasining o'zi faqat Architecture Change Request (ACR) jarayoni orqali o'zgartiriladi (masalan, Version 1.1 sifatida).
 
-Audit Report Template (11-bo'lim) Scoring va Acceptance bilan birga yakuniy tahrirga ochiq.
-
-Barcha bo'limlar yakuniy tasdiqlangandan so'nggina bu hujjat CANONICAL deb belgilanadi. Faqat shundan keyin Layer Audit boshlanadi. Hujjat CANONICAL deb tasdiqlangach, unga ham Freeze qo'llaniladi — shundan keyin ushbu metodologiyaning o'zi ham ACR'siz o'zgartirilmaydi.
+Metodologiya tasdiqlangani sababli, Layer Audit (1-bosqich) boshlanishi mumkin.
 ---
 # Summary
 Architecture Audit Plan GoldBot Canonical Architecture'ning barcha Layer, Module va Cross-Layer aloqalarini, shuningdek nomlash standartlarini yagona metodologiya asosida tekshirish, natijalarni standart Scoring System va Severity Levels bo'yicha baholash, va yakunda Architecture Freeze orqali loyihani "konstitutsiya" darajasidagi spetsifikatsiya sifatida muzlatishni belgilovchi rasmiy reja hisoblanadi. Freeze'dan keyingi har qanday o'zgarish faqat Architecture Change Request (ACR) jarayoni orqali amalga oshiriladi.
