@@ -12,9 +12,9 @@ User
 ↓
 InteractionManager
 ↓
-PersonaManager
-↓
 UserProfile
+↓
+PersonaManager
 ↓
 KnowledgeAI
 ↓
@@ -25,8 +25,8 @@ AICoordinator
 ---
 # Runtime Rules
 1. Har bir User Request InteractionManager orqali o'tadi.
-2. Persona avval aniqlanadi.
-3. User Profile yuklanadi.
+2. User Profile avval yuklanadi.
+3. Persona shundan keyin aniqlanadi.
 4. KnowledgeAI javobni qo'llab-quvvatlaydi.
 5. Senior va Seniorita bir xil Knowledge ishlatadi.
 ---

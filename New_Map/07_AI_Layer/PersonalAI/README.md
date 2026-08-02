@@ -90,6 +90,8 @@ User
 ↓
 Interaction Manager
 ↓
+User Profile
+↓
 Persona Manager
 ↓
 KnowledgeAI

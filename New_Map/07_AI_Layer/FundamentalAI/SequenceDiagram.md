@@ -14,9 +14,9 @@ FundamentalAI
 ↓
 NewsAI
 ↓
-SentimentAI
-↓
 EconomicCalendarAI
+↓
+SentimentAI
 ↓
 CorrelationAI
 ↓
@@ -27,8 +27,8 @@ AICoordinator
 ---
 # Runtime Rules
 1. News mavjud bo'lsa tahlil qilinadi.
-2. Economic Calendar tekshiriladi.
-3. Sentiment hisoblanadi.
+2. Economic Calendar tekshiriladi (Sentiment uchun kontekst beradi).
+3. Sentiment Economic Calendar natijasidan keyin hisoblanadi.
 4. Correlation tekshiriladi.
 5. Natijalar yagona Fundamental Context'ga birlashtiriladi.
 ---

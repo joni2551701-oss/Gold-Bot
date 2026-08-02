@@ -6,11 +6,11 @@ Ushbu hujjat ConfidenceAI ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-AICoordinator
+ExplanationAI
 ↓
 ConfidenceAI
 ↓
-Decision Layer
+AICoordinator
 ```
 ---
 # Module Architecture
@@ -42,10 +42,11 @@ Yakuniy Confidence Score hisoblaydi.
 Noaniqlik darajasini aniqlaydi.
 ---
 ## Confidence Report Builder
-Decision Layer uchun standart hisobot yaratadi.
+AICoordinator uchun standart hisobot yaratadi.
 ---
 # Allowed Dependencies
 ✓ AICoordinator
+✓ ExplanationAI
 ✓ KnowledgeAI
 ✓ FundamentalAI
 ---

@@ -6,7 +6,7 @@ Ushbu hujjat ExplanationAI Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
 ```text
-Decision Context
+VoiceAI
 ↓
 ExplanationAI
 ↓
@@ -18,7 +18,7 @@ Adapt To User Profile
 ↓
 Return Explanation
 ↓
-User
+ConfidenceAI
 ```
 ---
 # Runtime Rules
@@ -41,10 +41,10 @@ Completed
 ```
 ---
 # Summary
-Decision Context
+AI Context
 ↓
 ExplanationAI
 ↓
 Human Explanation
 ↓
-User
+ConfidenceAI

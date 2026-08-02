@@ -18,27 +18,40 @@ AIEngine
         ▼
 AICoordinator
         │
-        ├──────────────┬──────────────┐
-        ▼              ▼              ▼
-PersonalAI      KnowledgeAI       VoiceAI
-        │              │              │
-        ▼              ▼              │
-FundamentalAI   VisionAI               │
-        │              │              │
-        └──────┬───────┴──────────────┘
-               ▼
+        ▼
+PersonalAI
+        │
+        ▼
+KnowledgeAI
+        │
+        ▼
+FundamentalAI
+        │
+        ▼
+VisionAI
+        │
+        ▼
+VoiceAI
+        │
+        ▼
 ExplanationAI
-               ▼
+        │
+        ▼
 ConfidenceAI
-               ▼
+        │
+        ▼
 AI Package
-               ▼
+        │
+        ▼
 AICoordinator
-               ▼
+        │
+        ▼
 AIEngine
-               ▼
+        │
+        ▼
 AIService (Exit)
-               ▼
+        │
+        ▼
 Decision Layer
 ```
 ---

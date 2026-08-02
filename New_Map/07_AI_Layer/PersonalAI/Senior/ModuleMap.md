@@ -43,7 +43,6 @@ Kelajakdagi ovozli yordamchi Personasi.
 # Allowed Dependencies
 ✓ PersonaManager
 ✓ KnowledgeAI
-✓ AIEngine
 ---
 # Forbidden Dependencies
 ✗ MemoryManager

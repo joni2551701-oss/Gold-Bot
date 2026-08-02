@@ -22,20 +22,18 @@ ExplanationAI bajarmaydi.
 ---
 # Module Boundary
 ```text
-Decision Context
+VoiceAI
 ↓
 ExplanationAI
 ↓
-PersonalAI
-↓
-User
+ConfidenceAI
 ```
 ---
 # Input Contract
-• Decision Context
-• Signal Context
+• AI Context
+• Vision Context
+• Voice Context
 • Market Context
-• User Question
 ---
 # Output Contract
 • Human Explanation
@@ -44,11 +42,14 @@ User
 • Explanation Metadata
 ---
 # Allowed Dependencies
-✓ PersonalAI
 ✓ AICoordinator
+✓ VisionAI
+✓ VoiceAI
+✓ ConfidenceAI
 ---
 # Forbidden Dependencies
 ✗ Decision Engine
+✗ PersonalAI
 ✗ Signal Layer
 ✗ Risk Layer
 ✗ Execution Layer
@@ -66,8 +67,8 @@ User
 ✓ Explanation yaratiladi.
 ✓ Reasoning shakllantiriladi.
 ✓ Educational javob tayyorlanadi.
-✓ PersonalAI orqali foydalanuvchiga uzatiladi.
+✓ ConfidenceAI'ga uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-ExplanationAI Contract GoldBot AI ichidagi barcha qarorlar, signallar va bozor tahlillarini foydalanuvchiga tushunarli va izchil tarzda tushuntirishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.
+ExplanationAI Contract GoldBot AI ichidagi AI Pipeline natijalarini (Vision, Voice, Market) tushunarli va izchil tarzda izohlab, ConfidenceAI'ga uzatishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi. ExplanationAI Decision Engine'dan input olmaydi va foydalanuvchiga to'g'ridan-to'g'ri javob qaytarmaydi.

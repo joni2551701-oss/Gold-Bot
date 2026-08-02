@@ -20,13 +20,11 @@ ExplanationAI quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-Decision Engine
+VoiceAI
 ↓
 ExplanationAI
 ↓
-PersonalAI
-↓
-User
+ConfidenceAI
 ```
 ---
 # Responsibilities
@@ -49,10 +47,10 @@ ExplanationAI
 ---
 # Input
 ExplanationAI qabul qiladi.
-• Decision Context
-• Signal Context
+• AI Context
+• Vision Context
+• Voice Context
 • Market Context
-• User Question
 ---
 # Output
 ExplanationAI yaratadi.
@@ -71,7 +69,7 @@ Generate Explanation
 ↓
 Adapt To User
 ↓
-Return Explanation
+ConfidenceAI
 ```
 ---
 # Golden Rules

@@ -20,11 +20,11 @@ ConfidenceAI quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-AICoordinator
+ExplanationAI
 ↓
 ConfidenceAI
 ↓
-Decision Layer
+AICoordinator
 ```
 ---
 # Responsibilities
@@ -51,6 +51,7 @@ ConfidenceAI qabul qiladi.
 • Knowledge Context
 • Vision Context
 • News Context
+• Explanation Context
 • Provider Metadata
 ---
 # Output
@@ -72,7 +73,7 @@ Calculate Confidence
 ↓
 Generate Report
 ↓
-Decision Layer
+AICoordinator
 ```
 ---
 # Golden Rules

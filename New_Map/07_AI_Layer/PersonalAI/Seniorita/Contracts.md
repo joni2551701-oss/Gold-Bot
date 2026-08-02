@@ -42,7 +42,6 @@ KnowledgeAI
 # Allowed Dependencies
 ✓ PersonaManager
 ✓ KnowledgeAI
-✓ AIEngine
 ---
 # Forbidden Dependencies
 ✗ MemoryManager

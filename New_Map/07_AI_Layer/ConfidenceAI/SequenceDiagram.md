@@ -6,7 +6,7 @@ Ushbu hujjat ConfidenceAI Runtime Sequence'ni tavsiflaydi.
 ---
 # Runtime Sequence
 ```text
-AICoordinator
+ExplanationAI
 ↓
 ConfidenceAI
 ↓
@@ -20,7 +20,7 @@ Calculate Confidence
 ↓
 Generate Report
 ↓
-Decision Layer
+AICoordinator
 ```
 ---
 # Runtime Rules
@@ -49,4 +49,4 @@ ConfidenceAI
 ↓
 Confidence Report
 ↓
-Decision Layer
+AICoordinator

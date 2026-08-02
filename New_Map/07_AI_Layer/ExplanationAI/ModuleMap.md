@@ -6,11 +6,11 @@ Ushbu hujjat ExplanationAI ichki arxitekturasini tavsiflaydi.
 ---
 # Module Position
 ```text
-Decision Engine
+VoiceAI
 ↓
 ExplanationAI
 ↓
-PersonalAI
+ConfidenceAI
 ```
 ---
 # Module Architecture
@@ -45,11 +45,14 @@ Til va uslubni moslashtiradi.
 Yakuniy javobni formatlaydi.
 ---
 # Allowed Dependencies
-✓ PersonalAI
 ✓ AICoordinator
+✓ VisionAI
+✓ VoiceAI
+✓ ConfidenceAI
 ---
 # Forbidden Dependencies
 ✗ Decision Engine
+✗ PersonalAI
 ✗ Signal Layer
 ✗ Execution Layer
 ✗ Risk Layer

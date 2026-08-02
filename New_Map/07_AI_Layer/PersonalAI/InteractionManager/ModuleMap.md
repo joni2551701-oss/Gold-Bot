@@ -49,7 +49,6 @@ Interaction Event yaratadi.
 # Allowed Dependencies
 ✓ UserProfile
 ✓ PersonaManager
-✓ AIEngine
 ---
 # Forbidden Dependencies
 ✗ MemoryManager

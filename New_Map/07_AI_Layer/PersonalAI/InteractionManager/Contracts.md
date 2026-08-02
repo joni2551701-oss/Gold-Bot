@@ -48,7 +48,6 @@ AIEngine
 # Allowed Dependencies
 ✓ UserProfile
 ✓ PersonaManager
-✓ AIEngine
 ---
 # Forbidden Dependencies
 ✗ MemoryManager

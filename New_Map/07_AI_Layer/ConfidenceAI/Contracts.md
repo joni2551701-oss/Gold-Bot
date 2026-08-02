@@ -22,11 +22,11 @@ ConfidenceAI bajarmaydi.
 ---
 # Module Boundary
 ```text
-AICoordinator
+ExplanationAI
 ↓
 ConfidenceAI
 ↓
-Decision Layer
+AICoordinator
 ```
 ---
 # Input Contract
@@ -34,6 +34,7 @@ Decision Layer
 • Knowledge Context
 • Vision Context
 • Fundamental Context
+• Explanation Context
 • Provider Metadata
 ---
 # Output Contract
@@ -44,6 +45,7 @@ Decision Layer
 ---
 # Allowed Dependencies
 ✓ AICoordinator
+✓ ExplanationAI
 ✓ KnowledgeAI
 ✓ FundamentalAI
 ---
@@ -68,8 +70,8 @@ Decision Layer
 ✓ Consistency tekshiriladi.
 ✓ Confidence Score hisoblanadi.
 ✓ Confidence Report yaratiladi.
-✓ Decision Layer'ga uzatiladi.
+✓ AICoordinator'ga uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-ConfidenceAI Contract GoldBot AI ichidagi barcha AI natijalarining ishonchliligini baholash, Confidence Score yaratish va Decision Layer'ga standart Confidence Context uzatishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.
+ConfidenceAI Contract GoldBot AI ichidagi barcha AI natijalarining ishonchliligini baholash, Confidence Score yaratish va AICoordinator'ga standart Confidence Context uzatishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi. AICoordinator o'z navbatida AIEngine va AIService (Exit) orqali Decision Layer'ga uzatadi.
