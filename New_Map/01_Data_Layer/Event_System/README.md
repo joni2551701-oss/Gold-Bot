@@ -38,27 +38,15 @@ Event System quyidagi vazifalarni bajaradi:
 
 # Layer Position
 
-Historical Data
-
-+
-
-Live Data
+Source Modules
 
 ↓
 
-Market Memory
+Event System Layer
 
 ↓
 
-Event System
-
-↓
-
-GoldBot Core
-
-↓
-
-Application Services
+Target Modules
 
 ---
 
@@ -67,94 +55,55 @@ Application Services
 Event_System/
 
 ├── README.md
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+├── Layer_Contracts.md
 │
-├── EventBus.md
-├── EventTypes.md
-├── Publishers.md
-├── Subscribers.md
-├── EventFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── EventService/
+├── EventPublisher/
+├── EventBus/
+├── EventDispatcher/
+├── EventSubscriber/
+└── EventLifecycle/
 
 ---
 
 # Module Overview
 
+## EventService
+
+Event System Layer'ning markaziy Orchestrator'i.
+
+---
+
+## EventPublisher
+
+Event yaratadigan yagona Producer.
+
+---
+
 ## EventBus
 
-Data Layer ichidagi barcha Event'larni qabul qiladi va tegishli Subscriber'larga uzatadi.
+Yagona Event Transport.
 
 ---
 
-## EventTypes
+## EventDispatcher
 
-Tizimdagi barcha Event turlarini belgilaydi.
-
-Masalan:
-
-• PRICE_UPDATED
-
-• CANDLE_CLOSED
-
-• MARKET_OPENED
-
-• MARKET_CLOSED
-
-• MEMORY_UPDATED
-
-• PROVIDER_CONNECTED
-
-• PROVIDER_DISCONNECTED
+Yagona Event Routing komponenti.
 
 ---
 
-## Publishers
+## EventSubscriber
 
-Event yaratadigan modullar.
-
-Masalan:
-
-• HistoricalDataService
-
-• PriceStreamService
-
-• CandleBuilder
-
-• MarketMemory
+Yagona Event Consumer.
 
 ---
 
-## Subscribers
+## EventLifecycle
 
-Event'larni qabul qiluvchi modullar.
-
-Masalan:
-
-• GoldBot Core
-
-• Monitoring
-
-• Analytics
-
-• Notification
-
----
-
-## EventFlow
-
-Eventlarning tizim bo'ylab qanday harakatlanishini tavsiflaydi.
-
----
-
-## SequenceDiagram
-
-Event System ishlash ketma-ketligini ko'rsatadi.
-
----
-
-## ModuleMap
-
-Event System modullari orasidagi bog'lanishni ko'rsatadi.
+Barcha Event'larning Lifecycle'ini kuzatuvchi komponent.
 
 ---
 
@@ -251,15 +200,19 @@ Module Response
 Event_System/
 
 ├── README.md
-├── EventBus.md
-├── EventTypes.md
-├── Publishers.md
-├── Subscribers.md
-├── EventFlow.md
-├── SequenceDiagram.md
-└── ModuleMap.md
+├── Layer_DataFlow.md
+├── Layer_SequenceDiagram.md
+├── Layer_ModuleMap.md
+├── Layer_Contracts.md
+│
+├── EventService/
+├── EventPublisher/
+├── EventBus/
+├── EventDispatcher/
+├── EventSubscriber/
+└── EventLifecycle/
 
-Har bir modul o'z specification hujjatiga ega bo'lishi kerak.
+Har bir modul o'z README.md, Contracts.md, ModuleMap.md va SequenceDiagram.md hujjatlariga ega bo'lishi kerak.
 
 ---
 
