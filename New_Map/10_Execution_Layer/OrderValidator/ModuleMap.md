@@ -57,6 +57,9 @@ Validation Metadata yaratadi.
 ✗ OrderRouter
 ✗ ExecutionMonitor
 ✗ Decision Layer
+✗ Risk Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 OrderValidator GoldBot Execution Layer ichidagi barcha Order Validation jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

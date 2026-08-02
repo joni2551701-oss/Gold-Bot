@@ -57,6 +57,8 @@ Monitoring Metadata yaratadi.
 ✗ OrderManager
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 ExecutionMonitor GoldBot Execution Layer ichidagi barcha Execution Event va Status Monitoring jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

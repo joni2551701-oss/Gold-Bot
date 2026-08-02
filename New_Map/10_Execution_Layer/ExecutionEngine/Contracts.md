@@ -27,12 +27,10 @@ ExecutionService
 ExecutionEngine
 ↓
 OrderValidator
-↓
-ExecutionMonitor
 ```
 ---
 # Input Contract
-• Risk Approval
+• Validated Execution Request
 • Position Package
 • Order Request
 • Execution Metadata
@@ -44,6 +42,7 @@ ExecutionMonitor
 • Execution Metadata
 ---
 # Allowed Dependencies
+✓ ExecutionService
 ✓ OrderValidator
 ✓ OrderManager
 ✓ OrderRouter
@@ -57,7 +56,7 @@ ExecutionMonitor
 ✗ Platform Layer
 ---
 # Runtime Contract
-1. Faqat APPROVED Risk qabul qilinadi.
+1. Faqat ExecutionService orqali kelgan Validated Execution Request qabul qilinadi.
 2. Execution Context yaratilishi shart.
 3. Execution Pipeline to'liq bajarilishi shart.
 4. Har bir modul natijasi tekshirilishi shart.

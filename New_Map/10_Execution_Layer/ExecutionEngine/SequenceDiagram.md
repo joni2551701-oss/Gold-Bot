@@ -15,18 +15,10 @@ Validate Request
 Build Execution Context
 ↓
 OrderValidator
-↓
-OrderManager
-↓
-OrderRouter
-↓
-BrokerGateway
-↓
-ExecutionMonitor
 ```
 ---
 # Runtime Rules
-1. Risk Approval mavjud bo'lishi shart.
+1. Validated Execution Request mavjud bo'lishi shart.
 2. Execution Context yaratilishi shart.
 3. Pipeline ketma-ket bajarilishi shart.
 4. Execution Result yaratilishi shart.
@@ -51,6 +43,6 @@ ExecutionService
 ↓
 ExecutionEngine
 ↓
-Execution Pipeline
+Execution Context
 ↓
-ExecutionMonitor
+OrderValidator

@@ -50,6 +50,9 @@ OrderManager
 ✗ OrderRouter
 ✗ ExecutionMonitor
 ✗ Decision Layer
+✗ Risk Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Order Structure tekshirilishi shart.

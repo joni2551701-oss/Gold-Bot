@@ -53,6 +53,8 @@ Routing Metadata yaratadi.
 ✗ ExecutionService
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 OrderRouter GoldBot Execution Layer ichidagi Broker Routing va Order Dispatch jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

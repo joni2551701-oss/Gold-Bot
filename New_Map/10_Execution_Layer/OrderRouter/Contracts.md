@@ -50,6 +50,8 @@ BrokerGateway
 ✗ ExecutionService
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Managed Order mavjud bo'lishi shart.

@@ -51,6 +51,8 @@ Trade Monitoring Layer
 ✗ OrderManager
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Har bir Broker Response qayta ishlanishi shart.

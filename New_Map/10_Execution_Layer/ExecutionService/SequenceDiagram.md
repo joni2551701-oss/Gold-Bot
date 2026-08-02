@@ -14,16 +14,6 @@ Validate Request
 ↓
 ExecutionEngine
 ↓
-OrderValidator
-↓
-OrderManager
-↓
-OrderRouter
-↓
-BrokerGateway
-↓
-ExecutionMonitor
-↓
 ExecutionService (Exit)
 ↓
 Standardize Response

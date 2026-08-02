@@ -53,6 +53,8 @@ Order Metadata yaratadi.
 ✗ ExecutionMonitor
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 OrderManager GoldBot Execution Layer ichidagi barcha Order Lifecycle jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

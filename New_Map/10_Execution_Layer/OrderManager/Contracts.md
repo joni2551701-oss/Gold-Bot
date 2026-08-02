@@ -50,6 +50,8 @@ OrderRouter
 ✗ ExecutionMonitor
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Faqat Validated Order qabul qilinadi.

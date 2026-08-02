@@ -24,8 +24,6 @@ ExecutionService
 ExecutionEngine
 ↓
 OrderValidator
-↓
-OrderManager
 ```
 ---
 # Responsibilities
@@ -48,7 +46,7 @@ ExecutionEngine
 ---
 # Input
 ExecutionEngine qabul qiladi.
-• Risk Approval
+• Validated Execution Request
 • Position Package
 • Order Request
 • Execution Metadata
@@ -78,7 +76,7 @@ ExecutionMonitor
 ```
 ---
 # Golden Rules
-1. Faqat APPROVED Risk qabul qilinadi.
+1. Faqat ExecutionService orqali kelgan Validated Execution Request qabul qilinadi.
 2. Execution Pipeline ketma-ket ishlaydi.
 3. Har bir modul natijasi tekshiriladi.
 4. Execution Result standart formatda yaratiladi.

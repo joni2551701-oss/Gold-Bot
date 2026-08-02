@@ -57,6 +57,8 @@ Gateway Metadata yaratadi.
 ✗ OrderValidator
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 BrokerGateway GoldBot Execution Layer ichidagi barcha tashqi Broker Communication jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

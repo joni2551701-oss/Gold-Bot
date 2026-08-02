@@ -68,7 +68,9 @@ ExecutionService holatini kuzatadi.
 ✗ OrderRouter (to'g'ridan-to'g'ri)
 ✗ BrokerGateway (to'g'ridan-to'g'ri)
 ✗ Decision Layer
+✗ Risk Layer
 ✗ Database Layer
+✗ Platform Layer
 ---
 # Summary
 ExecutionService GoldBot Execution Layer uchun ikki tomonlama Boundary Gateway va Public API modulidir.

@@ -74,7 +74,9 @@ Chiqish tomonida (Trade Monitoring Layer'ga):
 ✗ OrderRouter (to'g'ridan-to'g'ri)
 ✗ BrokerGateway (to'g'ridan-to'g'ri)
 ✗ Decision Layer
+✗ Risk Layer
 ✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Execution Layer'ga barcha kirish va chiqishlar ExecutionService orqali amalga oshirilishi shart (Boundary Gateway).

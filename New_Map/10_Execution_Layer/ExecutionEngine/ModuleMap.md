@@ -11,8 +11,6 @@ ExecutionService
 ExecutionEngine
 ↓
 OrderValidator
-↓
-OrderManager
 ```
 ---
 # Module Architecture
@@ -47,6 +45,7 @@ Execution Report yaratadi.
 Execution Metadata yaratadi.
 ---
 # Allowed Dependencies
+✓ ExecutionService
 ✓ OrderValidator
 ✓ OrderManager
 ✓ OrderRouter

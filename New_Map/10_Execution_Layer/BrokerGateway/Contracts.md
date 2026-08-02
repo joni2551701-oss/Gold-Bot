@@ -51,6 +51,8 @@ ExecutionMonitor
 ✗ OrderValidator
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Database Layer
+✗ Platform Layer
 ---
 # Runtime Contract
 1. Routed Order qabul qilinishi shart.
