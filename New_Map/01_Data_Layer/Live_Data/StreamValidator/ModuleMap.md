@@ -311,6 +311,8 @@ StreamValidator quyidagilar bilan ishlashi mumkin emas.
 
 ✗ Market Memory
 
+✗ Memory Reader
+
 ✗ Context Engine
 
 ✗ Analysis Engine
