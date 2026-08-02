@@ -19,14 +19,15 @@ Status: CANONICAL
 │
 ├── PortfolioManager
 │
-├── RiskValidator
-│
-└── Risk Approval
+└── RiskValidator
 ```
 ---
 # Processing Pipeline
 ```text
-RiskService
+Decision Layer
+        │
+        ▼
+RiskService (Entry)
         │
         ▼
 RiskEngine
@@ -48,11 +49,17 @@ PortfolioManager
         │
         ▼
 RiskValidator
+        │
+        ▼
+RiskService (Exit)
+        │
+        ▼
+Execution Layer
 ```
 ---
 # Module Responsibilities
 ## RiskService
-Risk Layer Gateway.
+Risk Layer'ning ikki tomonlama (bidirectional) Boundary Gateway'i — Entry va Exit.
 ---
 ## RiskEngine
 Risk Assessment boshlaydi.
@@ -73,7 +80,7 @@ Exposure va Position Concentration nazorat qiladi.
 Portfolio Risk va Correlation nazorat qiladi.
 ---
 ## RiskValidator
-Yakuniy Risk Approval yaratadi.
+Yakuniy Risk Approval yaratadi. Layer tashqarisiga chiqmaydi — natijani RiskService orqali uzatadi.
 ---
 # Summary
 Risk Layer GoldBot arxitekturasidagi Canonical Capital Protection Layer hisoblanadi.

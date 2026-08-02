@@ -10,7 +10,7 @@ Risk Layer Decision Layer tomonidan APPROVED qilingan Trade'ni kapital xavfsizli
 Decision Layer
         │
         ▼
-RiskService
+RiskService (Entry)
         │
         ▼
 RiskEngine
@@ -37,6 +37,9 @@ RiskValidator
 Risk Approval
         │
         ▼
+RiskService (Exit)
+        │
+        ▼
 Execution Layer
 ```
 ---
@@ -61,7 +64,8 @@ Execution Layer
 2. Har bir modul oldingi modul natijasidan foydalanadi.
 3. Risk Report barcha modullar yakunlangandan keyin yaratiladi.
 4. Risk Approval faqat RiskValidator tomonidan yaratiladi.
-5. Execution Layer faqat APPROVED Risk natijasini qabul qiladi.
+5. Risk Approval RiskService orqali Execution Layer'ga uzatiladi — RiskValidator Layer tashqarisiga chiqmaydi.
+6. Execution Layer faqat APPROVED Risk natijasini qabul qiladi.
 ---
 # Summary
 Risk Layer GoldBot kapitalini himoya qiluvchi Canonical Data Processing Pipeline hisoblanadi.

@@ -92,6 +92,8 @@ Trading vaqtincha bloklandi.
 ```text
 Receive Decision
 ↓
+RiskService (Entry)
+↓
 RiskEngine
 ↓
 PositionSizing
@@ -106,7 +108,7 @@ PortfolioManager
 ↓
 RiskValidator
 ↓
-RiskService
+RiskService (Exit)
 ↓
 Execution Layer
 ```

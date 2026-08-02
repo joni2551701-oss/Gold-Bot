@@ -43,7 +43,7 @@ Risk Layer yaratadi.
 ---
 # Layer Pipeline
 ```text
-RiskService
+RiskService (Entry)
 ↓
 RiskEngine
 ↓
@@ -58,6 +58,8 @@ ExposureManager
 PortfolioManager
 ↓
 RiskValidator
+↓
+RiskService (Exit)
 ↓
 Execution Layer
 ```

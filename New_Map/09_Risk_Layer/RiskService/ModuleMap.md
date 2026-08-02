@@ -8,11 +8,23 @@ Ushbu hujjat RiskService ichki arxitekturasini tavsiflaydi.
 ```text
 Decision Layer
 ↓
-RiskService
+RiskService (Entry)
 ↓
 RiskEngine
 ↓
+PositionSizing
+↓
+MoneyManagement
+↓
+DrawdownManager
+↓
+ExposureManager
+↓
+PortfolioManager
+↓
 RiskValidator
+↓
+RiskService (Exit)
 ↓
 Execution Layer
 ```
@@ -31,7 +43,7 @@ RiskService
 ---
 # Internal Components
 ## Request Receiver
-Risk Request'larni qabul qiladi.
+Decision Layer'dan Risk Request'larni qabul qiladi.
 ---
 ## Request Validator
 Request formatini tekshiradi.
@@ -43,7 +55,7 @@ Risk Session holatini boshqaradi.
 RiskEngine'ga so'rov yuboradi.
 ---
 ## Response Formatter
-Risk javobini standart formatga o'tkazadi.
+RiskValidator'dan qaytgan Risk Approval'ni standart formatga o'tkazadi va Execution Layer'ga uzatadi.
 ---
 ## Service Monitor
 RiskService holatini kuzatadi.
@@ -53,10 +65,14 @@ RiskService holatini kuzatadi.
 ✓ RiskValidator
 ---
 # Forbidden Dependencies
-✗ Execution Layer
+✗ PositionSizing (to'g'ridan-to'g'ri)
+✗ MoneyManagement (to'g'ridan-to'g'ri)
+✗ DrawdownManager (to'g'ridan-to'g'ri)
+✗ ExposureManager (to'g'ridan-to'g'ri)
+✗ PortfolioManager (to'g'ridan-to'g'ri)
 ✗ Database Layer
 ✗ Platform Layer
 ✗ DecisionEngine
 ---
 # Summary
-RiskService GoldBot Risk Layer uchun yagona Service Gateway va Public API modulidir.
+RiskService GoldBot Risk Layer uchun ikki tomonlama Boundary Gateway va Public API modulidir.

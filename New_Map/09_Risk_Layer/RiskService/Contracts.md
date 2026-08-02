@@ -6,42 +6,64 @@ Ushbu hujjat RiskService modulining rasmiy Architecture Contract hujjati hisobla
 ---
 # Module Responsibility
 RiskService quyidagilar uchun javobgar.
-✓ Risk Request Management
+✓ Public Entry Point (Decision Layer'dan Risk Layer'ga kirish)
+✓ Public Exit Point (Risk Layer'dan Execution Layer'ga chiqish)
 ✓ Request Validation
-✓ Risk Layer Gateway
+✓ Response Serialization
 ✓ Session Management
-✓ Response Formatting
-✓ Service Monitoring
+✓ API Boundary Enforcement
 RiskService bajarmaydi.
 ✗ Risk Calculation
 ✗ Position Size Calculation
+✗ Money Management
+✗ Drawdown Monitoring
+✗ Exposure Control
+✗ Portfolio Analysis
 ✗ Risk Validation
 ✗ Trade Execution
 ✗ Database Management
-✗ Logging
 ---
 # Module Boundary
 ```text
 Decision Layer
 ↓
-RiskService
+RiskService (Entry)
 ↓
 RiskEngine
 ↓
+PositionSizing
+↓
+MoneyManagement
+↓
+DrawdownManager
+↓
+ExposureManager
+↓
+PortfolioManager
+↓
 RiskValidator
+↓
+RiskService (Exit)
 ↓
 Execution Layer
 ```
 ---
 # Input Contract
+Kirish tomonida (Decision Layer'dan):
 • Decision Package
 • Risk Request
 • Session Metadata
+
+Chiqish tomonida (RiskValidator'dan):
+• Risk Approval
 ---
 # Output Contract
+Kirish tomonida (RiskEngine'ga):
+• Validated Risk Request
+
+Chiqish tomonida (Execution Layer'ga):
 • Risk Response
 • Standard Response
-• Risk Approval
 • Service Metadata
 ---
 # Allowed Dependencies
@@ -49,28 +71,33 @@ Execution Layer
 ✓ RiskValidator
 ---
 # Forbidden Dependencies
-✗ Execution Layer
+✗ PositionSizing (to'g'ridan-to'g'ri)
+✗ MoneyManagement (to'g'ridan-to'g'ri)
+✗ DrawdownManager (to'g'ridan-to'g'ri)
+✗ ExposureManager (to'g'ridan-to'g'ri)
+✗ PortfolioManager (to'g'ridan-to'g'ri)
+✗ Execution Layer'dan boshqa tashqi Layer
 ✗ Database Layer
 ✗ Platform Layer
 ✗ DecisionEngine
 ---
 # Runtime Contract
-1. Risk Layer'ga barcha kirishlar RiskService orqali amalga oshirilishi shart.
-2. Har bir Request Validation'dan o'tishi shart.
-3. RiskService Risk hisoblamaydi.
+1. Risk Layer'ga barcha kirish va chiqishlar RiskService orqali amalga oshirilishi shart (Boundary Gateway).
+2. Har bir kirish Request Validation'dan o'tishi shart.
+3. RiskService Risk hisoblamaydi — faqat Entry/Exit Boundary vazifasini bajaradi.
 4. Risk javobi standart formatda qaytarilishi shart.
-5. Session holati boshqarilishi shart.
-6. Risk Approval Execution Layer'ga uzatilishi shart.
+5. RiskValidator Layer tashqarisiga chiqmaydi — faqat RiskService orqali chiqadi.
+6. Session holati boshqarilishi shart.
 7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
-✓ Request qabul qilinadi.
+✓ Decision Layer'dan Request qabul qilinadi.
 ✓ Validation bajariladi.
-✓ RiskEngine ishga tushiriladi.
-✓ RiskValidator natijasi olinadi.
+✓ RiskEngine'ga uzatiladi.
+✓ RiskValidator'dan Risk Approval qabul qilinadi.
 ✓ Response standartlashtiriladi.
 ✓ Execution Layer'ga uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-RiskService Contract GoldBot Risk Layer uchun yagona Public Interface va Service Gateway sifatida ishlashni, barcha Risk so'rovlarini boshqarishni, Risk Approval natijalarini standart formatga o'tkazishni va Execution Layer'ga uzatishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.
+RiskService Contract GoldBot Risk Layer uchun ikki tomonlama (bidirectional) Boundary Gateway sifatida ishlashini — Decision Layer'dan kirish va Execution Layer'ga chiqishni — belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

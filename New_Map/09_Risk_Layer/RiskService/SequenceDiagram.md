@@ -8,7 +8,7 @@ Ushbu hujjat RiskService Runtime Sequence'ni tavsiflaydi.
 ```text
 Decision Layer
 ↓
-RiskService
+RiskService (Entry)
 ↓
 Validate Request
 ↓
@@ -26,7 +26,7 @@ PortfolioManager
 ↓
 RiskValidator
 ↓
-Receive Risk Approval
+RiskService (Exit)
 ↓
 Standardize Response
 ↓
@@ -37,7 +37,8 @@ Execution Layer
 1. Decision APPROVED bo'lishi shart.
 2. Request Validation bajarilishi shart.
 3. RiskValidator yakunlanishi shart.
-4. Standard Response yaratilishi shart.
+4. RiskValidator natijasi RiskService orqali Execution Layer'ga uzatiladi.
+5. Standard Response yaratilishi shart.
 ---
 # State Flow
 ```text
