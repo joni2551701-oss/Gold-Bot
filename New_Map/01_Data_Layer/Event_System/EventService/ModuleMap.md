@@ -88,6 +88,7 @@ EventLifecycle
 ---
 # Forbidden Dependencies
 ✗ Context Layer
+✗ Analysis Layer
 ✗ Strategy Layer
 ✗ Decision Layer
 ✗ Risk Layer
