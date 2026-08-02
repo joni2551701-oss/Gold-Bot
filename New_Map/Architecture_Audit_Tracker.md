@@ -1191,8 +1191,8 @@ Phase 2 — Module Audit Progress
 ✅ Historical_Data      CLOSED (600/600)
 ✅ Live_Data            CLOSED (800/800)
 ✅ Market_Memory        CLOSED (600/600)
-⏳ Event_System
-⬜ Data_Validation
+✅ Event_System         CLOSED (600/600)
+⏳ Data_Validation
 ⬜ Providers
 ```
 
@@ -1259,16 +1259,74 @@ Canonical rules established or reinforced during this group's audit (added to `A
 
 ---
 
+## Director Review — 01_Data_Layer / Event_System
+
+Phase:
+Phase 2 — Module Audit
+
+Layer:
+01_Data_Layer
+
+Group:
+Event_System
+
+Status:
+CLOSED
+
+Modules:
+6 / 6
+
+Architecture Score:
+600 / 600
+
+Critical:
+0
+
+Major:
+0
+
+Warnings:
+0
+
+Approved:
+100%
+
+Module Results:
+
+| Module | Status | Score |
+|---|---|---|
+| EventService | CLOSED, APPROVED | 100/100 |
+| EventPublisher | CLOSED, APPROVED | 100/100 |
+| EventBus | CLOSED, APPROVED | 100/100 |
+| EventDispatcher | CLOSED, APPROVED | 100/100 |
+| EventSubscriber | CLOSED, APPROVED | 100/100 |
+| EventLifecycle | CLOSED, APPROVED | 100/100 |
+
+Findings fixed during this group's audit (all pushed; group-level README/Layer Position Director-authorized, remaining Dependency Source of Truth mismatches Worker-self-fixed per the Director's updated Phase 2 workflow):
+
+* Event_System (group-level) README.md — stale module list (EventBus, EventTypes, Publishers, Subscribers, EventFlow no longer match the 6 Canonical modules) rebuilt (Major, Group README Rule); Layer Position corrected from a fixed pipeline stage to the Cross-Cutting Layer model, Source Modules -> Event System Layer -> Target Modules (Major, Runtime Documentation Consistency).
+* EventService — ModuleMap Forbidden Dependencies missing Analysis Layer (Major).
+* EventPublisher — ModuleMap Forbidden Dependencies bidirectional mismatch: missing Context/Risk/Platform/Business Layer, extra Trading Logic (Major).
+* EventBus, EventDispatcher, EventSubscriber, EventLifecycle — same bidirectional pattern (missing several Layer entries, extra "Trading Logic" not in Contracts), self-fixed by Worker across all four modules in one batch.
+
+Canonical rules established during this group's audit (added to `Architecture_Audit_Plan.md` section 9b):
+
+* Cross-Cutting Layer Rule (infrastructure layers must not be documented as fixed pipeline stages; canonical position is Source Modules -> Infrastructure Layer -> Target Modules).
+
+Process change (Director-authorized, in force from this group onward): Worker audits a full group in one pass, self-fixes findings the audit rules already resolve mechanically (Dependency Source of Truth, stale README structure, naming, Layer/Engine consistency, Repository Structure, diagram/workflow alignment), and stops for Director decision only on architecture-affecting matters (module add/remove, ownership changes, runtime pipeline changes, boundary changes, dependency design changes, new Golden Rules, ACR-level changes). One consolidated report per group.
+
+---
+
 ## Phase 2 Statistics (running)
 
 Groups Completed:
-3
+4
 
 Modules Completed:
-20
+26
 
 Architecture Score:
-2000 / 2000
+2600 / 2600
 
 Critical Remaining:
 0
