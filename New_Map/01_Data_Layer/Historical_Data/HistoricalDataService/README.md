@@ -165,6 +165,28 @@ HistoricalDataService quyidagi modullarni boshqaradi:
 
 ---
 
+# Allowed Dependencies
+
+HistoricalDataService quyidagilar bilan ishlashi mumkin:
+
+• Bootstrap
+
+• Recovery
+
+• Historical Providers
+
+• Historical Database
+
+• Data Validation
+
+• Market Memory
+
+• Event Bus
+
+• Configuration Layer
+
+---
+
 # Workflow
 
 ```text

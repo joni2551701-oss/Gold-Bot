@@ -72,11 +72,7 @@ HistoricalDataService
 
 ↓
 
-Bootstrap
-
-↓
-
-Recovery
+Bootstrap (Cold Start) / Recovery (Restart yoki Failure Recovery) — Parallel / Mutually Exclusive
 
 ↓
 

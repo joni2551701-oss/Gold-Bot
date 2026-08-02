@@ -240,7 +240,7 @@ HistoricalDataService quyidagilar bilan ishlashi mumkin.
 
 ✓ Market Memory
 
-✓ Memory Reader
+✓ Event Bus
 
 ✓ Configuration Layer
 
