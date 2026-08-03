@@ -1,6 +1,6 @@
 from config import Config
 from core.logger import setup_logger
-from core.pipeline import TradingPipeline
+from goldbot.core_layer.pipeline import TradingPipeline
 from monitoring.resource_monitor import record_process_start
 
 logger = setup_logger("GoldBot")
@@ -16,7 +16,7 @@ class GoldBot:
     Wires the real TradingPipeline (Data -> Context -> Strategy ->
     Signal -> AI -> Decision -> Risk -> Telegram Format -> Telegram
     Delivery -> Persistence) as the v0.1 entry point. No business
-    logic lives here; all of it belongs to core.pipeline.TradingPipeline
+    logic lives here; all of it belongs to goldbot.core_layer.pipeline.TradingPipeline
     and the layers it wires.
     """
 

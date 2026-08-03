@@ -10,6 +10,7 @@ Bu papka repository root'dagi Canonical Architecture'ning importga yaroqli aksi.
 |---|---|---|
 | `configuration` | ✅ MIGRATED | eski `configuration/` paketi |
 | `secrets` | ✅ MIGRATED | eski `core/secrets.py` |
+| `pipeline` | ✅ MIGRATED | eski `core/pipeline.py` |
 | qolganlari | SKELETON | — |
 
 ## Canonical hujjatlar

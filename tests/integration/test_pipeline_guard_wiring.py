@@ -20,7 +20,7 @@ real EmergencyState combination triggers before_ai() skipping alone
 
 from dataclasses import dataclass
 
-from core.pipeline import TradingPipeline
+from goldbot.core_layer.pipeline import TradingPipeline
 from core.emergency.emergency_state import EmergencyState, create_emergency_state_record
 from core.guards.pipeline_guard import GuardDecision, PipelineGuard
 from data.market_data import MarketSnapshot

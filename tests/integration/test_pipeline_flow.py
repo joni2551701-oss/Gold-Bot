@@ -108,7 +108,7 @@ def test_no_candidates_produces_no_telegram_messages(mock_pipeline):
 
 def test_persist_signals_false_does_not_write_to_database(mock_signal_candidate, mock_ai_result):
     """send_notifications/persist_signals both default False -- no side effects unless explicitly enabled."""
-    from core.pipeline import TradingPipeline
+    from goldbot.core_layer.pipeline import TradingPipeline
     from data.market_data import MarketSnapshot
 
     pipeline = TradingPipeline(symbol="XAUUSD", interval="M15", outputsize=200)

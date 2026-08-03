@@ -7,7 +7,7 @@ objects here, no formatting -- only READ access to already-persisted
 signals, with exception handling so a database failure never
 propagates up to a command handler. This service never creates,
 updates, or deletes a signal -- that remains
-core.pipeline.TradingPipeline / telegram.result_handler's job.
+goldbot.core_layer.pipeline.TradingPipeline / telegram.result_handler's job.
 
     Telegram Handler -> SignalService -> SignalRepository -> Database
 """

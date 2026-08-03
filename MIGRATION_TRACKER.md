@@ -90,7 +90,7 @@ Director tomonidan tasdiqlangan tartib: Configuration → Secrets → Core → E
 |---|---|---|---|---|
 | 1 | Configuration | `goldbot.core_layer.configuration` | ✅ MIGRATED | 9 fayl ko'chirildi, 68 fayldagi importlar yangilandi, wrapper yaratilmadi |
 | 2 | Secrets | `goldbot.core_layer.secrets` | ✅ MIGRATED | faqat `core/secrets.py`; `config.py` Director qarori bo'yicha tegilmadi (SMR-001) |
-| 3 | Core | `goldbot.core_layer.*` | ⏳ | |
+| 3 | Core | `goldbot.core_layer.*` | 🔄 | Pipeline ✅; qolgani xaritalanmoqda — quyidagi jadvalga qarang |
 | 4 | Event | `goldbot.data_layer.event_system` | ⏳ | |
 | 5 | Performance | `goldbot.core_layer.performance` | ⏳ | |
 | 6 | Database | `goldbot.database_layer.*` | ⏳ | |
@@ -129,7 +129,38 @@ core/secrets.py -> goldbot/core_layer/secrets/secrets.py
 
 MVR-001 natijasi: import ✅ · eski/yangi parity ✅ · pyflakes ✅ · compileall ✅ · pytest 5400/5400 ✅ · `python main.py` ✅
 
-Joriy holat: **210 moduldan 2 tasi MIGRATED, 208 tasi SKELETON**.
+### 3. Core — IN PROGRESS
+
+`core/` da 34 ta `.py` fayl bor. Canonical `02_Core_Layer` esa 12 modulga bo'lingan. Xaritalash real kod mas'uliyatiga qarab bajarildi:
+
+| Real kod | Canonical modul | Holat |
+|---|---|---|
+| `core/pipeline.py` | `Pipeline` | ✅ MIGRATED |
+| `core/gateway/service_registry.py`, `service_manifest.py`, `service_state.py`, `service.py` | `ServiceRegistry` | ⏳ |
+| `core/gateway/health_service.py` | `HealthMonitor` | ⏳ |
+| `core/gateway/metrics_service.py` | `Performance` | ⏳ |
+| `core/gateway/gateway.py` (CoreGateway facade) | `CoreService` (?) | ❓ Director |
+| `core/emergency/` (4 fayl) | — | ❓ Director |
+| `core/errors/` (3 fayl) | — | ❓ Director |
+| `core/guards/pipeline_guard.py` | — | ❓ Director |
+| `core/gateway/` qolgan 11 fayl (auth, authz, rate_limiter, router, service_breaker, version, dependency_graph, gateway_context/events/request) | — | ❓ Director |
+| `core/logger.py` (129 importer) | — | ❓ Director |
+| `core/phone_hash.py` | — | ❓ Director |
+| `core/system_state.py` | — | ❓ Director |
+
+`❓ Director` bilan belgilanganlar uchun canonical modul mavjud emas. WAR-007 bo'yicha yangi modul yaratish Director Review talab qiladi — Worker o'zi modul o'ylab topmaydi.
+
+#### 3.1 Pipeline — MIGRATED
+
+```text
+core/pipeline.py -> goldbot/core_layer/pipeline/pipeline.py
+```
+
+`TradingPipeline` paket darajasida re-export qilindi. 10 ta fayl yangilandi (4 ta haqiqiy importer + 6 ta docstring/prose havolasi). SMR-001 bo'yicha fayl ichi tegilmagan — Data→Context→Signal→AI→Decision→Risk→Telegram oqimi va notification-eligibility filtri o'zgarmagan.
+
+MVR-001: import ✅ · parity ✅ · pyflakes ✅ · compileall ✅ · pytest 5400/5400 ✅ · `main.py` ✅
+
+Joriy holat: **210 moduldan 3 tasi MIGRATED, 207 tasi SKELETON**.
 
 ---
 

@@ -1048,6 +1048,12 @@ Har bir Director qarori eslab qolinadi. Worker qayta "ruxsat berasizmi?" deb so'
 
 Amaldagi qoidalar: MIR-001 · ICR-001 · MVR-001 · SMR-001 · WDR-001 · RAR-001 va §9b dagi barcha ACR'lar.
 
+## WAR-008 — Repository Infrastructure Rule
+Worker quyidagilarni **Repository Infrastructure** deb qabul qiladi va Director ruxsatisiz ularning joylashuvini o'zgartirmaydi:
+`.github/` · `tests/` · `docs/` · `scripts/` · `deploy/` · `assets/` · `logs/` · `requirements*.txt` · `Dockerfile` · `docker-compose.yml` · `CLAUDE.md`
+
+Ularni ko'chirish yoki qayta tashkil qilish alohida Director qarorini talab qiladi.
+
 ## WAR-007 — Escalation Rule
 Faqat quyidagilar Director Review'ga chiqadi:
 * Yangi Layer
@@ -1091,8 +1097,13 @@ goldbot/                     (Canonical implementatsiya namespace'i — Phase A.
 ## 12.4 Eski implementatsiya
 `core/`, `data/`, `ai/`, `execution/` va boshqa pre-freeze paketlar Foundation Freeze arxitekturasi **emas**. Ular faqat migratsiya tugaguncha implementatsiya manbai sifatida mavjud bo'ladi va bosqichma-bosqich `goldbot/` namespace'iga ko'chiriladi (Phase B-E).
 
-## 12.5 Loyiha infratuzilmasi
-Quyidagilar arxitektura hujjati ham, pre-freeze implementatsiya ham emas, lekin loyihaning ishlashi uchun zarur va root'da qoladi: `main.py`, `config.py`, `tests/`, `docs/`, `contracts/`, `scripts/`, `deploy/`, `assets/`, `logs/`, `requirements*.txt`, `Dockerfile`, `docker-compose.yml`, `.github/`, `.gitignore`, `.env.example`, `.env.production`, `CLAUDE.md`. Ularning taqdiri (ko'chirish, saqlash yoki olib tashlash) Phase E — Cleanup bosqichida hal qilinadi.
+## 12.5 Loyiha infratuzilmasi — RESOLVED (Deferred to Phase E)
+Quyidagilar arxitektura hujjati ham, pre-freeze implementatsiya ham emas: `main.py`, `config.py`, `tests/`, `docs/`, `contracts/`, `scripts/`, `deploy/`, `assets/`, `logs/`, `requirements*.txt`, `Dockerfile`, `docker-compose.yml`, `.github/`, `.gitignore`, `.env.example`, `.env.production`, `CLAUDE.md`. Ular **Repository Infrastructure** hisoblanadi va hozir ko'chirilmaydi ham, o'chirilmaydi ham (WAR-008).
+
+Director Decision: Phase E — Cleanup davomida ular uchta toifaga ajratiladi:
+1. **Repository Infrastructure (saqlanadi)** — `.github/`, `tests/`, `docs/`, `scripts/`, `Dockerfile`, `requirements*.txt` va shu kabilar.
+2. **Application Implementation** — `goldbot/` ichiga tegishli kod.
+3. **Legacy** — migratsiya tugagach olib tashlanadigan eski paketlar.
 
 ## 12.6 Worker vakolati
 Ruxsat: ortiqcha vaqtinchalik hujjatlarni olib tashlash · duplicate fayllarni yo'qotish · README havolalarini yangilash · migratsiya trackerini yangilash.

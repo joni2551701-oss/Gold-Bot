@@ -77,7 +77,7 @@ def check_database():
 
 def check_main_imports():
     try:
-        importlib.import_module("core.pipeline")
+        importlib.import_module("goldbot.core_layer.pipeline")
         return True, "main: OK"
     except Exception as e:
         return False, f"main: FAILED ({e})"

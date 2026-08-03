@@ -9,7 +9,7 @@ read-only formatting logic over an already-built input object passed
 in via `**kwargs` (a `MarketContext`, a `FundamentalContextSnapshot`,
 a `Sequence[SignalPerformance]`, a `LearningContext`, or a
 `knowledge/` lookup) -- none fetches its own data. `ai/` still holds
-no runtime dependency on `database/`, `context/`, or `core.pipeline`
+no runtime dependency on `database/`, `context/`, or `goldbot.core_layer.pipeline`
 (see `ai/context/context_adapter.py`'s docstring for why `ai/` never
 reaches `context/` directly); the caller that already legitimately
 built the input object is responsible for supplying it. A future
