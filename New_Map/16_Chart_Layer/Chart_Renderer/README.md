@@ -73,8 +73,10 @@ Chart_Renderer
 ├── LayerRenderer/
 ├── OverlayRenderer/
 ├── ObjectRenderer/
+├── WatermarkRenderer/
 └── RenderPipeline/
 ```
+`WatermarkRenderer` — matn/logo Watermark'ni (masalan "Demo", "Paper Trading", "Replay Mode") chizadi: Opacity, Position, Scale, Rotation, Theme (Dark/Light), Responsive joylashuv. Render Order'da Grid va Candle orasiga joylashadi (qarang: `Rendering_Guide.md`). Input: Shared Render State, Theme, Watermark Settings. Output: Watermark Layer.
 ---
 # Golden Rules
 1. Chart_Renderer faqat o'z mas'uliyat doirasida ishlaydi.

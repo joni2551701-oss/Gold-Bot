@@ -59,21 +59,24 @@ Frame End
 Chart_Renderer quyidagi qat'iy Z-Index tartibida chizadi — pastdan yuqoriga:
 ```text
 0. Background / Grid           (Settings, Theme)
-1. Candle / Price Data         (Chart_Data → Objects: CandleObject)
-2. Volume Panel                (Indicators: Volume)
-3. Indicators (Overlay-type)   (Indicators: MovingAverage, VWAP)
-4. Drawing Tools                (Drawing_Tools: TrendLine, Rectangle, Fibonacci...)
-5. Analysis Overlay              (Analysis_Overlay: BOS, CHoCH, OB, FVG, Liquidity, Wyckoff, AMD)
-6. Alerts Markers                (Alerts)
-7. Crosshair / Tooltip            (Crosshair)
-8. UI Chrome (Toolbar, Legend)     (Chart_API / Templates)
+1. Watermark                    (Chart_Renderer: WatermarkRenderer)
+2. Candle / Price Data         (Chart_Data → Objects: CandleObject)
+3. Volume Panel                (Indicators: Volume)
+4. Indicators (Overlay-type)   (Indicators: MovingAverage, VWAP)
+5. Drawing Tools                (Drawing_Tools: TrendLine, Rectangle, Fibonacci...)
+6. Analysis Overlay              (Analysis_Overlay: BOS, CHoCH, OB, FVG, Liquidity, Wyckoff, AMD)
+7. Alerts Markers                (Alerts)
+8. Crosshair / Tooltip            (Crosshair)
+9. UI Chrome (Toolbar, Legend)     (Chart_API / Templates)
 ```
 Yuqori raqamli qatlam har doim pastki qatlamning ustidan chiziladi.
+Watermark qasddan eng yuqori qatlamga emas, Grid va Candle orasiga joylashtirilgan — shunda u fon sifatida ko'rinadi, shamlarni yopib qo'ymaydi va Crosshair/Drawing Object'larga xalaqit bermaydi (TradingView uslubidagi Watermark rendering pattern'i).
 ---
 # Layer Rendering Priority
 | Layer | Priority | Update Frequency |
 |---|---|---|
 | Background / Grid | Low | On resize / theme change only |
+| Watermark | Low | On theme/settings change only |
 | Candle / Price Data | High | Every tick / new candle |
 | Volume Panel | High | Every tick / new candle |
 | Indicators (Overlay) | Medium | On candle close (yoki real-time, indikatorga bog'liq) |
@@ -133,7 +136,7 @@ Crosshair va Tooltip yangilanishi throttle qilinadi (masalan 16ms — 60 FPS che
 * **Candle Cache** — Chart_Data tomonidan saqlanadi, Renderer har frame'da qayta so'ramaydi.
 * **Indicator Cache** — Indicator natijalari yangi Candle kelmaguncha qayta hisoblanmaydi (Indicators moduli tomonidan boshqariladi, Rendering emas).
 * **Overlay Cache** — Analysis_Overlay GoldBot Core'dan yangi natija kelmaguncha oldingi Overlay Object'larini qayta ishlatadi.
-* **Render Cache (Offscreen Canvas)** — o'zgarmagan qatlamlar (masalan Background/Grid) Offscreen Canvas'da keshlanadi va faqat kerak bo'lganda qayta chiziladi.
+* **Render Cache (Offscreen Canvas)** — o'zgarmagan qatlamlar (masalan Background/Grid, Watermark) Offscreen Canvas'da keshlanadi va faqat kerak bo'lganda qayta chiziladi.
 ---
 # Golden Rules
 1. Render Order (Z-Index) hech qachon buzilmaydi.

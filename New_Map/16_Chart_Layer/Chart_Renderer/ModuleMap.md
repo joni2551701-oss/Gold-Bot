@@ -12,6 +12,7 @@ Chart_Renderer
         ├── LayerRenderer
         ├── OverlayRenderer
         ├── ObjectRenderer
+        ├── WatermarkRenderer
         └── RenderPipeline
 ```
 ---
@@ -26,7 +27,7 @@ Screenshot / Alerts / Chart_API
 ---
 # Processing Pipeline (Planned)
 ```text
-CanvasRenderer → WebGLRenderer → LayerRenderer → OverlayRenderer → ObjectRenderer → RenderPipeline
+CanvasRenderer → WebGLRenderer → LayerRenderer → WatermarkRenderer → OverlayRenderer → ObjectRenderer → RenderPipeline
 ```
 ---
 # Dependency Map
