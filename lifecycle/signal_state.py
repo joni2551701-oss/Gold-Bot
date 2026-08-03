@@ -11,7 +11,7 @@ decided -- see "What this module does NOT do" below.
 
     CREATED -> QUALITY_CHECKED -> EXPLAINED -> APPROVED / REJECTED -> PAPER_OPEN -> CLOSED
 
-NAMING NOTE -- read before using this module: execution/signal_lifecycle.py
+NAMING NOTE -- read before using this module: execution_layer/execution_monitor/signal_lifecycle.py
 already defines a class named SignalState (CREATED/SENT/ACKNOWLEDGED/
 CLOSED) -- a Telegram message-delivery state machine, inert, unrelated
 to a signal's own analysis-pipeline progress (SENT/ACKNOWLEDGED both
@@ -22,12 +22,12 @@ same-name collision between two different concepts in two different
 packages -- the same disambiguation discipline
 context_layer/context_engine/snapshot.py's ContextSnapshotSchema (vs. the real
 ContextSnapshot) and lifecycle/paper_trade.py (vs.
-execution/signal_lifecycle.py's own SignalState) already established.
-execution/signal_lifecycle.py is untouched by this phase.
+execution_layer/execution_monitor/signal_lifecycle.py's own SignalState) already established.
+execution_layer/execution_monitor/signal_lifecycle.py is untouched by this phase.
 
 What this module does NOT do:
-- Does not change signals/signal_quality.py, signals/explainability.py,
-  or decision/decision_engine.py -- their outputs are only *read* by
+- Does not change signal_layer/signal_scoring/signal_quality.py, signal_layer/signal_scoring/explainability.py,
+  or decision_layer/decision_engine/decision_engine.py -- their outputs are only *read* by
   derive_signal_lifecycle_state() below, never recomputed.
 - Does not add a new field to signals.schema.SignalSchema, and does
   not persist anything -- no database change.
@@ -44,7 +44,7 @@ from lifecycle.trade_state import TradeState
 
 if TYPE_CHECKING:
     from lifecycle.paper_trade import PaperTrade
-    from signals.schema import SignalSchema
+    from signal_layer.signal_builder.schema import SignalSchema
 
 
 class SignalLifecycleState(Enum):

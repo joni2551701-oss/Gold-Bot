@@ -105,7 +105,7 @@ platform constitution — the near-complete v0.3.5 Foundation:
   `docs/DECISION_PRINCIPLES.md`, `docs/DEVELOPMENT_GUIDE.md`,
   `docs/SYSTEM_OVERVIEW.md`, `docs/DOCUMENTATION_STANDARD.md`) — the
   rule statements and the workflow for changing this codebase.
-- **A15 Signal Schema** (`signals/schema.py`) — the standard shape a
+- **A15 Signal Schema** (`signal_layer/signal_builder/schema.py`) — the standard shape a
   signal is described in across modules.
 - **A16 Context Snapshot** (`context_layer/context_engine/snapshot.py`) — the standard
   shape market context is described in across modules.

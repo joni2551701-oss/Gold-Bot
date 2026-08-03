@@ -6,9 +6,9 @@ distance — and suggests a lot size. **Risk never originates a trade
 idea.** See `docs/DECISION_PRINCIPLES.md`'s Principle 3.
 
 ## Input
-`decision.models.TradeDecision` (required) and an optional
+`decision_layer.decision_engine.models.TradeDecision` (required) and an optional
 `account_balance: float`
-(`risk.risk_manager.RiskManager.evaluate(trade_decision, account_balance=None)`).
+(`risk_layer.risk_engine.risk_manager.RiskManager.evaluate(trade_decision, account_balance=None)`).
 This matches the brief's "TradeDecision, Account Information" input
 description closely — `account_balance` is exactly that "account
 information," and is the one input `RiskManager` reads that isn't
@@ -18,7 +18,7 @@ balance; a caller must supply it explicitly for dollar `risk_amount`/
 `lot_size` to be non-zero.
 
 ## Output
-`risk.risk_manager.RiskResult` — `approved` (`bool`), `lot_size`
+`risk_layer.risk_engine.risk_manager.RiskResult` — `approved` (`bool`), `lot_size`
 (`float`, a sizing *suggestion*, never an order instruction),
 `risk_amount` (`float`), `risk_reward` (`float`), `reason` (`str`).
 Anything the Decision Engine did not `APPROVE` is rejected
@@ -40,7 +40,7 @@ strategy produced a candidate beyond what's already on
 filter by strategy.
 ❌ `ai/`, `database/`, `telegram/`, `execution/` — Risk Manager reads
 a `TradeDecision`, nothing else; "No MT5, no SymbolInfo, no Database,
-no Telegram, no Logger" per `risk/risk_manager.py`'s own module
+no Telegram, no Logger" per `risk_layer/risk_engine/risk_manager.py`'s own module
 docstring.
 
 ## Error Contract

@@ -58,7 +58,7 @@ class AssetDefinition:
         characterization, distinct from trading_session above). Never
         fabricated.
     risk_profile: always None in this phase -- reserved for a future,
-        not-yet-defined type. risk/risk_manager.py is entirely
+        not-yet-defined type. risk_layer/risk_engine/risk_manager.py is entirely
         unmodified by this phase and does not read this field. Never
         fabricated.
     news_profile: always None in this phase -- reserved for a future,

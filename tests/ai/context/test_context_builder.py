@@ -8,7 +8,7 @@ from ai.interfaces import MarketContext
 from ai.journal.trade_journal import DecisionType, SignalType, TradeOutcome, create_journal_entry
 from ai.learning_context import build_learning_context
 from ai.profiles.user_profile import AIUserProfile
-from signals.schema import SignalSchema, generate_signal_id
+from signal_layer.signal_builder.schema import SignalSchema, generate_signal_id
 
 
 def test_build_ai_context_with_no_inputs_returns_all_empty():

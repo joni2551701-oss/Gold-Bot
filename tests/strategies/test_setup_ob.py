@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 from context_layer.order_block.order_block import OrderBlockType
 
-from strategies.ob_strategy import OBStrategy
-from strategies.result import StrategyDirection, SetupStatus
+from strategy_layer.strategy_library.ob_strategy import OBStrategy
+from strategy_layer.strategy_engine.result import StrategyDirection, SetupStatus
 
 
 def test_bullish_ob_retest_when_price_in_zone(make_ctx):

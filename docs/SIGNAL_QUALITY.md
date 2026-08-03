@@ -24,10 +24,10 @@ FVG reaction behind it).
 ## Architecture
 
 ```
-Signal Candidates (signals/signal_engine.py, unchanged)
+Signal Candidates (signal_layer/signal_engine/signal_engine.py, unchanged)
       |
       v
-signals/signal_quality.py
+signal_layer/signal_scoring/signal_quality.py
       |  compute_signal_quality(signal, context, htf_bias) -> SignalQualityResult
       v
 TradingPipeline.run()'s result dict ("quality_results", Phase A4)
@@ -65,7 +65,7 @@ No detector was rewritten or copied to produce this feature.
 ## Inputs
 
 `compute_signal_quality(signal, context, htf_bias=None)`:
-- `signal: SignalCandidate` (from `signals/models.py`) — needs
+- `signal: SignalCandidate` (from `signal_layer/signal_builder/models.py`) — needs
   `signal_type` (BUY/SELL/NONE) and `entry` (price).
 - `context: ContextSnapshot` (from `context/`) — reads `.structure`,
   `.liquidity_sweeps`, `.order_blocks`, `.fair_value_gaps`.
@@ -144,7 +144,7 @@ to add, and still does.
 ## What this does NOT do
 
 - Does not generate a `BUY`/`SELL` signal, and is not itself a
-  strategy — `signals/signal_engine.py` and every `strategies/*.py`
+  strategy — `signal_layer/signal_engine/signal_engine.py` and every `strategies/*.py`
   file are unchanged.
 - Does not approve, reject, or size a trade.
 - Is not consumed by `AIAnalyzer`, `DecisionEngine`, or `RiskManager`
@@ -166,7 +166,7 @@ to add, and still does.
 
 - **Session criterion**: Session Intelligence exists as of Phase A6
   (`context_layer/session/session.py`) — add a `SESSION_ALIGNED` entry to
-  `signals/signal_quality.py`'s `_CRITERIA` tuple (the single place a
+  `signal_layer/signal_scoring/signal_quality.py`'s `_CRITERIA` tuple (the single place a
   new criterion needs to be registered) and bump `criteria_total`
   accordingly. Still not done — a distinct future step, not implied by
   Session Intelligence existing.

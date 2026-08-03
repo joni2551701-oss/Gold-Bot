@@ -3,7 +3,7 @@
 **Package:** GB-CONST-036 · **Document:** Chapter36_RiskGovernance.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Domain (Chapters 28–37)
 **Continuity:** Reuses the terminology of Chapters 01–35; does not contradict any approved chapter.
-**Operative sources:** [`contracts/risk_contract.md`](../../../contracts/risk_contract.md), the Risk Manager (`risk/risk_manager.py`), and the Trading Safety rules in [`CLAUDE.md`](../../../CLAUDE.md).
+**Operative sources:** [`contracts/risk_contract.md`](../../../contracts/risk_contract.md), the Risk Manager (`risk_layer/risk_engine/risk_manager.py`), and the Trading Safety rules in [`CLAUDE.md`](../../../CLAUDE.md).
 **Note:** This chapter states risk *governance* at the constitutional level. It does not define, alter, or restate any risk formula, threshold, or logic — those remain the exclusive domain of the operative risk sources and are changed only by explicit, specific authorization.
 
 ---

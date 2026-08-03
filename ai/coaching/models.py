@@ -7,7 +7,7 @@ Foundation, TASK 2).
 `ai/trade_journal/models.py`, and `ai/learning/models.py` all already
 established: every field is a primitive (`str`/`float`/`Mapping[str,
 str]`) or an enum defined in this same file -- never a
-`decision.models.TradeDecision`, `risk.risk_manager.RiskResult`, or any
+`decision_layer.decision_engine.models.TradeDecision`, `risk_layer.risk_engine.risk_manager.RiskResult`, or any
 other Trading Core object reference. `ai/coaching/` never imports
 `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
 `context/`, `telegram/`, `database/`, `voice/`, `assistant/`, `media/`,

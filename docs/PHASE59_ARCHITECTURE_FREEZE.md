@@ -79,7 +79,7 @@ in the repo except `tests/`): **195 modules, 0 import failures, 0
 circular imports.**
 
 Confirmed directly by reading `core/pipeline.py`'s own import list and
-grepping `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
+grepping `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
 `execution/`, `telegram/handlers.py`, `telegram/command_router.py`,
 `telegram/commands.py`, `telegram/permissions.py` for any reference to
 a Phase 59.x foundation module (`runtime_feature`, `emergency_manager`,
@@ -116,14 +116,14 @@ three dicts.
 |---|---|---|
 | `telegram/owner/` (all 13 modules) | Every owner-facing view/control built across Phase 59.1–59.9 | New entries in `telegram/commands.py`'s `OWNER_COMMANDS`, routing in `telegram/command_router.py` using `telegram/owner/security.py`'s `require_role()`, new handlers in `telegram/handlers.py` calling these functions |
 | `configuration/runtime_feature_manager.py` | Real, working runtime toggle (validated/persisted/audited/snapshotted) | Nothing in `core/pipeline.py` currently constructs a `RuntimeFeatureManager` or checks a feature's runtime value before running a stage |
-| `core_layer/emergency/emergency_manager.py` | Real, working kill/pause/maintenance/restore controller | Nothing in `core/pipeline.py`/`risk/risk_manager.py`/`execution/` reads `EmergencyManager.get_status()` before running; `core_layer/emergency/circuit_breaker.py`'s `evaluate_circuit()` is never fed live loss/drawdown/api data |
+| `core_layer/emergency/emergency_manager.py` | Real, working kill/pause/maintenance/restore controller | Nothing in `core/pipeline.py`/`risk_layer/risk_engine/risk_manager.py`/`execution/` reads `EmergencyManager.get_status()` before running; `core_layer/emergency/circuit_breaker.py`'s `evaluate_circuit()` is never fed live loss/drawdown/api data |
 | `core_layer/system_state/system_state.py` | A pure enum + record, no holder | No singleton exists anywhere holding "the" current `SystemState` |
 | `database/audit_log_repository.py` | Real, append-only audit trail | Only written to by `RuntimeFeatureManager`/`EmergencyManager` today — no owner command's real invocation exists yet to trigger those writes in production |
 | `database/config_snapshot_repository.py` | Real rollback-capture mechanism | Only written to by `RuntimeFeatureManager` today; nothing reads a snapshot back to actually roll back a config yet |
 
 **Live and protected (the real trading path, untouched by any Phase
 59 work):** `data/` → `context/` → `strategies/`/`signals/` → `ai/`
-→ `decision/decision_engine.py` → `risk/risk_manager.py` →
+→ `decision_layer/decision_engine/decision_engine.py` → `risk_layer/risk_engine/risk_manager.py` →
 `telegram/notifier.py` → `database/signal_repository.py`. Every
 signal that reaches a user still passes through
 `RiskManager.evaluate()` with no shortcut, per `CLAUDE.md`'s own

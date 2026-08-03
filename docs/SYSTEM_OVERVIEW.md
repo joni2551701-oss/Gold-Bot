@@ -79,7 +79,7 @@ The exact, implementation-accurate `core/pipeline.py` stage order
 | Version | Theme |
 |---|---|
 | v0.4 AI | A real AI provider replacing `ai/ai_analyzer.py`'s current heuristic stub — not started. |
-| v0.5 MT5 | Live MT5 broker integration — `execution/execution_engine.py` (currently, deliberately, inert) gets wired to a real order path. |
+| v0.5 MT5 | Live MT5 broker integration — `execution_layer/execution_engine/execution_engine.py` (currently, deliberately, inert) gets wired to a real order path. |
 | v0.6 Portfolio | Multi-position/portfolio-level risk and performance tracking. |
 | v0.7 Cloud | Cloud-hosted deployment and scaling. |
 | v0.8 Mini App | Telegram Mini App interface. |

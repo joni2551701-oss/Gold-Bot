@@ -1,13 +1,37 @@
-"""08_Decision_Layer / DecisionEngine — decision_layer.decision_engine.
-
-Foundation Freeze v1.0 — canonical architecture skeleton.
-
-Phase A creates this package as an importable mirror of the canonical
-Layer documents at the repository root. Code is migrated module by
-module in Phases B-E under Migration Isolation Rule (MIR-001); until a
-module is migrated, its behaviour still comes from the pre-freeze
-top-level packages, which keep working during migration per Import
-Compatibility Rule (ICR-001).
-
-Canonical documentation: 08_Decision_Layer/DecisionEngine/README.md
 """
+decision/ — GoldBot's Decision Layer.
+
+Live/FROZEN path (unchanged): decision.decision_engine.DecisionEngine.evaluate()
+takes a SignalCandidate + AIAnalysisResult and returns a TradeDecision with a
+DecisionAction (APPROVE / REJECT / NO_TRADE) — the confidence-blend the live
+pipeline runs; do not modify without explicit approval (CLAUDE.md Trading
+Safety).
+
+STEP-09 business-decision layer (TASK-CORE-009, additive parallel, reuse-first):
+decision.decision_manager.DecisionManager takes a canonical signal
+(signal_layer.signal_builder.schema.SignalSchema) and produces a DecisionOutcome with a
+DecisionStatus (APPROVE / REJECT / HOLD / EXPIRE). It REUSES the frozen
+engine's verdict (mapping NO_TRADE -> HOLD) and adds HOLD/EXPIRE via its own
+business rules. It sizes no risk, sends no order, and touches no platform.
+"""
+
+from decision_layer.decision_engine.decision_status import (
+    DecisionStatus,
+    from_decision_action,
+    from_signal_decision,
+)
+from decision_layer.decision_engine.decision_model import DecisionOutcome
+from decision_layer.decision_service.decision_manager import DecisionManager
+from decision_layer.decision_service.decision_router import DecisionConsumer, route as route_decision
+
+__all__ = [
+    "DecisionStatus",
+    "from_decision_action",
+    "from_signal_decision",
+    "DecisionOutcome",
+    "DecisionManager",
+    "DecisionConsumer",
+    "route_decision",
+]
+
+# Canonical documentation: 08_Decision_Layer/DecisionEngine/README.md

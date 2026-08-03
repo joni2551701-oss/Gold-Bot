@@ -29,7 +29,7 @@ and Section 21, not resolved here.
 because it is this ecosystem's single most important boundary, so it
 is worth stating in both documents): the AI layer explains, analyzes,
 summarizes, and educates. It never approves or rejects a trade, never
-calls `decision/decision_engine.py` or `risk/risk_manager.py`, never
+calls `decision_layer/decision_engine/decision_engine.py` or `risk_layer/risk_engine/risk_manager.py`, never
 executes an order, and never sends a Telegram message that bypasses
 the pipeline's own eligibility filter. This boundary is permanent
 (Constitution Article 1: "It will never give the AI a vote"), not a

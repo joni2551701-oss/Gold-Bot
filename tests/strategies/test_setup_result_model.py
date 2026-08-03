@@ -2,7 +2,7 @@
 
 from types import SimpleNamespace
 
-from strategies.result import StrategyResult, StrategyDirection, SetupStatus, compute_rr
+from strategy_layer.strategy_engine.result import StrategyResult, StrategyDirection, SetupStatus, compute_rr
 
 
 def test_default_result_is_no_setup():

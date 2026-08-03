@@ -5,8 +5,8 @@ Intelligence Foundation, TASK 2/3).
 `TradeJournalEntry` follows the same Article 3 resolution
 `ai/trading_analyst/models.py` and `ai/chart_intelligence/models.py`
 both already established: every field is a primitive
-(`str`/`float`/`Sequence[str]`) — never a `decision.models.TradeDecision`,
-`risk.risk_manager.RiskResult`, or any other Trading Core object
+(`str`/`float`/`Sequence[str]`) — never a `decision_layer.decision_engine.models.TradeDecision`,
+`risk_layer.risk_engine.risk_manager.RiskResult`, or any other Trading Core object
 reference. `ai/trade_journal/` never imports `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/`, `context/`, or `monitoring/`.
 
@@ -14,7 +14,7 @@ reference. `ai/trade_journal/` never imports `decision/`, `risk/`,
 `docs/PHASE66_2_AUDIT.md`'s "Conclusion" section): a *different*,
 Trading-Core-coupled, Phase 55-era type with the same bare class name
 already exists at `ai.journal.trade_journal.TradeJournalEntry`
-(imports `signals.models.SignalType`, predates Constitution Article 3).
+(imports `signal_layer.signal_builder.models.SignalType`, predates Constitution Article 3).
 This module's `ai.trade_journal.models.TradeJournalEntry` is a
 distinct, non-colliding fully-qualified path, never imported alongside
 the old one, and serves a genuinely different purpose (a narrative,

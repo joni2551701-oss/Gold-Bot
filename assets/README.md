@@ -45,8 +45,8 @@ gold_assets = registry.by_type(AssetType.GOLD)  # [GOLD_ASSET]
 - Does not fetch market data, call a Forex/Crypto API, or add a new
   data provider.
 - Does not generate a signal and is not read by `strategies/`,
-  `signals/`, `ai/`, or `decision/decision_engine.py`.
-- Does not size a position — `risk/risk_manager.py` is untouched and
+  `signals/`, `ai/`, or `decision_layer/decision_engine/decision_engine.py`.
+- Does not size a position — `risk_layer/risk_engine/risk_manager.py` is untouched and
   does not read `AssetDefinition.risk_profile` (a `None` hook, not a
   wired-in value).
 - Does not execute an order — `execution/` is untouched.

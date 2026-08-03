@@ -37,7 +37,7 @@ def _row_to_entry(row) -> RiskDecisionEntry:
 
 
 class RiskDecisionRepository:
-    """Append-only persistence for RiskDecisionEntry -- database access only, no risk-calculation logic (that's risk/risk_manager.py's job, same phase)."""
+    """Append-only persistence for RiskDecisionEntry -- database access only, no risk-calculation logic (that's risk_layer/risk_engine/risk_manager.py's job, same phase)."""
 
     def __init__(self):
         self.db = Database()

@@ -6,7 +6,7 @@ provider_commands.py's own docstring. NOT registered into
 telegram/commands.py, NOT called from telegram/command_router.py or
 telegram/handlers.py.
 
-A thin telegram-facing wrapper over execution/simulator/ -- this
+A thin telegram-facing wrapper over execution_layer/execution_engine/simulator/ -- this
 module writes no slippage/spread/latency logic of its own, it only
 reports already-computed config and a selected simulation mode. The
 selected mode is an in-memory-only holder (module-level dict), same
@@ -17,8 +17,8 @@ not survive a process restart.
 
 from typing import Dict, Optional
 
-from execution.simulator.simulator_engine import ExecutionSimulator
-from execution.simulator.slippage import SlippageConfig
+from execution_layer.execution_engine.simulator.simulator_engine import ExecutionSimulator
+from execution_layer.execution_engine.simulator.slippage import SlippageConfig
 from telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
 
@@ -39,7 +39,7 @@ def execution_status() -> ProviderCommandResult:
             f"Slippage: {simulator.slippage_config.points} pts (max {simulator.slippage_config.max_points})",
             f"Spread (default): {simulator.spread_config.default_points} pts (max {simulator.spread_config.max_points})",
             f"Latency: {simulator.latency_config.execution_latency_ms}ms",
-            "Live execution: INERT (execution/execution_engine.py unchanged)",
+            "Live execution: INERT (execution_layer/execution_engine/execution_engine.py unchanged)",
         ]
         return ProviderCommandResult(success=True, message="\n".join(lines))
     except Exception as e:
@@ -60,7 +60,7 @@ def slippage_status() -> ProviderCommandResult:
 def set_simulation_mode(mode: str) -> ProviderCommandResult:
     """
     The future `/set_simulation_mode` command's payload -- selects
-    which named session spread (`execution.simulator.spread.SpreadConfig.session_spreads`)
+    which named session spread (`execution_layer.execution_engine.simulator.spread.SpreadConfig.session_spreads`)
     a future simulate() call should be run under. Does not itself call
     ExecutionSimulator.simulate() -- a future caller reads
     _MODE_SESSIONS[mode] and passes it as simulate()'s own `session`

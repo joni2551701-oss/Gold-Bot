@@ -42,7 +42,7 @@ pause was required.
 - `monitoring/decision_logger.py` (new) — `DecisionLogger`:
   `log_entry()`/`get_recent_entries()`, primitive `criteria_met`/
   `criteria_total`/`decision`/`reason` only — never imports
-  `signals.signal_quality.SignalQualityResult` directly.
+  `signal_layer.signal_scoring.signal_quality.SignalQualityResult` directly.
 - `monitoring/error_monitor.py` (new) — `ErrorMonitor`:
   `capture()`/`get_recent_errors()`/`get_error_counts()`; `capture()`
   also relays into `SystemMonitor.record_error()`.

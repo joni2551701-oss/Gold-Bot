@@ -88,7 +88,7 @@ own worked example (`1000$ -> +30 -> 1030$`) is expressed in dollars.
 `EquityCurveConfig.unit_risk_amount` bridges that gap — a configurable
 dollar value representing "1R" that converts each trade's already-real
 `r_multiple` into a dollar delta. This is **visualization-only**, not a
-sizing or PnL computation; `risk/risk_manager.py` is untouched. Same
+sizing or PnL computation; `risk_layer/risk_engine/risk_manager.py` is untouched. Same
 disclosed-assumption posture `backtest_engine.py`'s own HTF-neutral
 fallback used in Phase 60.2.
 

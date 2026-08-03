@@ -1,10 +1,10 @@
 """
-Phase 60.3, TASK 5 -- execution/simulator/latency.py tests.
+Phase 60.3, TASK 5 -- execution_layer/execution_engine/simulator/latency.py tests.
 """
 
 from datetime import datetime, timezone
 
-from execution.simulator.latency import LatencyConfig, apply_latency, compute_latency
+from execution_layer.execution_engine.simulator.latency import LatencyConfig, apply_latency, compute_latency
 
 
 def test_compute_latency_returns_configured_value():

@@ -83,12 +83,12 @@ Strategies (strategies/)         |  -- 3 independent SMC methodologies
       v     |
 Signal Generation (signals/)     |  -- aggregates strategy output
       |     |     |
-      |     |     '-- Signal Quality Score (signals/signal_quality.py)
+      |     |     '-- Signal Quality Score (signal_layer/signal_scoring/signal_quality.py)
       |     |          -- per-candidate A+/A/B/C grade (Phase A4;
       |     |          advisory only, see docs/SIGNAL_QUALITY.md;
       |     |          not consumed below in this phase)
       |     |     |
-      |     |     '-- Explainability (signals/explainability.py)
+      |     |     '-- Explainability (signal_layer/signal_scoring/explainability.py)
       |     |          -- reasons list from Signal Quality's
       |     |          criteria_met + Wyckoff/Session/Regime
       |     |          (Phase A9; advisory only, see
@@ -161,7 +161,7 @@ same as `core/`), not inside the Data→...→Database flow, and
 `Environment`/`ApplicationSettings`/`FeatureFlags` in this phase —
 see its own section below.
 
-Signal Schema (`signals/schema.py`/`signals/adapter.py`, Phase A15)
+Signal Schema (`signal_layer/signal_builder/schema.py`/`signal_layer/signal_builder/adapter.py`, Phase A15)
 was **not** shown in the diagram above through Phase A19 — but as of
 the Pre-Phase 59 Architecture Readiness Review (AC-03), `core/pipeline.py`
 now calls `from_signal_candidate()` once per candidate in the new
@@ -187,7 +187,7 @@ full linkage.
 
 ### Decision Engine v2 (Phase A3)
 
-`decision/decision_engine.py`'s `DecisionEngine.evaluate()` no longer
+`decision_layer/decision_engine/decision_engine.py`'s `DecisionEngine.evaluate()` no longer
 computes a flat `(signal.confidence + ai_analysis.confidence) / 2`
 average (the pre-A3 formula). It now blends four weighted components,
 all on the existing 0.0–1.0 confidence scale:
@@ -211,18 +211,18 @@ hardcoded inline in `evaluate()`. Full detail, including the exact
 HTF-bias mapping table and the quality-dampening formula:
 `decision/README.md`.
 
-`risk.risk_manager.RiskResult` is **not** one of the four inputs —
+`risk_layer.risk_engine.risk_manager.RiskResult` is **not** one of the four inputs —
 Risk Manager runs *after* Decision Engine in the pipeline (see the
 diagram above) and cannot supply an input to a decision that precedes
 it. The "Risk" component instead reads `AIAnalysisResult.risk_score`
 (already computed by the AI layer, before Decision Engine runs),
 inverted so higher always means better, consistent with the other
-three inputs. `risk/risk_manager.py` itself is entirely unmodified by
+three inputs. `risk_layer/risk_engine/risk_manager.py` itself is entirely unmodified by
 Phase A3.
 
 ### Signal Quality Score (Phase A4)
 
-`signals/signal_quality.py`'s `compute_signal_quality(signal, context,
+`signal_layer/signal_scoring/signal_quality.py`'s `compute_signal_quality(signal, context,
 htf_bias)` grades each signal candidate's alignment with existing
 context into a letter grade — a **checklist model**, not a weighted
 average like Decision Engine v2's, since it answers a different
@@ -307,7 +307,7 @@ were both named in the roadmap and both deliberately **not**
 fabricated this phase — see `docs/SESSION_INTELLIGENCE.md`'s "What was
 asked but is NOT included" section for why each needs a different,
 separate future step (historical aggregation for the former; a
-`SESSION_ALIGNED` criterion in `signals/signal_quality.py`, Phase A4's
+`SESSION_ALIGNED` criterion in `signal_layer/signal_scoring/signal_quality.py`, Phase A4's
 already-documented extension point, for the latter — neither wired in
 this phase).
 
@@ -365,7 +365,7 @@ full detail and the exact penalty table: `docs/DATA_QUALITY.md`.
 
 ### Explainability Layer (Phase A9)
 
-`signals/explainability.py`'s `explain_signal(signal, context,
+`signal_layer/signal_scoring/explainability.py`'s `explain_signal(signal, context,
 quality)` produces a `SignalExplanation` (`direction`, `reasons`,
 `quality`, `confidence`) — human-readable reasons for a signal, with
 zero new detection logic. Its primary reason source is Signal Quality
@@ -420,7 +420,7 @@ as `quality_results`/`explanations` (not the once-per-cycle shape
 `htf_bias`/`market_regime` use, since `signal_quality`/`confidence`
 only exist per candidate); `"features"` is the only new key in
 `run()`'s result dict. Not consumed by any `strategies/*.py` file,
-`signals/signal_quality.py`'s scoring, `signals/explainability.py`,
+`signal_layer/signal_scoring/signal_quality.py`'s scoring, `signal_layer/signal_scoring/explainability.py`,
 `AIAnalyzer`, `DecisionEngine`, or `RiskManager` in this phase — see
 `docs/FEATURE_ENGINEERING.md`'s "Significance for AI" section for why
 this is nonetheless a natural, already-available input for a future
@@ -435,7 +435,7 @@ real AI provider.
 `DISABLED`/`DEPRECATED`), and `StrategyRegistry`
 (`register()`/`get()`/`list()`/`active()`) — a metadata layer, not a
 signal-generation layer. `build_default_registry()` registers the
-three strategies `strategies/strategy_manager.py`'s `StrategyManager`
+three strategies `strategy_layer/strategy_manager/strategy_manager.py`'s `StrategyManager`
 already runs (`LIQUIDITY_SWEEP_STRATEGY`/`FVG_STRATEGY`/
 `AMD_STRATEGY`, matched by their real `SignalCandidate.strategy_name`
 string literals) — no new strategy is introduced, and no existing
@@ -520,12 +520,12 @@ dependency on `data/`, `context/`, `strategies/`, `signals/`, `ai/`,
 
 ### Signal Schema Standard Foundation (Phase A15)
 
-`signals/schema.py` adds `SignalSchema` — one standard, cross-module
+`signal_layer/signal_builder/schema.py` adds `SignalSchema` — one standard, cross-module
 signal contract (identity, market info, direction, price, a
 `context_id` reference, strategy info, quality info, an
 `explanation_id` reference, decision info, a `risk_id` reference) —
 and `validate_signal()`/`generate_signal_id()`.
-`signals/adapter.py` adds `from_signal_candidate()`, the one
+`signal_layer/signal_builder/adapter.py` adds `from_signal_candidate()`, the one
 backward-compatibility bridge from an existing `SignalCandidate` to a
 `SignalSchema`. A standardization layer, not a new signal source:
 computes nothing, relays already-computed values
@@ -545,18 +545,18 @@ the database in this phase. Both independently reuse
 generation — not a new scheme.
 
 `SignalSchema.decision`'s vocabulary (`APPROVED`/`REJECTED`/
-`PENDING`) is deliberately distinct from `decision.models.DecisionAction`'s
+`PENDING`) is deliberately distinct from `decision_layer.decision_engine.models.DecisionAction`'s
 real values (`APPROVE`/`REJECT`/`NO_TRADE`) — `SignalSchema` can exist
 before a `TradeDecision` does at all, so `"PENDING"` is a real third
 state `DecisionAction` has no equivalent for.
-`signals/adapter.py`'s `_DECISION_ACTION_TO_STATUS` maps
+`signal_layer/signal_builder/adapter.py`'s `_DECISION_ACTION_TO_STATUS` maps
 `APPROVE`→`"APPROVED"`, `REJECT`→`"REJECTED"`,
 `NO_TRADE`→`"REJECTED"` (collapsed — both mean no signal reaches the
 user) — the one place that translation happens.
 
 Deliberately has **zero pipeline wiring** in this phase, same posture
 as every other Phase A foundation module: `core/pipeline.py` never
-calls `from_signal_candidate()`. `signals/adapter.py` does not import
+calls `from_signal_candidate()`. `signal_layer/signal_builder/adapter.py` does not import
 `assets/` for its `asset_type` default either — `"GOLD"` is a literal
 matching `assets.asset_type.AssetType.GOLD.value`, documented, not a
 new cross-package dependency (Strategy Lifecycle, Asset Intelligence,
@@ -586,8 +586,8 @@ Explainability/Feature Engineering module already consumes —
 untouched by this phase. A second class with the identical name in
 the same package would be a serious, ongoing ambiguity for any future
 reader or agent; `ContextSnapshotSchema` mirrors
-`signals/schema.py`'s own `SignalSchema` naming (Phase A15, distinct
-from `signals/models.py`'s real `SignalCandidate`) for the same
+`signal_layer/signal_builder/schema.py`'s own `SignalSchema` naming (Phase A15, distinct
+from `signal_layer/signal_builder/models.py`'s real `SignalCandidate`) for the same
 reason. See `docs/CONTEXT_SNAPSHOT.md`'s "A critical naming note" for
 the full comparison table between the two types.
 
@@ -634,7 +634,7 @@ it without creating a new architecture boundary.
 **A foundation, not a retrofit**: no existing raise site is migrated
 in this phase. `core/secrets.py`'s existing bare `ValueError`,
 `assets.asset_registry.DuplicateAssetSymbolError`, and
-`strategies.lifecycle.strategy_registry.DuplicateStrategyIdError` are
+`strategy_layer.strategy_manager.lifecycle.strategy_registry.DuplicateStrategyIdError` are
 all untouched — migrating them is a named, explicitly deferred future
 step (`docs/ERROR_HANDLING.md`'s "What this phase does NOT do").
 Existing "expected, data-driven" error reporting
@@ -758,7 +758,7 @@ which now just points here) — five owner-only Telegram commands
 
 None of `data_layer/live_data/market_data.py`, `core/pipeline.py`, `context/`,
 `strategies/`, `signals/` (candidate generation),
-`decision/decision_engine.py`, `risk/risk_manager.py`, `ai/`,
+`decision_layer/decision_engine/decision_engine.py`, `risk_layer/risk_engine/risk_manager.py`, `ai/`,
 `execution/`, or any Telegram file changed in this phase — see
 `docs/MARKET_DATA_ARCHITECTURE.md`'s "As implemented today" section
 for the explicit, disclosed gap between this diagram and what
@@ -829,8 +829,8 @@ the module's own naming note). Pure adapter over already-supplied
 fabricated. Generates no signal, makes no decision.
 
 None of `data_layer/live_data/market_data.py`, `core/pipeline.py`, `strategies/`,
-`signals/` (candidate generation), `decision/decision_engine.py`,
-`risk/risk_manager.py`, `ai/`, `execution/`, `telegram/handlers.py`,
+`signals/` (candidate generation), `decision_layer/decision_engine/decision_engine.py`,
+`risk_layer/risk_engine/risk_manager.py`, `ai/`, `execution/`, `telegram/handlers.py`,
 `telegram/command_router.py`, or `telegram/commands.py` changed in
 this phase.
 
@@ -1082,7 +1082,7 @@ this phase.
 New `core_layer/emergency/` package — a finer-grained state vocabulary and
 runtime controller for the bot's emergency posture, still, per the
 Director's own roadmap, **not** wired into `core/pipeline.py`,
-`decision/`, `risk/risk_manager.py`, `execution/`, or any Telegram
+`decision/`, `risk_layer/risk_engine/risk_manager.py`, `execution/`, or any Telegram
 routing surface. Full detail: `docs/EMERGENCY_SYSTEM.md`.
 
 **`emergency_state.py`** — `EmergencyState` enum
@@ -1128,7 +1128,7 @@ the full, never-lost sequence.
 registered into `telegram/commands.py`/`command_router.py`/
 `handlers.py`, same posture as every Owner Mode module before it.
 
-None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
+None of `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
 `execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
 `telegram/handlers.py`, `telegram/command_router.py`, or
 `telegram/commands.py` changed in this phase. No real order or signal
@@ -1209,7 +1209,7 @@ TASK 1's own reuse-audit finding: the existing `get_candles()` only
 supports "most recent N rows," no date bound, which a fixed
 historical replay window needs. `get_candles()` itself is unchanged.
 
-None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
+None of `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
 `execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
 `telegram/handlers.py`, `telegram/command_router.py`, or
 `telegram/commands.py` changed in this phase.
@@ -1226,7 +1226,7 @@ Full detail: `docs/BACKTESTING_ENGINE.md`.
 **`backtesting/data_feed.py`** — `IDataFeed` (ABC) + `LiveDataFeed`/
 `ReplayDataFeed`. Per the Director's own rule ("no `if backtest: ...
 else: ...`"): TASK 1's reuse audit found `strategies/`/
-`signals/signal_engine.py` were already source-agnostic (they consume
+`signal_layer/signal_engine/signal_engine.py` were already source-agnostic (they consume
 `ContextSnapshot`, never a candle source directly) — the real seam is
 one level up, between the live `market_data` stage
 (`MarketDataNormalizer.get_candles()`) and Phase 60.1's `ReplayFeed`.
@@ -1272,7 +1272,7 @@ empty-dataset edge case, bounded so a future regression fails fast
 instead of hanging CI. See `docs/BACKTESTING_ENGINE.md`'s own section
 on this for the full root-cause writeup.
 
-None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
+None of `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
 `execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
 `telegram/handlers.py`, `telegram/command_router.py`, or
 `telegram/commands.py` changed in this phase.
@@ -1281,8 +1281,8 @@ None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
 
 New `execution/simulator/` subpackage — deliberately inside the
 *existing* `execution/` top-level package, not a new `simulation/`
-package. TASK 1's reuse audit read `execution/execution_engine.py`/
-`execution/signal_lifecycle.py` directly: both are still deliberately
+package. TASK 1's reuse audit read `execution_layer/execution_engine/execution_engine.py`/
+`execution_layer/execution_monitor/signal_lifecycle.py` directly: both are still deliberately
 inert stubs, nothing to reuse, and extending either would blur the
 "intentionally inert, needs separate approval" line `CLAUDE.md` draws
 around live execution — so this phase leaves both files completely
@@ -1335,7 +1335,7 @@ curve is supplied.
 visualization-only assumption (`unit_risk_amount`, a configurable
 dollar-per-1R) bridges the "no PnL model exists" gap to match the
 Director's own worked example (`1000$ -> +30 -> 1030$`).
-`risk/risk_manager.py` is untouched.
+`risk_layer/risk_engine/risk_manager.py` is untouched.
 
 **`benchmark.py`** — `BenchmarkComparison` +
 `compute_benchmark_comparison(equity_curve, benchmark_start_price,
@@ -1363,8 +1363,8 @@ session preset (`DEFAULT`/`LONDON`/`NY_NEWS`) in an in-memory-only
 holder — not persisted, not wired into `telegram/commands.py`/
 `command_router.py`/`handlers.py`.
 
-None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
-`execution/execution_engine.py`, `execution/signal_lifecycle.py`,
+None of `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
+`execution_layer/execution_engine/execution_engine.py`, `execution_layer/execution_monitor/signal_lifecycle.py`,
 `strategies/`, `signals/`, `context/`, `ai/`, `lifecycle/paper_trade.py`,
 `telegram/handlers.py`, `telegram/command_router.py`, or
 `telegram/commands.py` changed in this phase.
@@ -1374,7 +1374,7 @@ None of `core/pipeline.py`, `decision/`, `risk/risk_manager.py`,
 A **Macro Context Engine**, not a signal generator, per the Director's
 own hard rule: this layer never returns "BUY"/"SELL" and never opens a
 trade — only a macro bias (`BULLISH GOLD`/`BEARISH GOLD`/`NEUTRAL`), a
-confidence, and reasons. `decision/decision_engine.py` is unchanged;
+confidence, and reasons. `decision_layer/decision_engine/decision_engine.py` is unchanged;
 this phase adds no connection to it. Full detail:
 `docs/FUNDAMENTAL_INTELLIGENCE.md`.
 
@@ -1715,7 +1715,7 @@ never `enable_execution()`) — confirmed clean, nothing to remove. No
 anywhere in this codebase.
 
 None of `decision/`, `risk/`, `strategies/`, `signals/`, `context/`,
-`ai/`, or `execution/execution_engine.py` changed in this phase. No
+`ai/`, or `execution_layer/execution_engine/execution_engine.py` changed in this phase. No
 new trading functionality — a registry/wiring cleanup only.
 
 ### Phase 60.10 — v0.4 Foundation Freeze & Final Architecture Audit
@@ -1749,11 +1749,11 @@ context_layer/trend/market_regime.py, context_layer/trend/market_phase.py,
 context_layer/fundamental/fundamental_context.py                                      (Context)
   |
   v
-strategies/strategy_manager.py                                      (Strategy)
+strategy_layer/strategy_manager/strategy_manager.py                                      (Strategy)
   |
   v
-signals/signal_engine.py, signals/signal_quality.py,
-signals/explainability.py                                           (Signal)
+signal_layer/signal_engine/signal_engine.py, signal_layer/signal_scoring/signal_quality.py,
+signal_layer/signal_scoring/explainability.py                                           (Signal)
   |
   v
 features/feature_engine.py                                          (Features)
@@ -1762,17 +1762,17 @@ features/feature_engine.py                                          (Features)
 ai/ai_analyzer.py (heuristic stub), ai/prompts/prompt_manager.py    (AI -- advisory only)
   |
   v
-decision/decision_engine.py                                         (Decision)
+decision_layer/decision_engine/decision_engine.py                                         (Decision)
   |
   v
-risk/risk_manager.py                                                (Risk -- the one hard gate)
+risk_layer/risk_engine/risk_manager.py                                                (Risk -- the one hard gate)
   |
   v
 lifecycle/paper_trade.py                                            (Paper Trade)
   |
   v
 execution/simulator/simulator_engine.py                             (Execution Simulator -- foundation)
-execution/execution_engine.py                                       (Execution -- deliberately inert, v0.5 MT5)
+execution_layer/execution_engine/execution_engine.py                                       (Execution -- deliberately inert, v0.5 MT5)
   |
   v
 learning/trade_event_bridge.py, learning/outcome_analyzer.py,
@@ -2185,7 +2185,7 @@ today. New `core/pipeline.py` stage immediately after `context`;
 **Signal History Foundation (AC-03)** — the review's highest-priority
 item. `core/pipeline.py`'s new `signal_history` stage (immediately
 after `risk`, before candidate selection) is the first place in this
-codebase that connects `signals/schema.py` (Phase A15) and
+codebase that connects `signal_layer/signal_builder/schema.py` (Phase A15) and
 `context_layer/context_engine/snapshot.py` (Phase A16) — both previously built with "zero
 pipeline wiring" — into a live record. Per cycle: one
 `ContextSnapshotSchema` is built via `from_context_snapshot()`; then,
@@ -2193,7 +2193,7 @@ per candidate, one `SignalSchema` is built via `from_signal_candidate()`
 with `context_id=context_snapshot.snapshot_id` (the two sides of the
 same link) and a freshly generated `decision_id=str(uuid.uuid4())`
 (mirroring `database/signal_record.py`'s own `signal_id` generation
-convention — `decision.models.TradeDecision`, a Trading-Safety-protected
+convention — `decision_layer.decision_engine.models.TradeDecision`, a Trading-Safety-protected
 file, is deliberately left with no id field of its own). `strategy_id`
 needed no new field: `SignalSchema.strategy_name` (Phase A15) already
 carries the same value as `StrategyDefinition.id` (Phase A11, e.g.
@@ -2221,7 +2221,7 @@ dedicated tests. `data_layer/providers/twelve_data_client.py`'s retry/backoff lo
 raise behavior are untouched.
 
 Neither `strategies/`, `signals/` (candidate generation), `risk/`, nor
-`decision/decision_engine.py` changed in this review — every item
+`decision_layer/decision_engine/decision_engine.py` changed in this review — every item
 above is either read-only verification or an additive, advisory record
 built from already-computed values.
 
@@ -2230,7 +2230,7 @@ built from already-computed values.
 Audit before Phase 59 Real Market Validation, closing the same kind of
 narrow, verified gaps as the Architecture Readiness Review above — no
 new trading logic, and none of `strategies/`, `signals/` (candidate
-generation), `decision/decision_engine.py`, `risk/risk_manager.py`, or
+generation), `decision_layer/decision_engine/decision_engine.py`, `risk_layer/risk_engine/risk_manager.py`, or
 `ai/` changed. Full detail: `docs/PHASE59_VALIDATION.md`.
 
 **Architecture Final Verification (TASK 6)**: the live pipeline stage
@@ -2270,7 +2270,7 @@ pipeline sequence above:
   `derive_signal_lifecycle_state()`) names a signal's own progress
   through the analysis pipeline for the first time. Not the same
   concept as `strategies/lifecycle/` (per-strategy metadata, Phase
-  A11) or `execution/signal_lifecycle.py` (a pre-existing, still-inert
+  A11) or `execution_layer/execution_monitor/signal_lifecycle.py` (a pre-existing, still-inert
   Telegram-delivery state machine, untouched — its own `SignalState`
   enum is deliberately not reused, to avoid a same-name collision with
   this module's differently-scoped `SignalLifecycleState`). No
@@ -2326,8 +2326,8 @@ gained `classify_empty_response()` and a disclosed message-heuristic
 for `API_003`. `data_layer/live_data/market_data_snapshot.py`'s `MarketDataSnapshot`
 (Phase 59 Preparation) gained two optional, additive fields
 (`provider`, `data_quality`), both defaulting `None`. None of
-`strategies/`, `signals/` (candidate generation), `decision/decision_engine.py`,
-`risk/risk_manager.py`, or `ai/` changed.
+`strategies/`, `signals/` (candidate generation), `decision_layer/decision_engine/decision_engine.py`,
+`risk_layer/risk_engine/risk_manager.py`, or `ai/` changed.
 
 ## Module Responsibilities (summary — full detail in `docs/code_structure.md`)
 
@@ -2350,7 +2350,7 @@ for `API_003`. `data_layer/live_data/market_data_snapshot.py`'s `MarketDataSnaps
 | `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `monitoring/performance.py`'s trade-outcome statistics. |
 | `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. Phase 59.6 added `audit_log`/`config_snapshots` (`audit_log_models.py`/`audit_log_repository.py`, `config_snapshot_models.py`/`config_snapshot_repository.py`) — both append-only. Phase 59.7 added `runtime_features` (`runtime_feature_models.py`/`runtime_feature_repository.py`) — one row per feature name, `configuration.runtime_feature_manager.RuntimeFeatureManager`'s persistence layer; `audit_log`/`config_snapshots` are now actually written to on every successful runtime toggle, no longer purely a manual/future-command capture. Phase 59.9 added `emergency_states` (`emergency_models.py`/`emergency_repository.py`) — append-only (like `audit_log`, unlike `runtime_features`' upsert), `core_layer.emergency.emergency_manager.EmergencyManager`'s persistence layer; every transition is also written to `audit_log`. |
 | `telegram/` | The Telegram product layer: routing, permissions, handlers, services. `owner/` (Phase 59.3-59.5) — real, tested owner-command service functions (`provider_commands.py`/`system_commands.py`/`feature_commands.py`/`report_commands.py`/`validation_commands.py`/`dataset_commands.py`), not registered into `commands.py`/`command_router.py`/`handlers.py` — the live bot's command surface is unaffected. |
-| `lifecycle/` | Phase 59 Preparation foundation — `PaperTrade`/`TradeState` (simulated, broker-free trade state machine) and `SignalLifecycleState` (a signal's own progress through the analysis pipeline). In-memory only: no database persistence, no pipeline wiring. Not the same as `strategies/lifecycle/` (per-strategy metadata) or `execution/signal_lifecycle.py` (a pre-existing, inert, Telegram-delivery state machine). |
+| `lifecycle/` | Phase 59 Preparation foundation — `PaperTrade`/`TradeState` (simulated, broker-free trade state machine) and `SignalLifecycleState` (a signal's own progress through the analysis pipeline). In-memory only: no database persistence, no pipeline wiring. Not the same as `strategies/lifecycle/` (per-strategy metadata) or `execution_layer/execution_monitor/signal_lifecycle.py` (a pre-existing, inert, Telegram-delivery state machine). |
 | `analytics/` | Phase 59 Preparation foundation — `SignalPerformance`/`StrategyPerformanceReport`, **trading** performance (win/loss/R-multiple by strategy). Not wired into `core/pipeline.py`; not the same concept as `performance/` (Phase A19, system timing) or a replacement for `monitoring/performance.py`'s pre-existing, database-driven `PerformanceTracker`. |
 
 ## Dependency Rules
@@ -2377,10 +2377,10 @@ import sweep):
   existing module in this phase.
 - `context/`, `strategies/`, `signals/` never import `telegram/`,
   `database/`, or `ai/`.
-- `signals/schema.py` (Phase A15) imports only the standard library —
-  no dependency on any other GoldBot package. `signals/adapter.py`
-  imports `signals.schema` (same package) plus, `TYPE_CHECKING`-only,
-  `signals.models`/`signals.signal_quality`/`decision.models` — this
+- `signal_layer/signal_builder/schema.py` (Phase A15) imports only the standard library —
+  no dependency on any other GoldBot package. `signal_layer/signal_builder/adapter.py`
+  imports `signal_layer.signal_builder.schema` (same package) plus, `TYPE_CHECKING`-only,
+  `signal_layer.signal_builder.models`/`signal_layer.signal_scoring.signal_quality`/`decision_layer.decision_engine.models` — this
   is not a runtime `signals/` → `decision/` dependency (which would
   invert `decision/`'s own existing `signals/` import below and
   create a cycle); it exists purely for type hints, same pattern
@@ -2389,23 +2389,23 @@ import sweep):
   or `assets/` — `adapter.py`'s `asset_type` default is a literal
   string, not an `assets/` import (see `docs/SIGNAL_SCHEMA.md`). As of
   AC-03, `core/pipeline.py` imports and calls
-  `signals.adapter.from_signal_candidate()` at runtime — allowed,
+  `signal_layer.signal_builder.adapter.from_signal_candidate()` at runtime — allowed,
   since `core/pipeline.py` is the one file permitted to import from
-  every layer (see its own rule below); `signals/schema.py`'s and
-  `signals/adapter.py`'s own import lists above are otherwise
+  every layer (see its own rule below); `signal_layer/signal_builder/schema.py`'s and
+  `signal_layer/signal_builder/adapter.py`'s own import lists above are otherwise
   unchanged by this.
 - `context_layer/context_engine/snapshot.py` (Phase A16) imports only the standard library
   plus `context_layer.context_engine.context_orchestrator` and `context_layer.market_structure.market_structure`
   (same package) — no dependency on `strategies/`, `signals/`, `ai/`,
   `decision/`, `risk/`, `database/`, `telegram/`, or `assets/`.
-  Deliberately does not import `signals.schema.ValidationResult`
+  Deliberately does not import `signal_layer.signal_builder.schema.ValidationResult`
   despite the identical shape — `context/` must never depend on
   `signals/` (see `docs/ARCHITECTURE_RULES.md`'s Context Engine rule)
   — `context_layer/context_engine/snapshot.py` declares its own, independent
   `ValidationResult` instead (see `docs/CONTEXT_SNAPSHOT.md`). As of
   AC-03, `core/pipeline.py` imports and calls
   `context.snapshot.from_context_snapshot()` at runtime, same allowed
-  pattern as `signals/adapter.py` above.
+  pattern as `signal_layer/signal_builder/adapter.py` above.
 - `context_layer/trend/market_phase.py` (AC-02) imports `context_layer.amd.amd`,
   `context_layer.trend.market_regime`, and `context_layer.wyckoff.wyckoff` (same package,
   standard library `enum`/`dataclasses` otherwise) plus, `TYPE_CHECKING`-
@@ -2499,7 +2499,7 @@ import sweep):
   Not called by `data_layer/live_data/market_data.py` or any other existing module in
   this phase.
 - `lifecycle/` (Phase 59 Preparation TASK 2 + TASK 4) imports
-  `signals.schema.SignalSchema` (`TYPE_CHECKING`-only, in both
+  `signal_layer.signal_builder.schema.SignalSchema` (`TYPE_CHECKING`-only, in both
   `paper_trade.py` and `signal_state.py`) and, within the package,
   `lifecycle.trade_state`/`lifecycle.paper_trade` — no dependency on
   `context/`, `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`,
@@ -2525,7 +2525,7 @@ import sweep):
   one-directional `monitoring/` → `data_layer/providers/` dependency, never
   reversed.
 - `analytics/` (Phase 59 Preparation TASK 3) imports
-  `lifecycle.paper_trade.PaperTrade` and `signals.schema.SignalSchema`
+  `lifecycle.paper_trade.PaperTrade` and `signal_layer.signal_builder.schema.SignalSchema`
   (`TYPE_CHECKING`-only) plus, within the package,
   `analytics.signal_performance` — no dependency on `context/`,
   `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`,

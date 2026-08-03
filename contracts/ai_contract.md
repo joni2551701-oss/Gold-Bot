@@ -9,11 +9,11 @@ word. See `docs/DECISION_PRINCIPLES.md`'s Principle 1 and
 this contract in code, not just in this document.
 
 ## Input
-`signals.models.SignalCandidate` and `context.context_orchestrator.ContextSnapshot`
+`signal_layer.signal_builder.models.SignalCandidate` and `context.context_orchestrator.ContextSnapshot`
 (`ai.ai_analyzer.AIAnalyzer.analyze(signal, context)`).
 
 A future real AI provider could additionally read
-`signals.schema.SignalSchema`/`context.snapshot.ContextSnapshotSchema`
+`signal_layer.signal_builder.schema.SignalSchema`/`context.snapshot.ContextSnapshotSchema`
 (Phase A15/A16's standardized, JSON-serializable shapes) instead of
 the live pipeline objects — not implemented in this phase; both are
 named in `docs/SIGNAL_SCHEMA.md`'s and `docs/CONTEXT_SNAPSHOT.md`'s
@@ -31,7 +31,7 @@ explanation: "..."}`) does not match `AIAnalysisResult`'s real field
 names or types — there is no `risk_note` field, `risk_score` is a
 0.0–1.0 float, not a `"low"/"medium"/"high"` label, and `approved` is
 not shown in the brief's example at all despite being the field
-`decision/decision_engine.py`'s hard-gate check
+`decision_layer/decision_engine/decision_engine.py`'s hard-gate check
 (`if not ai_analysis.approved: REJECT`) actually reads. This document
 describes the real, already-implemented type — see
 `docs/AI_ARCHITECTURE.md` for why `AIAnalyzer.analyze()` is currently

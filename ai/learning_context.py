@@ -18,7 +18,7 @@ tavsiya" -- explanation, conclusion, recommendation only), and even
 then strictly advisory: the same `AIAnalyzerInterface` boundary
 `ai/interfaces.py` already documents applies here too -- a future AI
 that reads a `LearningContext` must never itself approve/reject a
-trade, call `risk.risk_manager.RiskManager`, or mutate a strategy
+trade, call `risk_layer.risk_engine.risk_manager.RiskManager`, or mutate a strategy
 parameter. This module has no LLM call, no network access, and is not
 called from `core/pipeline.py`.
 

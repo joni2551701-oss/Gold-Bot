@@ -138,7 +138,7 @@ correctly-typed `SignalCandidate`.
   (added in the prior critical-bug-fix phase); confirmed still in
   place and enforced downstream (see Risk Manager below).
 - `StrategyManager.run_all_strategies()` aggregates linearly with no
-  dedup (`strategies/strategy_manager.py:23-34`) — by design; the
+  dedup (`strategy_layer/strategy_manager/strategy_manager.py:23-34`) — by design; the
   pipeline's best-candidate selection (Signal Layer, below) is what
   prevents duplicate notifications, not the strategy layer.
 
@@ -146,7 +146,7 @@ correctly-typed `SignalCandidate`.
 
 **Status:** Confirmed working — Phase 39/47/48 fixes intact.
 
-- `SignalCandidate` (`signals/models.py`) is a plain immutable
+- `SignalCandidate` (`signal_layer/signal_builder/models.py`) is a plain immutable
   dataclass; `SignalEngine.generate_signals()` is a thin router to
   `StrategyManager` (no double-execution risk).
 - **Confirmed via this audit's own runtime validation** (see Testing
@@ -181,7 +181,7 @@ correctly-typed `SignalCandidate`.
 - **P1 — Production risk (already known/documented, restated here for
   visibility):** because `AIAnalyzer.analyze()` always returns
   `approved=False`, `DecisionEngine.evaluate()` always takes the
-  `not ai_analysis.approved → REJECT` branch (`decision/decision_engine.py:38-40`)
+  `not ai_analysis.approved → REJECT` branch (`decision_layer/decision_engine/decision_engine.py:38-40`)
   for every signal, for every strategy, on every run. Combined with
   the (correct) Phase 48 notification filter, this means: **GoldBot's
   Telegram channel will not send a single real trading signal in
@@ -196,7 +196,7 @@ correctly-typed `SignalCandidate`.
 in the prior critical-bug-fix phase; re-confirmed here.
 
 - Flow is exactly Technical/Signal confidence + AI confidence → blended
-  `final_confidence` → threshold logic (`decision/decision_engine.py:24-40`):
+  `final_confidence` → threshold logic (`decision_layer/decision_engine/decision_engine.py:24-40`):
   `not approved → REJECT`; `< 0.50 → NO_TRADE`; `< 0.80 → REJECT`;
   else `→ APPROVE`. Thresholds are named constants
   (`DecisionConfig.min_confidence`/`approve_confidence`), not magic
@@ -214,7 +214,7 @@ correct and enforced, including a fresh runtime re-test in this audit.
   first, then checks `validate_geometry()` (BUY requires
   `stop_loss < entry < take_profit`; SELL requires
   `take_profit < entry < stop_loss`), then `validate_stop_loss_distance()`
-  (`risk/risk_manager.py:38-96,140-163`).
+  (`risk_layer/risk_engine/risk_manager.py:38-96,140-163`).
 - **Re-tested in this audit** with the task's exact adversarial cases:
   - BUY Entry 4000 / SL 4010 (above entry) / TP 3990 (below entry) →
     blocked, `"Invalid BUY geometry..."`.
@@ -223,7 +223,7 @@ correct and enforced, including a fresh runtime re-test in this audit.
   Both correctly rejected before any Telegram formatting occurs.
 - RR/lot-size calculations are pure arithmetic with zero-guards
   (`calculate_risk_reward`, `calculate_position_size` —
-  `risk/risk_manager.py:110-138`); no MT5/broker dependency, matching
+  `risk_layer/risk_engine/risk_manager.py:110-138`); no MT5/broker dependency, matching
   the documented "sizing suggestion only" contract.
 - No issues found.
 
@@ -234,7 +234,7 @@ correct and enforced, including a fresh runtime re-test in this audit.
 - `ExecutionEngine.dispatch()` and `SignalLifecycle.transition()`
   unconditionally return `dispatched=False`/`transitioned=False`,
   `reason="Not implemented"` — no MT5 client, no order calls, no I/O
-  (`execution/execution_engine.py:31-43`, `execution/signal_lifecycle.py:37-49`).
+  (`execution_layer/execution_engine/execution_engine.py:31-43`, `execution_layer/execution_monitor/signal_lifecycle.py:37-49`).
 - Confirmed not imported by `core/pipeline.py` or `main.py` — fully
   unreachable from any runtime path. Consistent with README ("GoldBot
   does not place trades automatically").

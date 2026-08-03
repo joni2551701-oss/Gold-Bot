@@ -56,7 +56,7 @@
 
 ## 2. The one contract that threads all seven steps
 
-STEP-09 produces the **`DecisionOutcome`** (`decision/decision_model.py`):
+STEP-09 produces the **`DecisionOutcome`** (`decision_layer/decision_engine/decision_model.py`):
 `status ∈ {APPROVE, REJECT, HOLD, EXPIRE}` + `signal_id/symbol/direction/
 confidence/reasons/rules_applied/metadata`. Everything downstream keys off
 it:
@@ -71,7 +71,7 @@ it:
 | platform (STEP-15) | `RiskOutcome` + presentation | every deliverable outcome |
 | monitoring (STEP-16) | events/counters | nothing — observes |
 
-`decision/decision_router.py` already encodes this fan-out: `RISK` is routed
+`decision_layer/decision_service/decision_router.py` already encodes this fan-out: `RISK` is routed
 only for `APPROVE`; `DATABASE`/`AI`/`MONITORING`/`TELEGRAM` are always routed.
 STEP-10…16 are the concrete consumers of that route list.
 
@@ -94,8 +94,8 @@ Safety guarantees, and a **detailed flow diagram**.
 
 ## 4. Cross-cutting rules (apply to every step)
 
-1. **FROZEN never edited.** `risk/risk_manager.py` (geometry/sizing),
-   `decision/decision_engine.py` (blend + thresholds),
+1. **FROZEN never edited.** `risk_layer/risk_engine/risk_manager.py` (geometry/sizing),
+   `decision_layer/decision_engine/decision_engine.py` (blend + thresholds),
    `strategies/`, `signals/` core, and the `core/pipeline.py` live flow are
    untouched by any of these steps. Reuse their verdicts; don't reimplement.
 2. **One layer down only.** Each layer imports the layer immediately below
@@ -108,12 +108,12 @@ Safety guarantees, and a **detailed flow diagram**.
    requires explicit Director approval before any code.
 4. **Additive-parallel naming.** When a new orchestrator would collide with
    a frozen one, it takes a sibling name — as `decision_manager.py` sits
-   beside the frozen `decision_engine.py`, and `signals/manager.py` beside
+   beside the frozen `decision_engine.py`, and `signal_layer/signal_service/manager.py` beside
    `signal_engine.py`. STEP-10 uses the same rule (`risk_gateway.py` beside
    the frozen `risk_manager.py`).
 5. **Fail-safe, duck-typed inputs.** Cross-layer inputs are read via
    `getattr`, so a None/partial upstream object yields a defined outcome,
-   never a raise (matches `strategies.result.from_signal_candidate` and the
+   never a raise (matches `strategy_layer.strategy_engine.result.from_signal_candidate` and the
    STEP-09 rules style).
 6. **Trading Safety boundary.** Risk Manager is never bypassed; AI never
    executes; secrets are read only by `config.py`/`core/secrets.py` and are

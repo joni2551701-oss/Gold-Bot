@@ -4,8 +4,8 @@ Trade Protection), TASK 2 (Risk Calculation Validation), TASK 3
 (Minimum Risk Reward Protection) tests.
 """
 
-from decision.decision_engine import DecisionEngine
-from risk.risk_manager import RiskConfig
+from decision_layer.decision_engine.decision_engine import DecisionEngine
+from risk_layer.risk_engine.risk_manager import RiskConfig
 
 
 def _decision(candidate, ai_result):
@@ -185,7 +185,7 @@ def test_high_rr_is_approved(risk_manager, mock_signal_candidate, mock_ai_result
 
 
 def test_rr_below_minimum_sell_side_is_rejected(risk_manager, mock_signal_candidate, mock_ai_result):
-    from signals.models import SignalType
+    from signal_layer.signal_builder.models import SignalType
 
     candidate = mock_signal_candidate(
         signal_type=SignalType.SELL, entry=100.0, stop_loss=105.0, take_profit=99.0,

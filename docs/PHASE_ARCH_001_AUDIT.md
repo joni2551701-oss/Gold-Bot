@@ -38,8 +38,8 @@ No **hard** layer-crossing import violations.
 
 | Reported "hit" | Reality |
 |---|---|
-| `context_layer/fundamental/fundamental_scoring.py:27` → decision/risk | **Docstring** ("…from decision/decision_engine.py or risk/risk_manager.py — it answers"), not an import. |
-| `signals/signal_quality.py:20` → context | **Comment** describing provenance, not an import. |
+| `context_layer/fundamental/fundamental_scoring.py:27` → decision/risk | **Docstring** ("…from decision_layer/decision_engine/decision_engine.py or risk_layer/risk_engine/risk_manager.py — it answers"), not an import. |
+| `signal_layer/signal_scoring/signal_quality.py:20` → context | **Comment** describing provenance, not an import. |
 | `signals/*` → `context.*` (real imports) | **Type/enum only** — `LiquidityType`, `OrderBlockType`, `FvgType`, `WyckoffPhase`, `MarketRegime`, `ContextSnapshot` for typing. This is the FROZEN live pipeline contract, not analysis logic. |
 | `strategies/*` → `context.*` | Detector **reuse** (reads `ContextSnapshot` fields / calls frozen `analyze()`). No structure recomputation. |
 | `market/*` → `context.*` | None. `market/` reads a passed-in context schema via `from_context()` projections. |
@@ -110,7 +110,7 @@ config.py → data_layer/providers/ → stream/ → market/ → context/ → str
 
 ## 5. Two borderline items — logged, NOT actioned
 
-**A. `signals/signal_quality.py` classification.**
+**A. `signal_layer/signal_scoring/signal_quality.py` classification.**
 It reads context *enums* to attach an A+/A/B/C quality grade to a
 signal. It performs **no** structure/liquidity/OB/FVG detection (all
 reused from context). It is defensible as a `signals/` concern (grading

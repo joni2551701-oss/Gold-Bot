@@ -1,5 +1,5 @@
 """
-Phase 60.3, TASK 6 -- execution/simulator/simulator_engine.py tests.
+Phase 60.3, TASK 6 -- execution_layer/execution_engine/simulator/simulator_engine.py tests.
 Real lifecycle.paper_trade/risk.risk_manager objects -- no mocks.
 """
 
@@ -7,12 +7,12 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from execution.simulator.simulator_engine import ExecutionSimulator
-from execution.simulator.slippage import SlippageConfig
-from execution.simulator.spread import SpreadConfig
+from execution_layer.execution_engine.simulator.simulator_engine import ExecutionSimulator
+from execution_layer.execution_engine.simulator.slippage import SlippageConfig
+from execution_layer.execution_engine.simulator.spread import SpreadConfig
 from lifecycle.paper_trade import create_paper_trade, open_paper_trade
-from risk.risk_manager import RiskResult
-from signals.schema import SignalSchema
+from risk_layer.risk_engine.risk_manager import RiskResult
+from signal_layer.signal_builder.schema import SignalSchema
 
 
 def _approved_signal(**overrides) -> SignalSchema:

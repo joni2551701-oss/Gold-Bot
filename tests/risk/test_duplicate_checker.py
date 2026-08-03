@@ -1,10 +1,10 @@
 """
 Phase V1.0.1 (Risk Management Hardening Patch) -- TASK 6 (Duplicate
-Trade Protection) tests, exercising risk/duplicate_checker.py against
+Trade Protection) tests, exercising risk_layer/risk_validator/duplicate_checker.py against
 an isolated DB.
 """
 
-from risk.duplicate_checker import DuplicateTradeChecker
+from risk_layer.risk_validator.duplicate_checker import DuplicateTradeChecker
 from database.risk_decision_repository import RiskDecisionRepository
 
 
@@ -88,7 +88,7 @@ def test_zero_second_window_never_finds_a_duplicate(isolated_db):
 
 
 def test_default_duplicate_window_is_five_minutes():
-    from risk.duplicate_checker import DEFAULT_DUPLICATE_WINDOW_SECONDS
+    from risk_layer.risk_validator.duplicate_checker import DEFAULT_DUPLICATE_WINDOW_SECONDS
 
     assert DEFAULT_DUPLICATE_WINDOW_SECONDS == 300.0
 

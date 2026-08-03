@@ -160,8 +160,8 @@ def test_generate_strategy_id_unique():
 
 
 def test_strategy_status_and_trading_core_strategy_status_are_distinct_enums():
-    """docs/PHASE66_6_AUDIT.md: ai.strategy.models.StrategyStatus is not the same enum as strategies.lifecycle.strategy_status.StrategyStatus (import forbidden, different value sets)."""
-    from strategies.lifecycle.strategy_status import StrategyStatus as TradingCoreStrategyStatus
+    """docs/PHASE66_6_AUDIT.md: ai.strategy.models.StrategyStatus is not the same enum as strategy_layer.strategy_manager.lifecycle.strategy_status.StrategyStatus (import forbidden, different value sets)."""
+    from strategy_layer.strategy_manager.lifecycle.strategy_status import StrategyStatus as TradingCoreStrategyStatus
 
     assert StrategyStatus is not TradingCoreStrategyStatus
     assert set(StrategyStatus) != set(TradingCoreStrategyStatus)

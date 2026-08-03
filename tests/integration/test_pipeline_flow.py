@@ -15,8 +15,8 @@ SignalFormatter, Notifier, and SignalRepository are all real,
 unmodified production code.
 """
 
-from decision.models import DecisionAction
-from signals.models import SignalType
+from decision_layer.decision_engine.models import DecisionAction
+from signal_layer.signal_builder.models import SignalType
 
 
 def test_case1_valid_signal_is_approved_and_telegram_eligible(

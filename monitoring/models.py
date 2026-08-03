@@ -7,8 +7,8 @@ Alpha, TASK 1; extended by Phase B.0's own genuine-gaps set --
 
 Every field is a primitive (`str`/`float`/`int`/`bool`) or an enum
 defined in this same file -- no Trading Core object reference of any
-kind (`decision.models.TradeDecision`, `risk.risk_manager.RiskResult`,
-`signals.signal_quality.SignalQualityResult`, etc.). Monitoring never
+kind (`decision_layer.decision_engine.models.TradeDecision`, `risk_layer.risk_engine.risk_manager.RiskResult`,
+`signal_layer.signal_scoring.signal_quality.SignalQualityResult`, etc.). Monitoring never
 imports `decision/`, `risk/`, or `execution/` (this brief's own TASK 8
 isolation list); `SystemHealth`/`MarketHealth`/`SignalHealth` are
 computed live from already-existing sources (see
@@ -131,10 +131,10 @@ class DecisionPipelineEntry:
     Strategy Intelligence input this brief's own closing section names.
 
     criteria_met/criteria_total mirror
-    `signals.signal_quality.SignalQualityResult`'s own shape exactly
+    `signal_layer.signal_scoring.signal_quality.SignalQualityResult`'s own shape exactly
     (e.g. `criteria_met=("STRUCTURE_ALIGNED", "LIQUIDITY_SWEPT")`,
     `criteria_total=5`) -- relayed as primitive values only, this
-    module never imports `signals.signal_quality.SignalQualityResult`
+    module never imports `signal_layer.signal_scoring.signal_quality.SignalQualityResult`
     itself (see `docs/PHASE_CORE_MONITORING_AUDIT.md`'s own
     "signals/ and context/" section for why: a primitive-only contract
     boundary, not an object reference).

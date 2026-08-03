@@ -111,8 +111,8 @@ telegram/result_handler.py           ResultHandler
 
 Modules with no logger and no `try`/`except`/`raise` at all (pure
 dataclasses, pure functions, or static text) intentionally have none:
-`signals/models.py`, `decision/models.py`, `risk/risk_manager.py`,
-`strategies/*.py`, `signals/signal_engine.py`, `telegram/keyboards.py`,
+`signal_layer/signal_builder/models.py`, `decision_layer/decision_engine/models.py`, `risk_layer/risk_engine/risk_manager.py`,
+`strategies/*.py`, `signal_layer/signal_engine/signal_engine.py`, `telegram/keyboards.py`,
 `telegram/commands.py`, `telegram/signal_formatter.py`,
 `context_layer/context_engine/candle.py`, `context_layer/context_engine/context_config.py`, `context_layer/fair_value_gap/fvg.py`,
 `context_layer/liquidity/liquidity.py`, `context_layer/order_block/order_block.py`, all `database/*_models.py`,

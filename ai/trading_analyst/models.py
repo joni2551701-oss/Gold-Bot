@@ -5,8 +5,8 @@ Foundation, TASK 2).
 `TradingAnalysisInput` follows `ai/explanation/explanation_input.py`'s
 own Article 3 resolution exactly: every field is a primitive
 (`str`/`float`/`Sequence[str]`) or an enum defined in this same file —
-never a `decision.models.TradeDecision`, `risk.risk_manager.RiskResult`,
-`signals.models.SignalCandidate`, or any other Trading Core object
+never a `decision_layer.decision_engine.models.TradeDecision`, `risk_layer.risk_engine.risk_manager.RiskResult`,
+`signal_layer.signal_builder.models.SignalCandidate`, or any other Trading Core object
 reference. `ai/trading_analyst/` itself never imports `decision/`,
 `risk/`, `execution/`, `strategies/`, `signals/`, `context/`, or
 `monitoring/` — a future, separately-approved live-wiring phase would
@@ -16,7 +16,7 @@ trading layer's own output) extract these plain values from its own
 `docs/PHASE66_0_AUDIT.md`'s "central architectural resolution" section.
 
 `signal_score`/`htf_score`/`risk_score`/`ai_score` mirror
-`decision.models.TradeDecision`'s own five-component breakdown by
+`decision_layer.decision_engine.models.TradeDecision`'s own five-component breakdown by
 field name only (Decision Engine v2) — relayed, never recomputed;
 this module has no formula of its own. `risk_level` is likewise
 caller-supplied, never computed here — Rule 4 ("AI faqat READ ONLY")

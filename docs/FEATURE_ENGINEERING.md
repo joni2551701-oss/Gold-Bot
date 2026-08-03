@@ -68,8 +68,8 @@ class MarketFeatures:
 | `htf_bias` | `HTFBiasResult.bias` (Phase A2, passed in externally, same pattern as Decision Engine v2/Market Regime) | `"UNKNOWN"` if no `HTFBiasResult` was supplied. |
 | `market_regime` | `context.market_regime.MarketRegimeResult.regime` (Phase A7) | Direct `.value` read. |
 | `session` | `context.session_events[-1].session` (Phase A6) | The most recent session transition's session. `"UNKNOWN"` if no session data. |
-| `signal_quality` | `signals.explainability.SignalExplanation.quality` (Phase A9, itself `SignalQualityResult.grade.value`, Phase A4) | Relayed as-is — Feature Engineering does not grade anything itself. |
-| `confidence` | `signals.explainability.SignalExplanation.confidence` (Phase A9, itself `SignalCandidate.confidence * 100`) | Relayed as-is, never recomputed. |
+| `signal_quality` | `signal_layer.signal_scoring.explainability.SignalExplanation.quality` (Phase A9, itself `SignalQualityResult.grade.value`, Phase A4) | Relayed as-is — Feature Engineering does not grade anything itself. |
+| `confidence` | `signal_layer.signal_scoring.explainability.SignalExplanation.confidence` (Phase A9, itself `SignalCandidate.confidence * 100`) | Relayed as-is, never recomputed. |
 | `volatility` | `context.market_regime.MarketRegimeResult.regime` (Phase A7) | Direct read: `HIGH_VOLATILITY`→`"HIGH"`, `LOW_VOLATILITY`→`"LOW"`, `UNKNOWN`→`"UNKNOWN"`, anything else→`"NORMAL"`. No new volatility calculation. |
 | `trend_strength` | `context.market_regime.MarketRegimeResult.confidence` (Phase A7) | `confidence / 100.0` when `regime == TRENDING`, else `0.0`. The exact same HTF+structure-agreement signal Market Regime already computed — not a new trend calculation. |
 | `liquidity_distance` | `context.liquidity_zones` (unchanged) | Absolute distance from the most recent candle's close to the nearest zone's price. `None` if no candles or no zones. |
@@ -134,9 +134,9 @@ one new key, `"features"` (`List[MarketFeatures]`, same order as
 ## What this does NOT do
 
 - Does not train, run, or reference any ML model.
-- Does not change `strategies/*.py`, `signals/signal_engine.py`,
-  `signals/signal_quality.py`'s scoring, `signals/explainability.py`,
-  `ai/`, or `decision/decision_engine.py` — none are modified by this
+- Does not change `strategies/*.py`, `signal_layer/signal_engine/signal_engine.py`,
+  `signal_layer/signal_scoring/signal_quality.py`'s scoring, `signal_layer/signal_scoring/explainability.py`,
+  `ai/`, or `decision_layer/decision_engine/decision_engine.py` — none are modified by this
   phase, and none read `MarketFeatures`.
 - Does not grade, explain, or re-derive anything itself — `signal_quality`/
   `confidence` are relayed from `SignalExplanation`, not recomputed.

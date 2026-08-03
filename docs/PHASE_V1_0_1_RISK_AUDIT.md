@@ -9,7 +9,7 @@ fixing the gaps (this phase is explicitly scoped to `risk/`,
 Trading Core, `decision/`, `execution/`, `strategies/`, `signals/`,
 `context/`, and `ai/` remain locked).
 
-## 1. risk/risk_manager.py — current state (read in full)
+## 1. risk_layer/risk_engine/risk_manager.py — current state (read in full)
 
 `RiskManager.evaluate(trade_decision, account_balance=None) -> RiskResult`
 is the sole entry point. Confirmed gaps, matching `docs/V1_RISK_AUDIT.md`:
@@ -35,11 +35,11 @@ is the sole entry point. Confirmed gaps, matching `docs/V1_RISK_AUDIT.md`:
   a specific risk verdict (TASK 8 target).
 - No monitoring surface reads Risk's outcomes at all (TASK 9 target).
 
-## 2. decision/decision_engine.py + decision/models.py
+## 2. decision_layer/decision_engine/decision_engine.py + decision_layer/decision_engine/models.py
 
 `TradeDecision` (frozen dataclass) carries `signal: SignalCandidate`
 and `ai_analysis`, but **no `symbol` field** —
-`signals.models.SignalCandidate` also has no `symbol` field (GoldBot
+`signal_layer.signal_builder.models.SignalCandidate` also has no `symbol` field (GoldBot
 trades a single hardcoded symbol, `"XAUUSD"`, set only in
 `main.py`'s `TradingPipeline(symbol="XAUUSD", ...)` construction, never
 threaded down into `SignalCandidate`/`TradeDecision`). This matters for
@@ -65,7 +65,7 @@ extend for `MIN_RISK_PER_TRADE`/`MAX_RISK_PER_TRADE`/
 `MIN_RISK_REWARD_RATIO`/`MAX_DRAWDOWN`/daily-loss threshold — the
 Module Reuse Principle's first two questions ("does this exist," "can
 an existing module be extended") both resolve "no": these limits are
-resolved via new fields on `risk.risk_manager.RiskConfig` itself
+resolved via new fields on `risk_layer.risk_engine.risk_manager.RiskConfig` itself
 (the module that already owns `risk_per_trade`/`max_daily_loss`/
 `max_drawdown`), not a new `configuration/` module — the existing
 dataclass is the correct, minimal extension point.

@@ -23,8 +23,8 @@ eligibility filter.
 
 1. **Does it already exist?** — No. `telegram/` is one platform's transport;
    there is no platform-neutral dispatch point today.
-2. **Can an existing module be extended?** — Partially: `signals/router.py`
-   and `decision/decision_router.py` already emit *consumer route metadata*
+2. **Can an existing module be extended?** — Partially: `signal_layer/signal_service/router.py`
+   and `decision_layer/decision_service/decision_router.py` already emit *consumer route metadata*
    (which layers care), but neither *dispatches* to multiple front-ends.
    Extending `telegram/` would couple the fan-out to one platform — the exact
    thing this layer must avoid.
@@ -55,7 +55,7 @@ platform/platform_dispatcher.py  ── reads enabled adapters, fan-out
 ## 4. Input / Output
 
 - **Input:** a `RiskOutcome` (approved) + a `SignalPresentation` (the neutral
-  title/summary/reason already produced by `signals/formatter.py`), plus the
+  title/summary/reason already produced by `signal_layer/signal_formatter/formatter.py`), plus the
   audience (owner / subscriber tier).
 - **Output:** a neutral `PlatformMessage` dispatched to each enabled adapter;
   each adapter returns a delivery status.

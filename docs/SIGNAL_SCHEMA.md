@@ -39,9 +39,9 @@ SignalCandidate
    produces a structured `ValidationResult(valid=False, errors=[...])`,
    the same fail-safe posture every other Phase A foundation module
    uses.
-3. Existing signal creation (`strategies/*.py`, `signals/signal_engine.py`,
-   `signals/models.py`) is untouched. `SignalSchema` is purely
-   additive, bridged via `signals/adapter.py`.
+3. Existing signal creation (`strategies/*.py`, `signal_layer/signal_engine/signal_engine.py`,
+   `signal_layer/signal_builder/models.py`) is untouched. `SignalSchema` is purely
+   additive, bridged via `signal_layer/signal_builder/adapter.py`.
 4. Not wired into `core/pipeline.py` in this phase (Phase A15) — pipeline
    logic is unchanged. **Update (Pre-Phase 59 Architecture Readiness
    Review, AC-03)**: `core/pipeline.py` now calls
@@ -56,14 +56,14 @@ reuse rather than invent:
 
 | Found | Location | Reused as |
 |---|---|---|
-| `SignalCandidate(signal_type, entry, stop_loss, take_profit, strategy_name, confidence, reasons)` | `signals/models.py` | The adapter's required input — untouched. |
-| `SignalType.BUY/SELL/NONE` | `signals/models.py` | `SignalSchema.direction`'s exact allowed vocabulary (`ALLOWED_DIRECTIONS`) — read as plain literals, not imported as the enum type (see "Why fields are plain strings" below). |
-| `SignalQualityResult(grade: QualityGrade, score, ...)` | `signals/signal_quality.py` | `SignalSchema.quality_grade`/`.confidence_score`, relayed via `grade.value`/`score` in the adapter, never recomputed. |
+| `SignalCandidate(signal_type, entry, stop_loss, take_profit, strategy_name, confidence, reasons)` | `signal_layer/signal_builder/models.py` | The adapter's required input — untouched. |
+| `SignalType.BUY/SELL/NONE` | `signal_layer/signal_builder/models.py` | `SignalSchema.direction`'s exact allowed vocabulary (`ALLOWED_DIRECTIONS`) — read as plain literals, not imported as the enum type (see "Why fields are plain strings" below). |
+| `SignalQualityResult(grade: QualityGrade, score, ...)` | `signal_layer/signal_scoring/signal_quality.py` | `SignalSchema.quality_grade`/`.confidence_score`, relayed via `grade.value`/`score` in the adapter, never recomputed. |
 | `SignalRecord(signal_id: str, created_at: datetime, ...)`, `create_signal_record()`'s `signal_id=str(uuid.uuid4())`, `created_at=datetime.now(timezone.utc)` | `database/signal_record.py` (untouched) | `SignalSchema.signal_id`/`.created_at`'s exact generation convention (`generate_signal_id()`), not a new counter-based scheme. See "Relationship to SignalRecord" below for why `SignalSchema` is a distinct model, not a duplicate. |
-| `DecisionAction.APPROVE/REJECT/NO_TRADE` | `decision/models.py` | Confirmed **not** the same vocabulary as this phase's `SignalSchema.decision` (`APPROVED`/`REJECTED`/`PENDING`) — see "Decision status mapping" below for why, and the explicit, documented mapping. |
-| `RiskResult(approved, lot_size, risk_amount, risk_reward, reason)` — no `id` field | `risk/risk_manager.py` | Confirmed `risk_id` has no real source anywhere today — stays an honest `None` hook, never fabricated. |
-| `SignalExplanation(direction, reasons, quality, confidence)` — no `id` field | `signals/explainability.py` | Confirmed `explanation_id` has no real source anywhere today — stays an honest `None` hook. |
-| `main.py`'s `symbol="XAUUSD"`, `interval="M15"`; `assets/profiles/gold.py`'s `AssetType.GOLD.value == "GOLD"` | `main.py`, `assets/` | `signals/adapter.py`'s default `symbol`/`timeframe`/`asset_type` — real, already-established values, not new inventions (the same real-value-reuse pattern Phase A11/A12/A13 followed). `asset_type`'s default is the literal `"GOLD"` string, not an `assets/` import — see "Why no `assets/` import" below. |
+| `DecisionAction.APPROVE/REJECT/NO_TRADE` | `decision_layer/decision_engine/models.py` | Confirmed **not** the same vocabulary as this phase's `SignalSchema.decision` (`APPROVED`/`REJECTED`/`PENDING`) — see "Decision status mapping" below for why, and the explicit, documented mapping. |
+| `RiskResult(approved, lot_size, risk_amount, risk_reward, reason)` — no `id` field | `risk_layer/risk_engine/risk_manager.py` | Confirmed `risk_id` has no real source anywhere today — stays an honest `None` hook, never fabricated. |
+| `SignalExplanation(direction, reasons, quality, confidence)` — no `id` field | `signal_layer/signal_scoring/explainability.py` | Confirmed `explanation_id` has no real source anywhere today — stays an honest `None` hook. |
+| `main.py`'s `symbol="XAUUSD"`, `interval="M15"`; `assets/profiles/gold.py`'s `AssetType.GOLD.value == "GOLD"` | `main.py`, `assets/` | `signal_layer/signal_builder/adapter.py`'s default `symbol`/`timeframe`/`asset_type` — real, already-established values, not new inventions (the same real-value-reuse pattern Phase A11/A12/A13 followed). `asset_type`'s default is the literal `"GOLD"` string, not an `assets/` import — see "Why no `assets/` import" below. |
 
 ## Relationship to `SignalRecord` (`database/signal_record.py`)
 
@@ -125,7 +125,7 @@ Review (AC-03) — see "AC-03 update" below.
 | Strategy | `strategy_name`, `strategy_version` | `strategy_name` is the real `SignalCandidate.strategy_name` value (e.g. `"LIQUIDITY_SWEEP_STRATEGY"`), not a human label — see "A deliberate deviation" below. `strategy_version` has no source today; an honest hook. |
 | Quality | `quality_grade`, `confidence_score` | Relayed from an already-computed `SignalQualityResult` — never recomputed. |
 | Explainability reference | `explanation_id` | A reference only; `SignalExplanation` has no id field today. |
-| Decision | `decision`, `decision_score`, `decision_id` | `decision` defaults `"PENDING"`; see "Decision status mapping" below. `decision_id` (added AC-03) is a freshly generated `str(uuid.uuid4())` per `TradeDecision`, since `decision.models.TradeDecision` itself has no id field — generated by `core/pipeline.py` at the point it builds the historical record, not by the adapter or `TradeDecision`. |
+| Decision | `decision`, `decision_score`, `decision_id` | `decision` defaults `"PENDING"`; see "Decision status mapping" below. `decision_id` (added AC-03) is a freshly generated `str(uuid.uuid4())` per `TradeDecision`, since `decision_layer.decision_engine.models.TradeDecision` itself has no id field — generated by `core/pipeline.py` at the point it builds the historical record, not by the adapter or `TradeDecision`. |
 | Risk reference | `risk_id` | A reference only; `RiskResult` has no id field today. |
 
 ### Why fields are plain strings, not enums
@@ -155,11 +155,11 @@ brief's `["GOLD"]`.
 ### Decision status mapping
 
 `SignalSchema.decision`'s vocabulary (`APPROVED`/`REJECTED`/`PENDING`)
-is deliberately **not** the same as `decision.models.DecisionAction`'s
+is deliberately **not** the same as `decision_layer.decision_engine.models.DecisionAction`'s
 real values (`APPROVE`/`REJECT`/`NO_TRADE`) — `SignalSchema` can exist
 before Decision Engine has run at all, so `"PENDING"` is a real,
 necessary third state `DecisionAction` has no equivalent for.
-`signals/adapter.py`'s `_DECISION_ACTION_TO_STATUS` is the one place
+`signal_layer/signal_builder/adapter.py`'s `_DECISION_ACTION_TO_STATUS` is the one place
 the translation happens, when a `TradeDecision` is supplied:
 
 | `DecisionAction` | `SignalSchema.decision` |
@@ -172,8 +172,8 @@ the translation happens, when a `TradeDecision` is supplied:
 ### Why no `assets/` import
 
 `SignalSchema.asset_type` defaults to the literal `"GOLD"` string in
-`signals/adapter.py`, matching `assets.asset_type.AssetType.GOLD.value`
-exactly — but `signals/adapter.py` does not import `assets/` to get
+`signal_layer/signal_builder/adapter.py`, matching `assets.asset_type.AssetType.GOLD.value`
+exactly — but `signal_layer/signal_builder/adapter.py` does not import `assets/` to get
 it. Each Phase A foundation module (Strategy Lifecycle, Asset
 Intelligence, Configuration) has deliberately stayed unwired from the
 others in its own phase (see e.g. `docs/ASSET_INTELLIGENCE.md`'s
@@ -214,13 +214,13 @@ already a JSON-native primitive). `SignalSchema.to_json()` wraps it in
 Existing SignalCandidate
         |
         v
-   Adapter (signals/adapter.py)
+   Adapter (signal_layer/signal_builder/adapter.py)
         |
         v
      SignalSchema
 ```
 
-`signals/adapter.py`'s `from_signal_candidate(signal, ...)` is the one
+`signal_layer/signal_builder/adapter.py`'s `from_signal_candidate(signal, ...)` is the one
 adapter — the minimum input is an existing `SignalCandidate`
 (unmodified). Every other parameter (`quality`, `decision`,
 `context_id`, `explanation_id`, `risk_id`, `strategy_version`,
@@ -235,7 +235,7 @@ Minimal in Phase A15 — not wired into `core/pipeline.py` at the time:
 Strategy Output (SignalCandidate)
         |
         v
-SignalSchema Adapter (signals/adapter.py)
+SignalSchema Adapter (signal_layer/signal_builder/adapter.py)
         |
         v
    Existing Pipeline (unchanged)
@@ -274,7 +274,7 @@ section for the full diagram). `strategy_id` needed no new field:
 result dict. This wiring does **not** persist either object to the
 database — no migration, no new repository — the records are simply
 now genuinely linked and `to_json()`-ready for a future persistence
-step. `ai/`, `decision/decision_engine.py`, `risk/risk_manager.py`,
+step. `ai/`, `decision_layer/decision_engine/decision_engine.py`, `risk_layer/risk_engine/risk_manager.py`,
 `telegram/`, and `strategies/` remain untouched — `core/pipeline.py`
 only reads their already-computed output to build these two records.
 

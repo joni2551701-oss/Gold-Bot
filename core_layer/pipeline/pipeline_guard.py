@@ -39,7 +39,7 @@ Four public methods, one per named pipeline stage boundary:
     before_ai()          -- gates the `ai` stage (AIAnalyzer.analyze())
     before_execution()   -- gates the `telegram_delivery` stage (Notifier.send_messages()) -- see
                              "Design notes" below for why "execution" maps here, not to
-                             execution/execution_engine.py
+                             execution_layer/execution_engine/execution_engine.py
     before_database()    -- gates the `database` stage (SignalRepository.save_signal_record())
 
 Each returns a `GuardDecision(proceed, abort, reason)` -- `proceed`
@@ -72,7 +72,7 @@ Design notes
    does mean `MAINTENANCE`'s own "only Market Data" is not literally
    true -- several read-only context stages also still run.
 2. `before_execution()` maps to `core/pipeline.py`'s `telegram_delivery`
-   stage, not to `execution/execution_engine.py` (which stays
+   stage, not to `execution_layer/execution_engine/execution_engine.py` (which stays
    untouched and inert). The pipeline has no real "execution" stage
    today -- Telegram delivery is the only point where an actual
    outward effect happens, so it is the practical stand-in for

@@ -76,7 +76,7 @@ def most_recent_bias(structure: Sequence[StructurePoint]) -> Optional[str]:
     classification, which had this exact walk-backward logic inline --
     now the single, shared definition of "what does this structure
     sequence's most recent point say about direction," reused by both
-    HTF Bias and Signal Quality Score (signals/signal_quality.py).
+    HTF Bias and Signal Quality Score (signal_layer/signal_scoring/signal_quality.py).
     Behavior is unchanged from the pre-extraction inline version.
     """
     for point in reversed(structure):

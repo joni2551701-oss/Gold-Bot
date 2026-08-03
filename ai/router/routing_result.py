@@ -15,7 +15,7 @@ class RoutingResult:
     provider_name: None when no available provider was found for
         `capability` -- a router caller must check this before using
         the result, same "structured result, never raise" convention
-        `signals/schema.py`'s `ValidationResult` uses.
+        `signal_layer/signal_builder/schema.py`'s `ValidationResult` uses.
     reason: a short, human-readable explanation of the outcome (which
         rule matched, or why nothing did).
     """

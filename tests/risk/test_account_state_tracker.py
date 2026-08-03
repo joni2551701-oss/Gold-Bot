@@ -1,12 +1,12 @@
 """
 Phase V1.0.1 (Risk Management Hardening Patch) -- TASK 4 (Drawdown
 Protection) and TASK 5 (Daily Loss Protection) tests, exercising
-risk/account_state_tracker.py directly against an isolated DB.
+risk_layer/risk_engine/account_state_tracker.py directly against an isolated DB.
 """
 
 from datetime import datetime, timezone, timedelta
 
-from risk.account_state_tracker import AccountStateTracker, NORMAL, TRADING_PAUSED
+from risk_layer.risk_engine.account_state_tracker import AccountStateTracker, NORMAL, TRADING_PAUSED
 from database.risk_state_repository import RiskStateRepository
 
 

@@ -29,7 +29,7 @@ question -- see strategy_report.py's own docstring.
 A standardization layer, like SignalSchema/ContextSnapshotSchema
 before it: computes nothing new except r_multiple (a pure arithmetic
 derivation from already-approved price levels, not a risk-sizing
-change -- risk/risk_manager.py is untouched). profit_loss stays an
+change -- risk_layer/risk_engine/risk_manager.py is untouched). profit_loss stays an
 honest None hook -- no lot-value/account-currency PnL computation
 exists anywhere in this codebase today, and building one would need
 sizing/currency-conversion logic this task's own boundary
@@ -46,7 +46,7 @@ from lifecycle.trade_state import TradeState
 
 if TYPE_CHECKING:
     from lifecycle.paper_trade import PaperTrade
-    from signals.schema import SignalSchema
+    from signal_layer.signal_builder.schema import SignalSchema
 
 
 @dataclass(frozen=True)
@@ -127,7 +127,7 @@ def compute_r_multiple(
 ) -> Optional[float]:
     """
     A pure, deterministic arithmetic derivation -- not a new risk
-    formula, and it never touches risk/risk_manager.py. Deliberately
+    formula, and it never touches risk_layer/risk_engine/risk_manager.py. Deliberately
     mirrors database/signal_record.py's _calculate_rr_ratio() (BUY:
     (TP-Entry)/(Entry-SL); SELL: (Entry-TP)/(SL-Entry)) rather than
     importing it, since that function is a private, database-layer

@@ -55,8 +55,8 @@ Signal/Context Engine without a dedicated Director task.
 
 ## 3. The one typed-parameter exception
 
-`telegram/signal_formatter.py` imports `signals.models.SignalCandidate`,
-`ai.ai_analyzer.AIAnalysisResult`, and `decision.models.TradeDecision`
+`telegram/signal_formatter.py` imports `signal_layer.signal_builder.models.SignalCandidate`,
+`ai.ai_analyzer.AIAnalysisResult`, and `decision_layer.decision_engine.models.TradeDecision`
 — for its own dataclass field type hints only. It calls no method on
 Trading Core, it only reads already-computed values off objects those
 layers already produced and handed it. This is the pre-existing,

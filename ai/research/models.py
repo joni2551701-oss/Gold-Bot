@@ -8,8 +8,8 @@ follow the same Article 3 resolution `ai/trade_journal/models.py`,
 `ai/learning/models.py`, `ai/coaching/models.py`, `ai/performance/models.py`,
 `ai/strategy/models.py`, and `ai/portfolio/models.py` all already
 established: every field is a primitive (`str`/`int`) or an enum
-defined in this same file -- never a `decision.models.TradeDecision`,
-`risk.risk_manager.RiskResult`, or any other Trading Core object
+defined in this same file -- never a `decision_layer.decision_engine.models.TradeDecision`,
+`risk_layer.risk_engine.risk_manager.RiskResult`, or any other Trading Core object
 reference. `ai/research/` never imports `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/`, `context/`, `monitoring/`,
 `telegram/`, `database/`, `voice/`, `assistant/`, `core.`, or

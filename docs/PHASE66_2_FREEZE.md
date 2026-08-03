@@ -16,7 +16,7 @@ audit list — the brief named `database/`, `analytics/`, `performance/`,
 both of which already exist and are directly relevant. The audit found
 and reviewed two pre-existing types with the same or adjacent purpose:
 `ai.journal.trade_journal.TradeJournalEntry` (Phase 55, Trading-Core-
-coupled — imports `signals.models.SignalType`, predates Constitution
+coupled — imports `signal_layer.signal_builder.models.SignalType`, predates Constitution
 Article 3) and `learning.models.LearningRecord` (Phase 60.6/60.7,
 DB-persisted, pattern-analysis-shaped). Neither was reusable for this
 phase's own primitive-only, in-memory, narrative-journal mandate. No

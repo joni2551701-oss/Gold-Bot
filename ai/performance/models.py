@@ -6,8 +6,8 @@ Foundation, TASK 2).
 the same Article 3 resolution `ai/trade_journal/models.py`,
 `ai/learning/models.py`, and `ai/coaching/models.py` all already
 established: every field is a primitive (`str`/`float`/`bool`) or an
-enum defined in this same file -- never a `decision.models.TradeDecision`,
-`risk.risk_manager.RiskResult`, or any other Trading Core object
+enum defined in this same file -- never a `decision_layer.decision_engine.models.TradeDecision`,
+`risk_layer.risk_engine.risk_manager.RiskResult`, or any other Trading Core object
 reference. `ai/performance/` never imports `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/`, `context/`, `telegram/`,
 `database/`, `voice/`, `assistant/`, `media/`, `broadcast/`,

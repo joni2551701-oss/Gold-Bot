@@ -14,10 +14,10 @@ from context_layer.amd.amd import AmdEventType
 from context_layer.fair_value_gap.fvg import FvgType
 from context_layer.market_structure.bos import BosDirection
 
-from strategies.amd_strategy import AMDSetupStrategy
-from strategies.liquidity_strategy import LiquiditySetupStrategy
-from strategies.fvg_strategy import FVGSetupStrategy
-from strategies.result import StrategyDirection, SetupStatus
+from strategy_layer.strategy_library.amd_strategy import AMDSetupStrategy
+from strategy_layer.strategy_library.liquidity_strategy import LiquiditySetupStrategy
+from strategy_layer.strategy_library.fvg_strategy import FVGSetupStrategy
+from strategy_layer.strategy_engine.result import StrategyDirection, SetupStatus
 
 
 def _swing(price):

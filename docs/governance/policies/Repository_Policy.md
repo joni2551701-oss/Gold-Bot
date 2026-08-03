@@ -98,7 +98,7 @@ Director lifts the relevant pause.
 - **Repository Recovery** is the correction of a repository-integrity
   problem (e.g. the corrupted-filename merge conflict diagnosed in
   `docs/BRANCH_FORENSICS_001.md` — a single invisible U+2060 character
-  in `strategies/strategy_manager.py`).
+  in `strategy_layer/strategy_manager/strategy_manager.py`).
 - Recovery is **audit-first**: the root cause is established before any
   fix (done — `BRANCH-FORENSICS-001`), a rollback anchor is created
   first (tagging, per `Git_Workflow_Standard.md`), the minimal

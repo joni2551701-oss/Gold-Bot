@@ -41,7 +41,7 @@ never touches `decision/`, `risk/`, `execution/`, `strategies/`,
 
 Documented in `docs/PHASE66_7_AUDIT.md`: a repository-wide search
 found no pre-existing `Portfolio`-shaped model anywhere.
-`risk/risk_manager.py`'s `RiskResult`/`RiskManager` are the nearest
+`risk_layer/risk_engine/risk_manager.py`'s `RiskResult`/`RiskManager` are the nearest
 conceptual neighbor by name only — a per-trade sizing contract, not a
 per-portfolio one, and Trading Core (`risk/`) — import forbidden
 outright by this phase's own Rule 1, the same absolute-ban posture
@@ -153,7 +153,7 @@ this package.
   `performance_adapter.py` reads from (type-only, no Runtime import).
 - `ai/strategy/` — the sibling package this phase's `strategy_adapter.py`
   reads from (type-only, no Runtime import, sequence-based counting).
-- `risk/risk_manager.py` — the pre-existing Trading Core risk-sizing
+- `risk_layer/risk_engine/risk_manager.py` — the pre-existing Trading Core risk-sizing
   contract this package's own models are deliberately independent
   from (import forbidden by Rule 1).
 - `docs/ai/AI_STRATEGY.md` — the immediately preceding phase's own

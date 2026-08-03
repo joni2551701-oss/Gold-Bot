@@ -5,7 +5,7 @@ risk_decisions row (timestamp, symbol, risk%, rr, drawdown, decision,
 reason).
 """
 
-from decision.decision_engine import DecisionEngine
+from decision_layer.decision_engine.decision_engine import DecisionEngine
 
 
 def _decision(candidate, ai_result):

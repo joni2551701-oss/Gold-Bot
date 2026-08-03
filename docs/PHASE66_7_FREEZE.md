@@ -14,7 +14,7 @@ TASK 0's audit (`docs/PHASE66_7_AUDIT.md`) reviewed `ai/performance/`,
 `knowledge/`, `database/`, `ai/coaching/`, `ai/trading_analyst/`, and
 `ai/chart_intelligence/`. It found no pre-existing Portfolio model,
 Runtime, Registry, or Manager anywhere in the codebase.
-`risk/risk_manager.py`'s `RiskResult`/`RiskManager` are the nearest
+`risk_layer/risk_engine/risk_manager.py`'s `RiskResult`/`RiskManager` are the nearest
 conceptual neighbor by name only — a per-trade sizing contract, not a
 per-portfolio one, and Trading Core (`risk/`) — import forbidden
 outright by this brief's own Rule 1, the same absolute-ban conclusion
@@ -130,7 +130,7 @@ outright by this brief's own Rule 1, the same absolute-ban conclusion
   were read type-only, never duplicated; the one genuine gap (a
   portfolio-metadata contract and CRUD runtime) was added as a new
   subpackage only after confirming the one conceptually adjacent model
-  (`risk.risk_manager.RiskResult`) is Trading Core and import-forbidden
+  (`risk_layer.risk_engine.risk_manager.RiskResult`) is Trading Core and import-forbidden
   — see `docs/PHASE66_7_AUDIT.md`.
 
 ## Dependency Compliance

@@ -81,13 +81,13 @@ range, liquidity-sweep count) — not fabricated placeholders. See
 an explicit account of what was named in the roadmap but deliberately
 NOT built ("liquidity probability" needs historical aggregation this
 phase doesn't have; "setup quality" per session is
-`signals/signal_quality.py`'s job, not wired here).
+`signal_layer/signal_scoring/signal_quality.py`'s job, not wired here).
 
 ### What Session Intelligence does NOT do
 - Does not generate a `BUY`/`SELL` signal, and is not itself a
   strategy — no `strategies/*.py` file reads `Session`/`SessionEvent`.
 - Does not add a `SESSION_ALIGNED` criterion to
-  `signals/signal_quality.py` — a distinct, separate, not-yet-done
+  `signal_layer/signal_scoring/signal_quality.py` — a distinct, separate, not-yet-done
   future step.
 - Does not read, call, or duplicate `data_layer/live_data/session_filter.py`'s
   `is_trading_time()` — different purpose (wall-clock trading-hours
@@ -137,7 +137,7 @@ architecture and confidence-scoring explanation.
   strategy or a decision.
 - Is not a field on `ContextSnapshot`, and is not passed into
   `strategies/`, `signals/`, `ai/`, or `risk/`. As of Phase A3, it
-  *is* passed into `decision.decision_engine.DecisionEngine.evaluate()`
+  *is* passed into `decision_layer.decision_engine.decision_engine.DecisionEngine.evaluate()`
   as one weighted input among four (`decision/README.md`'s "Decision
   v2" section) — it still never approves/rejects anything itself, and
   `context_layer/trend/htf_bias.py` was not modified to make this connection (the
@@ -156,7 +156,7 @@ identity-bearing in a way a future backtest replay, AI training
 export, or Analytics dataset could rely on. Phase A16 adds
 `ContextSnapshotSchema` — deliberately not named `ContextSnapshot`,
 to avoid a same-name collision with the real type in this same
-package; mirrors `signals/schema.py`'s `SignalSchema` naming for the
+package; mirrors `signal_layer/signal_builder/schema.py`'s `SignalSchema` naming for the
 identical reason. See `docs/CONTEXT_SNAPSHOT.md` for the full field
 table, the "critical naming note" explaining the two types' relationship in detail, and two deliberate, disclosed
 deviations from the roadmap's own illustrative example (`regime`
@@ -264,7 +264,7 @@ For HTF Bias specifically, see `docs/HTF_BIAS.md`'s Future Expansion
 section — Decision Engine v2 consumption is done (Phase A3); optional
 persistence and per-timeframe weighting remain unimplemented. For
 Wyckoff specifically, see `docs/WYCKOFF.md`'s Future Expansion
-section — a `strategies/wyckoff_strategy.py`, real volume confirmation
+section — a `strategy_layer/strategy_library/wyckoff_strategy.py`, real volume confirmation
 (once a volume data source exists), and a shared sweep-then-break
 helper (a minor, known duplication across `order_block.py`, `amd.py`,
 and `wyckoff.py`, deliberately not refactored in this foundation-only

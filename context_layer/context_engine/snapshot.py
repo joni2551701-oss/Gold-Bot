@@ -21,8 +21,8 @@ fields: candles, structure, bos_events, ... market_regime). This
 module's class is deliberately named ContextSnapshotSchema, not
 ContextSnapshot, to avoid a same-name collision between two entirely
 different types in the same top-level package -- mirroring
-signals/schema.py's SignalSchema (Phase A15), which is similarly
-named -Schema to distinguish it from signals/models.py's
+signal_layer/signal_builder/schema.py's SignalSchema (Phase A15), which is similarly
+named -Schema to distinguish it from signal_layer/signal_builder/models.py's
 SignalCandidate. context.context_orchestrator.ContextSnapshot is
 untouched by this phase, and nothing about it changes.
 """
@@ -127,7 +127,7 @@ class ContextSnapshotSchema:
         built from an empty-candle context has no real timestamp to
         report, and validate_snapshot() is the one place that gets to
         say so is invalid, not the dataclass constructor (never
-        raises at construction -- same posture as signals/schema.py).
+        raises at construction -- same posture as signal_layer/signal_builder/schema.py).
     structure/liquidity/zones/session: nested, already-documented
         Info groups -- each defaults to its own all-empty instance.
     regime: one of ALLOWED_REGIMES, defaults "UNKNOWN".
@@ -180,7 +180,7 @@ class ContextSnapshotSchema:
 
 
 def generate_snapshot_id() -> str:
-    """Same generation convention as signals/schema.py's generate_signal_id() (str(uuid.uuid4())) -- not a new scheme."""
+    """Same generation convention as signal_layer/signal_builder/schema.py's generate_signal_id() (str(uuid.uuid4())) -- not a new scheme."""
     return str(uuid.uuid4())
 
 

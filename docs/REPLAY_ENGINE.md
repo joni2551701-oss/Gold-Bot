@@ -97,8 +97,8 @@ returns.
 
 Per the Director's own explicit instruction, this phase (and every
 phase built on top of it) must never:
-- Modify `strategies/`, `signals/`, `decision/decision_engine.py`, or
-  `risk/risk_manager.py`.
+- Modify `strategies/`, `signals/`, `decision_layer/decision_engine/decision_engine.py`, or
+  `risk_layer/risk_engine/risk_manager.py`.
 - Call any of the above from `backtesting/`.
 
 `ReplayFeed.next_candle()`/`window()` return

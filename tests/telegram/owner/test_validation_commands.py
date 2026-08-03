@@ -13,7 +13,7 @@ from telegram.owner.validation_commands import (
 )
 from analytics.signal_performance import SignalPerformance
 from config import Config
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 
 P0 = datetime(2026, 8, 1, tzinfo=timezone.utc)
 P1 = datetime(2026, 8, 8, tzinfo=timezone.utc)

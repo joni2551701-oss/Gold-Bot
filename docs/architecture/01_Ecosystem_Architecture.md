@@ -577,7 +577,7 @@ proposed for these). "Missing" = genuinely not built.
 | Module (diagram) | Current | Target | Priority | Impact | Risk |
 |---|---|---|---|---|---|
 | Market Engine | Absorbed into `data/` + `context/` | No change proposed — see Section 11 | N/A | N/A | N/A |
-| Analysis Engine | Absorbed into `context/` + `signals/signal_quality.py` | No change proposed — see Section 11 | N/A | N/A | N/A |
+| Analysis Engine | Absorbed into `context/` + `signal_layer/signal_scoring/signal_quality.py` | No change proposed — see Section 11 | N/A | N/A | N/A |
 | Confluence Engine | Absorbed into each `strategies/*.py` | No change proposed — see Section 11 | N/A | N/A | N/A |
 | Application Services boundary | Mostly missing (`04_Application_Services.md`) | A real service boundary between Core and Telegram, so a future Web/Mobile client doesn't need its own copy of `telegram/signal_formatter.py`'s logic | Medium (blocks Platform Layer expansion, not urgent while Telegram is the only platform) | High once a second platform is planned | Low — additive, no existing consumer needs to change |
 | MarketMemory as the pipeline's read path | Not wired (`core/pipeline.py` uses `MarketDataService()` bare, no registry — `02_Data_Layer.md`) | Inject a shared `MarketMemoryRegistry` into the pipeline's `MarketDataService`/future `PriceStreamService` construction | Medium | Closes the "Single Source of Truth" gap (Golden Rule 1) for real | Medium — touches `core/pipeline.py` construction; needs its own Owner-approved technical task, explicit test coverage, and Trading Safety review (out of scope for this doc-only task) |

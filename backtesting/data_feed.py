@@ -8,7 +8,7 @@ rule: no `if backtest: ... else: ...` branch anywhere -- a caller that
 only knows `IDataFeed.get_candles(count)` cannot tell whether it is
 running live or replayed.
 
-Reuse-audit finding (Phase 60.2, TASK 1): `strategies/`/`signals/signal_engine.py`
+Reuse-audit finding (Phase 60.2, TASK 1): `strategies/`/`signal_layer/signal_engine/signal_engine.py`
 already only depend on `context.context_orchestrator.ContextSnapshot`,
 never on a candle source directly -- they were already source-agnostic
 before this phase. The actual seam requiring an abstraction is one

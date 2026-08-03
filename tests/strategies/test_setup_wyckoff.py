@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 from context_layer.wyckoff.wyckoff import WyckoffEventType
 
-from strategies.wyckoff_strategy import WyckoffStrategy
-from strategies.result import StrategyDirection, SetupStatus
+from strategy_layer.strategy_library.wyckoff_strategy import WyckoffStrategy
+from strategy_layer.strategy_engine.result import StrategyDirection, SetupStatus
 
 
 def _wyckoff(index, wtype, phase, sweep_price):

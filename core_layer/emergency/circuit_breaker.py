@@ -14,10 +14,10 @@ per-signal or per-cycle loss/drawdown data is available and feed its
 CircuitDecision into EmergencyManager.activate_pause()/activate_kill().
 
 Thresholds are this module's own defaults, not a shared import from
-risk/risk_manager.py's RiskConfig.max_drawdown -- core/ must not import
+risk_layer/risk_engine/risk_manager.py's RiskConfig.max_drawdown -- core/ must not import
 risk/ (CLAUDE.md layer isolation; risk/ sits above core/ in the
 pipeline, never the reverse). DEFAULT_MAX_DAILY_DRAWDOWN mirrors
-risk/risk_manager.py's own default (0.10) in value only, as an
+risk_layer/risk_engine/risk_manager.py's own default (0.10) in value only, as an
 independent constant -- reconciling the two, if they should ever
 diverge, is a future explicit decision, not this phase's.
 """

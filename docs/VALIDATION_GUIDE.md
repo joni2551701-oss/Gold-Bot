@@ -13,7 +13,7 @@ exists, not what to build next.
 - No real order is ever opened. No broker/MT5 execution is connected —
   `execution/` stays inert.
 - Strategy logic (`strategies/`, `signals/`) is not changed.
-- Decision thresholds (`decision/decision_engine.py`) are not changed.
+- Decision thresholds (`decision_layer/decision_engine/decision_engine.py`) are not changed.
 - Only observation and dataset collection happen during validation —
   see `CLAUDE.md`'s "Trading Safety" section, which this document does
   not override.
@@ -103,6 +103,6 @@ Context Engine) is made —
       producing the `GoldBot Validation Report` shape without error.
 
 None of these criteria require any change to `strategies/`, `signals/`
-signal logic, `risk/risk_manager.py`, or
-`decision/decision_engine.py` — a validation run that satisfies all
+signal logic, `risk_layer/risk_engine/risk_manager.py`, or
+`decision_layer/decision_engine/decision_engine.py` — a validation run that satisfies all
 seven is complete using only the foundation this document describes.

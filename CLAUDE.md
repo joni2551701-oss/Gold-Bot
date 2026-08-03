@@ -155,9 +155,9 @@ list of what changed and why, not just "done."
 
 Never modify, without explicit approval for that specific change:
 - **Signal logic** (`strategies/`, `signals/`).
-- **Risk limits** (`risk/risk_manager.py`'s geometry/stop-loss
+- **Risk limits** (`risk_layer/risk_engine/risk_manager.py`'s geometry/stop-loss
   validation and sizing formulas).
-- **Decision flow** (`decision/decision_engine.py`'s
+- **Decision flow** (`decision_layer/decision_engine/decision_engine.py`'s
   confidence-blending and APPROVE/REJECT/NO_TRADE thresholds).
 - **Execution rules** — `execution/` is intentionally inert (no MT5
   order calls exist yet); wiring it up is itself a change requiring
@@ -165,10 +165,10 @@ Never modify, without explicit approval for that specific change:
 
 Specific hard rules:
 - Never bypass Risk Manager. Every signal that could reach a user
-  must pass through `risk.risk_manager.RiskManager.evaluate()` —
+  must pass through `risk_layer.risk_engine.risk_manager.RiskManager.evaluate()` —
   no shortcut path to Telegram delivery.
 - Never allow AI direct execution. The AI layer (`ai/`) is advisory
-  input to `decision.decision_engine.DecisionEngine` only — it must
+  input to `decision_layer.decision_engine.decision_engine.DecisionEngine` only — it must
   never itself approve/reject a trade, call the Risk Manager, or
   trigger a Telegram send or an execution action. See
   `ai/interfaces.py`'s `AIAnalyzerInterface` docstring for the

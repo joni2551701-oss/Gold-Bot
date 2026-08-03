@@ -2,7 +2,7 @@
 
 Governed by `docs/constitution/CONSTITUTION.md` Article 1 ("Never
 bypass Risk Manager" — `CLAUDE.md`'s own Trading Safety hard rule).
-Verified directly against `risk/risk_manager.py`. Updated by Phase
+Verified directly against `risk_layer/risk_engine/risk_manager.py`. Updated by Phase
 V1.0.1 (Risk Management Hardening Patch, Director Approved) — see
 `docs/PHASE_V1_0_1_RISK_AUDIT.md` and `docs/PHASE_V1_0_1_RISK_FREEZE.md`
 for the full audit/freeze trail behind every change on this page.
@@ -59,7 +59,7 @@ with this phase.
   (Phase V1.0.1 TASK 3) — closes the gap `docs/V1_RISK_AUDIT.md`
   documented (RR=0.1 previously approved identically to RR=5.0).
 - **drawdown** — `RiskConfig.max_drawdown` (default 0.10 = 10%).
-  When `current_equity` is supplied, `risk.account_state_tracker.AccountStateTracker`
+  When `current_equity` is supplied, `risk_layer.risk_engine.account_state_tracker.AccountStateTracker`
   tracks a per-symbol starting-equity baseline
   (`database.risk_state_repository.RiskStateRepository`,
   `risk_account_state` table) and computes drawdown % against it; an
@@ -70,7 +70,7 @@ with this phase.
   per-symbol, per-UTC-day starting-balance baseline and blocks new
   trades once the day's loss % exceeds the limit (Phase V1.0.1 TASK 5).
 - **duplicate trade protection** — when `symbol` is supplied,
-  `risk.duplicate_checker.DuplicateTradeChecker` rejects a signal
+  `risk_layer.risk_validator.duplicate_checker.DuplicateTradeChecker` rejects a signal
   matching an already-APPROVEd (symbol, direction, strategy) within a
   configurable time window (`RiskConfig.duplicate_window_seconds`,
   default 300s) — reusing the `risk_decisions` log itself as the

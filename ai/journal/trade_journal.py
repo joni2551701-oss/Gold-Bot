@@ -1,7 +1,7 @@
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
-from signals.models import SignalType  # Reusing established SignalType
+from signal_layer.signal_builder.models import SignalType  # Reusing established SignalType
 
 
 class TradeOutcome(Enum):

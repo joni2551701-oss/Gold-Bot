@@ -63,16 +63,16 @@ tests/test_generate_signals.py --collect-only` confirmed: **"no tests
 collected."** Not a duplicate-test problem, a *disguised zero-coverage*
 problem — the files looked like working regression tests and weren't.
 
-**Zero tests for `decision/decision_engine.py` and
+**Zero tests for `decision_layer/decision_engine/decision_engine.py` and
 `core/pipeline.py`.** Coverage: both **0%** before Phase 52. This was
 the most consequential gap: the critical-bug-fix phase's guarantees
 (REJECT/BLOCKED/invalid-geometry signals never reach Telegram; at most
 one Telegram message per pipeline cycle) were only ever verified with
 ad-hoc scripts run in chat during that phase — nothing in `tests/`
-would have caught a regression to that fix. `signals/signal_engine.py`
+would have caught a regression to that fix. `signal_layer/signal_engine/signal_engine.py`
 was also at 0%.
 
-**`risk/risk_manager.py` at 44% coverage, no dedicated test file.**
+**`risk_layer/risk_engine/risk_manager.py` at 44% coverage, no dedicated test file.**
 The geometry-validation logic (the actual fix from the critical-bug
 phase) had no direct unit test — only indirectly touched wherever
 another test happened to construct a `RiskResult`.
@@ -167,9 +167,9 @@ the directory the task asked for, holding only this explanation.
   `telegram/`, `database/`, `core/`, `signals/`, `ai/` combined) —
   met the stated 70% minimum.
 - `core/pipeline.py`: 0% → **100%**.
-- `decision/decision_engine.py`: 0% → **100%**.
-- `signals/signal_engine.py`: 0% → **100%**.
-- `risk/risk_manager.py`: 44% → **82%**.
+- `decision_layer/decision_engine/decision_engine.py`: 0% → **100%**.
+- `signal_layer/signal_engine/signal_engine.py`: 0% → **100%**.
+- `risk_layer/risk_engine/risk_manager.py`: 44% → **82%**.
 - `telegram/handlers.py`: 24% → **48%**.
 
 Deliberately left low at the time (LOW priority, per Phase 52's own
@@ -230,7 +230,7 @@ tests/
 
 - File names: `test_<module_or_feature>.py`, snake_case, matching the
   production module it primarily covers (`test_risk_manager.py` for
-  `risk/risk_manager.py`) or the feature it exercises
+  `risk_layer/risk_engine/risk_manager.py`) or the feature it exercises
   (`test_pipeline_flow.py` for the full pipeline chain).
 - Test function names: `test_<condition>_<expected_result>`, e.g.
   `test_invalid_buy_geometry_blocked`, `test_reject_when_ai_not_approved`.

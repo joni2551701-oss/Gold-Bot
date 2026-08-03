@@ -39,7 +39,7 @@ from features.feature_model import MarketFeatures
 if TYPE_CHECKING:
     from context_layer.context_engine.context_orchestrator import ContextSnapshot
     from context_layer.trend.htf_bias import HTFBiasResult
-    from signals.explainability import SignalExplanation
+    from signal_layer.signal_scoring.explainability import SignalExplanation
 
 
 def compute_market_features(

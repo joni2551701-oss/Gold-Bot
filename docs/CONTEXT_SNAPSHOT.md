@@ -34,9 +34,9 @@ feature-engineering module already imports and consumes. This
 phase's new class is deliberately named **`ContextSnapshotSchema`**,
 not `ContextSnapshot`, specifically to avoid a same-name collision
 between two structurally unrelated types in the same top-level
-package. This mirrors Phase A15's own naming: `signals/schema.py`
+package. This mirrors Phase A15's own naming: `signal_layer/signal_builder/schema.py`
 defines `SignalSchema`, not a second `SignalCandidate`, to stay
-distinct from `signals/models.py`'s real `SignalCandidate`. Anyone
+distinct from `signal_layer/signal_builder/models.py`'s real `SignalCandidate`. Anyone
 searching this codebase for "ContextSnapshot" should be aware there
 are now two distinct concepts:
 
@@ -91,7 +91,7 @@ than invent:
 | `Session.LONDON.value == "LONDON"` (and every other session) | `context_layer/session/session.py` (Phase A6) | `SessionInfo.current_session` — the latest `SessionEvent.session.value`, same pattern `features/feature_engine.py` (Phase A10) already used. |
 | `setup_logger("ContextEngine")` | `context_layer/context_engine/context_orchestrator.py` | `SnapshotMetadata.source` default — the real logger name this module already uses, not an invented label. |
 | No `premium_discount`/premium-discount-zone detector anywhere; `context_layer/context_engine/context_config.py`'s own docstring names it as a future detector | `context_layer/context_engine/context_config.py` | Confirms `ZonesInfo.premium_discount` has no real source today — stays an honest `None` hook, never fabricated. |
-| `signals/schema.py`'s `generate_signal_id()` (`str(uuid.uuid4())`), `ValidationResult(valid, errors)` shape (Phase A15) | `signals/schema.py` | The exact same identity-generation convention (`generate_snapshot_id()`) and result-shape convention, independently re-declared (not imported — see "Why not import from `signals/`" below), not invented. |
+| `signal_layer/signal_builder/schema.py`'s `generate_signal_id()` (`str(uuid.uuid4())`), `ValidationResult(valid, errors)` shape (Phase A15) | `signal_layer/signal_builder/schema.py` | The exact same identity-generation convention (`generate_snapshot_id()`) and result-shape convention, independently re-declared (not imported — see "Why not import from `signals/`" below), not invented. |
 
 ## Model
 
@@ -157,14 +157,14 @@ proxy, not a textbook ATR.
 ### Why not import from `signals/`
 
 `context_layer/context_engine/snapshot.py` defines its own tiny `ValidationResult(valid,
-errors)` rather than importing `signals.schema.ValidationResult`
+errors)` rather than importing `signal_layer.signal_builder.schema.ValidationResult`
 (Phase A15), even though the shape is identical. `context/` must
 never depend on `signals/` — `docs/ARCHITECTURE_RULES.md`'s Context
 Engine rule states this explicitly ("❌ signal yaratish" extends to
 not importing the signal layer's own types). The two-field
 `(valid, errors)` shape recurring independently across
 `SignalQualityResult`-adjacent code, `DataQualityResult`,
-`RiskResult.approved`, `signals.schema.ValidationResult`, and now
+`RiskResult.approved`, `signal_layer.signal_builder.schema.ValidationResult`, and now
 `context.snapshot.ValidationResult` is a *convention*, not shared
 code — the same reasoning Phase A5's Wyckoff module used for not
 reusing `amd.py`'s sweep-correlation logic.

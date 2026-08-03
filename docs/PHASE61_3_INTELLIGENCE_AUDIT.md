@@ -48,9 +48,9 @@ Twelve report-building modules exist (`performance_metrics.py`,
 etc.), each already following the "build result + format to text"
 pattern a future Explanation/Education tool needs. No module named
 `explain*` exists here — the only "explain" logic in the repo is
-`signals/explainability.py`'s `explain_signal()` (why a *signal*
+`signal_layer/signal_scoring/explainability.py`'s `explain_signal()` (why a *signal*
 fired, not a trade outcome or a conversational answer). **TASK 7's
-Explanation Engine reuses `signals/explainability.py`'s already-built
+Explanation Engine reuses `signal_layer/signal_scoring/explainability.py`'s already-built
 `SignalExplanation` as one optional input rather than re-deriving
 signal reasoning**, and reuses `analytics/learning_report.py`/
 `analytics/strategy_report.py`'s formatted text for summary-shaped
@@ -146,6 +146,6 @@ Phase 61.2's own closing verification step.
 | 4 (Real Tool Calling) | Real logic inside existing tool classes | `ai/tools/tool_registry.py`'s `BaseAITool`/`ToolRegistry` (unchanged); `database/learning_repository.py`, `database/signal_repository.py`, `database/market_snapshot_repository.py`; `context_layer/fundamental/fundamental_context.py`; `analytics/*` |
 | 5 (Conversation Engine) | `ConversationEngine` (new, thin) | `ai/session/` (entirely, unmodified); `ai/runtime/ai_service.py` (unmodified) |
 | 6 (Memory Runtime) | `MemoryRuntime` facade (new, thin) | `ai/memory/context_memory.py`'s `ContextMemory` (5 instances, unmodified) |
-| 7 (Explanation Engine) | `ExplanationEngine` (new, thin) | `ai/runtime/ai_service.py`; `signals/explainability.py`'s `SignalExplanation`; `analytics/learning_report.py`/`strategy_report.py` |
+| 7 (Explanation Engine) | `ExplanationEngine` (new, thin) | `ai/runtime/ai_service.py`; `signal_layer/signal_scoring/explainability.py`'s `SignalExplanation`; `analytics/learning_report.py`/`strategy_report.py` |
 | 8 (Runtime Trace) | `request_id` field + trace lookup function | `ai/audit/request_log.py`/`response_log.py`'s existing UUID `request_id` (no new ID generator) |
 | 9 (Provider Benchmark) | One ranking function | `ai/audit/provider_stats.py`'s `ProviderStats` (unmodified fields) |

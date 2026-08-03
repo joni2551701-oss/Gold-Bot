@@ -103,9 +103,9 @@ Per ORDER-021 (Director chose Option 2), the Worker prepared and
 a fresh full-tree sweep found **9** U+2060-corrupted filenames on `main`
 (the conflicting `strategy_manager.py` + 8 more: `ai/ai_prompt.py`,
 `ai/confidence_model.py`, `context_layer/market_structure/market_structure.py`,
-`database/signal_repository.py`, `signals/models.py`,
-`signals/signal_engine.py`, `strategies/amd_strategy.py`,
-`strategies/fvg_strategy.py`). Both scopes were tested locally:
+`database/signal_repository.py`, `signal_layer/signal_builder/models.py`,
+`signal_layer/signal_engine/signal_engine.py`, `strategy_layer/strategy_library/amd_strategy.py`,
+`strategy_layer/strategy_library/fvg_strategy.py`). Both scopes were tested locally:
 
 - Fix **only** `strategy_manager.py` → **0** merge conflicts (correct).
 - Fix **all 9** → **4** merge conflicts introduced (harmful).
@@ -141,7 +141,7 @@ was declared FROZEN. Executes the recovery diagnosed by
 ## Objective
 
 Restore repository merge-integrity by removing the single invisible
-U+2060 character from `strategies/strategy_manager.py` on `main`, after
+U+2060 character from `strategy_layer/strategy_manager/strategy_manager.py` on `main`, after
 first establishing rollback anchors — closing both the merge-conflict
 defect and the zero-rollback-anchor gap.
 

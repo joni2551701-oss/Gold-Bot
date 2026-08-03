@@ -13,8 +13,8 @@ mocking.
 
 import pytest
 
-from decision.decision_engine import DecisionEngine, DecisionConfig, DecisionWeights
-from decision.models import DecisionAction
+from decision_layer.decision_engine.decision_engine import DecisionEngine, DecisionConfig, DecisionWeights
+from decision_layer.decision_engine.models import DecisionAction
 from context_layer.trend.htf_bias import HTFBias, HTFBiasResult
 
 

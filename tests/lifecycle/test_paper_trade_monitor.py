@@ -8,7 +8,7 @@ from data_layer.providers.twelve_data_client import Candle
 from lifecycle.paper_trade import create_paper_trade, open_paper_trade
 from lifecycle.paper_trade_monitor import check_paper_trade_against_candles
 from lifecycle.trade_state import TradeState
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 
 
 def _signal(direction="BUY", entry=2000.0, sl=1990.0, tp=2020.0):

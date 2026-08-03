@@ -1,5 +1,5 @@
 """
-Phase A4 -- Signal Quality Score unit tests (signals/signal_quality.py).
+Phase A4 -- Signal Quality Score unit tests (signal_layer/signal_scoring/signal_quality.py).
 
 Builds minimal, real ContextSnapshot/HTFBiasResult objects directly
 (no mocking) to control exactly which of the 5 criteria are met, and
@@ -10,8 +10,8 @@ tests/unit/test_risk_manager.py.
 
 from datetime import datetime, timezone
 
-from signals.signal_quality import compute_signal_quality, QualityGrade
-from signals.models import SignalType
+from signal_layer.signal_scoring.signal_quality import compute_signal_quality, QualityGrade
+from signal_layer.signal_builder.models import SignalType
 from context_layer.context_engine.context_orchestrator import ContextSnapshot
 from context_layer.market_structure.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
 from context_layer.liquidity.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType

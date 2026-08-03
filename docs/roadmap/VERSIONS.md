@@ -193,7 +193,7 @@ phase builds the Foundation for answering "Qaysi strategiya qanday
 ishlayapti?" (Which strategy is performing how?). Primitive-only,
 in-memory `StrategyRecord`/`StrategyType`/`StrategyStatus`/
 `StrategyConfidence` (`StrategyStatus` distinct from the Trading-Core-
-LOCKed `strategies.lifecycle.strategy_status.StrategyStatus` -- import
+LOCKed `strategy_layer.strategy_manager.lifecycle.strategy_status.StrategyStatus` -- import
 of `strategies/` forbidden outright by this phase's own Rule 1, making
 reuse architecturally impossible rather than merely impractical),
 `StrategyRuntime` (CRUD-only:
@@ -213,7 +213,7 @@ builds the Foundation for answering "Portfolio qanday holatda?" (What
 state is the portfolio in?). Primitive-only, in-memory
 `PortfolioRecord`/`PortfolioStatus`/`PortfolioRiskLevel`/
 `PortfolioHealth` (no pre-existing Portfolio model found anywhere;
-`risk.risk_manager.RiskResult` is the nearest conceptual neighbor by
+`risk_layer.risk_engine.risk_manager.RiskResult` is the nearest conceptual neighbor by
 name only, Trading Core, import forbidden outright by Rule 1),
 `PortfolioRuntime` (CRUD-only:
 `create()`/`get()`/`list()`/`update()`/`update_notes()`/`archive()`,
@@ -285,9 +285,9 @@ every V1.0-audit Risk gap that scope permitted: a configurable
 risk-per-trade clamp (`min_risk_per_trade`/`max_risk_per_trade`), a
 minimum risk/reward ratio (`min_risk_reward_ratio`, default 2.0),
 per-symbol drawdown and daily-loss tracking backed by a new
-`risk_account_state` table (`risk/account_state_tracker.py`),
+`risk_account_state` table (`risk_layer/risk_engine/account_state_tracker.py`),
 duplicate-trade detection reusing a new append-only `risk_decisions`
-log (`risk/duplicate_checker.py`), and — the most significant
+log (`risk_layer/risk_validator/duplicate_checker.py`), and — the most significant
 correction — Risk now consults `core_layer.emergency.emergency_manager.EmergencyManager`
 directly, so `PAUSED`/`KILLED`/`MAINTENANCE` actually stop new trade
 approval at the Risk layer, not only Telegram delivery. Every

@@ -2,8 +2,8 @@
 
 from types import SimpleNamespace
 
-from strategies.session_strategy import SessionStrategy
-from strategies.result import StrategyDirection, SetupStatus
+from strategy_layer.strategy_library.session_strategy import SessionStrategy
+from strategy_layer.strategy_engine.result import StrategyDirection, SetupStatus
 
 
 def _session(name):

@@ -13,7 +13,7 @@ TASK 0's audit (`docs/PHASE66_6_AUDIT.md`) reviewed `strategies/`,
 `ai/performance/`, `ai/trade_journal/`, `analytics/`, `knowledge/`,
 `database/`, `ai/trading_analyst/`, `ai/chart_intelligence/`, and
 `ai/coaching/`. It found a genuine, mature Strategy metadata contract
-already exists at `strategies.lifecycle.{strategy_model,strategy_status,strategy_registry}`
+already exists at `strategy_layer.strategy_manager.lifecycle.{strategy_model,strategy_status,strategy_registry}`
 (`StrategyDefinition`/`StrategyStatus`/`StrategyRegistry`) — but this
 brief's own Rule 1 bans `ai/` from importing `strategies/` outright,
 making a new, independent `ai/strategy/models.py` the only
@@ -132,7 +132,7 @@ reused (no adapter task requests it, mirroring Phase 66.4's own
   were read type-only, never duplicated; the one genuine gap (a
   strategy-metadata contract and CRUD runtime) was added as a new
   subpackage only after confirming the one pre-existing Strategy model
-  (`strategies.lifecycle.StrategyDefinition`) is Trading Core and
+  (`strategy_layer.strategy_manager.lifecycle.StrategyDefinition`) is Trading Core and
   import-forbidden — see `docs/PHASE66_6_AUDIT.md`.
 
 ## Dependency Compliance
@@ -196,7 +196,7 @@ session's Director Policy.
 
 - `docs/PHASE66_6_AUDIT.md` — TASK 0's Foundation Reuse Audit,
   confirming the one pre-existing Strategy model
-  (`strategies.lifecycle.StrategyDefinition`) is Trading Core and
+  (`strategy_layer.strategy_manager.lifecycle.StrategyDefinition`) is Trading Core and
   import-forbidden.
 - `docs/ai/AI_STRATEGY.md` — the full, current documentation of
   `ai/strategy/`'s model/runtime/adapter surfaces.

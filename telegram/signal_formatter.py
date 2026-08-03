@@ -1,10 +1,10 @@
 from typing import Optional
 from dataclasses import dataclass
 
-from signals.models import SignalCandidate
+from signal_layer.signal_builder.models import SignalCandidate
 from ai.ai_analyzer import AIAnalysisResult
-from decision.models import TradeDecision
-from risk.risk_manager import RiskResult
+from decision_layer.decision_engine.models import TradeDecision
+from risk_layer.risk_engine.risk_manager import RiskResult
 
 
 @dataclass(frozen=True)

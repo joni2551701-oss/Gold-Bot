@@ -266,8 +266,8 @@ core/pipeline.py's existing Data -> ... -> Database flow (docs/ARCHITECTURE.md)
 
 - Does not change `core/pipeline.py`, `data_layer/live_data/market_data.py`,
   `data_layer/providers/twelve_data_client.py`, `context/`, `strategies/`, `signals/`
-  (candidate generation), `decision/decision_engine.py`,
-  `risk/risk_manager.py`, `ai/`, or `execution/`.
+  (candidate generation), `decision_layer/decision_engine/decision_engine.py`,
+  `risk_layer/risk_engine/risk_manager.py`, `ai/`, or `execution/`.
 - Does not open a trade, dispatch a broker order, or change any risk
   calculation.
 - Does not require a database migration.

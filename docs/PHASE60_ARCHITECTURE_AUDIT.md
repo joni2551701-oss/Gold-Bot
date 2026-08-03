@@ -46,14 +46,14 @@ risk → telegram → database` chain:
   persistence-identity. `database/` sits at the *end* of the chain; it
   is supposed to import upstream result types to store them. Not a
   violation.
-- **`risk → decision`**: real — `risk/risk_manager.py` imports
-  `decision.models.TradeDecision`/`DecisionAction` because
+- **`risk → decision`**: real — `risk_layer/risk_engine/risk_manager.py` imports
+  `decision_layer.decision_engine.models.TradeDecision`/`DecisionAction` because
   `RiskManager.evaluate()` *consumes* a `TradeDecision` as input (the
   Decision Engine's output is Risk's input, exactly the documented
   order). `decision/` does **not** import `risk/` anywhere — confirmed
   via grep, zero matches — so this is one-directional, not circular.
-- **`signals → decision`**: `signals/adapter.py`'s only reference to
-  `decision.models.TradeDecision` is inside an `if TYPE_CHECKING:`
+- **`signals → decision`**: `signal_layer/signal_builder/adapter.py`'s only reference to
+  `decision_layer.decision_engine.models.TradeDecision` is inside an `if TYPE_CHECKING:`
   block — never a real runtime import.
 - **`telegram → risk/decision/ai`**: real, but confined to
   `telegram/signal_formatter.py`, which formats the same
@@ -81,14 +81,14 @@ docstrings rather than accidental orphans:
 
 | Item | File | Status |
 |---|---|---|
-| `class DecisionResult` | `decision/decision_engine.py:24` | Superseded — `DecisionEngine.decide()` actually returns `TradeDecision` (from `decision/models.py`), never `DecisionResult`. Zero references anywhere. |
+| `class DecisionResult` | `decision_layer/decision_engine/decision_engine.py:24` | Superseded — `DecisionEngine.decide()` actually returns `TradeDecision` (from `decision_layer/decision_engine/models.py`), never `DecisionResult`. Zero references anywhere. |
 | `class SignalMonitor` | `monitoring/signal_monitor.py:16` | Self-documented placeholder ("Currently a placeholder... Signal ID, state, and timestamp will arrive via a future event contract"). Never constructed anywhere. |
 | `def build_prompt()` | `ai/ai_prompt.py:40` | `ai/ai_analyzer.py` (the real, live AI analyzer) never imports `ai_prompt` — this is a disconnected, earlier-generation prompt builder. |
 | `def evaluate_confidence()` | `ai/confidence_model.py:23` | Same disconnection — `ai_analyzer.py` never imports `confidence_model`. Its own docstring already says it's a no-op until a future phase populates `SignalCandidate.context_refs`. |
 | `def is_doji()`, `body_ratio()`, `upper_wick()`, `lower_wick()` | `context_layer/context_engine/candle.py:23,33,36,42` | Candle-shape helper functions with zero callers anywhere (sibling functions `direction()`/`is_bullish()`/`is_bearish()`/`body_size()`/`range_size()` in the same file *are* used elsewhere and were correctly not flagged). |
 | `def is_user()` | `telegram/permissions.py:59` | `get_permission_level()` in the same file falls through to `PermissionLevel.USER` directly without calling `is_user()` — the function exists but nothing calls it. |
 
-**No action taken** — `decision/decision_engine.py` and `ai/` are
+**No action taken** — `decision_layer/decision_engine/decision_engine.py` and `ai/` are
 both under `CLAUDE.md`'s "Trading Safety" explicit-approval
 restriction, and `context_layer/context_engine/candle.py`/`monitoring/`/`telegram/permissions.py`
 changes should go through the same review discipline as everything
@@ -237,7 +237,7 @@ telegram_delivery → database
 This matches `CLAUDE.md`'s `data → context → strategies → signals →
 ai → decision → risk → telegram → database` chain exactly, at finer
 granularity (`strategies` isn't its own pipeline stage name because
-`signals/signal_engine.py` calls into `strategies/` internally during
+`signal_layer/signal_engine/signal_engine.py` calls into `strategies/` internally during
 the `signal` stage, not as a separate top-level phase).
 
 The Director's requested full diagram adds four stages beyond what's
@@ -247,7 +247,7 @@ live today — **all confirmed foundation-only, not wired**:
 ... risk → [Execution] → [Paper] → [Analytics] → [Journal]
 ```
 
-- **Execution**: `execution/execution_engine.py` — confirmed inert,
+- **Execution**: `execution_layer/execution_engine/execution_engine.py` — confirmed inert,
   zero `order_send`/MT5 calls anywhere in `execution/` (re-grepped
   this pass), per `CLAUDE.md`'s own statement.
 - **Paper**: `lifecycle/paper_trade.py` + `lifecycle/paper_trade_monitor.py`
@@ -276,7 +276,7 @@ until MT5 order wiring is itself an explicitly-approved phase.
    both targeting `/system_status`. Needs the same kind of decision
    (section 5).
 3. **Six dead-code items** (section 2) — reported, not touched;
-   `decision/decision_engine.py`'s `DecisionResult` and `ai/`'s
+   `decision_layer/decision_engine/decision_engine.py`'s `DecisionResult` and `ai/`'s
    `build_prompt()`/`evaluate_confidence()` need the Trading
    Safety/AI-layer owner's explicit sign-off before any removal or
    wiring.

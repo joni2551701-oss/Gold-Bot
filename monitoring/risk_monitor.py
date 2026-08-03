@@ -1,7 +1,7 @@
 """
 Monitoring Layer — Risk Monitor (Phase V1.0.1: Risk Management
 Hardening Patch, TASK 9). Read-only aggregator over the risk_decisions
-log risk/risk_manager.py's TASK 8 already writes
+log risk_layer/risk_engine/risk_manager.py's TASK 8 already writes
 (database.risk_decision_repository.RiskDecisionRepository) -- this
 module never computes a risk verdict, never mutates trading state,
 and never writes to risk_decisions itself. Same "monitoring only
@@ -11,7 +11,7 @@ reads" posture as every prior monitoring phase in this codebase
 Pause Events = EMERGENCY_PAUSED-category rejects + DRAWDOWN-category
 rejects (both represent "trading is currently paused" from the
 Owner's point of view); Drawdown Events is the DRAWDOWN-category
-subset specifically -- see risk/risk_manager.py's `reject_category`
+subset specifically -- see risk_layer/risk_engine/risk_manager.py's `reject_category`
 values for the full taxonomy.
 """
 

@@ -2,9 +2,9 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from signals.models import SignalCandidate, SignalType
-from decision.models import TradeDecision
-from risk.risk_manager import RiskResult
+from signal_layer.signal_builder.models import SignalCandidate, SignalType
+from decision_layer.decision_engine.models import TradeDecision
+from risk_layer.risk_engine.risk_manager import RiskResult
 
 
 @dataclass(frozen=True)

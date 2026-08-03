@@ -19,7 +19,7 @@ from typing import Sequence
 from analytics.signal_performance import SignalPerformance
 from analytics.validation_report import build_validation_report, format_validation_report
 from config import Config
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 from telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
 

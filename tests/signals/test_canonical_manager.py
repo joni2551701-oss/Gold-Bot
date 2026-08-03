@@ -2,10 +2,10 @@
 
 import json
 
-from signals.manager import SignalManager, CanonicalSignalResult
-from signals.quality import SignalStrength
-from signals.lifecycle.state import CanonicalSignalStatus
-from signals.router import SignalConsumer
+from signal_layer.signal_service.manager import SignalManager, CanonicalSignalResult
+from signal_layer.signal_scoring.quality import SignalStrength
+from signal_layer.signal_engine.lifecycle.state import CanonicalSignalStatus
+from signal_layer.signal_service.router import SignalConsumer
 
 
 def test_full_long_setup_builds_ready_signal(make_strategy_result):

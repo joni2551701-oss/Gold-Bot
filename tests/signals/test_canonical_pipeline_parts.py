@@ -2,12 +2,12 @@
 
 from datetime import datetime, timezone
 
-from signals.schema import SignalSchema
-from signals import validator as V
-from signals import quality as Q
-from signals import enricher as E
-from signals import formatter as F
-from signals import serializer as S
+from signal_layer.signal_builder.schema import SignalSchema
+from signal_layer.signal_validator import validator as V
+from signal_layer.signal_scoring import quality as Q
+from signal_layer.signal_builder import enricher as E
+from signal_layer.signal_formatter import formatter as F
+from signal_layer.signal_formatter import serializer as S
 
 
 def _sig(direction="BUY", entry=100.0, sl=98.0, tp=104.0, strategy="BOS"):

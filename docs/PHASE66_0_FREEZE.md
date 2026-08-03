@@ -12,8 +12,8 @@ Dependency compliance checks run at close.
 ## Audit Summary
 
 TASK 0's audit (`docs/PHASE66_0_AUDIT.md`) found no existing Trading
-Analysis module: the closest candidates (`decision.models.TradeDecision`,
-`risk.risk_manager.RiskResult`) are both off-limits to `ai/` under
+Analysis module: the closest candidates (`decision_layer.decision_engine.models.TradeDecision`,
+`risk_layer.risk_engine.risk_manager.RiskResult`) are both off-limits to `ai/` under
 Constitution Article 3's absolute rule, and `ai/explanation/`'s own
 `ExplanationInput`/`ExplanationOutput` is the compliant precedent this
 phase followed rather than duplicated. `ai/journal/`'s

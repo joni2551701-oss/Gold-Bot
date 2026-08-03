@@ -20,7 +20,7 @@ layers are declared **FROZEN** as of the STEP-08 / TASK-CORE-008 commit.
 
 - **No change** to these layers' public contracts, computations, or file
   structure without **explicit Director approval** for that specific change.
-- The STEP-08 signals/ work consumes `strategies.result.StrategyResult` (read
+- The STEP-08 signals/ work consumes `strategy_layer.strategy_engine.result.StrategyResult` (read
   only) and `context.ContextSnapshot` (read only) — it modifies none of the
   frozen layers.
 - The live trading pipeline

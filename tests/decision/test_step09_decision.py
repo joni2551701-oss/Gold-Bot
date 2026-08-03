@@ -3,14 +3,14 @@
 from datetime import datetime, timezone, timedelta
 from types import SimpleNamespace
 
-from signals.schema import SignalSchema, generate_signal_id
-from decision.decision_status import (
+from signal_layer.signal_builder.schema import SignalSchema, generate_signal_id
+from decision_layer.decision_engine.decision_status import (
     DecisionStatus, from_decision_action, from_signal_decision,
 )
-from decision.models import DecisionAction
-from decision.decision_model import DecisionOutcome
-from decision.decision_router import DecisionConsumer, route
-from decision.decision_manager import DecisionManager
+from decision_layer.decision_engine.models import DecisionAction
+from decision_layer.decision_engine.decision_model import DecisionOutcome
+from decision_layer.decision_service.decision_router import DecisionConsumer, route
+from decision_layer.decision_service.decision_manager import DecisionManager
 
 
 def _sig(direction="BUY", entry=100.0, sl=98.0, tp=104.0, conf=0.8,

@@ -8,7 +8,7 @@ Foundation, TASK 2).
 `ai/coaching/models.py`, `ai/performance/models.py`, and
 `ai/strategy/models.py` all already established: every field is a
 primitive (`str`/`int`) or an enum defined in this same file -- never
-a `decision.models.TradeDecision`, `risk.risk_manager.RiskResult`, or
+a `decision_layer.decision_engine.models.TradeDecision`, `risk_layer.risk_engine.risk_manager.RiskResult`, or
 any other Trading Core object reference. `ai/portfolio/` never imports
 `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
 `context/`, `monitoring/`, `telegram/`, `database/`, `voice/`,
@@ -17,7 +17,7 @@ or `ai.memory`.
 
 **No naming collision** (documented, see `docs/PHASE66_7_AUDIT.md`'s
 "Question 1"): a repository-wide search found no pre-existing
-`Portfolio`-shaped model anywhere. `risk/risk_manager.py`'s
+`Portfolio`-shaped model anywhere. `risk_layer/risk_engine/risk_manager.py`'s
 `RiskResult`/`RiskManager` are the nearest conceptual neighbor by name
 only -- a per-trade sizing contract, not a per-portfolio one, and
 Trading Core (`risk/`) -- import forbidden outright by this phase's

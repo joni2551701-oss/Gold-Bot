@@ -52,7 +52,7 @@ class Capability(Enum):
     Each value is advisory-only, matching every other `ai/` module's
     boundary (`ai/interfaces.py`'s `AIAnalyzerInterface` docstring):
     none of these ever approve/reject a trade, call
-    `risk.risk_manager.RiskManager`, or trigger execution/Telegram
+    `risk_layer.risk_engine.risk_manager.RiskManager`, or trigger execution/Telegram
     delivery on their own.
     """
     CHAT = "CHAT"

@@ -29,10 +29,10 @@ config -> providers -> stream -> market -> context -> strategies
 
 ## 3. Director decision — reuse-first
 
-`signals.schema.SignalSchema` (Phase A15) is ALREADY the cross-module,
+`signal_layer.signal_builder.schema.SignalSchema` (Phase A15) is ALREADY the cross-module,
 platform-independent signal contract, with `validate_signal()`,
 `to_dict()/to_json()`, and an `adapter.from_signal_candidate()`. STEP-08
-therefore **reuses** it: `signals.signal.CanonicalSignal is SignalSchema`.
+therefore **reuses** it: `signal_layer.signal_builder.signal.CanonicalSignal is SignalSchema`.
 No second signal model was created — this satisfies the task's own Refactor
 Rules ("duplicate yozilmasin, mavjud kod reuse qilinsin") and CLAUDE.md's
 "No duplicate logic".
@@ -42,11 +42,11 @@ Rules ("duplicate yozilmasin, mavjud kod reuse qilinsin") and CLAUDE.md's
 | Task CanonicalSignal field | Home |
 |---|---|
 | signal_id, symbol, direction, strategy, confidence, entry, stop_loss, take_profit, status(decision), created_at, session, timeframe | `SignalSchema` fields (reused verbatim) |
-| quality | `signals.quality.SignalStrength` (STRONG/GOOD/NORMAL/WEAK/INVALID), on `CanonicalSignalResult.strength` |
+| quality | `signal_layer.signal_scoring.quality.SignalStrength` (STRONG/GOOD/NORMAL/WEAK/INVALID), on `CanonicalSignalResult.strength` |
 | rr | derived in `manager` from the setup's own geometry (descriptive), carried on the result |
 | reason | `SignalPresentation.short_reason` (from the StrategyResult reasons) |
 | metadata | `SignalEnrichment` (price/spread/session/volatility/regime/build_version) |
-| lifecycle status | `signals.lifecycle.CanonicalSignalStatus` |
+| lifecycle status | `signal_layer.signal_engine.lifecycle.CanonicalSignalStatus` |
 
 `SignalSchema` (frozen A15 contract) was **not** modified — the extra fields
 live in the surrounding STEP-08 structures, kept additive.
@@ -73,7 +73,7 @@ live in the surrounding STEP-08 structures, kept additive.
 |---|---|---|
 | `CanonicalSignalStatus` | `signals/lifecycle/` | signals/-layer **build/publish** (CREATED→VALIDATED→ENRICHED→READY→PUBLISHED/EXPIRED/CANCELLED) |
 | `SignalLifecycleState` | `lifecycle/signal_state.py` | signal **analysis/decision** journey (CREATED→QUALITY_CHECKED→…→CLOSED) |
-| `SignalState` | `execution/signal_lifecycle.py` | Telegram **message delivery** (inert) |
+| `SignalState` | `execution_layer/execution_monitor/signal_lifecycle.py` | Telegram **message delivery** (inert) |
 
 Three names, three packages, one concept each — the codebase's standing
 disambiguation discipline.

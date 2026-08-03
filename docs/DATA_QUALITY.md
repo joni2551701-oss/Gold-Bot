@@ -141,7 +141,7 @@ reachable via `result["context"].candles`; only the new
   `get_candles()` returned is what `context/` receives, regardless of
   `data_quality.valid`.
 - Does not change `strategies/`, `signals/` signal-generation logic,
-  `ai/`, or `decision/decision_engine.py`.
+  `ai/`, or `decision_layer/decision_engine/decision_engine.py`.
 - Does not persist `DataQualityResult` anywhere — no schema change, no
   new table.
 - Does not block a pipeline cycle below any quality threshold — that

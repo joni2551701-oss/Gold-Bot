@@ -30,7 +30,7 @@ from typing import Dict, List, Optional, Sequence
 
 from analytics.signal_performance import SignalPerformance
 from analytics.strategy_report import StrategyPerformanceReport, build_strategy_report, compute_win_rate
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 
 
 @dataclass(frozen=True)

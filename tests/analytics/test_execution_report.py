@@ -9,7 +9,7 @@ from analytics.execution_report import (
     format_execution_record,
     summarize_execution_records,
 )
-from execution.simulator.models import ExecutionSimulationResult, SimulatedFill, SimulatedOrder
+from execution_layer.execution_engine.simulator.models import ExecutionSimulationResult, SimulatedFill, SimulatedOrder
 
 
 def _order(order_id="o1"):

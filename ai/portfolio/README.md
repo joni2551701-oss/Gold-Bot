@@ -81,6 +81,6 @@ method anywhere in this package.
   `performance_adapter.py` reads from (type-only, no Runtime import).
 - `ai/strategy/` — the sibling package this phase's
   `strategy_adapter.py` reads from (type-only, no Runtime import).
-- `risk/risk_manager.py` — the pre-existing Trading Core risk-sizing
+- `risk_layer/risk_engine/risk_manager.py` — the pre-existing Trading Core risk-sizing
   contract this package's own models are deliberately independent
   from (import forbidden by Rule 1).

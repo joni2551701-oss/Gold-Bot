@@ -14,7 +14,7 @@ this is a genuinely new package, not a duplicate of `ai/ai_analyzer.py`
 
 Same advisory-only boundary as `ai/interfaces.py`'s
 `AIAnalyzerInterface`: a `BaseAIProvider` implementation must never
-approve/reject a trade, call `risk.risk_manager.RiskManager`, or
+approve/reject a trade, call `risk_layer.risk_engine.risk_manager.RiskManager`, or
 trigger execution/Telegram delivery. It answers a question; it never
 acts on the answer.
 

@@ -22,7 +22,7 @@ planned):
 | **Users** | `owner_roles.py` (role/permission gating for every command in this package) |
 | **Subscription** | *(subscription management lives in `telegram/subscription_service.py`, called from the relevant owner command file rather than a dedicated `telegram/owner/subscription_commands.py` today — v0.5 Business Layer on the roadmap is where this may grow a dedicated file per Article 7's reuse-first process)* |
 | **Trading** | `execution_commands.py` |
-| **Risk** | *(no dedicated `telegram/owner/risk_commands.py` exists today; risk visibility is surfaced through `status_commands.py`/`dashboard.py` reading `risk/risk_manager.py` output — read-only, never a control surface, per Constitution Article 1/`CLAUDE.md` Trading Safety)* |
+| **Risk** | *(no dedicated `telegram/owner/risk_commands.py` exists today; risk visibility is surfaced through `status_commands.py`/`dashboard.py` reading `risk_layer/risk_engine/risk_manager.py` output — read-only, never a control surface, per Constitution Article 1/`CLAUDE.md` Trading Safety)* |
 | **Decision** | `replay_commands.py` (signal/decision replay), `backtest_commands.py` |
 | **Broadcast** | `runtime_notifications.py` (queues alerts; live delivery loop is the still-open v0.7 gap noted in `docs/PHASE61_7_FREEZE.md`) |
 | **Analytics** | `performance_commands.py`, `report_commands.py`, `dataset_commands.py`, `feature_commands.py`, `fundamental_commands.py`, `learning_commands.py` |

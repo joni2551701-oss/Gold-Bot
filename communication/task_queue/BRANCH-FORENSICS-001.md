@@ -5,7 +5,7 @@
 `communication/task_queue/QUEUE.md`)
 **Priority**: Critical
 **Status**: ✅ APPROVED — Director review complete (F-008 through F-013
-confirmed: root cause is a single file, `strategies/strategy_manager.py`,
+confirmed: root cause is a single file, `strategy_layer/strategy_manager/strategy_manager.py`,
 zero code difference, caused by one invisible Unicode U+2060 character;
 the `strategie/` typo was a separate, already self-corrected historical
 event, not the conflict cause).
@@ -40,7 +40,7 @@ Chain, Conflict Origin, Recovery Strategy, Director Recommendation.
 
 **Headline finding**: `git merge-tree` (safe, side-effect-free) proves
 the entire `mergeable_state: dirty` conflict blocking both PR #1 and PR
-#2 traces to exactly one file (`strategies/strategy_manager.py`) and
+#2 traces to exactly one file (`strategy_layer/strategy_manager/strategy_manager.py`) and
 exactly one invisible Unicode character (U+2060 WORD JOINER) left over
 from an incomplete cleanup on `main`, while the production branch's
 independent cleanup removed it fully. The file's content is

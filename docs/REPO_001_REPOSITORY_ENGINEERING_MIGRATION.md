@@ -124,7 +124,7 @@ inferred:
 3. **The structural reason a clean merge was never realistic**: `main`'s
    5 post-divergence commits are themselves a chain of broken-filename
    repairs. `git log --name-status` shows `ai/ai_analyzer.py`,
-   `strategies/strategy_manager.py`, and `strategies/liquidity_strategy.py`
+   `strategy_layer/strategy_manager/strategy_manager.py`, and `strategy_layer/strategy_library/liquidity_strategy.py`
    were each renamed one or more times on `main` to fix invisible
    Unicode word-joiner characters and a typo'd `strategie/` directory
    name that had been embedded in the filenames (consistent with an

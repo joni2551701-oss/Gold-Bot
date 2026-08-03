@@ -13,7 +13,7 @@ only: an in-process, in-memory store with no persistence and no
 database integration, exactly as this phase's spec requires
 ("Database integration: QILINMASIN. Faqat interface.").
 
-Not wired into core/pipeline.py, decision/decision_engine.py, or any
+Not wired into core/pipeline.py, decision_layer/decision_engine/decision_engine.py, or any
 Telegram handler -- nothing calls this yet.
 """
 

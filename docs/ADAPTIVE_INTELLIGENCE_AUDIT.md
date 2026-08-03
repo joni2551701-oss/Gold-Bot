@@ -15,7 +15,7 @@ trade event actually originates in this codebase today.
 
 `core/pipeline.py` — the live cycle — **never imports or references
 `lifecycle.paper_trade` at all** (confirmed by a full grep: zero
-matches). No MT5/broker execution is wired (`execution/execution_engine.py`
+matches). No MT5/broker execution is wired (`execution_layer/execution_engine/execution_engine.py`
 remains an inert stub, per every prior phase's own audit), so a live
 cycle never creates a `PaperTrade` in the first place — there is no
 "real" closed trade to observe outside of a backtest run.

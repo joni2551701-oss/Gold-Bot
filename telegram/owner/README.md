@@ -178,7 +178,7 @@ live bot, same as every module in this package.
 
 ### `execution_commands.py` (Phase 60.3: Execution Simulator Foundation)
 `execution_status()`, `slippage_status()`, `set_simulation_mode()` —
-thin wrappers over `execution.simulator.simulator_engine.ExecutionSimulator`'s
+thin wrappers over `execution_layer.execution_engine.simulator.simulator_engine.ExecutionSimulator`'s
 own config classes, reporting already-computed slippage/spread/latency
 settings and a selected session preset. No new simulation logic. See
 `docs/EXECUTION_SIMULATOR.md` for the full chain. Not wired into the
@@ -223,9 +223,9 @@ imports `telegram.admin_service.AdminService` and
 imports `config.Config`, `configuration.feature_flags.DEFAULT_FLAGS`,
 and `provider_commands.ProviderCommandResult`. `report_commands.py`
 imports `analytics.strategy_report`, `analytics.signal_performance`,
-`signals.schema.SignalSchema`, and `provider_commands.ProviderCommandResult`.
+`signal_layer.signal_builder.schema.SignalSchema`, and `provider_commands.ProviderCommandResult`.
 `validation_commands.py` imports `analytics.validation_report`,
-`analytics.signal_performance`, `config.Config`, `signals.schema.SignalSchema`,
+`analytics.signal_performance`, `config.Config`, `signal_layer.signal_builder.schema.SignalSchema`,
 and `provider_commands.ProviderCommandResult`. `dataset_commands.py`
 imports `analytics.dataset_report`, `data_layer.providers.provider_comparison`,
 `database.raw_candle_repository`, `database.sync_state_repository`,
@@ -255,8 +255,8 @@ imports `backtesting.backtest_engine.BacktestEngine`,
 `backtesting.backtest_result.format_backtest_report()`,
 `backtesting.replay_models.ReplayConfig`, and
 `provider_commands.ProviderCommandResult`. `execution_commands.py`
-imports `execution.simulator.simulator_engine.ExecutionSimulator`,
-`execution.simulator.slippage.SlippageConfig`, and
+imports `execution_layer.execution_engine.simulator.simulator_engine.ExecutionSimulator`,
+`execution_layer.execution_engine.simulator.slippage.SlippageConfig`, and
 `provider_commands.ProviderCommandResult`. `performance_commands.py`
 imports `analytics.performance_metrics`, `analytics.equity_curve`,
 `analytics.benchmark`, `analytics.signal_performance.SignalPerformance`,

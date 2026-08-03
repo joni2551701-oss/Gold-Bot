@@ -26,7 +26,7 @@ this document governs.
 
 GoldBot has exactly one system that decides whether a trade signal is
 approved, rejected, or held: the pipeline running
-`core/pipeline.py → decision/decision_engine.py → risk/risk_manager.py`.
+`core/pipeline.py → decision_layer/decision_engine/decision_engine.py → risk_layer/risk_engine/risk_manager.py`.
 This system is deterministic, rule-based, and fully auditable. It does
 not consult the AI layer to make its decision.
 
@@ -34,12 +34,12 @@ The AI layer (`ai/`) exists to **help humans understand** what the
 Trading Engine is doing — explain, summarize, analyze, educate. Per
 `CLAUDE.md`'s own pipeline order (`signals/ -> ai/ -> decision/`),
 `core/pipeline.py` calls `AIAnalyzer.analyze()` and passes its
-`AIAnalysisResult` into `decision.decision_engine.DecisionEngine` as
+`AIAnalysisResult` into `decision_layer.decision_engine.decision_engine.DecisionEngine` as
 one advisory input alongside the deterministic signal/risk factors —
 this is real and intended, not a violation. What never happens, under
 any configuration: the AI layer itself calling
-`decision.decision_engine.DecisionEngine`, calling
-`risk.risk_manager.RiskManager`, triggering execution, or triggering a
+`decision_layer.decision_engine.decision_engine.DecisionEngine`, calling
+`risk_layer.risk_engine.risk_manager.RiskManager`, triggering execution, or triggering a
 Telegram send (`ai/interfaces.py`'s `AIAnalyzerInterface` docstring
 states this contract for any future provider). The Decision Engine
 reads the AI's answer; the AI layer never acts on it.
@@ -136,8 +136,8 @@ adding one requires the same audit discipline as any other new
 cross-layer import (see Article 7).
 
 `decision/` importing `ai/` is the one sanctioned exception in this
-direction, and it is exactly as narrow as it sounds: `decision/models.py`
-and `decision/decision_engine.py` import `AIAnalysisResult` from
+direction, and it is exactly as narrow as it sounds: `decision_layer/decision_engine/models.py`
+and `decision_layer/decision_engine/decision_engine.py` import `AIAnalysisResult` from
 `ai.ai_analyzer` — a **type only**, to accept the AI's analysis as a
 parameter — per Article 1 and `CLAUDE.md`'s own `signals/ -> ai/ ->
 decision/` ordering. `decision/` never imports `ai/router/`,

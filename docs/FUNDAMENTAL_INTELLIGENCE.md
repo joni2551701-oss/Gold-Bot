@@ -245,7 +245,7 @@ these import `database/`, `risk/`, `decision/`, `execution/`,
 - No economic-calendar provider exists to populate an `EconomicEvent`
   -- TASK 4's model has no real data source yet.
 - Nothing in this phase is wired into `core/pipeline.py`,
-  `decision/decision_engine.py`, or any Telegram routing surface.
+  `decision_layer/decision_engine/decision_engine.py`, or any Telegram routing surface.
 
 ## Future Roadmap
 

@@ -109,7 +109,7 @@ def mock_signal_candidate():
     stop_loss=..., take_profit=..., confidence=..., strategy_name=...)
     -> SignalCandidate. Defaults produce a geometrically valid BUY.
     """
-    from signals.models import SignalCandidate, SignalType
+    from signal_layer.signal_builder.models import SignalCandidate, SignalType
 
     def _make(
         signal_type=SignalType.BUY,

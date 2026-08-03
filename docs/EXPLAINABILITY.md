@@ -28,7 +28,7 @@ Confidence: 85%
 
 ## What it does
 
-`signals/explainability.py`'s `explain_signal(signal, context,
+`signal_layer/signal_scoring/explainability.py`'s `explain_signal(signal, context,
 quality)` produces a `SignalExplanation`:
 
 ```python
@@ -83,9 +83,9 @@ to report even if this module wanted to.
 ## What it does NOT do
 
 - Does not generate a `BUY`/`SELL` signal, and is not itself a
-  strategy — `strategies/*.py` and `signals/signal_engine.py` are
+  strategy — `strategies/*.py` and `signal_layer/signal_engine/signal_engine.py` are
   unmodified.
-- Does not approve or reject a signal — `decision/decision_engine.py`
+- Does not approve or reject a signal — `decision_layer/decision_engine/decision_engine.py`
   is completely unmodified; `explain_signal()`'s output isn't even
   passed into it in this phase.
 - Does not compute a new confidence value — `SignalCandidate.confidence`

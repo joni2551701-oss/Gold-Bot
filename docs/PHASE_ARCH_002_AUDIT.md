@@ -73,7 +73,7 @@ document is the finer, file-granularity companion to
 - **Output:** `SignalCandidate` (live) / `StrategyResult` (setup layer).
 - **Allowed:** setup evaluation by **reading** context; reuse frozen `analyze()`.
 - **Forbidden:** structure math, context detector duplication, entering the signal engine.
-- **Depends on:** `context/`, `signals.models` (SignalCandidate type — live contract).
+- **Depends on:** `context/`, `signal_layer.signal_builder.models` (SignalCandidate type — live contract).
 - **Must not depend on:** decision/risk/execution.
 
 ### signals/
@@ -101,11 +101,11 @@ document is the finer, file-granularity companion to
 | `market/{liquidity,regime,session,trend,volatility}_state.py` | OK | façade DTOs. |
 | `market/{candle,current_price,ticker,orderbook,market_data,market_manager}.py` | OK | façade views/aggregation. |
 | `context/*.py` (all) | OK — FROZEN | SSoT for structure math. |
-| `strategies/strategy_manager.py` | OK | reads context, aggregates `SignalCandidate`. |
+| `strategy_layer/strategy_manager/strategy_manager.py` | OK | reads context, aggregates `SignalCandidate`. |
 | `strategies/{amd,liquidity,fvg}_strategy.py` | OK | live `analyze()`; reused, not duplicated. |
 | `strategies/{base,result,registry,manager}.py` + setup strategies | OK | read context, emit `StrategyResult`. |
-| `signals/signal_engine.py` | OK | context→manager→candidates, no recompute. |
-| `signals/signal_quality.py` | Keep as-is | grades a candidate vs already-computed context; docstring documents "no new structure detection". |
+| `signal_layer/signal_engine/signal_engine.py` | OK | context→manager→candidates, no recompute. |
+| `signal_layer/signal_scoring/signal_quality.py` | Keep as-is | grades a candidate vs already-computed context; docstring documents "no new structure detection". |
 | `signals/{explainability,adapter,schema,models,signal_quality}.py` | OK | formatting/assembly. |
 
 ---

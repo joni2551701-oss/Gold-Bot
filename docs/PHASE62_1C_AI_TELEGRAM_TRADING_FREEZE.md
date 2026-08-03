@@ -58,7 +58,7 @@ document, add only the genuinely new detail):
    the real two-axis model.
 6. **`DECISION_ENGINE.md`'s formula — corrected.** The Director's
    brief sketch showed a three-term blend (Technical + AI + Risk).
-   `decision/decision_engine.py`'s real `_weighted_score()` blends
+   `decision_layer/decision_engine/decision_engine.py`'s real `_weighted_score()` blends
    **four** terms: `signal_confidence`, `htf_score`, `risk_score`,
    `ai_score`. `docs/trading/DECISION_ENGINE.md` states the real
    formula. (`TRADING_ARCHITECTURE.md`'s stage order, by contrast,

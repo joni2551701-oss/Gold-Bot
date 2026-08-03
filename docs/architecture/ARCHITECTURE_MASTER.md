@@ -30,11 +30,11 @@ Real modules behind each box:
 |--------------------|----------------|
 | Market Data        | `data/` |
 | Context Engine      | `context_layer/context_engine/context_orchestrator.py` |
-| Strategy Engine     | `strategies/strategy_manager.py` |
-| Signal Engine       | `signals/signal_engine.py` |
-| Decision Engine     | `decision/decision_engine.py` |
-| Risk Manager        | `risk/risk_manager.py` |
-| Execution           | `execution/execution_engine.py` (intentionally inert — no MT5 order calls exist yet) |
+| Strategy Engine     | `strategy_layer/strategy_manager/strategy_manager.py` |
+| Signal Engine       | `signal_layer/signal_engine/signal_engine.py` |
+| Decision Engine     | `decision_layer/decision_engine/decision_engine.py` |
+| Risk Manager        | `risk_layer/risk_engine/risk_manager.py` |
+| Execution           | `execution_layer/execution_engine/execution_engine.py` (intentionally inert — no MT5 order calls exist yet) |
 | Trade Monitor       | `lifecycle/paper_trade_monitor.py` |
 | Telegram            | `telegram/handlers.py` → `telegram/*_service.py` → `database/*_repository.py` |
 | AI Infrastructure   | `ai/providers/`, `ai/router/`, `ai/capabilities/` |
@@ -69,7 +69,7 @@ depends-on.
   geometry.
 - **Depends on**: `strategies/`, `context/`.
 
-### Decision Engine (`decision/decision_engine.py`)
+### Decision Engine (`decision_layer/decision_engine/decision_engine.py`)
 - **CAN**: blend confidence (including the `AIAnalysisResult` value
   `core/pipeline.py` hands it — `ai_confidence` on `DecisionResult`),
   apply APPROVE/REJECT/NO_TRADE thresholds, decide whether a signal
@@ -82,7 +82,7 @@ depends-on.
 - **Depends on**: `signals/`, `context/`, and `ai.ai_analyzer.AIAnalysisResult`
   (type only — see `docs/architecture/IMPORT_RULES.md`).
 
-### Risk Manager (`risk/risk_manager.py`)
+### Risk Manager (`risk_layer/risk_engine/risk_manager.py`)
 - **CAN**: evaluate a signal's geometry/stop-loss validity, size a
   position, reject on risk-limit violation via `evaluate()`.
 - **CANNOT**: be skipped for any signal reaching a user (`CLAUDE.md`

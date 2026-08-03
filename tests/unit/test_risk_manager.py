@@ -1,7 +1,7 @@
 """
 Phase 52 — RiskManager unit tests.
 
-Previously ZERO dedicated tests existed for risk/risk_manager.py (the
+Previously ZERO dedicated tests existed for risk_layer/risk_engine/risk_manager.py (the
 geometry-validation fix from the earlier critical-bug-fix phase was
 only ever verified with ad-hoc scripts in chat, never captured as a
 permanent regression test). This file closes that gap: geometry
@@ -9,9 +9,9 @@ validation, stop-loss distance validation, and the APPROVE-only gate,
 using the real RiskManager/DecisionEngine, no mocking.
 """
 
-from decision.decision_engine import DecisionEngine
-from decision.models import DecisionAction
-from risk.risk_manager import RiskManager
+from decision_layer.decision_engine.decision_engine import DecisionEngine
+from decision_layer.decision_engine.models import DecisionAction
+from risk_layer.risk_engine.risk_manager import RiskManager
 
 
 def _decision(candidate, ai_result):
@@ -30,7 +30,7 @@ def test_valid_buy_geometry_passes(mock_signal_candidate, mock_ai_result):
 
 
 def test_valid_sell_geometry_passes(mock_signal_candidate, mock_ai_result):
-    from signals.models import SignalType
+    from signal_layer.signal_builder.models import SignalType
 
     candidate = mock_signal_candidate(
         signal_type=SignalType.SELL, entry=4111.40, stop_loss=4116.00, take_profit=4090.00,
@@ -55,7 +55,7 @@ def test_invalid_buy_geometry_blocked(mock_signal_candidate, mock_ai_result):
 
 def test_invalid_sell_geometry_blocked(mock_signal_candidate, mock_ai_result):
     """SELL requires take_profit < entry < stop_loss. SL below entry must block."""
-    from signals.models import SignalType
+    from signal_layer.signal_builder.models import SignalType
 
     candidate = mock_signal_candidate(
         signal_type=SignalType.SELL, entry=4111.40, stop_loss=4111.33, take_profit=4090.00,

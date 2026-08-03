@@ -34,11 +34,11 @@ above; it depends on nothing in this diagram.
 |---|---|
 | `data/` | external market data sources, `core/` |
 | `context_layer/context_engine/context_orchestrator.py` | `data/`, `core/` |
-| `strategies/strategy_manager.py` | `context/`, `data/`, `core/` |
-| `signals/signal_engine.py` | `strategies/`, `context/`, `core/` |
-| `decision/decision_engine.py`, `decision/models.py` | `signals/`, `context/`, `core/`, plus `ai.ai_analyzer.AIAnalysisResult` (**type only** — the one sanctioned `decision/ → ai/` import, see Constitution Article 1/3) |
-| `risk/risk_manager.py` | `decision/`, `core/` |
-| `execution/execution_engine.py` | `risk/`, `core/` (inert — no live order calls) |
+| `strategy_layer/strategy_manager/strategy_manager.py` | `context/`, `data/`, `core/` |
+| `signal_layer/signal_engine/signal_engine.py` | `strategies/`, `context/`, `core/` |
+| `decision_layer/decision_engine/decision_engine.py`, `decision_layer/decision_engine/models.py` | `signals/`, `context/`, `core/`, plus `ai.ai_analyzer.AIAnalysisResult` (**type only** — the one sanctioned `decision/ → ai/` import, see Constitution Article 1/3) |
+| `risk_layer/risk_engine/risk_manager.py` | `decision/`, `core/` |
+| `execution_layer/execution_engine/execution_engine.py` | `risk/`, `core/` (inert — no live order calls) |
 | `lifecycle/paper_trade_monitor.py` | `decision/`, `risk/`, `core/` |
 | `core/pipeline.py` | orchestrates all of the above, top to bottom |
 

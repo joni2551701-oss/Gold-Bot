@@ -97,9 +97,9 @@ it may never *decide* one.
 - **Trading Safety is an absolute boundary.** Even within its own
   layers, the Core Worker must never modify — without the Director's
   explicit approval for that specific change — signal logic
-  (`strategies/`, `signals/`), risk limits (`risk/risk_manager.py`'s
+  (`strategies/`, `signals/`), risk limits (`risk_layer/risk_engine/risk_manager.py`'s
   geometry/stop-loss validation and sizing), or decision flow
-  (`decision/decision_engine.py`'s confidence-blending and
+  (`decision_layer/decision_engine/decision_engine.py`'s confidence-blending and
   APPROVE/REJECT/NO_TRADE thresholds); and it must never bypass the
   Risk Manager, never give the AI layer direct execution/decision/
   Telegram authority, and never wire up `execution/` (intentionally

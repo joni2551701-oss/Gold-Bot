@@ -25,7 +25,7 @@ signals ─┤  (read-only)
 decision ┤ ──► ai/context/ (AIContext builder) ──► ai provider (AIAnalyzerInterface)
 database ┘                                              │  AIResponse (advisory)
                                                         ▼
-                                        decision/decision_engine.py  (blend input, FROZEN)
+                                        decision_layer/decision_engine/decision_engine.py  (blend input, FROZEN)
                                               ▲  advisory only — AI never decides
                                               └─ AI cannot reach risk / execution / telegram
 ```
@@ -62,7 +62,7 @@ database ┘                                              │  AIResponse (advis
 - AI **never**: calls `RiskManager.evaluate()`, builds/sends an
   `ExecutionIntent`, triggers a Telegram send, or writes to the trade path.
 - The advisory `AIResponse.decision`/`confidence` are inputs to the FROZEN
-  decision blend (`decision/decision_engine.py`) — they do not *set* the
+  decision blend (`decision_layer/decision_engine/decision_engine.py`) — they do not *set* the
   verdict.
 - Secrets (provider API keys) are read only via `config.py`/`core/secrets.py`
   and never logged (`ai/audit/` records metadata, not keys).
@@ -76,7 +76,7 @@ context + signals + DecisionOutcome + db history
 ai/context builder ──► AIContext ──► ai/providers (AIAnalyzerInterface.analyze)
                                             │  AIResponse (advisory)
                                             ▼
-                          decision/decision_engine.py blend  [FROZEN]  ── one weighted input
+                          decision_layer/decision_engine/decision_engine.py blend  [FROZEN]  ── one weighted input
                                             ▲
                                             └── AI has NO path to risk / execution / telegram
 ```

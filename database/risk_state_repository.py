@@ -36,7 +36,7 @@ def _row_to_entry(row) -> RiskAccountStateEntry:
 
 
 class RiskStateRepository:
-    """Handles CRUD operations for the 'risk_account_state' table. Database access only -- no drawdown/daily-loss calculation logic (that's risk/account_state_tracker.py's job, same phase)."""
+    """Handles CRUD operations for the 'risk_account_state' table. Database access only -- no drawdown/daily-loss calculation logic (that's risk_layer/risk_engine/account_state_tracker.py's job, same phase)."""
 
     def __init__(self):
         self.db = Database()

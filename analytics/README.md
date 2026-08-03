@@ -20,7 +20,7 @@ already-working calculator this package does not replace or import).
 `session`, `market_phase`, `created_at`) plus
 `compute_signal_performance(signal, paper_trade=None, session=None,
 market_phase=None)` — a standardization adapter, like
-`signals/schema.py`/`context_layer/context_engine/snapshot.py` before it: relays
+`signal_layer/signal_builder/schema.py`/`context_layer/context_engine/snapshot.py` before it: relays
 already-known values (`strategy_id` = `SignalSchema.strategy_name`,
 `context_id` = `SignalSchema.context_id`, both real since AC-03) and
 computes only `r_multiple` (a pure, disclosed arithmetic derivation —
@@ -28,7 +28,7 @@ see `compute_r_multiple()`) and `duration` (from
 `PaperTrade.opened_at`/`closed_at`). `profit_loss` is always `None` —
 an honest hook; no PnL/lot-value computation exists anywhere in this
 codebase today (would need sizing/currency logic, out of this task's
-scope — `risk/risk_manager.py` is untouched).
+scope — `risk_layer/risk_engine/risk_manager.py` is untouched).
 
 ### `strategy_report.py`
 `StrategyPerformanceReport` plus `build_strategy_report(performances)`
@@ -58,7 +58,7 @@ carries, not a fabricated field.
 `ExecutionAnalyticsRecord`/`ExecutionAnalyticsSummary` plus
 `build_execution_record(result)`/`summarize_execution_records(records)`/
 `format_execution_record(record)` — packages an
-`execution.simulator.models.ExecutionSimulationResult` (requested
+`execution_layer.execution_engine.simulator.models.ExecutionSimulationResult` (requested
 price, fill price, slippage, spread, latency, rejection reason) for
 later comparison against real MT5 fills, per the Director's own
 brief. No new execution/slippage/spread/latency logic — reads an
@@ -83,7 +83,7 @@ None`) sequence of `SignalPerformance` into a running balance/drawdown
 curve. Makes one disclosed, visualization-only assumption
 (`EquityCurveConfig.unit_risk_amount`, a configurable dollar-per-1R) to
 bridge the same "no PnL model exists" gap `performance_metrics.py`
-also discloses — `risk/risk_manager.py` is untouched. See
+also discloses — `risk_layer/risk_engine/risk_manager.py` is untouched. See
 `docs/PERFORMANCE_VALIDATION.md`.
 
 ### `benchmark.py` (Phase 60.4: Performance Validation Foundation, TASK 4)
@@ -109,7 +109,7 @@ condition / Worst condition" worked example shape. See
 - Does not call `SignalRepository` or `monitoring/performance.py` —
   its input is an in-memory `List[SignalPerformance]`, built by the
   caller from already-computed `SignalSchema`/`PaperTrade` objects.
-- Does not change `risk/risk_manager.py`, `decision/decision_engine.py`,
+- Does not change `risk_layer/risk_engine/risk_manager.py`, `decision_layer/decision_engine/decision_engine.py`,
   or any strategy — `r_multiple` is a pure post-hoc arithmetic
   derivation from already-approved price levels, never a sizing
   decision.
@@ -121,11 +121,11 @@ condition / Worst condition" worked example shape. See
 `signal_performance.py` imports `lifecycle.trade_state.TradeState`
 (Phase 59.4, TASK 1 — a real runtime import, needed to detect a
 `CANCELLED` `PaperTrade`) plus, `TYPE_CHECKING`-only,
-`lifecycle.paper_trade.PaperTrade` and `signals.schema.SignalSchema`.
+`lifecycle.paper_trade.PaperTrade` and `signal_layer.signal_builder.schema.SignalSchema`.
 `strategy_report.py` imports `analytics.signal_performance` (same
 package) only. Neither imports `context/`, `strategies/`, `ai/`,
 `decision/`, `risk/`, `execution/`, `database/`, or `telegram/`.
-`execution_report.py` imports `execution.simulator.models.ExecutionSimulationResult`
+`execution_report.py` imports `execution_layer.execution_engine.simulator.models.ExecutionSimulationResult`
 (`TYPE_CHECKING`-only) — the one exception to the "no `execution/`
 dependency" rule above, read-only and scoped to this single new file.
 `performance_metrics.py` imports `analytics.signal_performance` and

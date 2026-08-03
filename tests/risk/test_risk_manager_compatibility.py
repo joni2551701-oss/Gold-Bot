@@ -4,9 +4,9 @@ and Compatibility (existing pipeline unchanged) tests, per TASK 11's
 explicit requirement.
 """
 
-from decision.decision_engine import DecisionEngine
-from decision.models import DecisionAction
-from risk.risk_manager import RiskConfig, RiskManager, RiskResult
+from decision_layer.decision_engine.decision_engine import DecisionEngine
+from decision_layer.decision_engine.models import DecisionAction
+from risk_layer.risk_engine.risk_manager import RiskConfig, RiskManager, RiskResult
 
 
 def _decision(candidate, ai_result):
@@ -182,7 +182,7 @@ def test_calculate_risk_reward_unchanged():
 
 
 def test_validate_geometry_unchanged():
-    from signals.models import SignalCandidate, SignalType
+    from signal_layer.signal_builder.models import SignalCandidate, SignalType
 
     manager = RiskManager()
     valid = SignalCandidate(

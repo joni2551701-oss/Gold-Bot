@@ -2,13 +2,13 @@
 
 import pytest
 
-from strategies.registry import (
+from strategy_layer.strategy_library.registry import (
     SetupRegistry,
     build_setup_registry,
     DuplicateStrategyNameError,
     DEFAULT_SETUP_STRATEGIES,
 )
-from strategies.base import SetupStrategy
+from strategy_layer.strategy_engine.base import SetupStrategy
 
 _EXPECTED = {
     "AMD_SETUP", "LIQUIDITY_SETUP", "FVG_SETUP", "ORDER_BLOCK_SETUP",
@@ -36,7 +36,7 @@ def test_get_returns_none_for_unknown():
 
 def test_duplicate_registration_raises():
     reg = SetupRegistry()
-    from strategies.snr_strategy import SNRStrategy
+    from strategy_layer.strategy_library.snr_strategy import SNRStrategy
     reg.register(SNRStrategy())
     with pytest.raises(DuplicateStrategyNameError):
         reg.register(SNRStrategy())

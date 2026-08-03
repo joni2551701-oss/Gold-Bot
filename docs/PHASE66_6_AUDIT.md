@@ -42,7 +42,7 @@ silently duplicated.
 codebase has now applied five times — `TradeJournalEntry`,
 `LearningRecord`, `PerformanceMetric`, and now this): TASK 2's own
 `StrategyStatus` enum (`ACTIVE`/`TESTING`/`DISABLED`/`ARCHIVED`) shares
-a bare name with `strategies.lifecycle.strategy_status.StrategyStatus`
+a bare name with `strategy_layer.strategy_manager.lifecycle.strategy_status.StrategyStatus`
 but is a **different value set** (`ARCHIVED` vs `DEPRECATED`) at a
 distinct, non-colliding fully-qualified path
 (`ai.strategy.models.StrategyStatus`), never imported alongside the
@@ -116,7 +116,7 @@ confirmed by the isolation test's allowed-import allowlist.
 
 ## Conclusion
 
-1. A Strategy model exists (`strategies.lifecycle.StrategyDefinition`/
+1. A Strategy model exists (`strategy_layer.strategy_manager.lifecycle.StrategyDefinition`/
    `StrategyStatus`/`StrategyRegistry`) but is Trading Core — import
    forbidden by this brief's own Rule 1, making a new, independent
    `ai/strategy/models.py` the only legal outcome, not a reuse

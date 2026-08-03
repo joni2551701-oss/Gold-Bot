@@ -49,7 +49,7 @@ line after, no side effect on the stage itself" shape.
 
 ---
 
-### `decision/decision_engine.py`, `risk/risk_manager.py`
+### `decision_layer/decision_engine/decision_engine.py`, `risk_layer/risk_engine/risk_manager.py`
 
 Both are pure, stateless, dependency-free calculation classes (no
 `database/`, `configuration/`, `core_layer/emergency/`, or `telegram/`
@@ -70,7 +70,7 @@ Trading Safety rules verbatim.
 
 ---
 
-### `execution/execution_engine.py`
+### `execution_layer/execution_engine/execution_engine.py`
 
 `ExecutionEngine.dispatch()` always returns
 `ExecutionResult(dispatched=False, reason="Not implemented")` and has
@@ -253,7 +253,7 @@ assumed.
 |---|---|---|
 | `core/pipeline.py` | `main.py` (`GoldBot.run()`) | Yes — stage-boundary guard only |
 | `decision/`, `risk/` | `core/pipeline.py`, `backtesting/backtest_engine.py` | No — out of scope, none proposed |
-| `execution/execution_engine.py` | none | No — stays inert, separate approval required |
+| `execution_layer/execution_engine/execution_engine.py` | none | No — stays inert, separate approval required |
 | `telegram/owner/*.py` | tests only (not wired to handlers) | Yes — `dashboard.py` composition only |
 | `RuntimeFeatureManager` | tests, `telegram/owner/*`, `runtime_api.py` | Yes, but needs a feature-name mapping decision |
 | `EmergencyManager` | tests, `telegram/owner/emergency_commands.py` | Yes, but needs a 5-state mapping decision |

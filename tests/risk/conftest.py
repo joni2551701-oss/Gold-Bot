@@ -28,7 +28,7 @@ def isolated_db(tmp_path, monkeypatch):
 @pytest.fixture
 def risk_manager(isolated_db):
     """A bare, fully-isolated RiskManager() -- every internal dependency (EmergencyManager, RiskDecisionRepository, AccountStateTracker, DuplicateTradeChecker) points at the same isolated_db."""
-    from risk.risk_manager import RiskManager
+    from risk_layer.risk_engine.risk_manager import RiskManager
 
     return RiskManager()
 

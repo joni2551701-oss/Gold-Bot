@@ -41,7 +41,7 @@ specific assumptions actually touch.
   constructor-parameterized, not hardcoded — confirmed in
   `docs/FOUNDATION_GAP_ANALYSIS.md`'s Asset Manager section. Only
   `main.py`'s single call site hardcodes `"XAUUSD"`.
-- `risk/risk_manager.py`'s own docstring explicitly disclaims broker-
+- `risk_layer/risk_engine/risk_manager.py`'s own docstring explicitly disclaims broker-
   specific knowledge — "No knowledge of broker specifications
   (contract size, tick value, lot step, min/max lot, stop level)" —
   confirmed by reading the file this phase. The risk-sizing math is

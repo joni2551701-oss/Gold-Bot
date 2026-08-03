@@ -2,18 +2,18 @@
 
 **Not wired into the live bot, and never touches live execution.**
 Same "real function, not live-wired" posture as every phase before
-it. `execution/execution_engine.py`'s `ExecutionEngine.dispatch()` and
-`execution/signal_lifecycle.py`'s `SignalLifecycle.transition()` are
+it. `execution_layer/execution_engine/execution_engine.py`'s `ExecutionEngine.dispatch()` and
+`execution_layer/execution_monitor/signal_lifecycle.py`'s `SignalLifecycle.transition()` are
 both completely untouched by this phase — still deliberately inert,
 still requiring a separate, explicit approval to wire up per
 `CLAUDE.md`'s Trading Safety rules.
 
-## Why `execution/simulator/`, not `simulation/`
+## Why `execution_layer/execution_engine/simulator/`, not `simulation/`
 
 Per the Director's own instruction and the Module Reuse Principle
 (`CLAUDE.md`): before creating any new module, check whether an
 existing one can be extended. TASK 1's reuse audit read
-`execution/execution_engine.py` and `execution/signal_lifecycle.py`
+`execution_layer/execution_engine/execution_engine.py` and `execution_layer/execution_monitor/signal_lifecycle.py`
 directly — both are deliberately inert stubs ("Currently
 unimplemented"/"Currently a placeholder") with nothing to reuse, and
 extending either would blur the "intentionally inert, needs separate
@@ -33,11 +33,11 @@ Risk Approved
 lifecycle.paper_trade.create_paper_trade()/open_paper_trade()   -- unmodified (Phase 59 Preparation)
       |  (an OPEN PaperTrade + its RiskResult)
       v
-execution.simulator.simulator_engine.ExecutionSimulator.simulate()   -- Phase 60.3
+execution_layer.execution_engine.simulator.simulator_engine.ExecutionSimulator.simulate()   -- Phase 60.3
       |
-      +-- execution.simulator.spread.get_spread()/is_spread_too_wide()   -- TASK 4
-      +-- execution.simulator.slippage.compute_slippage()/apply_slippage()  -- TASK 3
-      +-- execution.simulator.latency.compute_latency()/apply_latency()     -- TASK 5
+      +-- execution_layer.execution_engine.simulator.spread.get_spread()/is_spread_too_wide()   -- TASK 4
+      +-- execution_layer.execution_engine.simulator.slippage.compute_slippage()/apply_slippage()  -- TASK 3
+      +-- execution_layer.execution_engine.simulator.latency.compute_latency()/apply_latency()     -- TASK 5
       |
       v
 ExecutionSimulationResult (filled=True + SimulatedFill, or filled=False + rejection_reason)
@@ -82,7 +82,7 @@ A spread at or above `SpreadConfig.max_points` rejects the order
 before any fill price is computed — `ExecutionSimulationResult.filled=False`,
 `fill=None`, `rejection_reason` set. This models a real broker's own
 max-spread guard (e.g. during a news spike) without inventing new risk
-logic — `risk/risk_manager.py` is completely untouched; this reject
+logic — `risk_layer/risk_engine/risk_manager.py` is completely untouched; this reject
 happens entirely inside the simulator, after Risk has already
 approved the trade.
 
@@ -94,27 +94,27 @@ approved the trade.
 
 ## API reference
 
-### `execution/simulator/models.py`
+### `execution_layer/execution_engine/simulator/models.py`
 - `SimulatedOrder(order_id, trade_id, symbol, direction, requested_price, lot_size, requested_at)` — frozen.
 - `SimulatedFill(fill_price, spread_points, slippage_points, latency_ms, filled_at)` — frozen.
 - `ExecutionSimulationResult(filled, order, fill=None, rejection_reason=None)` — frozen. Deliberately **not** named `ExecutionResult` — `execution_engine.py` already owns that name for its own, unrelated, still-inert dispatch stub.
 
-### `execution/simulator/slippage.py`
+### `execution_layer/execution_engine/simulator/slippage.py`
 - `SlippageConfig(points=0.10, max_points=0.50)`.
 - `compute_slippage(config=None) -> float`.
 - `apply_slippage(requested_price, direction, slippage_points) -> float`.
 
-### `execution/simulator/spread.py`
+### `execution_layer/execution_engine/simulator/spread.py`
 - `SpreadConfig(default_points=0.20, max_points=1.00, session_spreads={"LONDON": 0.15, "NY_NEWS": 0.80})`.
 - `get_spread(session, config=None) -> float`.
 - `is_spread_too_wide(spread_points, config=None) -> bool`.
 
-### `execution/simulator/latency.py`
+### `execution_layer/execution_engine/simulator/latency.py`
 - `LatencyConfig(execution_latency_ms=2000)`.
 - `compute_latency(config=None) -> int`.
 - `apply_latency(signal_time, latency_ms) -> datetime`.
 
-### `execution/simulator/simulator_engine.py`
+### `execution_layer/execution_engine/simulator/simulator_engine.py`
 - `ExecutionSimulator(slippage_config=None, spread_config=None, latency_config=None)`.
 - `.simulate(paper_trade, risk_result, session=None, signal_time=None) -> ExecutionSimulationResult`.
 
@@ -132,10 +132,10 @@ approved the trade.
 
 ## What this phase does NOT do
 
-- Does not call `execution/execution_engine.py`'s `ExecutionEngine` or
-  `execution/signal_lifecycle.py`'s `SignalLifecycle` — both remain
+- Does not call `execution_layer/execution_engine/execution_engine.py`'s `ExecutionEngine` or
+  `execution_layer/execution_monitor/signal_lifecycle.py`'s `SignalLifecycle` — both remain
   exactly as inert as before this phase.
-- Does not touch `decision/decision_engine.py` or `risk/risk_manager.py`
+- Does not touch `decision_layer/decision_engine/decision_engine.py` or `risk_layer/risk_engine/risk_manager.py`
   — every eligibility decision (APPROVE/REJECT, risk-approved) is made
   entirely upstream, unchanged; the simulator only decides fill-vs-reject
   on its own spread condition.
@@ -154,7 +154,7 @@ approved the trade.
 docs/EXECUTION_SIMULATOR.md (Phase 60.3 -- foundation, this document)
         |
         v
-execution/simulator/*.py, analytics/execution_report.py,
+execution_layer/execution_engine/simulator/*.py, analytics/execution_report.py,
 telegram/owner/execution_commands.py (Phase 60.3 -- real logic, not wired)
         |
         v

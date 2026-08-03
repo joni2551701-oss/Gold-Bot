@@ -38,9 +38,9 @@ core/pipeline.py -> data/, context/, signals/, ai/, decision/, risk/, telegram/,
 | `context/` | `core/` | `context_orchestrator.py` and others | logger, expected |
 | `context/` | `data/` | multiple | `Candle` type, expected (context consumes candles) |
 | `strategies/` | `context/` | all 3 strategy files | `ContextSnapshot` input, expected |
-| `strategies/` | `signals/` | `amd_strategy.py`, `fvg_strategy.py`, `liquidity_strategy.py`, `strategy_manager.py` | `signals.models.SignalCandidate`/`SignalType` — output type |
+| `strategies/` | `signals/` | `amd_strategy.py`, `fvg_strategy.py`, `liquidity_strategy.py`, `strategy_manager.py` | `signal_layer.signal_builder.models.SignalCandidate`/`SignalType` — output type |
 | `signals/` | `context/` | `signal_engine.py` (via `ContextSnapshot` param) | expected |
-| `signals/` | `strategies/` | `signal_engine.py` | `strategies.strategy_manager.StrategyManager` — orchestration call |
+| `signals/` | `strategies/` | `signal_engine.py` | `strategy_layer.strategy_manager.strategy_manager.StrategyManager` — orchestration call |
 | `ai/` | `context/` | `ai_analyzer.py`, `ai_prompt.py`, `confidence_model.py` | `ContextSnapshot` input, expected |
 | `ai/` | `core/` | `ai_analyzer.py` | logger, expected |
 | `decision/` | `ai/` | `decision_engine.py`, `models.py` | `AIAnalysisResult` input — `decision_engine.py`'s is `TYPE_CHECKING`-only |
@@ -62,13 +62,13 @@ core/pipeline.py -> data/, context/, signals/, ai/, decision/, risk/, telegram/,
 **One found: `strategies/` ↔ `signals/` (package level).**
 
 ```
-strategies/*.py  --imports-->  signals/models.py
-signals/signal_engine.py  --imports-->  strategies/strategy_manager.py
+strategies/*.py  --imports-->  signal_layer/signal_builder/models.py
+signal_layer/signal_engine/signal_engine.py  --imports-->  strategy_layer/strategy_manager/strategy_manager.py
 ```
 
 This is a **package-level** cycle, not a **module-level** one — the
-two specific submodules that get imported (`signals/models.py`,
-`strategies/strategy_manager.py`) do not import each other, so Python
+two specific submodules that get imported (`signal_layer/signal_builder/models.py`,
+`strategy_layer/strategy_manager/strategy_manager.py`) do not import each other, so Python
 resolves both import statements without a runtime `ImportError` today
 (re-verified this phase: the full 88-module import sweep passes
 clean). It is nonetheless a real mutual dependency between the two
@@ -90,8 +90,8 @@ otherwise a DAG.
   **zero** hard dependency on `signals/`/`ai/`, only a static-typing-
   time one. This is the loosest coupling in the entire graph and is
   worth calling out as a positive pattern other modules don't
-  currently follow (e.g. `risk/risk_manager.py` imports
-  `decision.models` at runtime, not `TYPE_CHECKING`-gated).
+  currently follow (e.g. `risk_layer/risk_engine/risk_manager.py` imports
+  `decision_layer.decision_engine.models` at runtime, not `TYPE_CHECKING`-gated).
 - **`database/signal_record.py`** is tightly coupled to three upstream
   layers' concrete types (`SignalCandidate`, `TradeDecision`,
   `RiskResult`) at runtime, not `TYPE_CHECKING`-gated — a schema
@@ -111,7 +111,7 @@ otherwise a DAG.
    submodule imports the other package's orchestration module *and*
    is itself imported by that same orchestration module. A future
    strategy that needs something from `signal_engine.py` (not just
-   `signals/models.py`) would create a real, hard circular import and
+   `signal_layer/signal_builder/models.py`) would create a real, hard circular import and
    fail at process start — this would surface immediately (not
    silently), but is worth pre-empting via the documentation fix in
    Architecture Audit recommendation #1 before it happens rather than

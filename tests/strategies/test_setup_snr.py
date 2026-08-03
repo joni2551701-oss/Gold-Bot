@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 from context_layer.liquidity.liquidity import LiquidityType
 
-from strategies.snr_strategy import SNRStrategy
-from strategies.result import StrategyDirection, SetupStatus
+from strategy_layer.strategy_library.snr_strategy import SNRStrategy
+from strategy_layer.strategy_engine.result import StrategyDirection, SetupStatus
 
 
 def _zone(price, ltype, start=0, end=2, strength=2):

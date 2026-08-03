@@ -9,7 +9,7 @@ future) monitored/recovered from the same way. **This is a
 foundation, not a retrofit.** No existing raise site is migrated to
 the new hierarchy in this phase — `core/secrets.py`'s existing bare
 `ValueError`, `assets.asset_registry.DuplicateAssetSymbolError`, and
-`strategies.lifecycle.strategy_registry.DuplicateStrategyIdError` are
+`strategy_layer.strategy_manager.lifecycle.strategy_registry.DuplicateStrategyIdError` are
 all untouched. This phase implements the hierarchy
 `contracts/error_contract.md` (Phase A17) specified but explicitly
 deferred as a future phase's job — this is that phase.

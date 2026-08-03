@@ -115,7 +115,7 @@ feature/platform ─┘
   a fresh `git merge-tree`.
 - For the known case (`BRANCH-FORENSICS-001`): the fix is a single
   `git mv` removing the U+2060 character from
-  `strategies/strategy_manager.py` on `main` — a normal forward commit,
+  `strategy_layer/strategy_manager/strategy_manager.py` on `main` — a normal forward commit,
   no history rewrite, no force-push — executed only under its Director
   Order (ORDER-010, queued).
 

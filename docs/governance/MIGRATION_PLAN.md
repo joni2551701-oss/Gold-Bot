@@ -26,7 +26,7 @@ the earlier `BRANCH-FORENSICS-001`:
 | Check | Result |
 |---|---|
 | **Repository Health** | Working tree clean; current branch `claude/trading-ai-arch-review-tgszrz`; 3 branches total (`main` @ `5618adec`, production `claude/code-analysis-optimization-pwfo3q` @ `d911b97`, working branch @ `45eee10`). |
-| **Branch Integrity** | `main` carries the corrupted path `strategies/strategy_manager.py⟨U+2060⟩`; the production branch and the working branch both carry the clean `strategies/strategy_manager.py`. File **content** is byte-identical on all three (same blob) — path-only defect. |
+| **Branch Integrity** | `main` carries the corrupted path `strategy_layer/strategy_manager/strategy_manager.py⟨U+2060⟩`; the production branch and the working branch both carry the clean `strategy_layer/strategy_manager/strategy_manager.py`. File **content** is byte-identical on all three (same blob) — path-only defect. |
 | **Git History Validation** | Merge-base of `main` and production = `ad1affe` (2026-07-12). `git merge-tree` reports **exactly one** rename/rename conflict (`strategy_manager.py`), for both `main`↔production and `main`↔working — no other conflict anywhere. |
 | **Rollback Readiness** | **Zero tags** locally and on the remote. No rollback anchor exists — creating anchors is the mandatory first mutating action of Phase 2. |
 
@@ -50,7 +50,7 @@ change, per `Branch_Protection_Policy.md` §7 /
    anything is touched.
 2. **Fix the Unicode filename on `main`** — a single content-neutral
    rename removing the trailing U+2060 character:
-   `git mv "strategies/strategy_manager.py⟨U+2060⟩" strategies/strategy_manager.py`
+   `git mv "strategy_layer/strategy_manager/strategy_manager.py⟨U+2060⟩" strategy_layer/strategy_manager/strategy_manager.py`
    on `main`, committed with a clear message, pushed to `main`. This is
    a normal forward commit — **no history rewrite, no force-push**
    (`Git_Workflow_Standard.md` §8).

@@ -118,8 +118,8 @@ that specific change:
   `UserRepository.get_user()`, etc.) stay stable unless a task
   explicitly asks for a signature change (`CLAUDE.md` Restrictions).
 
-Trading-critical files (`strategies/`, `signals/`, `risk/risk_manager.py`,
-`decision/decision_engine.py`, `execution/`) additionally require
+Trading-critical files (`strategies/`, `signals/`, `risk_layer/risk_engine/risk_manager.py`,
+`decision_layer/decision_engine/decision_engine.py`, `execution/`) additionally require
 explicit approval for *any* change, not just a large one — see
 `CLAUDE.md`'s Trading Safety section.
 

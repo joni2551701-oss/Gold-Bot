@@ -12,7 +12,7 @@ Governed by `docs/constitution/CONSTITUTION.md` and this repository's
 
 **No.** A repository-wide search for `Portfolio`/`PortfolioRecord`/
 `PortfolioRegistry`/`PortfolioManager`/`PortfolioRuntime` returns zero
-matches anywhere in the codebase. `risk/risk_manager.py` carries
+matches anywhere in the codebase. `risk_layer/risk_engine/risk_manager.py` carries
 `RiskConfig`/`RiskResult`/`RiskManager` — a genuine risk-sizing
 contract, but it operates per-trade (`lot_size`/`risk_amount`/
 `risk_reward` for a single signal), not per-portfolio, and it is
@@ -43,7 +43,7 @@ else in the codebase.
 ## Question 4 — Manager bormi?
 
 **No.** No `PortfolioManager` or equivalent orchestration class exists.
-`risk/risk_manager.py`'s `RiskManager` is the nearest conceptual
+`risk_layer/risk_engine/risk_manager.py`'s `RiskManager` is the nearest conceptual
 neighbor by name only — it manages per-trade risk sizing, not
 portfolio state, and is Trading Core (import forbidden by Rule 1).
 
@@ -98,7 +98,7 @@ model anywhere to consolidate — `ai/portfolio/` is a genuine gap.
 1. No Portfolio model exists anywhere in the codebase — `ai/portfolio/models.py`
    is a genuine new contract, not a duplicate.
 2. No Portfolio Runtime, Registry, or Manager exists anywhere.
-3. `risk/risk_manager.py`'s `RiskManager`/`RiskResult` are the nearest
+3. `risk_layer/risk_engine/risk_manager.py`'s `RiskManager`/`RiskResult` are the nearest
    conceptual neighbor by name only — per-trade, not per-portfolio, and
    Trading Core (import forbidden outright by Rule 1, the same
    absolute-ban conclusion `docs/PHASE66_6_AUDIT.md` already reached

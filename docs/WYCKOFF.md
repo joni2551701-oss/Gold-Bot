@@ -62,7 +62,7 @@ module does not import, wrap, or reuse `context_layer/amd/amd.py`'s function
 directly. Two reasons:
 
 1. `context_layer/amd/amd.py` already feeds a live, tested strategy
-   (`strategies/amd_strategy.py`). Touching it to share logic with a
+   (`strategy_layer/strategy_library/amd_strategy.py`). Touching it to share logic with a
    brand-new, unwired module would raise the blast radius of this
    foundation phase for no functional benefit — CLAUDE.md's "no
    unnecessary refactor" principle weighed against "no duplicate
@@ -134,7 +134,7 @@ this module.
 ## What this does NOT do
 
 - Does not generate a `BUY`/`SELL` signal, and is not itself a
-  strategy — no `strategies/wyckoff_strategy.py` was created, and no
+  strategy — no `strategy_layer/strategy_library/wyckoff_strategy.py` was created, and no
   existing `strategies/*.py` file was modified to read
   `WyckoffEvent`.
 - Does not implement full Wyckoff phase theory (Phase A/B/C/D/E
@@ -152,7 +152,7 @@ this module.
 
 ## Future expansion
 
-- **A `strategies/wyckoff_strategy.py`** (a future, separately-
+- **A `strategy_layer/strategy_library/wyckoff_strategy.py`** (a future, separately-
   approved phase) — registering it in `StrategyManager.__init__`'s
   strategy list is the natural next step once a Spring/Upthrust-based
   entry rule is explicitly scoped.
@@ -164,7 +164,7 @@ this module.
   `context_layer/order_block/order_block.py`, `context_layer/amd/amd.py`, and this module — not
   done here to avoid touching two already-tested,
   strategy-feeding files in a foundation-only phase.
-- **Signal Quality Score integration** — `signals/signal_quality.py`
+- **Signal Quality Score integration** — `signal_layer/signal_scoring/signal_quality.py`
   (Phase A4) could gain a `WYCKOFF_ALIGNED` criterion once a strategy
   consumes `WyckoffEvent`, following the exact extension mechanism
   `docs/SIGNAL_QUALITY.md` already documents for Session/Volume.

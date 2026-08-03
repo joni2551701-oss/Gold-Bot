@@ -85,7 +85,7 @@ third input).
 
 **What's genuinely missing**: everything — a `context_layer/wyckoff/wyckoff.py`
 (or new subpackage) detector, a `WyckoffPhase` enum, a
-`strategies/wyckoff_strategy.py`, and (if phase/Spring/UTAD detection
+`strategy_layer/strategy_library/wyckoff_strategy.py`, and (if phase/Spring/UTAD detection
 is meant to use volume) a volume data source, which does not exist in
 `data/` today. This is the largest single gap found in this audit.
 
@@ -96,7 +96,7 @@ is meant to use volume) a volume data source, which does not exist in
 Not one of Task 3's 12 named roadmap items, but explicitly asked about
 in the brief's Trading Context Audit section, so recorded here for
 completeness: `context_layer/amd/amd.py` (detector, 30% test coverage — lowest
-in the repo) and `strategies/amd_strategy.py` (candidate generator,
+in the repo) and `strategy_layer/strategy_library/amd_strategy.py` (candidate generator,
 37% coverage) both exist, are registered in `strategy_manager.py`, and
 do influence real `SignalCandidate` output — re-confirmed by reading
 `strategy_manager.py`'s `self.strategies` list this phase. Status:
@@ -210,7 +210,7 @@ change, out of scope for a specification-only phase to decide).
   `AIAnalysisResult.explanation`, `TradeDecision.reason`,
   `RiskResult.reason` are all populated at every stage
   (re-confirmed by reading `ai/ai_analyzer.py`,
-  `decision/decision_engine.py`, `risk/risk_manager.py` this phase) —
+  `decision_layer/decision_engine/decision_engine.py`, `risk_layer/risk_engine/risk_manager.py` this phase) —
   every REJECT/NO_TRADE/APPROVE already carries a human-readable why.
 - **What's missing**: no aggregated, queryable "explain this signal"
   view — the reason strings are attached to in-memory objects for one
@@ -239,7 +239,7 @@ change, out of scope for a specification-only phase to decide).
   Liquidity-Sweep candidate and an AMD candidate contribute their
   `SignalCandidate.confidence` identically, with no visibility into
   which methodology produced it), and no third "Risk Score" input
-  despite `decision/decision_engine.py` defining a `DecisionResult`
+  despite `decision_layer/decision_engine/decision_engine.py` defining a `DecisionResult`
   dataclass with a `risk_score` field — that field is **dead**, never
   populated or read (confirmed by grep: zero external references to
   `DecisionResult` anywhere in the codebase).

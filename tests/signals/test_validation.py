@@ -1,11 +1,11 @@
 """
 Phase A15 -- Signal Schema tests: validate_signal()
-(signals/schema.py).
+(signal_layer/signal_builder/schema.py).
 """
 
 from datetime import datetime, timezone
 
-from signals.schema import SignalSchema, generate_signal_id, validate_signal
+from signal_layer.signal_builder.schema import SignalSchema, generate_signal_id, validate_signal
 
 
 def _schema(**overrides):

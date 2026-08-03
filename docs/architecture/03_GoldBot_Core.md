@@ -22,12 +22,12 @@ Ecosystem-level summary and the one genuine finding this audit adds
 |---|---|---|
 | Market Engine | *(no separate module)* | Absorbed into `data/` (fetch) + `context/` (structure) |
 | Context Engine | `context_layer/context_engine/context_orchestrator.py` | Real, matches `ARCHITECTURE_MASTER.md` |
-| Analysis Engine | *(no separate module)* | Absorbed into `context/`'s detectors (Wyckoff/Regime/Session) + `signals/signal_quality.py` |
-| Strategy Engine | `strategies/strategy_manager.py` | Real |
-| Confluence Engine | *(no separate module)* | Confluence logic lives inside each strategy in `strategies/*.py`, reinforced by `signals/signal_quality.py` |
-| Decision Engine | `decision/decision_engine.py` | Real |
-| Risk Engine | `risk/risk_manager.py` | Real |
-| Signal Engine | `signals/signal_engine.py` | Real |
+| Analysis Engine | *(no separate module)* | Absorbed into `context/`'s detectors (Wyckoff/Regime/Session) + `signal_layer/signal_scoring/signal_quality.py` |
+| Strategy Engine | `strategy_layer/strategy_manager/strategy_manager.py` | Real |
+| Confluence Engine | *(no separate module)* | Confluence logic lives inside each strategy in `strategies/*.py`, reinforced by `signal_layer/signal_scoring/signal_quality.py` |
+| Decision Engine | `decision_layer/decision_engine/decision_engine.py` | Real |
+| Risk Engine | `risk_layer/risk_engine/risk_manager.py` | Real |
+| Signal Engine | `signal_layer/signal_engine/signal_engine.py` | Real |
 | Monitoring | `monitoring/` | Real, matches by name |
 | Simulation | `backtesting/` + `execution/simulator/` | Real, different name |
 

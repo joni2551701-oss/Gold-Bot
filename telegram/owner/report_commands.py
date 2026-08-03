@@ -29,7 +29,7 @@ from typing import Dict, Optional, Sequence
 
 from analytics.strategy_report import StrategyPerformanceReport, build_strategy_report, compute_win_rate
 from analytics.signal_performance import SignalPerformance
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 from telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
 

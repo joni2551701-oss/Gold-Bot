@@ -17,14 +17,14 @@ SignalCandidate
 ```
 
 ## Input
-`signals.signal_engine.SignalEngine` takes a `ContextSnapshot` (routes
+`signal_layer.signal_engine.signal_engine.SignalEngine` takes a `ContextSnapshot` (routes
 to `strategies.StrategyManager`).
-`signals.signal_quality.compute_signal_quality()` takes a
+`signal_layer.signal_scoring.signal_quality.compute_signal_quality()` takes a
 `SignalCandidate`, a `ContextSnapshot`, and an optional
 `HTFBiasResult`.
-`signals.explainability.explain_signal()` takes a `SignalCandidate`, a
+`signal_layer.signal_scoring.explainability.explain_signal()` takes a `SignalCandidate`, a
 `ContextSnapshot`, and an already-computed `SignalQualityResult`.
-`signals.adapter.from_signal_candidate()` (Phase A15) takes a
+`signal_layer.signal_builder.adapter.from_signal_candidate()` (Phase A15) takes a
 `SignalCandidate` (required) plus optional `SignalQualityResult`/
 `TradeDecision`/reference strings.
 
@@ -34,7 +34,7 @@ to `strategies.StrategyManager`).
 `criteria_total`) — one per candidate.
 `SignalExplanation` (`direction`, `reasons`, `quality`, `confidence`)
 — one per candidate.
-`signals.schema.SignalSchema` — the standard record: identity
+`signal_layer.signal_builder.schema.SignalSchema` — the standard record: identity
 (`signal_id`, `created_at`, `version`), `symbol`, `timeframe`,
 `direction`, price (`entry_price`, `stop_loss`, `take_profit`), a
 `context_id` reference, strategy info (`strategy_name`,
@@ -52,9 +52,9 @@ reference. See `docs/SIGNAL_SCHEMA.md` for the full field table.
 Explainability are advisory only; neither is consumed by these layers
 in this phase (`"quality_results"`/`"explanations"` travel only as
 far as `TradingPipeline.run()`'s result dict).
-❌ `database/`, `telegram/` — `signals/schema.py` imports only the
-standard library; `signals/adapter.py` adds `TYPE_CHECKING`-only
-`decision.models` for a type hint, never a runtime dependency (would
+❌ `database/`, `telegram/` — `signal_layer/signal_builder/schema.py` imports only the
+standard library; `signal_layer/signal_builder/adapter.py` adds `TYPE_CHECKING`-only
+`decision_layer.decision_engine.models` for a type hint, never a runtime dependency (would
 otherwise invert `decision/`'s own existing `signals/` import and
 create a cycle).
 
@@ -70,7 +70,7 @@ the model every module's own validation should follow: a
 `ValidationError` is a *result*, not a thrown exception, unless the
 caller explicitly needs a hard-fail lookup (see
 `assets.asset_registry.DuplicateAssetSymbolError`/
-`strategies.lifecycle.strategy_registry.DuplicateStrategyIdError` for
+`strategy_layer.strategy_manager.lifecycle.strategy_registry.DuplicateStrategyIdError` for
 the one legitimate raise-worthy case: a genuine programmer error,
 duplicate registration, not a data-quality issue).
 

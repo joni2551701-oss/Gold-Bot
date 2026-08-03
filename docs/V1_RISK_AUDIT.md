@@ -1,7 +1,7 @@
 # GoldBot V1.0 — Risk Management Audit
 
 Part of the Phase V1.0 GoldBot V1 Final Audit Foundation (Worker Brief,
-Director Approved). Scope: `risk/risk_manager.py` (`RiskManager.evaluate()`,
+Director Approved). Scope: `risk_layer/risk_engine/risk_manager.py` (`RiskManager.evaluate()`,
 a locked public signature) and `core_layer/emergency/` (emergency stop / kill
 switch). Read-only audit — per RULE 1 (Trading Core Protection), no
 change was made to `risk/` in this phase; findings below are reported
@@ -10,7 +10,7 @@ approval per CLAUDE.md's Trading Safety section.
 
 ## 1. Lot / position size calculation — PASS
 
-`risk/risk_manager.py:125-138` `calculate_position_size()`:
+`risk_layer/risk_engine/risk_manager.py:125-138` `calculate_position_size()`:
 `lot_size = risk_amount / stop_loss_distance`, guarded by
 `if stop_loss_distance <= 0: return 0.0`. `calculate_risk_amount()`
 (lines 113-123) guards `account_balance <= 0 or risk_percent <= 0 ->
@@ -42,8 +42,8 @@ before any sizing (line 67), rejects with a descriptive reason.
 `calculate_risk_reward()` (lines 140-153) computes RR and returns it in
 `RiskResult.risk_reward`, but `evaluate()` never compares it against a
 threshold — no `min_risk_reward` field exists in `RiskConfig`, and no
-rejection/downgrade branch exists in `risk/risk_manager.py` or
-`decision/decision_engine.py`. A geometrically valid signal with RR =
+rejection/downgrade branch exists in `risk_layer/risk_engine/risk_manager.py` or
+`decision_layer/decision_engine/decision_engine.py`. A geometrically valid signal with RR =
 0.1 is approved identically to one with RR = 5.0.
 
 **Scenario**: entry=2000, stop_loss=1990 (risk=10), take_profit=2001
@@ -72,8 +72,8 @@ introduced by this or any recent phase.
 
 ## 6. Duplicate trade prevention — FAIL (known, documented limitation)
 
-No open-position/duplicate-signal check exists in `risk/risk_manager.py`,
-`decision/decision_engine.py`, or `core/pipeline.py`.
+No open-position/duplicate-signal check exists in `risk_layer/risk_engine/risk_manager.py`,
+`decision_layer/decision_engine/decision_engine.py`, or `core/pipeline.py`.
 `RiskConfig.max_open_trades: int = 1` (line 12) is declared but never
 referenced anywhere outside its own declaration. `evaluate()` is
 stateless per call — it has no notion of currently-open trades.
@@ -158,7 +158,7 @@ independently re-verified in the Trading Pipeline Audit
 (`docs/PHASE_V1_AUDIT.md`). These are approval-logic and
 observability gaps, not user-facing safety failures.
 
-Per CLAUDE.md's Trading Safety rules, `risk/risk_manager.py` and
+Per CLAUDE.md's Trading Safety rules, `risk_layer/risk_engine/risk_manager.py` and
 `core_layer/emergency/` are locked; no fix is applied in this phase. These
 findings are carried into `docs/PHASE_V1_FREEZE.md`'s Known Issues /
 Remaining Risks section for the Director's explicit decision on

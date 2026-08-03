@@ -24,8 +24,8 @@ risk/ (STEP-10)  RiskOutcome(approved=True)
         ▼
 execution/execution_status.py   ── builds an ExecutionIntent (PENDING_MANUAL)
         │
-        ├─► execution/execution_engine.py (FROZEN INERT)   → "not implemented"
-        ├─► execution/signal_lifecycle.py (FROZEN INERT)   → "not implemented"
+        ├─► execution_layer/execution_engine/execution_engine.py (FROZEN INERT)   → "not implemented"
+        ├─► execution_layer/execution_monitor/signal_lifecycle.py (FROZEN INERT)   → "not implemented"
         │
         ▼
    ExecutionIntent(status=PENDING_MANUAL)  ──► database (STEP-12)  + platform (STEP-15)
@@ -45,8 +45,8 @@ Separately, backtesting-only (unchanged, Phase 60.3):
 
 | File | Role | Input | Output | Reads from | Passes to | New / Extend |
 |---|---|---|---|---|---|---|
-| `execution/execution_engine.py` | **FROZEN INERT** live-order stub | none | "not implemented" | — | — | **UNCHANGED** |
-| `execution/signal_lifecycle.py` | **FROZEN INERT** order-lifecycle stub | none | "not implemented" | — | — | **UNCHANGED** |
+| `execution_layer/execution_engine/execution_engine.py` | **FROZEN INERT** live-order stub | none | "not implemented" | — | — | **UNCHANGED** |
+| `execution_layer/execution_monitor/signal_lifecycle.py` | **FROZEN INERT** order-lifecycle stub | none | "not implemented" | — | — | **UNCHANGED** |
 | `execution/simulator/` | simulated fills for backtesting only | `PaperTrade`+`RiskResult` | `ExecutionSimulationResult` | lifecycle/risk | backtesting/analytics | **UNCHANGED** (Phase 60.3) |
 | `execution/execution_status.py` | `ExecutionStatus` vocab + `ExecutionIntent` model (manual-mode, no order) | `RiskOutcome` | `ExecutionIntent` | risk_model | database/platform | **new** (records intent, calls no broker) |
 | `execution/__init__.py` | export STEP-11 surface; restate inert boundary | — | — | — | — | **extend** |

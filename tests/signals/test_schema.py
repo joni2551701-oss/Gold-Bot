@@ -1,6 +1,6 @@
 """
 Phase A15 -- Signal Schema tests: creation and serialization
-(signals/schema.py).
+(signal_layer/signal_builder/schema.py).
 """
 
 import dataclasses
@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from signals.schema import SignalSchema, generate_signal_id
+from signal_layer.signal_builder.schema import SignalSchema, generate_signal_id
 
 
 def _schema(**overrides):

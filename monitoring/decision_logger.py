@@ -8,7 +8,7 @@ Decision: NO TRADE") -- this brief's own named future `66.5`/`66.6`
 Performance/Strategy Intelligence datasource. Never generates a
 signal, never decides a trade -- every field here is relayed from a
 caller who already computed it (e.g. via
-`signals.signal_quality.SignalQualityResult`, read type-only by the
+`signal_layer.signal_scoring.signal_quality.SignalQualityResult`, read type-only by the
 caller, never imported by this module -- see
 `docs/PHASE_CORE_MONITORING_AUDIT.md`'s own "signals/ and context/"
 section for why).

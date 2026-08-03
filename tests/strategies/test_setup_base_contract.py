@@ -6,9 +6,9 @@ always return a StrategyResult (never raise), and give a defined result
 for empty and invalid contexts.
 """
 
-from strategies.registry import DEFAULT_SETUP_STRATEGIES
-from strategies.base import SetupStrategy
-from strategies.result import StrategyResult, SetupStatus
+from strategy_layer.strategy_library.registry import DEFAULT_SETUP_STRATEGIES
+from strategy_layer.strategy_engine.base import SetupStrategy
+from strategy_layer.strategy_engine.result import StrategyResult, SetupStatus
 
 
 def _all():

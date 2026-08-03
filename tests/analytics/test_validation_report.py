@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 from analytics.signal_performance import SignalPerformance
 from analytics.validation_report import ValidationReport, build_validation_report, format_validation_report
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 
 P0 = datetime(2026, 8, 1, tzinfo=timezone.utc)
 P1 = datetime(2026, 8, 8, tzinfo=timezone.utc)

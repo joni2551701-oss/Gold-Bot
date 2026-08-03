@@ -11,15 +11,15 @@ from context_layer.trend.market_phase import compute_market_phase, MarketPhaseRe
 from context_layer.context_engine.snapshot import from_context_snapshot, ContextSnapshotSchema
 from features.feature_engine import compute_market_features
 from features.feature_model import MarketFeatures
-from signals.signal_engine import SignalEngine
-from signals.signal_quality import compute_signal_quality, SignalQualityResult
-from signals.explainability import explain_signal, SignalExplanation
-from signals.adapter import from_signal_candidate
-from signals.schema import SignalSchema
+from signal_layer.signal_engine.signal_engine import SignalEngine
+from signal_layer.signal_scoring.signal_quality import compute_signal_quality, SignalQualityResult
+from signal_layer.signal_scoring.explainability import explain_signal, SignalExplanation
+from signal_layer.signal_builder.adapter import from_signal_candidate
+from signal_layer.signal_builder.schema import SignalSchema
 from ai.ai_analyzer import AIAnalyzer, AIAnalysisResult
-from decision.decision_engine import DecisionEngine
-from decision.models import TradeDecision, DecisionAction
-from risk.risk_manager import RiskManager, RiskResult
+from decision_layer.decision_engine.decision_engine import DecisionEngine
+from decision_layer.decision_engine.models import TradeDecision, DecisionAction
+from risk_layer.risk_engine.risk_manager import RiskManager, RiskResult
 from telegram.signal_formatter import SignalFormatter
 from telegram.notifier import Notifier
 from database.signal_repository import SignalRepository
@@ -78,7 +78,7 @@ class TradingPipeline:
     Education consumer.
 
     Signal History (Pre-Phase 59 Architecture Readiness Review, AC-03,
-    signals/adapter.py + context_layer/context_engine/snapshot.py) builds one
+    signal_layer/signal_builder/adapter.py + context_layer/context_engine/snapshot.py) builds one
     ContextSnapshotSchema per cycle and one SignalSchema per candidate,
     with a real context_id (the cycle's ContextSnapshotSchema.snapshot_id)
     and a real decision_id (freshly generated per TradeDecision) --
@@ -114,7 +114,7 @@ class TradingPipeline:
     Returned in run()'s result dict ("features", one per candidate,
     same order as "signals") for a future consumer to use.
 
-    Explainability (Phase A9, signals/explainability.py) turns each
+    Explainability (Phase A9, signal_layer/signal_scoring/explainability.py) turns each
     signal candidate's already-computed context into human-readable
     reasons -- reusing Signal Quality's criteria_met plus Wyckoff/
     Session/Market Regime, no new detection logic, no new confidence
@@ -135,7 +135,7 @@ class TradingPipeline:
     consume (e.g. skipping a cycle below some quality threshold -- not
     implemented here).
 
-    Signal Quality Score (Phase A4, signals/signal_quality.py) grades
+    Signal Quality Score (Phase A4, signal_layer/signal_scoring/signal_quality.py) grades
     each signal candidate's alignment with HTF Bias and existing
     context (Structure, Liquidity, Order Blocks, FVG) into a letter
     grade (A+/A/B/C). Purely advisory, like HTF Bias was before Phase
@@ -485,7 +485,7 @@ class TradingPipeline:
         # signal_quality/decision are relayed from the already-computed
         # SignalQualityResult/TradeDecision, never recomputed.
         # strategy_name already carries the real strategy identifier
-        # (matching strategies.lifecycle.strategy_registry.StrategyDefinition.id),
+        # (matching strategy_layer.strategy_manager.lifecycle.strategy_registry.StrategyDefinition.id),
         # so no separate "strategy_id" field was needed. Not written to
         # the database in this phase -- the link now exists and is
         # returned in run()'s result dict, ready for a future,
@@ -560,7 +560,7 @@ class TradingPipeline:
         # itself is skipped (EmergencyState.PAUSED, or ENABLE_EXECUTION
         # disabled). See pipeline_guard.py's own "Disclosed Findings"
         # for why "execution" maps to Telegram delivery here, not to
-        # execution/execution_engine.py (untouched, still inert).
+        # execution_layer/execution_engine/execution_engine.py (untouched, still inert).
         execution_decision = self.pipeline_guard.before_execution()
         if execution_decision.abort:
             logger.warning(f"[{self.symbol}|{self.interval}] pipeline_aborted stage=execution reason={execution_decision.reason}")

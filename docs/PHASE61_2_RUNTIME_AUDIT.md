@@ -45,15 +45,15 @@ ai/context/context_builder.py  :: from signals.schema import SignalSchema
 `data/ -> context/ -> strategies/ -> signals/ -> ai/ -> decision/ ->
 risk/ -> telegram/ -> database/` and "A layer talks to the layer
 immediately below it" — `signals/` is the layer immediately below
-`ai/` in that chain, so `ai/` importing `signals.models`/
-`signals.schema` is the architecturally *correct*, intended
+`ai/` in that chain, so `ai/` importing `signal_layer.signal_builder.models`/
+`signal_layer.signal_builder.schema` is the architecturally *correct*, intended
 relationship, not a boundary violation. Every one of these six sites
 predates this phase (`ai/ai_analyzer.py` since Phase 6.0.1,
 `ai/context/context_snapshot.py` since Phase 61.0 TASK 5) and reads
 `SignalCandidate`/`SignalSchema` only — never writes to `signals/`,
 never calls a strategy, never generates a signal itself. This is the
 same distinction Phase 61.0's own TASK 1 audit already drew for
-`ai/ai_analyzer.py` importing `signals.models`.
+`ai/ai_analyzer.py` importing `signal_layer.signal_builder.models`.
 
 ## strategies/ — genuinely zero
 

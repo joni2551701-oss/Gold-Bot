@@ -1,7 +1,7 @@
 # STEP-10 — `risk/` Layer Architecture Specification
 
 > **DOCUMENTATION ONLY.** Blueprint for the risk step. No code here.
-> `risk/risk_manager.py` is a **FROZEN Trading-Safety module** — its
+> `risk_layer/risk_engine/risk_manager.py` is a **FROZEN Trading-Safety module** — its
 > geometry validation and sizing formulas are never modified. STEP-10 is
 > an **additive gateway** that *reuses* `RiskManager.evaluate()`.
 
@@ -24,9 +24,9 @@ decision/decision_router.route(outcome)   [RISK present only if APPROVE]
         ▼
 risk/risk_gateway.py  ── maps DecisionOutcome→RiskManager input, REUSES evaluate()
         │
-        ├─► risk/risk_manager.py (FROZEN)        geometry + sizing  → RiskResult
-        ├─► risk/account_state_tracker.py (exists) drawdown / daily-loss state
-        ├─► risk/duplicate_checker.py   (exists)  duplicate-trade gate
+        ├─► risk_layer/risk_engine/risk_manager.py (FROZEN)        geometry + sizing  → RiskResult
+        ├─► risk_layer/risk_engine/account_state_tracker.py (exists) drawdown / daily-loss state
+        ├─► risk_layer/risk_validator/duplicate_checker.py   (exists)  duplicate-trade gate
         ▼
    RiskOutcome(status, approved, lot_size, risk_amount, risk_reward, reasons)
         │
@@ -37,7 +37,7 @@ risk/risk_gateway.py  ── maps DecisionOutcome→RiskManager input, REUSES ev
 ## 3. Input / Output
 
 - **Input:** `DecisionOutcome` (APPROVE), the `CanonicalSignal`
-  (`signals.schema.SignalSchema`) it references, optional `account_balance`
+  (`signal_layer.signal_builder.schema.SignalSchema`) it references, optional `account_balance`
   / account state.
 - **Output:** `RiskOutcome` — reuses the frozen `RiskResult` fields
   (`approved`, `lot_size`, `risk_amount`, `risk_reward`, `reason`) plus a
@@ -47,9 +47,9 @@ risk/risk_gateway.py  ── maps DecisionOutcome→RiskManager input, REUSES ev
 
 | File | Role | Input | Output | Reads from | Passes to | New / Extend |
 |---|---|---|---|---|---|---|
-| `risk/risk_manager.py` | **FROZEN** geometry + sizing | `TradeDecision` + balance | `RiskResult` | decision models | gateway | **UNCHANGED** |
-| `risk/account_state_tracker.py` | drawdown/daily-loss state | account state | pass/pause | database (state) | gateway | reuse (extend only if a new counter is approved) |
-| `risk/duplicate_checker.py` | duplicate-trade gate | recent trades | allow/block | database | gateway | reuse |
+| `risk_layer/risk_engine/risk_manager.py` | **FROZEN** geometry + sizing | `TradeDecision` + balance | `RiskResult` | decision models | gateway | **UNCHANGED** |
+| `risk_layer/risk_engine/account_state_tracker.py` | drawdown/daily-loss state | account state | pass/pause | database (state) | gateway | reuse (extend only if a new counter is approved) |
+| `risk_layer/risk_validator/duplicate_checker.py` | duplicate-trade gate | recent trades | allow/block | database | gateway | reuse |
 | `risk/risk_status.py` | verdict vocab `APPROVED/REJECTED/PAUSED/BLOCKED` + mapping from `RiskResult` | `RiskResult` | `RiskStatus` | risk_manager | model | **new** (mirrors `decision_status.py`) |
 | `risk/risk_model.py` | `RiskOutcome` frozen dataclass (`to_dict`/`to_json`) | gateway fields | `RiskOutcome` | risk_status | database/platform | **new** (mirrors `decision_model.py`) |
 | `risk/risk_gateway.py` | orchestrator: `DecisionOutcome`→`RiskManager` input, REUSE `evaluate()`, apply account/duplicate gates, build `RiskOutcome` | `DecisionOutcome` + signal + balance | `RiskOutcome` | risk_manager, trackers | database/platform | **new** (name sits beside the frozen `risk_manager.py`) |
@@ -64,7 +64,7 @@ risk/risk_gateway.py  ── maps DecisionOutcome→RiskManager input, REUSES ev
   formula change.
 
 ### Existing files NEVER touched
-- `risk/risk_manager.py` — geometry + `calculate_risk_amount` /
+- `risk_layer/risk_engine/risk_manager.py` — geometry + `calculate_risk_amount` /
   `calculate_position_size` / `calculate_risk_reward` are Trading-Safety
   frozen.
 

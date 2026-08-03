@@ -10,7 +10,7 @@ from lifecycle.signal_state import (
     derive_signal_lifecycle_state,
     transition_signal_state,
 )
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 
 
 def _signal(**overrides) -> SignalSchema:

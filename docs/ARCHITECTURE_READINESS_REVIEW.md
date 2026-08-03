@@ -49,7 +49,7 @@ functions it reuses/`confidence`). It generates no signal — see
 `context_layer/trend/htf_bias.py`'s own module docstring and
 `contracts/context_contract.md`.
 
-`decision/decision_engine.py` already imports `HTFBias`/`HTFBiasResult`
+`decision_layer/decision_engine/decision_engine.py` already imports `HTFBias`/`HTFBiasResult`
 and uses it as one of Decision Engine v2's four weighted inputs (Phase
 A3) — `core/pipeline.py`'s `evaluate(candidate, ai_result, htf_bias)`
 call. No further work needed.
@@ -103,12 +103,12 @@ consumed by any strategy, AI, Decision, or Risk. This is exactly the
 
 **Verified: the two schemas existed independently; the link did not — wired in this review. This was the real gap.**
 
-Before this review: `signals/schema.py`'s `SignalSchema.context_id`
+Before this review: `signal_layer/signal_builder/schema.py`'s `SignalSchema.context_id`
 (Phase A15) and `context_layer/context_engine/snapshot.py`'s `ContextSnapshotSchema` (Phase
 A16) both existed as complete, tested, documented models — but
 nothing in production code ever set `context_id` to a real value.
 Grepping the codebase confirmed `context_id` was populated only in
-test files; the one production call site (`signals/adapter.py`)
+test files; the one production call site (`signal_layer/signal_builder/adapter.py`)
 simply passed through a caller-supplied parameter that defaulted to
 (and always was) `None`.
 
@@ -134,13 +134,13 @@ Signal
  |
  +-- strategy_id    -- SignalSchema.strategy_name already carries this
  |                      (the real value, e.g. "LIQUIDITY_SWEEP_STRATEGY",
- |                      matching strategies.lifecycle.strategy_registry
+ |                      matching strategy_layer.strategy_manager.lifecycle.strategy_registry
  |                      .StrategyDefinition.id, Phase A11) -- no new
  |                      field needed
  |
  +-- decision_id    -- a new SignalSchema field (this review), a
                         fresh id generated per TradeDecision
-                        (decision.models.TradeDecision has no id
+                        (decision_layer.decision_engine.models.TradeDecision has no id
                         field of its own; core/pipeline.py generates
                         this one, not TradeDecision)
 ```
@@ -180,7 +180,7 @@ needed.
 
 **Verified: already exists.**
 
-`strategies/lifecycle/` (Phase A11): `StrategyDefinition(id, name,
+`strategy_layer/strategy_manager/lifecycle/` (Phase A11): `StrategyDefinition(id, name,
 version, status, ...)`, `StrategyStatus(TESTING/ACTIVE/DISABLED/
 DEPRECATED)` — exactly the fields and states the Director's example
 named. `StrategyRegistry.active()` already supports the "which
@@ -240,7 +240,7 @@ review.
 
 ## Explainability — confirmed 🟢
 
-`signals/explainability.py` (Phase A9) already produces exactly the
+`signal_layer/signal_scoring/explainability.py` (Phase A9) already produces exactly the
 shape the Director's example showed: `direction`, `reasons` (a list —
 "H4 bullish structure", "Liquidity sweep", "FVG reaction", session
 context, Market Regime), `quality`, `confidence`. Matches the

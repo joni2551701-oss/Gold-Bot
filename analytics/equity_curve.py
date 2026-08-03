@@ -12,7 +12,7 @@ documented, *visualization-only* assumption to bridge that gap:
 `EquityCurveConfig.unit_risk_amount` — a configurable dollar value
 representing "1R" — converts each trade's already-computed
 `r_multiple` (real, from `compute_r_multiple()`) into a dollar delta.
-This is not a sizing or PnL computation, and `risk/risk_manager.py`
+This is not a sizing or PnL computation, and `risk_layer/risk_engine/risk_manager.py`
 is completely untouched — it exists only so this module can render an
 equity curve shape, the same disclosed-assumption posture
 `backtesting/backtest_engine.py`'s own HTF-neutral-fallback used in

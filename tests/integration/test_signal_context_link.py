@@ -9,7 +9,7 @@ code) to verify core/pipeline.py's wiring end to end, not just the
 underlying signals.adapter/context.snapshot units in isolation.
 """
 
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 from context_layer.context_engine.snapshot import ContextSnapshotSchema
 from context_layer.trend.market_phase import MarketPhaseResult
 

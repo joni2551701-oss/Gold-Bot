@@ -13,7 +13,7 @@ Risk Manager before it can ever reach a user — see
 ## Input
 `context.context_orchestrator.ContextSnapshot` (each
 `strategies/*.py` file's `analyze(context)` method).
-`strategies.strategy_manager.StrategyManager.run_all_strategies(context)`
+`strategy_layer.strategy_manager.strategy_manager.StrategyManager.run_all_strategies(context)`
 runs every registered strategy against the same `ContextSnapshot` and
 aggregates their output.
 

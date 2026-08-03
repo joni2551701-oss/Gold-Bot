@@ -21,11 +21,11 @@ Explicitly OUT of scope for this phase:
 
 
 def test_signal_layer_imports_cleanly():
-    from signals.signal_engine import SignalEngine
-    from strategies.strategy_manager import StrategyManager
-    from strategies.liquidity_strategy import LiquidityStrategy
-    from strategies.fvg_strategy import FVGStrategy
-    from strategies.amd_strategy import AMDStrategy
+    from signal_layer.signal_engine.signal_engine import SignalEngine
+    from strategy_layer.strategy_manager.strategy_manager import StrategyManager
+    from strategy_layer.strategy_library.liquidity_strategy import LiquidityStrategy
+    from strategy_layer.strategy_library.fvg_strategy import FVGStrategy
+    from strategy_layer.strategy_library.amd_strategy import AMDStrategy
 
     # Referencing every imported name is the actual assertion here --
     # a successful, non-empty import chain with no ModuleNotFoundError.
@@ -34,9 +34,9 @@ def test_signal_layer_imports_cleanly():
 
 
 def test_individual_strategies_instantiate():
-    from strategies.liquidity_strategy import LiquidityStrategy
-    from strategies.fvg_strategy import FVGStrategy
-    from strategies.amd_strategy import AMDStrategy
+    from strategy_layer.strategy_library.liquidity_strategy import LiquidityStrategy
+    from strategy_layer.strategy_library.fvg_strategy import FVGStrategy
+    from strategy_layer.strategy_library.amd_strategy import AMDStrategy
 
     assert LiquidityStrategy() is not None
     assert FVGStrategy() is not None
@@ -44,11 +44,11 @@ def test_individual_strategies_instantiate():
 
 
 def test_signal_engine_wires_strategy_manager_with_all_three_strategies():
-    from signals.signal_engine import SignalEngine
-    from strategies.strategy_manager import StrategyManager
-    from strategies.liquidity_strategy import LiquidityStrategy
-    from strategies.fvg_strategy import FVGStrategy
-    from strategies.amd_strategy import AMDStrategy
+    from signal_layer.signal_engine.signal_engine import SignalEngine
+    from strategy_layer.strategy_manager.strategy_manager import StrategyManager
+    from strategy_layer.strategy_library.liquidity_strategy import LiquidityStrategy
+    from strategy_layer.strategy_library.fvg_strategy import FVGStrategy
+    from strategy_layer.strategy_library.amd_strategy import AMDStrategy
 
     engine = SignalEngine()
 

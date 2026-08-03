@@ -488,7 +488,7 @@ strategy is performing how?). New `ai/strategy/` subpackage (inside
 the existing `ai/` top-level package, confirmed by
 `docs/PHASE66_6_AUDIT.md`'s TASK 0 audit, which found a genuine,
 mature Strategy metadata contract already at
-`strategies.lifecycle.{strategy_model,strategy_status,strategy_registry}`
+`strategy_layer.strategy_manager.lifecycle.{strategy_model,strategy_status,strategy_registry}`
 -- but this brief's own Rule 1 bans `ai/` from importing `strategies/`
 at all, making a new, independent model the only constitutionally
 legal outcome, a stricter conclusion than every prior `66.x` naming
@@ -524,7 +524,7 @@ in?). New `ai/portfolio/` subpackage (inside the existing `ai/`
 top-level package, confirmed by `docs/PHASE66_7_AUDIT.md`'s TASK 0
 audit, which found no pre-existing Portfolio model, Runtime, Registry,
 or Manager anywhere in the codebase --
-`risk.risk_manager.RiskResult`/`RiskManager` are the nearest
+`risk_layer.risk_engine.risk_manager.RiskResult`/`RiskManager` are the nearest
 conceptual neighbor by name only, a per-trade sizing contract rather
 than a per-portfolio one, and Trading Core -- import forbidden
 outright by this brief's own Rule 1, the same absolute-ban conclusion

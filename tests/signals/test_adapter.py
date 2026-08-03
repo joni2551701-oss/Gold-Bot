@@ -1,6 +1,6 @@
 """
 Phase A15 -- Signal Schema tests: backward-compatibility adapter
-(signals/adapter.py).
+(signal_layer/signal_builder/adapter.py).
 
 Confirms an existing SignalCandidate (produced by any real
 strategies/*.py file, unmodified by this phase) converts cleanly into
@@ -9,11 +9,11 @@ objects (SignalQualityResult, TradeDecision) populates more fields --
 never recomputing any of them.
 """
 
-from signals.models import SignalCandidate, SignalType
-from signals.signal_quality import SignalQualityResult, QualityGrade
-from signals.adapter import from_signal_candidate
-from signals.schema import validate_signal
-from decision.models import TradeDecision, DecisionAction
+from signal_layer.signal_builder.models import SignalCandidate, SignalType
+from signal_layer.signal_scoring.signal_quality import SignalQualityResult, QualityGrade
+from signal_layer.signal_builder.adapter import from_signal_candidate
+from signal_layer.signal_builder.schema import validate_signal
+from decision_layer.decision_engine.models import TradeDecision, DecisionAction
 from ai.ai_analyzer import AIAnalysisResult
 
 
@@ -98,7 +98,7 @@ def test_adapter_accepts_explicit_references_and_overrides():
 def test_adapter_strategy_name_doubles_as_strategy_id():
     """
     No separate strategy_id field was added -- strategy_name already
-    carries the real strategies.lifecycle.strategy_registry.StrategyDefinition.id
+    carries the real strategy_layer.strategy_manager.lifecycle.strategy_registry.StrategyDefinition.id
     value (Phase A11), satisfying the Architecture Readiness Review's
     AC-03 "strategy_id" reference under an existing, established name.
     """
@@ -152,12 +152,12 @@ def test_existing_signal_candidate_and_strategies_are_untouched():
     """
     The adapter is purely additive -- constructing a SignalCandidate
     the exact way every real strategies/*.py file already does must
-    keep working identically, unaffected by signals/schema.py or
-    signals/adapter.py existing.
+    keep working identically, unaffected by signal_layer/signal_builder/schema.py or
+    signal_layer/signal_builder/adapter.py existing.
     """
-    from strategies.liquidity_strategy import LiquidityStrategy
-    from strategies.fvg_strategy import FVGStrategy
-    from strategies.amd_strategy import AMDStrategy
+    from strategy_layer.strategy_library.liquidity_strategy import LiquidityStrategy
+    from strategy_layer.strategy_library.fvg_strategy import FVGStrategy
+    from strategy_layer.strategy_library.amd_strategy import AMDStrategy
 
     assert LiquidityStrategy().analyze
     assert FVGStrategy().analyze

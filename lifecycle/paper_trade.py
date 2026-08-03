@@ -11,12 +11,12 @@ real order. This module is the standard shape for that simulation:
 PaperTrade never calls a broker, never places a real order, and never
 changes risk sizing -- see "What this module does NOT do" below.
 
-Distinct from execution/execution_engine.py and
-execution/signal_lifecycle.py (both pre-existing, both untouched by
+Distinct from execution_layer/execution_engine/execution_engine.py and
+execution_layer/execution_monitor/signal_lifecycle.py (both pre-existing, both untouched by
 this phase): those live in the Trading-Safety-protected execution/
 package, are both deliberately inert stubs (ExecutionEngine.dispatch()
 and SignalLifecycle.transition() each always return a "Not
-implemented" result), and execution/signal_lifecycle.py's own
+implemented" result), and execution_layer/execution_monitor/signal_lifecycle.py's own
 SignalState enum (CREATED/SENT/ACKNOWLEDGED/CLOSED) describes Telegram
 message delivery, not a trade's own lifecycle. PaperTrade is a new,
 separate, simulation-only concept in a new top-level package -- it
@@ -48,7 +48,7 @@ from typing import TYPE_CHECKING, Optional
 from lifecycle.trade_state import TradeState
 
 if TYPE_CHECKING:
-    from signals.schema import SignalSchema
+    from signal_layer.signal_builder.schema import SignalSchema
 
 # The Phase 59 Validation Report's own Result vocabulary
 # (docs/PHASE59_VALIDATION.md's "Result" section: TP/SL/BE/expired) --

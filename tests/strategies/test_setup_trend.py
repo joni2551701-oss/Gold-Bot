@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 from context_layer.market_structure.market_structure import StructureType
 
-from strategies.trend_strategy import TrendStrategy
-from strategies.result import StrategyDirection, SetupStatus
+from strategy_layer.strategy_library.trend_strategy import TrendStrategy
+from strategy_layer.strategy_engine.result import StrategyDirection, SetupStatus
 
 
 def _regime(name, direction, conf=85.0):

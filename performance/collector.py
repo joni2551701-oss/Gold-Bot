@@ -17,7 +17,7 @@ class PerformanceCollector:
     A plain, in-memory list of PerformanceMetric records. Not a
     singleton -- each PerformanceCollector() is independent, so
     tests/future callers never leak state into one another (same
-    convention as strategies.lifecycle.strategy_registry.StrategyRegistry/
+    convention as strategy_layer.strategy_manager.lifecycle.strategy_registry.StrategyRegistry/
     assets.asset_registry.AssetRegistry).
     """
 

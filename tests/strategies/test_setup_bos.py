@@ -5,8 +5,8 @@ from types import SimpleNamespace
 from context_layer.market_structure.bos import BosDirection
 from context_layer.market_structure.choch import ChochDirection
 
-from strategies.bos_strategy import BOSStrategy
-from strategies.result import StrategyDirection, SetupStatus
+from strategy_layer.strategy_library.bos_strategy import BOSStrategy
+from strategy_layer.strategy_engine.result import StrategyDirection, SetupStatus
 
 
 def _bos(index, direction, price=110.0):

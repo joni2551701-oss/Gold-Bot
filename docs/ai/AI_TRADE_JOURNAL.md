@@ -28,7 +28,7 @@ BUY/SELL/NO_TRADE verdict, never opens a trade, and never touches
 
 `ai/journal/trade_journal.py`'s own `TradeJournalEntry` (Phase 55) is
 a different, Trading-Core-coupled type (imports
-`signals.models.SignalType`, predates Constitution Article 3) —
+`signal_layer.signal_builder.models.SignalType`, predates Constitution Article 3) —
 structurally different from this phase's own contract and left
 untouched. `ai/journal/failure_analysis.py`'s `FailureAnalysisEntry`
 (Phase 59) is narrower (failure-only). `learning/models.py`'s

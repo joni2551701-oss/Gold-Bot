@@ -7,7 +7,7 @@ advisory only, per core_layer.emergency.emergency_state.EmergencyState's
 own docstring).
 """
 
-from decision.decision_engine import DecisionEngine
+from decision_layer.decision_engine.decision_engine import DecisionEngine
 
 
 def _decision(candidate, ai_result):
@@ -93,7 +93,7 @@ def test_paused_still_rejects_geometrically_invalid_signal_for_the_same_reason(
 
 
 def test_default_emergency_manager_reads_real_repository_and_defaults_to_normal(isolated_db):
-    from risk.risk_manager import RiskManager
+    from risk_layer.risk_engine.risk_manager import RiskManager
 
     manager = RiskManager()
     status = manager.emergency_manager.get_status()

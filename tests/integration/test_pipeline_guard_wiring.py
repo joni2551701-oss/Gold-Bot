@@ -24,7 +24,7 @@ from core_layer.pipeline import TradingPipeline
 from core_layer.emergency.emergency_state import EmergencyState, create_emergency_state_record
 from core_layer.pipeline.pipeline_guard import GuardDecision, PipelineGuard
 from data_layer.live_data.market_data import MarketSnapshot
-from decision.models import DecisionAction
+from decision_layer.decision_engine.models import DecisionAction
 
 
 class _StubEmergencyManager:

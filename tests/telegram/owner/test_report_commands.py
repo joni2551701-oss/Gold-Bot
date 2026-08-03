@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 from analytics.signal_performance import SignalPerformance
 from analytics.strategy_report import build_strategy_report
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 from telegram.owner.provider_commands import ProviderCommandResult
 from telegram.owner.report_commands import format_daily_stats, get_validation_summary, pick_best_strategy
 

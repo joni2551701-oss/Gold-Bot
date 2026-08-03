@@ -1,5 +1,5 @@
 """
-Phase A9 -- Explainability Layer foundation tests (signals/explainability.py).
+Phase A9 -- Explainability Layer foundation tests (signal_layer/signal_scoring/explainability.py).
 
 No mocking -- real ContextSnapshot/SignalQualityResult/WyckoffEvent/
 SessionEvent/MarketRegimeResult objects, same convention as
@@ -8,14 +8,14 @@ tests/unit/test_signal_quality.py and tests/context/test_market_regime.py.
 
 from datetime import datetime, timezone
 
-from signals.explainability import explain_signal, SignalExplanation
-from signals.signal_quality import SignalQualityResult, QualityGrade
+from signal_layer.signal_scoring.explainability import explain_signal, SignalExplanation
+from signal_layer.signal_scoring.signal_quality import SignalQualityResult, QualityGrade
 from context_layer.context_engine.context_orchestrator import ContextSnapshot
 from context_layer.wyckoff.wyckoff import WyckoffEvent, WyckoffEventType, WyckoffPhase
 from context_layer.liquidity.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
 from context_layer.session.session import Session, SessionEvent
 from context_layer.trend.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
-from signals.models import SignalType
+from signal_layer.signal_builder.models import SignalType
 
 TS = datetime(2024, 1, 1, tzinfo=timezone.utc)
 

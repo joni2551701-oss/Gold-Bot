@@ -2,7 +2,7 @@
 Knowledge Foundation — Risk entries (Phase 61.3, TASK 3).
 
 Restates `risk/README.md` and `CLAUDE.md`'s own Trading Safety rules --
-what `risk.risk_manager.RiskManager.evaluate()` actually validates, not
+what `risk_layer.risk_engine.risk_manager.RiskManager.evaluate()` actually validates, not
 generic risk-management theory. No entry here describes a number this
 codebase does not already enforce.
 """

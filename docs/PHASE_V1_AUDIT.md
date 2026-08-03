@@ -91,7 +91,7 @@ actual import failure results).
 
 ### Layer violations found
 
-1. `risk/risk_manager.py:4` imports `signals.models` directly
+1. `risk_layer/risk_engine/risk_manager.py:4` imports `signal_layer.signal_builder.models` directly
    (`SignalCandidate`, `SignalType`), used in `validate_geometry()`.
    `MODULE_DEPENDENCIES.md` documents `risk_manager.py` as depending
    only on `decision/`, `core/` — this is an undocumented
@@ -100,8 +100,8 @@ actual import failure results).
    types, not new business logic), but the docs need updating to
    match reality, or the import needs re-routing through `decision/`'s
    own re-exported types.
-2. `database/signal_record.py:5-7` imports `signals.models`,
-   `decision.models`, `risk.risk_manager.RiskResult` — reaches three
+2. `database/signal_record.py:5-7` imports `signal_layer.signal_builder.models`,
+   `decision_layer.decision_engine.models`, `risk_layer.risk_engine.risk_manager.RiskResult` — reaches three
    layers up from the documented bottom-most layer. Used by
    `core/pipeline.py` as the composition root's persistence-shape
    type. A documentation gap in `MODULE_DEPENDENCIES.md`'s Database
@@ -135,8 +135,8 @@ recommended follow-up documentation-sync task (not a code change).
 `grep -rn "^from decision\|^from risk\|^from execution\|^import decision\|^import risk\|^import execution" ai/`
 (the exact command `IMPORT_RULES.md` itself prescribes) returns **zero
 results** across all 182 non-test `.py` files in `ai/` — independently
-re-run and confirmed during this audit. `decision/decision_engine.py`'s
-only `ai/` import is `TYPE_CHECKING`-guarded; `decision/models.py`'s
+re-run and confirmed during this audit. `decision_layer/decision_engine/decision_engine.py`'s
+only `ai/` import is `TYPE_CHECKING`-guarded; `decision_layer/decision_engine/models.py`'s
 `AIAnalysisResult` import is the one documented value-only exception.
 
 ### `telegram/handlers.py`-never-touches-repository-directly rule — PASS, confirmed
@@ -224,8 +224,8 @@ flagged as Known Issues.
 ## TASK 4 — Execution Audit
 
 **Confirmed: Execution is a simulator-only layer. No live broker
-integration exists anywhere in the codebase.** `execution/execution_engine.py`
-and `execution/signal_lifecycle.py` are deliberately inert stubs
+integration exists anywhere in the codebase.** `execution_layer/execution_engine/execution_engine.py`
+and `execution_layer/execution_monitor/signal_lifecycle.py` are deliberately inert stubs
 (both unconditionally return "not implemented," per their own
 docstrings). The real logic lives in `execution/simulator/`
 (`ExecutionSimulator.simulate()`, spread/slippage/latency models),
@@ -279,7 +279,7 @@ a genuine cross-boundary call. A separate search for
 `approve_trade`/`reject_trade`/`place_order`/`send_signal`/`execute`-named
 functions anywhere in `ai/` returned **zero matches**.
 
-Confirmed the real call direction: `decision/decision_engine.py`
+Confirmed the real call direction: `decision_layer/decision_engine/decision_engine.py`
 **calls into** `ai/` (consumes `AIAnalysisResult` as one input among
 several to `_weighted_score()`), not the reverse — `DecisionEngine`
 itself computes and owns the final APPROVE/REJECT/NO_TRADE action.

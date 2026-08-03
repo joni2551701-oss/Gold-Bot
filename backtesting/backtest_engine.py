@@ -96,16 +96,16 @@ from context_layer.trend.htf_bias import HTFBiasResult, compute_htf_bias
 from context_layer.trend.market_phase import compute_market_phase
 from context_layer.context_engine.snapshot import from_context_snapshot
 from data_layer.live_data.market_data import MarketSnapshot
-from decision.decision_engine import DecisionEngine
-from decision.models import DecisionAction
+from decision_layer.decision_engine.decision_engine import DecisionEngine
+from decision_layer.decision_engine.models import DecisionAction
 from lifecycle.paper_trade import create_paper_trade, open_paper_trade
 from lifecycle.paper_trade_monitor import check_paper_trade_against_candles
 from lifecycle.trade_state import TradeState
 from learning.trade_event_bridge import bridge_closed_trade
-from risk.risk_manager import RiskManager
-from signals.adapter import from_signal_candidate
-from signals.signal_engine import SignalEngine
-from signals.signal_quality import compute_signal_quality
+from risk_layer.risk_engine.risk_manager import RiskManager
+from signal_layer.signal_builder.adapter import from_signal_candidate
+from signal_layer.signal_engine.signal_engine import SignalEngine
+from signal_layer.signal_scoring.signal_quality import compute_signal_quality
 from database.learning_repository import LearningRepository
 from database.raw_candle_repository import RawCandleRepository
 from core_layer.logger.logger import setup_logger

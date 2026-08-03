@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from context_layer.context_engine.context_orchestrator import ContextSnapshot
-from signals.models import SignalCandidate
+from signal_layer.signal_builder.models import SignalCandidate
 from ai.confidence_model import ConfidenceResult
 
 SYSTEM_PROMPT = """

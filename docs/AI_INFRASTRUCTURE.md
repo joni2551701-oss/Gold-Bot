@@ -11,8 +11,8 @@ AI/LLM API call anywhere in this phase, no change to
 AI stays advisory-only, exactly as `ai/interfaces.py`'s
 `AIAnalyzerInterface` and `docs/FOUNDATION_FREEZE_v0.4.md`'s "AI
 Optional" principle already establish. Nothing built this phase
-approves/rejects a trade, calls `risk.risk_manager.RiskManager`,
-bypasses `decision.decision_engine.DecisionEngine`, or generates a
+approves/rejects a trade, calls `risk_layer.risk_engine.risk_manager.RiskManager`,
+bypasses `decision_layer.decision_engine.decision_engine.DecisionEngine`, or generates a
 signal.
 
 ## Why eight packages
@@ -66,7 +66,7 @@ is supplied.
 `AIContext` bundles the five inputs the brief names — Market Context
 (`ai.interfaces.MarketContext`, sanitized through
 `context_adapter.sanitize_market_context()` to strip any accidental
-raw-candle metadata key), Signal Schema (`signals.schema.SignalSchema`),
+raw-candle metadata key), Signal Schema (`signal_layer.signal_builder.schema.SignalSchema`),
 User Profile (`ai.profiles.user_profile.AIUserProfile`), Trade History
 (`ai.journal.trade_journal.TradeJournalEntry` list), and Learning
 Context (`ai.learning_context.LearningContext`). `build_ai_context()`

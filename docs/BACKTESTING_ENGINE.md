@@ -31,7 +31,7 @@ REPLAY: backtesting.replay_feed.ReplayFeed.window()            -> List[Candle]
 `MarketDataNormalizer`, same call `core/pipeline.py`'s own live
 `market_data` stage already makes) and `ReplayDataFeed` (wraps a
 `backtesting.replay_feed.ReplayFeed`, Phase 60.1). Neither `strategies/`
-nor `signals/signal_engine.py` needed to change at all — TASK 1's own
+nor `signal_layer/signal_engine/signal_engine.py` needed to change at all — TASK 1's own
 reuse audit found they already only depend on `ContextSnapshot`, never
 on a candle source directly.
 
@@ -87,7 +87,7 @@ Strategy/Signal/Decision/Risk logic anywhere.
 
 ## Reuse audit findings (TASK 1)
 
-- `strategies/`/`signals/signal_engine.py` were already source-agnostic
+- `strategies/`/`signal_layer/signal_engine/signal_engine.py` were already source-agnostic
   (they consume `ContextSnapshot`, never a candle source) — the actual
   seam needing `IDataFeed` is one level up, at the live pipeline's
   `market_data` stage vs. Phase 60.1's `ReplayFeed`.
@@ -197,8 +197,8 @@ trading logic was touched by this fix; it is entirely contained to
 - Does not register `/backtest_run` into `telegram/commands.py`/
   `command_router.py`/`handlers.py`.
 - Does not touch `core/pipeline.py`, `strategies/`, `signals/`,
-  `ai/ai_analyzer.py`, `decision/decision_engine.py`, or
-  `risk/risk_manager.py` — every one of these was read, never written,
+  `ai/ai_analyzer.py`, `decision_layer/decision_engine/decision_engine.py`, or
+  `risk_layer/risk_engine/risk_manager.py` — every one of these was read, never written,
   this phase.
 
 ## Future wiring plan

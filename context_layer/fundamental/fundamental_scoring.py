@@ -24,7 +24,7 @@ centered at 50 (neutral).
 
 Per the Director's own hard boundary for this whole phase: this module
 never returns "BUY"/"SELL", never opens a trade, and is never called
-from decision/decision_engine.py or risk/risk_manager.py -- it answers
+from decision_layer/decision_engine/decision_engine.py or risk_layer/risk_engine/risk_manager.py -- it answers
 "what does the macro picture look like for gold," nothing more.
 """
 

@@ -20,13 +20,13 @@ Trade Review, Performance, or Trade Explanation, covering
 `rr`, `summary`, `strengths`, `weaknesses`, `recommendation`,
 `educational_note`). The closest existing shapes:
 
-- `decision/models.py`'s `TradeDecision` (`action`, `confidence`,
+- `decision_layer/decision_engine/models.py`'s `TradeDecision` (`action`, `confidence`,
   `reason`, `signal`, `ai_analysis`, `signal_score`/`htf_score`/
   `risk_score`/`ai_score`/`final_score`) is the Decision Engine's own
   verdict record — a `decision/` type, off-limits to `ai/` under
   Constitution Article 3's zero-exception rule (see "The central
   architectural resolution" below).
-- `risk/risk_manager.py`'s `RiskResult` (`approved`, `lot_size`,
+- `risk_layer/risk_engine/risk_manager.py`'s `RiskResult` (`approved`, `lot_size`,
   `risk_amount`, `risk_reward`, `reason`) is the Risk Layer's own
   verdict — same `risk/` off-limits rule.
 - `ai/explanation/explanation_input.py`'s `ExplanationInput`/

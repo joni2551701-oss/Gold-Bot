@@ -38,7 +38,7 @@ from ai.interfaces import MarketContext
 from ai.journal.trade_journal import TradeJournalRecord
 from ai.learning_context import LearningContext
 from ai.profiles.user_profile import AIUserProfile
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 
 
 def build_ai_context(

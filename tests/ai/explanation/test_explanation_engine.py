@@ -7,7 +7,7 @@ from ai.interfaces import MarketContext
 from ai.providers.base_provider import ProviderResult
 from ai.providers.provider_manager import ProviderStatus
 from ai.runtime.ai_service import AIService
-from signals.explainability import SignalExplanation
+from signal_layer.signal_scoring.explainability import SignalExplanation
 
 
 class _FakeProvider:

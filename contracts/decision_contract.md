@@ -8,15 +8,15 @@ never re-analyzes the market itself — see
 "whose read wins" framing this whole document follows.
 
 ## Input
-`signals.models.SignalCandidate`, `ai.ai_analyzer.AIAnalysisResult`,
+`signal_layer.signal_builder.models.SignalCandidate`, `ai.ai_analyzer.AIAnalysisResult`,
 and an optional `context.htf_bias.HTFBiasResult`
-(`decision.decision_engine.DecisionEngine.evaluate(signal, ai_analysis, htf_bias=None)`).
+(`decision_layer.decision_engine.decision_engine.DecisionEngine.evaluate(signal, ai_analysis, htf_bias=None)`).
 
 **A deliberate correction to the brief's own example**: the brief
 lists Decision Engine's input as "Signal, AI Analysis, Risk
 Assessment." That is not the real pipeline order — Risk Manager runs
 *after* Decision Engine (see `core/pipeline.py`'s stage order and
-`docs/ARCHITECTURE.md`'s Decision Engine v2 section: "`risk.risk_manager.RiskResult`
+`docs/ARCHITECTURE.md`'s Decision Engine v2 section: "`risk_layer.risk_engine.risk_manager.RiskResult`
 is **not** one of the four inputs — Risk Manager runs after Decision
 Engine in the pipeline and cannot supply an input to a decision that
 precedes it"). This document states the real input set; the "Risk"
@@ -25,7 +25,7 @@ component `DecisionWeights` blends is `AIAnalysisResult.risk_score`
 inverted so higher always means better — not a `RiskResult`.
 
 ## Output
-`decision.models.TradeDecision` — `action` (`DecisionAction.APPROVE`/
+`decision_layer.decision_engine.models.TradeDecision` — `action` (`DecisionAction.APPROVE`/
 `REJECT`/`NO_TRADE`), `confidence`, `reason`, the originating `signal`
 and `ai_analysis`, plus `signal_score`/`htf_score`/`risk_score`/
 `ai_score`/`final_score` (Phase A3's weighted-formula components,

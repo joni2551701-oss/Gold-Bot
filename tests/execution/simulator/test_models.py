@@ -1,12 +1,12 @@
 """
-Phase 60.3, TASK 2 -- execution/simulator/models.py tests.
+Phase 60.3, TASK 2 -- execution_layer/execution_engine/simulator/models.py tests.
 """
 
 from datetime import datetime, timezone
 
 import pytest
 
-from execution.simulator.models import ExecutionSimulationResult, SimulatedFill, SimulatedOrder
+from execution_layer.execution_engine.simulator.models import ExecutionSimulationResult, SimulatedFill, SimulatedOrder
 
 
 def test_simulated_order_is_frozen():

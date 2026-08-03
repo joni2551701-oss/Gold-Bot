@@ -8,8 +8,8 @@ decided; it never approves, rejects, sizes, or alters a signal. See
 `docs/ARCHITECTURE_RULES.md`'s Telegram Layer section.
 
 ## Input
-`signals.models.SignalCandidate`, `ai.ai_analyzer.AIAnalysisResult`,
-`decision.models.TradeDecision`, `risk.risk_manager.RiskResult`
+`signal_layer.signal_builder.models.SignalCandidate`, `ai.ai_analyzer.AIAnalysisResult`,
+`decision_layer.decision_engine.models.TradeDecision`, `risk_layer.risk_engine.risk_manager.RiskResult`
 (`telegram.signal_formatter.SignalFormatter.format_signal(signal, ai_analysis, decision, risk_result)`)
 — the four already-computed pipeline outputs, read defensively
 (`getattr` with a safe `"N/A"` default, never raising on a missing/

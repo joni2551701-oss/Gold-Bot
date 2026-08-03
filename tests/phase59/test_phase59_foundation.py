@@ -31,7 +31,7 @@ from lifecycle.signal_state import (
     transition_signal_state,
 )
 from lifecycle.trade_state import TradeState
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 
 
 def _approved_signal(**overrides) -> SignalSchema:

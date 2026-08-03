@@ -59,12 +59,12 @@ directory exists (confirmed). README gap: `core/`, `monitoring/`,
 |---|---|---|
 | Market Engine | `data/` (fetch) + `context_layer/context_engine/candle.py`/`market_structure.py` | **No** — absorbed (data/ + context/) |
 | Context Engine | `context_layer/context_engine/context_orchestrator.py` (+ detectors) | ✅ Yes |
-| Analysis Engine | `context/` detectors (Wyckoff/Regime/Session) + `signals/signal_quality.py` | **No** — absorbed |
-| Strategy Engine | `strategies/strategy_manager.py` | ✅ Yes |
-| Confluence Engine | inside each `strategies/*.py` + `signals/signal_quality.py` | **No** — absorbed |
-| Decision Engine | `decision/decision_engine.py` | ✅ Yes |
-| Risk Engine | `risk/risk_manager.py` | ✅ Yes |
-| Signal Engine | `signals/signal_engine.py` | ✅ Yes |
+| Analysis Engine | `context/` detectors (Wyckoff/Regime/Session) + `signal_layer/signal_scoring/signal_quality.py` | **No** — absorbed |
+| Strategy Engine | `strategy_layer/strategy_manager/strategy_manager.py` | ✅ Yes |
+| Confluence Engine | inside each `strategies/*.py` + `signal_layer/signal_scoring/signal_quality.py` | **No** — absorbed |
+| Decision Engine | `decision_layer/decision_engine/decision_engine.py` | ✅ Yes |
+| Risk Engine | `risk_layer/risk_engine/risk_manager.py` | ✅ Yes |
+| Signal Engine | `signal_layer/signal_engine/signal_engine.py` | ✅ Yes |
 | Monitoring | `monitoring/` | ✅ Yes |
 | Simulation | `backtesting/` + `execution/simulator/` | ✅ Yes (named differently) |
 
@@ -85,16 +85,16 @@ Article 7). Core-audit summary:
 | Module | Purpose | Provider (reads from) | Consumer (read by) | Public entry |
 |---|---|---|---|---|
 | `context/` | Stateless SMC structure detection → `ContextSnapshot`/`ContextSnapshotSchema` | `data/` | strategies/, signals/, decision/(HTF type), market/(schema) | `context_orchestrator.build_context_snapshot` |
-| `strategies/` | 3 SMC methodologies → `List[SignalCandidate]` | context/ | signals/ | `strategies.strategy_manager.StrategyManager` |
-| `signals/` | Candidate contract, quality grade, explainability, schema; STEP-08 `SignalManager` parallel pipeline | context/, strategies/ | decision/(types), pipeline | `signals.signal_engine.SignalEngine` |
-| `decision/` | Weighted APPROVE/REJECT/NO_TRADE; STEP-09 `decision_manager` parallel | signals/, context/(HTF), `ai.ai_analyzer.AIAnalysisResult` (type) | risk/, pipeline | `decision.decision_engine.DecisionEngine` |
-| `risk/` | Geometry/SL validation + sizing; last gate | decision/ | pipeline | `risk.risk_manager.RiskManager` |
+| `strategies/` | 3 SMC methodologies → `List[SignalCandidate]` | context/ | signals/ | `strategy_layer.strategy_manager.strategy_manager.StrategyManager` |
+| `signals/` | Candidate contract, quality grade, explainability, schema; STEP-08 `SignalManager` parallel pipeline | context/, strategies/ | decision/(types), pipeline | `signal_layer.signal_engine.signal_engine.SignalEngine` |
+| `decision/` | Weighted APPROVE/REJECT/NO_TRADE; STEP-09 `decision_manager` parallel | signals/, context/(HTF), `ai.ai_analyzer.AIAnalysisResult` (type) | risk/, pipeline | `decision_layer.decision_engine.decision_engine.DecisionEngine` |
+| `risk/` | Geometry/SL validation + sizing; last gate | decision/ | pipeline | `risk_layer.risk_engine.risk_manager.RiskManager` |
 | `monitoring/` | Health/error/resource/risk/signal/performance/system observers | many (observes) | telegram owner cmds | per-monitor classes |
 | `features/` | Standardization layer (`MarketFeatures`) | context/signals output | future AI/ML | `features.feature_engine` |
 | `assets/` | Asset metadata registry | config | future multi-asset | `assets.asset_registry` |
 | `lifecycle/` | Strategy/paper-trade lifecycle metadata | decision/risk | future | `lifecycle/*` |
 | `backtesting/` | Replay chain over context→…→risk (Simulation) | all Core (unmodified) | analytics/owner | `backtesting.backtest_engine` |
-| `execution/` | Intentionally INERT (no MT5 order calls); `execution/simulator/` fills for backtest only | risk/ | (none live) | `execution.execution_engine` (inert) |
+| `execution/` | Intentionally INERT (no MT5 order calls); `execution/simulator/` fills for backtest only | risk/ | (none live) | `execution_layer.execution_engine.execution_engine` (inert) |
 | `core/` | Orchestration (`pipeline.py`), guards, gateway, errors, logger, secrets, emergency | all | main.py | `core.pipeline.TradingPipeline` |
 
 ## 4. Layer Boundary Report
@@ -109,7 +109,7 @@ Platform / Telegram / UI FORBIDDEN.
 | Core → UI | ✅ none | zero imports |
 | **Core → Telegram (FORBIDDEN)** | ⚠ **PRESENT** | `core/pipeline.py` imports `telegram.signal_formatter.SignalFormatter` + `telegram.notifier.Notifier` (the pipeline's delivery-boundary wiring); `monitoring/` imports `telegram.admin_service.AdminService` in 7 files (system/decision/risk/error/signal/performance/resource monitors) |
 | **Core → Database (persistence)** | ⚠ **PRESENT** | `core/pipeline.py` (SignalRepository/SignalRecord), `core_layer/emergency/emergency_manager.py`, and `monitoring/*` write/read the DB |
-| Core → AI (type-only) | ⚠ present, documented | `decision/models.py` imports `ai.ai_analyzer.AIAnalysisResult` — a TYPE only (Constitution Article 1/3; `IMPORT_RULES.md`); the Decision Engine reads the AI's result value, never calls the AI layer |
+| Core → AI (type-only) | ⚠ present, documented | `decision_layer/decision_engine/models.py` imports `ai.ai_analyzer.AIAnalysisResult` — a TYPE only (Constitution Article 1/3; `IMPORT_RULES.md`); the Decision Engine reads the AI's result value, never calls the AI layer |
 
 **Reading of the crossings (audit judgment, not a fix):** the
 `core/pipeline.py` → telegram/database crossings are the pipeline's own
@@ -129,8 +129,8 @@ changed by this audit.
 |---|---|
 | Duplicate Engine | None. Market/Analysis/Confluence "engines" are ABSENT (absorbed), not duplicated. |
 | Duplicate Strategy logic | None found across `strategies/`. |
-| Duplicate Decision logic | `decision/decision_manager.py` (STEP-09) is a **parallel, additive** manager that REUSES (does not recompute) `decision_engine.py`'s frozen verdict — documented as reuse, not a duplicate. |
-| Duplicate Signal logic | `signals/manager.py` (STEP-08 `SignalManager`) is a **parallel, additive** canonical pipeline reusing `SignalSchema` — documented reuse, not a duplicate. |
+| Duplicate Decision logic | `decision_layer/decision_service/decision_manager.py` (STEP-09) is a **parallel, additive** manager that REUSES (does not recompute) `decision_engine.py`'s frozen verdict — documented as reuse, not a duplicate. |
+| Duplicate Signal logic | `signal_layer/signal_service/manager.py` (STEP-08 `SignalManager`) is a **parallel, additive** canonical pipeline reusing `SignalSchema` — documented reuse, not a duplicate. |
 | Duplicate Risk logic | None found. |
 
 The two "parallel manager" files (STEP-08/09) are the only near-duplication
@@ -146,7 +146,7 @@ Proposal to confirm whether the engine and its manager should consolidate
 - **Invalid import / layer violation:** the §4 crossings (Core →
   Telegram/Database; monitoring → AdminService). These are the only
   upward/sideways imports found.
-- **Hidden dependency:** `decision/models.py` → `ai.ai_analyzer` is a
+- **Hidden dependency:** `decision_layer/decision_engine/models.py` → `ai.ai_analyzer` is a
   type-only import that is easy to miss in a dependency scan; recorded
   here explicitly. It is intentional and documented.
 - Authoritative living dependency map: `docs/architecture/
@@ -191,16 +191,16 @@ Migration Proposal, not reconciled here.
 | Context / Strategy / Signal / Decision / Risk / Monitoring | ✅ fully present, own modules |
 | Simulation | ✅ present (`backtesting/` + `execution/simulator/`) |
 | Market Engine | ⚠ partial — absorbed into `data/` + `context/`, no standalone module |
-| Analysis Engine | ⚠ partial — absorbed into `context/` + `signals/signal_quality.py` |
-| Confluence Engine | ⚠ partial — absorbed into `strategies/` + `signals/signal_quality.py` |
+| Analysis Engine | ⚠ partial — absorbed into `context/` + `signal_layer/signal_scoring/signal_quality.py` |
+| Confluence Engine | ⚠ partial — absorbed into `strategies/` + `signal_layer/signal_scoring/signal_quality.py` |
 | MarketMemory as Core's read source | ❌ gap — Core reads `MarketDataNormalizer`, not `MarketMemory` (Data Layer phase left this unwired) |
 
 ## 9. Canonical Mapping
 
 | Module | Status |
 |---|---|
-| `context/`, `strategies/`, `signals/signal_engine.py`, `decision/decision_engine.py`, `risk/risk_manager.py`, `core/pipeline.py`, `monitoring/`, `features/`, `assets/`, `backtesting/`, `execution/` (inert) | **CANONICAL** |
-| `signals/manager.py` (STEP-08), `decision/decision_manager.py` (STEP-09) | **CANDIDATE FOR MIGRATION** — parallel/additive; confirm consolidation with the frozen engine |
+| `context/`, `strategies/`, `signal_layer/signal_engine/signal_engine.py`, `decision_layer/decision_engine/decision_engine.py`, `risk_layer/risk_engine/risk_manager.py`, `core/pipeline.py`, `monitoring/`, `features/`, `assets/`, `backtesting/`, `execution/` (inert) | **CANONICAL** |
+| `signal_layer/signal_service/manager.py` (STEP-08), `decision_layer/decision_service/decision_manager.py` (STEP-09) | **CANDIDATE FOR MIGRATION** — parallel/additive; confirm consolidation with the frozen engine |
 | Market / Analysis / Confluence "Engine" | **GAP (not a module)** — CANDIDATE for a future decision on whether to promote to real modules or keep absorbed |
 | Core→Telegram/DB wiring in `core/pipeline.py`, monitoring→AdminService | **CANDIDATE FOR MIGRATION** (boundary review) — not LEGACY, not DUPLICATE; a layering question |
 | (none) | **LEGACY** — no Core module is legacy today |

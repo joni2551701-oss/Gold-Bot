@@ -117,7 +117,7 @@ in-process, in-memory only, no persistence. 7 tests
 
 - `explain_signal(SignalExplanation, ...)` — `Capability.EXPLANATION`,
   the only one of the four with a real `BaseAIProvider` method mapping
-  today. Reuses `signals/explainability.py`'s already-computed
+  today. Reuses `signal_layer/signal_scoring/explainability.py`'s already-computed
   `SignalExplanation` (`ai/` → `signals/` is the one sanctioned
   cross-layer import; `explanation_engine.py` never recomputes signal
   reasoning).
@@ -176,7 +176,7 @@ AST-based import sweep (`ast.walk()` over every `.py` file under
 | `risk/` | **0** |
 | `execution/` | **0** |
 | `strategies/` | **0** |
-| `signals/` | 7 (6 pre-existing + `ai/explanation/explanation_engine.py`, new this phase — `signals.explainability`, the layer immediately below `ai/`) |
+| `signals/` | 7 (6 pre-existing + `ai/explanation/explanation_engine.py`, new this phase — `signal_layer.signal_scoring.explainability`, the layer immediately below `ai/`) |
 | `database/` | **0** |
 | `telegram/` | **0** |
 

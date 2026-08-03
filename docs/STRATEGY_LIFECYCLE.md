@@ -7,7 +7,7 @@ strategies — `StrategyDefinition`, `StrategyStatus`,
 `StrategyRegistry` — entirely separate from strategy execution. **This
 is a metadata layer, not a signal-generation layer.** It does not
 detect anything, does not run a strategy, and does not change what
-`strategies/strategy_manager.py`'s `StrategyManager` already does.
+`strategy_layer/strategy_manager/strategy_manager.py`'s `StrategyManager` already does.
 
 This phase exists because Phase 59 (Real Market Validation), Quant
 Research, a future AI Assistant, and Analytics will all eventually
@@ -29,7 +29,7 @@ questions.
 5. It does not compute win rate.
 6. It does not write to the database.
 7. No fake performance value is ever written.
-8. Existing strategy code (`strategies/liquidity_strategy.py`,
+8. Existing strategy code (`strategy_layer/strategy_library/liquidity_strategy.py`,
    `fvg_strategy.py`, `amd_strategy.py`, `strategy_manager.py`) is not
    rewritten.
 9. Backward compatibility with `StrategyManager` is preserved — it is
@@ -45,7 +45,7 @@ auditing `strategies/` in full before writing any code — the only
 pre-existing "registry"-flavored code in the whole codebase turned out
 to be unrelated docstring mentions in `ai/prompts/prompt_manager.py`
 and `telegram/command_router.py`, no actual metadata/registry
-pattern). `strategies/strategy_manager.py`'s `StrategyManager` is the
+pattern). `strategy_layer/strategy_manager/strategy_manager.py`'s `StrategyManager` is the
 only thing that has ever run a strategy, and stays that way.
 
 ## Strategy Status
@@ -108,14 +108,14 @@ store — no shared global state, no database.
 ## Existing strategies
 
 `build_default_registry()` registers exactly the three strategies
-`strategies/strategy_manager.py`'s `StrategyManager` already runs in
+`strategy_layer/strategy_manager/strategy_manager.py`'s `StrategyManager` already runs in
 production — no new strategy is introduced:
 
 | `id` | `name` | Real source |
 |---|---|---|
-| `LIQUIDITY_SWEEP_STRATEGY` | Liquidity Sweep | `strategies/liquidity_strategy.py` |
-| `FVG_STRATEGY` | Fair Value Gap | `strategies/fvg_strategy.py` |
-| `AMD_STRATEGY` | AMD (Accumulation-Manipulation-Distribution) | `strategies/amd_strategy.py` |
+| `LIQUIDITY_SWEEP_STRATEGY` | Liquidity Sweep | `strategy_layer/strategy_library/liquidity_strategy.py` |
+| `FVG_STRATEGY` | Fair Value Gap | `strategy_layer/strategy_library/fvg_strategy.py` |
+| `AMD_STRATEGY` | AMD (Accumulation-Manipulation-Distribution) | `strategy_layer/strategy_library/amd_strategy.py` |
 
 Each `id` matches the exact `SignalCandidate.strategy_name` string
 literal that strategy's own `analyze()` method already produces (see

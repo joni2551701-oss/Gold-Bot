@@ -3,7 +3,7 @@ AI Layer — provider interface foundation (Phase 55).
 
 This module defines the *shape* a future AI provider must satisfy so
 swapping providers (heuristic stub -> Gemini -> a different LLM later)
-never requires touching core/pipeline.py, decision/decision_engine.py,
+never requires touching core/pipeline.py, decision_layer/decision_engine/decision_engine.py,
 or any other caller. Nothing here calls a real AI/LLM -- this is a
 contract, not an implementation.
 

@@ -105,7 +105,7 @@ boundaries is already true of the real code referenced.
 
 **Allowed**
 - ✅ Finding a setup (each `strategies/*_strategy.py`'s `analyze()`)
-- ✅ Producing a candidate (`SignalCandidate`, from `signals/models.py`)
+- ✅ Producing a candidate (`SignalCandidate`, from `signal_layer/signal_builder/models.py`)
 
 **Forbidden**
 - ❌ Calling the AI layer (`strategies/` never imports `ai/`)
@@ -131,7 +131,7 @@ boundaries is already true of the real code referenced.
 
 **Allowed**
 - ✅ Blending every score (signal confidence, HTF bias, AI risk/
-  confidence — `decision/decision_engine.py`'s `DecisionEngine.evaluate()`)
+  confidence — `decision_layer/decision_engine/decision_engine.py`'s `DecisionEngine.evaluate()`)
 - ✅ Approve/Reject/No-Trade (`DecisionAction`)
 
 **Forbidden**

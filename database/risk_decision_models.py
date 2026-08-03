@@ -3,7 +3,7 @@ Database Layer — Risk Decision persistence model (Phase V1.0.1: Risk
 Management Hardening Patch, TASK 8). Mirrors
 database/emergency_models.py's own shape/naming split: the DB-row
 model gets its own name (RiskDecisionEntry), distinct from the domain
-model (risk.risk_manager.RiskResult) -- same "two names for two
+model (risk_layer.risk_engine.risk_manager.RiskResult) -- same "two names for two
 layers" precedent as database.emergency_models.EmergencyStateEntry vs
 core_layer.emergency.emergency_state.EmergencyStateRecord.
 

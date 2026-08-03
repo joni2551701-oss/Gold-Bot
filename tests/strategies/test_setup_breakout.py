@@ -5,8 +5,8 @@ from types import SimpleNamespace
 from context_layer.liquidity.liquidity import LiquidityType
 from context_layer.market_structure.bos import BosDirection
 
-from strategies.breakout_strategy import BreakoutStrategy
-from strategies.result import StrategyDirection, SetupStatus
+from strategy_layer.strategy_library.breakout_strategy import BreakoutStrategy
+from strategy_layer.strategy_engine.result import StrategyDirection, SetupStatus
 
 
 def test_confirmed_breakout_long(make_ctx):

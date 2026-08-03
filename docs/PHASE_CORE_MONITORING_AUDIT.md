@@ -156,11 +156,11 @@ Signal statistics reuse `SignalRepository` — no new storage.
 
 ## `signals/` and `context/` — structured evaluation trace
 
-`decision/decision_engine.py` only exposes a **weighted blend score**
+`decision_layer/decision_engine/decision_engine.py` only exposes a **weighted blend score**
 (`signal_score`/`htf_score`/`risk_score`/`ai_score`/`final_score`, all
 continuous floats) — not a Market Structure/Liquidity/FVG pass-fail
 trace. The actual structured, already-computed, per-criterion trace
-the brief describes lives in **`signals/signal_quality.py`**:
+the brief describes lives in **`signal_layer/signal_scoring/signal_quality.py`**:
 `SignalQualityResult` (`grade`, `score`, `criteria_met: Sequence[str]`
 — e.g. `("HTF_ALIGNED", "LIQUIDITY_SWEPT")`, `criteria_total`), built
 from `context.context_orchestrator.ContextSnapshot`'s own structure/
@@ -168,7 +168,7 @@ liquidity/order-block/FVG detector output. Nothing currently logs or
 persists a `SignalQualityResult`. **Decision**: `monitoring/decision_logger.py`
 accepts **primitive fields only** (`criteria_met: Sequence[str]`,
 `criteria_total: int`, `decision: str`, `reason: str`) rather than
-importing `SignalQualityResult`/`signals.signal_quality` directly —
+importing `SignalQualityResult`/`signal_layer.signal_scoring.signal_quality` directly —
 the same "primitive contract, no upstream object import" discipline
 this codebase's `ai/*/models.py` Foundation contracts already
 established for observability boundaries. This keeps `monitoring/`

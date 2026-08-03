@@ -181,7 +181,7 @@ state, same relationship every prior phase's owner commands already
 have). Confirmed via `git diff --stat` against
 `core/pipeline.py`/`decision/`/`execution/`/`risk/`/`strategies/`/
 `signals/` at the end of this phase (TASK 10): **zero lines changed**.
-AI still never approves/rejects a trade, calls `risk.risk_manager.
+AI still never approves/rejects a trade, calls `risk_layer.risk_engine.risk_manager.
 RiskManager`, or triggers execution — every module added this phase
 is explain/summarize/educate/analyze-shaped or pure operations
 tooling (health, metrics, notifications), never a new capability that

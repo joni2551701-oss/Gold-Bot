@@ -11,7 +11,7 @@ document is only ever the current tip.
 **Status: 🟡 IN PROGRESS.** Engineering Governance v1.1 is **FROZEN**
 (all 9 GOV documents approved). The project has returned to Engineering
 Implementation, starting with Repository Recovery — fixing the single
-invisible U+2060 character in `strategies/strategy_manager.py` on `main`
+invisible U+2060 character in `strategy_layer/strategy_manager/strategy_manager.py` on `main`
 (diagnosed by `BRANCH-FORENSICS-001`) and creating the repository's
 first rollback anchors.
 

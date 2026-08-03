@@ -11,7 +11,7 @@ from analytics.signal_performance import (
     generate_performance_id,
 )
 from lifecycle.paper_trade import cancel_paper_trade, create_paper_trade, open_paper_trade, close_paper_trade
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 
 
 def _signal(**overrides) -> SignalSchema:

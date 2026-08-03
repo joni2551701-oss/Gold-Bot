@@ -52,8 +52,8 @@ Verified against the real codebase:
 
 - **`TradeContext` does not exist anywhere in this repository** — no
   class by this name in any package. It is not a real type to import.
-- **`DecisionResult`** is real — `decision/models.py`/`decision/decision_engine.py`.
-- **`RiskResult`** is real — `risk/risk_manager.py`.
+- **`DecisionResult`** is real — `decision_layer/decision_engine/models.py`/`decision_layer/decision_engine/decision_engine.py`.
+- **`RiskResult`** is real — `risk_layer/risk_engine/risk_manager.py`.
 - **`MarketContext`** is real — `ai/interfaces.py` (already `ai/`-owned,
   no conflict).
 
@@ -75,7 +75,7 @@ roster), this one is a **hard architectural boundary**, the exact one
 `CLAUDE.md`'s Trading Safety section and Constitution Article 1 exist
 to protect: "Never bypass Risk Manager," "AI never imports the Trading
 Decision layers." A new `ai/explanation/explanation_builder.py` that
-imports `decision.models.DecisionResult`/`risk.risk_manager.RiskResult`
+imports `decision_layer.decision_engine.models.DecisionResult`/`risk_layer.risk_engine.risk_manager.RiskResult`
 directly would be a Constitution Article 3 violation on its first
 line, mechanically caught by this project's own standing grep sweep
 (`docs/architecture/IMPORT_RULES.md`'s "Mechanical verification"
@@ -106,7 +106,7 @@ The caller that assembles these primitive values from a real
 this codebase already permitted to see every layer's output — the
 exact role it already plays for `AIAnalyzer.analyze()`), never
 `ai/explanation/` itself. This mirrors the one sanctioned pattern
-already on record: `decision/models.py` accepting `AIAnalysisResult`
+already on record: `decision_layer/decision_engine/models.py` accepting `AIAnalysisResult`
 as a **value** while never importing `ai/router/`/`ai/providers/`/
 `ai/runtime/` — the same value-not-object-import shape, just crossing
 the boundary in the other direction.

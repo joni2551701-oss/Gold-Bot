@@ -2,7 +2,7 @@
 Analytics Layer — Execution Report (Phase 60.3: Execution Simulator
 Foundation, TASK 8).
 
-Packages an `execution.simulator.models.ExecutionSimulationResult`
+Packages an `execution_layer.execution_engine.simulator.models.ExecutionSimulationResult`
 into the persistence/reporting shape every other Phase 59.x/60.x
 report module already uses (`analytics/dataset_report.py`,
 `analytics/strategy_report.py`, etc.) — requested price, fill price,
@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from execution.simulator.models import ExecutionSimulationResult
+    from execution_layer.execution_engine.simulator.models import ExecutionSimulationResult
 
 
 @dataclass(frozen=True)

@@ -67,13 +67,13 @@ edge. database/ is storage. monitoring/ only observes.
 - **Allowed:** turn a strategy result into a structured signal, score it.
 - **Forbidden:** re-analyze the market, make the APPROVE/REJECT decision, compute risk.
 
-### Layer: `decision/` (`decision/decision_engine.py`)
+### Layer: `decision/` (`decision_layer/decision_engine/decision_engine.py`)
 - **Input:** a `signals/` signal, plus one ADVISORY `AIAnalysisResult` value from `ai/`.
 - **Output:** `APPROVE` / `REJECT` / `NO_TRADE` (confidence-blended).
 - **Allowed:** decide whether a signal becomes a trade; blend confidence.
 - **Forbidden:** re-analyze the market, size the trade, send an order, call into `ai/`/`telegram/`/`execution/`. `DecisionEngine` thresholds change only with explicit approval.
 
-### Layer: `risk/` (`risk/risk_manager.py`)
+### Layer: `risk/` (`risk_layer/risk_engine/risk_manager.py`)
 - **Input:** an APPROVED decision + account state.
 - **Output:** lot size, stop-loss, take-profit, exposure verdict (`RiskManager.evaluate()`).
 - **Allowed:** position sizing, SL/TP geometry, drawdown/daily-loss/exposure limits, duplicate-trade guard.

@@ -20,8 +20,8 @@ defaults) -- every field must be supplied, even as an empty list.
 
 from context_layer.context_engine.context_orchestrator import ContextSnapshot
 from context_layer.trend.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
-from signals.signal_engine import SignalEngine
-from signals.models import SignalCandidate
+from signal_layer.signal_engine.signal_engine import SignalEngine
+from signal_layer.signal_builder.models import SignalCandidate
 
 
 def _empty_context() -> ContextSnapshot:

@@ -24,7 +24,7 @@ Does NOT call FredProvider itself: FredProvider.get_interest_rate()/
 get_inflation_data() always raise NotImplementedError today (Phase
 59.2's own honest stub) -- this function takes already-fetched
 FundamentalDataPoint values as input, the same "adapter over
-already-computed data" pattern signals/adapter.py and
+already-computed data" pattern signal_layer/signal_builder/adapter.py and
 context_layer/context_engine/snapshot.py already established. A future, real FredProvider
 implementation is the one that would supply real values here; this
 module does not change when that happens.

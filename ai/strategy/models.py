@@ -7,7 +7,7 @@ follow the same Article 3 resolution `ai/trade_journal/models.py`,
 `ai/learning/models.py`, `ai/coaching/models.py`, and
 `ai/performance/models.py` all already established: every field is a
 primitive (`str`/`bool`) or an enum defined in this same file -- never
-a `decision.models.TradeDecision`, `risk.risk_manager.RiskResult`, or
+a `decision_layer.decision_engine.models.TradeDecision`, `risk_layer.risk_engine.risk_manager.RiskResult`, or
 any other Trading Core object reference. `ai/strategy/` never imports
 `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
 `context/`, `monitoring/`, `telegram/`, `database/`, `voice/`,
@@ -17,7 +17,7 @@ any other Trading Core object reference. `ai/strategy/` never imports
 **Naming note** (documented, not a defect -- see
 `docs/PHASE66_6_AUDIT.md`'s "Question 1" section): a *different*,
 Trading-Core `StrategyStatus` enum already exists at
-`strategies.lifecycle.strategy_status.StrategyStatus`
+`strategy_layer.strategy_manager.lifecycle.strategy_status.StrategyStatus`
 (`TESTING`/`ACTIVE`/`DISABLED`/`DEPRECATED`) alongside its own
 `StrategyDefinition`/`StrategyRegistry`. Unlike every prior `66.x`
 naming collision (where reuse was merely a field-shape mismatch), this
@@ -52,7 +52,7 @@ class StrategyStatus(Enum):
     TASK 2's own exact vocabulary. Metadata only -- this package never
     controls whether any real strategy in `strategies/*.py` runs; see
     the module docstring's "Naming note" for why this is a distinct
-    enum from `strategies.lifecycle.strategy_status.StrategyStatus`.
+    enum from `strategy_layer.strategy_manager.lifecycle.strategy_status.StrategyStatus`.
     """
 
     ACTIVE = "ACTIVE"

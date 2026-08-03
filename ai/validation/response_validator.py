@@ -19,7 +19,7 @@ from ai.validation.schemas import DEFAULT_SCHEMA, ResponseSchema
 
 @dataclass(frozen=True)
 class ValidationResult:
-    """Same "structured result, never raise" convention `signals/schema.py`'s `ValidationResult` and `ai/context/`'s own dataclasses already use in this codebase."""
+    """Same "structured result, never raise" convention `signal_layer/signal_builder/schema.py`'s `ValidationResult` and `ai/context/`'s own dataclasses already use in this codebase."""
     accepted: bool
     errors: List[str] = field(default_factory=list)
 

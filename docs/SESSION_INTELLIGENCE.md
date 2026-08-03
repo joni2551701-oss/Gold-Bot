@@ -129,7 +129,7 @@ fabricate the third:
 - Does not generate a `BUY`/`SELL` signal, and is not itself a
   strategy — no `strategies/*.py` file reads `Session`/`SessionEvent`.
 - Does not add a `SESSION_ALIGNED` criterion to
-  `signals/signal_quality.py` — that remains a distinct, separate,
+  `signal_layer/signal_scoring/signal_quality.py` — that remains a distinct, separate,
   not-yet-done future step, the same "compute now, connect later"
   posture HTF Bias had between Phase A2 and Phase A3.
 - Does not modify `data_layer/live_data/session_filter.py` — different purpose,

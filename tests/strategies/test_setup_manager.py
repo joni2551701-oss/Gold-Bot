@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 from context_layer.order_block.order_block import OrderBlockType
 
-from strategies.manager import SetupManager, SetupEvaluation
-from strategies.result import StrategyResult, SetupStatus, StrategyDirection
+from strategy_layer.strategy_manager.manager import SetupManager, SetupEvaluation
+from strategy_layer.strategy_engine.result import StrategyResult, SetupStatus, StrategyDirection
 
 
 def test_evaluate_runs_every_strategy(make_ctx):
@@ -40,8 +40,8 @@ def test_ranking_puts_setups_first_by_confidence(make_ctx):
 
 
 def test_manager_accepts_injected_registry():
-    from strategies.registry import SetupRegistry
-    from strategies.snr_strategy import SNRStrategy
+    from strategy_layer.strategy_library.registry import SetupRegistry
+    from strategy_layer.strategy_library.snr_strategy import SNRStrategy
     reg = SetupRegistry()
     reg.register(SNRStrategy())
     mgr = SetupManager(registry=reg)

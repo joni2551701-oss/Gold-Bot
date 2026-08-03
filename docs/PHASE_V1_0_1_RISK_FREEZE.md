@@ -36,15 +36,15 @@ backup) is a Production-Readiness concern, tracked separately.
 
 | File | Purpose |
 |---|---|
-| `risk/account_state_tracker.py` | Drawdown (TASK 4) + daily loss (TASK 5) tracking, backed by `risk_account_state` |
-| `risk/duplicate_checker.py` | Duplicate-trade detection (TASK 6), backed by `risk_decisions` |
+| `risk_layer/risk_engine/account_state_tracker.py` | Drawdown (TASK 4) + daily loss (TASK 5) tracking, backed by `risk_account_state` |
+| `risk_layer/risk_validator/duplicate_checker.py` | Duplicate-trade detection (TASK 6), backed by `risk_decisions` |
 | `database/risk_decision_models.py` / `risk_decision_repository.py` | Append-only risk decision log (TASK 8) |
 | `database/risk_state_models.py` / `risk_state_repository.py` | Per-symbol drawdown/daily-loss baseline (TASK 4/5/10) |
 | `monitoring/risk_monitor.py` | Read-only aggregator over `risk_decisions` (TASK 9) |
 
 ## Extended modules
 
-- `risk/risk_manager.py` — `RiskConfig` gained `min_risk_per_trade`,
+- `risk_layer/risk_engine/risk_manager.py` — `RiskConfig` gained `min_risk_per_trade`,
   `max_risk_per_trade`, `min_risk_reward_ratio`,
   `duplicate_window_seconds` (all additive, defaulted). `RiskResult`
   gained `risk_percent`, `drawdown_percent` (additive, defaulted).

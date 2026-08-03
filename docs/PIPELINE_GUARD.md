@@ -152,7 +152,7 @@ by the very next one.
    mean `MAINTENANCE`'s own "Faqat Market Data ... ishga ruxsat" is not
    literally true — several read-only context stages also still run.
 2. **`before_execution()` maps to `telegram_delivery`, not
-   `execution/execution_engine.py`.** The pipeline has no real
+   `execution_layer/execution_engine/execution_engine.py`.** The pipeline has no real
    "execution" stage today (`ExecutionEngine.dispatch()` has zero real
    callers anywhere, confirmed in TASK 1's audit) — Telegram delivery
    is the only point where an actual outward effect happens, so it is
@@ -232,7 +232,7 @@ Trading-pipeline name ever again tripping every unrelated
 
 - Does not change any `decision/`, `risk/`, `strategies/`, `signals/`,
   `context/`, or `ai/` logic, threshold, or formula.
-- Does not wire `execution/execution_engine.py` — it stays untouched
+- Does not wire `execution_layer/execution_engine/execution_engine.py` — it stays untouched
   and inert.
 - Does not register any Telegram command (`/dashboard`, `/pause`,
   etc.) — no `telegram/command_router.py`/`telegram/handlers.py`

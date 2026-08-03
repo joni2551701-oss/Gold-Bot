@@ -8,8 +8,8 @@ freeze audit. Full technical detail is in `docs/PHASE_V1_AUDIT.md`,
 
 Scope discipline honored throughout: **no new strategy, no new AI
 Foundation, no Trading Core logic change, no architecture rebuild.**
-This was audit/verify/detect/document only. `risk/risk_manager.py`,
-`decision/decision_engine.py`, `core_layer/emergency/`, `execution/`,
+This was audit/verify/detect/document only. `risk_layer/risk_engine/risk_manager.py`,
+`decision_layer/decision_engine/decision_engine.py`, `core_layer/emergency/`, `execution/`,
 `strategies/`, `signals/`, `context/`, and all nine locked `ai/`
 subpackages (`ai/trading_analyst/`, `ai/chart_intelligence/`,
 `ai/trade_journal/`, `ai/learning/`, `ai/coaching/`,
@@ -42,7 +42,7 @@ safety rule is actually broken. No FAIL was found anywhere.
 
 ## Known Issues (documented, non-blocking)
 
-1. **Risk % has no 0-100% clamp** (`risk/risk_manager.py`) — a
+1. **Risk % has no 0-100% clamp** (`risk_layer/risk_engine/risk_manager.py`) — a
    caller-supplied `risk_per_trade` above 1.0 is silently accepted.
    Not exercised in production today (the pipeline uses the
    `RiskConfig` default of 0.01), but the code has no defense if that
@@ -79,7 +79,7 @@ safety rule is actually broken. No FAIL was found anywhere.
    stale relative to the current `ai/` subpackage count;
    `monitoring<->telegram` and `analytics<->learning` bidirectional
    package-level dependencies exist but are undocumented; three
-   layer-skip imports (`risk_manager.py`->`signals.models`,
+   layer-skip imports (`risk_manager.py`->`signal_layer.signal_builder.models`,
    `database/signal_record.py`->three layers up,
    `core_layer/emergency/emergency_manager.py`->`database/`) are real but
    undocumented exceptions, none of which route AI into Decision/Risk/

@@ -64,7 +64,7 @@ its own phase, per CLAUDE.md's Trading Safety rules.
   current heuristic stub. The single hardest constraint: whatever
   provider is chosen must preserve "AI optional" (see Foundation
   Principles below) exactly as it works today.
-- **v0.5 MT5** — live broker integration; `execution/execution_engine.py`
+- **v0.5 MT5** — live broker integration; `execution_layer/execution_engine/execution_engine.py`
   goes from permanently inert to real, under explicit approval.
 - **v0.6 Portfolio** — multi-position/portfolio-level risk.
 - **v0.7 Cloud** — cloud-hosted deployment and scaling.
@@ -87,11 +87,11 @@ and is the contract v0.4 AI and every phase after it must preserve.
   APPROVE/REJECT/NO_TRADE decision whether `ai/ai_analyzer.py` is a
   heuristic stub (today) or a real provider (v0.4 AI). `DecisionEngine`
   blends AI as one of four weighted inputs, never as a sole gate.
-- **Decision First** — `decision/decision_engine.py` is the one place
+- **Decision First** — `decision_layer/decision_engine/decision_engine.py` is the one place
   a trade is approved or rejected. No other module (not `ai/`, not
   `learning/`, not `telegram/`) makes that call.
 - **Risk Before Execution** — every `TradeDecision` that could reach a
-  user passes through `risk/risk_manager.py`'s geometry/sizing
+  user passes through `risk_layer/risk_engine/risk_manager.py`'s geometry/sizing
   validation first. No shortcut path exists anywhere in the codebase
   (verified: TASK 2's dependency audit found zero `telegram/` or
   `execution/` import of `decision/` that bypasses `risk/`).

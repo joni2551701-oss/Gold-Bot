@@ -3,8 +3,8 @@
 ## Purpose
 Feature Engineering foundation (Phase A10) — builds one standard
 `MarketFeatures` snapshot per signal candidate, entirely from results
-already computed elsewhere (`context/`, `signals/signal_quality.py`,
-`signals/explainability.py`). A standardization layer for a future AI
+already computed elsewhere (`context/`, `signal_layer/signal_scoring/signal_quality.py`,
+`signal_layer/signal_scoring/explainability.py`). A standardization layer for a future AI
 Analyzer, backtester, ML dataset exporter, or Failure Analysis
 module, not a new analysis.
 
@@ -16,10 +16,10 @@ Context Engine
 Strategy Engine (signal candidates)
       |
       v
-Signal Quality Score (signals/signal_quality.py)
+Signal Quality Score (signal_layer/signal_scoring/signal_quality.py)
       |
       v
-Explainability (signals/explainability.py)
+Explainability (signal_layer/signal_scoring/explainability.py)
       |
       v
 Feature Engineering (feature_engine.py, Phase A10)
@@ -51,9 +51,9 @@ Score (Phase A4) already solved for their own narrower questions. See
 
 ### What Feature Engineering does NOT do
 - Does not train, run, or reference any ML model.
-- Does not change `strategies/*.py`, `signals/signal_engine.py`,
-  `signals/signal_quality.py`'s scoring, `signals/explainability.py`,
-  `ai/`, or `decision/decision_engine.py` — none read `MarketFeatures`
+- Does not change `strategies/*.py`, `signal_layer/signal_engine/signal_engine.py`,
+  `signal_layer/signal_scoring/signal_quality.py`'s scoring, `signal_layer/signal_scoring/explainability.py`,
+  `ai/`, or `decision_layer/decision_engine/decision_engine.py` — none read `MarketFeatures`
   in this phase.
 - Does not grade, explain, or re-derive anything itself —
   `signal_quality`/`confidence` are relayed from an already-computed
@@ -69,7 +69,7 @@ Score (Phase A4) already solved for their own narrower questions. See
 
 ## Input
 `ContextSnapshot` (from `context/`), an already-computed
-`SignalExplanation` (from `signals/explainability.py`, itself built
+`SignalExplanation` (from `signal_layer/signal_scoring/explainability.py`, itself built
 from `SignalQualityResult`), `asset`/`timeframe` (strings, passed in
 by `core/pipeline.py`), and an optional `HTFBiasResult` (from
 `context_layer/trend/htf_bias.py`, passed in externally, same pattern as Decision
@@ -83,7 +83,7 @@ candidate, never raises even on an empty/minimal context.
 
 ## Dependencies
 `context_layer.trend.market_regime` (for `MarketRegime`) — an already-existing
-`context/` computation, no new indicator — and `signals.explainability`
+`context/` computation, no new indicator — and `signal_layer.signal_scoring.explainability`
 (for `SignalExplanation`, `TYPE_CHECKING`-only). No dependency on
 `strategies/`, `ai/`, `decision/`, `risk/`, `database/`, or
 `telegram/`.

@@ -23,7 +23,7 @@ Two bounded, heuristic checks over a provider's returned text:
 Both checks are heuristic, not exhaustive -- they exist to catch an
 obvious violation early, not to replace the structural guarantees
 (Rule 1/2 in `ai/providers/gemini_provider.py`, "AI never approves a
-trade" in `decision/decision_engine.py`) that actually make those
+trade" in `decision_layer/decision_engine/decision_engine.py`) that actually make those
 properties true.
 """
 

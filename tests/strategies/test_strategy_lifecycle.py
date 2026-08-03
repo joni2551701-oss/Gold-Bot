@@ -1,6 +1,6 @@
 """
 Phase A11 -- Strategy Lifecycle foundation tests
-(strategies/lifecycle/).
+(strategy_layer/strategy_manager/lifecycle/).
 
 No mocking -- real StrategyDefinition/StrategyRegistry objects, same
 convention as tests/features/test_feature_engine.py.
@@ -13,9 +13,9 @@ import dataclasses
 
 import pytest
 
-from strategies.lifecycle.strategy_model import StrategyDefinition
-from strategies.lifecycle.strategy_status import StrategyStatus
-from strategies.lifecycle.strategy_registry import (
+from strategy_layer.strategy_manager.lifecycle.strategy_model import StrategyDefinition
+from strategy_layer.strategy_manager.lifecycle.strategy_status import StrategyStatus
+from strategy_layer.strategy_manager.lifecycle.strategy_registry import (
     StrategyRegistry,
     DuplicateStrategyIdError,
     DEFAULT_STRATEGIES,
@@ -134,11 +134,11 @@ def test_future_compatibility_field_shape_is_stable():
 def test_default_registry_contains_only_existing_strategies():
     """
     build_default_registry() must register exactly the three strategies
-    strategies/strategy_manager.py's StrategyManager already runs --
+    strategy_layer/strategy_manager/strategy_manager.py's StrategyManager already runs --
     LiquidityStrategy, FVGStrategy, AMDStrategy -- no new strategy, no
     strategy removed. ids must match the exact strategy_name string
-    literals each strategy already produces (strategies/liquidity_strategy.py:45,
-    strategies/fvg_strategy.py:45, strategies/amd_strategy.py:51).
+    literals each strategy already produces (strategy_layer/strategy_library/liquidity_strategy.py:45,
+    strategy_layer/strategy_library/fvg_strategy.py:45, strategy_layer/strategy_library/amd_strategy.py:51).
     """
     registry = build_default_registry()
     ids = {d.id for d in registry.list()}

@@ -1,7 +1,7 @@
 # GoldBot — Decision Engine
 
 Governed by `docs/constitution/CONSTITUTION.md` Article 1. Verified
-directly against `decision/decision_engine.py`.
+directly against `decision_layer/decision_engine/decision_engine.py`.
 
 **AI qaror bermaydi.** The Decision Engine is the one place a trade
 signal becomes APPROVED, REJECTED, or held. It reads the AI's analysis
@@ -11,7 +11,7 @@ layer never calls `decision/`, `risk/`, or `execution/` back.
 ## The real formula
 
 **Correction to a simplified brief sketch**: the blend is not three
-terms (Technical + AI + Risk). `decision/decision_engine.py`'s
+terms (Technical + AI + Risk). `decision_layer/decision_engine/decision_engine.py`'s
 `_weighted_score()` blends **four** components, per `DecisionWeights`:
 
 ```

@@ -73,13 +73,13 @@ lifecycle record, not an AI-authored journal entry.
 | `htf_bias` | Higher-timeframe bias computation | `context/` |
 | `context` | Build the market context snapshot | `context_layer/context_engine/context_orchestrator.py` |
 | `market_phase` | Classify market phase (Wyckoff/AMD/trend) | `context/` |
-| `signal` | Generate candidate signal(s) | `strategies/`, `signals/signal_engine.py` |
+| `signal` | Generate candidate signal(s) | `strategies/`, `signal_layer/signal_engine/signal_engine.py` |
 | `signal_quality` | Score/filter candidate signals | `signals/` |
 | `explainability` | Build the explainability payload for the signal | `signals/`, `ai/explanation/` (type-only) |
 | `features` | Assemble feature values for AI context | `context/`, `signals/` |
 | `ai` | `AIAnalyzer.analyze()` — produces `AIAnalysisResult` | `ai/ai_analyzer.py` |
-| `decision` | Blend confidence, APPROVE/REJECT/NO_TRADE | `decision/decision_engine.py` |
-| `risk` | Geometry/stop-loss validation, sizing | `risk/risk_manager.py` |
+| `decision` | Blend confidence, APPROVE/REJECT/NO_TRADE | `decision_layer/decision_engine/decision_engine.py` |
+| `risk` | Geometry/stop-loss validation, sizing | `risk_layer/risk_engine/risk_manager.py` |
 | `signal_history` | Persist the signal's lifecycle record | `lifecycle/` |
 | `telegram_format` | Format the Telegram message | `telegram/` |
 | `telegram_delivery` | Send eligible messages | `telegram/` |

@@ -2025,7 +2025,7 @@ Unda birorta ham `.py` fayl yo'q — u faqat governance/ADR markdown hujjatlari.
 
 | ACR | Kod holati |
 |---|---|
-| Backtesting Isolation Rule | ✅ **Verified** — `backtesting/backtest_engine.py` `risk.risk_manager.RiskManager`ni chaqiradi va `execution/` yoki biror broker mijozini umuman import qilmaydi |
+| Backtesting Isolation Rule | ✅ **Verified** — `backtesting/backtest_engine.py` `risk_layer.risk_engine.risk_manager.RiskManager`ni chaqiradi va `execution/` yoki biror broker mijozini umuman import qilmaydi |
 | Canonical Event Bus Rule | ✅ **Verified** — `01_Data_Layer/Event_System` yagona Event Bus infratuzilmasi |
 | Module Reuse Rule | ✅ **Verified** — `backtest_engine.py` `lifecycle/paper_trade.py`ni qayta ishlatadi, o'z simulyatsiya modulini yaratmaydi |
 

@@ -1,11 +1,11 @@
 """STEP-08: canonical signal build/publish lifecycle (TASK-CORE-008)."""
 
-from signals.lifecycle.state import (
+from signal_layer.signal_engine.lifecycle.state import (
     CanonicalSignalStatus as St,
     transition,
     is_terminal,
 )
-from signals.lifecycle import CanonicalSignalStatus as StFromPkg
+from signal_layer.signal_engine.lifecycle import CanonicalSignalStatus as StFromPkg
 
 
 def test_package_reexport():

@@ -252,8 +252,8 @@ rule. The pipeline's dependency direction is intact.
 
 ### 3.2 Finding: `risk/` imports `database/` directly (undisclosed)
 
-`risk/risk_manager.py`, `risk/account_state_tracker.py`, and
-`risk/duplicate_checker.py` import directly from
+`risk_layer/risk_engine/risk_manager.py`, `risk_layer/risk_engine/account_state_tracker.py`, and
+`risk_layer/risk_validator/duplicate_checker.py` import directly from
 `database/*_repository.py` modules — real, module-level imports, not
 `TYPE_CHECKING`-only. This contradicts `risk/README.md`'s own explicit
 statement that risk/ has "No dependency on database/", and it is not

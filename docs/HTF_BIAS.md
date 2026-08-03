@@ -134,13 +134,13 @@ source of truth for this list.
   strategy or a decision -- it describes market context only.
 - Does not call, modify, or receive input from `strategies/`,
   `signals/`, `ai/`, or `risk/`. As of Phase A3, `HTFBiasResult` *is*
-  passed into `decision.decision_engine.DecisionEngine.evaluate()` as
+  passed into `decision_layer.decision_engine.decision_engine.DecisionEngine.evaluate()` as
   one weighted input among four -- it still never itself
   approves/rejects a trade; it only contributes a bounded score
   component (see decision/README.md's "HTF integration" section for
   exactly how). `context_layer/trend/htf_bias.py` itself was not modified to make
   this connection -- the consuming code lives entirely in
-  `decision/decision_engine.py`.
+  `decision_layer/decision_engine/decision_engine.py`.
 - Does not change `ContextSnapshot`'s fields, `SignalCandidate`, or
   `RiskResult`. `TradeDecision` (Phase A3) gained new explainability
   fields, but `DecisionEngine.evaluate()`'s pre-A2 two-argument call

@@ -1,10 +1,10 @@
 """
-Phase 60.3, TASK 3 -- execution/simulator/slippage.py tests.
+Phase 60.3, TASK 3 -- execution_layer/execution_engine/simulator/slippage.py tests.
 """
 
 import pytest
 
-from execution.simulator.slippage import SlippageConfig, apply_slippage, compute_slippage
+from execution_layer.execution_engine.simulator.slippage import SlippageConfig, apply_slippage, compute_slippage
 
 
 def test_compute_slippage_returns_configured_points():

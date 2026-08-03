@@ -5,8 +5,8 @@ from types import SimpleNamespace
 from context_layer.market_structure.choch import ChochDirection
 from context_layer.liquidity.liquidity import LiquidityType
 
-from strategies.reversal_strategy import ReversalStrategy
-from strategies.result import StrategyDirection, SetupStatus
+from strategy_layer.strategy_library.reversal_strategy import ReversalStrategy
+from strategy_layer.strategy_engine.result import StrategyDirection, SetupStatus
 
 
 def _choch(index, direction, price=105.0):

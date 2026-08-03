@@ -15,7 +15,7 @@ from lifecycle.paper_trade import (
     open_paper_trade,
 )
 from lifecycle.trade_state import TradeState
-from signals.schema import SignalSchema
+from signal_layer.signal_builder.schema import SignalSchema
 
 
 def _approved_signal(**overrides) -> SignalSchema:

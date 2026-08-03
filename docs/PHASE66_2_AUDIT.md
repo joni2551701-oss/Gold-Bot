@@ -28,12 +28,12 @@ remembers to name.
 - **`ai/journal/trade_journal.py`'s `TradeJournalEntry`** (Phase 55 AI
   folder restructure, re-exported by a compatibility shim at
   `ai/trade_journal.py`). Fields: `signal_id`, `strategy_name`,
-  `signal_type` (typed as `signals.models.SignalType`!),
+  `signal_type` (typed as `signal_layer.signal_builder.models.SignalType`!),
   `technical_score`, `ai_confidence`, `decision` (`DecisionType`:
   APPROVED/REJECTED/NO_TRADE), `entry`, `stop_loss`, `take_profit`,
   `exit_price`, `pnl`, `rr`, `outcome` (`TradeOutcome`:
   WIN/LOSS/BREAK_EVEN), `timestamp`, `notes`. **This type directly
-  imports `signals.models.SignalType`** — a hard Trading Core
+  imports `signal_layer.signal_builder.models.SignalType`** — a hard Trading Core
   dependency. It predates Constitution Article 3's zero-exception `ai/`
   isolation rule (formalized Phase 62.0); at the time it was written,
   no such rule existed. Extending it for this phase's own

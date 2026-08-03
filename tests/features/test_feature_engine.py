@@ -23,7 +23,7 @@ from context_layer.trend.market_regime import MarketRegimeResult, MarketRegime, 
 from context_layer.session.session import Session, SessionEvent
 from context_layer.liquidity.liquidity import LiquidityZone, LiquidityType
 from context_layer.trend.htf_bias import HTFBias, HTFBiasResult
-from signals.explainability import SignalExplanation
+from signal_layer.signal_scoring.explainability import SignalExplanation
 from data_layer.providers.twelve_data_client import Candle
 
 TS = datetime(2024, 1, 2, 9, 0, tzinfo=timezone.utc)  # 09:00 UTC -- LONDON per context_layer/session/session.py

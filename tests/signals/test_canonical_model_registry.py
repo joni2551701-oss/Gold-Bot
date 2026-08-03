@@ -2,9 +2,9 @@
 
 from datetime import datetime, timezone
 
-from signals.signal import CanonicalSignal, generate_signal_id, validate_signal
-from signals.schema import SignalSchema
-from signals.registry import SignalKind, kind_for_direction, is_registered, all_kinds
+from signal_layer.signal_builder.signal import CanonicalSignal, generate_signal_id, validate_signal
+from signal_layer.signal_builder.schema import SignalSchema
+from signal_layer.signal_engine.registry import SignalKind, kind_for_direction, is_registered, all_kinds
 
 
 def _sig(direction="BUY", entry=100.0, sl=98.0, tp=104.0):

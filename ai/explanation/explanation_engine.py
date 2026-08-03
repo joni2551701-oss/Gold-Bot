@@ -4,7 +4,7 @@ TASK 7).
 
 Wraps `ai/runtime/ai_service.py`'s `AIService.ask()` (unmodified) for
 EXPLANATION/SUMMARY/EDUCATION/ANALYSIS-shaped questions only -- no new
-provider call, no new capability. Reuses `signals/explainability.py`'s
+provider call, no new capability. Reuses `signal_layer/signal_scoring/explainability.py`'s
 `SignalExplanation` (already-computed reasons; `ai/` -> `signals/` is
 the one sanctioned cross-layer import this session's own boundary
 audit established) and `knowledge/registry.py`'s entries as prompt
@@ -32,7 +32,7 @@ from ai.runtime.ai_service import AIService
 from ai.runtime.runtime_request import RuntimeRequest
 from ai.runtime.runtime_response import RuntimeResponse
 from knowledge.registry import get_entry
-from signals.explainability import SignalExplanation
+from signal_layer.signal_scoring.explainability import SignalExplanation
 
 
 def _format_signal_explanation(explanation: SignalExplanation) -> str:

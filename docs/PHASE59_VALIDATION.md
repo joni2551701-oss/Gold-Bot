@@ -96,13 +96,13 @@ automatically yet — a live monitor comparing an `OPEN` `PaperTrade`'s
 
 | Metric | Source | Status |
 |---|---|---|
-| Drawdown | Would need a running equity curve across closed `PaperTrade`s | **Gap** — no equity/account-balance simulation exists anywhere in this codebase (deliberately: `risk/risk_manager.py`'s `lot_size` is "a sizing suggestion for manual execution, never an order instruction" — see `risk/risk_manager.py`'s own docstring). |
+| Drawdown | Would need a running equity curve across closed `PaperTrade`s | **Gap** — no equity/account-balance simulation exists anywhere in this codebase (deliberately: `risk_layer/risk_engine/risk_manager.py`'s `lot_size` is "a sizing suggestion for manual execution, never an order instruction" — see `risk_layer/risk_engine/risk_manager.py`'s own docstring). |
 | Max loss | The single worst `r_multiple` among closed `PaperTrade`s in the window | Computable once `SignalPerformance.r_multiple` values exist for the window (`analytics/signal_performance.py`, TASK 3) — same persistence gap as above. |
 | Consecutive losses | A streak count over closed `PaperTrade`s in chronological order | Computable the same way, once results exist for the window — no dedicated helper exists yet; a report generator would compute this directly from an ordered `List[SignalPerformance]`. |
 
 Per this phase's own boundary ("Risk o'zgarmaydi" — Risk Manager logic
 does not change), none of the three above are computed by
-`risk/risk_manager.py` — they are all post-hoc, read-only aggregations
+`risk_layer/risk_engine/risk_manager.py` — they are all post-hoc, read-only aggregations
 over `PaperTrade`/`SignalPerformance` records a future report generator
 would build.
 
@@ -158,8 +158,8 @@ analytics/strategy_report.py (TASK 3)     aggregation
 The gaps this document originally disclosed above are the ones this
 follow-up phase's brief targeted directly — closing the foundation
 pieces needed to actually run a 7-day validation, without touching
-`strategies/`, `signals/` signal logic, `risk/risk_manager.py`, or
-`decision/decision_engine.py` (this phase's own explicit boundary: "no
+`strategies/`, `signals/` signal logic, `risk_layer/risk_engine/risk_manager.py`, or
+`decision_layer/decision_engine/decision_engine.py` (this phase's own explicit boundary: "no
 real order, no broker execution, no strategy/threshold change — only
 observation and dataset collection"). See `docs/VALIDATION_GUIDE.md`
 for how a validation run is actually carried out and
@@ -168,7 +168,7 @@ for how a validation run is actually carried out and
 | Task | What it added | Closes which gap above |
 |---|---|---|
 | TASK 1 | `config.Config.VALIDATION_MODE` (default `False`) — a single foundation switch; nothing reads it yet beyond `telegram/owner/validation_commands.py`'s `get_validation_status()`. | None directly — a hook for future wiring, not a gap-closer itself. |
-| TASK 2 | `SignalSchema.market_phase` — every signal now carries its own market phase at creation time, relayed by `signals/adapter.py`'s `from_signal_candidate()` and stamped by `core/pipeline.py`'s `signal_history` stage. | Narrows the Market Context gap: market phase is now on the signal record itself in-memory, not just in the same cycle's separate `result["market_phase"]`. **Still open**: `database/signal_record.py`'s persisted `SignalRecord` has no `market_phase` column, so it is not yet part of the durable, cross-run `signals` table row — only of the in-memory `SignalSchema`. |
+| TASK 2 | `SignalSchema.market_phase` — every signal now carries its own market phase at creation time, relayed by `signal_layer/signal_builder/adapter.py`'s `from_signal_candidate()` and stamped by `core/pipeline.py`'s `signal_history` stage. | Narrows the Market Context gap: market phase is now on the signal record itself in-memory, not just in the same cycle's separate `result["market_phase"]`. **Still open**: `database/signal_record.py`'s persisted `SignalRecord` has no `market_phase` column, so it is not yet part of the durable, cross-run `signals` table row — only of the in-memory `SignalSchema`. |
 | TASK 3 | `database/raw_candle_models.py`'s `from_market_candle()` + `RawCandleRepository.save_market_candles()` — bridges a provider's real `MarketCandle` output (e.g. `TwelveDataProvider.get_candles()`) into the already-persisted `raw_candles` table (Phase 59.3). | Closes the "real candles must be stored for future backtesting" requirement for whichever candles a caller chooses to save — still opt-in per call, nothing in `core/pipeline.py` calls it automatically yet (that would be a separate, explicit wiring decision). |
 | TASK 4 | Verification only, no new code: `lifecycle/paper_trade.py` (`OPEN`→`TP`/`SL`/`BE`/`EXPIRED`/`CANCELLED`, via `TradeState`/`ALLOWED_PAPER_TRADE_RESULTS`) and `lifecycle/paper_trade_monitor.py`'s `check_paper_trade_against_candles()` (Phase 59.4) already fully satisfy the "Paper Trading Validation Engine" requirement, confirmed to contain zero broker/lot-sizing/MetaTrader code (`grep -rn "broker\|lot_size\|MetaTrader\|real_order\|place_order" lifecycle/*.py` finds only docstring disclaimers). | Confirms Known gap #2's state machine and monitor are real and complete; the "nothing calls them automatically yet" half of that gap is unchanged by design (out of scope for this phase). |
 | TASK 5 | `analytics/validation_report.py` — `build_validation_report()`/`format_validation_report()`, the exact weekly-report shape this document's own Signal/Strategy/Market-Context sections describe, built from already-computed `Sequence[SignalSchema]`/`Sequence[SignalPerformance]`. | Gives the Signal/Strategy/Market-Context sections above a real, tested aggregation function — still needs its caller to supply 7 days' worth of `SignalSchema`/`SignalPerformance` (Known gap #1 persistence). |

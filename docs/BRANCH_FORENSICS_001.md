@@ -15,7 +15,7 @@ correction is stated explicitly.
 blocking both PR #1 and PR #2 traces to **exactly one file** and
 **exactly one invisible character**. `git merge-tree` (a safe,
 side-effect-free git plumbing command) reports precisely one conflict
-in each case, on `strategies/strategy_manager.py` — and the underlying
+in each case, on `strategy_layer/strategy_manager/strategy_manager.py` — and the underlying
 file content is byte-identical on every side (same blob SHA,
 `89a66416a8...`, confirmed via `git ls-tree` and `git cat-file`/`md5sum`).
 This is a path-only collision, not a content conflict.
@@ -36,10 +36,10 @@ All timestamps converted to UTC for a single consistent ordering
 | **2026-07-12 13:10:54** | **`ad1affe` "Update config.py" — the last commit both branches share.** Confirmed via `git merge-base` and `git merge-base --is-ancestor` (true for both `main` and the production branch). |
 | 2026-07-12 13:46:38 | `e67e5e4` (main-only) — repairs `ai/ai_analyzer.py⁠`'s own corrupted name. |
 | 2026-07-12 13:48:34 | `acc844a` (main-only) — renames `"strategies/ liquidity_strategy.py⁠"` → `"strategie/lsiquidity_strategy.py⁠"`. **This is where the `strategie/` (missing "s") directory typo is introduced** — a regression relative to the already-correct `strategies/` spelling one commit earlier. |
-| 2026-07-12 13:48:59 | `8c69ae77` (main-only) — renames `"strategies/ strategy_manager.py⁠"` → `"strategies/strategy_manager.py⁠"`: **removes the leading space but does not remove the trailing invisible character.** This is `main`'s own final, incomplete fix for this file — no later commit touches it, so this exact (still-corrupted) name persists to `main`'s current tip. |
-| 2026-07-12 14:04:41 | `f78461b` (production branch's **first** post-divergence commit, "fix: stabilize imports and config path") — renames `"strategies/ strategy_manager.py⁠"` → `strategies/strategy_manager.py`, cleanly, in one step: removes both the leading space and the trailing invisible character. Production's copy is fully clean from this point on. |
+| 2026-07-12 13:48:59 | `8c69ae77` (main-only) — renames `"strategies/ strategy_manager.py⁠"` → `"strategy_layer/strategy_manager/strategy_manager.py⁠"`: **removes the leading space but does not remove the trailing invisible character.** This is `main`'s own final, incomplete fix for this file — no later commit touches it, so this exact (still-corrupted) name persists to `main`'s current tip. |
+| 2026-07-12 14:04:41 | `f78461b` (production branch's **first** post-divergence commit, "fix: stabilize imports and config path") — renames `"strategies/ strategy_manager.py⁠"` → `strategy_layer/strategy_manager/strategy_manager.py`, cleanly, in one step: removes both the leading space and the trailing invisible character. Production's copy is fully clean from this point on. |
 | 2026-07-12 14:05:26 | **PR #1 opened** — 45 seconds after `f78461b` was pushed; head = production branch, base = `main` @ `8c69ae77` (itself one of the mid-repair commits above, not `main`'s later tip). Timing is consistent with an auto-created PR on first push of a new session branch, not a hand-authored change proposal. |
-| 2026-07-12 16:45:34 | `7af7ddc5` (main-only) — renames `"strategie/lsiquidity_strategy.py⁠"` → `strategies/liquidity_strategy.py`: fixes the directory typo, the "lsiquidity" typo, and removes the invisible character, all in one commit. This file fully converges with production's clean version — no conflict remains for `liquidity_strategy.py`. |
+| 2026-07-12 16:45:34 | `7af7ddc5` (main-only) — renames `"strategie/lsiquidity_strategy.py⁠"` → `strategy_layer/strategy_library/liquidity_strategy.py`: fixes the directory typo, the "lsiquidity" typo, and removes the invisible character, all in one commit. This file fully converges with production's clean version — no conflict remains for `liquidity_strategy.py`. |
 | 2026-07-20 17:40:23 | `5618adec` (main-only) — "Add owner_snapshot.yml to main" — `main`'s current tip. |
 | 2026-07-23 12:41:49 | `d911b97` "V2 Phase 6 Freeze" — production branch's current tip. |
 | 2026-07-23 20:25:22 | **PR #2 opened** — head = current Platform Worker branch (production branch + 18 Platform/Governance commits, none touching `strategies/`). |
@@ -68,7 +68,7 @@ it was only lightly, sporadically touched for unrelated
 housekeeping.
 
 **Q: What is the exact conflict origin?**
-A **rename/rename conflict on a single file**, `strategies/strategy_manager.py`,
+A **rename/rename conflict on a single file**, `strategy_layer/strategy_manager/strategy_manager.py`,
 caused by two *independent* cleanup attempts on the same
 originally-corrupted filename (`"signal/strategy_manager.py⁠"`,
 created 2026-07-11 with a directory typo and a trailing U+2060 WORD
@@ -85,7 +85,7 @@ reconcile.
 
 **How the corruption itself originated** (not just how it was
 fixed): every `git log --follow` trace on this file (and the parallel
-trace on `ai/ai_analyzer.py`, `strategies/liquidity_strategy.py`)
+trace on `ai/ai_analyzer.py`, `strategy_layer/strategy_library/liquidity_strategy.py`)
 begins with the *very first* commits that created these files, on
 2026-07-11 — the invisible-character pattern is not something either
 branch introduced; it was present in this repository from its
@@ -101,7 +101,7 @@ completely — which is the actual mechanism that produced two divergent
 ## Commit Chain
 
 Full chain for the one file that actually conflicts,
-`strategies/strategy_manager.py`, oldest to newest:
+`strategy_layer/strategy_manager/strategy_manager.py`, oldest to newest:
 
 ```
 fd9e1e69 (2026-07-11 10:01:08 UTC, shared)
@@ -118,7 +118,7 @@ e1fa1291 (2026-07-11 10:18:23 UTC, shared)
    [main line]                                          [production line]
         ↓                                                    ↓
 8c69ae77 (13:48:59 UTC)                              f78461b (14:04:41 UTC)
-    "strategies/strategy_manager.py⁠"                  strategies/strategy_manager.py
+    "strategy_layer/strategy_manager/strategy_manager.py⁠"                  strategy_layer/strategy_manager/strategy_manager.py
     [leading space removed;                            [leading space AND invisible
      invisible char NOT removed —                        char both removed — fully
      main's final, incomplete fix]                       clean, production's final state]
@@ -131,7 +131,7 @@ e1fa1291 (2026-07-11 10:18:23 UTC, shared)
     character in this filename                          (current working branch) too
 ```
 
-Companion file `strategies/liquidity_strategy.py` went through a
+Companion file `strategy_layer/strategy_library/liquidity_strategy.py` went through a
 similar but ultimately **non-conflicting** chain: `main`'s `acc844a`
 (13:48:34 UTC) introduced a *worse* intermediate state
 (`"strategie/lsiquidity_strategy.py⁠"` — directory typo regression plus
@@ -151,8 +151,8 @@ ORDER-002's constraints):
 ```
 $ git merge-tree --write-tree origin/main origin/claude/code-analysis-optimization-pwfo3q
 CONFLICT (rename/rename): strategies/ strategy_manager.py⁠ renamed to
-strategies/strategy_manager.py⁠ in origin/main and to
-strategies/strategy_manager.py in origin/claude/code-analysis-optimization-pwfo3q.
+strategy_layer/strategy_manager/strategy_manager.py⁠ in origin/main and to
+strategy_layer/strategy_manager/strategy_manager.py in origin/claude/code-analysis-optimization-pwfo3q.
 ```
 
 Re-run against PR #2's actual head (the current Platform Worker
@@ -174,8 +174,8 @@ is a path-only conflict. Not one line of actual code differs.**
 Not executed — proposed only, per ORDER-002/ORDER-003's constraints.
 
 1. **The fix, once authorized, is a single-file, content-neutral
-   rename on `main`**: `git mv "strategies/strategy_manager.py⁠"
-   strategies/strategy_manager.py` (removing the one trailing U+2060
+   rename on `main`**: `git mv "strategy_layer/strategy_manager/strategy_manager.py⁠"
+   strategy_layer/strategy_manager/strategy_manager.py` (removing the one trailing U+2060
    character) — this makes `main`'s path byte-identical to the
    production branch's, at which point `git merge-tree` would report
    zero conflicts for this file, and (based on this investigation

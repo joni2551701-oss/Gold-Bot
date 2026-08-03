@@ -75,7 +75,7 @@ ai/
                    ai.memory) (Phase 66.5)
   strategy/        models.py (StrategyRecord/StrategyType/StrategyStatus/StrategyConfidence,
                    primitive-only, in-memory, no BUY/SELL/verdict field of any kind, StrategyStatus
-                   distinct from strategies.lifecycle.strategy_status.StrategyStatus -- import of
+                   distinct from strategy_layer.strategy_manager.lifecycle.strategy_status.StrategyStatus -- import of
                    strategies/ forbidden outright), access.py (is_strategy_intelligence_enabled_for,
                    Owner-only), strategy_runtime.py (StrategyRuntime -- create/get/list/update/
                    update_notes/archive CRUD only, in-memory dict, no database, no LLM/reasoning),
@@ -312,7 +312,7 @@ above:
   (CRUD-only, in-memory, no LLM/reasoning/inference, no BUY/SELL/
   verdict field of any kind), its primitive-only `StrategyRecord`
   contract (`StrategyStatus` distinct from the Trading-Core-LOCKed
-  `strategies.lifecycle.strategy_status.StrategyStatus` -- import of
+  `strategy_layer.strategy_manager.lifecycle.strategy_status.StrategyStatus` -- import of
   `strategies/` forbidden outright by this phase's own Rule 1), and
   its Performance/Trade Journal/Memory integration points (Phase 66.6).
 - `docs/ai/AI_PORTFOLIO.md` — `ai/portfolio/`'s `PortfolioRuntime`

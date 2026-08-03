@@ -5,8 +5,8 @@ and `generate_chart_id()`).
 
 Follows `ai/trading_analyst/models.py`'s own Article 3 resolution
 exactly: every field is a primitive (`str`/`float`/`Sequence[str]`) or
-an enum defined in this same file — never a `decision.models.TradeDecision`,
-`risk.risk_manager.RiskResult`, or any other Trading Core object
+an enum defined in this same file — never a `decision_layer.decision_engine.models.TradeDecision`,
+`risk_layer.risk_engine.risk_manager.RiskResult`, or any other Trading Core object
 reference. `ai/chart_intelligence/` never imports `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/`, `context/`, or `monitoring/`.
 

@@ -5,8 +5,8 @@ day-to-day AI-layer development.
 
 ## AI assists, never decides (Article 1)
 
-No AI-layer module calls `decision.decision_engine.DecisionEngine`,
-`risk.risk_manager.RiskManager`, triggers execution, or triggers a
+No AI-layer module calls `decision_layer.decision_engine.decision_engine.DecisionEngine`,
+`risk_layer.risk_engine.risk_manager.RiskManager`, triggers execution, or triggers a
 Telegram send. `ai/interfaces.py`'s `AIAnalyzerInterface` docstring is
 the binding contract for any current or future provider. A new
 `Capability` (Article 11's checklist item 5) never changes this — a

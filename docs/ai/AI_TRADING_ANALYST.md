@@ -31,8 +31,8 @@ to conflict with the brief's own diagram — it does not, once resolved
 the same way `ai/explanation/explanation_input.py`'s own
 `ExplanationInput` already resolved it: `TradingAnalysisInput`'s every
 field is a primitive (`str`/`float`/`Sequence[str]`) or an enum
-defined in this same package — never a `decision.models.TradeDecision`,
-`risk.risk_manager.RiskResult`, or `signals.models.SignalCandidate`
+defined in this same package — never a `decision_layer.decision_engine.models.TradeDecision`,
+`risk_layer.risk_engine.risk_manager.RiskResult`, or `signal_layer.signal_builder.models.SignalCandidate`
 object reference. A future, separately-approved live-wiring phase
 would have `core/pipeline.py` (the only place already permitted to
 see every trading layer's own output) extract these plain values from

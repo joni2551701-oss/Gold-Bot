@@ -21,7 +21,7 @@ Authorized Operator executes the pushes, then the Worker verifies and
 writes the Recovery Report.
 
 **Scope (Director-confirmed, final)**: this runbook fixes **only**
-`strategies/strategy_manager.py` — the one file whose corrupted name
+`strategy_layer/strategy_manager/strategy_manager.py` — the one file whose corrupted name
 causes the merge conflict. Testing proved this achieves zero merge
 conflicts, and proved that fixing the other 8 corrupted filenames on
 `main` would *introduce* 4 new conflicts. **The other 8 are explicitly
@@ -83,7 +83,7 @@ PY
 
 # Commit ONLY the rename. Do NOT use `git add -A` or `git commit -a`
 # (that can pull in a stray runtime database/goldbot.db).
-git commit -m "Repository Recovery: fix U+2060 in strategies/strategy_manager.py filename
+git commit -m "Repository Recovery: fix U+2060 in strategy_layer/strategy_manager/strategy_manager.py filename
 
 Removes a trailing U+2060 WORD JOINER from the filename that caused the
 only rename/rename merge conflict between main and the production/working
@@ -109,7 +109,7 @@ git push origin post-recovery-main
 
 ```bash
 git fsck --full                                                    # expect: no corruption errors
-git rev-parse "main:strategies/strategy_manager.py"                # expect: 89a66416a8f53672ceb12312760188fedd1b4bd8
+git rev-parse "main:strategy_layer/strategy_manager/strategy_manager.py"                # expect: 89a66416a8f53672ceb12312760188fedd1b4bd8
 git merge-tree --write-tree main origin/claude/code-analysis-optimization-pwfo3q | grep -ci conflict   # expect: 0
 git merge-tree --write-tree main origin/claude/trading-ai-arch-review-tgszrz     | grep -ci conflict   # expect: 0
 ```
@@ -123,9 +123,9 @@ git merge-tree --write-tree main origin/claude/trading-ai-arch-review-tgszrz    
 **Expected and intentional**: a full non-ASCII filename sweep of `main`
 will still list **8 other** U+2060 filenames (`ai/ai_prompt.py`,
 `ai/confidence_model.py`, `context_layer/market_structure/market_structure.py`,
-`database/signal_repository.py`, `signals/models.py`,
-`signals/signal_engine.py`, `strategies/amd_strategy.py`,
-`strategies/fvg_strategy.py`). These are **left unfixed on purpose** —
+`database/signal_repository.py`, `signal_layer/signal_builder/models.py`,
+`signal_layer/signal_engine/signal_engine.py`, `strategy_layer/strategy_library/amd_strategy.py`,
+`strategy_layer/strategy_library/fvg_strategy.py`). These are **left unfixed on purpose** —
 see the finding below. Their presence is not a validation failure.
 
 ## Step 5 — Return to the Worker

@@ -13,8 +13,8 @@ Written from a full audit of the real codebase as it stood after
 Phase 61.7 (AI Runtime Integration). Self-corrected once during
 drafting: the first draft of Article 1/2/3 wrongly claimed
 `decision/`/`risk/` never import from `ai/`; corrected to state the
-real, narrow, type-only exception (`decision/models.py`,
-`decision/decision_engine.py` importing `AIAnalysisResult`) before
+real, narrow, type-only exception (`decision_layer/decision_engine/models.py`,
+`decision_layer/decision_engine/decision_engine.py` importing `AIAnalysisResult`) before
 ratification. Commit `882c5b5`.
 
 ## Phase 62.1a — First amendment: Articles 8–12

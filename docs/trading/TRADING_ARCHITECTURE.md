@@ -18,10 +18,10 @@ Market Data     data/
 Context          context_layer/context_engine/context_orchestrator.py
     │
     ▼
-Strategy           strategies/strategy_manager.py
+Strategy           strategy_layer/strategy_manager/strategy_manager.py
     │
     ▼
-Signal                signals/signal_engine.py
+Signal                signal_layer/signal_engine/signal_engine.py
     │
     ▼
 AI Analysis              ai/ai_analyzer.py — advisory only, produces
@@ -29,13 +29,13 @@ AI Analysis              ai/ai_analyzer.py — advisory only, produces
                           (Constitution Article 1)
     │
     ▼
-Decision                    decision/decision_engine.py
+Decision                    decision_layer/decision_engine/decision_engine.py
     │
     ▼
-Risk                           risk/risk_manager.py
+Risk                           risk_layer/risk_engine/risk_manager.py
     │
     ▼
-Execution                          execution/execution_engine.py
+Execution                          execution_layer/execution_engine/execution_engine.py
                                     (intentionally inert — no live
                                     MT5 order calls exist yet)
     │
@@ -51,7 +51,7 @@ this trading-scoped view and the real code agree.
 ## The one rule this whole document exists to protect
 
 Constitution Article 1: the AI layer produces a *value*
-(`AIAnalysisResult`) that `decision/decision_engine.py` accepts as one
+(`AIAnalysisResult`) that `decision_layer/decision_engine/decision_engine.py` accepts as one
 input among several — it never calls `decision/`, `risk/`, or
 `execution/` itself. See `docs/trading/DECISION_ENGINE.md` for exactly
 how that value is blended, and `docs/architecture/IMPORT_RULES.md` for

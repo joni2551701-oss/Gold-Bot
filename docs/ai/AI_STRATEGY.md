@@ -40,7 +40,7 @@ isolation list).
 ### Naming note: `StrategyStatus` vs the Trading Core one
 
 Documented in `docs/PHASE66_6_AUDIT.md`, not a defect, and stricter
-than every prior `66.x` naming collision: `strategies.lifecycle.strategy_status.StrategyStatus`
+than every prior `66.x` naming collision: `strategy_layer.strategy_manager.lifecycle.strategy_status.StrategyStatus`
 (`TESTING`/`ACTIVE`/`DISABLED`/`DEPRECATED`) is a genuine, mature
 Trading Core Strategy metadata contract — but this brief's own Rule 1
 bans `ai/` from importing `strategies/` at all, making reuse

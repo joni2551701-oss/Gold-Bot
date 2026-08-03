@@ -188,13 +188,13 @@ aggregation.
 unchanged (`signal_engine.py` is 9 lines).
 
 **Dependencies** (grepped): `context/` and — **`strategies/`**
-(`signal_engine.py` imports `strategies.strategy_manager.StrategyManager`).
+(`signal_engine.py` imports `strategy_layer.strategy_manager.strategy_manager.StrategyManager`).
 Combined with the previous section: `strategies` imports
-`signals.models`, and `signals.signal_engine` imports
-`strategies.strategy_manager`. **This is a real, two-way, package-
+`signal_layer.signal_builder.models`, and `signal_layer.signal_engine.signal_engine` imports
+`strategy_layer.strategy_manager.strategy_manager`. **This is a real, two-way, package-
 level circular dependency.** It does not crash today (Python resolves
-it because the exact submodules involved — `signals/models.py` and
-`strategies/strategy_manager.py` — don't import each other directly,
+it because the exact submodules involved — `signal_layer/signal_builder/models.py` and
+`strategy_layer/strategy_manager/strategy_manager.py` — don't import each other directly,
 only their sibling submodules do), but the two packages are mutually
 dependent, which `docs/ARCHITECTURE.md`'s stated one-directional
 "Strategies → Signal Generation" flow does not disclose.
@@ -243,7 +243,7 @@ entire audit:
   Read in full this phase: it always returns `AIAnalysisResult(approved=False,
   confidence=0.0, risk_score=1.0, explanation="AI Analyzer initialized.
   Pending heuristic integration.")` — regardless of the signal or
-  context passed in. `decision/decision_engine.py`'s `evaluate()`
+  context passed in. `decision_layer/decision_engine/decision_engine.py`'s `evaluate()`
   hard-gates on `ai_analysis.approved`: if `False`, the action is
   always `REJECT`, unconditionally. **This means the production
   pipeline, in its current state, structurally cannot produce an
@@ -289,7 +289,7 @@ Trading Safety rules name explicitly as requiring approval to change.
   `risk_score` field) is defined in `decision_engine.py` but never
   instantiated or imported anywhere else in the codebase** — confirmed
   by a full-repo grep this phase. Dead code; `evaluate()` actually
-  returns `TradeDecision` (a different class, in `decision/models.py`),
+  returns `TradeDecision` (a different class, in `decision_layer/decision_engine/models.py`),
   not `DecisionResult`. Not flagged for removal here (out of this
   phase's no-code-change scope) — flagged for v0.3.5 cleanup
   consideration.
@@ -499,8 +499,8 @@ Recommendations only — **nothing below has been implemented.**
 
 ### 1. `strategies/` ↔ `signals/` circular package dependency
 
-- **Current**: `strategies/*.py` imports `signals.models`;
-  `signals/signal_engine.py` imports `strategies.strategy_manager`.
+- **Current**: `strategies/*.py` imports `signal_layer.signal_builder.models`;
+  `signal_layer/signal_engine/signal_engine.py` imports `strategy_layer.strategy_manager.strategy_manager`.
 - **Problem**: a two-way package dependency the architecture docs
   don't disclose. No runtime failure today (the specific submodules
   involved don't cross-import each other), but any future change that
@@ -509,20 +509,20 @@ Recommendations only — **nothing below has been implemented.**
   `ImportError`. Fragile, easy to trip on without noticing during a
   routine change.
 - **Recommended architecture**: move `SignalCandidate`/`SignalType`
-  (currently in `signals/models.py`) to a location both packages can
+  (currently in `signal_layer/signal_builder/models.py`) to a location both packages can
   depend on without depending on *each other* — e.g. a `signals/`
-  package split into `signals/models.py` (imported by `strategies/`)
-  and `signals/signal_engine.py` (imports `strategies/`, not the
+  package split into `signal_layer/signal_builder/models.py` (imported by `strategies/`)
+  and `signal_layer/signal_engine/signal_engine.py` (imports `strategies/`, not the
   reverse). This is almost the current layout already; the fix is
   narrower than it sounds — `strategies/*.py` already only needs
-  `signals.models`, never `signals.signal_engine`. The dependency is
+  `signal_layer.signal_builder.models`, never `signal_layer.signal_engine.signal_engine`. The dependency is
   circular at the *package* level only because Python packages are
   imported as a whole in dependency-map tooling; at the *module* level
   it is already one-directional. **Recommendation: no file move
   needed — document the module-level (not package-level) dependency
   rule explicitly in `docs/ARCHITECTURE.md`**, i.e. "`strategies/`
-  depends on `signals/models.py` only, never `signals/signal_engine.py`;
-  `signals/signal_engine.py` depends on `strategies/strategy_manager.py`."
+  depends on `signal_layer/signal_builder/models.py` only, never `signal_layer/signal_engine/signal_engine.py`;
+  `signal_layer/signal_engine/signal_engine.py` depends on `strategy_layer/strategy_manager/strategy_manager.py`."
   A documentation fix, not a code migration.
 - **Benefits**: removes a currently-invisible fragility; a future
   contributor reading `docs/ARCHITECTURE.md` would know exactly which
@@ -533,8 +533,8 @@ Recommendations only — **nothing below has been implemented.**
 ### 2. `database/signal_record.py`'s upward type dependency
 
 - **Current**: `database/signal_record.py` imports `SignalCandidate`/
-  `SignalType` from `signals.models`, `TradeDecision` from
-  `decision.models`, `RiskResult` from `risk.risk_manager`, to type a
+  `SignalType` from `signal_layer.signal_builder.models`, `TradeDecision` from
+  `decision_layer.decision_engine.models`, `RiskResult` from `risk_layer.risk_engine.risk_manager`, to type a
   persistence wrapper.
 - **Problem**: `docs/ARCHITECTURE.md`'s Data Flow diagram places
   Database last, after Telegram; `database/`'s only stated dependency
@@ -577,7 +577,7 @@ Recommendations only — **nothing below has been implemented.**
 - **Migration risk**: none (documentation-only).
 - **Priority**: LOW.
 
-### 4. `decision/decision_engine.py`'s dead `DecisionResult` class
+### 4. `decision_layer/decision_engine/decision_engine.py`'s dead `DecisionResult` class
 
 - **Current**: `DecisionResult` (with a `risk_score` field) is defined
   but never instantiated or imported anywhere in the codebase;
@@ -599,5 +599,5 @@ Recommendations only — **nothing below has been implemented.**
 - **Migration risk**: low — confirmed zero external references this
   phase, so removal (when explicitly approved) would not break any
   caller. Still requires the explicit approval `CLAUDE.md` mandates
-  for any change to `decision/decision_engine.py`.
+  for any change to `decision_layer/decision_engine/decision_engine.py`.
 - **Priority**: LOW.

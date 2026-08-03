@@ -72,7 +72,7 @@ def _classify_timeframe(candles: Sequence[Candle], config: ContextConfig) -> HTF
     Derives one timeframe's bias from its most recent classified
     structure point via context.market_structure.most_recent_bias()
     (Phase A4: extracted from this function's own former inline walk,
-    now shared with signals/signal_quality.py -- behavior unchanged).
+    now shared with signal_layer/signal_scoring/signal_quality.py -- behavior unchanged).
     UNKNOWN if there isn't yet enough data to confirm any structure.
     """
     swings = detect_swing_points(

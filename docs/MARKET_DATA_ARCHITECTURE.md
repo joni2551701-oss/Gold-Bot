@@ -108,7 +108,7 @@ nothing from `FundamentalContextSnapshot` in this phase.
   `data_layer/providers/` — the live pipeline's data path is unchanged (see
   "As implemented today" above).
 - Does not change `strategies/`, `signals/` (candidate generation),
-  `decision/decision_engine.py`, `risk/risk_manager.py`, `ai/`,
+  `decision_layer/decision_engine/decision_engine.py`, `risk_layer/risk_engine/risk_manager.py`, `ai/`,
   `execution/`, `telegram/handlers.py`, `telegram/command_router.py`,
   or `telegram/commands.py`.
 - Does not implement a real Binance/FRED connection, or a

@@ -18,11 +18,11 @@ per-*signal* runtime state machine. Unrelated concepts that happen to
 share the word "lifecycle" — neither package imports the other.
 
 ## Not the same as `execution/`
-`execution/execution_engine.py` and `execution/signal_lifecycle.py`
+`execution_layer/execution_engine/execution_engine.py` and `execution_layer/execution_monitor/signal_lifecycle.py`
 are pre-existing, deliberately inert stubs in the Trading-Safety-
 protected `execution/` package (`ExecutionEngine.dispatch()` and
 `SignalLifecycle.transition()` both always return "Not implemented").
-`execution/signal_lifecycle.py`'s own `SignalState` enum
+`execution_layer/execution_monitor/signal_lifecycle.py`'s own `SignalState` enum
 (`CREATED`/`SENT`/`ACKNOWLEDGED`/`CLOSED`) describes Telegram message
 delivery, not a signal's analysis-pipeline progress or a trade's own
 life. `lifecycle/` never imports from or calls `execution/`, and does
@@ -31,7 +31,7 @@ no broker call, no real order, no MT5 integration. See
 `lifecycle/paper_trade.py`'s and `lifecycle/signal_state.py`'s own
 docstrings for the exact naming disambiguation
 (`PaperTrade`/`TradeState` vs. nothing pre-existing; `SignalLifecycleState`
-vs. `execution.signal_lifecycle.SignalState`).
+vs. `execution_layer.execution_monitor.signal_lifecycle.SignalState`).
 
 ## Modules
 
@@ -78,9 +78,9 @@ vocabulary for a `PaperTrade`.
 
 ## Dependencies
 `paper_trade.py` imports `lifecycle.trade_state` (same package) plus,
-`TYPE_CHECKING`-only, `signals.schema.SignalSchema`. `signal_state.py`
+`TYPE_CHECKING`-only, `signal_layer.signal_builder.schema.SignalSchema`. `signal_state.py`
 imports `lifecycle.trade_state` plus, `TYPE_CHECKING`-only,
-`lifecycle.paper_trade.PaperTrade` and `signals.schema.SignalSchema`.
+`lifecycle.paper_trade.PaperTrade` and `signal_layer.signal_builder.schema.SignalSchema`.
 Neither imports `context/`, `strategies/`, `ai/`, `decision/`,
 `risk/`, `execution/`, `database/`, or `telegram/`.
 

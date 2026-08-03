@@ -12,12 +12,12 @@ must never gain the ability to alter a candidate's entry/stop-loss/
 take-profit, re-run a strategy, or override a `TradeDecision`.
 
 ## Input
-`risk.risk_manager.RiskResult` (`execution.execution_engine.ExecutionEngine.dispatch(risk_result)`)
+`risk_layer.risk_engine.risk_manager.RiskResult` (`execution_layer.execution_engine.execution_engine.ExecutionEngine.dispatch(risk_result)`)
 — an already Decision-Engine-approved, Risk-Manager-validated result.
 This is the concrete carrier of what the brief calls "Approved Trade."
 
 ## Output
-`execution.execution_engine.ExecutionResult` — `dispatched` (`bool`),
+`execution_layer.execution_engine.execution_engine.ExecutionResult` — `dispatched` (`bool`),
 `reason` (`str`).
 
 ## Allowed Dependencies
@@ -29,7 +29,7 @@ and never alters a `SignalCandidate`'s entry/stop-loss/take-profit.
 ❌ Generating a signal — `execution/` never imports `context/` or
 `signals/` to look for a setup of its own.
 ❌ `ai/`, `decision/`, `database/`, `telegram/` — per
-`execution/execution_engine.py`'s own module docstring: "No MT5, no
+`execution_layer/execution_engine/execution_engine.py`'s own module docstring: "No MT5, no
 Telegram, no HTTP, no Database, no Logger, no async/threading/queue.
 No knowledge of message formatting or delivery mechanics."
 
@@ -43,7 +43,7 @@ never let a broker-side failure raise past this layer uncaught, since
 a live trading cycle must not crash mid-run. Not yet implemented.
 
 ## Future Extension
-`execution/signal_lifecycle.py` exists alongside `execution_engine.py`
+`execution_layer/execution_monitor/signal_lifecycle.py` exists alongside `execution_engine.py`
 as additional foundation scaffolding, also inert. Wiring up a real
 MT5/broker connection is explicitly named in `CLAUDE.md`'s Trading
 Safety rules as "itself a change requiring explicit approval, not a

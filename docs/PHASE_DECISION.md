@@ -1,7 +1,7 @@
 # PHASE_DECISION — Business-Decision Layer (STEP-09 / TASK-CORE-009)
 
 The STEP-09 `decision/` additions turn ONE canonical signal
-(`signals.schema.SignalSchema`) into ONE business verdict —
+(`signal_layer.signal_builder.schema.SignalSchema`) into ONE business verdict —
 **APPROVE / REJECT / HOLD / EXPIRE** — that every downstream consumer
 reads. It performs no risk sizing, no order, no platform formatting,
 and it does not modify the live, frozen decision engine.
@@ -39,7 +39,7 @@ never reach risk sizing.
 ## 3. Director decision — additive parallel + reuse-first
 
 The **live path is FROZEN and untouched**:
-`decision.decision_engine.DecisionEngine.evaluate(signal, ai_analysis,
+`decision_layer.decision_engine.decision_engine.DecisionEngine.evaluate(signal, ai_analysis,
 htf_bias=None)` still consumes a `SignalCandidate` + `AIAnalysisResult`
 and returns a `TradeDecision` with a `DecisionAction`
 (APPROVE / REJECT / NO_TRADE) — the confidence-blend on the live

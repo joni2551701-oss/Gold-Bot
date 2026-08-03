@@ -4,7 +4,7 @@
 phase before it (Phase 59.3-59.8): real, tested, standalone modules
 exist; nothing is registered into `telegram/commands.py`,
 `telegram/command_router.py`, or `telegram/handlers.py`; nothing in
-`core/pipeline.py`, `decision/`, `risk/risk_manager.py`, or
+`core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`, or
 `execution/` reads or is blocked by any module in this phase. No real
 order or signal is blocked by this phase's code.
 
@@ -118,7 +118,7 @@ future, separately-approved steps:
   - ~~core/pipeline.py: check EmergencyManager.get_status() before a
     stage runs (e.g. skip signal generation when PAUSED/KILLED)~~ —
     done, via `core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard`
-  - risk/risk_manager.py or a stage ahead of it: feed live
+  - risk_layer/risk_engine/risk_manager.py or a stage ahead of it: feed live
     loss/drawdown/api/execution signals into
     circuit_breaker.evaluate_circuit(), and decide what a BLOCK/WARNING
     decision should do to EmergencyManager's state

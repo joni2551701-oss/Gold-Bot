@@ -82,7 +82,7 @@ own brief, which shows `PerformanceMetric(name=..., module=...,
 duration_ms=...)` with nothing else supplied. Every other field has a
 sensible default (`metric_id` auto-generated, `timestamp` "now",
 `status="success"`, `metadata={}`, `error_code=None`) — a deliberate
-difference from `signals.schema.SignalSchema`/
+difference from `signal_layer.signal_builder.schema.SignalSchema`/
 `context.snapshot.ContextSnapshotSchema` (Phase A15/A16), whose
 identity fields are always required with no default, because *this*
 phase's own brief explicitly demonstrates the shorter, default-heavy
@@ -110,7 +110,7 @@ name.
 `PerformanceCollector` (`register()`/`get()`-style interface, named
 `record()`/`get_metrics()`/`get_by_module()`/`clear()` per this
 phase's own brief) is a plain in-memory list — not a singleton, same
-convention as `strategies.lifecycle.strategy_registry.StrategyRegistry`/
+convention as `strategy_layer.strategy_manager.lifecycle.strategy_registry.StrategyRegistry`/
 `assets.asset_registry.AssetRegistry`: each instance is independent.
 
 ## Timer and decorator
