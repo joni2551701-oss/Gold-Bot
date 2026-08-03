@@ -1000,3 +1000,100 @@ Phase 1 — Layer Audit tartibi (repository root'idagi haqiqiy papka nomlari bo'
 ---
 # Summary
 Architecture Audit Plan GoldBot Canonical Architecture'ning barcha Layer, Module va Cross-Layer aloqalarini, shuningdek nomlash standartlarini yagona metodologiya asosida tekshirish, natijalarni standart Scoring System va Severity Levels bo'yicha baholash, va yakunda Architecture Freeze orqali loyihani "konstitutsiya" darajasidagi spetsifikatsiya sifatida muzlatishni belgilovchi rasmiy reja hisoblanadi. Freeze'dan keyingi har qanday o'zgarish faqat Architecture Change Request (ACR) jarayoni orqali amalga oshiriladi.
+
+---
+# 11. Worker Authority Registry (WAR)
+
+Director Order No. 003. Har bir Director qarori bir marta tasdiqlanadi va Worker uni keyingi ishlarida avtomatik qo'llaydi — qayta ruxsat so'ralmaydi (WDR-001'ning kengaytmasi).
+
+## WAR-001 — Auto Fix Authority
+Worker Director'siz bajaradi:
+* Typo, formatting, markdown fix
+* README va broken link tuzatish
+* Dependency Source of Truth moslashtirish
+* Allowed/Forbidden ro'yxatlarini moslashtirish
+* Canonical Naming
+* Import update
+* Wrapper qo'shish/olib tashlash (ruxsat berilgan holatlarda)
+* Test update (arxitekturani o'zgartirmasa)
+* ACR raqamlash
+* Tracker update
+
+## WAR-002 — Migration Authority
+Worker mustaqil bajaradi:
+* `git mv`
+* Papka yaratish
+* Namespace o'zgartirish
+* `__init__.py` yozish va package export sozlash
+* README havolalari
+* Import migration
+* Skeleton yaratish
+
+## WAR-003 — Documentation Authority
+Worker README, Contracts, ModuleMap va SequenceDiagram orasidagi oddiy nomuvofiqliklarni o'zi tuzatadi.
+
+## WAR-004 — Validation Authority
+Har commitdan keyin avtomatik: `pyflakes` · `compileall` · `pytest` · `python main.py` · `git diff` · import check.
+
+## WAR-005 — Refactoring Restriction
+Worker quyidagilarni **qilmaydi** — Director Review talab qilinadi:
+* Modulni bo'lish
+* Ownership o'zgartirish
+* Runtime Pipeline o'zgartirish
+* Layer qo'shish
+* Public API o'zgartirish
+
+## WAR-006 — Decision Memory
+Har bir Director qarori eslab qolinadi. Worker qayta "ruxsat berasizmi?" deb so'ramaydi — mavjud qoidaga havola qilib davom etadi, masalan: "SMR-001 bo'yicha modul bo'linmaydi, shuning uchun faqat migratsiya qilindi."
+
+Amaldagi qoidalar: MIR-001 · ICR-001 · MVR-001 · SMR-001 · WDR-001 · RAR-001 va §9b dagi barcha ACR'lar.
+
+## WAR-007 — Escalation Rule
+Faqat quyidagilar Director Review'ga chiqadi:
+* Yangi Layer
+* Yangi Modul
+* Ownership o'zgarishi
+* Runtime Pipeline
+* Security Boundary
+* Public API
+* Architectural Pattern
+* Canonical Rule
+
+Qolgan hamma narsa avtomatik bajariladi.
+
+---
+# 12. Repository Structure (Director Order No. 003)
+
+Foundation Freeze v1.0 tasdiqlanganidan boshlab kuchga kiradi.
+
+## 12.1 Canonical Architecture
+Foundation Freeze v1.0 = GoldBot v1. `goldbot-v1` branchining asosiy tuzilmasi aynan Freeze'da tasdiqlangan arxitektura hisoblanadi. Worker bundan keyin barcha qarorlarini shu asosda qabul qiladi.
+
+## 12.2 Repository Root — Canonical tarkib
+```text
+01_Data_Layer/ … 17_Backtesting_Layer/
+ARCHITECTURE.md
+FOUNDATION_FREEZE_V1.md
+Architecture_Audit_Plan.md
+Architecture_Audit_Tracker.md
+README.md
+MIGRATION_TRACKER.md
+goldbot/                     (Canonical implementatsiya namespace'i — Phase A.5'da tasdiqlangan)
+```
+
+## 12.3 Foundation Freeze tarkibiga KIRMAYDI
+* Vaqtinchalik papkalar
+* Eski experiment branch fayllari
+* Audit davomida ishlatilgan yordamchi fayllar
+* Duplicate hujjatlar
+* Keraksiz migration artefaktlari
+
+## 12.4 Eski implementatsiya
+`core/`, `data/`, `ai/`, `execution/` va boshqa pre-freeze paketlar Foundation Freeze arxitekturasi **emas**. Ular faqat migratsiya tugaguncha implementatsiya manbai sifatida mavjud bo'ladi va bosqichma-bosqich `goldbot/` namespace'iga ko'chiriladi (Phase B-E).
+
+## 12.5 Loyiha infratuzilmasi
+Quyidagilar arxitektura hujjati ham, pre-freeze implementatsiya ham emas, lekin loyihaning ishlashi uchun zarur va root'da qoladi: `main.py`, `config.py`, `tests/`, `docs/`, `contracts/`, `scripts/`, `deploy/`, `assets/`, `logs/`, `requirements*.txt`, `Dockerfile`, `docker-compose.yml`, `.github/`, `.gitignore`, `.env.example`, `.env.production`, `CLAUDE.md`. Ularning taqdiri (ko'chirish, saqlash yoki olib tashlash) Phase E — Cleanup bosqichida hal qilinadi.
+
+## 12.6 Worker vakolati
+Ruxsat: ortiqcha vaqtinchalik hujjatlarni olib tashlash · duplicate fayllarni yo'qotish · README havolalarini yangilash · migratsiya trackerini yangilash.
+Taqiqlanadi: Foundation Freeze tarkibini o'zgartirish · yangi Layer qo'shish · yangi Modul qo'shish · Canonical hujjatlarni Director tasdiqisiz o'zgartirish.

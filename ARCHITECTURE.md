@@ -229,6 +229,15 @@ Repository doimo Target Repository tomon rivojlanadi.
 
 ---
 
+# Governance
+
+Worker/Director ish taqsimoti `Architecture_Audit_Plan.md`da rasmiylashtirilgan:
+
+* **§11 — Worker Authority Registry (WAR-001 … WAR-007)** — Worker Director'siz nima qila oladi va nima Director Review talab qiladi.
+* **§12 — Repository Structure (Director Order No. 003)** — repository root'ining canonical tarkibi, Freeze tarkibiga kirmaydigan fayllar, pre-freeze implementatsiya va loyiha infratuzilmasining maqomi.
+* **§9b** — barcha Canonical Rule va ACR'lar (MIR-001, ICR-001, MVR-001, SMR-001, WDR-001, RAR-001 va boshqalar).
+
+---
 # Golden Principle
 
 Architecture defines Repository.
