@@ -36,7 +36,7 @@ TASK 2 dependency audit re-verified this).
 | Phase 59 (Real Market Validation Foundation) | `VALIDATION_MODE`, `MarketDataSnapshot`, `lifecycle/` (`PaperTrade`), `analytics/` (`SignalPerformance`, strategy report), failure-analysis journal. |
 | Phase 59.1 | Provider abstraction foundation (`data_layer/providers/`), TwelveData + MT5 stub. |
 | Phase 59.2 | TradingView research, Binance/FRED provider stubs, `ProviderRegistry`, provider health monitoring. |
-| Phase 59.3 | Provider normalization, raw market storage, `telegram/owner/` foundation, `context/fundamental_context.py`. |
+| Phase 59.3 | Provider normalization, raw market storage, `telegram/owner/` foundation, `context_layer/fundamental/fundamental_context.py`. |
 | Phase 59.4 | Paper Trade Monitor wired, strategy/context performance reports, Owner Report foundation. |
 | Phase 59.5 | Historical data collector, sync state, dataset/gap reports, provider comparison. |
 | Phase 59.6 | `core_layer/system_state/system_state.py`, audit log, owner roles, Feature Registry, dependency validator, config snapshots. |

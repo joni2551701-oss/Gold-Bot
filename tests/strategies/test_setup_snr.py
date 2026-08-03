@@ -2,7 +2,7 @@
 
 from types import SimpleNamespace
 
-from context.liquidity import LiquidityType
+from context_layer.liquidity.liquidity import LiquidityType
 
 from strategies.snr_strategy import SNRStrategy
 from strategies.result import StrategyDirection, SetupStatus

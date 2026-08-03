@@ -14,7 +14,7 @@ from typing import Optional, TYPE_CHECKING
 from ai.tools.tool_registry import BaseAITool, ToolResult
 
 if TYPE_CHECKING:
-    from context.fundamental_context import FundamentalContextSnapshot
+    from context_layer.fundamental.fundamental_context import FundamentalContextSnapshot
 
 
 class NewsTool(BaseAITool):

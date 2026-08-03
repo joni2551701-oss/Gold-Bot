@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from context.context_orchestrator import ContextSnapshot
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
 from signals.models import SignalCandidate
 from ai.confidence_model import ConfidenceResult
 

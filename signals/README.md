@@ -69,7 +69,7 @@ grading table and criteria definitions.
   candidate still reaches AI/Decision/Risk exactly as before this
   phase.
 - Does not include a Session or Volume criterion. Session Intelligence
-  now exists (`context/session.py`, Phase A6) but wiring a
+  now exists (`context_layer/session/session.py`, Phase A6) but wiring a
   `SESSION_ALIGNED` criterion here is a distinct, not-yet-done future
   step; Volume still has no data source anywhere in `data/`. Both
   remain named, explicit future-extension points in
@@ -124,7 +124,7 @@ persistence wrapper, not a cross-module contract).
 ## Input
 `ContextSnapshot` (from `context/`) for `signal_engine.py`.
 `compute_signal_quality()` additionally takes the `SignalCandidate`
-being graded and an optional `HTFBiasResult` (from `context/htf_bias.py`).
+being graded and an optional `HTFBiasResult` (from `context_layer/trend/htf_bias.py`).
 `explain_signal()` takes the `SignalCandidate`, the `ContextSnapshot`,
 and the already-computed `SignalQualityResult` — no `HTFBiasResult`
 directly (HTF alignment is already reflected in
@@ -145,12 +145,12 @@ JSON-serializable via `.to_dict()`/`.to_json()`.
 
 ## Dependencies
 `context/` and `strategies/`, unchanged. `signal_quality.py`
-additionally imports `context.htf_bias` (for `HTFBias`) and
-`context.market_structure`/`context.liquidity`/`context.order_block`/
-`context.fvg` (for their result types and the shared
+additionally imports `context_layer.trend.htf_bias` (for `HTFBias`) and
+`context_layer.market_structure.market_structure`/`context_layer.liquidity.liquidity`/`context_layer.order_block.order_block`/
+`context_layer.fair_value_gap.fvg` (for their result types and the shared
 `most_recent_bias()` helper) — all still within `context/`, no new
 package dependency. `explainability.py` additionally imports
-`context.wyckoff` (for `WyckoffPhase`) and `context.market_regime`
+`context_layer.wyckoff.wyckoff` (for `WyckoffPhase`) and `context_layer.trend.market_regime`
 (for `MarketRegime`/`RegimeDirection`) — same package, no new
 dependency. `schema.py` imports only the standard library (`json`,
 `uuid`, `dataclasses`, `datetime`) — no dependency on any other

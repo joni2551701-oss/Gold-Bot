@@ -36,7 +36,7 @@ context.fundamental_scoring.compute_fundamental_score()    -- TASK 5, this phase
 FundamentalScoreResult (gold_bias, confidence, macro_score, reasons)
       |
       v  merge_fundamental_score() (TASK 2, this phase)
-FundamentalContextSnapshot (context/fundamental_context.py) -- extended, not replaced
+FundamentalContextSnapshot (context_layer/fundamental/fundamental_context.py) -- extended, not replaced
       |
       v  attach_fundamental_context() (TASK 6, this phase)
 EnrichedContextSnapshot { context: ContextSnapshot, fundamental: FundamentalContextSnapshot }
@@ -50,7 +50,7 @@ ai.prompts.prompt_manager.PromptManager.get_fundamental_analysis_prompt()  -- TA
 
 ## TASK 1: Reuse audit
 
-Read `context/fundamental_context.py` (Phase 59.3, TASK 6 --
+Read `context_layer/fundamental/fundamental_context.py` (Phase 59.3, TASK 6 --
 `FundamentalContextSnapshot`/`compute_fundamental_context()`, already
 a real Context-layer adapter), `data_layer/providers/fundamental_base.py`
 (Phase 59.2, TASK 4 -- `FundamentalDataPoint`/`FundamentalSnapshot`/
@@ -66,14 +66,14 @@ Two of the Director's brief's suggested new paths were found, by this
 audit, to already have a better home:
 
 - **TASK 2**'s "Yangi modul: `context/fundamental/`" -- not created.
-  `context/fundamental_context.py` already is the real, tested,
+  `context_layer/fundamental/fundamental_context.py` already is the real, tested,
   Context-layer home for a fundamental snapshot; `context/` itself has
   no subpackages today (every topic -- `bos.py`, `choch.py`, `fvg.py`,
   `liquidity.py`, `wyckoff.py`, etc. -- is a flat file), so introducing
   the first subpackage for this one phase would be a structural
   precedent shift the Module Reuse Principle counsels against. TASK 2
   extends the existing file; TASK 4/5 add flat sibling files
-  (`context/economic_events.py`, `context/fundamental_scoring.py`),
+  (`context_layer/fundamental/economic_events.py`, `context_layer/fundamental/fundamental_scoring.py`),
   matching every other module already there.
 - **TASK 7**'s "Yangi: `ai/fundamental_prompt.py`" -- not created.
   `ai/prompts/prompt_manager.py`'s `PromptManager` is already the
@@ -83,7 +83,7 @@ audit, to already have a better home:
   Gemini-specific `ai/ai_prompt.py`). TASK 7 adds one new method to
   the existing class instead.
 
-## TASK 2: `context/fundamental_context.py` -- scoring-field extension
+## TASK 2: `context_layer/fundamental/fundamental_context.py` -- scoring-field extension
 
 `FundamentalContextSnapshot` gains eight new `Optional` fields
 (`dxy_bias`, `rates_bias`, `inflation_bias`, `fed_expectation`,
@@ -113,7 +113,7 @@ not implied by "collect the three series" alone), so
 never an exception. Once a real connection exists, this method starts
 returning real values with no code change.
 
-## TASK 4: `context/economic_events.py`
+## TASK 4: `context_layer/fundamental/economic_events.py`
 
 `EventImpact` (`HIGH`/`MEDIUM`/`LOW`, the standard three-tier
 economic-calendar convention) + `EconomicEvent` (`name`, `date`,
@@ -124,7 +124,7 @@ file directly under `context/`, matching every other topic file there
 Data model only; nothing in this codebase populates one yet (no
 economic-calendar provider exists).
 
-## TASK 5: `context/fundamental_scoring.py`
+## TASK 5: `context_layer/fundamental/fundamental_scoring.py`
 
 `FundamentalScoreWeights` (`dxy=20.0`, `rates=15.0`, `inflation=10.0`,
 `risk=15.0` -- magnitudes only) + `FundamentalScoreResult` +
@@ -136,7 +136,7 @@ weights=None)` + `explain_fundamental_score()` +
 **Does not classify a raw macro number into a bias.** Every input
 (`dxy_bias`/`rates_bias`/`inflation_bias`/`risk_sentiment`) is already
 a `"BULLISH"`/`"BEARISH"`/`"NEUTRAL"` judgment *for gold*, supplied by
-the caller (a future analyst/AI layer) -- `context/fundamental_context.py`'s
+the caller (a future analyst/AI layer) -- `context_layer/fundamental/fundamental_context.py`'s
 own docstring already discloses that a real classification "would need
 a historical baseline/threshold model this codebase has no real data
 to calibrate today," and TASK 1's reuse audit found nothing has closed
@@ -172,7 +172,7 @@ forbid without explicit approval, and this task's own boundary ("Bu
 yerda signalga tegilmaydi... Decision hali o'zgarmaydi") does not ask
 for.
 
-Instead, `context/fundamental_context.py` gained
+Instead, `context_layer/fundamental/fundamental_context.py` gained
 `EnrichedContextSnapshot` (`context: ContextSnapshot`, `fundamental:
 FundamentalContextSnapshot`) + `attach_fundamental_context(context,
 fundamental)` -- pure composition, zero changes to `ContextSnapshot`
@@ -211,13 +211,13 @@ precedent).
 
 ## Dependencies
 
-`context/fundamental_context.py` imports `context.fundamental_scoring.FundamentalScoreResult`
+`context_layer/fundamental/fundamental_context.py` imports `context.fundamental_scoring.FundamentalScoreResult`
 and `context.context_orchestrator.ContextSnapshot` (both
 `TYPE_CHECKING`-only, same-layer sibling imports, no cycle --
 `context_orchestrator.py` does not import `fundamental_context.py`)
 plus `data_layer.providers.fundamental_base.FundamentalDataPoint`
 (`TYPE_CHECKING`-only, unchanged from Phase 59.3).
-`context/fundamental_scoring.py` and `context/economic_events.py`
+`context_layer/fundamental/fundamental_scoring.py` and `context_layer/fundamental/economic_events.py`
 import nothing beyond stdlib. `data_layer/providers/fred_provider.py`
 gained one new import, `data_layer.providers.fundamental_base.FundamentalSnapshot`
 (already a sibling import in that package). `ai/prompts/prompt_manager.py`

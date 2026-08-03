@@ -71,7 +71,7 @@ lifecycle record, not an AI-authored journal entry.
 | `market_data` | Fetch and normalize candles | `data/` |
 | `data_quality` | Score data completeness/validity | `data/` |
 | `htf_bias` | Higher-timeframe bias computation | `context/` |
-| `context` | Build the market context snapshot | `context/context_orchestrator.py` |
+| `context` | Build the market context snapshot | `context_layer/context_engine/context_orchestrator.py` |
 | `market_phase` | Classify market phase (Wyckoff/AMD/trend) | `context/` |
 | `signal` | Generate candidate signal(s) | `strategies/`, `signals/signal_engine.py` |
 | `signal_quality` | Score/filter candidate signals | `signals/` |

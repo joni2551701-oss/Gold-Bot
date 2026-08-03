@@ -1,11 +1,11 @@
 """
-Phase 59.3, TASK 6 -- context/fundamental_context.py tests.
+Phase 59.3, TASK 6 -- context_layer/fundamental/fundamental_context.py tests.
 """
 
 from datetime import datetime, timezone
 
-from context.context_orchestrator import ContextSnapshot
-from context.fundamental_context import (
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.fundamental.fundamental_context import (
     EnrichedContextSnapshot,
     FundamentalContextSnapshot,
     attach_fundamental_context,
@@ -13,8 +13,8 @@ from context.fundamental_context import (
     generate_fundamental_snapshot_id,
     merge_fundamental_score,
 )
-from context.fundamental_scoring import compute_fundamental_score
-from context.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
+from context_layer.fundamental.fundamental_scoring import compute_fundamental_score
+from context_layer.trend.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
 from data_layer.providers.fundamental_base import FundamentalDataPoint
 
 
@@ -194,7 +194,7 @@ def test_enriched_context_snapshot_is_frozen():
 
 def test_never_generates_a_signal_or_decision():
     """Structural guard matching the task's own boundary: no signal/decision-shaped attribute anywhere on the module."""
-    import context.fundamental_context as module
+    import context_layer.fundamental.fundamental_context as module
 
     forbidden_terms = ("signal", "decision", "approve", "reject")
     public_names = [name for name in dir(module) if not name.startswith("_")]

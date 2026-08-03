@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List
-from context.context_orchestrator import ContextSnapshot
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
 from signals.models import SignalCandidate
 
 @dataclass(frozen=True)

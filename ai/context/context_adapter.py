@@ -13,7 +13,7 @@ every future caller to remember not to pass one.
 `market_context_from_snapshot()` (TASK 2) is the
 `context.snapshot.ContextSnapshotSchema -> MarketContext` adapter
 `docs/PHASE61_3_INTELLIGENCE_AUDIT.md` TASK 1 found missing. It takes
-an *already-built* `ContextSnapshotSchema` (`context/snapshot.py`'s
+an *already-built* `ContextSnapshotSchema` (`context_layer/context_engine/snapshot.py`'s
 `from_context_snapshot()` output) rather than calling that function or
 importing `context.context_orchestrator.ContextSnapshot` itself --
 `ai/` never holds a runtime dependency on `context/` (the same
@@ -32,7 +32,7 @@ from typing import Optional, TYPE_CHECKING
 from ai.interfaces import MarketContext
 
 if TYPE_CHECKING:
-    from context.snapshot import ContextSnapshotSchema
+    from context_layer.context_engine.snapshot import ContextSnapshotSchema
 
 # Metadata keys that would indicate a caller accidentally attached raw
 # market data (a candle series, a full OHLCV dump) instead of the

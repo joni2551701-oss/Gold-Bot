@@ -20,7 +20,7 @@ quality/explanation/decision journey). This module's enum is
 deliberately named SignalLifecycleState, not SignalState, to avoid a
 same-name collision between two different concepts in two different
 packages -- the same disambiguation discipline
-context/snapshot.py's ContextSnapshotSchema (vs. the real
+context_layer/context_engine/snapshot.py's ContextSnapshotSchema (vs. the real
 ContextSnapshot) and lifecycle/paper_trade.py (vs.
 execution/signal_lifecycle.py's own SignalState) already established.
 execution/signal_lifecycle.py is untouched by this phase.
@@ -103,7 +103,7 @@ def derive_signal_lifecycle_state(
     Observational only -- classifies a SignalSchema's current lifecycle
     state from fields it (and an optional linked PaperTrade) already
     carry, the same read-only, priority-ordered classification pattern
-    context/market_phase.py's compute_market_phase() already
+    context_layer/trend/market_phase.py's compute_market_phase() already
     established. No new decision or quality logic: every input here
     was computed elsewhere (Signal Quality Score, Decision Engine,
     Paper Trade transitions).

@@ -326,7 +326,7 @@ be a Reply Menu design change, out of scope for this Freeze).
 | Chart | Main (new button) | Not started | `/chart` |
 | AI Assistant | Main (new button) | Foundation exists (`assistant/`, `ai/conversation/`, `voice/`) — not Telegram-wired | `/assistant` |
 | AI Analyst | Main or AI Assistant sub-flow | Foundation exists (`ai/trading_analyst/`) — not Telegram-wired | via AI Assistant |
-| Economic Calendar | Main (new button) | Not started (fundamental data exists in `context/economic_events.py`, no Telegram surface) | `/calendar` |
+| Economic Calendar | Main (new button) | Not started (fundamental data exists in `context_layer/fundamental/economic_events.py`, no Telegram surface) | `/calendar` |
 | News Center | Main (new button) | Not started | `/news` |
 | Academy | Main (new button) | Foundation exists (`ai/learning/`) — not Telegram-wired | `/academy` |
 | Analytics | Owner submenu (extend) | Partially live (`/performance`, `/report` exist under Owner) | already reachable |

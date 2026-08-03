@@ -15,7 +15,7 @@ only the trading-relevant subset.
 Market Data     data/
     │
     ▼
-Context          context/context_orchestrator.py
+Context          context_layer/context_engine/context_orchestrator.py
     │
     ▼
 Strategy           strategies/strategy_manager.py

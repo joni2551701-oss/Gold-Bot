@@ -2,7 +2,7 @@
 
 from types import SimpleNamespace
 
-from context.order_block import OrderBlockType
+from context_layer.order_block.order_block import OrderBlockType
 
 from strategies.ob_strategy import OBStrategy
 from strategies.result import StrategyDirection, SetupStatus

@@ -14,7 +14,7 @@ Architecture this closes, per this task's own brief:
 
 FRED exists (data_layer/providers/fred_provider.py, Phase 59.2) but was
 never connected to Context. This module is that connection point --
-a pure, read-only adapter, same posture as context/market_phase.py's
+a pure, read-only adapter, same posture as context_layer/trend/market_phase.py's
 own compute_market_phase(): computes a classification from
 already-supplied data, generates no signal, makes no decision.
 "Signal yaratmaydi. Faqat Context." (does not generate a signal, only
@@ -25,7 +25,7 @@ get_inflation_data() always raise NotImplementedError today (Phase
 59.2's own honest stub) -- this function takes already-fetched
 FundamentalDataPoint values as input, the same "adapter over
 already-computed data" pattern signals/adapter.py and
-context/snapshot.py already established. A future, real FredProvider
+context_layer/context_engine/snapshot.py already established. A future, real FredProvider
 implementation is the one that would supply real values here; this
 module does not change when that happens.
 
@@ -64,8 +64,8 @@ from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from data_layer.providers.fundamental_base import FundamentalDataPoint
-    from context.fundamental_scoring import FundamentalScoreResult
-    from context.context_orchestrator import ContextSnapshot
+    from context_layer.fundamental.fundamental_scoring import FundamentalScoreResult
+    from context_layer.context_engine.context_orchestrator import ContextSnapshot
 
 
 @dataclass(frozen=True)
@@ -78,7 +78,7 @@ class FundamentalContextSnapshot:
         recomputed. None if that indicator wasn't supplied.
     dollar_strength/risk_level: always None in this phase -- an
         honest hook, same "never fabricate" convention as
-        context/snapshot.py's ZonesInfo.premium_discount. A real
+        context_layer/context_engine/snapshot.py's ZonesInfo.premium_discount. A real
         classification would need a historical baseline/threshold
         model this codebase has no real data to calibrate today
         (FredProvider has no live connection yet, Phase 59.2). Not

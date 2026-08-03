@@ -1,5 +1,5 @@
 """
-TASK-CORE-006 gap-fill — dedicated unit tests for context/choch.py.
+TASK-CORE-006 gap-fill — dedicated unit tests for context_layer/market_structure/choch.py.
 
 Read-only exercise of the existing frozen detect_choch(): a bullish
 CHoCH is a close above a LOWER_HIGH pivot; a bearish CHoCH is a close
@@ -10,8 +10,8 @@ from datetime import datetime, timedelta, timezone
 
 from data_layer.providers.twelve_data_client import Candle
 
-from context.choch import detect_choch, ChochDirection
-from context.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
+from context_layer.market_structure.choch import detect_choch, ChochDirection
+from context_layer.market_structure.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
 
 BASE = datetime(2026, 1, 1, tzinfo=timezone.utc)
 

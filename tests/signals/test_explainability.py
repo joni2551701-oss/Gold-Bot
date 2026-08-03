@@ -10,11 +10,11 @@ from datetime import datetime, timezone
 
 from signals.explainability import explain_signal, SignalExplanation
 from signals.signal_quality import SignalQualityResult, QualityGrade
-from context.context_orchestrator import ContextSnapshot
-from context.wyckoff import WyckoffEvent, WyckoffEventType, WyckoffPhase
-from context.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
-from context.session import Session, SessionEvent
-from context.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.wyckoff.wyckoff import WyckoffEvent, WyckoffEventType, WyckoffPhase
+from context_layer.liquidity.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
+from context_layer.session.session import Session, SessionEvent
+from context_layer.trend.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
 from signals.models import SignalType
 
 TS = datetime(2024, 1, 1, tzinfo=timezone.utc)

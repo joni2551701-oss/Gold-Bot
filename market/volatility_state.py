@@ -4,7 +4,7 @@ Market Layer — Volatility State projection (TASK-CORE-005).
 VolatilityState is a READ-ONLY projection. context/ does NOT expose a
 standalone volatility label -- volatility only appears inside
 context.market_regime's regime enum as HIGH_VOLATILITY / LOW_VOLATILITY
-(see context/market_regime.py). This module therefore PROJECTS the
+(see context_layer/trend/market_regime.py). This module therefore PROJECTS the
 volatility level from the already-computed regime; it performs NO
 volatility calculation of its own and adds no new detector (that would
 be new structure math, which market/ must never do).

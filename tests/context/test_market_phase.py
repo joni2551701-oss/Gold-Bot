@@ -1,6 +1,6 @@
 """
 Pre-Phase 59 Architecture Readiness Review, AC-02 -- MarketPhase
-classifier tests (context/market_phase.py).
+classifier tests (context_layer/trend/market_phase.py).
 
 No mocking -- real ContextSnapshot/WyckoffEvent/AmdEvent/
 MarketRegimeResult objects, same convention as
@@ -9,12 +9,12 @@ tests/features/test_feature_engine.py.
 
 from datetime import datetime, timezone
 
-from context.context_orchestrator import ContextSnapshot
-from context.market_phase import MarketPhase, compute_market_phase
-from context.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
-from context.wyckoff import WyckoffEvent, WyckoffEventType, WyckoffPhase
-from context.amd import AmdEvent, AmdEventType
-from context.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.trend.market_phase import MarketPhase, compute_market_phase
+from context_layer.trend.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
+from context_layer.wyckoff.wyckoff import WyckoffEvent, WyckoffEventType, WyckoffPhase
+from context_layer.amd.amd import AmdEvent, AmdEventType
+from context_layer.liquidity.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
 
 TS = datetime(2024, 1, 2, 9, 0, tzinfo=timezone.utc)
 

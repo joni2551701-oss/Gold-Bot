@@ -94,7 +94,7 @@ def filter_performances(
 
     Note: the brief's own worked example ("Liquidity Sweep / London /
     M15 / BULLISH HTF") lists a fifth value, HTF bias, under this same
-    filter set -- but HTF bias (context/htf_bias.py's HTFBias enum:
+    filter set -- but HTF bias (context_layer/trend/htf_bias.py's HTFBias enum:
     BULLISH/BEARISH/NEUTRAL/UNKNOWN) is a different concept from
     market_phase (MarketPhase: ACCUMULATION/MANIPULATION/
     DISTRIBUTION/MARKUP/MARKDOWN), and SignalPerformance carries no

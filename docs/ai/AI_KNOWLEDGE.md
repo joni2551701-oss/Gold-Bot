@@ -49,7 +49,7 @@ approved" posture every Phase 61.x/63.x module has used.
 
 `KnowledgeEntry` (Phase 63.2, TASK 2) also gained one new optional
 field: `source: Optional[str] = None` — free-text provenance (e.g.
-`"context/bos.py"`, `"docs/WYCKOFF.md"`) for where an entry's content
+`"context_layer/market_structure/bos.py"`, `"docs/WYCKOFF.md"`) for where an entry's content
 was traced from. Unset (`None`) on all 26 pre-existing entries; this
 phase does not backfill them, only adds the capability for future
 entries to record it.

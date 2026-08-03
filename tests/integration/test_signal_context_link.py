@@ -10,8 +10,8 @@ underlying signals.adapter/context.snapshot units in isolation.
 """
 
 from signals.schema import SignalSchema
-from context.snapshot import ContextSnapshotSchema
-from context.market_phase import MarketPhaseResult
+from context_layer.context_engine.snapshot import ContextSnapshotSchema
+from context_layer.trend.market_phase import MarketPhaseResult
 
 
 def test_pipeline_returns_a_context_snapshot_and_signal_history(mock_pipeline, mock_signal_candidate, mock_ai_result):

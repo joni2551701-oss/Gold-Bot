@@ -20,8 +20,8 @@ Per this whole phase's hard boundary: none of these commands return
 -- they only report a macro bias, a score, and a Fed reading.
 """
 
-from context.fundamental_context import FundamentalContextSnapshot
-from context.fundamental_scoring import FundamentalScoreResult, format_fundamental_score
+from context_layer.fundamental.fundamental_context import FundamentalContextSnapshot
+from context_layer.fundamental.fundamental_scoring import FundamentalScoreResult, format_fundamental_score
 from telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
 

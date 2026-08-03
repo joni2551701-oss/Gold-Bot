@@ -37,9 +37,9 @@ over `registry.py`, matching the Manager-over-Registry shape
   zero AI reasoning, zero LLM/network call, same read-only posture as
   `registry.py`'s own module-level functions it wraps.
 - `smc.py` / `wyckoff.py` / `risk.py` — content traced directly to
-  `context/bos.py`, `context/choch.py`, `context/liquidity.py`,
-  `context/order_block.py`, `context/fvg.py`, `context/amd.py`,
-  `context/wyckoff.py`, `docs/WYCKOFF.md`, and `risk/README.md`.
+  `context_layer/market_structure/bos.py`, `context_layer/market_structure/choch.py`, `context_layer/liquidity/liquidity.py`,
+  `context_layer/order_block/order_block.py`, `context_layer/fair_value_gap/fvg.py`, `context_layer/amd/amd.py`,
+  `context_layer/wyckoff/wyckoff.py`, `docs/WYCKOFF.md`, and `risk/README.md`.
 - `psychology.py` — general, widely-established trading-discipline
   concepts (FOMO, revenge trading, overtrading, patience). GoldBot
   detects none of these states — no psychology-scoring code exists

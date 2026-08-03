@@ -18,15 +18,15 @@ from datetime import datetime, timezone
 
 from features.feature_engine import compute_market_features
 from features.feature_model import MarketFeatures
-from context.context_orchestrator import ContextSnapshot
-from context.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
-from context.session import Session, SessionEvent
-from context.liquidity import LiquidityZone, LiquidityType
-from context.htf_bias import HTFBias, HTFBiasResult
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.trend.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
+from context_layer.session.session import Session, SessionEvent
+from context_layer.liquidity.liquidity import LiquidityZone, LiquidityType
+from context_layer.trend.htf_bias import HTFBias, HTFBiasResult
 from signals.explainability import SignalExplanation
 from data_layer.providers.twelve_data_client import Candle
 
-TS = datetime(2024, 1, 2, 9, 0, tzinfo=timezone.utc)  # 09:00 UTC -- LONDON per context/session.py
+TS = datetime(2024, 1, 2, 9, 0, tzinfo=timezone.utc)  # 09:00 UTC -- LONDON per context_layer/session/session.py
 
 
 def _empty_context(**overrides) -> ContextSnapshot:

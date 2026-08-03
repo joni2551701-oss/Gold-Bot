@@ -32,7 +32,7 @@ from typing import Optional, TYPE_CHECKING
 from ai.interfaces import MarketContext, UserContext
 
 if TYPE_CHECKING:
-    from context.fundamental_context import FundamentalContextSnapshot
+    from context_layer.fundamental.fundamental_context import FundamentalContextSnapshot
 
 FUNDAMENTAL_ANALYSIS_SYSTEM_PROMPT = """
 ROLE: Macro/Fundamental Analyst.

@@ -7,8 +7,8 @@ ai/prompts/prompt_manager.py, matching this phase's explicit scope.
 
 from ai.interfaces import MarketContext, UserContext
 from ai.prompts.prompt_manager import PromptManager
-from context.fundamental_context import compute_fundamental_context, merge_fundamental_score
-from context.fundamental_scoring import compute_fundamental_score
+from context_layer.fundamental.fundamental_context import compute_fundamental_context, merge_fundamental_score
+from context_layer.fundamental.fundamental_scoring import compute_fundamental_score
 
 
 def test_market_analysis_prompt_includes_context_fields():

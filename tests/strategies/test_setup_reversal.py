@@ -2,8 +2,8 @@
 
 from types import SimpleNamespace
 
-from context.choch import ChochDirection
-from context.liquidity import LiquidityType
+from context_layer.market_structure.choch import ChochDirection
+from context_layer.liquidity.liquidity import LiquidityType
 
 from strategies.reversal_strategy import ReversalStrategy
 from strategies.result import StrategyDirection, SetupStatus

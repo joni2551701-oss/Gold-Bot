@@ -1,6 +1,6 @@
 from typing import List
-from context.context_orchestrator import ContextSnapshot
-from context.amd import AmdEventType
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.amd.amd import AmdEventType
 from signals.models import SignalCandidate, SignalType
 
 

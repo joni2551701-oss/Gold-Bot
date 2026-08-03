@@ -9,7 +9,7 @@ enters that chain, a detail `AI_FLOW.md` names but doesn't trace.
 ## Entry point
 
 ```
-Market Context (context/context_orchestrator.py, Layer 1)
+Market Context (context_layer/context_engine/context_orchestrator.py, Layer 1)
       │
       ▼
 AI Context Adapter        ai/context/context_adapter.py

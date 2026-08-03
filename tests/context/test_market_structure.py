@@ -1,5 +1,5 @@
 """
-TASK-CORE-006 gap-fill — dedicated unit tests for context/market_structure.py.
+TASK-CORE-006 gap-fill — dedicated unit tests for context_layer/market_structure/market_structure.py.
 
 Exercises the EXISTING frozen detectors read-only (no logic change):
 detect_swing_points (swing high/low), classify_structure (HH/HL/LH/LL),
@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 
 from data_layer.providers.twelve_data_client import Candle
 
-from context.market_structure import (
+from context_layer.market_structure.market_structure import (
     SwingPoint,
     SwingType,
     StructurePoint,

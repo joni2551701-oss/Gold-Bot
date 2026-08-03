@@ -1,5 +1,5 @@
 """
-TASK-CORE-006 gap-fill — dedicated unit tests for context/bos.py.
+TASK-CORE-006 gap-fill — dedicated unit tests for context_layer/market_structure/bos.py.
 
 Read-only exercise of the existing frozen detect_bos(): a bullish BOS is
 a close above a HIGHER_HIGH pivot; a bearish BOS is a close below a
@@ -10,8 +10,8 @@ from datetime import datetime, timedelta, timezone
 
 from data_layer.providers.twelve_data_client import Candle
 
-from context.bos import detect_bos, BosDirection
-from context.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
+from context_layer.market_structure.bos import detect_bos, BosDirection
+from context_layer.market_structure.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
 
 BASE = datetime(2026, 1, 1, tzinfo=timezone.utc)
 

@@ -8,7 +8,7 @@ anything itself; every field is either a direct copy of an
 already-computed value (from context.context_orchestrator.ContextSnapshot
 and its detector modules) or an explicit None/False placeholder for
 something no detector computes yet (premium_discount -- see
-context/context_config.py's own "future detector" note). See
+context_layer/context_engine/context_config.py's own "future detector" note). See
 docs/CONTEXT_SNAPSHOT.md for the full contract and this module's
 from_context_snapshot() for how the existing ContextSnapshot becomes
 one.
@@ -33,8 +33,8 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import List, Optional
 
-from context.context_orchestrator import ContextSnapshot
-from context.market_structure import most_recent_bias
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.market_structure.market_structure import most_recent_bias
 
 # The real vocabulary context.market_regime.MarketRegime already
 # defines (TRENDING/RANGE/ACCUMULATION/DISTRIBUTION/HIGH_VOLATILITY/
@@ -90,7 +90,7 @@ class ZonesInfo:
     order_block: True if context.order_blocks is non-empty.
     fvg: True if context.fair_value_gaps is non-empty.
     premium_discount: always None -- no detector for this exists
-        anywhere in this codebase today (context/context_config.py's
+        anywhere in this codebase today (context_layer/context_engine/context_config.py's
         own docstring names it as a future detector). Never fabricated.
     """
     order_block: bool = False
@@ -108,7 +108,7 @@ class SessionInfo:
 class SnapshotMetadata:
     """
     source: "ContextEngine" -- the real logger name
-        context/context_orchestrator.py already uses
+        context_layer/context_engine/context_orchestrator.py already uses
         (setup_logger("ContextEngine")), not an invented label.
     engine_version: always None -- no versioning scheme exists for the
         context detection engine itself today. An honest hook.

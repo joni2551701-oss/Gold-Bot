@@ -18,7 +18,7 @@ Returns a StrategyResult; emits no signal.
 
 from strategies.base import SetupStrategy
 from strategies.result import StrategyResult, StrategyDirection, SetupStatus
-from context.liquidity import LiquidityType
+from context_layer.liquidity.liquidity import LiquidityType
 
 _NEAR_FRACTION = 0.002  # 0.2% of price counts as "at" a level.
 

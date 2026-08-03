@@ -11,8 +11,8 @@ Returns a StrategyResult; recomputes no structure, emits no signal.
 
 from strategies.base import SetupStrategy
 from strategies.result import StrategyResult, StrategyDirection, SetupStatus
-from context.liquidity import LiquidityType
-from context.bos import BosDirection
+from context_layer.liquidity.liquidity import LiquidityType
+from context_layer.market_structure.bos import BosDirection
 
 
 class BreakoutStrategy(SetupStrategy):

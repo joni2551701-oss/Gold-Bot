@@ -1,5 +1,5 @@
 """
-TASK-CORE-006 gap-fill — dedicated unit tests for context/order_block.py.
+TASK-CORE-006 gap-fill — dedicated unit tests for context_layer/order_block/order_block.py.
 
 Read-only exercise of the existing frozen detect_order_blocks(): the
 last opposing candle before a sweep-induced structural break. A bullish
@@ -11,10 +11,10 @@ from datetime import datetime, timedelta, timezone
 
 from data_layer.providers.twelve_data_client import Candle
 
-from context.liquidity import LiquidityType, LiquidityZone, LiquiditySweepEvent
-from context.bos import BosEvent, BosDirection
-from context.order_block import detect_order_blocks, OrderBlockType
-from context.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
+from context_layer.liquidity.liquidity import LiquidityType, LiquidityZone, LiquiditySweepEvent
+from context_layer.market_structure.bos import BosEvent, BosDirection
+from context_layer.order_block.order_block import detect_order_blocks, OrderBlockType
+from context_layer.market_structure.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
 
 BASE = datetime(2026, 1, 1, tzinfo=timezone.utc)
 

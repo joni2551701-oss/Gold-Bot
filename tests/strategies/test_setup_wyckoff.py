@@ -2,7 +2,7 @@
 
 from types import SimpleNamespace
 
-from context.wyckoff import WyckoffEventType
+from context_layer.wyckoff.wyckoff import WyckoffEventType
 
 from strategies.wyckoff_strategy import WyckoffStrategy
 from strategies.result import StrategyDirection, SetupStatus

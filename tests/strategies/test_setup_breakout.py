@@ -2,8 +2,8 @@
 
 from types import SimpleNamespace
 
-from context.liquidity import LiquidityType
-from context.bos import BosDirection
+from context_layer.liquidity.liquidity import LiquidityType
+from context_layer.market_structure.bos import BosDirection
 
 from strategies.breakout_strategy import BreakoutStrategy
 from strategies.result import StrategyDirection, SetupStatus

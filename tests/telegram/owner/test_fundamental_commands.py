@@ -4,8 +4,8 @@ No mocks: real FundamentalContextSnapshot/FundamentalScoreResult
 construction, same convention as every other telegram/owner/ test.
 """
 
-from context.fundamental_context import compute_fundamental_context, merge_fundamental_score
-from context.fundamental_scoring import compute_fundamental_score
+from context_layer.fundamental.fundamental_context import compute_fundamental_context, merge_fundamental_score
+from context_layer.fundamental.fundamental_scoring import compute_fundamental_score
 from data_layer.providers.fundamental_base import FundamentalDataPoint
 from datetime import datetime, timezone
 

@@ -116,9 +116,9 @@ value already real in this codebase over an illustrative label.)
 including `GOLD_ASSET`. None of these is computed anywhere in this
 codebase today:
 
-- `context/session.py` (Phase A6) classifies a *candle's* session,
+- `context_layer/session/session.py` (Phase A6) classifies a *candle's* session,
   not a per-asset "typical session" label.
-- `context/market_regime.py` (Phase A7) classifies volatility per
+- `context_layer/trend/market_regime.py` (Phase A7) classifies volatility per
   *pipeline cycle*, not a fixed per-asset volatility class.
 - No news/fundamental data source exists anywhere in `data/`.
 

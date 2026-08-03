@@ -47,10 +47,10 @@ criterion, never an exception) — see "What this does NOT do" below.
 **Reuse, not duplication** (per `CLAUDE.md`'s "No duplicate logic"
 rule):
 - `context.market_structure.most_recent_bias()` — extracted in this
-  phase from `context/htf_bias.py`'s per-timeframe classification
+  phase from `context_layer/trend/htf_bias.py`'s per-timeframe classification
   (which had this exact walk-backward-through-structure logic
   inline). Both `htf_bias.py` and `signal_quality.py` now call the
-  same, single definition; `context/htf_bias.py`'s own 9 tests were
+  same, single definition; `context_layer/trend/htf_bias.py`'s own 9 tests were
   re-run after the extraction and confirmed byte-for-byte unchanged
   behavior.
 - `ContextSnapshot.structure`/`.liquidity_sweeps`/`.order_blocks`/
@@ -69,7 +69,7 @@ No detector was rewritten or copied to produce this feature.
   `signal_type` (BUY/SELL/NONE) and `entry` (price).
 - `context: ContextSnapshot` (from `context/`) — reads `.structure`,
   `.liquidity_sweeps`, `.order_blocks`, `.fair_value_gaps`.
-- `htf_bias: Optional[HTFBiasResult]` (from `context/htf_bias.py`,
+- `htf_bias: Optional[HTFBiasResult]` (from `context_layer/trend/htf_bias.py`,
   Phase A2) — defaults to `None` (treated as "not aligned," never an
   error).
 
@@ -124,7 +124,7 @@ Director decision when this ambiguity was raised before implementation:
 - **Session**: at the time of Phase A4, no session classification
   existed anywhere in this codebase (only `data_layer/live_data/session_filter.py`'s
   binary trading-hours gate, not a session classifier). **Phase A6
-  built `context/session.py`'s `classify_session()`/`Session` enum**,
+  built `context_layer/session/session.py`'s `classify_session()`/`Session` enum**,
   so a real session criterion is now buildable — but wiring it into
   this module's `_CRITERIA` tuple was not part of Phase A6's scope
   either (that phase built Session Intelligence standalone, the same
@@ -165,7 +165,7 @@ to add, and still does.
 ## Future expansion
 
 - **Session criterion**: Session Intelligence exists as of Phase A6
-  (`context/session.py`) — add a `SESSION_ALIGNED` entry to
+  (`context_layer/session/session.py`) — add a `SESSION_ALIGNED` entry to
   `signals/signal_quality.py`'s `_CRITERIA` tuple (the single place a
   new criterion needs to be registered) and bump `criteria_total`
   accordingly. Still not done — a distinct future step, not implied by

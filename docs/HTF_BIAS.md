@@ -30,7 +30,7 @@ Market Data (data/)
       '-- MarketDataNormalizer.get_snapshot()        (Phase A2, new call site)
                 |  Daily + H4 + H1 candles, per-timeframe quality flags
                 v
-          context/htf_bias.py
+          context_layer/trend/htf_bias.py
                 |  compute_htf_bias(snapshot) -> HTFBiasResult
                 v
           TradingPipeline.run()'s result dict ("htf_bias")
@@ -60,9 +60,9 @@ rule):
   new dict entries added (`"Daily"` in `TwelveDataClient.INTERVAL_MAP`
   and `MarketDataNormalizer.expected_deltas`) so the existing gap
   detection covers the new timeframe instead of silently skipping it.
-- Swing/structure classification: `context/market_structure.py`'s
+- Swing/structure classification: `context_layer/market_structure/market_structure.py`'s
   `detect_swing_points()`/`classify_structure()` — the exact same
-  functions `context/context_orchestrator.py` already uses for the
+  functions `context_layer/context_engine/context_orchestrator.py` already uses for the
   execution timeframe, called here once per HTF timeframe instead.
 
 No detector, validator, or fetch routine was rewritten or copied to
@@ -70,7 +70,7 @@ produce this feature.
 
 ## Inputs
 
-`context/htf_bias.py`'s `compute_htf_bias()` takes a
+`context_layer/trend/htf_bias.py`'s `compute_htf_bias()` takes a
 `data_layer.live_data.market_data.MarketSnapshot` — the same object
 `get_snapshot(symbol, ["Daily", "H4", "H1"])` already returns, keyed
 by timeframe:
@@ -100,7 +100,7 @@ classifies as `BULLISH` (most recent confirmed structure point is a
 Higher High or Higher Low), `BEARISH` (most recent confirmed point is
 a Lower High or Lower Low), or `UNKNOWN` (no candle data, or not
 enough candles yet to confirm any structure — the same "first
-occurrence" semantics `context/market_structure.py`'s
+occurrence" semantics `context_layer/market_structure/market_structure.py`'s
 `classify_structure()` already uses).
 
 The overall result:
@@ -125,7 +125,7 @@ timeframe-agreement number specifically.
 
 **Daily, H4, H1 only** — the execution timeframe (M15, unchanged) is
 never part of the HTF set, and no M1/M5 logic exists in this module.
-`context/htf_bias.py`'s `SUPPORTED_HTF_TIMEFRAMES` is the single
+`context_layer/trend/htf_bias.py`'s `SUPPORTED_HTF_TIMEFRAMES` is the single
 source of truth for this list.
 
 ## What this module does NOT do
@@ -138,7 +138,7 @@ source of truth for this list.
   one weighted input among four -- it still never itself
   approves/rejects a trade; it only contributes a bounded score
   component (see decision/README.md's "HTF integration" section for
-  exactly how). `context/htf_bias.py` itself was not modified to make
+  exactly how). `context_layer/trend/htf_bias.py` itself was not modified to make
   this connection -- the consuming code lives entirely in
   `decision/decision_engine.py`.
 - Does not change `ContextSnapshot`'s fields, `SignalCandidate`, or

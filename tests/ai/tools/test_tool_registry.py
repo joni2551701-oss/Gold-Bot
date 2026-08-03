@@ -62,7 +62,7 @@ def test_market_tool_formats_a_supplied_market_context():
 def test_news_tool_formats_a_supplied_fundamental_snapshot():
     from datetime import datetime, timezone
 
-    from context.fundamental_context import FundamentalContextSnapshot
+    from context_layer.fundamental.fundamental_context import FundamentalContextSnapshot
 
     tool = NewsTool()
     snapshot = FundamentalContextSnapshot(

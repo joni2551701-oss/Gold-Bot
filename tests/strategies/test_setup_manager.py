@@ -2,7 +2,7 @@
 
 from types import SimpleNamespace
 
-from context.order_block import OrderBlockType
+from context_layer.order_block.order_block import OrderBlockType
 
 from strategies.manager import SetupManager, SetupEvaluation
 from strategies.result import StrategyResult, SetupStatus, StrategyDirection

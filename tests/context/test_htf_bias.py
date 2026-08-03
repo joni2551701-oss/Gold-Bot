@@ -1,5 +1,5 @@
 """
-Phase A2 -- HTF Bias tests (context/htf_bias.py).
+Phase A2 -- HTF Bias tests (context_layer/trend/htf_bias.py).
 
 Builds synthetic multi-timeframe candle series directly (no live
 Twelve Data call -- MarketSnapshot is constructed by hand, same
@@ -15,7 +15,7 @@ pipeline stage as part of every pipeline.run() call in that file).
 
 from datetime import datetime, timedelta, timezone
 
-from context.htf_bias import compute_htf_bias, HTFBias, SUPPORTED_HTF_TIMEFRAMES
+from context_layer.trend.htf_bias import compute_htf_bias, HTFBias, SUPPORTED_HTF_TIMEFRAMES
 from data_layer.live_data.market_data import MarketSnapshot
 from data_layer.providers.twelve_data_client import Candle
 

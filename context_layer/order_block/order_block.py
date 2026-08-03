@@ -3,10 +3,10 @@ from enum import Enum
 from typing import List, Sequence
 from datetime import datetime
 from data_layer.providers.twelve_data_client import Candle
-from context.candle import is_bullish, is_bearish
-from context.liquidity import LiquiditySweepEvent, LiquidityType
-from context.bos import BosEvent, BosDirection
-from context.choch import ChochEvent, ChochDirection
+from context_layer.context_engine.candle import is_bullish, is_bearish
+from context_layer.liquidity.liquidity import LiquiditySweepEvent, LiquidityType
+from context_layer.market_structure.bos import BosEvent, BosDirection
+from context_layer.market_structure.choch import ChochEvent, ChochDirection
 
 class OrderBlockType(Enum):
     BULLISH = "BULLISH"

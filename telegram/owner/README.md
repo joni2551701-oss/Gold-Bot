@@ -198,7 +198,7 @@ the live bot, same as every module in this package.
 ### `fundamental_commands.py` (Phase 60.5: Fundamental Intelligence Foundation)
 `get_macro_status()`, `get_fundamental_score_report()`,
 `get_fed_status()` — thin wrappers over
-`context.fundamental_context`/`context.fundamental_scoring`'s own
+`context_layer.fundamental.fundamental_context`/`context_layer.fundamental.fundamental_scoring`'s own
 data/format functions. No new macro classification/scoring logic of
 its own. Never returns "BUY"/"SELL" or approves/rejects anything — see
 `docs/FUNDAMENTAL_INTELLIGENCE.md`'s own hard rule for this whole

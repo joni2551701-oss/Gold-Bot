@@ -3,7 +3,7 @@ from enum import Enum
 from typing import List, Sequence
 from datetime import datetime
 from data_layer.providers.twelve_data_client import Candle
-from context.market_structure import SwingPoint, SwingType
+from context_layer.market_structure.market_structure import SwingPoint, SwingType
 
 class LiquidityType(Enum):
     BSL = "BUY_SIDE_LIQUIDITY"

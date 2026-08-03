@@ -51,8 +51,8 @@ Principle). Six directories audited: `analytics/`, `ai/` (incl.
    cross-record condition-combination failure/success probability.
    Neither imports `decision/`, `risk/`, `execution/`, `strategies/`,
    or `signals/` — both read only already-computed `PaperTrade`
-   (`TYPE_CHECKING`), `LearningRecord`, and `context.fundamental_context`/
-   `context.context_orchestrator` types (`TYPE_CHECKING`) where a
+   (`TYPE_CHECKING`), `LearningRecord`, and `context_layer.fundamental.fundamental_context`/
+   `context_layer.context_engine.context_orchestrator` types (`TYPE_CHECKING`) where a
    caller supplies market context.
 5. **`ai/learning_context.py`** — placed at the top level of `ai/`
    (not inside `ai/journal/`), matching `ai/prompts/`'s own placement

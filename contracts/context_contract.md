@@ -74,7 +74,7 @@ bare `Exception`/`ValueError` — not yet implemented in this phase.
 
 ## Future Extension
 Premium/discount zoning (named, not built — see
-`context/context_config.py`'s own docstring and
+`context_layer/context_engine/context_config.py`'s own docstring and
 `docs/CONTEXT_SNAPSHOT.md`'s `ZonesInfo.premium_discount`). Real
 volume confirmation once a volume data source exists (Wyckoff's
 `_volume_confirms()` hook). `ContextSnapshotSchema` persistence (Phase

@@ -15,11 +15,11 @@ import pytest
 
 from decision.decision_engine import DecisionEngine, DecisionConfig, DecisionWeights
 from decision.models import DecisionAction
-from context.htf_bias import HTFBias, HTFBiasResult
+from context_layer.trend.htf_bias import HTFBias, HTFBiasResult
 
 
 def _htf(bias, quality_score=1.0, confidence=100.0, timeframes=("Daily", "H4", "H1")):
-    """Test-local HTFBiasResult builder -- isolates Decision Engine tests from context/htf_bias.py's own compute_htf_bias() logic."""
+    """Test-local HTFBiasResult builder -- isolates Decision Engine tests from context_layer/trend/htf_bias.py's own compute_htf_bias() logic."""
     return HTFBiasResult(bias=bias, confidence=confidence, timeframes=timeframes, quality_score=quality_score)
 
 

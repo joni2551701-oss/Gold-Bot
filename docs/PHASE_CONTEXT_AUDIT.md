@@ -24,24 +24,24 @@ is reuse, not rewrite.
 
 | TASK-CORE-006 asked | Already implemented in | Public API | Live in pipeline |
 |---|---|---|---|
-| context_manager.py (orchestration) | `context/context_orchestrator.py` | `ContextEngine.build()` / `build_context_snapshot()` | ✅ |
-| snapshot.py (container) | `context/context_orchestrator.py` + `context/snapshot.py` | `ContextSnapshot` (internal) / `ContextSnapshotSchema` (public contract) | ✅ |
-| market_structure.py (HH/HL/LH/LL, swing) | `context/market_structure.py` | `detect_swing_points()`, `classify_structure()`, `StructureType` | ✅ |
-| BOS | `context/bos.py` | `detect_bos()`, `BosEvent`, `BosDirection` | ✅ |
-| CHoCH | `context/choch.py` | `detect_choch()`, `ChochEvent`, `ChochDirection` | ✅ |
-| liquidity.py (BSL/SSL, sweep, zone) | `context/liquidity.py` | `detect_equal_levels()`, `detect_sweeps()`, `LiquidityType` | ✅ |
-| order_block.py (bull/bear) | `context/order_block.py` | `detect_order_blocks()`, `OrderBlock`, `OrderBlockType` | ✅ |
-| fvg.py (imbalance) | `context/fvg.py` | `detect_fvg()`, `FairValueGap`, `FvgType` | ✅ |
-| trend.py / bias.py | `context/market_structure.py` + `context/htf_bias.py` | `most_recent_bias()` (BULLISH/BEARISH/None), `HTFBiasResult` | ✅ |
-| regime.py (trending/range/…) | `context/market_regime.py` | `compute_market_regime()`, `MarketRegime` | ✅ |
-| session.py (Asia/London/NY/Off) | `context/session.py` | `classify_session()`, `detect_session_events()`, `Session` | ✅ |
-| volatility.py (low/normal/high) | `context/market_regime.py` (HIGH/LOW_VOLATILITY) + `context/session.py` `compute_session_volatility()` | — | ✅ |
-| helpers/ | `context/candle.py` (`is_bullish`/`is_bearish`/`body_ratio`/…) + inline | — | ✅ |
+| context_manager.py (orchestration) | `context_layer/context_engine/context_orchestrator.py` | `ContextEngine.build()` / `build_context_snapshot()` | ✅ |
+| snapshot.py (container) | `context_layer/context_engine/context_orchestrator.py` + `context_layer/context_engine/snapshot.py` | `ContextSnapshot` (internal) / `ContextSnapshotSchema` (public contract) | ✅ |
+| market_structure.py (HH/HL/LH/LL, swing) | `context_layer/market_structure/market_structure.py` | `detect_swing_points()`, `classify_structure()`, `StructureType` | ✅ |
+| BOS | `context_layer/market_structure/bos.py` | `detect_bos()`, `BosEvent`, `BosDirection` | ✅ |
+| CHoCH | `context_layer/market_structure/choch.py` | `detect_choch()`, `ChochEvent`, `ChochDirection` | ✅ |
+| liquidity.py (BSL/SSL, sweep, zone) | `context_layer/liquidity/liquidity.py` | `detect_equal_levels()`, `detect_sweeps()`, `LiquidityType` | ✅ |
+| order_block.py (bull/bear) | `context_layer/order_block/order_block.py` | `detect_order_blocks()`, `OrderBlock`, `OrderBlockType` | ✅ |
+| fvg.py (imbalance) | `context_layer/fair_value_gap/fvg.py` | `detect_fvg()`, `FairValueGap`, `FvgType` | ✅ |
+| trend.py / bias.py | `context_layer/market_structure/market_structure.py` + `context_layer/trend/htf_bias.py` | `most_recent_bias()` (BULLISH/BEARISH/None), `HTFBiasResult` | ✅ |
+| regime.py (trending/range/…) | `context_layer/trend/market_regime.py` | `compute_market_regime()`, `MarketRegime` | ✅ |
+| session.py (Asia/London/NY/Off) | `context_layer/session/session.py` | `classify_session()`, `detect_session_events()`, `Session` | ✅ |
+| volatility.py (low/normal/high) | `context_layer/trend/market_regime.py` (HIGH/LOW_VOLATILITY) + `context_layer/session/session.py` `compute_session_volatility()` | — | ✅ |
+| helpers/ | `context_layer/context_engine/candle.py` (`is_bullish`/`is_bearish`/`body_ratio`/…) + inline | — | ✅ |
 
-Extra detectors already present beyond the task list: `context/amd.py`
-(Accumulation-Manipulation-Distribution), `context/wyckoff.py`
-(Spring/Upthrust), `context/market_phase.py` (5-state phase),
-`context/fundamental_context.py` / `economic_events.py` /
+Extra detectors already present beyond the task list: `context_layer/amd/amd.py`
+(Accumulation-Manipulation-Distribution), `context_layer/wyckoff/wyckoff.py`
+(Spring/Upthrust), `context_layer/trend/market_phase.py` (5-state phase),
+`context_layer/fundamental/fundamental_context.py` / `economic_events.py` /
 `fundamental_scoring.py` (fundamental layer).
 
 ## How the pipeline works (verified, unchanged)

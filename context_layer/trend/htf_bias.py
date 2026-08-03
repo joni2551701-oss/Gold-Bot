@@ -23,8 +23,8 @@ from typing import Dict, Sequence, Tuple
 
 from data_layer.live_data.market_data import MarketSnapshot
 from data_layer.providers.twelve_data_client import Candle
-from context.context_config import ContextConfig
-from context.market_structure import (
+from context_layer.context_engine.context_config import ContextConfig
+from context_layer.market_structure.market_structure import (
     detect_swing_points,
     classify_structure,
     most_recent_bias,

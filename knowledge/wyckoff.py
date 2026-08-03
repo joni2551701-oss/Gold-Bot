@@ -1,7 +1,7 @@
 """
 Knowledge Foundation — Wyckoff entries (Phase 61.3, TASK 3).
 
-Restates `docs/WYCKOFF.md` and `context/wyckoff.py`'s own detection
+Restates `docs/WYCKOFF.md` and `context_layer/wyckoff/wyckoff.py`'s own detection
 rule -- GoldBot's Spring/Upthrust detector, not full Wyckoff phase
 theory (Phase A/B/C/D/E boundaries are explicitly out of scope, per
 `docs/WYCKOFF.md`'s own "What this does NOT do" section, and are not

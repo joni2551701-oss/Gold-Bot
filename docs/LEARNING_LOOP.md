@@ -331,7 +331,7 @@ Director's own five named regimes. Four (`TRENDING`/`RANGE`/
 `context.market_regime.MarketRegime`'s real enum values via
 `record_from_context()`; `NEWS_EVENT` has no detector behind it
 anywhere in this codebase (same disclosed gap
-`context/economic_events.py` already carries) and is only recorded
+`context_layer/fundamental/economic_events.py` already carries) and is only recorded
 when a caller supplies it explicitly — never fabricated.
 `format_regime_summary()` produces exactly the `Sequence[str]` shape
 TASK 6's `regimes=` parameter expects, closing the loop between TASK 6

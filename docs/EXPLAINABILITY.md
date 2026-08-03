@@ -147,7 +147,7 @@ good" from raw `ContextSnapshot` fields on every call, a future
 directly as part of its prompt context, and potentially reason about
 *which* factors were present rather than only a bare confidence
 number. `SignalExplanation` is already sitting in `run()`'s result
-dict, alongside `context.market_regime` (`docs/MARKET_REGIME.md`'s
+dict, alongside `context_layer.trend.market_regime` (`docs/MARKET_REGIME.md`'s
 own "Significance for AI" section makes the same point) — no new
 plumbing needed to make it available once a real AI implementation
 exists, only a decision (out of this phase's scope) to read it.

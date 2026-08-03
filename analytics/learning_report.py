@@ -24,7 +24,7 @@ does not carry as a structured field (only `strategy_name`/`session`/
 `learning.pattern_detector.detect_patterns()` already groups by). This
 report reproduces the shape with the three real dimensions, not a
 fabricated fourth one -- the same disclosed, deliberate substitution
-`context.fundamental_scoring`'s own worked-example handling already
+`context_layer.fundamental.fundamental_scoring`'s own worked-example handling already
 established this session.
 """
 

@@ -82,7 +82,7 @@ KnowledgeSource") — reuse mapping
 - **`KnowledgeSource`** — the one real, if small, gap: no existing
   field records where an entry's content is traced from. Today that
   provenance lives only in prose, inside each category module's own
-  docstring (e.g. `smc.py`: "Restates `context/bos.py`... docstrings").
+  docstring (e.g. `smc.py`: "Restates `context_layer/market_structure/bos.py`... docstrings").
   Resolution: extend `KnowledgeEntry` (Article 9's allowed shape — a
   new **optional** field with a safe default) with `source: Optional[str]
   = None`, rather than create a new `KnowledgeSource` class. A free-text

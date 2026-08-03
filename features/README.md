@@ -72,7 +72,7 @@ Score (Phase A4) already solved for their own narrower questions. See
 `SignalExplanation` (from `signals/explainability.py`, itself built
 from `SignalQualityResult`), `asset`/`timeframe` (strings, passed in
 by `core/pipeline.py`), and an optional `HTFBiasResult` (from
-`context/htf_bias.py`, passed in externally, same pattern as Decision
+`context_layer/trend/htf_bias.py`, passed in externally, same pattern as Decision
 Engine v2/Market Regime).
 
 ## Output
@@ -82,7 +82,7 @@ Engine v2/Market Regime).
 candidate, never raises even on an empty/minimal context.
 
 ## Dependencies
-`context.market_regime` (for `MarketRegime`) — an already-existing
+`context_layer.trend.market_regime` (for `MarketRegime`) — an already-existing
 `context/` computation, no new indicator — and `signals.explainability`
 (for `SignalExplanation`, `TYPE_CHECKING`-only). No dependency on
 `strategies/`, `ai/`, `decision/`, `risk/`, `database/`, or

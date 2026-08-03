@@ -11,7 +11,7 @@ consumed by any `strategies/*.py` file — wiring one is a future,
 separately-approved phase.
 
 This phase exists because Phase A1's architecture audit found zero
-Wyckoff code anywhere in the codebase — `context/amd.py`'s
+Wyckoff code anywhere in the codebase — `context_layer/amd/amd.py`'s
 Accumulation-Manipulation-Distribution cycle detector uses overlapping
 vocabulary but is a distinct, narrower SMC concept (see "Relationship
 to AMD" below).
@@ -30,13 +30,13 @@ Candles
   -> Liquidity Zones / Sweeps
   -> Order Blocks / Fair Value Gaps
   -> AMD Events
-  -> Wyckoff Events          (context/wyckoff.py, Phase A5)
+  -> Wyckoff Events          (context_layer/wyckoff/wyckoff.py, Phase A5)
   -> ContextSnapshot         (candles, ..., amd_events, wyckoff_events)
 ```
 
 `ContextSnapshot` gains a 10th field, `wyckoff_events`. Every existing
 field keeps its exact name and meaning — only a new one was added.
-Both real construction sites (`context/context_orchestrator.py`'s
+Both real construction sites (`context_layer/context_engine/context_orchestrator.py`'s
 `ContextEngine.build()`, and every test that builds a `ContextSnapshot`
 by hand) were updated to supply it, preserving this dataclass's
 existing "every field is required, no silent defaults" convention
@@ -52,16 +52,16 @@ rule):
 
 ## Relationship to AMD
 
-`context/amd.py`'s `detect_amd_events()` already correlates a
+`context_layer/amd/amd.py`'s `detect_amd_events()` already correlates a
 liquidity sweep (its `MANIPULATION` event) with a subsequent
 structural break (its `DISTRIBUTION` event) — a general pattern.
 Wyckoff's Spring/Upthrust are a **narrower, more specific**
 correlation of the same underlying idea (a sweep followed by the
 *nearest* same-direction break), so the vocabulary overlaps, but this
-module does not import, wrap, or reuse `context/amd.py`'s function
+module does not import, wrap, or reuse `context_layer/amd/amd.py`'s function
 directly. Two reasons:
 
-1. `context/amd.py` already feeds a live, tested strategy
+1. `context_layer/amd/amd.py` already feeds a live, tested strategy
    (`strategies/amd_strategy.py`). Touching it to share logic with a
    brand-new, unwired module would raise the blast radius of this
    foundation phase for no functional benefit — CLAUDE.md's "no
@@ -76,7 +76,7 @@ directly. Two reasons:
    `_confirming_break()`, flagged here rather than silently
    introduced. A future cleanup phase could extract a shared "nearest
    same-direction break after index N" helper covering both
-   `context/order_block.py` (which has the identical pattern a third
+   `context_layer/order_block/order_block.py` (which has the identical pattern a third
    time) and this module — not done in this phase.
 
 **Manipulation is not a third, separate Wyckoff event type.** It is
@@ -100,7 +100,7 @@ detection.
 |---|---|---|
 | `type` | `WyckoffEventType` | `SPRING` or `UPTHRUST`. |
 | `phase` | `WyckoffPhase` | `ACCUMULATION` (Spring) or `DISTRIBUTION` (Upthrust) — currently a direct function of `type`, exposed separately so a caller can query by phase without knowing the type mapping, and so a future event type sharing a phase doesn't require a breaking change. |
-| `index` / `confirming_break_index` | `int` | The confirming BOS/CHoCH's candle index (not the sweep's) — same convention `context/order_block.py` uses. |
+| `index` / `confirming_break_index` | `int` | The confirming BOS/CHoCH's candle index (not the sweep's) — same convention `context_layer/order_block/order_block.py` uses. |
 | `timestamp` | `datetime` | The confirming break's timestamp. |
 | `sweep` | `LiquiditySweepEvent` | The sweep that set up this event — the Manipulation leg (see above). |
 | `volume_confirmed` | `Optional[bool]` | Always `None` today — see "Volume confirmation hook" below. |
@@ -124,7 +124,7 @@ around a Spring or Upthrust to fully confirm the test. **This codebase
 has no volume data source at all** — `data_layer/providers/twelve_data_client.py`'s
 `Candle` is OHLC-only (confirmed in Phase A1's architecture audit,
 re-confirmed by reading the file this phase; Twelve Data's response is
-never asked for volume). `context/wyckoff.py`'s `_volume_confirms()`
+never asked for volume). `context_layer/wyckoff/wyckoff.py`'s `_volume_confirms()`
 is a named, documented, functionally-inert hook — it always returns
 `None` ("not checked"), never fabricates `True`/`False`. Wiring in
 real volume confirmation is a future, separately-approved phase's job;
@@ -141,7 +141,7 @@ this module.
   boundaries within Accumulation/Distribution) — only the Spring/
   Upthrust test events, the most concrete, directly-detectable pieces
   of the theory given this codebase's existing primitives.
-- Does not modify `context/amd.py`, `context/order_block.py`, or any
+- Does not modify `context_layer/amd/amd.py`, `context_layer/order_block/order_block.py`, or any
   other existing detector — see "Relationship to AMD" above for why.
 - Does not change any existing `ContextSnapshot` field's name or
   meaning — only adds `wyckoff_events`.
@@ -161,7 +161,7 @@ this module.
 - **Shared sweep-then-break helper** — a future cleanup phase could
   extract the "nearest same-direction break after index N" pattern
   duplicated (independently, not copy-pasted) across
-  `context/order_block.py`, `context/amd.py`, and this module — not
+  `context_layer/order_block/order_block.py`, `context_layer/amd/amd.py`, and this module — not
   done here to avoid touching two already-tested,
   strategy-feeding files in a foundation-only phase.
 - **Signal Quality Score integration** — `signals/signal_quality.py`

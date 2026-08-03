@@ -18,7 +18,7 @@ any context internal.
 
 from datetime import datetime, timezone
 
-from context.snapshot import (
+from context_layer.context_engine.snapshot import (
     ContextSnapshotSchema,
     LiquidityInfo,
     SessionInfo,

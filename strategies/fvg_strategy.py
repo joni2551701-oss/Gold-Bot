@@ -1,6 +1,6 @@
 from typing import List
-from context.context_orchestrator import ContextSnapshot
-from context.fvg import FvgType
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.fair_value_gap.fvg import FvgType
 from signals.models import SignalCandidate, SignalType
 
 

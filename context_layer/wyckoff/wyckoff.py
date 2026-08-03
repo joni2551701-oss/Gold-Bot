@@ -22,20 +22,20 @@ Scope for this phase, mapped from the Director's five-item list
   `sweep` field already present on every WyckoffEvent (the liquidity
   sweep that sets up the Spring/Upthrust *is* the manipulation leg of
   that cycle). Modeling it as a third independent detector would
-  re-describe the same sweep context/amd.py's AmdEventType.MANIPULATION
+  re-describe the same sweep context_layer/amd/amd.py's AmdEventType.MANIPULATION
   already names for a related but distinct concept -- see
   docs/WYCKOFF.md's "Relationship to AMD" section for why this module
-  does not import or reuse context/amd.py directly (both read the same
+  does not import or reuse context_layer/amd/amd.py directly (both read the same
   underlying LiquiditySweepEvent/BosEvent/ChochEvent types, but
   Spring/Upthrust are a narrower, more specific correlation than
-  AMD's general sweep-then-break detection, and context/amd.py already
+  AMD's general sweep-then-break detection, and context_layer/amd/amd.py already
   feeds a live, tested strategy -- this module does not touch it).
 
 Reuses existing detection output rather than duplicating it:
 - context.liquidity.LiquiditySweepEvent, context.bos.BosEvent,
   context.choch.ChochEvent (all unchanged) supply the sweep/break
   events this module correlates -- no new sweep or structural-break
-  detection is added here, same reuse principle context/order_block.py
+  detection is added here, same reuse principle context_layer/order_block/order_block.py
   already established for its own sweep-then-break correlation.
 """
 
@@ -45,9 +45,9 @@ from typing import List, Optional, Sequence
 from datetime import datetime
 
 from data_layer.providers.twelve_data_client import Candle
-from context.liquidity import LiquiditySweepEvent, LiquidityType
-from context.bos import BosEvent, BosDirection
-from context.choch import ChochEvent, ChochDirection
+from context_layer.liquidity.liquidity import LiquiditySweepEvent, LiquidityType
+from context_layer.market_structure.bos import BosEvent, BosDirection
+from context_layer.market_structure.choch import ChochEvent, ChochDirection
 
 
 class WyckoffEventType(Enum):
@@ -77,7 +77,7 @@ class WyckoffEvent:
     type: SPRING or UPTHRUST.
     phase: ACCUMULATION (Spring) or DISTRIBUTION (Upthrust).
     index: the confirming break's candle index (BOS/CHoCH), not the
-        sweep's own index -- matches context/order_block.py's
+        sweep's own index -- matches context_layer/order_block/order_block.py's
         convention of indexing an event by its confirmation point.
     timestamp: the confirming break's timestamp.
     sweep: the LiquiditySweepEvent that set up this Spring/Upthrust --

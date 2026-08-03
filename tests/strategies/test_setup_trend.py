@@ -2,7 +2,7 @@
 
 from types import SimpleNamespace
 
-from context.market_structure import StructureType
+from context_layer.market_structure.market_structure import StructureType
 
 from strategies.trend_strategy import TrendStrategy
 from strategies.result import StrategyDirection, SetupStatus

@@ -1,5 +1,5 @@
 """
-Phase A5 -- Wyckoff Engine foundation tests (context/wyckoff.py).
+Phase A5 -- Wyckoff Engine foundation tests (context_layer/wyckoff/wyckoff.py).
 
 Builds minimal, real LiquiditySweepEvent/BosEvent/ChochEvent objects
 directly (no mocking) to control exactly which sweep-then-break
@@ -10,11 +10,11 @@ tests/unit/test_signal_quality.py.
 
 from datetime import datetime, timezone
 
-from context.wyckoff import detect_wyckoff_events, WyckoffEventType, WyckoffPhase
-from context.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
-from context.bos import BosEvent, BosDirection
-from context.choch import ChochEvent, ChochDirection
-from context.context_orchestrator import build_context_snapshot
+from context_layer.wyckoff.wyckoff import detect_wyckoff_events, WyckoffEventType, WyckoffPhase
+from context_layer.liquidity.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
+from context_layer.market_structure.bos import BosEvent, BosDirection
+from context_layer.market_structure.choch import ChochEvent, ChochDirection
+from context_layer.context_engine.context_orchestrator import build_context_snapshot
 from data_layer.providers.twelve_data_client import Candle
 
 TS = datetime(2024, 1, 1, tzinfo=timezone.utc)

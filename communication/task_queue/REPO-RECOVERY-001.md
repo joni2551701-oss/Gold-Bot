@@ -102,7 +102,7 @@ Per ORDER-021 (Director chose Option 2), the Worker prepared and
 **Scope finding (No Silent Decisions — Director confirmation requested)**:
 a fresh full-tree sweep found **9** U+2060-corrupted filenames on `main`
 (the conflicting `strategy_manager.py` + 8 more: `ai/ai_prompt.py`,
-`ai/confidence_model.py`, `context/market_structure.py`,
+`ai/confidence_model.py`, `context_layer/market_structure/market_structure.py`,
 `database/signal_repository.py`, `signals/models.py`,
 `signals/signal_engine.py`, `strategies/amd_strategy.py`,
 `strategies/fvg_strategy.py`). Both scopes were tested locally:

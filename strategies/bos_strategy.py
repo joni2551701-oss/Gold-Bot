@@ -9,8 +9,8 @@ computes no structure, emits no signal.
 
 from strategies.base import SetupStrategy
 from strategies.result import StrategyResult, StrategyDirection, SetupStatus
-from context.bos import BosDirection
-from context.choch import ChochDirection
+from context_layer.market_structure.bos import BosDirection
+from context_layer.market_structure.choch import ChochDirection
 
 
 class BOSStrategy(SetupStrategy):

@@ -20,7 +20,7 @@ gate**, not a fourth additive term:
 
 This module makes four disclosed, deterministic 0.0-1.0 sub-scores,
 the same "reproduce the shape, not invent literal arithmetic"
-precedent `context.fundamental_scoring`'s own worked-example handling
+precedent `context_layer.fundamental.fundamental_scoring`'s own worked-example handling
 already established this session:
 
 - **Sample Size**: `min(occurrences / MIN_PATTERN_SAMPLE, 1.0)` —

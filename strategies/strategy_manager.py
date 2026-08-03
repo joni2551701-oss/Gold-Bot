@@ -1,5 +1,5 @@
 from typing import List
-from context.context_orchestrator import ContextSnapshot
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
 from signals.models import SignalCandidate
 from strategies.liquidity_strategy import LiquidityStrategy
 from strategies.fvg_strategy import FVGStrategy

@@ -6,13 +6,13 @@ Combines already-classified per-indicator biases (dxy_bias/rates_bias/
 inflation_bias/risk_sentiment -- each "BULLISH"/"BEARISH"/"NEUTRAL"
 FOR GOLD, supplied by the caller) into one aggregate gold_bias +
 macro_score + confidence. This module does not classify a raw macro
-number into a bias itself -- context/fundamental_context.py's own
+number into a bias itself -- context_layer/fundamental/fundamental_context.py's own
 docstring already discloses that gap ("would need a historical
 baseline/threshold model this codebase has no real data to calibrate
 today"), and TASK 1's reuse audit found nothing has closed it since.
 A future analyst/AI layer supplies the per-indicator biases; this
 module only aggregates them, the same "adapter over already-computed
-data" posture context/fundamental_context.py itself established.
+data" posture context_layer/fundamental/fundamental_context.py itself established.
 
 The Director's own worked example ("DXY: -20, Rates: -15, Inflation:
 +10, Risk: +15 -> Gold Score: +70") is illustrative of the shape only

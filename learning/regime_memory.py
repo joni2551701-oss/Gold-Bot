@@ -9,7 +9,7 @@ directly onto `context.market_regime.MarketRegime`'s own real enum
 values (`record_from_context()` relays `.value` directly, never
 recomputing a regime classification itself); `"NEWS_EVENT"` is the one
 category with no existing detector behind it in this codebase
-(`context/economic_events.py`'s own docstring already discloses "no
+(`context_layer/fundamental/economic_events.py`'s own docstring already discloses "no
 economic-calendar provider exists" — an `EconomicEvent` cannot be
 auto-detected from a `ContextSnapshot` today) — a caller records it
 explicitly via `record()` when it has that information some other way,
@@ -31,10 +31,10 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, TYPE_CHECKING
 
-from context.market_regime import MarketRegime
+from context_layer.trend.market_regime import MarketRegime
 
 if TYPE_CHECKING:
-    from context.context_orchestrator import ContextSnapshot
+    from context_layer.context_engine.context_orchestrator import ContextSnapshot
 
 REGIME_TRENDING = "TRENDING"
 REGIME_RANGE = "RANGE"

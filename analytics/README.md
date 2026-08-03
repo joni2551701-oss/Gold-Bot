@@ -20,7 +20,7 @@ already-working calculator this package does not replace or import).
 `session`, `market_phase`, `created_at`) plus
 `compute_signal_performance(signal, paper_trade=None, session=None,
 market_phase=None)` — a standardization adapter, like
-`signals/schema.py`/`context/snapshot.py` before it: relays
+`signals/schema.py`/`context_layer/context_engine/snapshot.py` before it: relays
 already-known values (`strategy_id` = `SignalSchema.strategy_name`,
 `context_id` = `SignalSchema.context_id`, both real since AC-03) and
 computes only `r_multiple` (a pure, disclosed arithmetic derivation —

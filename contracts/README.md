@@ -55,7 +55,7 @@ Every module contract follows the same eight-section shape:
   summary table.
 
 Together with `configuration/` (A13), `docs/ARCHITECTURE_RULES.md`
-(A14), `signals/schema.py` (A15), and `context/snapshot.py` (A16),
+(A14), `signals/schema.py` (A15), and `context_layer/context_engine/snapshot.py` (A16),
 this directory completes what `docs/MODULE_CONTRACTS.md` calls
 GoldBot's "platform constitution" — see that document's own closing
 note.

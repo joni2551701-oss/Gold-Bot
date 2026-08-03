@@ -10,9 +10,9 @@ the adapted direction.
 
 from types import SimpleNamespace
 
-from context.amd import AmdEventType
-from context.fvg import FvgType
-from context.bos import BosDirection
+from context_layer.amd.amd import AmdEventType
+from context_layer.fair_value_gap.fvg import FvgType
+from context_layer.market_structure.bos import BosDirection
 
 from strategies.amd_strategy import AMDSetupStrategy
 from strategies.liquidity_strategy import LiquiditySetupStrategy

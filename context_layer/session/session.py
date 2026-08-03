@@ -31,7 +31,7 @@ from enum import Enum
 from typing import Dict, List, Sequence
 
 from data_layer.providers.twelve_data_client import Candle
-from context.liquidity import LiquiditySweepEvent
+from context_layer.liquidity.liquidity import LiquiditySweepEvent
 
 
 class Session(Enum):

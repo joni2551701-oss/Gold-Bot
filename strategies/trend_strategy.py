@@ -9,7 +9,7 @@ Returns a StrategyResult; recomputes no structure, emits no signal.
 
 from strategies.base import SetupStrategy
 from strategies.result import StrategyResult, StrategyDirection, SetupStatus
-from context.market_structure import most_recent_bias
+from context_layer.market_structure.market_structure import most_recent_bias
 
 
 class TrendStrategy(SetupStrategy):

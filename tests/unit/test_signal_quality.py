@@ -12,13 +12,13 @@ from datetime import datetime, timezone
 
 from signals.signal_quality import compute_signal_quality, QualityGrade
 from signals.models import SignalType
-from context.context_orchestrator import ContextSnapshot
-from context.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
-from context.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
-from context.order_block import OrderBlock, OrderBlockType
-from context.fvg import FairValueGap, FvgType
-from context.htf_bias import HTFBias, HTFBiasResult
-from context.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.market_structure.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
+from context_layer.liquidity.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
+from context_layer.order_block.order_block import OrderBlock, OrderBlockType
+from context_layer.fair_value_gap.fvg import FairValueGap, FvgType
+from context_layer.trend.htf_bias import HTFBias, HTFBiasResult
+from context_layer.trend.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
 
 
 TS = datetime(2024, 1, 1, tzinfo=timezone.utc)

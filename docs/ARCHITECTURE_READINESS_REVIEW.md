@@ -28,7 +28,7 @@ review added.
 
 **Verified: already exists, already wired.**
 
-`context/htf_bias.py` (Phase A2) defines:
+`context_layer/trend/htf_bias.py` (Phase A2) defines:
 
 ```python
 @dataclass(frozen=True)
@@ -46,7 +46,7 @@ AC item asked for, and exactly the field shape the Director's own
 `HTFBiasSnapshot` example named (`trend`/`timeframe`/`structure`/
 `confidence` map onto `bias`/`timeframes`/the swing/structure
 functions it reuses/`confidence`). It generates no signal — see
-`context/htf_bias.py`'s own module docstring and
+`context_layer/trend/htf_bias.py`'s own module docstring and
 `contracts/context_contract.md`.
 
 `decision/decision_engine.py` already imports `HTFBias`/`HTFBiasResult`
@@ -58,17 +58,17 @@ call. No further work needed.
 
 **Verified: detection exists; the requested output model did not — built in this review.**
 
-`context/wyckoff.py` (Phase A5) and `context/amd.py` (pre-existing)
+`context_layer/wyckoff/wyckoff.py` (Phase A5) and `context_layer/amd/amd.py` (pre-existing)
 both detect real events:
 
 - `WyckoffPhase`: `ACCUMULATION`/`DISTRIBUTION` (tied to Spring/
   Upthrust events only — a narrower 2-state model, by design, see
-  `context/wyckoff.py`'s own module docstring).
+  `context_layer/wyckoff/wyckoff.py`'s own module docstring).
 - `AmdEventType`: `MANIPULATION`/`DISTRIBUTION`.
 
 Neither produces the Director's requested standard output —
 `MarketPhase(ACCUMULATION/MANIPULATION/DISTRIBUTION/MARKUP/MARKDOWN)`
-— a genuine gap. This review adds `context/market_phase.py`:
+— a genuine gap. This review adds `context_layer/trend/market_phase.py`:
 
 ```python
 class MarketPhase(Enum):
@@ -82,9 +82,9 @@ class MarketPhase(Enum):
 
 `compute_market_phase(context)` classifies from data **already on**
 `ContextSnapshot` (`wyckoff_events`, `amd_events`, `market_regime`) —
-no new detection logic; `context/wyckoff.py` and `context/amd.py` are
+no new detection logic; `context_layer/wyckoff/wyckoff.py` and `context_layer/amd/amd.py` are
 both unmodified. Priority order (most specific first, mirroring
-`context/market_regime.py`'s own established pattern):
+`context_layer/trend/market_regime.py`'s own established pattern):
 
 1. Most recent Wyckoff Spring/Upthrust → `ACCUMULATION`/`DISTRIBUTION`
    (narrowest, most specific signal).
@@ -104,7 +104,7 @@ consumed by any strategy, AI, Decision, or Risk. This is exactly the
 **Verified: the two schemas existed independently; the link did not — wired in this review. This was the real gap.**
 
 Before this review: `signals/schema.py`'s `SignalSchema.context_id`
-(Phase A15) and `context/snapshot.py`'s `ContextSnapshotSchema` (Phase
+(Phase A15) and `context_layer/context_engine/snapshot.py`'s `ContextSnapshotSchema` (Phase
 A16) both existed as complete, tested, documented models — but
 nothing in production code ever set `context_id` to a real value.
 Grepping the codebase confirmed `context_id` was populated only in
@@ -191,7 +191,7 @@ Sweep v1 vs v2 win rate") would build on. No further work needed.
 
 **Verified: already exists.**
 
-`context/session.py` (Phase A6): `Session(ASIA/LONDON/
+`context_layer/session/session.py` (Phase A6): `Session(ASIA/LONDON/
 LONDON_NEW_YORK_OVERLAP/NEW_YORK/OFF_HOURS)`, classified per candle by
 `classify_session()`. Already part of `ContextSnapshot`
 (`session_events`), already read by Signal Quality, Explainability,

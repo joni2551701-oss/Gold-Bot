@@ -70,7 +70,7 @@ vocabulary for a `PaperTrade`.
 - `derive_signal_lifecycle_state(signal, paper_trade=None)` —
   observational classification from already-computed
   `SignalSchema`/`PaperTrade` fields (same priority-ordered,
-  read-only pattern `context/market_phase.py`'s
+  read-only pattern `context_layer/trend/market_phase.py`'s
   `compute_market_phase()` established). Documented limitation:
   `EXPLAINED` cannot be reliably derived, since
   `SignalSchema.explanation_id` is never populated anywhere in this

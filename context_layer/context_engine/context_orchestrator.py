@@ -3,31 +3,31 @@ from typing import List, Optional, Sequence, TYPE_CHECKING
 
 from data_layer.providers.twelve_data_client import Candle
 
-from context.context_config import ContextConfig
-from context.market_structure import (
+from context_layer.context_engine.context_config import ContextConfig
+from context_layer.market_structure.market_structure import (
     detect_swing_points,
     classify_structure,
     SwingPoint,
     StructurePoint,
 )
-from context.bos import detect_bos, BosEvent
-from context.choch import detect_choch, ChochEvent
-from context.liquidity import (
+from context_layer.market_structure.bos import detect_bos, BosEvent
+from context_layer.market_structure.choch import detect_choch, ChochEvent
+from context_layer.liquidity.liquidity import (
     detect_equal_levels,
     detect_sweeps,
     LiquidityZone,
     LiquiditySweepEvent,
 )
-from context.order_block import detect_order_blocks, OrderBlock
-from context.fvg import detect_fvg, FairValueGap
-from context.amd import detect_amd_events, AmdEvent
-from context.wyckoff import detect_wyckoff_events, WyckoffEvent
-from context.session import detect_session_events, SessionEvent
-from context.market_regime import compute_market_regime, MarketRegimeResult
+from context_layer.order_block.order_block import detect_order_blocks, OrderBlock
+from context_layer.fair_value_gap.fvg import detect_fvg, FairValueGap
+from context_layer.amd.amd import detect_amd_events, AmdEvent
+from context_layer.wyckoff.wyckoff import detect_wyckoff_events, WyckoffEvent
+from context_layer.session.session import detect_session_events, SessionEvent
+from context_layer.trend.market_regime import compute_market_regime, MarketRegimeResult
 from core_layer.logger.logger import setup_logger
 
 if TYPE_CHECKING:
-    from context.htf_bias import HTFBiasResult
+    from context_layer.trend.htf_bias import HTFBiasResult
 
 logger = setup_logger("ContextEngine")
 
@@ -53,7 +53,7 @@ class ContextSnapshot:
     tests/test_generate_signals.py's docstring for this convention
     stated as an explicit contract. market_regime is the one
     exception to "empty sequence" (it is a single MarketRegimeResult,
-    not a list) -- see context/market_regime.py; a caller with no
+    not a list) -- see context_layer/trend/market_regime.py; a caller with no
     real data still supplies a real MarketRegimeResult(regime=UNKNOWN, ...),
     never None, keeping the same "always supplied, never silently
     missing" spirit.
@@ -114,7 +114,7 @@ class ContextEngine:
         Regime reads it, everything else ignores it. Passing None
         (any pre-Phase-A7 caller) simply means Market Regime classifies
         without HTF confirmation available, never an error -- see
-        context/market_regime.py.
+        context_layer/trend/market_regime.py.
         """
         self._validate_candle_order(candles)
 
@@ -254,7 +254,7 @@ class ContextEngine:
         Stage 6 (Phase A5): correlates liquidity sweeps with the
         nearest subsequent same-direction structural break into Spring
         (Accumulation) / Upthrust (Distribution) events. Foundation
-        only -- not consumed by any strategy. See context/wyckoff.py
+        only -- not consumed by any strategy. See context_layer/wyckoff/wyckoff.py
         and docs/WYCKOFF.md.
         """
         return detect_wyckoff_events(candles, sweeps, bos, choch)
@@ -264,7 +264,7 @@ class ContextEngine:
         Stage 7 (Phase A6): classifies each candle's UTC hour into a
         trading session (Asia/London/New York/Overlap/Off-hours),
         emitting one SessionEvent per transition. Foundation only --
-        not consumed by any strategy. See context/session.py and
+        not consumed by any strategy. See context_layer/session/session.py and
         docs/SESSION_INTELLIGENCE.md.
         """
         return detect_session_events(candles)
@@ -280,7 +280,7 @@ class ContextEngine:
         Stage 8 (Phase A7): classifies overall market character from
         already-computed structure, Wyckoff events, session/volatility
         data, and (if available) HTF Bias -- no new indicator. Not
-        consumed by any strategy. See context/market_regime.py and
+        consumed by any strategy. See context_layer/trend/market_regime.py and
         docs/MARKET_REGIME.md.
         """
         return compute_market_regime(candles, structure, wyckoff_events, htf_bias)

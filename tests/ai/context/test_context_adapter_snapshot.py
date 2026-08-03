@@ -6,7 +6,7 @@ from ai.context.context_adapter import market_context_from_snapshot
 
 
 def _schema(**overrides):
-    from context.snapshot import ContextSnapshotSchema, LiquidityInfo, SessionInfo, StructureInfo, ZonesInfo, generate_snapshot_id
+    from context_layer.context_engine.snapshot import ContextSnapshotSchema, LiquidityInfo, SessionInfo, StructureInfo, ZonesInfo, generate_snapshot_id
     from datetime import datetime, timezone
 
     defaults = dict(
@@ -28,7 +28,7 @@ def test_ai_context_adapter_module_never_imports_context_at_runtime():
     reference is TYPE_CHECKING-only. Saves and restores every removed
     sys.modules entry in a finally block -- permanently dropping
     context.* here would force every later test to re-import it fresh,
-    producing a *new* class object for anything like context.htf_bias.HTFBias
+    producing a *new* class object for anything like context_layer.trend.htf_bias.HTFBias
     with a different identity than the one other already-imported code
     holds a reference to (enums compare by identity), breaking unrelated
     tests elsewhere in the suite. Discovered via a real full-suite
@@ -36,7 +36,7 @@ def test_ai_context_adapter_module_never_imports_context_at_runtime():
     """
     saved_context_modules = {
         mod: sys.modules[mod] for mod in list(sys.modules)
-        if mod == "context" or mod.startswith("context.")
+        if mod == "context_layer" or mod.startswith("context_layer.")
     }
     saved_adapter = sys.modules.pop("ai.context.context_adapter", None)
     for mod in saved_context_modules:
@@ -46,8 +46,8 @@ def test_ai_context_adapter_module_never_imports_context_at_runtime():
         import ai.context.context_adapter
 
         assert hasattr(ai.context.context_adapter, "market_context_from_snapshot")
-        assert "context.snapshot" not in sys.modules
-        assert "context" not in sys.modules
+        assert "context_layer.context_engine.snapshot" not in sys.modules
+        assert "context_layer" not in sys.modules
     finally:
         sys.modules.update(saved_context_modules)
         if saved_adapter is not None:
@@ -91,7 +91,7 @@ def test_metadata_carries_snapshot_id():
 
 
 def test_degenerate_schema_falls_back_to_unknown_symbol_timeframe():
-    from context.snapshot import ContextSnapshotSchema, generate_snapshot_id
+    from context_layer.context_engine.snapshot import ContextSnapshotSchema, generate_snapshot_id
     from datetime import datetime, timezone
 
     empty_schema = ContextSnapshotSchema(snapshot_id=generate_snapshot_id(), created_at=datetime.now(timezone.utc))

@@ -107,7 +107,7 @@ platform constitution — the near-complete v0.3.5 Foundation:
   rule statements and the workflow for changing this codebase.
 - **A15 Signal Schema** (`signals/schema.py`) — the standard shape a
   signal is described in across modules.
-- **A16 Context Snapshot** (`context/snapshot.py`) — the standard
+- **A16 Context Snapshot** (`context_layer/context_engine/snapshot.py`) — the standard
   shape market context is described in across modules.
 - **A17 Module Contracts** (this document, `contracts/`) — the
   precise input/output/dependency/error contract per module.

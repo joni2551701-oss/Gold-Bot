@@ -73,7 +73,7 @@ class FundamentalSnapshot:
     by a short logical name (e.g. "dxy", "interest_rate", "cpi") --
     not by the source's own series_id, so a future consumer can read
     `snapshot.indicators["interest_rate"]` without knowing FRED's own
-    naming convention. Mirrors context/snapshot.py's
+    naming convention. Mirrors context_layer/context_engine/snapshot.py's
     ContextSnapshotSchema identity/timestamp shape (snapshot_id,
     created_at) -- the same standardization pattern, not shared code
     (data_layer/providers/ must not import context/, see registry.py's own

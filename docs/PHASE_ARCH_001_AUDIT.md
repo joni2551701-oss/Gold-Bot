@@ -38,7 +38,7 @@ No **hard** layer-crossing import violations.
 
 | Reported "hit" | Reality |
 |---|---|
-| `context/fundamental_scoring.py:27` → decision/risk | **Docstring** ("…from decision/decision_engine.py or risk/risk_manager.py — it answers"), not an import. |
+| `context_layer/fundamental/fundamental_scoring.py:27` → decision/risk | **Docstring** ("…from decision/decision_engine.py or risk/risk_manager.py — it answers"), not an import. |
 | `signals/signal_quality.py:20` → context | **Comment** describing provenance, not an import. |
 | `signals/*` → `context.*` (real imports) | **Type/enum only** — `LiquidityType`, `OrderBlockType`, `FvgType`, `WyckoffPhase`, `MarketRegime`, `ContextSnapshot` for typing. This is the FROZEN live pipeline contract, not analysis logic. |
 | `strategies/*` → `context.*` | Detector **reuse** (reads `ContextSnapshot` fields / calls frozen `analyze()`). No structure recomputation. |
@@ -83,7 +83,7 @@ config.py → data_layer/providers/ → stream/ → market/ → context/ → str
 - `*_state.py` (liquidity/regime/session/trend/volatility) + `candle.py`
   = documented thin façade DTOs (41–56 lines each), no detectors.
 - **Duplicate check:** `market/candle.py` is a deliberate façade view,
-  not a second `Candle` detector. `context/candle.py` remains the SSoT
+  not a second `Candle` detector. `context_layer/context_engine/candle.py` remains the SSoT
   for candle sentiment (`direction()` / `is_bullish()`).
 
 ### `context/` — ✅ FROZEN, no move

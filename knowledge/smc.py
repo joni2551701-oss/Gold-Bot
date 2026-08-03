@@ -1,8 +1,8 @@
 """
 Knowledge Foundation — Smart Money Concepts entries (Phase 61.3, TASK 3).
 
-Restates `context/bos.py`, `context/choch.py`, `context/liquidity.py`,
-`context/order_block.py`, `context/fvg.py`, and `context/amd.py`'s own
+Restates `context_layer/market_structure/bos.py`, `context_layer/market_structure/choch.py`, `context_layer/liquidity/liquidity.py`,
+`context_layer/order_block/order_block.py`, `context_layer/fair_value_gap/fvg.py`, and `context_layer/amd/amd.py`'s own
 docstrings and detection rules -- the exact concepts GoldBot's Context
 Engine already detects, not a second, independently-invented SMC theory.
 """
@@ -78,7 +78,7 @@ SMC_ENTRIES = (
         category=KnowledgeCategory.SMC,
         title="AMD Cycle (Accumulation - Manipulation - Distribution)",
         summary=(
-            "GoldBot's `context/amd.py` correlates a liquidity sweep (the "
+            "GoldBot's `context_layer/amd/amd.py` correlates a liquidity sweep (the "
             "Manipulation leg) with a subsequent structural break (the "
             "Distribution leg) into one cycle. This is a general "
             "correlation; Wyckoff Spring/Upthrust (see the Wyckoff category) "

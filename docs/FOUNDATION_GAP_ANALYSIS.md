@@ -65,7 +65,7 @@ third input).
   (Accumulation/Markup/Distribution/Markdown), Spring, UTAD, or phase
   detection exists anywhere in the codebase — confirmed by a
   case-insensitive full-repo grep this phase.
-- `context/amd.py`'s Accumulation-Manipulation-Distribution cycle
+- `context_layer/amd/amd.py`'s Accumulation-Manipulation-Distribution cycle
   detector uses **overlapping vocabulary** (`ACCUMULATION`/
   `DISTRIBUTION` appear as `AmdEventType` values) but is a distinct,
   narrower SMC concept — it correlates a liquidity sweep
@@ -83,7 +83,7 @@ third input).
   or Crypto), unlike the current SMC strategies which were built and
   tuned specifically around XAUUSD's behavior.
 
-**What's genuinely missing**: everything — a `context/wyckoff.py`
+**What's genuinely missing**: everything — a `context_layer/wyckoff/wyckoff.py`
 (or new subpackage) detector, a `WyckoffPhase` enum, a
 `strategies/wyckoff_strategy.py`, and (if phase/Spring/UTAD detection
 is meant to use volume) a volume data source, which does not exist in
@@ -95,7 +95,7 @@ is meant to use volume) a volume data source, which does not exist in
 
 Not one of Task 3's 12 named roadmap items, but explicitly asked about
 in the brief's Trading Context Audit section, so recorded here for
-completeness: `context/amd.py` (detector, 30% test coverage — lowest
+completeness: `context_layer/amd/amd.py` (detector, 30% test coverage — lowest
 in the repo) and `strategies/amd_strategy.py` (candidate generator,
 37% coverage) both exist, are registered in `strategy_manager.py`, and
 do influence real `SignalCandidate` output — re-confirmed by reading
@@ -181,7 +181,7 @@ change, out of scope for a specification-only phase to decide).
 - No trending-vs-ranging, volatility-regime, or any regime
   classification exists anywhere — confirmed by a case-insensitive
   full-repo grep this phase (zero hits for "regime").
-- `context/market_structure.py`'s HH/HL/LH/LL classification is the
+- `context_layer/market_structure/market_structure.py`'s HH/HL/LH/LL classification is the
   closest existing concept (structure direction), but it operates
   candle-by-candle/swing-by-swing, not as a persistent regime state
   a strategy or the decision engine could condition on.

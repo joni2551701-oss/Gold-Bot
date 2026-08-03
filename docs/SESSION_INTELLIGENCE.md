@@ -27,7 +27,7 @@ detector inside `ContextEngine.build()`:
 ```
 Candles
   -> ... (Structure, BOS/CHoCH, Liquidity, OB, FVG, AMD, Wyckoff)
-  -> Session Events           (context/session.py, Phase A6)
+  -> Session Events           (context_layer/session/session.py, Phase A6)
   -> ContextSnapshot          (..., wyckoff_events, session_events)
 ```
 

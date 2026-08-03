@@ -1,6 +1,6 @@
 """
 Phase A16 -- Context Snapshot tests: creation, immutability, and the
-from_context_snapshot() adapter (context/snapshot.py).
+from_context_snapshot() adapter (context_layer/context_engine/snapshot.py).
 
 No mocking -- real ContextSnapshot objects, built either via
 build_context_snapshot() over real candles or hand-constructed (same
@@ -12,9 +12,9 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from context.context_orchestrator import build_context_snapshot, ContextSnapshot
-from context.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
-from context.snapshot import (
+from context_layer.context_engine.context_orchestrator import build_context_snapshot, ContextSnapshot
+from context_layer.trend.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
+from context_layer.context_engine.snapshot import (
     ContextSnapshotSchema,
     StructureInfo,
     LiquidityInfo,
@@ -158,8 +158,8 @@ def test_adapter_accepts_symbol_and_timeframe_overrides():
 
 
 def test_adapter_reflects_bos_and_choch_presence():
-    from context.bos import BosEvent, BosDirection
-    from context.market_structure import StructurePoint, SwingPoint, SwingType, StructureType
+    from context_layer.market_structure.bos import BosEvent, BosDirection
+    from context_layer.market_structure.market_structure import StructurePoint, SwingPoint, SwingType, StructureType
 
     swing = SwingPoint(index=0, price=100.0, timestamp=BASE, type=SwingType.HIGH)
     structure_point = StructurePoint(swing=swing, structure=StructureType.HIGHER_HIGH)

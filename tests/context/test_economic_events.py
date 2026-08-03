@@ -1,11 +1,11 @@
 """
 Phase 60.5: Fundamental Intelligence Foundation, TASK 4 --
-context/economic_events.py tests.
+context_layer/fundamental/economic_events.py tests.
 """
 
 from datetime import datetime, timezone
 
-from context.economic_events import EconomicEvent, EventImpact
+from context_layer.fundamental.economic_events import EconomicEvent, EventImpact
 
 
 def _event(expected=None, actual=None):

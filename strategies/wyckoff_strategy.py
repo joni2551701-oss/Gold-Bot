@@ -9,7 +9,7 @@ StrategyResult; recomputes no structure, emits no signal.
 
 from strategies.base import SetupStrategy
 from strategies.result import StrategyResult, StrategyDirection, SetupStatus
-from context.wyckoff import WyckoffEventType
+from context_layer.wyckoff.wyckoff import WyckoffEventType
 
 
 class WyckoffStrategy(SetupStrategy):

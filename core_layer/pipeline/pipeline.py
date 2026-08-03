@@ -5,10 +5,10 @@ from typing import List, Optional
 from data_layer.live_data.market_data import MarketSnapshot
 from data_layer.live_data.market_data_service import MarketDataService
 from data_layer.data_validation.data_quality import assess_data_quality, DataQualityResult
-from context.context_orchestrator import build_context_snapshot
-from context.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
-from context.market_phase import compute_market_phase, MarketPhaseResult
-from context.snapshot import from_context_snapshot, ContextSnapshotSchema
+from context_layer.context_engine.context_orchestrator import build_context_snapshot
+from context_layer.trend.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
+from context_layer.trend.market_phase import compute_market_phase, MarketPhaseResult
+from context_layer.context_engine.snapshot import from_context_snapshot, ContextSnapshotSchema
 from features.feature_engine import compute_market_features
 from features.feature_model import MarketFeatures
 from signals.signal_engine import SignalEngine
@@ -67,18 +67,18 @@ class TradingPipeline:
     Telegram Delivery -> Persistence into a single, runnable flow.
 
     Market Phase (Pre-Phase 59 Architecture Readiness Review, AC-02,
-    context/market_phase.py) classifies the market into one of six
+    context_layer/trend/market_phase.py) classifies the market into one of six
     states (ACCUMULATION/MANIPULATION/DISTRIBUTION/MARKUP/MARKDOWN/
     UNKNOWN) once per cycle, entirely from data already on
     ContextSnapshot (wyckoff_events, amd_events, market_regime) -- no
-    new detection logic, context/wyckoff.py and context/amd.py are
+    new detection logic, context_layer/wyckoff/wyckoff.py and context_layer/amd/amd.py are
     unmodified. Purely advisory: not consumed by any strategy,
     AIAnalyzer, DecisionEngine, or RiskManager. Returned in run()'s
     result dict ("market_phase") for a future AI explanation or
     Education consumer.
 
     Signal History (Pre-Phase 59 Architecture Readiness Review, AC-03,
-    signals/adapter.py + context/snapshot.py) builds one
+    signals/adapter.py + context_layer/context_engine/snapshot.py) builds one
     ContextSnapshotSchema per cycle and one SignalSchema per candidate,
     with a real context_id (the cycle's ContextSnapshotSchema.snapshot_id)
     and a real decision_id (freshly generated per TradeDecision) --
@@ -145,7 +145,7 @@ class TradingPipeline:
     one per candidate, same order as "signals") for a future,
     separately-approved phase to consume.
 
-    Market Regime (Phase A7, context/market_regime.py) classifies
+    Market Regime (Phase A7, context_layer/trend/market_regime.py) classifies
     overall market character (TRENDING/RANGE/ACCUMULATION/
     DISTRIBUTION/HIGH_VOLATILITY/LOW_VOLATILITY/UNKNOWN) from
     already-computed Structure, Wyckoff events, session/volatility
@@ -153,11 +153,11 @@ class TradingPipeline:
     build_context_snapshot() specifically so Market Regime can read it
     (the only reason ContextSnapshot construction now takes htf_bias
     at all; every other detector still only reads candles). Purely
-    advisory: `context.market_regime` is part of ContextSnapshot, not
+    advisory: `context_layer.trend.market_regime` is part of ContextSnapshot, not
     consumed by any strategy, AIAnalyzer, DecisionEngine, or
     RiskManager in this phase.
 
-    HTF Bias (Phase A2, context/htf_bias.py) describes the higher-
+    HTF Bias (Phase A2, context_layer/trend/htf_bias.py) describes the higher-
     timeframe (Daily/H4/H1) market state only -- it is never passed
     into Strategies or the AI Analyzer, and it never blocks or alters
     any existing stage. As of Phase A3 (Decision Engine v2), it is
@@ -352,7 +352,7 @@ class TradingPipeline:
         # market sits in the Accumulation-Manipulation-Distribution-
         # Markup-Markdown cycle, computed entirely from data already on
         # `context` (wyckoff_events, amd_events, market_regime) -- no
-        # new detection logic, context/wyckoff.py and context/amd.py
+        # new detection logic, context_layer/wyckoff/wyckoff.py and context_layer/amd/amd.py
         # are unmodified. Purely advisory: not consumed by any
         # strategy, AIAnalyzer, DecisionEngine, or RiskManager.
         t0 = time.perf_counter()

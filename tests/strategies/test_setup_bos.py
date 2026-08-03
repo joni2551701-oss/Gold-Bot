@@ -2,8 +2,8 @@
 
 from types import SimpleNamespace
 
-from context.bos import BosDirection
-from context.choch import ChochDirection
+from context_layer.market_structure.bos import BosDirection
+from context_layer.market_structure.choch import ChochDirection
 
 from strategies.bos_strategy import BOSStrategy
 from strategies.result import StrategyDirection, SetupStatus

@@ -3,9 +3,9 @@ Context Layer — Economic Event Model (Phase 60.5: Fundamental
 Intelligence Foundation, TASK 4).
 
 A calendar entry for a scheduled macro release (NFP, CPI, FOMC, ISM,
-PMI, etc.) -- distinct from context/fundamental_context.py's
+PMI, etc.) -- distinct from context_layer/fundamental/fundamental_context.py's
 FundamentalContextSnapshot (a point-in-time indicator reading) and
-context/fundamental_scoring.py's FundamentalScoreResult (an aggregate
+context_layer/fundamental/fundamental_scoring.py's FundamentalScoreResult (an aggregate
 bias/score): this module answers "what economic release is this, and
 what did it say," not "what does it mean for gold" -- that
 interpretation belongs to a future caller, same "data, not judgment"

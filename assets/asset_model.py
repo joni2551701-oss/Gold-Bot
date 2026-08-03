@@ -37,12 +37,12 @@ class AssetDefinition:
     quote_currency: the currency the asset is priced in (e.g. "USD").
         Same rationale as base_currency.
     trading_session: always None in this phase -- an explicit hook.
-        This codebase's Session Intelligence (context/session.py,
+        This codebase's Session Intelligence (context_layer/session/session.py,
         Phase A6) classifies a *candle's* session, not a per-asset
         "typical session" label; computing the latter is a distinct,
         not-yet-done future step.
     volatility_class: always None in this phase -- an explicit hook.
-        context/market_regime.py (Phase A7) classifies volatility per
+        context_layer/trend/market_regime.py (Phase A7) classifies volatility per
         *cycle*, not a fixed per-asset volatility class; never
         fabricated here.
     news_sensitivity: always None in this phase -- an explicit hook.

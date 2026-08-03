@@ -36,13 +36,13 @@ from enum import Enum
 from typing import Optional, Sequence, TYPE_CHECKING
 
 from data_layer.providers.twelve_data_client import Candle
-from context.market_structure import StructurePoint, most_recent_bias
-from context.wyckoff import WyckoffEvent, WyckoffPhase
-from context.session import classify_session, compute_session_volatility
-from context.htf_bias import HTFBias
+from context_layer.market_structure.market_structure import StructurePoint, most_recent_bias
+from context_layer.wyckoff.wyckoff import WyckoffEvent, WyckoffPhase
+from context_layer.session.session import classify_session, compute_session_volatility
+from context_layer.trend.htf_bias import HTFBias
 
 if TYPE_CHECKING:
-    from context.htf_bias import HTFBiasResult
+    from context_layer.trend.htf_bias import HTFBiasResult
 
 
 class MarketRegime(Enum):

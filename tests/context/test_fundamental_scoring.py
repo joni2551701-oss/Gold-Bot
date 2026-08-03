@@ -1,9 +1,9 @@
 """
 Phase 60.5: Fundamental Intelligence Foundation, TASK 5 --
-context/fundamental_scoring.py tests.
+context_layer/fundamental/fundamental_scoring.py tests.
 """
 
-from context.fundamental_scoring import (
+from context_layer.fundamental.fundamental_scoring import (
     FundamentalScoreResult,
     FundamentalScoreWeights,
     compute_fundamental_score,

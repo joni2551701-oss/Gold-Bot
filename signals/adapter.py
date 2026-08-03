@@ -11,7 +11,7 @@ this module only reads what those already produce.
 
 core/pipeline.py's "signal_history" stage now calls this once per
 candidate with a real context_id (the cycle's own ContextSnapshotSchema.snapshot_id,
-context/snapshot.py, Phase A16) and a real decision_id (a fresh id
+context_layer/context_engine/snapshot.py, Phase A16) and a real decision_id (a fresh id
 generated per TradeDecision) -- see docs/SIGNAL_SCHEMA.md's
 "Integration" section and docs/ARCHITECTURE_READINESS_REVIEW.md's
 AC-03 section for the full contract. The resulting SignalSchema list

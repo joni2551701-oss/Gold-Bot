@@ -20,7 +20,7 @@ Reuses existing detection output rather than duplicating it:
   session name -- no new session classification.
 - context.htf_bias.HTFBiasResult (Phase A2, passed in externally,
   same as Decision Engine v2/Market Regime) supplies htf_bias.
-- ContextSnapshot.liquidity_zones (context/liquidity.py) supplies the
+- ContextSnapshot.liquidity_zones (context_layer/liquidity/liquidity.py) supplies the
   nearest-zone distance calculation -- no new liquidity detection.
 - signals.explainability.SignalExplanation (Phase A9) supplies
   signal_quality and confidence -- both already computed by Signal
@@ -33,12 +33,12 @@ be a new indicator, out of scope for this standardization-only phase
 
 from typing import Optional, TYPE_CHECKING
 
-from context.market_regime import MarketRegime
+from context_layer.trend.market_regime import MarketRegime
 from features.feature_model import MarketFeatures
 
 if TYPE_CHECKING:
-    from context.context_orchestrator import ContextSnapshot
-    from context.htf_bias import HTFBiasResult
+    from context_layer.context_engine.context_orchestrator import ContextSnapshot
+    from context_layer.trend.htf_bias import HTFBiasResult
     from signals.explainability import SignalExplanation
 
 

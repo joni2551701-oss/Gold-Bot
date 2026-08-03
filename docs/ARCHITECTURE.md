@@ -58,7 +58,7 @@ Data Quality (data_layer/data_validation/data_quality.py)  -- observational only
       |                                  (never filters/blocks, see
       |                                  docs/DATA_QUALITY.md)
       v
-HTF Bias (context/htf_bias.py)   -- Daily/H4/H1 market-context only
+HTF Bias (context_layer/trend/htf_bias.py)   -- Daily/H4/H1 market-context only
       |     |                       (Phase A2; never itself a trade
       |     |                       decision, see docs/HTF_BIAS.md)
       v     |
@@ -70,7 +70,7 @@ Context Engine (context/)        |  -- SMC structure detection:
       |     |                       see below) -- see below
       |     |
       v     |
-Market Phase (context/market_phase.py)  -- ACCUMULATION/MANIPULATION/
+Market Phase (context_layer/trend/market_phase.py)  -- ACCUMULATION/MANIPULATION/
       |     |                       DISTRIBUTION/MARKUP/MARKDOWN/UNKNOWN,
       |     |                       classified from already-computed
       |     |                       Wyckoff/AMD/Market Regime (Pre-Phase
@@ -171,7 +171,7 @@ below) to build the historical link record. `Signal Generation
 exactly as before; `SignalSchema` is built downstream, after Risk, from
 already-computed values only.
 
-Context Snapshot (`context/snapshot.py`, Phase A16) was likewise
+Context Snapshot (`context_layer/context_engine/snapshot.py`, Phase A16) was likewise
 **not** shown in the diagram above through Phase A19 — but as of the
 same Pre-Phase 59 Architecture Readiness Review (AC-03),
 `core/pipeline.py` now calls `from_context_snapshot()` once per cycle,
@@ -252,16 +252,16 @@ returned in `run()`'s result dict (`"quality_results"`) only, the same
 Phase A3. `AIAnalyzer`, `DecisionEngine`, and `RiskManager` are all
 unmodified by Phase A4.
 
-One shared extraction, zero behavior change: `context/htf_bias.py`'s
+One shared extraction, zero behavior change: `context_layer/trend/htf_bias.py`'s
 per-timeframe "most recent structure direction" walk (previously
 inline) was factored out to `context.market_structure.most_recent_bias()`
 so both `htf_bias.py` and `signal_quality.py` use the same definition
-instead of two copies of the same six lines — `context/htf_bias.py`'s
+instead of two copies of the same six lines — `context_layer/trend/htf_bias.py`'s
 own 9 tests were re-run after the extraction and confirmed unchanged.
 
 ### Wyckoff Engine (Phase A5)
 
-`context/wyckoff.py`'s `detect_wyckoff_events()` correlates already-
+`context_layer/wyckoff/wyckoff.py`'s `detect_wyckoff_events()` correlates already-
 detected liquidity sweeps with the nearest subsequent same-direction
 structural break into Spring (`SSL` sweep -> bullish break,
 `phase=ACCUMULATION`) and Upthrust (`BSL` sweep -> bearish break,
@@ -273,7 +273,7 @@ exact pattern, so its output (`wyckoff_events`) is simply a new field
 on `ContextSnapshot` (now 10 fields; every pre-existing field's name
 and meaning is unchanged).
 
-Deliberately does not reuse `context/amd.py`'s
+Deliberately does not reuse `context_layer/amd/amd.py`'s
 `detect_amd_events()` despite the vocabulary overlap (both correlate a
 sweep with a break) — `amd.py` already feeds a live, tested strategy,
 and sharing code with a brand-new, unwired module was judged higher
@@ -289,7 +289,7 @@ never fabricates a `True`/`False` confirmation. Not consumed by any
 
 ### Session Intelligence (Phase A6)
 
-`context/session.py`'s `classify_session(timestamp)` classifies a
+`context_layer/session/session.py`'s `classify_session(timestamp)` classifies a
 candle's UTC hour into `ASIA` / `LONDON` /
 `LONDON_NEW_YORK_OVERLAP` / `NEW_YORK` / `OFF_HOURS`. Like Wyckoff,
 this needed no `core/pipeline.py` change — an 8th `ContextEngine.build()`
@@ -317,7 +317,7 @@ purpose) — not read, called, or duplicated by this module.
 
 ### Market Regime Engine (Phase A7)
 
-`context/market_regime.py`'s `compute_market_regime()` classifies
+`context_layer/trend/market_regime.py`'s `compute_market_regime()` classifies
 overall market character (`TRENDING`/`RANGE`/`ACCUMULATION`/
 `DISTRIBUTION`/`HIGH_VOLATILITY`/`LOW_VOLATILITY`/`UNKNOWN`) from
 already-computed structure, Wyckoff events, session volatility, and
@@ -335,7 +335,7 @@ Since `core/pipeline.py` already computes `htf_bias` before building
 an optional `htf_bias=None` parameter — backward compatible with
 every pre-Phase-A7 call site (both real code and every existing
 test), verified by re-running the full suite after the change.
-`context.market_regime` is `ContextSnapshot`'s 12th field, and the
+`context_layer.trend.market_regime` is `ContextSnapshot`'s 12th field, and the
 only one that is a single `MarketRegimeResult` rather than a
 `Sequence[...]` — a regime is a state of the whole window, not a
 sparse event list.
@@ -566,7 +566,7 @@ contract.
 
 ### Context Snapshot Foundation (Phase A16)
 
-`context/snapshot.py` adds `ContextSnapshotSchema` — one standard,
+`context_layer/context_engine/snapshot.py` adds `ContextSnapshotSchema` — one standard,
 flat, JSON-serializable summary of market context (identity, market
 info, nested `structure`/`liquidity`/`zones`/`session` groups,
 `regime`, `metadata`) — plus `validate_snapshot()`,
@@ -580,7 +580,7 @@ default (`zones.premium_discount` — no detector for this exists
 anywhere in this codebase today).
 
 **Deliberately named `ContextSnapshotSchema`, not `ContextSnapshot`**:
-`context.context_orchestrator` already defines the real, internal,
+`context_layer.context_engine.context_orchestrator` already defines the real, internal,
 12-field `ContextSnapshot` every strategy/Signal Quality Score/
 Explainability/Feature Engineering module already consumes —
 untouched by this phase. A second class with the identical name in
@@ -605,14 +605,14 @@ disclosure pattern Phase A10-A15 each followed.
 
 Deliberately has **zero pipeline wiring** in this phase, same posture
 as every other Phase A foundation module: `core/pipeline.py` never
-calls `from_context_snapshot()`. `context/snapshot.py` does not import
+calls `from_context_snapshot()`. `context_layer/context_engine/snapshot.py` does not import
 `signals/` for its own `ValidationResult` either — `context/` must
 never depend on `signals/` (see `docs/ARCHITECTURE_RULES.md`'s
 Context Engine rule), so a separate, independently-declared,
 identically-shaped `ValidationResult` exists instead of an import.
-`context/market_structure.py`, `context/liquidity.py`,
-`context/order_block.py`, `context/fvg.py`, and
-`context/context_orchestrator.py` are all read-only inputs to this
+`context_layer/market_structure/market_structure.py`, `context_layer/liquidity/liquidity.py`,
+`context_layer/order_block/order_block.py`, `context_layer/fair_value_gap/fvg.py`, and
+`context_layer/context_engine/context_orchestrator.py` are all read-only inputs to this
 phase — none is modified. See `docs/CONTEXT_SNAPSHOT.md` for the full
 contract.
 
@@ -816,7 +816,7 @@ live bot's command surface is unaffected. `enable_provider()`/
 override mechanism exists for `config.py`'s import-time-read
 `ENABLE_*` flags.
 
-**TASK 6 (Fundamental Context Contract)** — `context/fundamental_context.py`'s
+**TASK 6 (Fundamental Context Contract)** — `context_layer/fundamental/fundamental_context.py`'s
 `compute_fundamental_context()` connects `data_layer/providers/fred_provider.py`
 (Phase 59.2, never previously read by `context/`) to a new
 `FundamentalContextSnapshot` (`fed_rate`, `inflation`,
@@ -1381,13 +1381,13 @@ this phase adds no connection to it. Full detail:
 TASK 1's reuse audit found two of the Director's own brief's suggested
 new paths already had a better home and were not created: a new
 `context/fundamental/` subpackage (this phase extends the existing
-`context/fundamental_context.py` instead, plus two flat sibling files
+`context_layer/fundamental/fundamental_context.py` instead, plus two flat sibling files
 — `context/` has no subpackages today, and Module Reuse Principle
 counsels against introducing the first one for this alone) and a new
 `ai/fundamental_prompt.py` (this phase adds one method to the existing
 `ai/prompts/prompt_manager.py`'s `PromptManager` instead).
 
-**`context/fundamental_context.py` extensions (TASK 2/6)** —
+**`context_layer/fundamental/fundamental_context.py` extensions (TASK 2/6)** —
 `FundamentalContextSnapshot` gained eight new `Optional` fields
 (`dxy_bias`/`rates_bias`/`inflation_bias`/`fed_expectation`/
 `risk_sentiment`/`gold_bias`/`confidence`/`macro_score`, all default
@@ -1406,11 +1406,11 @@ catching each `NotImplementedError` individually. Still no real
 `api.stlouisfed.org` connection — that needs an API key and is a
 separate, explicitly-approvable future step.
 
-**`context/economic_events.py`** (TASK 4) — `EventImpact` +
+**`context_layer/fundamental/economic_events.py`** (TASK 4) — `EventImpact` +
 `EconomicEvent` (`name`/`date`/`impact`/`currency`/`expected`/`actual`
 + a computed `surprise` property). Data model only, no provider yet.
 
-**`context/fundamental_scoring.py`** (TASK 5) —
+**`context_layer/fundamental/fundamental_scoring.py`** (TASK 5) —
 `FundamentalScoreWeights`/`FundamentalScoreResult` +
 `compute_fundamental_score()`/`explain_fundamental_score()`/
 `format_fundamental_score()`. Aggregates already-classified
@@ -1744,9 +1744,9 @@ core/pipeline.py (TradingPipeline.run())
 data_layer/live_data/market_data.py, data_layer/providers/*, data_layer/data_validation/data_quality.py        (Market Data + Data Quality)
   |
   v
-context/context_orchestrator.py, context/htf_bias.py,
-context/market_regime.py, context/market_phase.py,
-context/fundamental_context.py                                      (Context)
+context_layer/context_engine/context_orchestrator.py, context_layer/trend/htf_bias.py,
+context_layer/trend/market_regime.py, context_layer/trend/market_phase.py,
+context_layer/fundamental/fundamental_context.py                                      (Context)
   |
   v
 strategies/strategy_manager.py                                      (Strategy)
@@ -2165,7 +2165,7 @@ Session Intelligence and Explainability) — verified, not rebuilt, per
 this codebase's "No duplicate logic" rule. **Three items had a real,
 narrow gap**, closed in this review:
 
-**Market Phase Foundation (AC-02)** — `context/market_phase.py` adds
+**Market Phase Foundation (AC-02)** — `context_layer/trend/market_phase.py` adds
 `MarketPhase` (`ACCUMULATION`/`MANIPULATION`/`DISTRIBUTION`/`MARKUP`/
 `MARKDOWN`/`UNKNOWN`) and `compute_market_phase(context)`, extending
 the pre-existing 2-state `WyckoffPhase` into the Director's requested
@@ -2173,11 +2173,11 @@ the pre-existing 2-state `WyckoffPhase` into the Director's requested
 to every other classification enum in this codebase — e.g. `HTFBias`,
 `MarketRegime` — not one of the Director's own 5 listed values,
 disclosed explicitly). Priority order, mirroring
-`context/market_regime.py`'s own established pattern: most recent
+`context_layer/trend/market_regime.py`'s own established pattern: most recent
 Wyckoff Spring/Upthrust event (most specific) → most recent AMD event
 → confirmed `TRENDING` `MarketRegime` direction → `UNKNOWN`. Computes
 nothing new — reads only `context.wyckoff_events`, `context.amd_events`,
-and `context.market_regime`, all already fields on `ContextSnapshot`
+and `context_layer.trend.market_regime`, all already fields on `ContextSnapshot`
 today. New `core/pipeline.py` stage immediately after `context`;
 `"market_phase"` is a new key in `run()`'s result dict, advisory only
 (not consumed by Decision Engine, Risk Manager, or any strategy).
@@ -2186,7 +2186,7 @@ today. New `core/pipeline.py` stage immediately after `context`;
 item. `core/pipeline.py`'s new `signal_history` stage (immediately
 after `risk`, before candidate selection) is the first place in this
 codebase that connects `signals/schema.py` (Phase A15) and
-`context/snapshot.py` (Phase A16) — both previously built with "zero
+`context_layer/context_engine/snapshot.py` (Phase A16) — both previously built with "zero
 pipeline wiring" — into a live record. Per cycle: one
 `ContextSnapshotSchema` is built via `from_context_snapshot()`; then,
 per candidate, one `SignalSchema` is built via `from_signal_candidate()`
@@ -2394,20 +2394,20 @@ import sweep):
   every layer (see its own rule below); `signals/schema.py`'s and
   `signals/adapter.py`'s own import lists above are otherwise
   unchanged by this.
-- `context/snapshot.py` (Phase A16) imports only the standard library
-  plus `context.context_orchestrator` and `context.market_structure`
+- `context_layer/context_engine/snapshot.py` (Phase A16) imports only the standard library
+  plus `context_layer.context_engine.context_orchestrator` and `context_layer.market_structure.market_structure`
   (same package) — no dependency on `strategies/`, `signals/`, `ai/`,
   `decision/`, `risk/`, `database/`, `telegram/`, or `assets/`.
   Deliberately does not import `signals.schema.ValidationResult`
   despite the identical shape — `context/` must never depend on
   `signals/` (see `docs/ARCHITECTURE_RULES.md`'s Context Engine rule)
-  — `context/snapshot.py` declares its own, independent
+  — `context_layer/context_engine/snapshot.py` declares its own, independent
   `ValidationResult` instead (see `docs/CONTEXT_SNAPSHOT.md`). As of
   AC-03, `core/pipeline.py` imports and calls
   `context.snapshot.from_context_snapshot()` at runtime, same allowed
   pattern as `signals/adapter.py` above.
-- `context/market_phase.py` (AC-02) imports `context.amd`,
-  `context.market_regime`, and `context.wyckoff` (same package,
+- `context_layer/trend/market_phase.py` (AC-02) imports `context_layer.amd.amd`,
+  `context_layer.trend.market_regime`, and `context_layer.wyckoff.wyckoff` (same package,
   standard library `enum`/`dataclasses` otherwise) plus, `TYPE_CHECKING`-
   only, `context.context_orchestrator.ContextSnapshot` — no dependency
   on `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`,
@@ -2429,7 +2429,7 @@ import sweep):
   `strategies/lifecycle/`), `signals/`, `ai/`, `decision/`, `risk/`,
   `execution/`, `database/`, or `telegram/`. `asset_registry.py`
   imports `assets.profiles.gold` (same package) only.
-- `features/` imports `context/` (`context.market_regime`) and
+- `features/` imports `context/` (`context_layer.trend.market_regime`) and
   `signals/` (for `SignalExplanation`, `TYPE_CHECKING`-only) plus its
   own `features.feature_model` — never `strategies/`, `ai/`,
   `decision/`, `risk/`, `database/`, or `telegram/`. `features/`
@@ -2479,7 +2479,7 @@ import sweep):
   `data_layer.live_data.market_data_snapshot.MarketDataSnapshot`, `TYPE_CHECKING`-only.
   No dependency on `telegram/`, `ai/`, `decision/`, `risk/`,
   `context/`, or `strategies/`.
-- `context/fundamental_context.py` (Phase 59.3) imports only the
+- `context_layer/fundamental/fundamental_context.py` (Phase 59.3) imports only the
   standard library plus, `TYPE_CHECKING`-only,
   `data_layer.providers.fundamental_base.FundamentalDataPoint` — no runtime
   dependency on `data_layer/providers/` (inputs are supplied by the caller,

@@ -26,13 +26,13 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, List, Sequence
 
 from signals.models import SignalType
-from context.wyckoff import WyckoffPhase
-from context.market_regime import MarketRegime, RegimeDirection
+from context_layer.wyckoff.wyckoff import WyckoffPhase
+from context_layer.trend.market_regime import MarketRegime, RegimeDirection
 
 if TYPE_CHECKING:
     from signals.models import SignalCandidate
     from signals.signal_quality import SignalQualityResult
-    from context.context_orchestrator import ContextSnapshot
+    from context_layer.context_engine.context_orchestrator import ContextSnapshot
 
 
 @dataclass(frozen=True)

@@ -1,11 +1,11 @@
 """
 Phase A16 -- Context Snapshot tests: validate_snapshot()
-(context/snapshot.py).
+(context_layer/context_engine/snapshot.py).
 """
 
 from datetime import datetime, timezone
 
-from context.snapshot import (
+from context_layer.context_engine.snapshot import (
     ContextSnapshotSchema,
     generate_snapshot_id,
     validate_snapshot,

@@ -9,8 +9,8 @@ Returns a StrategyResult; recomputes no structure, emits no signal.
 
 from strategies.base import SetupStrategy
 from strategies.result import StrategyResult, StrategyDirection, SetupStatus
-from context.choch import ChochDirection
-from context.liquidity import LiquidityType
+from context_layer.market_structure.choch import ChochDirection
+from context_layer.liquidity.liquidity import LiquidityType
 
 
 class ReversalStrategy(SetupStrategy):

@@ -261,7 +261,7 @@ not a plan to implement:
 | Chart | Not started |
 | AI Assistant | Foundation exists (`assistant/`, `ai/conversation/`, `voice/`) — no Telegram entry point |
 | AI Analyst | Foundation exists (`ai/trading_analyst/`) — no Telegram entry point |
-| Economic Calendar | Not started (fundamental data exists in `context/economic_events.py`, no Telegram surface) |
+| Economic Calendar | Not started (fundamental data exists in `context_layer/fundamental/economic_events.py`, no Telegram surface) |
 | News Center | Not started |
 | Academy | Foundation exists (`ai/learning/`) — no Telegram entry point |
 | Analytics | Partially live (`/performance`, `/report` under Owner) |

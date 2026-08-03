@@ -19,7 +19,7 @@ data/   -- fetch + validate + de-duplicate
       |         |                                 -> Context Engine
       |         '-- on exception -> api_error_classifier.py (AC-07)
       |                              -> structured log line only
-      '-- get_snapshot() (Daily/H4/H1)        -> context/htf_bias.py
+      '-- get_snapshot() (Daily/H4/H1)        -> context_layer/trend/htf_bias.py
                                                   (Phase A2)
 ```
 

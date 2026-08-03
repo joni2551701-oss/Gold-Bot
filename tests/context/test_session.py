@@ -1,5 +1,5 @@
 """
-Phase A6 -- Session Intelligence foundation tests (context/session.py).
+Phase A6 -- Session Intelligence foundation tests (context_layer/session/session.py).
 
 No mocking -- real Candle/LiquiditySweepEvent objects with hand-picked
 UTC timestamps, same convention as tests/context/test_htf_bias.py and
@@ -8,16 +8,16 @@ tests/context/test_wyckoff.py.
 
 from datetime import datetime, timezone
 
-from context.session import (
+from context_layer.session.session import (
     Session,
     classify_session,
     detect_session_events,
     compute_session_volatility,
     compute_session_liquidity_activity,
 )
-from context.context_orchestrator import build_context_snapshot
+from context_layer.context_engine.context_orchestrator import build_context_snapshot
 from data_layer.providers.twelve_data_client import Candle
-from context.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
+from context_layer.liquidity.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
 
 
 def _ts(hour: int, minute: int = 0) -> datetime:

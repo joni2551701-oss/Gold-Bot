@@ -134,7 +134,7 @@ def compute_r_multiple(
     helper and analytics/ has no reason to depend on database/ for a
     three-line formula -- the same small, disclosed duplication this
     codebase already accepted for Wyckoff-vs-AMD
-    (context/wyckoff.py's own "Relationship to AMD" docstring) and
+    (context_layer/wyckoff/wyckoff.py's own "Relationship to AMD" docstring) and
     Data Quality-vs-market_data.py (data_layer/data_validation/data_quality.py's own
     docstring).
 

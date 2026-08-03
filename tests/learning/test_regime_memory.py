@@ -5,8 +5,8 @@ learning/regime_memory.py tests.
 
 from datetime import datetime, timedelta, timezone
 
-from context.context_orchestrator import ContextSnapshot
-from context.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.trend.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
 from learning.regime_memory import (
     REGIME_HIGH_VOLATILITY,
     REGIME_LOW_VOLATILITY,

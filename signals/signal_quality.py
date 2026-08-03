@@ -17,13 +17,13 @@ points in docs/SIGNAL_QUALITY.md, not faked with a placeholder score.
 
 Reuses existing detection output rather than duplicating it:
 - context.market_structure.most_recent_bias() (Phase A4: extracted
-  from context/htf_bias.py's per-timeframe classification, now shared
+  from context_layer/trend/htf_bias.py's per-timeframe classification, now shared
   by both) reads ContextSnapshot.structure -- no new structure
   detection.
 - ContextSnapshot.liquidity_sweeps, .order_blocks, .fair_value_gaps
   (context_orchestrator.py, unchanged) supply the other three
   criteria -- no new liquidity/OB/FVG detection.
-- HTFBiasResult (context/htf_bias.py, Phase A2) supplies the HTF
+- HTFBiasResult (context_layer/trend/htf_bias.py, Phase A2) supplies the HTF
   criterion -- no new HTF computation.
 """
 
@@ -31,18 +31,18 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Callable, Optional, Sequence, Tuple
 
-from context.liquidity import LiquidityType
-from context.order_block import OrderBlockType
-from context.fvg import FvgType
-from context.market_structure import most_recent_bias
-from context.htf_bias import HTFBias
+from context_layer.liquidity.liquidity import LiquidityType
+from context_layer.order_block.order_block import OrderBlockType
+from context_layer.fair_value_gap.fvg import FvgType
+from context_layer.market_structure.market_structure import most_recent_bias
+from context_layer.trend.htf_bias import HTFBias
 from signals.models import SignalType
 from core_layer.logger.logger import setup_logger
 
 if TYPE_CHECKING:
     from signals.models import SignalCandidate
-    from context.context_orchestrator import ContextSnapshot
-    from context.htf_bias import HTFBiasResult
+    from context_layer.context_engine.context_orchestrator import ContextSnapshot
+    from context_layer.trend.htf_bias import HTFBiasResult
 
 logger = setup_logger("SignalQualityEngine")
 

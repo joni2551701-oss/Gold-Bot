@@ -69,11 +69,11 @@ data_layer/live_data/market_data.py                  MarketDataNormalizer
 data_layer/market_memory/data_cache.py                   SmartDataCache
 data_layer/live_data/session_filter.py               SessionFilter
 
-context/context_orchestrator.py      ContextEngine
-context/market_structure.py          MarketStructureEngine
-context/bos.py                       BOSEngine
-context/choch.py                     ChochEngine
-context/amd.py                       AMD
+context_layer/context_engine/context_orchestrator.py      ContextEngine
+context_layer/market_structure/market_structure.py          MarketStructureEngine
+context_layer/market_structure/bos.py                       BOSEngine
+context_layer/market_structure/choch.py                     ChochEngine
+context_layer/amd/amd.py                       AMD
 
 ai/ai_analyzer.py                    AIAnalyzer
 
@@ -114,8 +114,8 @@ dataclasses, pure functions, or static text) intentionally have none:
 `signals/models.py`, `decision/models.py`, `risk/risk_manager.py`,
 `strategies/*.py`, `signals/signal_engine.py`, `telegram/keyboards.py`,
 `telegram/commands.py`, `telegram/signal_formatter.py`,
-`context/candle.py`, `context/context_config.py`, `context/fvg.py`,
-`context/liquidity.py`, `context/order_block.py`, all `database/*_models.py`,
+`context_layer/context_engine/candle.py`, `context_layer/context_engine/context_config.py`, `context_layer/fair_value_gap/fvg.py`,
+`context_layer/liquidity/liquidity.py`, `context_layer/order_block/order_block.py`, all `database/*_models.py`,
 `ai/ai_prompt.py`, `ai/confidence_model.py`, `ai/trade_journal.py`,
 `execution/*.py`, `monitoring/signal_monitor.py`. Adding a logger to a
 file with nothing to log would be surface for its own sake — not done.

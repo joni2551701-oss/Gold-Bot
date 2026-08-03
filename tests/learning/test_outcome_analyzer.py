@@ -7,14 +7,14 @@ as tests/context/test_market_phase.py.
 
 from datetime import datetime, timezone
 
-from context.bos import BosDirection, BosEvent
-from context.context_orchestrator import ContextSnapshot
-from context.fvg import FairValueGap, FvgType
-from context.htf_bias import HTFBias, HTFBiasResult
-from context.liquidity import LiquiditySweepEvent, LiquidityType, LiquidityZone
-from context.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
-from context.market_structure import StructurePoint, StructureType, SwingPoint, SwingType
-from context.order_block import OrderBlock, OrderBlockType
+from context_layer.market_structure.bos import BosDirection, BosEvent
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.fair_value_gap.fvg import FairValueGap, FvgType
+from context_layer.trend.htf_bias import HTFBias, HTFBiasResult
+from context_layer.liquidity.liquidity import LiquiditySweepEvent, LiquidityType, LiquidityZone
+from context_layer.trend.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
+from context_layer.market_structure.market_structure import StructurePoint, StructureType, SwingPoint, SwingType
+from context_layer.order_block.order_block import OrderBlock, OrderBlockType
 from learning.outcome_analyzer import TradeAnalysis, analyze_trade_result
 from lifecycle.paper_trade import PaperTrade
 from lifecycle.trade_state import TradeState

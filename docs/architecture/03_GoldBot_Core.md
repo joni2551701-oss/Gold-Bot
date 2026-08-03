@@ -21,7 +21,7 @@ Ecosystem-level summary and the one genuine finding this audit adds
 | Ecosystem diagram box | Real module | Note |
 |---|---|---|
 | Market Engine | *(no separate module)* | Absorbed into `data/` (fetch) + `context/` (structure) |
-| Context Engine | `context/context_orchestrator.py` | Real, matches `ARCHITECTURE_MASTER.md` |
+| Context Engine | `context_layer/context_engine/context_orchestrator.py` | Real, matches `ARCHITECTURE_MASTER.md` |
 | Analysis Engine | *(no separate module)* | Absorbed into `context/`'s detectors (Wyckoff/Regime/Session) + `signals/signal_quality.py` |
 | Strategy Engine | `strategies/strategy_manager.py` | Real |
 | Confluence Engine | *(no separate module)* | Confluence logic lives inside each strategy in `strategies/*.py`, reinforced by `signals/signal_quality.py` |

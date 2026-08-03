@@ -23,11 +23,11 @@ live decision path -- `observe -> analyze -> report`, not
 from dataclasses import dataclass, field
 from typing import List, Optional, Sequence, TYPE_CHECKING
 
-from context.htf_bias import HTFBias
+from context_layer.trend.htf_bias import HTFBias
 
 if TYPE_CHECKING:
-    from context.context_orchestrator import ContextSnapshot
-    from context.htf_bias import HTFBiasResult
+    from context_layer.context_engine.context_orchestrator import ContextSnapshot
+    from context_layer.trend.htf_bias import HTFBiasResult
     from analytics.signal_performance import SignalPerformance
     from lifecycle.paper_trade import PaperTrade
 

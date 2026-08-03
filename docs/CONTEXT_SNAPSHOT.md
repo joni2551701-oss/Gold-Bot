@@ -27,7 +27,7 @@ context look like."
 
 ## A critical naming note
 
-`context.context_orchestrator` already defines a class named
+`context_layer.context_engine.context_orchestrator` already defines a class named
 `ContextSnapshot` — untouched by this phase, and it stays the name
 every existing detector/strategy/signal-quality/explainability/
 feature-engineering module already imports and consumes. This
@@ -71,26 +71,26 @@ ContextSnapshotSchema (this phase, standalone)
 AI / Analytics / Replay / Education   -- not wired to any of these in this phase
 ```
 
-`context/snapshot.py`'s `from_context_snapshot()` adapts an existing,
+`context_layer/context_engine/snapshot.py`'s `from_context_snapshot()` adapts an existing,
 already-built `context.context_orchestrator.ContextSnapshot` into a
 `ContextSnapshotSchema` — it is not itself part of the live pipeline
 flow. `core/pipeline.py` does not call it anywhere in this phase.
 
 ## Pre-implementation audit
 
-Before writing any code, `context/context_orchestrator.py` and every
+Before writing any code, `context_layer/context_engine/context_orchestrator.py` and every
 detector module it orchestrates were read in full, to reuse rather
 than invent:
 
 | Found | Location | Reused as |
 |---|---|---|
-| `most_recent_bias(structure) -> Optional[str]` ("BULLISH"/"BEARISH"/`None`) | `context/market_structure.py` (Phase A4/A5 shared helper) | `StructureInfo.trend` — the exact same value Signal Quality Score and HTF Bias already compute, not a new calculation. |
-| `StructureType.HIGHER_HIGH.value == "HH"` (and `HL`/`LH`/`LL`/`UNKNOWN`) | `context/market_structure.py` | `StructureInfo.swing_state` — the most recent `StructurePoint.structure.value`, a single already-classified label (not a new combined "last-high + last-low" walk — see "A deliberate simplification" below). |
-| `MarketRegime.TRENDING/RANGE/ACCUMULATION/DISTRIBUTION/HIGH_VOLATILITY/LOW_VOLATILITY/UNKNOWN` | `context/market_regime.py` (Phase A7) | `ContextSnapshotSchema.regime` — the real 7-value vocabulary, relayed via `.regime.value` (see "A deliberate deviation" below). |
-| `LiquidityType.BSL.value == "BUY_SIDE_LIQUIDITY"`, `SSL.value == "SELL_SIDE_LIQUIDITY"` | `context/liquidity.py` | `LiquidityInfo.liquidity_type` — the real value, not the roadmap's shortened illustrative `"SELL_SIDE"` label. |
-| `Session.LONDON.value == "LONDON"` (and every other session) | `context/session.py` (Phase A6) | `SessionInfo.current_session` — the latest `SessionEvent.session.value`, same pattern `features/feature_engine.py` (Phase A10) already used. |
-| `setup_logger("ContextEngine")` | `context/context_orchestrator.py` | `SnapshotMetadata.source` default — the real logger name this module already uses, not an invented label. |
-| No `premium_discount`/premium-discount-zone detector anywhere; `context/context_config.py`'s own docstring names it as a future detector | `context/context_config.py` | Confirms `ZonesInfo.premium_discount` has no real source today — stays an honest `None` hook, never fabricated. |
+| `most_recent_bias(structure) -> Optional[str]` ("BULLISH"/"BEARISH"/`None`) | `context_layer/market_structure/market_structure.py` (Phase A4/A5 shared helper) | `StructureInfo.trend` — the exact same value Signal Quality Score and HTF Bias already compute, not a new calculation. |
+| `StructureType.HIGHER_HIGH.value == "HH"` (and `HL`/`LH`/`LL`/`UNKNOWN`) | `context_layer/market_structure/market_structure.py` | `StructureInfo.swing_state` — the most recent `StructurePoint.structure.value`, a single already-classified label (not a new combined "last-high + last-low" walk — see "A deliberate simplification" below). |
+| `MarketRegime.TRENDING/RANGE/ACCUMULATION/DISTRIBUTION/HIGH_VOLATILITY/LOW_VOLATILITY/UNKNOWN` | `context_layer/trend/market_regime.py` (Phase A7) | `ContextSnapshotSchema.regime` — the real 7-value vocabulary, relayed via `.regime.value` (see "A deliberate deviation" below). |
+| `LiquidityType.BSL.value == "BUY_SIDE_LIQUIDITY"`, `SSL.value == "SELL_SIDE_LIQUIDITY"` | `context_layer/liquidity/liquidity.py` | `LiquidityInfo.liquidity_type` — the real value, not the roadmap's shortened illustrative `"SELL_SIDE"` label. |
+| `Session.LONDON.value == "LONDON"` (and every other session) | `context_layer/session/session.py` (Phase A6) | `SessionInfo.current_session` — the latest `SessionEvent.session.value`, same pattern `features/feature_engine.py` (Phase A10) already used. |
+| `setup_logger("ContextEngine")` | `context_layer/context_engine/context_orchestrator.py` | `SnapshotMetadata.source` default — the real logger name this module already uses, not an invented label. |
+| No `premium_discount`/premium-discount-zone detector anywhere; `context_layer/context_engine/context_config.py`'s own docstring names it as a future detector | `context_layer/context_engine/context_config.py` | Confirms `ZonesInfo.premium_discount` has no real source today — stays an honest `None` hook, never fabricated. |
 | `signals/schema.py`'s `generate_signal_id()` (`str(uuid.uuid4())`), `ValidationResult(valid, errors)` shape (Phase A15) | `signals/schema.py` | The exact same identity-generation convention (`generate_snapshot_id()`) and result-shape convention, independently re-declared (not imported — see "Why not import from `signals/`" below), not invented. |
 
 ## Model
@@ -127,7 +127,7 @@ class ContextSnapshotSchema:
 
 The brief's own illustrative example listed a 5-value `regime`
 vocabulary (`TREND`/`RANGE`/`REVERSAL`/`VOLATILITY`/`UNKNOWN`) — not
-what `context/market_regime.py`'s real `MarketRegime` enum produces
+what `context_layer/trend/market_regime.py`'s real `MarketRegime` enum produces
 (`TRENDING`/`RANGE`/`ACCUMULATION`/`DISTRIBUTION`/`HIGH_VOLATILITY`/
 `LOW_VOLATILITY`/`UNKNOWN`, 7 values). Collapsing the real 7 values
 down to the illustrative 5 would require inventing a new mapping rule
@@ -156,7 +156,7 @@ proxy, not a textbook ATR.
 
 ### Why not import from `signals/`
 
-`context/snapshot.py` defines its own tiny `ValidationResult(valid,
+`context_layer/context_engine/snapshot.py` defines its own tiny `ValidationResult(valid,
 errors)` rather than importing `signals.schema.ValidationResult`
 (Phase A15), even though the shape is identical. `context/` must
 never depend on `signals/` — `docs/ARCHITECTURE_RULES.md`'s Context
@@ -234,11 +234,11 @@ not implemented in this phase.
 
 ## Existing code — untouched
 
-`context/market_structure.py`, `context/liquidity.py`,
-`context/order_block.py`, `context/fvg.py`,
-`context/context_orchestrator.py`, and every other existing
+`context_layer/market_structure/market_structure.py`, `context_layer/liquidity/liquidity.py`,
+`context_layer/order_block/order_block.py`, `context_layer/fair_value_gap/fvg.py`,
+`context_layer/context_engine/context_orchestrator.py`, and every other existing
 `context/*.py` detector are read-only inputs to this phase — none is
-modified. `context/snapshot.py` is a new, additive file; nothing it
+modified. `context_layer/context_engine/snapshot.py` is a new, additive file; nothing it
 does changes any existing detection algorithm, and
 `context.context_orchestrator.ContextSnapshot` (the real, internal
 type) is unaffected.

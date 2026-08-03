@@ -396,7 +396,7 @@ gaps in Step 3 are documented as pre-conditions for future deprecation.
   `context/`, FROZEN) — pure projection.
 - **Responsibility:** give future consumers (chart/AI/telegram/monitoring)
   one read surface, so none reach into `context/` internals.
-- **Dependencies:** `context.snapshot` (public contract only),
+- **Dependencies:** `context_layer.context_engine.snapshot` (public contract only),
   `stream/current_price` (legacy — would re-point to canonical
   `data_layer.live_data.current_price_provider`).
 - **Consumer:** none today.
@@ -416,7 +416,7 @@ gaps in Step 3 are documented as pre-conditions for future deprecation.
   import cleanly; full suite green).
 - `market.market_data.MarketSnapshot` importers: still resolve (alias).
 - Canonical `data_layer.live_data.market_data.MarketSnapshot` importers (`core/pipeline.py`,
-  `context/htf_bias.py`, `backtesting/`, many tests): unaffected — that
+  `context_layer/trend/htf_bias.py`, `backtesting/`, many tests): unaffected — that
   class was never touched.
 
 ## Step 13 — Module Status

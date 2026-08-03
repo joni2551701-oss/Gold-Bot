@@ -1,6 +1,6 @@
 from typing import List
-from context.context_orchestrator import ContextSnapshot
-from context.bos import BosDirection
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.market_structure.bos import BosDirection
 from signals.models import SignalCandidate, SignalType
 
 

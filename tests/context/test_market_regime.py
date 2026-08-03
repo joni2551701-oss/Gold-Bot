@@ -1,5 +1,5 @@
 """
-Phase A7 -- Market Regime Engine foundation tests (context/market_regime.py).
+Phase A7 -- Market Regime Engine foundation tests (context_layer/trend/market_regime.py).
 
 No mocking -- real StructurePoint/WyckoffEvent/HTFBiasResult/Candle
 objects, same convention as tests/context/test_htf_bias.py,
@@ -8,7 +8,7 @@ tests/context/test_wyckoff.py, and tests/context/test_session.py.
 
 from datetime import datetime, timezone
 
-from context.market_regime import (
+from context_layer.trend.market_regime import (
     compute_market_regime,
     MarketRegime,
     RegimeDirection,
@@ -18,11 +18,11 @@ from context.market_regime import (
     RANGE_CONFIDENCE,
     UNKNOWN_CONFIDENCE,
 )
-from context.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
-from context.wyckoff import WyckoffEvent, WyckoffEventType, WyckoffPhase
-from context.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
-from context.htf_bias import HTFBias, HTFBiasResult
-from context.context_orchestrator import build_context_snapshot
+from context_layer.market_structure.market_structure import SwingPoint, SwingType, StructurePoint, StructureType
+from context_layer.wyckoff.wyckoff import WyckoffEvent, WyckoffEventType, WyckoffPhase
+from context_layer.liquidity.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
+from context_layer.trend.htf_bias import HTFBias, HTFBiasResult
+from context_layer.context_engine.context_orchestrator import build_context_snapshot
 from data_layer.providers.twelve_data_client import Candle
 
 TS = datetime(2024, 1, 1, tzinfo=timezone.utc)

@@ -3,12 +3,12 @@ from dataclasses import dataclass
 from typing import Optional, TYPE_CHECKING
 
 from decision.models import DecisionAction, TradeDecision
-from context.htf_bias import HTFBias
+from context_layer.trend.htf_bias import HTFBias
 
 if TYPE_CHECKING:
     from signals.models import SignalCandidate
     from ai.ai_analyzer import AIAnalysisResult
-    from context.htf_bias import HTFBiasResult
+    from context_layer.trend.htf_bias import HTFBiasResult
 
 
 class DecisionType(Enum):

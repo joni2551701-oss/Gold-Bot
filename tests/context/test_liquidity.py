@@ -1,5 +1,5 @@
 """
-TASK-CORE-006 gap-fill — dedicated unit tests for context/liquidity.py.
+TASK-CORE-006 gap-fill — dedicated unit tests for context_layer/liquidity/liquidity.py.
 
 Read-only exercise of the existing frozen detectors: detect_equal_levels
 clusters near-equal swing highs into BSL (buy-side) and near-equal swing
@@ -11,13 +11,13 @@ from datetime import datetime, timedelta, timezone
 
 from data_layer.providers.twelve_data_client import Candle
 
-from context.liquidity import (
+from context_layer.liquidity.liquidity import (
     LiquidityType,
     LiquidityZone,
     detect_equal_levels,
     detect_sweeps,
 )
-from context.market_structure import SwingPoint, SwingType
+from context_layer.market_structure.market_structure import SwingPoint, SwingType
 
 BASE = datetime(2026, 1, 1, tzinfo=timezone.utc)
 

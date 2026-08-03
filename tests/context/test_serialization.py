@@ -1,12 +1,12 @@
 """
 Phase A16 -- Context Snapshot tests: serialization
-(context/snapshot.py's to_dict()/to_json()/from_dict()/from_json()).
+(context_layer/context_engine/snapshot.py's to_dict()/to_json()/from_dict()/from_json()).
 """
 
 import json
 from datetime import datetime, timezone
 
-from context.snapshot import (
+from context_layer.context_engine.snapshot import (
     ContextSnapshotSchema,
     StructureInfo,
     LiquidityInfo,

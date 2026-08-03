@@ -6,20 +6,20 @@ MarketPhase is a standard 5-state (+ UNKNOWN) classification of "what
 point in the Accumulation-Manipulation-Distribution-Markup-Markdown
 cycle is the market in right now" -- built entirely from already-
 computed data (Wyckoff Spring/Upthrust events, AMD events, Market
-Regime). No new detection logic; context/wyckoff.py and context/amd.py
+Regime). No new detection logic; context_layer/wyckoff/wyckoff.py and context_layer/amd/amd.py
 are both untouched.
 
-Extends context/wyckoff.py's own 2-state WyckoffPhase
+Extends context_layer/wyckoff/wyckoff.py's own 2-state WyckoffPhase
 (ACCUMULATION/DISTRIBUTION, tied strictly to Spring/Upthrust) to the
 5-state model named in the Director's Architecture Readiness Review
 (Accumulation/Manipulation/Distribution/Markup/Markdown) -- see
 docs/ARCHITECTURE_READINESS_REVIEW.md's AC-02 section for the full
 rationale.
 
-Priority order mirrors context/market_regime.py's own established
+Priority order mirrors context_layer/trend/market_regime.py's own established
 pattern (most specific signal first, a safe UNKNOWN fallback last):
 1. Most recent Wyckoff Spring/Upthrust (the narrowest, most specific
-   signal -- see context/wyckoff.py's own docstring on why Spring/
+   signal -- see context_layer/wyckoff/wyckoff.py's own docstring on why Spring/
    Upthrust is narrower than AMD's general sweep-then-break
    detection) -> ACCUMULATION/DISTRIBUTION.
 2. Else, most recent AMD event -> MANIPULATION/DISTRIBUTION.
@@ -33,12 +33,12 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from context.amd import AmdEventType
-from context.market_regime import MarketRegime, RegimeDirection
-from context.wyckoff import WyckoffPhase
+from context_layer.amd.amd import AmdEventType
+from context_layer.trend.market_regime import MarketRegime, RegimeDirection
+from context_layer.wyckoff.wyckoff import WyckoffPhase
 
 if TYPE_CHECKING:
-    from context.context_orchestrator import ContextSnapshot
+    from context_layer.context_engine.context_orchestrator import ContextSnapshot
 
 
 class MarketPhase(Enum):
@@ -68,7 +68,7 @@ def compute_market_phase(context: 'ContextSnapshot') -> MarketPhaseResult:
     context.market_regime directly -- all three already exist on
     ContextSnapshot (Phase A5/AMD pre-existing/Phase A7), so this
     function needs no new field on ContextSnapshot and no change to
-    context/context_orchestrator.py. Never raises: an empty context
+    context_layer/context_engine/context_orchestrator.py. Never raises: an empty context
     (no Wyckoff/AMD events, MarketRegime.UNKNOWN) produces
     MarketPhase.UNKNOWN, not an error.
     """

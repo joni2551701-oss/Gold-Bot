@@ -140,7 +140,7 @@ architecture and confidence-scoring explanation.
   *is* passed into `decision.decision_engine.DecisionEngine.evaluate()`
   as one weighted input among four (`decision/README.md`'s "Decision
   v2" section) — it still never approves/rejects anything itself, and
-  `context/htf_bias.py` was not modified to make this connection (the
+  `context_layer/trend/htf_bias.py` was not modified to make this connection (the
   consuming code lives in `decision/`, not here).
 - Does not block or alter the execution-timeframe pipeline in any
   way — an HTF fetch/compute failure degrades to `HTFBias.UNKNOWN`
@@ -194,7 +194,7 @@ most recent AMD event > confirmed `TRENDING` `MarketRegime` direction >
 `UNKNOWN`) — the same priority-order pattern `market_regime.py`
 already established. No new detection: reads only
 `context.wyckoff_events`, `context.amd_events`, and
-`context.market_regime`, all pre-existing `ContextSnapshot` fields.
+`context_layer.trend.market_regime`, all pre-existing `ContextSnapshot` fields.
 
 ### What Market Phase does NOT do
 - Does not generate a `BUY`/`SELL` signal, and is not itself a
@@ -242,13 +242,13 @@ on `strategies/`, `signals/`, `ai/`, `database/`, or `telegram/` —
 every other file in this package (`market_regime.py`'s
 `HTFBiasResult` parameter is `TYPE_CHECKING`-only; `HTFBias` the enum
 is a real runtime import, used for equality comparison). `snapshot.py`
-imports only the standard library plus `context.context_orchestrator`
-and `context.market_structure` (same package) — deliberately does
+imports only the standard library plus `context_layer.context_engine.context_orchestrator`
+and `context_layer.market_structure.market_structure` (same package) — deliberately does
 **not** import `signals/` (see `docs/CONTEXT_SNAPSHOT.md`'s "Why not
 import from signals/" section for why its `ValidationResult` is a
 separate, independent definition, not shared code). `market_phase.py`
-imports `context.amd`, `context.market_regime`, and `context.wyckoff`
-(same package) plus, `TYPE_CHECKING`-only, `context.context_orchestrator`
+imports `context_layer.amd.amd`, `context_layer.trend.market_regime`, and `context_layer.wyckoff.wyckoff`
+(same package) plus, `TYPE_CHECKING`-only, `context_layer.context_engine.context_orchestrator`
 — no dependency on `strategies/`, `signals/`, `ai/`, `database/`, or
 `telegram/`. `fundamental_context.py` (Phase 60.5) imports
 `context.fundamental_scoring.FundamentalScoreResult` and
@@ -291,8 +291,8 @@ connection point: `compute_fundamental_context(interest_rate=,
 inflation=)` builds a `FundamentalContextSnapshot` (`fed_rate`,
 `inflation`, `dollar_strength`, `risk_level`) from already-fetched
 `FundamentalDataPoint` values, the same "pure adapter over
-already-computed data" pattern `context/market_phase.py` and
-`context/snapshot.py` already established. Does not call
+already-computed data" pattern `context_layer/trend/market_phase.py` and
+`context_layer/context_engine/snapshot.py` already established. Does not call
 `FredProvider` itself — that provider's own data-fetch methods always
 raise `NotImplementedError` today (Phase 59.2's honest stub); a future
 real implementation is the one that would supply real values here.
@@ -312,7 +312,7 @@ full comparison.
   `None` hooks; no historical baseline/threshold model exists in this
   codebase to calibrate a real classification against yet, and none
   is fabricated (same "never fabricate" convention as `zones.premium_discount`
-  in `context/snapshot.py`).
+  in `context_layer/context_engine/snapshot.py`).
 
 ### `economic_events.py` (Phase 60.5: Fundamental Intelligence Foundation, TASK 4)
 `EventImpact` (`HIGH`/`MEDIUM`/`LOW`) + `EconomicEvent` (`name`,

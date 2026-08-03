@@ -72,7 +72,7 @@ def most_recent_bias(structure: Sequence[StructurePoint]) -> Optional[str]:
     if no point has been classified yet (e.g. too few swings to
     confirm any structure -- every point is still StructureType.UNKNOWN).
 
-    Extracted (Phase A4) from context/htf_bias.py's per-timeframe
+    Extracted (Phase A4) from context_layer/trend/htf_bias.py's per-timeframe
     classification, which had this exact walk-backward logic inline --
     now the single, shared definition of "what does this structure
     sequence's most recent point say about direction," reused by both

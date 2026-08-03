@@ -155,7 +155,7 @@ def test_htf_bias_defaults_to_neutral_fallback():
     _, end = _seed_candles(30)
     engine = BacktestEngine(_config(end))
 
-    from context.htf_bias import HTFBias
+    from context_layer.trend.htf_bias import HTFBias
     result = engine.htf_bias_provider("XAUUSD")
     assert result.bias == HTFBias.UNKNOWN
 

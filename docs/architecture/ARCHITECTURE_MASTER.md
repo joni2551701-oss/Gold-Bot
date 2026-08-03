@@ -29,7 +29,7 @@ Real modules behind each box:
 | Diagram box       | Real module(s) |
 |--------------------|----------------|
 | Market Data        | `data/` |
-| Context Engine      | `context/context_orchestrator.py` |
+| Context Engine      | `context_layer/context_engine/context_orchestrator.py` |
 | Strategy Engine     | `strategies/strategy_manager.py` |
 | Signal Engine       | `signals/signal_engine.py` |
 | Decision Engine     | `decision/decision_engine.py` |

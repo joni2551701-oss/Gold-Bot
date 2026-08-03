@@ -4,11 +4,11 @@ from typing import List, Sequence
 from datetime import datetime
 
 from data_layer.providers.twelve_data_client import Candle
-from context.liquidity import LiquiditySweepEvent, LiquidityType
-from context.bos import BosEvent, BosDirection
-from context.choch import ChochEvent, ChochDirection
-from context.order_block import OrderBlock, OrderBlockType
-from context.fvg import FairValueGap, FvgType
+from context_layer.liquidity.liquidity import LiquiditySweepEvent, LiquidityType
+from context_layer.market_structure.bos import BosEvent, BosDirection
+from context_layer.market_structure.choch import ChochEvent, ChochDirection
+from context_layer.order_block.order_block import OrderBlock, OrderBlockType
+from context_layer.fair_value_gap.fvg import FairValueGap, FvgType
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("AMD")

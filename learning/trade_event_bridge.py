@@ -36,15 +36,15 @@ invoke this explicitly.
 
 from typing import Optional, TYPE_CHECKING
 
-from context.market_regime import MarketRegime
+from context_layer.trend.market_regime import MarketRegime
 from lifecycle.trade_state import TradeState
 from learning.models import LearningRecord, create_learning_record
 from learning.outcome_analyzer import analyze_trade_result
 
 if TYPE_CHECKING:
-    from context.context_orchestrator import ContextSnapshot
-    from context.fundamental_context import FundamentalContextSnapshot
-    from context.htf_bias import HTFBiasResult
+    from context_layer.context_engine.context_orchestrator import ContextSnapshot
+    from context_layer.fundamental.fundamental_context import FundamentalContextSnapshot
+    from context_layer.trend.htf_bias import HTFBiasResult
     from analytics.signal_performance import SignalPerformance
     from lifecycle.paper_trade import PaperTrade
     from database.learning_repository import LearningRepository

@@ -42,7 +42,7 @@ wrap, replace, or extend MarketSnapshot, and MarketSnapshot is
 untouched by this phase. The name is intentionally close (matching
 this phase's own brief verbatim), so this distinction is called out
 explicitly, the same disambiguation discipline
-context/snapshot.py's ContextSnapshotSchema (vs. the real
+context_layer/context_engine/snapshot.py's ContextSnapshotSchema (vs. the real
 ContextSnapshot) already established.
 """
 

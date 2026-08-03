@@ -57,8 +57,8 @@ directory exists (confirmed). README gap: `core/`, `monitoring/`,
 
 | Ecosystem Engine | Real module(s) | Exists as its own module? |
 |---|---|---|
-| Market Engine | `data/` (fetch) + `context/candle.py`/`market_structure.py` | **No** — absorbed (data/ + context/) |
-| Context Engine | `context/context_orchestrator.py` (+ detectors) | ✅ Yes |
+| Market Engine | `data/` (fetch) + `context_layer/context_engine/candle.py`/`market_structure.py` | **No** — absorbed (data/ + context/) |
+| Context Engine | `context_layer/context_engine/context_orchestrator.py` (+ detectors) | ✅ Yes |
 | Analysis Engine | `context/` detectors (Wyckoff/Regime/Session) + `signals/signal_quality.py` | **No** — absorbed |
 | Strategy Engine | `strategies/strategy_manager.py` | ✅ Yes |
 | Confluence Engine | inside each `strategies/*.py` + `signals/signal_quality.py` | **No** — absorbed |

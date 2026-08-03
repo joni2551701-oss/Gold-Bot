@@ -3,7 +3,7 @@ from enum import Enum
 from typing import List, Sequence
 from datetime import datetime
 from data_layer.providers.twelve_data_client import Candle
-from context.market_structure import StructurePoint, StructureType
+from context_layer.market_structure.market_structure import StructurePoint, StructureType
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("BOSEngine")

@@ -24,7 +24,7 @@ the same pattern `ai/prompts/prompt_manager.py`'s
 `FundamentalContextSnapshot`. Formats `structure`/`liquidity`/`zones`/
 `session`/`regime` into `MarketContext.summary`; never recomputes any
 of them. Verified via a fresh-process `sys.modules` check that
-importing this module never pulls in `context`/`context.snapshot`.
+importing this module never pulls in `context`/`context_layer.context_engine.snapshot`.
 
 ## TASK 3 — AI Knowledge Foundation
 

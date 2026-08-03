@@ -7,7 +7,7 @@ already returned — missing candles, duplicate timestamps, invalid
 OHLC, and timeframe consistency — into a structured, scored report.
 **Data Quality is observability, not gatekeeping.** It never blocks,
 filters, or alters the candles the rest of the pipeline uses, even
-when the result says `valid=False`. See `context/market_regime.py`'s
+when the result says `valid=False`. See `context_layer/trend/market_regime.py`'s
 sibling docs for the same "context, not a decision" framing applied
 here to data instead of price action.
 
@@ -158,7 +158,7 @@ reachable via `result["context"].candles`; only the new
   spotting a degrading provider over time), persisting
   `DataQualityResult` alongside a `SignalRecord` is a natural,
   separate schema-change proposal.
-- **AI input**: like `context.market_regime` (`docs/MARKET_REGIME.md`'s
+- **AI input**: like `context_layer.trend.market_regime` (`docs/MARKET_REGIME.md`'s
   "Significance for AI" section), a `DataQualityResult` is exactly the
   kind of structured signal a future real AI provider could use to
   down-weight its own confidence when the underlying data was shaky —

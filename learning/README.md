@@ -76,7 +76,7 @@ of the Director's own five named regimes ("Trending, Range, High
 volatility, Low volatility, News event"). Four map directly onto
 `context.market_regime.MarketRegime`'s own real enum values via
 `record_from_context()`; `"NEWS_EVENT"` has no detector behind it in
-this codebase (`context/economic_events.py` still has "no
+this codebase (`context_layer/fundamental/economic_events.py` still has "no
 economic-calendar provider exists") and is recorded only when a caller
 supplies it explicitly. `format_regime_summary()` produces the exact
 `Sequence[str]` shape `ai.learning_context.build_learning_context()`'s

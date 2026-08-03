@@ -251,7 +251,7 @@ new `signal_history` stage immediately after `risk`, once per candidate
 that reached Risk Manager:
 
 ```
-context_snapshot = from_context_snapshot(context, symbol, timeframe)  # context/snapshot.py
+context_snapshot = from_context_snapshot(context, symbol, timeframe)  # context_layer/context_engine/snapshot.py
 
 signal_history = [
     from_signal_candidate(

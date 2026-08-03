@@ -17,8 +17,8 @@ instance methods, not shared constants or reusable standalone
 functions -- reusing them directly would mean either changing
 market_data.py's public interface or reaching into its "private"
 methods, and market_data.py already feeds the live, real M15 pipeline
-path (the same caution this codebase applied to context/amd.py and
-context/order_block.py in Phase A5 -- see docs/WYCKOFF.md's
+path (the same caution this codebase applied to context_layer/amd/amd.py and
+context_layer/order_block/order_block.py in Phase A5 -- see docs/WYCKOFF.md's
 "Relationship to AMD" section for the precedent). This module
 therefore implements its own, independently-written checks rather
 than reusing market_data.py's internals -- a small, deliberate,

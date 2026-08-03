@@ -38,8 +38,8 @@ are each justified below by the "Cannot reuse" rows that name them.
 
 | Module | Status | Reason |
 |---|---|---|
-| `context/context_orchestrator.py` (`ContextSnapshot`) | Cannot reuse directly by AI | Already deliberately excluded from the AI-facing surface — `ai/interfaces.py`'s own docstring states `MarketContext` is "deliberately narrower than `context.context_orchestrator.ContextSnapshot`... so a future provider's input contract doesn't leak internal Context Layer types into `ai/`." TASK 5's `ai/context/` continues this boundary: it composes from `MarketContext`, never imports `ContextSnapshot` itself. |
-| `context/fundamental_context.py` (`FundamentalContextSnapshot`) | Already exists, used indirectly | Already consumed by `PromptManager.get_fundamental_analysis_prompt()`. Not a direct TASK 5 input (the Director's brief names Market Context/Signal Schema/User Profile/Trade History/Learning Context, not fundamentals) — left as a future extension point, not added speculatively. |
+| `context_layer/context_engine/context_orchestrator.py` (`ContextSnapshot`) | Cannot reuse directly by AI | Already deliberately excluded from the AI-facing surface — `ai/interfaces.py`'s own docstring states `MarketContext` is "deliberately narrower than `context.context_orchestrator.ContextSnapshot`... so a future provider's input contract doesn't leak internal Context Layer types into `ai/`." TASK 5's `ai/context/` continues this boundary: it composes from `MarketContext`, never imports `ContextSnapshot` itself. |
+| `context_layer/fundamental/fundamental_context.py` (`FundamentalContextSnapshot`) | Already exists, used indirectly | Already consumed by `PromptManager.get_fundamental_analysis_prompt()`. Not a direct TASK 5 input (the Director's brief names Market Context/Signal Schema/User Profile/Trade History/Learning Context, not fundamentals) — left as a future extension point, not added speculatively. |
 
 ## `learning/`
 

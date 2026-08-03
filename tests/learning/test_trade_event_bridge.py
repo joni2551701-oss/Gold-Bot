@@ -9,11 +9,11 @@ from learning.trade_event_bridge import bridge_closed_trade, build_learning_reco
 from lifecycle.paper_trade import PaperTrade, close_paper_trade, open_paper_trade
 from lifecycle.trade_state import TradeState
 from analytics.signal_performance import SignalPerformance
-from context.context_orchestrator import ContextSnapshot
-from context.fundamental_context import compute_fundamental_context, merge_fundamental_score
-from context.fundamental_scoring import compute_fundamental_score
-from context.htf_bias import HTFBias, HTFBiasResult
-from context.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
+from context_layer.context_engine.context_orchestrator import ContextSnapshot
+from context_layer.fundamental.fundamental_context import compute_fundamental_context, merge_fundamental_score
+from context_layer.fundamental.fundamental_scoring import compute_fundamental_score
+from context_layer.trend.htf_bias import HTFBias, HTFBiasResult
+from context_layer.trend.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
 from database.learning_repository import LearningRepository
 
 

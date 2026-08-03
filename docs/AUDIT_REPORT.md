@@ -92,7 +92,7 @@ context/telegram (-2).
   `not candles`; `liquidity.py:35` guards `len(points) < 2`.
 - **P2:** `order_block.py:50,65` reimplements bullish/bearish candle
   detection inline (`candles[i].close < candles[i].open`) instead of
-  reusing `context/candle.py`'s documented "single source of truth"
+  reusing `context_layer/context_engine/candle.py`'s documented "single source of truth"
   (`is_bullish`/`is_bearish`) — a maintenance/consistency risk, not a
   bug today.
 - **P2:** `amd.py._resolve_direction()` raises a bare, uncaught
@@ -412,7 +412,7 @@ runtime pass agree: nothing in this audit's scope is broken.
   checks live only in the command-router/handler call site, not in the
   service layer — a defense-in-depth gap, not an active bypass.
 - `order_block.py` reimplements bullish/bearish detection instead of
-  reusing `context/candle.py`'s shared helper.
+  reusing `context_layer/context_engine/candle.py`'s shared helper.
 - `amd.py._resolve_direction()` raises an unhandled `ValueError` on an
   unrecognized event tag — safe today, a latent crash risk for future
   event-type additions.
@@ -447,7 +447,7 @@ docs/handler argument-signature mismatch.
 4. Move the FREE/PREMIUM/VIP signal-access check (and other
    permission checks) into the service layer as defense-in-depth,
    rather than relying solely on `command_router`.
-5. Have `order_block.py` reuse `context/candle.py`'s
+5. Have `order_block.py` reuse `context_layer/context_engine/candle.py`'s
    `is_bullish`/`is_bearish` helpers instead of reimplementing them.
 6. Make `amd.py._resolve_direction()` degrade safely (log + skip)
    instead of raising on an unrecognized event tag.

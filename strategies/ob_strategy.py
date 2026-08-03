@@ -10,7 +10,7 @@ structure, emits no signal.
 
 from strategies.base import SetupStrategy
 from strategies.result import StrategyResult, StrategyDirection, SetupStatus
-from context.order_block import OrderBlockType
+from context_layer.order_block.order_block import OrderBlockType
 
 
 class OBStrategy(SetupStrategy):

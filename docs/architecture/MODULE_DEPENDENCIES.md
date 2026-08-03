@@ -33,7 +33,7 @@ above; it depends on nothing in this diagram.
 | Module | Depends on |
 |---|---|
 | `data/` | external market data sources, `core/` |
-| `context/context_orchestrator.py` | `data/`, `core/` |
+| `context_layer/context_engine/context_orchestrator.py` | `data/`, `core/` |
 | `strategies/strategy_manager.py` | `context/`, `data/`, `core/` |
 | `signals/signal_engine.py` | `strategies/`, `context/`, `core/` |
 | `decision/decision_engine.py`, `decision/models.py` | `signals/`, `context/`, `core/`, plus `ai.ai_analyzer.AIAnalysisResult` (**type only** — the one sanctioned `decision/ → ai/` import, see Constitution Article 1/3) |

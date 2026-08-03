@@ -1,5 +1,5 @@
 """
-TASK-CORE-006 gap-fill — ContextEngine orchestration (context/context_orchestrator.py).
+TASK-CORE-006 gap-fill — ContextEngine orchestration (context_layer/context_engine/context_orchestrator.py).
 
 Read-only exercise of the existing frozen engine: build() assembles one
 immutable ContextSnapshot with every detector field present (the context
@@ -11,12 +11,12 @@ from datetime import datetime, timedelta, timezone
 
 from data_layer.providers.twelve_data_client import Candle
 
-from context.context_orchestrator import (
+from context_layer.context_engine.context_orchestrator import (
     ContextEngine,
     ContextSnapshot,
     build_context_snapshot,
 )
-from context.market_regime import MarketRegime, MarketRegimeResult
+from context_layer.trend.market_regime import MarketRegime, MarketRegimeResult
 
 BASE = datetime(2026, 1, 1, tzinfo=timezone.utc)
 

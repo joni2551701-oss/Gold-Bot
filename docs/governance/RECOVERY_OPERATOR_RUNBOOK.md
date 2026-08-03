@@ -122,7 +122,7 @@ git merge-tree --write-tree main origin/claude/trading-ai-arch-review-tgszrz    
 
 **Expected and intentional**: a full non-ASCII filename sweep of `main`
 will still list **8 other** U+2060 filenames (`ai/ai_prompt.py`,
-`ai/confidence_model.py`, `context/market_structure.py`,
+`ai/confidence_model.py`, `context_layer/market_structure/market_structure.py`,
 `database/signal_repository.py`, `signals/models.py`,
 `signals/signal_engine.py`, `strategies/amd_strategy.py`,
 `strategies/fvg_strategy.py`). These are **left unfixed on purpose** —

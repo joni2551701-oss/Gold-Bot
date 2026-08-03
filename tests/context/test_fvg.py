@@ -1,5 +1,5 @@
 """
-TASK-CORE-006 gap-fill — dedicated unit tests for context/fvg.py.
+TASK-CORE-006 gap-fill — dedicated unit tests for context_layer/fair_value_gap/fvg.py.
 
 Read-only exercise of the existing frozen detect_fvg(): a 3-candle
 imbalance. Bullish FVG when candle-1 high < candle-3 low; bearish FVG
@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 
 from data_layer.providers.twelve_data_client import Candle
 
-from context.fvg import detect_fvg, FvgType
+from context_layer.fair_value_gap.fvg import detect_fvg, FvgType
 
 BASE = datetime(2026, 1, 1, tzinfo=timezone.utc)
 

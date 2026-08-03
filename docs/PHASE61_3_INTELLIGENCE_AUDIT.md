@@ -9,7 +9,7 @@ a specific finding here.
 
 ## `context/`
 
-`context/context_orchestrator.py`'s `ContextSnapshot` (12 required
+`context_layer/context_engine/context_orchestrator.py`'s `ContextSnapshot` (12 required
 fields: candles, structure, bos_events, choch_events, liquidity_zones,
 liquidity_sweeps, order_blocks, fair_value_gaps, amd_events,
 wyckoff_events, session_events, market_regime) is the full internal
@@ -18,7 +18,7 @@ already states it is "deliberately narrower... so a future provider's
 input contract doesn't leak internal Context Layer types into `ai/`."
 
 **Gap confirmed**: no adapter from `ContextSnapshot` to `MarketContext`
-exists. **Reuse found**: `context/snapshot.py`'s
+exists. **Reuse found**: `context_layer/context_engine/snapshot.py`'s
 `from_context_snapshot(context_snapshot, symbol, timeframe, engine_version=None) -> ContextSnapshotSchema`
 already converts `ContextSnapshot` into a flat, JSON-serializable
 summary shape — its own docstring names "a future AI provider... or
@@ -141,9 +141,9 @@ Phase 61.2's own closing verification step.
 
 | TASK | New | Reused |
 |---|---|---|
-| 2 (Context Intelligence) | `ContextSnapshot -> MarketContext` adapter (one function) | `context/snapshot.py`'s `from_context_snapshot()`; `ai/learning_context.py`; `ai/journal/trade_journal.py`; `ai/profiles/user_profile.py`; `ai/context/context_builder.py` (unmodified) |
+| 2 (Context Intelligence) | `ContextSnapshot -> MarketContext` adapter (one function) | `context_layer/context_engine/snapshot.py`'s `from_context_snapshot()`; `ai/learning_context.py`; `ai/journal/trade_journal.py`; `ai/profiles/user_profile.py`; `ai/context/context_builder.py` (unmodified) |
 | 3 (Knowledge Foundation) | `knowledge/` package (new, flat structure) | Content sourced from existing `docs/*.md` |
-| 4 (Real Tool Calling) | Real logic inside existing tool classes | `ai/tools/tool_registry.py`'s `BaseAITool`/`ToolRegistry` (unchanged); `database/learning_repository.py`, `database/signal_repository.py`, `database/market_snapshot_repository.py`; `context/fundamental_context.py`; `analytics/*` |
+| 4 (Real Tool Calling) | Real logic inside existing tool classes | `ai/tools/tool_registry.py`'s `BaseAITool`/`ToolRegistry` (unchanged); `database/learning_repository.py`, `database/signal_repository.py`, `database/market_snapshot_repository.py`; `context_layer/fundamental/fundamental_context.py`; `analytics/*` |
 | 5 (Conversation Engine) | `ConversationEngine` (new, thin) | `ai/session/` (entirely, unmodified); `ai/runtime/ai_service.py` (unmodified) |
 | 6 (Memory Runtime) | `MemoryRuntime` facade (new, thin) | `ai/memory/context_memory.py`'s `ContextMemory` (5 instances, unmodified) |
 | 7 (Explanation Engine) | `ExplanationEngine` (new, thin) | `ai/runtime/ai_service.py`; `signals/explainability.py`'s `SignalExplanation`; `analytics/learning_report.py`/`strategy_report.py` |
