@@ -2031,8 +2031,8 @@ Unda birorta ham `.py` fayl yo'q — u faqat governance/ADR markdown hujjatlari.
 **KG-001 — Maxfiy qiymatlar ikki yo'ldan o'qiladi.**
 `core/secrets.py` (AI, voice, telegram) va `config.py`ning `Settings` bloklari (`providers.bitget_api_key`, `telegram.bot_token`, `ai.gemini_api_key` — market data provayderlar) — ikkalasi ham `os.environ`dan o'qiydi. Blueprint `Secrets`ni yagona Canonical ega deb belgilaydi. Critical emas (ikkala yo'l ham xavfsiz), lekin implementatsiyada birlashtirilishi kerak.
 
-**KG-002 — Database Layer real repository soni hujjatlashtirilganidan ko'p.**
-New_Map 5 ta repository hujjatlashtiradi (Trade/User/Market/Journal/AuditLog), real kodda esa 16 tasi bor: `admin, audit_log, config_snapshot, emergency, feedback, learning, market_snapshot, monitoring, raw_candle, risk_decision, risk_state, runtime_feature, signal, subscription, sync_state, user`. Bu **Database Architecture** toifasiga kiradi, shuning uchun WDR-001 bo'yicha Director Review talab qilinadi — Worker o'zi hal qilmaydi.
+**KG-002 — Database Layer real repository soni hujjatlashtirilganidan ko'p. — ✅ YOPILDI.**
+New_Map 5 ta repository hujjatlashtirardi, real kodda esa 16 tasi bor edi. Director Decision (Variant 2): repository'lar domen bo'yicha guruhlanadi, alohida modul qilinmaydi. Yangi ACR: **Repository Aggregation Rule (RAR-001)**. Guruhlash real kod mas'uliyatiga qarab bajarildi va 5 ta Repository modulining README/ModuleMap/Contracts hujjatlariga kiritildi: UserRepository (user, subscription, feedback, admin) · TradeRepository (signal, risk_decision, risk_state, emergency) · MarketRepository (market_snapshot, raw_candle, sync_state) · JournalRepository (learning, config_snapshot, runtime_feature) · AuditLog (audit_log, monitoring). Jami 16 storage → 5 modul.
 
 **KG-003 — AuditLog hali hech qayerdan chaqirilmaydi.**
 `AuditLogRepository.log_action()` real mavjud, lekin `telegram/owner/` ichidagi birorta buyruq uni chaqirmaydi. Yozish qismi tayyor, ulash qismi implementatsiya bosqichida bajariladi.
@@ -2053,6 +2053,6 @@ New_Map 5 ta repository hujjatlashtiradi (Trade/User/Market/Journal/AuditLog), r
 Layers: 17 (15 core + 16_Chart_Layer + 17_Backtesting_Layer)
 Yangi modullar (Phase 3): 17 — VoiceProvider, VoiceSession, Features, PaperTrading, Translation, Telegram_Broadcast, Secrets, Performance, AuditLog (9) + 17_Backtesting_Layer'ning 8 moduli (BacktestService, BacktestEngine, DataFeed, ReplayEngine, ReplayController, Statistics, BacktestReport, Optimization)
 To'ldirilgan hujjatlar: 14_Media_Layer/Learning (Contracts, ModuleMap, SequenceDiagram)
-Yangi ACR: 7 — Chart Shared State Rule, Render Loop Rule, Chart Runtime Rule, Canonical Event Bus Rule, Backtesting Isolation Rule, Module Reuse Rule, Worker Decision Rule (WDR-001)
-Known Gaps: 3 (KG-001 Minor, KG-002 Director Review kerak, KG-003 Minor)
+Yangi ACR: 8 — Chart Shared State Rule, Render Loop Rule, Chart Runtime Rule, Canonical Event Bus Rule, Backtesting Isolation Rule, Module Reuse Rule, Worker Decision Rule (WDR-001), Repository Aggregation Rule (RAR-001)
+Known Gaps: 3 (KG-001 Minor — ochiq, KG-002 — YOPILDI (RAR-001), KG-003 Minor — ochiq)
 Refactoring TODO: 6

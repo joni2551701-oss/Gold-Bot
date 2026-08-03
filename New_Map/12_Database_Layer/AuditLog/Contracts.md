@@ -60,7 +60,8 @@ Database Storage
 4. AuditLog maxfiy qiymatlarni (API Key, Token, Password) hech qachon yozmaydi.
 5. AuditLog Business Logic bajarmaydi — faqat yozadi va o'qiydi.
 6. AuditLog foydalanuvchini autentifikatsiya yoki avtorizatsiya qilmaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. AuditLog `audit_log` va `monitoring` storage'larini o'z ichki mas'uliyati sifatida boshqaradi (RAR-001) — ular alohida modul emas.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Audit Entry qabul qilinadi.

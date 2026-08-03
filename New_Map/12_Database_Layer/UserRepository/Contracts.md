@@ -65,7 +65,8 @@ Database Storage
 4. Sensitive ma'lumotlar himoyalangan holda saqlanishi shart.
 5. Query natijalari standart formatda qaytarilishi shart.
 6. UserRepository Business Logic bajarmaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. UserRepository `user`, `subscription`, `feedback` va `admin` storage'larini o'z ichki mas'uliyati sifatida boshqaradi (RAR-001) — ular alohida modul emas.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ User saqlanadi.

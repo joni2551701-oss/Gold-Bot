@@ -67,6 +67,21 @@ Save / Update / Query
 Return Repository Result
 ```
 ---
+# Internal Storage (Real Implementations)
+Domen: AI Journal va tizim holati domeni.
+Repository Aggregation Rule (RAR-001): Database Layer'da repository soni biznes obyektlari soniga teng bo'lishi shart emas. Quyidagi storage implementatsiyalari alohida modul emas — ular shu Repository modulining ichki mas'uliyati hisoblanadi.
+```text
+JournalRepository
+├── learning
+├── config_snapshot
+└── runtime_feature
+```
+| Storage | Mas'uliyat |
+|---|---|
+| `learning` | Learning Loop yozuvlari (append-only) |
+| `config_snapshot` | Konfiguratsiya snapshot'lari (append-only) |
+| `runtime_feature` | Runtime Feature Toggle holati (upsert, feature/enabled/updated_by) |
+---
 # Golden Rules
 1. Decision History immutable saqlanadi.
 2. Har bir AI Analysis vaqt belgisi bilan yoziladi.

@@ -65,7 +65,8 @@ Database Storage
 4. Execution ma'lumotlari Audit uchun saqlanishi shart.
 5. Query natijalari standart formatda qaytarilishi shart.
 6. TradeRepository Business Logic bajarmaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. TradeRepository `signal`, `risk_decision`, `risk_state` va `emergency` storage'larini o'z ichki mas'uliyati sifatida boshqaradi (RAR-001) — ular alohida modul emas.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Trade saqlanadi.

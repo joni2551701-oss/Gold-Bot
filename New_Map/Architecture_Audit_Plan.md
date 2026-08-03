@@ -756,6 +756,31 @@ Worker Director Review'siz mustaqil bajaradigan ishlar:
 
 Sabab: Phase 2 Module Audit va Architecture Gap Review v1.0 davomida Worker'ning har bir aniq-ravshan qaror uchun Director'dan qayta ruxsat so'rashi jarayonni sekinlashtirdi, holbuki qarorlarning katta qismi mavjud ACR'lar va Canonical Architecture asosida bir ma'noli hal qilinardi. Director Ruling: WDR-001 bilan Director review'lar soni taxminan 80–90% ga kamayadi, arxitektura nazorati esa yuqoridagi 10 ta toifada to'liq saqlanib qoladi.
 ---
+## Repository Aggregation Rule (RAR-001)
+```text
+The number of
+repositories in the
+Database Layer need
+not equal the number
+of business objects.
+
+Multiple storage
+implementations within
+one domain are
+documented as the
+internal responsibility
+of a single Repository
+module.
+```
+Sabab: Architecture Gap Review v1.0'ning KG-002 topilmasi — `New_Map/12_Database_Layer` 5 ta repository hujjatlashtirgan, real kodda esa 16 ta storage implementatsiyasi mavjud (`admin, audit_log, config_snapshot, emergency, feedback, learning, market_snapshot, monitoring, raw_candle, risk_decision, risk_state, runtime_feature, signal, subscription, sync_state, user`). Director uchta variantni ko'rib chiqdi: (1) har birini alohida modul qilish — ortiqcha fragmentatsiya sababli rad etildi; (3) Freeze'dan keyinga qoldirish — Foundation Freeze'dan keyin Database arxitekturasini o'zgartirish noto'g'ri bo'lgani uchun rad etildi; (2) domen bo'yicha guruhlash — **tasdiqlandi**. Guruhlash real kod mas'uliyatiga qarab Worker tomonidan aniqlandi:
+* **UserRepository** (foydalanuvchi va hisob) — `user`, `subscription`, `feedback`, `admin`
+* **TradeRepository** (savdo va risk) — `signal`, `risk_decision`, `risk_state`, `emergency`
+* **MarketRepository** (market ma'lumot) — `market_snapshot`, `raw_candle`, `sync_state`
+* **JournalRepository** (AI Journal va tizim holati) — `learning`, `config_snapshot`, `runtime_feature`
+* **AuditLog** (audit va kuzatuv) — `audit_log`, `monitoring`
+
+Guruhlash asoslari: `admin` — `AdminRecord(telegram_id, role)`, ya'ni hisob domeni; `emergency` — `EmergencyStateEntry(state, reason, source)`, ya'ni Trading Safety domeni; `runtime_feature` — `RuntimeFeatureRecord(feature, enabled, updated_by)`, ya'ni tizim holati (upsert), shuning uchun append-only AuditLog'ga emas, JournalRepository'ga kiritildi. Yangi storage qo'shilganda u mos domendagi mavjud Repository ichiga kiritiladi — yangi Repository moduli yaratilmaydi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.

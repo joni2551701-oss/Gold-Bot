@@ -121,12 +121,13 @@ Platform Layer
 # Golden Rules
 1. Database Layer barcha Persistent Data uchun yagona manba hisoblanadi.
 2. Har bir Repository faqat o'z domeni bilan ishlaydi.
-3. Cache doimo Database bilan sinxron bo'lishi shart.
-4. Backup muntazam yaratilishi shart.
-5. Database Transaction atomik bo'lishi shart.
-6. Audit Trail append-only hisoblanadi — yozuv o'zgartirilmaydi va o'chirilmaydi; u Trade Journal bilan aralashtirilmaydi.
-7. Maxfiy qiymatlar (API Key, Token, Password) hech qachon ochiq ko'rinishda saqlanmaydi.
-8. Circular Dependency qat'iyan taqiqlanadi.
+3. Repository soni biznes obyektlari soniga teng bo'lishi shart emas — bir domendagi bir nechta storage implementatsiyasi bitta Repository modulining ichki mas'uliyati hisoblanadi (RAR-001).
+4. Cache doimo Database bilan sinxron bo'lishi shart.
+5. Backup muntazam yaratilishi shart.
+6. Database Transaction atomik bo'lishi shart.
+7. Audit Trail append-only hisoblanadi — yozuv o'zgartirilmaydi va o'chirilmaydi; u Trade Journal bilan aralashtirilmaydi.
+8. Maxfiy qiymatlar (API Key, Token, Password) hech qachon ochiq ko'rinishda saqlanmaydi.
+9. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents
 ```text

@@ -40,6 +40,21 @@ Repository Query'larini bajaradi.
 ## Metadata Generator
 Repository Metadata yaratadi.
 ---
+# Internal Storage (Real Implementations)
+Domen: AI Journal va tizim holati domeni.
+Repository Aggregation Rule (RAR-001): Database Layer'da repository soni biznes obyektlari soniga teng bo'lishi shart emas. Quyidagi storage implementatsiyalari alohida modul emas — ular shu Repository modulining ichki mas'uliyati hisoblanadi.
+```text
+JournalRepository
+├── learning
+├── config_snapshot
+└── runtime_feature
+```
+| Storage | Mas'uliyat |
+|---|---|
+| `learning` | Learning Loop yozuvlari (append-only) |
+| `config_snapshot` | Konfiguratsiya snapshot'lari (append-only) |
+| `runtime_feature` | Runtime Feature Toggle holati (upsert, feature/enabled/updated_by) |
+---
 # Allowed Dependencies
 ✓ DatabaseManager
 ✓ Database Storage

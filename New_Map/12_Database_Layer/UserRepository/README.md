@@ -70,6 +70,23 @@ Save / Update / Query
 Return Repository Result
 ```
 ---
+# Internal Storage (Real Implementations)
+Domen: Foydalanuvchi va hisob domeni.
+Repository Aggregation Rule (RAR-001): Database Layer'da repository soni biznes obyektlari soniga teng bo'lishi shart emas. Quyidagi storage implementatsiyalari alohida modul emas — ular shu Repository modulining ichki mas'uliyati hisoblanadi.
+```text
+UserRepository
+├── user
+├── subscription
+├── feedback
+└── admin
+```
+| Storage | Mas'uliyat |
+|---|---|
+| `user` | Foydalanuvchi yozuvlari |
+| `subscription` | Obuna holati va tarixi |
+| `feedback` | Foydalanuvchi fikr-mulohazalari |
+| `admin` | Admin yozuvlari (telegram_id, role) |
+---
 # Golden Rules
 1. Har bir User Unique ID bilan saqlanadi.
 2. User Settings versiyalanishi kerak.

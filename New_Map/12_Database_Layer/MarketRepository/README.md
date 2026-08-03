@@ -70,6 +70,21 @@ Save / Update / Query
 Return Repository Result
 ```
 ---
+# Internal Storage (Real Implementations)
+Domen: Market ma'lumot domeni.
+Repository Aggregation Rule (RAR-001): Database Layer'da repository soni biznes obyektlari soniga teng bo'lishi shart emas. Quyidagi storage implementatsiyalari alohida modul emas — ular shu Repository modulining ichki mas'uliyati hisoblanadi.
+```text
+MarketRepository
+├── market_snapshot
+├── raw_candle
+└── sync_state
+```
+| Storage | Mas'uliyat |
+|---|---|
+| `market_snapshot` | Market snapshot yozuvlari |
+| `raw_candle` | Xom candle ma'lumotlari |
+| `sync_state` | Tarixiy ma'lumot yig'ish sinxronizatsiya holati |
+---
 # Golden Rules
 1. Market Data vaqt bo'yicha tartiblangan bo'lishi shart.
 2. Candle ma'lumotlari immutable saqlanadi.

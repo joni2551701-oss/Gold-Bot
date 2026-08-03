@@ -63,7 +63,8 @@ Database Storage
 4. Query natijalari standart formatda qaytarilishi shart.
 5. JournalRepository Business Logic bajarmaydi.
 6. JournalRepository Audit Trail saqlamaydi — bu AuditLog modulining vazifasi (Trade Journal va Audit Log aralashtirilmaydi).
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. JournalRepository `learning`, `config_snapshot` va `runtime_feature` storage'larini o'z ichki mas'uliyati sifatida boshqaradi (RAR-001) — ular alohida modul emas.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ AI Journal saqlanadi.

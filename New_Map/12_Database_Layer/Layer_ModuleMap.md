@@ -80,5 +80,38 @@ Cache Infrastructure boshqaradi.
 ## BackupManager
 Backup va Disaster Recovery boshqaradi. Layer tashqarisiga chiqmaydi — natijani DatabaseService orqali uzatadi.
 ---
+# Repository Aggregation Map (RAR-001)
+Real kodda 16 ta storage implementatsiyasi mavjud. Ular alohida modul emas — domen bo'yicha 5 ta Canonical Repository moduli ichida guruhlanadi (Repository Aggregation Rule).
+```text
+12_Database_Layer
+│
+├── UserRepository        (foydalanuvchi va hisob domeni)
+│   ├── user
+│   ├── subscription
+│   ├── feedback
+│   └── admin
+│
+├── TradeRepository       (savdo va risk domeni)
+│   ├── signal
+│   ├── risk_decision
+│   ├── risk_state
+│   └── emergency
+│
+├── MarketRepository      (market ma'lumot domeni)
+│   ├── market_snapshot
+│   ├── raw_candle
+│   └── sync_state
+│
+├── JournalRepository     (AI Journal va tizim holati domeni)
+│   ├── learning
+│   ├── config_snapshot
+│   └── runtime_feature
+│
+└── AuditLog              (audit va kuzatuv domeni)
+    ├── audit_log
+    └── monitoring
+```
+Jami: 16 storage → 5 Repository moduli. Yangi storage qo'shilganda u mos domendagi mavjud Repository ichiga kiritiladi — yangi Repository moduli yaratilmaydi.
+---
 # Summary
 Database Layer GoldBot arxitekturasidagi Canonical Persistent Storage Layer hisoblanadi.

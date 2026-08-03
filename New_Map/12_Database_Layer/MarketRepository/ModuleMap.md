@@ -44,6 +44,21 @@ Repository Query'larini bajaradi.
 ## Metadata Generator
 Repository Metadata yaratadi.
 ---
+# Internal Storage (Real Implementations)
+Domen: Market ma'lumot domeni.
+Repository Aggregation Rule (RAR-001): Database Layer'da repository soni biznes obyektlari soniga teng bo'lishi shart emas. Quyidagi storage implementatsiyalari alohida modul emas — ular shu Repository modulining ichki mas'uliyati hisoblanadi.
+```text
+MarketRepository
+├── market_snapshot
+├── raw_candle
+└── sync_state
+```
+| Storage | Mas'uliyat |
+|---|---|
+| `market_snapshot` | Market snapshot yozuvlari |
+| `raw_candle` | Xom candle ma'lumotlari |
+| `sync_state` | Tarixiy ma'lumot yig'ish sinxronizatsiya holati |
+---
 # Allowed Dependencies
 ✓ DatabaseManager
 ✓ Database Storage

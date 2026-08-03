@@ -66,7 +66,8 @@ Database Storage
 4. Signal History immutable saqlanishi shart.
 5. Query natijalari standart formatda qaytarilishi shart.
 6. MarketRepository Business Logic bajarmaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. MarketRepository `market_snapshot`, `raw_candle` va `sync_state` storage'larini o'z ichki mas'uliyati sifatida boshqaradi (RAR-001) — ular alohida modul emas.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Candle saqlanadi.
