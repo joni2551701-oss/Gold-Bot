@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta, timezone
 
-from ai.access.trial_manager import DEFAULT_TRIAL_DURATION, TrialManager, trial_status_from_started_at
+from ai_layer.ai_service.access.trial_manager import DEFAULT_TRIAL_DURATION, TrialManager, trial_status_from_started_at
 
 
 def test_new_account_with_no_phone_reuse_is_eligible():

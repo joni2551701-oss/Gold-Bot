@@ -57,7 +57,7 @@ new model to duplicate anywhere:**
   **structural constant of this specific adapter**, not content-based
   inference: every record this adapter ever produces originates from a
   `PerformanceRecord`, so its category is fixed by construction, the
-  same way `ai.strategy.performance_adapter.py`'s own docstring already
+  same way `ai_layer.ai_engine.strategy.performance_adapter.py`'s own docstring already
   distinguishes "relaying a caller-supplied value" from "inferring one
   from content" (Phase 66.6's own precedent). `title`/`priority`/
   `status`/`summary`/`source_count` are deliberately absent —
@@ -80,7 +80,7 @@ research item cites, not a property any single `PerformanceRecord`/
 it would require real aggregation logic outside this Foundation's own
 CRUD-only scope (Rule 5), so it stays a plain caller-supplied
 `int = 0` field on `ResearchRecord` itself, mirroring how
-`ai.portfolio.models.PortfolioRecord.strategy_count` started as a
+`ai_layer.ai_engine.portfolio.models.PortfolioRecord.strategy_count` started as a
 plain default-`0` field before Phase 66.7's own `strategy_adapter.py`
 added deterministic counting for that specific, narrower case
 (counting `StrategyRecord`s, not an open-ended "sources" concept).
@@ -110,9 +110,9 @@ added deterministic counting for that specific, narrower case
    package location itself (which does not exist) — `ai/research/` is
    a genuine new subpackage, not a duplicate.
 2. Three sibling `66.x` Foundations are reused type-only:
-   `ai.performance.models.PerformanceRecord`,
-   `ai.strategy.models.StrategyRecord`, and
-   `ai.portfolio.models.PortfolioRecord` — each adapter relays `notes`
+   `ai_layer.ai_engine.performance.models.PerformanceRecord`,
+   `ai_layer.ai_engine.strategy.models.StrategyRecord`, and
+   `ai_layer.ai_engine.portfolio.models.PortfolioRecord` — each adapter relays `notes`
    and sets a fixed, structurally-determined `category` value (not
    content-based inference).
 3. `ResearchRecord.source_count` stays a plain caller-supplied field;

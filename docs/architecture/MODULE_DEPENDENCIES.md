@@ -36,7 +36,7 @@ above; it depends on nothing in this diagram.
 | `context_layer/context_engine/context_orchestrator.py` | `data/`, `core/` |
 | `strategy_layer/strategy_manager/strategy_manager.py` | `context/`, `data/`, `core/` |
 | `signal_layer/signal_engine/signal_engine.py` | `strategies/`, `context/`, `core/` |
-| `decision_layer/decision_engine/decision_engine.py`, `decision_layer/decision_engine/models.py` | `signals/`, `context/`, `core/`, plus `ai.ai_analyzer.AIAnalysisResult` (**type only** — the one sanctioned `decision/ → ai/` import, see Constitution Article 1/3) |
+| `decision_layer/decision_engine/decision_engine.py`, `decision_layer/decision_engine/models.py` | `signals/`, `context/`, `core/`, plus `ai_layer.ai_engine.ai_analyzer.AIAnalysisResult` (**type only** — the one sanctioned `decision/ → ai/` import, see Constitution Article 1/3) |
 | `risk_layer/risk_engine/risk_manager.py` | `decision/`, `core/` |
 | `execution_layer/execution_engine/execution_engine.py` | `risk/`, `core/` (inert — no live order calls) |
 | `trade_monitoring_layer/paper_trading/paper_trade_monitor.py` | `decision/`, `risk/`, `core/` |
@@ -62,7 +62,7 @@ above; it depends on nothing in this diagram.
 | Subpackage | Real responsibility | Depends on |
 |---|---|---|
 | `ai/access/` | capability/permission gating for AI requests | `core/` |
-| `ai/analyzer/` | Phase 55 compat entry point → re-exports canonical `ai/ai_analyzer.py` | `ai/ai_analyzer.py` |
+| `ai/analyzer/` | Phase 55 compat entry point → re-exports canonical `ai_layer/ai_engine/ai_analyzer.py` | `ai_layer/ai_engine/ai_analyzer.py` |
 | `ai/audit/` | provider stats / call auditing (`provider_stats.py`) | `core/` |
 | `ai/cache/` | response caching | `core/` |
 | `ai/capabilities/` | capability enum + permission matrix | `core/` |
@@ -83,7 +83,7 @@ above; it depends on nothing in this diagram.
 | `ai/tools/` | AI-callable tool definitions (advisory only) | `core/` |
 | `ai/validation/` | response validation, `safety.py` | `core/` |
 
-`ai/intelligence_runtime.py` (Phase 64.0) — a single top-level file,
+`ai_layer/ai_engine/intelligence_runtime.py` (Phase 64.0) — a single top-level file,
 not a subpackage — is the one deliberate exception to the per-layer
 dependency table above: it is the Intelligence layer's composition
 root, so it legitimately imports all eight layers it orchestrates
@@ -94,7 +94,7 @@ imports `decision/`/`risk/`/`execution/`/`strategies/`/`signals/`/
 `database/`/`telegram/`.
 
 Two top-level compat shims, documented so they are not mistaken for
-new modules: `ai/ai_analyzer.py` and `ai/trade_journal.py` are the
+new modules: `ai_layer/ai_engine/ai_analyzer.py` and `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` are the
 canonical files; `ai/analyzer/ai_analyzer.py` and
 `ai/journal/trade_journal.py` are the Phase 55-restructure entry
 points that re-export them.
@@ -121,7 +121,7 @@ existed before Phase 65.0 (see `docs/PHASE65_0_AUDIT.md`).
 |---|---|---|
 | `media/` | `MediaManager`'s two surfaces: Owner ENABLED/DISABLED intent per `MediaType` (Phase 63.0), extended Phase 63.7 with a deterministic `MediaAsset` surface (`create_asset`/`validate_asset`/`prepare_asset`/`get_asset`); `media_registry.py` (`MediaDescriptor`, `get`/`exists`, Phase 63.0/63.7); `models.py`/`media_adapter.py`/`media_pipeline.py` (Phase 63.7) | `ai/content/` (type-only), `core/` — never `broadcast/`/`translation/` (Intelligence Dependency Principle) |
 | `broadcast/` | `BroadcastManager`'s two surfaces: `would_broadcast`/`prepare` (real `BroadcastRequest` builder, Phase 63.0), extended Phase 63.8 with a deterministic `BroadcastAsset` surface (`create_broadcast`/`validate_broadcast`/`prepare_broadcast`/`get_broadcast`/`list_broadcasts`); `provider_manager.py`/`trigger_manager.py`/`models.py` (Phase 63.0, extended 63.8 with `TELEGRAM`/`MINI_APP`/`BroadcastTriggerType`); `broadcast_adapter.py` (Phase 63.8) | `media/` (type-only), `ai/content/` (type-only), `ai/persona/` (type-only), `core/` — never `decision/`/`risk/`/`execution/`/`strategies/`/`signals/` |
-| `voice/` | `VoiceManager`'s deterministic surface: profile ops delegated to `VoiceProfileRegistry`, provider ENABLED/DISABLED intent tracking, `validate`/`prepare` request lifecycle (Phase 65.0), extended Phase 65.1 with a real adapter registry (`register_adapter`/`get_adapter`) and per-profile provider selection (`set_provider_for_profile`/`provider_for_profile`); `models.py` (`VoiceProvider`/`VoiceProfile`/`VoiceSettings`/`VoiceRequest`/`VoiceResult`); `profiles.py`/`providers.py` (static catalogs, LOCKed); `registry.py` (`VoiceProfileRegistry`); `provider_contract.py` (`VoiceProviderContract`, Phase 65.1); `provider_adapters/` (real OpenAI/ElevenLabs TTS + Local/Custom skeletons, Phase 65.1); `adapter.py` (`content_result_to_voice_request` Phase 65.0, `media_asset_to_voice_request`/`broadcast_asset_to_voice_request`/`conversation_turn_to_voice_request` Phase 65.1); `runtime.py` (`VoiceRuntime`, thin façade, extended Phase 65.1 with `generate_audio`/`generate_with_fallback`); `stt/` (`STTProviderContract`/`STTManager`/real OpenAI Whisper + Local/Custom skeletons, Phase 65.2); `intents/` (`VoiceIntent`/`detect_intent()`, Phase 65.2); `session/` (`VoiceSession`/`VoiceSessionManager`, Phase 65.2); `conversation_bridge.py` (`handle_voice_turn()`, the real STT→Conversation→TTS composition root, Phase 65.2) | `ai/content/` (type-only), `media/` (type-only, Phase 65.1), `broadcast/` (type-only, Phase 65.1), `ai.session`/`ai.conversation` (type-only in `adapter.py`; `conversation_bridge.py` alone calls the real `ai.conversation.conversation_engine.ConversationEngine.ask()`, Phase 65.1/65.2), `core/` — never `translation/`/`decision/`/`risk/`/`execution/`/`strategies/`/`signals/`/`ai.memory`/`ai.reasoning`/`ai.explanation`/`knowledge` (Phase 65.2 Rule 2, zero exemptions) |
+| `voice/` | `VoiceManager`'s deterministic surface: profile ops delegated to `VoiceProfileRegistry`, provider ENABLED/DISABLED intent tracking, `validate`/`prepare` request lifecycle (Phase 65.0), extended Phase 65.1 with a real adapter registry (`register_adapter`/`get_adapter`) and per-profile provider selection (`set_provider_for_profile`/`provider_for_profile`); `models.py` (`VoiceProvider`/`VoiceProfile`/`VoiceSettings`/`VoiceRequest`/`VoiceResult`); `profiles.py`/`providers.py` (static catalogs, LOCKed); `registry.py` (`VoiceProfileRegistry`); `provider_contract.py` (`VoiceProviderContract`, Phase 65.1); `provider_adapters/` (real OpenAI/ElevenLabs TTS + Local/Custom skeletons, Phase 65.1); `adapter.py` (`content_result_to_voice_request` Phase 65.0, `media_asset_to_voice_request`/`broadcast_asset_to_voice_request`/`conversation_turn_to_voice_request` Phase 65.1); `runtime.py` (`VoiceRuntime`, thin façade, extended Phase 65.1 with `generate_audio`/`generate_with_fallback`); `stt/` (`STTProviderContract`/`STTManager`/real OpenAI Whisper + Local/Custom skeletons, Phase 65.2); `intents/` (`VoiceIntent`/`detect_intent()`, Phase 65.2); `session/` (`VoiceSession`/`VoiceSessionManager`, Phase 65.2); `conversation_bridge.py` (`handle_voice_turn()`, the real STT→Conversation→TTS composition root, Phase 65.2) | `ai/content/` (type-only), `media/` (type-only, Phase 65.1), `broadcast/` (type-only, Phase 65.1), `ai_layer.ai_service.session`/`ai_layer.personal_ai.interaction_manager` (type-only in `adapter.py`; `conversation_bridge.py` alone calls the real `ai_layer.personal_ai.interaction_manager.conversation_engine.ConversationEngine.ask()`, Phase 65.1/65.2), `core/` — never `translation/`/`decision/`/`risk/`/`execution/`/`strategies/`/`signals/`/`ai_layer.knowledge_ai.memory_manager`/`ai_layer.ai_engine.reasoning`/`ai_layer.explanation_ai`/`knowledge` (Phase 65.2 Rule 2, zero exemptions) |
 
 ## Related documents
 

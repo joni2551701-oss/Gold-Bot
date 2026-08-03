@@ -1,6 +1,6 @@
-from ai.portfolio.models import PortfolioRecord
-from ai.research.models import ResearchCategory
-from ai.research.portfolio_adapter import portfolio_record_to_research_input
+from ai_layer.ai_engine.portfolio.models import PortfolioRecord
+from ai_layer.fundamental_ai.models import ResearchCategory
+from ai_layer.fundamental_ai.portfolio_adapter import portfolio_record_to_research_input
 
 
 def _record(**overrides):
@@ -63,7 +63,7 @@ def test_different_records_produce_independent_mappings():
 
 
 def test_category_always_portfolio_regardless_of_content():
-    from ai.portfolio.models import PortfolioRiskLevel
+    from ai_layer.ai_engine.portfolio.models import PortfolioRiskLevel
 
     mapped_a = portfolio_record_to_research_input(_record(risk_level=PortfolioRiskLevel.LOW))
     mapped_b = portfolio_record_to_research_input(_record(risk_level=PortfolioRiskLevel.CRITICAL))

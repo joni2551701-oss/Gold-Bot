@@ -39,7 +39,7 @@ Real modules behind each box:
 | Telegram            | `platform_layer/telegram/handlers.py` → `telegram/*_service.py` → `database/*_repository.py` |
 | AI Infrastructure   | `ai/providers/`, `ai/router/`, `ai/capabilities/` |
 | AI Runtime          | `ai/runtime/` (`AIService`, `RuntimeManager`, `EventBus`) |
-| AI Intelligence     | `ai/analyzer/` / `ai/ai_analyzer.py`, `ai/context/`, `ai/explanation/` |
+| AI Intelligence     | `ai/analyzer/` / `ai_layer/ai_engine/ai_analyzer.py`, `ai/context/`, `ai/explanation/` |
 | AI Product          | `ai/session/`, `ai/conversation/`, `ai/prompts/` |
 | AI Broadcast        | `broadcast/`, `media/`, `translation/`, `ai/persona/` (Phase 63.0 — foundation/contract only, no real channel/media/translation call; see `docs/AI_BROADCAST_FOUNDATION.md`), plus `platform_layer/telegram/owner/runtime_commands.py`/`broadcast_commands.py` for Owner-facing surfacing (not wired to a live process loop) |
 
@@ -79,7 +79,7 @@ depends-on.
   itself, trigger an AI request, or let the AI layer make the
   decision for it (Constitution Article 1/3 — the AI answers, it does
   not act); be bypassed by any shortcut path to Telegram delivery.
-- **Depends on**: `signals/`, `context/`, and `ai.ai_analyzer.AIAnalysisResult`
+- **Depends on**: `signals/`, `context/`, and `ai_layer.ai_engine.ai_analyzer.AIAnalysisResult`
   (type only — see `docs/architecture/IMPORT_RULES.md`).
 
 ### Risk Manager (`risk_layer/risk_engine/risk_manager.py`)

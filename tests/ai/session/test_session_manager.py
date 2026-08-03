@@ -2,9 +2,9 @@
 
 from datetime import datetime, timedelta, timezone
 
-from ai.session.context_window import ContextWindow
-from ai.session.conversation_state import ConversationState
-from ai.session.session_manager import SessionManager
+from ai_layer.ai_service.session.context_window import ContextWindow
+from ai_layer.ai_service.session.conversation_state import ConversationState
+from ai_layer.ai_service.session.session_manager import SessionManager
 
 
 def test_create_session_returns_a_fresh_conversation_state():

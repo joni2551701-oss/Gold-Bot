@@ -11,12 +11,12 @@ before starting, as this brief's own status line requires.
 
 ### 1. Performance modeli mavjudmi?
 
-**Yo'q, aynan shu shaklda emas.** `analytics/performance_metrics.py`
+**Yo'q, aynan shu shaklda emas.** `backtesting_layer/statistics/performance_metrics.py`
 (Phase 60.4) already defines a `PerformanceMetrics` (plural) dataclass
 — but it is a fixed-shape, 11-field portfolio-wide aggregate report
 (`total_trades`, `win_rate`, `expectancy`, `profit_factor`,
 `max_drawdown`, `recovery_factor`, `risk_adjusted_return`, ...),
-computed from a sequence of `analytics.signal_performance.SignalPerformance`
+computed from a sequence of `backtesting_layer.statistics.signal_performance.SignalPerformance`
 objects (which carry `r_multiple`). This brief's own `PerformanceMetric`
 (singular) is a generic, free-form key/value observation
 (`metric_name`/`value`/`period`/`created_at`) meant for AI-layer
@@ -33,12 +33,12 @@ scores linked to a journal entry) exists anywhere in this codebase.
 
 ### 2. Analytics modulidan foydalanish mumkinmi?
 
-**Qisman.** `analytics.strategy_report.compute_win_rate()` (a plain
+**Qisman.** `backtesting_layer.statistics.strategy_report.compute_win_rate()` (a plain
 `(wins, losses) -> float` utility, already reused by
-`analytics/performance_metrics.py` itself) is directly reusable over
+`backtesting_layer/statistics/performance_metrics.py` itself) is directly reusable over
 `PerformanceRecord.result` counts — `ai/performance/analytics_adapter.py`
 reuses it rather than reimplementing a win-rate formula. Full reuse of
-`analytics.performance_metrics.compute_performance_metrics()` is
+`backtesting_layer.statistics.performance_metrics.compute_performance_metrics()` is
 **not** directly wireable: it requires `SignalPerformance.r_multiple`,
 a field `PerformanceRecord` does not carry (and synthesizing one from
 `result`/scores would be fabrication, forbidden). This gap is
@@ -49,7 +49,7 @@ its own, separately-briefed r_multiple-shaped bridge.
 ### 3. Trade Journal ma'lumotlari yetarlimi?
 
 **TASK 4's mapping uchun yetarli, TASK 2's barcha fieldlari uchun
-emas.** `ai.trade_journal.models.TradeJournalEntry` (Phase 66.2)
+emas.** `ai_layer.knowledge_ai.knowledge_base.trade_journal.models.TradeJournalEntry` (Phase 66.2)
 already carries `trade_id`, `journal_id` (as its own `journal_id`),
 `result`, `direction`, `confidence`, `lesson`, `reason` — enough to
 populate `PerformanceRecord.trade_id`/`.journal_id`/`.result`/
@@ -88,7 +88,7 @@ already established one consistent shape this phase reuses exactly:
   kwargs for the target runtime's own `create()`, never calls
   `create()` itself, never infers a caller-scoped field.
 - `memory_adapter.py`: a single `*_memory_key(record) -> str`
-  function, **never imports `ai.memory`** (`ai/learning/memory_adapter.py`'s
+  function, **never imports `ai_layer.knowledge_ai.memory_manager`** (`ai/learning/memory_adapter.py`'s
   and `ai/trade_journal/memory_adapter.py`'s own documented reason:
   no `MemoryScope` member is shaped for this record type, and adding
   one is out of this phase's scope).
@@ -109,16 +109,16 @@ enumerated either, going by their current on-disk shape).
 `ai/performance/` never imports `decision/`, `risk/`, `execution/`,
 `strategies/`, `signals/`, `context/`, `telegram/`, `database/`,
 `voice/`, `assistant/`, `media/`, `broadcast/`, `academy/`,
-`portfolio/`, `research/`, `core.`, or `ai.memory` — the same
+`portfolio/`, `research/`, `core.`, or `ai_layer.knowledge_ai.memory_manager` — the same
 isolation list `ai/coaching/README.md` already documents for its own
-package, extended with `ai.memory` per this phase's own TASK 9 rule.
+package, extended with `ai_layer.knowledge_ai.memory_manager` per this phase's own TASK 9 rule.
 Enforced by `tests/ai/performance/test_ai_performance_isolation.py`
 (AST-based, mirrors `tests/ai/coaching/test_ai_coaching_isolation.py`
 exactly).
 
 `ai/performance/journal_adapter.py` is the one file permitted to
-import `ai.trade_journal.models` (type-only); `ai/performance/coaching_adapter.py`
-is the one file permitted to import `ai.coaching.models`
+import `ai_layer.knowledge_ai.knowledge_base.trade_journal.models` (type-only); `ai/performance/coaching_adapter.py`
+is the one file permitted to import `ai_layer.personal_ai.senior.models`
 (type-only) — mirrors `ai/coaching/journal_adapter.py`'s own "one file
 permitted" precedent exactly. `ai/performance/analytics_adapter.py` is
 the one file permitted to import `analytics.*`.

@@ -2,7 +2,7 @@
 
 import pytest
 
-from ai.providers.base_provider import BaseAIProvider, ProviderResult
+from ai_layer.ai_engine.providers.base_provider import BaseAIProvider, ProviderResult
 
 
 def test_base_provider_cannot_be_instantiated_directly():

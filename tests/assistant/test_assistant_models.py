@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from assistant.models import AssistantProfile
+from ai_layer.ai_service.assistant.models import AssistantProfile
 
 
 def test_assistant_profile_required_fields():

@@ -85,8 +85,8 @@ from datetime import datetime, timezone
 from typing import Callable, Optional
 from uuid import uuid4
 
-from ai.ai_analyzer import AIAnalyzer
-from analytics.signal_performance import compute_signal_performance
+from ai_layer.ai_engine.ai_analyzer import AIAnalyzer
+from backtesting_layer.statistics.signal_performance import compute_signal_performance
 from backtesting_layer.backtest_report.backtest_result import BacktestResult, build_backtest_result
 from backtesting_layer.data_feed.data_feed import ReplayDataFeed
 from backtesting_layer.replay_engine.replay_engine import ReplayEngine
@@ -101,7 +101,7 @@ from decision_layer.decision_engine.models import DecisionAction
 from trade_monitoring_layer.paper_trading.paper_trade import create_paper_trade, open_paper_trade
 from trade_monitoring_layer.paper_trading.paper_trade_monitor import check_paper_trade_against_candles
 from trade_monitoring_layer.paper_trading.trade_state import TradeState
-from learning.trade_event_bridge import bridge_closed_trade
+from ai_layer.knowledge_ai.learning_loop.trade_event_bridge import bridge_closed_trade
 from risk_layer.risk_engine.risk_manager import RiskManager
 from signal_layer.signal_builder.adapter import from_signal_candidate
 from signal_layer.signal_engine.signal_engine import SignalEngine

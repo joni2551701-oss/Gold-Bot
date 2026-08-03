@@ -12,7 +12,7 @@ from platform_layer.telegram.owner.performance_commands import (
     get_performance_report,
 )
 from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
-from analytics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.signal_performance import SignalPerformance
 
 
 def _perf(result, r_multiple=None, created_at=None):

@@ -1,7 +1,7 @@
 """Phase 63.5 TASK 3 — ConversationEngine's deterministic surface (append/summarize/history/context/reset/close), all additive to the existing, LOCKed start_session()/ask()."""
 
-from ai.conversation.conversation_engine import ConversationEngine
-from ai.conversation.models import ConversationMode
+from ai_layer.personal_ai.interaction_manager.conversation_engine import ConversationEngine
+from ai_layer.personal_ai.interaction_manager.models import ConversationMode
 
 
 def _engine_with_session():

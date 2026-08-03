@@ -1,7 +1,7 @@
-from ai.chart_intelligence.models import ChartAnalysis, ChartAnalysisType, ChartImageType
-from ai.chart_intelligence.trading_analyst_adapter import combined_explanation
-from ai.explanation.explanation_builder import ExplanationBuilder
-from ai.trading_analyst.models import TradingAnalysis, TradingRiskLevel
+from ai_layer.vision_ai.models import ChartAnalysis, ChartAnalysisType, ChartImageType
+from ai_layer.vision_ai.trading_analyst_adapter import combined_explanation
+from ai_layer.explanation_ai.explanation_builder import ExplanationBuilder
+from ai_layer.ai_engine.trading_analyst.models import TradingAnalysis, TradingRiskLevel
 
 
 def _trading(**overrides):

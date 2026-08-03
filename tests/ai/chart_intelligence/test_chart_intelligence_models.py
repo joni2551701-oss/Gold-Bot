@@ -1,6 +1,6 @@
 import dataclasses
 
-from ai.chart_intelligence.models import (
+from ai_layer.vision_ai.models import (
     ChartAnalysis,
     ChartAnalysisInput,
     ChartAnalysisType,

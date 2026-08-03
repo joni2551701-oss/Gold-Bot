@@ -25,7 +25,7 @@ tests, zero regressions).
   `docs/AI_PRODUCTION_INTEGRATION.md`'s "Tests" section) — both
   corrections are additive/corrective, not scope expansions.
 - `strategies/`, `signals/`, `decision/`, `risk/`, live `execution/`,
-  and the production `ai/ai_analyzer.py` heuristic-stub path remain
+  and the production `ai_layer/ai_engine/ai_analyzer.py` heuristic-stub path remain
   completely untouched — this phase's own closing AST sweep confirms
   zero new `ai/` → `decision/`/`risk/`/`execution/`/`strategies/`/
   `database/`/`telegram/` imports, including the new `ai/content/`

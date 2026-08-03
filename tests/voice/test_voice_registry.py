@@ -1,8 +1,8 @@
-"""Phase 65.0 TASK 3 — voice/registry.py: VoiceProfileRegistry."""
+"""Phase 65.0 TASK 3 — ai_layer/voice_ai/registry.py: VoiceProfileRegistry."""
 
-from voice.models import VoiceProfile
-from voice.profiles import NARRATOR_VOICE, SENIOR_VOICE, SENIORITA_VOICE
-from voice.registry import VoiceProfileRegistry
+from ai_layer.voice_ai.models import VoiceProfile
+from ai_layer.voice_ai.profiles import NARRATOR_VOICE, SENIOR_VOICE, SENIORITA_VOICE
+from ai_layer.voice_ai.registry import VoiceProfileRegistry
 
 
 def test_registry_defaults_seeded_with_three_profiles():

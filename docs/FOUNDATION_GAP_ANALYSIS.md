@@ -209,7 +209,7 @@ change, out of scope for a specification-only phase to decide).
 - A textual reason/explanation trail already exists end-to-end:
   `AIAnalysisResult.explanation`, `TradeDecision.reason`,
   `RiskResult.reason` are all populated at every stage
-  (re-confirmed by reading `ai/ai_analyzer.py`,
+  (re-confirmed by reading `ai_layer/ai_engine/ai_analyzer.py`,
   `decision_layer/decision_engine/decision_engine.py`, `risk_layer/risk_engine/risk_manager.py` this phase) —
   every REJECT/NO_TRADE/APPROVE already carries a human-readable why.
 - **What's missing**: no aggregated, queryable "explain this signal"

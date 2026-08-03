@@ -95,7 +95,7 @@ ever exercises a non-default state.
 | Concern | Reuse decision |
 |---|---|
 | Cache key freshness field | Extend existing `CacheKey` (add `snapshot_id`), do not create a new key type. |
-| Snapshot ID hashing | Reuse `ai.cache.cache_policy.compute_context_hash()` directly from `ai/context/context_builder.py` — no second hash implementation. |
+| Snapshot ID hashing | Reuse `ai_layer.ai_engine.cache.cache_policy.compute_context_hash()` directly from `ai/context/context_builder.py` — no second hash implementation. |
 | Snapshot ID production | New logic inside `build_ai_context()` (TASK 2) — the one and only place `AIContext.snapshot_id` is ever set; no new module needed. |
 | Cache key construction | New factory function `build_cache_key_from_context()` inside `ai/cache/cache_policy.py` (same file `CacheKey` already lives in — extend, don't split) so a caller is steered toward `ai_context.snapshot_id` instead of inventing one. |
 | Prompt lifecycle | Extend `ai/prompts/prompt_registry.py` in place — `PromptLifecycleState` enum + a `state` field on the existing `PromptVersionRecord`, plus `deprecate()`/`archive()` methods on the existing `PromptRegistry` class. No new package, no new file — `PromptManager` itself untouched, matching TASK 3's own explicit instruction. |

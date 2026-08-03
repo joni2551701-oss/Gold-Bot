@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 
 from data_layer.providers.base_provider import MarketCandle
-from stream.stream_event import StreamEvent
+from data_layer.live_data.stream.stream_event import StreamEvent
 
 
 def _event(**kw):

@@ -9,21 +9,21 @@ tests/platform_layer/telegram/owner/test_runtime_notifications.py). No real netw
 call anywhere -- every provider is faked.
 """
 
-from ai.access.permissions import AIRole
-from ai.capabilities.capability import Capability
-from ai.providers.base_provider import ProviderResult
-from ai.providers.circuit_breaker import CircuitBreakerConfig, CircuitState, ProviderCircuitBreaker
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.providers.provider_manager import ProviderStatus
-from ai.providers.runtime_errors import ProviderTimeoutError
-from ai.runtime.ai_service import AIService
-from ai.event_bus import EventBus, EventType
-from ai.runtime.runtime_manager import RuntimeManager
-from ai.runtime.runtime_profiles import DEVELOPMENT_PROFILE, PRODUCTION_PROFILE, TESTING_PROFILE
-from ai.runtime.runtime_request import RuntimeRequest
-from ai.runtime.runtime_state import RuntimeState
-from ai.context.context_builder import build_ai_context
-from ai.interfaces import MarketContext
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.providers.base_provider import ProviderResult
+from ai_layer.ai_engine.providers.circuit_breaker import CircuitBreakerConfig, CircuitState, ProviderCircuitBreaker
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_engine.providers.provider_manager import ProviderStatus
+from ai_layer.ai_engine.providers.runtime_errors import ProviderTimeoutError
+from ai_layer.ai_engine.runtime.ai_service import AIService
+from ai_layer.ai_service.event_bus import EventBus, EventType
+from ai_layer.ai_engine.runtime.runtime_manager import RuntimeManager
+from ai_layer.ai_engine.runtime.runtime_profiles import DEVELOPMENT_PROFILE, PRODUCTION_PROFILE, TESTING_PROFILE
+from ai_layer.ai_engine.runtime.runtime_request import RuntimeRequest
+from ai_layer.ai_engine.runtime.runtime_state import RuntimeState
+from ai_layer.ai_engine.context.context_builder import build_ai_context
+from ai_layer.ai_service.interfaces import MarketContext
 from platform_layer.telegram.owner.runtime_notifications import RuntimeNotifier
 
 
@@ -105,8 +105,8 @@ def test_degraded_runtime_still_serves_requests():
 
 def test_unhealthy_runtime_rejection_writes_an_audit_trail():
     """Phase 62.2 TASK 3: previously the one _execute() rejection path with zero audit trail -- every other rejection/success path already called request_log/response_log.record()."""
-    from ai.audit.request_log import RequestLog
-    from ai.audit.response_log import ResponseLog
+    from ai_layer.ai_service.audit.request_log import RequestLog
+    from ai_layer.ai_service.audit.response_log import ResponseLog
 
     provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
     runtime_manager = RuntimeManager(initial_state=RuntimeState.FAILED)
@@ -158,7 +158,7 @@ def test_five_consecutive_failures_trip_the_circuit_and_it_stops_being_offered()
 
 
 def test_circuit_recovers_to_half_open_and_closes_on_a_real_success(monkeypatch):
-    import ai.providers.circuit_breaker as circuit_breaker_module
+    import ai_layer.ai_engine.providers.circuit_breaker as circuit_breaker_module
     from datetime import datetime, timedelta, timezone
 
     calls = {"count": 0}
@@ -242,8 +242,8 @@ def test_production_profile_max_retries_limits_attempts_even_with_more_providers
         "claude": _FakeProvider("claude", behavior=_fail),
         "grok": _FakeProvider("grok"),
     })
-    from ai.runtime.runtime_profiles import RuntimeProfile
-    from ai.validation.schemas import DEFAULT_SCHEMA
+    from ai_layer.ai_engine.runtime.runtime_profiles import RuntimeProfile
+    from ai_layer.confidence_ai.schemas import DEFAULT_SCHEMA
     two_attempt_profile = RuntimeProfile(
         name="two-attempts", max_retries=2, timeout_seconds=5, cache_ttl_seconds=60, validation_schema=DEFAULT_SCHEMA,
     )
@@ -459,7 +459,7 @@ def test_no_configured_limits_never_degrades_the_runtime():
 
 def test_a_breached_cost_limit_degrades_the_runtime():
     """Real response_log entries always log cost=0.0 today (no provider reports usage yet -- see ai_service.py's own docstring), so this pre-seeds the log with a breaching entry the same way a future real-cost-reporting phase would."""
-    from ai.audit.response_log import ResponseLog
+    from ai_layer.ai_service.audit.response_log import ResponseLog
 
     provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
     runtime_manager = RuntimeManager()
@@ -478,7 +478,7 @@ def test_a_breached_cost_limit_degrades_the_runtime():
 
 
 def test_a_breached_token_limit_degrades_the_runtime():
-    from ai.audit.response_log import ResponseLog
+    from ai_layer.ai_service.audit.response_log import ResponseLog
 
     provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
     runtime_manager = RuntimeManager()
@@ -495,7 +495,7 @@ def test_a_breached_token_limit_degrades_the_runtime():
 
 
 def test_cost_protection_notifies_the_owner():
-    from ai.audit.response_log import ResponseLog
+    from ai_layer.ai_service.audit.response_log import ResponseLog
 
     provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
     bus = EventBus()
@@ -515,7 +515,7 @@ def test_cost_protection_notifies_the_owner():
 
 
 def test_cost_protection_does_not_re_trigger_once_already_degraded():
-    from ai.audit.response_log import ResponseLog
+    from ai_layer.ai_service.audit.response_log import ResponseLog
 
     provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
     runtime_manager = RuntimeManager()
@@ -549,8 +549,8 @@ def test_cost_protection_under_the_limit_never_degrades():
 
 def test_scenario_1_full_provider_failure_flow_timeout_retry_breaker_fallback_audit_event():
     """AI Request -> Provider Timeout -> Retry -> Circuit Breaker -> Fallback -> Audit -> Owner Event, in one real end-to-end call sequence."""
-    from ai.audit.request_log import RequestLog
-    from ai.audit.response_log import ResponseLog
+    from ai_layer.ai_service.audit.request_log import RequestLog
+    from ai_layer.ai_service.audit.response_log import ResponseLog
 
     def _fail(prompt):
         raise ProviderTimeoutError("gemini", "timed out")
@@ -595,8 +595,8 @@ def test_scenario_1_full_provider_failure_flow_timeout_retry_breaker_fallback_au
 
 
 def test_scenario_2_runtime_failed_rejects_with_audit_and_event():
-    from ai.audit.request_log import RequestLog
-    from ai.audit.response_log import ResponseLog
+    from ai_layer.ai_service.audit.request_log import RequestLog
+    from ai_layer.ai_service.audit.response_log import ResponseLog
 
     provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
     bus = EventBus()
@@ -623,7 +623,7 @@ def test_scenario_2_runtime_failed_rejects_with_audit_and_event():
 
 
 def test_scenario_3_cost_limit_breach_degrades_notifies_without_false_metrics():
-    from ai.audit.response_log import ResponseLog
+    from ai_layer.ai_service.audit.response_log import ResponseLog
 
     provider_manager = _FakeProviderManager({"gemini": _FakeProvider("gemini")})
     bus = EventBus()
@@ -643,14 +643,14 @@ def test_scenario_3_cost_limit_breach_degrades_notifies_without_false_metrics():
     # Owner notification.
     assert any("Cost Protection" in a.title for a in notifier.drain())
     # No false metrics: the breach reason reflects the real, injected total, not a fabricated number.
-    from ai.audit.provider_stats import compute_daily_usage
+    from ai_layer.ai_service.audit.provider_stats import compute_daily_usage
     usage = compute_daily_usage(response_log.all())
     assert usage.total_cost == 999.0  # the real pre-seeded cost, not made up
 
 
 def test_scenario_4_cache_behavior_hit_miss_stale_and_prompt_collision():
-    from ai.runtime.runtime_profiles import RuntimeProfile
-    from ai.validation.schemas import DEFAULT_SCHEMA
+    from ai_layer.ai_engine.runtime.runtime_profiles import RuntimeProfile
+    from ai_layer.confidence_ai.schemas import DEFAULT_SCHEMA
 
     call_count = {"n": 0}
 

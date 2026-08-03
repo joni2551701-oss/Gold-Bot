@@ -1,5 +1,5 @@
-from ai.performance.models import PerformanceRecord
-from ai.strategy.performance_adapter import performance_record_to_strategy_input
+from ai_layer.ai_engine.performance.models import PerformanceRecord
+from ai_layer.ai_engine.strategy.performance_adapter import performance_record_to_strategy_input
 
 
 def _record(**overrides):

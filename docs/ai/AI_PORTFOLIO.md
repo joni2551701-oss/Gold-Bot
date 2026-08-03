@@ -25,7 +25,7 @@ any kind (Rule 4: "GPT/Claude/Gemini/Reasoning/Inference YO'Q"). It
 never touches `decision/`, `risk/`, `execution/`, `strategies/`,
 `signals/`, `context/`, `monitoring/`, `telegram/`, `database/`,
 `voice/`, `assistant/`, `media/`, `broadcast/`, `academy/`,
-`research/`, `core.`, or `ai.memory` (TASK 9's own isolation list).
+`research/`, `core.`, or `ai_layer.knowledge_ai.memory_manager` (TASK 9's own isolation list).
 
 ## Model (TASK 2)
 
@@ -60,19 +60,19 @@ established. `update()` mutates only `status`/`risk_level`/`health`/
 argument is `None`; `update_notes()` only ever mutates `notes`.
 `archive()` sets `status=PortfolioStatus.ARCHIVED` and never deletes a
 record. Owner-gated: every method re-checks
-`ai.portfolio.access.is_portfolio_intelligence_enabled_for()` itself.
+`ai_layer.ai_engine.portfolio.access.is_portfolio_intelligence_enabled_for()` itself.
 
 ## Performance Adapter (TASK 4)
 
 `performance_adapter.py`'s `performance_record_to_portfolio_input()`
 is a pure, type-only mapping — TASK 4's own instruction: "Type-only...
 Inference YO'Q." It reads an existing
-`ai.performance.models.PerformanceRecord` (Phase 66.5, LOCKed) and
+`ai_layer.ai_engine.performance.models.PerformanceRecord` (Phase 66.5, LOCKed) and
 relays only `notes`. `portfolio_name`/`status`/`risk_level`/`health`/
 `strategy_count`/`active_strategy_count` are deliberately absent —
 `PerformanceRecord` carries no field shaped for any of the six. Never
-imports `ai.performance.performance_runtime`. The one file in
-`ai/portfolio/` permitted to import `ai.performance.models`.
+imports `ai_layer.ai_engine.performance.performance_runtime`. The one file in
+`ai/portfolio/` permitted to import `ai_layer.ai_engine.performance.models`.
 
 ## Strategy Adapter (TASK 5)
 
@@ -81,15 +81,15 @@ first `66.x` adapter to operate over a **sequence** of source records
 rather than a single one — TASK 5's own instruction ("Type-only...
 Inference YO'Q") still applies, but `PortfolioRecord.strategy_count`/
 `.active_strategy_count` are aggregate counts no single
-`ai.strategy.models.StrategyRecord` (Phase 66.6, LOCKed) could ever
+`ai_layer.ai_engine.strategy.models.StrategyRecord` (Phase 66.6, LOCKed) could ever
 supply. `strategy_count = len(records)` and `active_strategy_count`
 counts records whose `status == StrategyStatus.ACTIVE` — both are
 **deterministic counting, not inference**, the same class of operation
-`ai.performance.analytics_adapter.performance_records_to_win_rate_metric()`
+`ai_layer.ai_engine.performance.analytics_adapter.performance_records_to_win_rate_metric()`
 (Phase 66.5) already performed. `notes` is deliberately absent — with
 multiple source records, no single canonical note exists to relay
 without an arbitrary choice. The one file in `ai/portfolio/` permitted
-to import `ai.strategy.models`.
+to import `ai_layer.ai_engine.strategy.models`.
 
 ## Owner Mode (TASK 7)
 
@@ -104,8 +104,8 @@ requires **both**
 `memory_adapter.py`'s `portfolio_reference_key(record) -> str` builds
 a plain string key (`"portfolio:{portfolio_id}"`) for a future,
 separately-approved phase to use once real Memory storage is wired —
-this module never imports `ai.memory` at all. Mirrors
-`ai.strategy.memory_adapter.strategy_reference_key()`'s own precedent
+this module never imports `ai_layer.knowledge_ai.memory_manager` at all. Mirrors
+`ai_layer.ai_engine.strategy.memory_adapter.strategy_reference_key()`'s own precedent
 exactly.
 
 ## Future Compatibility (TASK 8)
@@ -139,7 +139,7 @@ this package.
 - Never imports `decision/`, `risk/`, `execution/`, `strategies/`,
   `signals/`, `context/`, `monitoring/`, `telegram/`, `database/`,
   `voice/`, `assistant/`, `media/`, `broadcast/`, `academy/`,
-  `research/`, `core.`, or `ai.memory` — zero exceptions, permanently
+  `research/`, `core.`, or `ai_layer.knowledge_ai.memory_manager` — zero exceptions, permanently
   enforced by `tests/ai/portfolio/test_ai_portfolio_isolation.py`.
 - Not wired into `core/pipeline.py` or any Telegram command this
   phase — foundation only.

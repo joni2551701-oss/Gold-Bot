@@ -170,7 +170,7 @@ def mock_ai_result():
     Factory fixture: mock_ai_result(approved=..., confidence=...,
     risk_score=..., explanation=...) -> AIAnalysisResult.
     """
-    from ai.ai_analyzer import AIAnalysisResult
+    from ai_layer.ai_engine.ai_analyzer import AIAnalysisResult
 
     def _make(approved=True, confidence=0.9, risk_score=0.1, explanation="fixture"):
         return AIAnalysisResult(

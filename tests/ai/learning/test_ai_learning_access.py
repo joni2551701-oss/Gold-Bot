@@ -1,5 +1,5 @@
-from ai.access.permissions import AIRole
-from ai.learning.access import is_learning_intelligence_enabled_for
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.knowledge_ai.learning_engine.access import is_learning_intelligence_enabled_for
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_learning_intelligence=True)

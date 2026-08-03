@@ -1,4 +1,4 @@
-from assistant.identity import AssistantIdentity
+from ai_layer.ai_service.assistant.identity import AssistantIdentity
 
 
 def test_assistant_identity_holds_expected_fields():

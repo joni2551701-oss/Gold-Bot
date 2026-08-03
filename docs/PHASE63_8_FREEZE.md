@@ -38,7 +38,7 @@ Constitution Article conflict.
   `content_id`, `media_id`, `broadcast_type`, `status`, `persona_name`,
   `metadata`, `created_at`) — the two genuine model gaps this phase's
   audit found. No `BroadcastType` enum created — `broadcast_type`
-  reuses `ai.content.content_types.ContentType` (the audit's own
+  reuses `ai_layer.ai_service.content.content_types.ContentType` (the audit's own
   naming resolution); the one genuine gap in that mapping,
   `LIVE_ANALYSIS`, was added as an additive `ContentType` member
   instead (Article 9 — LOCKed since Phase 63.0/63.6).
@@ -55,7 +55,7 @@ Constitution Article conflict.
   optional `Persona`'s own already-public `.name` field — never
   `ContentEngine`/`MediaManager`/`PersonaManager`'s internal state).
   Its output *is* `BroadcastAsset` — no second, competing
-  "BroadcastReady" dataclass was declared; `ai.content.broadcast_output.
+  "BroadcastReady" dataclass was declared; `ai_layer.ai_service.content.broadcast_output.
   BroadcastReadyContent`/`prepare_broadcast()` (Phase 61.5) remain
   untouched.
 - No new `Persona` — per this brief's own TASK 5 instruction, "Senior"/
@@ -138,9 +138,9 @@ Constitution Article conflict.
   confirmed both by the Bash grep run at TASK 10 and by the permanent
   AST regression tests in `tests/broadcast/test_broadcast_isolation.py`
   and `test_broadcast_adapter.py`.
-- `broadcast/` imports `ai.content.content_schema.ContentResult`,
-  `ai.content.content_types.ContentType`, `media_layer.content_manager.models.MediaAsset`,
-  and `ai.persona.persona.Persona` — all upstream (per Rule 3's own
+- `broadcast/` imports `ai_layer.ai_service.content.content_schema.ContentResult`,
+  `ai_layer.ai_service.content.content_types.ContentType`, `media_layer.content_manager.models.MediaAsset`,
+  and `ai_layer.personal_ai.persona_manager.persona.Persona` — all upstream (per Rule 3's own
   "Broadcast o'qishi mumkin: media, content, ai" allowance), all
   type-only, none of their owning Manager class touched.
 
@@ -150,7 +150,7 @@ Constitution Article conflict.
 |------|-----|----------|--------|
 | Modules | `media_layer/telegram_broadcast/broadcast_adapter.py` (1) | `media_layer/telegram_broadcast/broadcast_manager.py`, `media_layer/telegram_broadcast/models.py`, `media_layer/telegram_broadcast/provider_manager.py` (3) | `media_layer/telegram_broadcast/trigger_manager.py` (1, untouched) |
 | Managers | — | `BroadcastManager` (+5 methods) | `BroadcastProviderManager`, `BroadcastTriggerManager` (unchanged) |
-| Models | `BroadcastStatus`, `BroadcastAsset`, `BroadcastTriggerType` (3) | `BroadcastProviderType` (+2 members: `TELEGRAM`/`MINI_APP`), `BroadcastTrigger` (+1 field: `trigger_type`), `ai.content.content_types.ContentType` (+1 member: `LIVE_ANALYSIS`) | `BroadcastProviderStatus`, `BroadcastProviderDescriptor` (unchanged) |
+| Models | `BroadcastStatus`, `BroadcastAsset`, `BroadcastTriggerType` (3) | `BroadcastProviderType` (+2 members: `TELEGRAM`/`MINI_APP`), `BroadcastTrigger` (+1 field: `trigger_type`), `ai_layer.ai_service.content.content_types.ContentType` (+1 member: `LIVE_ANALYSIS`) | `BroadcastProviderStatus`, `BroadcastProviderDescriptor` (unchanged) |
 | Contracts | `BroadcastAsset` (the new tracked, lifecycle-aware contract) | — | `BroadcastRequest` (existing, LOCKed, untouched — the `prepare()`/delivery-layer shape) |
 | Registries | — | `build_broadcast_provider_registry()` (+2 descriptors) | `Capability.AI_BROADCAST` (audited, no change made) |
 | Tests | `tests/broadcast/test_broadcast_models.py`, `test_broadcast_deterministic.py`, `test_broadcast_adapter.py`, `test_broadcast_isolation.py` (4 new files, 32 tests) | `tests/broadcast/test_broadcast_foundation.py` (1 assertion updated), `tests/ai/content/test_content_types.py` (1 assertion updated) | — |

@@ -27,8 +27,8 @@ up first, a separate, future step.
 from datetime import datetime
 from typing import Dict, Optional, Sequence
 
-from analytics.strategy_report import StrategyPerformanceReport, build_strategy_report, compute_win_rate
-from analytics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.strategy_report import StrategyPerformanceReport, build_strategy_report, compute_win_rate
+from backtesting_layer.statistics.signal_performance import SignalPerformance
 from signal_layer.signal_builder.schema import SignalSchema
 from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
@@ -62,7 +62,7 @@ def format_daily_stats(
     The future /stats command's payload. `signals` supplies the total/
     approved counts (SignalPerformance itself has no decision field);
     `performances` supplies the TP/SL/Expired/Cancelled counts and the
-    best-strategy pick, via analytics/strategy_report.py's
+    best-strategy pick, via backtesting_layer/statistics/strategy_report.py's
     build_strategy_report() (reused, not reimplemented). Never raises:
     empty inputs produce an all-zero report, not an exception.
     """

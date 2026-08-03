@@ -43,7 +43,7 @@ def create_error_event_entry(module: str, error_type: str, message: str, severit
 
 @dataclass(frozen=True)
 class DecisionPipelineEntryRow:
-    """Mirrors the 'monitoring_decision_pipeline' table row shape. `criteria_met` is stored as a comma-joined string (no fixed criteria vocabulary is enforced at the storage layer, same 'free text, no fixed taxonomy' posture `ai.trade_journal.models.TradeJournalEntry.mistakes` already uses for a similar Sequence[str] field). `stage_durations_ms` (Phase B.0) is stored the same way -- a comma-joined `stage:ms` string."""
+    """Mirrors the 'monitoring_decision_pipeline' table row shape. `criteria_met` is stored as a comma-joined string (no fixed criteria vocabulary is enforced at the storage layer, same 'free text, no fixed taxonomy' posture `ai_layer.knowledge_ai.knowledge_base.trade_journal.models.TradeJournalEntry.mistakes` already uses for a similar Sequence[str] field). `stage_durations_ms` (Phase B.0) is stored the same way -- a comma-joined `stage:ms` string."""
 
     symbol: str
     timeframe: str

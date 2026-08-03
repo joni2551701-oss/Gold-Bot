@@ -9,10 +9,10 @@ after this phase.
 
 | File | Currently used in production? | Purpose |
 |---|---|---|
-| `ai/ai_analyzer.py` | **Yes** — imported by `core/pipeline.py`, `decision_layer/decision_engine/decision_engine.py`, `decision_layer/decision_engine/models.py`, `platform_layer/telegram/signal_formatter.py`, and `tests/conftest.py` (5 importers). | `AIAnalyzer.analyze()` is the production entry point `TradingPipeline` calls. Currently a permanent-reject stub — always returns `approved=False, confidence=0.0, risk_score=1.0` with an explanatory string. Documented as intentional in the README and the Phase 48 audit ("Heuristic scoring logic will be implemented in Phase 6.0.1") — this is the single highest-impact pre-existing finding this repository's audit history has surfaced, and it is unchanged by this phase (explicitly forbidden: "signal approve/reject AI orqali" / "existing pipeline flow o'zgarishi"). |
-| `ai/confidence_model.py` | No external importer besides `ai/ai_prompt.py` (within `ai/` itself). | `evaluate_confidence()` — a deterministic technical scoring function reading `SignalCandidate.context_refs` (a field no strategy currently populates — the Phase 48 audit noted this makes the function a documented no-op today, always returning a 0 score, by design until a future phase wires `context_refs`). |
-| `ai/ai_prompt.py` | No external importer at all. | `build_prompt()` — a Gemini-specific prompt + JSON-schema builder, tightly coupled to `SignalCandidate`/`ContextSnapshot`/`ConfidenceResult`. Fully built, never called by `AIAnalyzer` or anything else. |
-| `ai/trade_journal.py` | No importer anywhere (confirmed by a repo-wide grep, including tests). | `TradeJournalEntry`/`create_journal_entry()` — a complete, type-safe trade-outcome record model. Never written to by anything (no `PerformanceTracker`, no repository). |
+| `ai_layer/ai_engine/ai_analyzer.py` | **Yes** — imported by `core/pipeline.py`, `decision_layer/decision_engine/decision_engine.py`, `decision_layer/decision_engine/models.py`, `platform_layer/telegram/signal_formatter.py`, and `tests/conftest.py` (5 importers). | `AIAnalyzer.analyze()` is the production entry point `TradingPipeline` calls. Currently a permanent-reject stub — always returns `approved=False, confidence=0.0, risk_score=1.0` with an explanatory string. Documented as intentional in the README and the Phase 48 audit ("Heuristic scoring logic will be implemented in Phase 6.0.1") — this is the single highest-impact pre-existing finding this repository's audit history has surfaced, and it is unchanged by this phase (explicitly forbidden: "signal approve/reject AI orqali" / "existing pipeline flow o'zgarishi"). |
+| `ai_layer/confidence_ai/confidence_model.py` | No external importer besides `ai_layer/ai_engine/ai_prompt.py` (within `ai/` itself). | `evaluate_confidence()` — a deterministic technical scoring function reading `SignalCandidate.context_refs` (a field no strategy currently populates — the Phase 48 audit noted this makes the function a documented no-op today, always returning a 0 score, by design until a future phase wires `context_refs`). |
+| `ai_layer/ai_engine/ai_prompt.py` | No external importer at all. | `build_prompt()` — a Gemini-specific prompt + JSON-schema builder, tightly coupled to `SignalCandidate`/`ContextSnapshot`/`ConfidenceResult`. Fully built, never called by `AIAnalyzer` or anything else. |
+| `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` | No importer anywhere (confirmed by a repo-wide grep, including tests). | `TradeJournalEntry`/`create_journal_entry()` — a complete, type-safe trade-outcome record model. Never written to by anything (no `PerformanceTracker`, no repository). |
 
 **Duplicate responsibility check**: none found. Each file has exactly
 one job and none overlaps another's — `ai_analyzer.py` is the
@@ -30,7 +30,7 @@ changes.
 **Dependencies**: `ai/` depends on `context/` (for `ContextSnapshot`)
 and `signals/` (for `SignalCandidate`) — never on `database/` or
 `telegram/` (confirmed by grep, zero matches). `decision_layer/decision_engine/models.py`
-depends on `ai/ai_analyzer.py` for `AIAnalysisResult` — the one
+depends on `ai_layer/ai_engine/ai_analyzer.py` for `AIAnalysisResult` — the one
 place outside `ai/` that reaches into it for a type, not a call.
 
 ## Part 2 — New Folder Structure
@@ -48,7 +48,7 @@ ai/
 │
 ├── analyzer/
 │   ├── __init__.py
-│   └── ai_analyzer.py      <- NEW: re-exports ai/ai_analyzer.py
+│   └── ai_analyzer.py      <- NEW: re-exports ai_layer/ai_engine/ai_analyzer.py
 │
 ├── memory/
 │   ├── __init__.py
@@ -74,13 +74,13 @@ Agar move qilish riskli bo'lsa: faqat structure tayyorlansin."* Each
 existing file was evaluated individually against that rule, using the
 same import-site grep as Part 1's audit table above:
 
-- **`ai/trade_journal.py` → moved** to `ai/journal/trade_journal.py`.
+- **`ai_layer/knowledge_ai/knowledge_base/trade_journal.py` → moved** to `ai/journal/trade_journal.py`.
   Zero importers anywhere (confirmed above) — moving it carries
   exactly zero production risk. The old path
-  (`ai/trade_journal.py`) is kept as a thin compatibility shim
+  (`ai_layer/knowledge_ai/knowledge_base/trade_journal.py`) is kept as a thin compatibility shim
   (`from ai.journal.trade_journal import ...`) purely as a defensive,
   zero-cost safety net, not because anything currently needs it.
-- **`ai/ai_analyzer.py` → NOT moved.** Five separate production
+- **`ai_layer/ai_engine/ai_analyzer.py` → NOT moved.** Five separate production
   modules import this exact path
   (`core/pipeline.py`, `decision_layer/decision_engine/decision_engine.py`,
   `decision_layer/decision_engine/models.py`, `platform_layer/telegram/signal_formatter.py`, plus
@@ -88,11 +88,11 @@ same import-site grep as Part 1's audit table above:
   move" this phase's spec says to avoid. Instead, the compatibility
   layer runs in the *other* direction: `ai/analyzer/ai_analyzer.py`
   (the new, professional-layout path) re-exports the untouched
-  original at `ai/ai_analyzer.py`. This achieves the same practical
+  original at `ai_layer/ai_engine/ai_analyzer.py`. This achieves the same practical
   outcome — the new structure has a real, working module at
-  `ai.analyzer.ai_analyzer` — with strictly lower risk, since not one
+  `ai_layer.ai_engine.ai_analyzer` — with strictly lower risk, since not one
   existing import site changes.
-- **`ai/confidence_model.py` and `ai/ai_prompt.py` → NOT moved.**
+- **`ai_layer/confidence_ai/confidence_model.py` and `ai_layer/ai_engine/ai_prompt.py` → NOT moved.**
   Neither is named in this phase's target folder structure (only
   `ai_analyzer.py`, `context_memory.py`, `prompt_manager.py`,
   `user_profile.py`, and `trade_journal.py` are), so there is no
@@ -101,10 +101,10 @@ same import-site grep as Part 1's audit table above:
 
 ## Part 3 — Interface Foundation
 
-`ai/interfaces.py`: `AIAnalyzerInterface` (abstract base class),
+`ai_layer/ai_service/interfaces.py`: `AIAnalyzerInterface` (abstract base class),
 `MarketContext`, `UserContext`, `AIResponse` (frozen dataclasses). No
 real AI/LLM call anywhere in this file. The existing production
-`AIAnalyzer` (`ai/ai_analyzer.py`) does **not** implement this
+`AIAnalyzer` (`ai_layer/ai_engine/ai_analyzer.py`) does **not** implement this
 interface yet — retrofitting it is out of scope this phase
 ("existing pipeline flow o'zgarishi" is forbidden). This interface is
 the agreed shape a *future* v0.4+ AI Assistant Core implements against
@@ -131,9 +131,9 @@ feature has a shape to build against, nothing more.
 `ai/prompts/prompt_manager.py`: `PromptManager` with
 `get_market_analysis_prompt(market_context)` and
 `get_user_assistant_prompt(user_context)`, both returning static
-template strings built from `ai.interfaces.MarketContext`/
+template strings built from `ai_layer.ai_service.interfaces.MarketContext`/
 `UserContext`. No LLM call anywhere. Deliberately built against the
-new interface types rather than duplicating `ai/ai_prompt.py`'s
+new interface types rather than duplicating `ai_layer/ai_engine/ai_prompt.py`'s
 internal-type-coupled, Gemini-specific, signal-validation-only prompt
 — see Part 1's audit table for why `ai_prompt.py` was left alone
 rather than merged into this new module.

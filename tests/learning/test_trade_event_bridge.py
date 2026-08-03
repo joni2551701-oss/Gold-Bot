@@ -1,14 +1,14 @@
 """
 Phase 60.7: Adaptive Intelligence Layer Foundation, TASK 2 --
-learning/trade_event_bridge.py tests. Real PaperTrade/SignalPerformance/
+ai_layer/knowledge_ai/learning_loop/trade_event_bridge.py tests. Real PaperTrade/SignalPerformance/
 LearningRepository objects, no mocks -- same convention as every
 other learning/ test.
 """
 
-from learning.trade_event_bridge import bridge_closed_trade, build_learning_record_from_trade
+from ai_layer.knowledge_ai.learning_loop.trade_event_bridge import bridge_closed_trade, build_learning_record_from_trade
 from trade_monitoring_layer.paper_trading.paper_trade import PaperTrade, close_paper_trade, open_paper_trade
 from trade_monitoring_layer.paper_trading.trade_state import TradeState
-from analytics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.signal_performance import SignalPerformance
 from context_layer.context_engine.context_orchestrator import ContextSnapshot
 from context_layer.fundamental.fundamental_context import compute_fundamental_context, merge_fundamental_score
 from context_layer.fundamental.fundamental_scoring import compute_fundamental_score
@@ -187,7 +187,7 @@ def test_engine_version_is_stamped_by_default():
 
     record = build_learning_record_from_trade(trade)
 
-    from learning.models import LEARNING_ENGINE_VERSION
+    from ai_layer.knowledge_ai.learning_loop.models import LEARNING_ENGINE_VERSION
     assert record.engine_version == LEARNING_ENGINE_VERSION
 
 

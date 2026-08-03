@@ -1,10 +1,10 @@
 """
 Phase 60.6: Learning Loop Foundation, TASK 6 --
-analytics/learning_report.py tests.
+backtesting_layer/statistics/learning_report.py tests.
 """
 
-from analytics.learning_report import build_learning_report, format_learning_report
-from learning.models import create_learning_record
+from backtesting_layer.statistics.learning_report import build_learning_report, format_learning_report
+from ai_layer.knowledge_ai.learning_loop.models import create_learning_record
 
 
 def _record(strategy_name, session, market_phase=None, result="SL"):

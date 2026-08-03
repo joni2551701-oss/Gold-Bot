@@ -20,7 +20,7 @@ already exist? Is a duplicate needed anywhere?
 
 ## Question 1 — Does an Assistant Runtime already exist?
 
-**No.** `assistant/assistant_manager.py`'s `AssistantManager` (Phase
+**No.** `ai_layer/ai_service/assistant/assistant_manager.py`'s `AssistantManager` (Phase
 65.3) owns `AssistantProfile` (durable per-user settings) but has no
 concept of a live session — no `session_id`, no `started_at`/
 `updated_at`, no `active` flag, no `conversation_id` pointer. This is
@@ -37,18 +37,18 @@ correct move, per Article 11 step 2 ("can an existing module be
 extended"), is answered by TASK 1 itself: extend the existing
 `AssistantManager` with runtime-lifecycle methods rather than creating
 a new `AssistantRuntimeManager` class. `AssistantRuntime` itself is a
-new dataclass in the already-existing `assistant/models.py` (extension
+new dataclass in the already-existing `ai_layer/ai_service/assistant/models.py` (extension
 of a file, not a new module).
 
 ## Question 2 — Does a composition (real cross-layer call) already exist?
 
-**Yes, twice, and neither is Assistant-scoped.** `ai/intelligence_runtime.py`'s
+**Yes, twice, and neither is Assistant-scoped.** `ai_layer/ai_engine/intelligence_runtime.py`'s
 `IntelligenceRuntime.run(topic, telegram_id)` is the first composition
 root (Phase 64.0) — deterministic only, walks Knowledge → Memory →
 Reasoning → Conversation (via `append()`, never `ask()`) → Explanation
 → Content → Media → Broadcast, and is directly reusable as-is for
 TASK 5/6 (Reasoning + Pipeline Integration) with zero modification.
-`voice/conversation_bridge.py`'s `handle_voice_turn()` is the second
+`ai_layer/voice_ai/conversation_bridge.py`'s `handle_voice_turn()` is the second
 (Phase 65.2) — the real, LLM-backed round trip, but its own entry
 point requires raw audio bytes (STT input) and a `VoiceSession`; this
 phase's brief names only text-based `ConversationEngine.ask()` and
@@ -59,20 +59,20 @@ methods to use (TASK 2/3), never STT. Reusing
 doesn't need — a worse fit than composing `ConversationEngine.ask()`
 and `VoiceRuntime.generate_audio()` directly, which is exactly what
 TASK 2/3's own brief text specifies. No third composition-root
-*duplicate* is created — `assistant/runtime_adapter.py` (TASK 9) is a
+*duplicate* is created — `ai_layer/ai_service/assistant/runtime_adapter.py` (TASK 9) is a
 new, Assistant-scoped composition, structurally parallel to (not a
 copy of) the existing two, calling each real Runtime's already-public
 methods and adding no new business logic of its own (same "zero new
 business logic in any of the systems it composes" posture
-`voice/conversation_bridge.py` already established).
+`ai_layer/voice_ai/conversation_bridge.py` already established).
 
 ## Question 3 — Does an adapter already exist?
 
 **Yes, one, and it is now extended one file further.**
-`assistant/conversation_adapter.py` (Phase 65.3) already produces
+`ai_layer/ai_service/assistant/conversation_adapter.py` (Phase 65.3) already produces
 primitive-shaped params matching `VoiceSessionManager.create_session()`/
 `ConversationEngine.start_session()`'s signatures, plus a Memory
-scope-key helper. This phase's `assistant/runtime_adapter.py` is a
+scope-key helper. This phase's `ai_layer/ai_service/assistant/runtime_adapter.py` is a
 **new file**, not a modification of `conversation_adapter.py` — Rule 1
 LOCKs `assistant/` itself (no rename/move/breaking API), and
 `conversation_adapter.py`'s three existing pure functions keep their
@@ -99,7 +99,7 @@ six classes is called via its existing, unmodified public API only:
 | `IntelligenceRuntime` | `run()` | Yes |
 | `AssistantManager` | extended in place with 5 new methods | Extended, not duplicated |
 
-## The one deliberate widening: `assistant/runtime_adapter.py`'s imports
+## The one deliberate widening: `ai_layer/ai_service/assistant/runtime_adapter.py`'s imports
 
 Phase 65.3's own isolation test
 (`test_assistant_package_never_imports_downstream_intelligence_layers`)
@@ -109,11 +109,11 @@ forbade `voice/`, `ai.conversation/`, `ai.memory/`, `ai.reasoning/`,
 zero exemptions. This phase's own brief explicitly authorizes crossing
 that boundary for real integration (TASK 2/3/4/6's own named method
 calls cannot be satisfied any other way). The resolution mirrors
-`voice/conversation_bridge.py`'s own precedent exactly:
-`assistant/runtime_adapter.py` becomes the **one** file in `assistant/`
-permitted to import `ai.conversation.conversation_engine`,
-`ai.intelligence_runtime`, `ai.memory.memory_runtime`/`ai.memory.models`,
-and `voice.runtime`/`voice.models` — every other file in `assistant/`
+`ai_layer/voice_ai/conversation_bridge.py`'s own precedent exactly:
+`ai_layer/ai_service/assistant/runtime_adapter.py` becomes the **one** file in `assistant/`
+permitted to import `ai_layer.personal_ai.interaction_manager.conversation_engine`,
+`ai_layer.ai_engine.intelligence_runtime`, `ai_layer.knowledge_ai.memory_manager.memory_runtime`/`ai_layer.knowledge_ai.memory_manager.models`,
+and `ai_layer.voice_ai.runtime`/`ai_layer.voice_ai.models` — every other file in `assistant/`
 (`identity.py`, `identity_registry.py`, `identity_manager.py`,
 `models.py`, `access.py`, `assistant_manager.py`,
 `conversation_adapter.py`) keeps the exact zero-downstream-import
@@ -131,7 +131,7 @@ model with no existing counterpart); one existing class extended in
 place (`AssistantManager`, +5 methods); one new file added inside the
 existing `assistant/` package (`runtime_adapter.py`, the third
 composition-root-shaped file in this codebase, after
-`ai/intelligence_runtime.py` and `voice/conversation_bridge.py`); zero
+`ai_layer/ai_engine/intelligence_runtime.py` and `ai_layer/voice_ai/conversation_bridge.py`); zero
 duplicate Managers/Runtimes/Engines; zero new top-level packages; zero
 changes to any of the ten Rule-1-LOCKed packages' own files (they are
 called, never edited).
@@ -142,7 +142,7 @@ called, never edited).
   phase's own Foundation this phase connects.
 - `docs/PHASE64_0_AUDIT.md` — `IntelligenceRuntime`'s own composition-
   root precedent, reused as-is via TASK 6.
-- `docs/PHASE65_2_AUDIT.md` — `voice/conversation_bridge.py`'s own
+- `docs/PHASE65_2_AUDIT.md` — `ai_layer/voice_ai/conversation_bridge.py`'s own
   composition-root precedent, the structural pattern this phase's
   `runtime_adapter.py` follows without importing or calling it.
 - `docs/ai/AI_PERSONAL_ASSISTANT.md` — updated with this phase's real

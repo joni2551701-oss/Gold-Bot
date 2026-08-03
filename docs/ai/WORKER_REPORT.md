@@ -47,13 +47,13 @@ formal internal layering document for `ai/` (unlike Trading Core,
 which has one). Full list in `AI_GAP_ANALYSIS.md`.
 
 **Qaysi modullar qayta ishlanishi kerak? (Which modules need rework?)**
-The `ai.runtime`/`ai.providers`/`ai.router`/`ai.audit` cluster (3 of
-the 4 real cycles are centered here) and `ai.content`/`ai.explanation`
+The `ai_layer.ai_engine.runtime`/`ai_layer.ai_engine.providers`/`ai_layer.ai_coordinator`/`ai_layer.ai_service.audit` cluster (3 of
+the 4 real cycles are centered here) and `ai_layer.ai_service.content`/`ai_layer.explanation_ai`
 (the 4th cycle, which violates a self-documented design principle).
 `ai/journal/trade_journal.py`'s `TradeJournalEntry` should be renamed
 to resolve the duplicate-name collision. 4 files
-(`ai/trade_journal.py`, `ai/analyzer/ai_analyzer.py`,
-`ai/ai_prompt.py`, `ai/confidence_model.py`) are dead and are
+(`ai_layer/knowledge_ai/knowledge_base/trade_journal.py`, `ai/analyzer/ai_analyzer.py`,
+`ai_layer/ai_engine/ai_prompt.py`, `ai_layer/confidence_ai/confidence_model.py`) are dead and are
 deletion candidates. Full detail and evidence in `AI_RISK_REPORT.md`
 and `AI_REFACTOR_RECOMMENDATIONS.md`.
 
@@ -76,12 +76,12 @@ their own sibling subpackage following the existing 66.x template
 once formally scoped; Media and Platform connect exactly as they do
 today (transitively through `IntelligenceRuntime`, and not at all,
 respectively); Memory connects through the same single-adapter-file
-pattern `assistant/runtime_adapter.py` already demonstrates; Voice
+pattern `ai_layer/ai_service/assistant/runtime_adapter.py` already demonstrates; Voice
 stays outside `ai/` in the separate `voice/` package (with a known,
 separately-flagged tension against Article 5, see
 `docs/CONSTITUTION_V2_AUDIT.md`); Vision lives inside the
 already-reserved `ai/chart_intelligence/`; and any future Agent System
-should extend `ai.tools`'s existing `BaseAITool`/`ToolRegistry`
+should extend `ai_layer.ai_service.tools`'s existing `BaseAITool`/`ToolRegistry`
 contract rather than create new orchestration infrastructure.
 
 ## Recommendation on TASK-AI-001

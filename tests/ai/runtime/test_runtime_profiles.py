@@ -1,7 +1,7 @@
 """Phase 61.6 TASK 8 — Runtime Configuration Profiles."""
 
-from ai.cache.cache_policy import CachePolicy
-from ai.runtime.runtime_profiles import (
+from ai_layer.ai_engine.cache.cache_policy import CachePolicy
+from ai_layer.ai_engine.runtime.runtime_profiles import (
     DEVELOPMENT_PROFILE,
     PRODUCTION_PROFILE,
     TESTING_PROFILE,

@@ -75,7 +75,7 @@ context_layer/market_structure/bos.py                       BOSEngine
 context_layer/market_structure/choch.py                     ChochEngine
 context_layer/amd/amd.py                       AMD
 
-ai/ai_analyzer.py                    AIAnalyzer
+ai_layer/ai_engine/ai_analyzer.py                    AIAnalyzer
 
 decision/                            (no logger -- see Task 1 notes below)
 risk/                                (no logger -- see Task 1 notes below)
@@ -116,7 +116,7 @@ dataclasses, pure functions, or static text) intentionally have none:
 `platform_layer/telegram/commands.py`, `platform_layer/telegram/signal_formatter.py`,
 `context_layer/context_engine/candle.py`, `context_layer/context_engine/context_config.py`, `context_layer/fair_value_gap/fvg.py`,
 `context_layer/liquidity/liquidity.py`, `context_layer/order_block/order_block.py`, all `database/*_models.py`,
-`ai/ai_prompt.py`, `ai/confidence_model.py`, `ai/trade_journal.py`,
+`ai_layer/ai_engine/ai_prompt.py`, `ai_layer/confidence_ai/confidence_model.py`, `ai_layer/knowledge_ai/knowledge_base/trade_journal.py`,
 `execution/*.py`, `core_layer/health_monitor/signal_monitor.py`. Adding a logger to a
 file with nothing to log would be surface for its own sake — not done.
 

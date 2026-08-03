@@ -1,6 +1,6 @@
-from ai.access.permissions import AIRole
-from ai.portfolio.models import PortfolioHealth, PortfolioRiskLevel, PortfolioStatus
-from ai.portfolio.portfolio_runtime import PortfolioRuntime
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.portfolio.models import PortfolioHealth, PortfolioRiskLevel, PortfolioStatus
+from ai_layer.ai_engine.portfolio.portfolio_runtime import PortfolioRuntime
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_portfolio_intelligence=True)

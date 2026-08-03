@@ -18,7 +18,7 @@ real media generation).
 
 from typing import Optional
 
-from ai.content.content_schema import ContentResult
+from ai_layer.ai_service.content.content_schema import ContentResult
 from media_layer.content_manager.media_adapter import content_result_to_media_asset
 from media_layer.content_manager.media_manager import MediaManager
 from media_layer.content_manager.media_types import MediaType

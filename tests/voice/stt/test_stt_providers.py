@@ -1,14 +1,14 @@
 """Phase 65.2 TASK 2 — voice/stt/providers/: openai.py, local.py, custom.py."""
 
-from voice.stt.contract import (
+from ai_layer.voice_ai.stt.contract import (
     STTProviderInvalidResponseError,
     STTProviderTimeoutError,
     STTProviderUnavailableError,
 )
-from voice.stt.models import STTRequest, STTResultStatus
-from voice.stt.providers.custom import CustomSTTProvider
-from voice.stt.providers.local import LocalSTTProvider
-from voice.stt.providers.openai import OpenAISTTProvider
+from ai_layer.voice_ai.stt.models import STTRequest, STTResultStatus
+from ai_layer.voice_ai.stt.providers.custom import CustomSTTProvider
+from ai_layer.voice_ai.stt.providers.local import LocalSTTProvider
+from ai_layer.voice_ai.stt.providers.openai import OpenAISTTProvider
 
 
 class _FakeSecretsNoKey:

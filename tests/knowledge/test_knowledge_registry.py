@@ -1,7 +1,7 @@
 """Phase 61.3 TASK 3 — knowledge/ registry: lookup, category filter, search, isolation."""
 
-from knowledge.models import KnowledgeCategory, KnowledgeEntry
-from knowledge.registry import all_entries, entries_by_category, get_entry, search
+from ai_layer.knowledge_ai.knowledge_base.models import KnowledgeCategory, KnowledgeEntry
+from ai_layer.knowledge_ai.knowledge_base.registry import all_entries, entries_by_category, get_entry, search
 
 
 def test_all_entries_nonempty_for_every_category():
@@ -76,7 +76,7 @@ def test_knowledge_module_never_imports_trading_layers():
     import pathlib
 
     knowledge_dir = pathlib.Path(__file__).resolve().parents[2] / "knowledge"
-    forbidden_prefixes = ("decision", "risk", "execution", "strategies", "database", "telegram")
+    forbidden_prefixes = ("decision_layer", "risk_layer", "execution_layer", "strategy_layer", "database_layer", "platform_layer.telegram")
 
     for py_file in knowledge_dir.glob("*.py"):
         tree = ast.parse(py_file.read_text(), filename=str(py_file))
@@ -99,7 +99,7 @@ def test_knowledge_entry_is_frozen():
 
 
 def test_duplicate_key_detection_raises():
-    from knowledge.registry import _build_index
+    from ai_layer.knowledge_ai.knowledge_base.registry import _build_index
 
     dup = KnowledgeEntry(key="dup", category=KnowledgeCategory.FAQ, title="A", summary="a")
     dup2 = KnowledgeEntry(key="dup", category=KnowledgeCategory.FAQ, title="B", summary="b")

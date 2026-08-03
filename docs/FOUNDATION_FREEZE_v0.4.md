@@ -60,7 +60,7 @@ TASK 2 dependency audit re-verified this).
 Nothing below is started. Each requires its own explicit approval and
 its own phase, per CLAUDE.md's Trading Safety rules.
 
-- **v0.4 AI** — a real AI provider replacing `ai/ai_analyzer.py`'s
+- **v0.4 AI** — a real AI provider replacing `ai_layer/ai_engine/ai_analyzer.py`'s
   current heuristic stub. The single hardest constraint: whatever
   provider is chosen must preserve "AI optional" (see Foundation
   Principles below) exactly as it works today.
@@ -84,7 +84,7 @@ verified in `docs/PHASE60_10_FOUNDATION_AUDIT.md`'s dependency audit,
 and is the contract v0.4 AI and every phase after it must preserve.
 
 - **AI Optional** — `core/pipeline.py` produces the same
-  APPROVE/REJECT/NO_TRADE decision whether `ai/ai_analyzer.py` is a
+  APPROVE/REJECT/NO_TRADE decision whether `ai_layer/ai_engine/ai_analyzer.py` is a
   heuristic stub (today) or a real provider (v0.4 AI). `DecisionEngine`
   blends AI as one of four weighted inputs, never as a sole gate.
 - **Decision First** — `decision_layer/decision_engine/decision_engine.py` is the one place

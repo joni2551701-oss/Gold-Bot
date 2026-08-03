@@ -66,7 +66,7 @@ platform/platform_dispatcher.py  ── reads enabled adapters, fan-out
 |---|---|---|---|---|---|---|
 | `platform/platform_message.py` | neutral `PlatformMessage` model (`to_dict`) | risk + presentation | `PlatformMessage` | risk/signals presentation | dispatcher | **new** |
 | `platform/platform_status.py` | delivery-status vocab `QUEUED/SENT/SKIPPED/FAILED` | adapter result | `PlatformStatus` | adapters | dispatcher/db | **new** |
-| `platform/adapter_contract.py` | `PlatformAdapter` ABC (`deliver(PlatformMessage)->PlatformStatus`) | — | contract | — | adapters | **new** (mirrors `ai/interfaces.py` style) |
+| `platform/adapter_contract.py` | `PlatformAdapter` ABC (`deliver(PlatformMessage)->PlatformStatus`) | — | contract | — | adapters | **new** (mirrors `ai_layer/ai_service/interfaces.py` style) |
 | `platform/platform_dispatcher.py` | fan-out to enabled adapters; honour eligibility | `PlatformMessage` | statuses | adapter_contract | adapters/db | **new** |
 | `platform/platform_router.py` | which adapters an outcome targets (owner/tier) | outcome | adapter list | platform_message | dispatcher | **new** (mirrors `decision_router.py`) |
 | `platform/adapters/telegram_adapter.py` | implement contract by delegating to `telegram/notification_service` | `PlatformMessage` | `PlatformStatus` | telegram service | telegram | **new** (thin; REUSES telegram/, no new send logic) |

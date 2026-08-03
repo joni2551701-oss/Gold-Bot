@@ -27,9 +27,9 @@ from context_layer.context_engine.snapshot import (
     generate_snapshot_id,
 )
 
-from market.market_manager import MarketManager
-from market.trend_state import TrendState
-from market.volatility_state import VolatilityLevel
+from data_layer.live_data.market.market_manager import MarketManager
+from data_layer.live_data.market.trend_state import TrendState
+from data_layer.live_data.market.volatility_state import VolatilityLevel
 
 # Deterministic non-weekend instant (Wed 2026-01-07 12:00 UTC).
 _WEEKDAY = datetime(2026, 1, 7, 12, 0, tzinfo=timezone.utc)

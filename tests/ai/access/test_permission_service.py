@@ -1,7 +1,7 @@
 """Phase 61.4 TASK 2 — AI Permission Service: real telegram_id -> AIRole resolver, over already-resolved identity facts."""
 
-from ai.access.permissions import AIRole
-from ai.access.permission_service import resolve_ai_role
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_service.access.permission_service import resolve_ai_role
 
 
 def test_owner_flag_wins_regardless_of_plan():

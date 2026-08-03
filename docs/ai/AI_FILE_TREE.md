@@ -21,11 +21,11 @@ private" in this codebase is a **module-level naming convention**
 (single leading underscore) rather than an `__init__.py` re-export
 list. Two top-level module files buck this pattern by defining their
 own `__all__` as compatibility shims: `ai/analyzer/ai_analyzer.py` and
-`ai/trade_journal.py`.
+`ai_layer/knowledge_ai/knowledge_base/trade_journal.py`.
 
-## Cross-cutting finding #2 — `ai/trade_journal.py` is permanently unreachable
+## Cross-cutting finding #2 — `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` is permanently unreachable
 
-Both `ai/trade_journal.py` (a compatibility-shim module) and
+Both `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` (a compatibility-shim module) and
 `ai/trade_journal/` (a real subpackage, Phase 66.2) exist side by side
 with the same import name. CPython always resolves the package
 directory over the sibling module of the same name, so
@@ -41,13 +41,13 @@ AI_REFACTOR_RECOMMENDATIONS.md for follow-up.
 | File | Purpose | Classes | Module functions |
 |---|---|---|---|
 | `ai/__init__.py` | (empty) | — | — |
-| `ai/ai_analyzer.py` | Production entry point `core/pipeline.py` calls | `AIAnalysisResult` (frozen dataclass), `AIAnalyzer` (plain) | — |
-| `ai/ai_prompt.py` | Builds a prompt payload for a future LLM call (dead — see finding below) | `PromptPayload` (frozen dataclass) | `_summarize_context()` (private), `build_prompt()` |
-| `ai/confidence_model.py` | Deterministic confidence scoring (dead — only consumer is `ai_prompt.py`) | `ScoringConfig`, `ConfidenceResult` (both frozen dataclass) | `evaluate_confidence()` |
-| `ai/interfaces.py` | Future-provider contract (Phase 55) | `MarketContext`, `UserContext`, `AIResponse` (frozen dataclass), `AIAnalyzerInterface` (**ABC**) | — |
-| `ai/learning_context.py` | Bundles Learning data into AI-facing JSON shape (Phase 60.6/60.7) | `LearningContext` (frozen dataclass) | `_recent_failures()`, `_strategy_stats()`, `_pattern_condition()`, `_confidence_summaries()` (private), `build_learning_context()` |
-| `ai/intelligence_runtime.py` | Composition root for the Official Intelligence Pipeline (Phase 64.0) | `PipelineStage` (Enum), `PipelineStageResult`, `PipelineRun` (frozen dataclass), `IntelligenceRuntime` (plain) | — |
-| `ai/trade_journal.py` | Compatibility shim (Phase 55) — **unreachable, see finding #2** | none (re-exports only) | — |
+| `ai_layer/ai_engine/ai_analyzer.py` | Production entry point `core/pipeline.py` calls | `AIAnalysisResult` (frozen dataclass), `AIAnalyzer` (plain) | — |
+| `ai_layer/ai_engine/ai_prompt.py` | Builds a prompt payload for a future LLM call (dead — see finding below) | `PromptPayload` (frozen dataclass) | `_summarize_context()` (private), `build_prompt()` |
+| `ai_layer/confidence_ai/confidence_model.py` | Deterministic confidence scoring (dead — only consumer is `ai_prompt.py`) | `ScoringConfig`, `ConfidenceResult` (both frozen dataclass) | `evaluate_confidence()` |
+| `ai_layer/ai_service/interfaces.py` | Future-provider contract (Phase 55) | `MarketContext`, `UserContext`, `AIResponse` (frozen dataclass), `AIAnalyzerInterface` (**ABC**) | — |
+| `ai_layer/knowledge_ai/learning_context.py` | Bundles Learning data into AI-facing JSON shape (Phase 60.6/60.7) | `LearningContext` (frozen dataclass) | `_recent_failures()`, `_strategy_stats()`, `_pattern_condition()`, `_confidence_summaries()` (private), `build_learning_context()` |
+| `ai_layer/ai_engine/intelligence_runtime.py` | Composition root for the Official Intelligence Pipeline (Phase 64.0) | `PipelineStage` (Enum), `PipelineStageResult`, `PipelineRun` (frozen dataclass), `IntelligenceRuntime` (plain) | — |
+| `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` | Compatibility shim (Phase 55) — **unreachable, see finding #2** | none (re-exports only) | — |
 
 ---
 
@@ -69,7 +69,7 @@ repeated per-entry.
 - `user_capability.py` — `UserCapability` (frozen dataclass), `UserCapabilityService` (plain)
 
 ### `ai/analyzer/` — Canonical-analyzer re-export (Phase 55, dead code)
-- `ai_analyzer.py` — pure re-export of `ai.ai_analyzer`; defines its own `__all__`
+- `ai_analyzer.py` — pure re-export of `ai_layer.ai_engine.ai_analyzer`; defines its own `__all__`
 
 ### `ai/audit/` — In-memory AI call audit trail (Phase 61.0/61.3/61.4/61.6)
 - `provider_stats.py` — `ProviderStats`, `DailyUsage`, `RuntimeMetrics` (frozen dataclass), `RuntimeMetricsCollector` (plain); `compute_provider_stats()`, `rank_providers()`, `compute_requests_per_minute()`, `compute_daily_usage()`, `evaluate_cost_protection()`
@@ -241,7 +241,7 @@ repeated per-entry.
 - `tool_registry.py` — `ToolResult` (frozen dataclass), `BaseAITool` (**ABC**, defined here), `ToolRegistry` (plain); `build_default_tool_registry()` (lazy-imports the 5 tools to avoid a module-level cycle)
 
 ### `ai/trade_journal/` — Trade journal, narrative record (Phase 66.2)
-**Name collision with top-level `ai/trade_journal.py` — see cross-cutting finding #2.**
+**Name collision with top-level `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` — see cross-cutting finding #2.**
 - `access.py` — `is_trade_journal_enabled_for()`
 - `journal_runtime.py` — `TradeJournalRuntime` (plain)
 - `memory_adapter.py` — `memory_reference_key()`

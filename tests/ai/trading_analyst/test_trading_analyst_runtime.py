@@ -1,6 +1,6 @@
-from ai.access.permissions import AIRole
-from ai.trading_analyst.analyst_runtime import TradingAnalystRuntime
-from ai.trading_analyst.models import TradingAnalysisInput, TradingRiskLevel
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.trading_analyst.analyst_runtime import TradingAnalystRuntime
+from ai_layer.ai_engine.trading_analyst.models import TradingAnalysisInput, TradingRiskLevel
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_trading_analyst=True)
@@ -133,7 +133,7 @@ def test_runtime_default_construction_never_raises():
 
 
 def test_runtime_accepts_injected_intelligence_runtime():
-    from ai.intelligence_runtime import IntelligenceRuntime
+    from ai_layer.ai_engine.intelligence_runtime import IntelligenceRuntime
     injected = IntelligenceRuntime()
     runtime = TradingAnalystRuntime(intelligence_runtime=injected, flags=ENABLED)
     result = runtime.analyze(_input(), AIRole.OWNER)
@@ -141,7 +141,7 @@ def test_runtime_accepts_injected_intelligence_runtime():
 
 
 def test_runtime_accepts_injected_explanation_builder():
-    from ai.explanation.explanation_builder import ExplanationBuilder
+    from ai_layer.explanation_ai.explanation_builder import ExplanationBuilder
     injected = ExplanationBuilder()
     runtime = TradingAnalystRuntime(explanation_builder=injected, flags=ENABLED)
     result = runtime.analyze(_input(), AIRole.OWNER)

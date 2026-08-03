@@ -92,14 +92,14 @@ FRED
 Fundamental Context   (does not exist yet)
  |
  v
-AI Analyzer            (ai/ai_analyzer.py, still a heuristic stub)
+AI Analyzer            (ai_layer/ai_engine/ai_analyzer.py, still a heuristic stub)
 ```
 
 `FundamentalDataProvider`/`FredProvider` (Phase 59.2) were the
 foundation for the first box only. Phase 59.3 (TASK 6) built the
 second box — `context_layer/fundamental/fundamental_context.py`'s
 `compute_fundamental_context()` — but `AI Analyzer` consumption
-remains future, separately-approved work; `ai/ai_analyzer.py` reads
+remains future, separately-approved work; `ai_layer/ai_engine/ai_analyzer.py` reads
 nothing from `FundamentalContextSnapshot` in this phase.
 
 ## What Phase 59.2/59.3 do NOT do

@@ -31,7 +31,7 @@ isolation list).
 ## Model
 
 - `models.py` — `CoachingTopic` (12-value vocabulary, mirroring
-  `ai.learning.models.LearningTopic`'s own value set for coherence but
+  `ai_layer.knowledge_ai.learning_engine.models.LearningTopic`'s own value set for coherence but
   defined as a separate, local enum — no cross-package import in
   `models.py`), `CoachingPriority` (LOW/MEDIUM/HIGH/CRITICAL),
   `CoachingType` (FEEDBACK/RECOMMENDATION/WARNING/MOTIVATION/REMINDER),
@@ -52,7 +52,7 @@ own `_records` dict already established. `update_status()` moves a
 record between PENDING/ACTIVE/ACKNOWLEDGED but rejects ARCHIVED —
 archiving is a dedicated, one-way action reachable only via
 `archive()`. Owner-gated: every method re-checks
-`ai.coaching.access.is_coaching_intelligence_enabled_for()` itself.
+`ai_layer.personal_ai.senior.access.is_coaching_intelligence_enabled_for()` itself.
 
 ## Learning Adapter (TASK 4)
 
@@ -64,7 +64,7 @@ keyword arguments `CoachingRuntime.create()` accepts. Unlike the
 Journal Adapter, this one *can* relay `topic` directly —
 `LearningRecord.topic` is already an explicit, caller-supplied
 classification, so copying it is a direct relay, not an inference. The
-one file in `ai/coaching/` permitted to import `ai.learning.models`.
+one file in `ai/coaching/` permitted to import `ai_layer.knowledge_ai.learning_engine.models`.
 
 ## Journal Adapter (TASK 5)
 
@@ -74,9 +74,9 @@ taqiqlanadi." It reads an existing `TradeJournalEntry`
 (`ai/trade_journal/`, Phase 66.2) type-only. `topic` is deliberately
 absent from the returned mapping — `TradeJournalEntry` has no
 topic-shaped field, so choosing one would require real inference,
-mirroring `ai.learning.journal_adapter`'s own "topic/level deliberately
+mirroring `ai_layer.knowledge_ai.learning_engine.journal_adapter`'s own "topic/level deliberately
 omitted" precedent. The one file in `ai/coaching/` permitted to import
-`ai.trade_journal.models`.
+`ai_layer.knowledge_ai.knowledge_base.trade_journal.models`.
 
 ## Owner Mode (TASK 6)
 

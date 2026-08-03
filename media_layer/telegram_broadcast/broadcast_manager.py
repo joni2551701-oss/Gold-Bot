@@ -27,8 +27,8 @@ from datetime import datetime, timezone
 from typing import Dict, List, Optional
 from uuid import uuid4
 
-from ai.content.broadcast_output import BroadcastReadyContent
-from ai.content_types import ContentType
+from ai_layer.ai_service.content.broadcast_output import BroadcastReadyContent
+from ai_layer.ai_service.content.content_type_vocabulary import ContentType
 from media_layer.telegram_broadcast.models import BroadcastAsset, BroadcastRequest, BroadcastStatus
 from media_layer.telegram_broadcast.provider_manager import BroadcastProviderManager
 from media_layer.telegram_broadcast.trigger_manager import BroadcastTriggerManager

@@ -1,7 +1,7 @@
 """Phase 61.1 TASK 6 — AI Tool Permission Matrix, a second axis alongside Capability entitlement."""
 
-from ai.access.permissions import AIRole
-from ai.access.tool_permissions import ToolPermissions
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_service.access.tool_permissions import ToolPermissions
 
 
 def test_owner_and_admin_are_allowed_every_tool():

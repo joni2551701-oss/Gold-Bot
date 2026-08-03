@@ -142,7 +142,7 @@ def test_default_dependencies_are_the_real_classes():
     _, end = _seed_candles(30)
     engine = BacktestEngine(_config(end))
 
-    from ai.ai_analyzer import AIAnalyzer
+    from ai_layer.ai_engine.ai_analyzer import AIAnalyzer
     from decision_layer.decision_engine.decision_engine import DecisionEngine
     from risk_layer.risk_engine.risk_manager import RiskManager
 

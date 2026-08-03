@@ -4,7 +4,7 @@ Phase 60.2, TASK 4 -- backtesting_layer/backtest_report/backtest_result.py tests
 
 from datetime import datetime, timezone
 
-from analytics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.signal_performance import SignalPerformance
 from backtesting_layer.backtest_report.backtest_result import build_backtest_result, format_backtest_report
 
 

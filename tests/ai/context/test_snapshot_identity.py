@@ -1,11 +1,11 @@
 """Phase 61.1.1 TASK 2/5 — Cache Freshness Correction: snapshot_id is content-derived, never time/random-derived."""
 
-from ai.context.context_builder import build_ai_context
-from ai.context.context_snapshot import AIContext
-from ai.interfaces import MarketContext
-from ai.cache.cache_policy import build_cache_key_from_context
-from ai.capabilities.capability import Capability
-from ai.cache.response_cache import ResponseCache
+from ai_layer.ai_engine.context.context_builder import build_ai_context
+from ai_layer.ai_engine.context.context_snapshot import AIContext
+from ai_layer.ai_service.interfaces import MarketContext
+from ai_layer.ai_engine.cache.cache_policy import build_cache_key_from_context
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.cache.response_cache import ResponseCache
 
 import pytest
 
@@ -74,7 +74,7 @@ def test_different_snapshot_id_is_a_cache_miss():
 
 
 def test_cache_key_requires_snapshot_id_field():
-    from ai.cache.cache_policy import CacheKey
+    from ai_layer.ai_engine.cache.cache_policy import CacheKey
     with pytest.raises(TypeError):
         CacheKey(
             capability=Capability.CHAT, context_version="1.0", provider_name="gemini",

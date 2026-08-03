@@ -1,5 +1,5 @@
-from ai.performance.coaching_adapter import performance_record_to_coaching_input
-from ai.performance.models import PerformanceRecord
+from ai_layer.ai_engine.performance.coaching_adapter import performance_record_to_coaching_input
+from ai_layer.ai_engine.performance.models import PerformanceRecord
 
 
 def _record(**overrides):

@@ -78,7 +78,7 @@ Candles
 
 `context/` feeds `signals/` (signal quality/generation), `decision/`,
 `ai/context/` (AI context builder), `market/` (the read-only facade,
-TASK-CORE-005), `analytics/context_report.py`, and monitoring — as
+TASK-CORE-005), `backtesting_layer/statistics/context_report.py`, and monitoring — as
 data only. It does **not** emit signals or trade decisions.
 
 ## Security (verified)

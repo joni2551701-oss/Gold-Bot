@@ -10,12 +10,12 @@ Strong at the subpackage-content-type level: value objects
 (`*Runtime`/`*Manager`/`*Engine` plain classes) and from
 enable/disable gating (`access.py`'s `is_X_enabled_for()` per 66.x
 subpackage). Weak at the subpackage-boundary level in two clusters:
-`ai.runtime`/`ai.providers`/`ai.router`/`ai.audit` mix orchestration,
+`ai_layer.ai_engine.runtime`/`ai_layer.ai_engine.providers`/`ai_layer.ai_coordinator`/`ai_layer.ai_service.audit` mix orchestration,
 health-tracking, and metrics-collection concerns across a
 bidirectionally-coupled group (AI_DEPENDENCY_GRAPH.md Cycles 1-3) —
 none of these four subpackages has a clean, one-directional concern
-boundary from the others. `ai.content`/`ai.explanation` similarly mix
-concerns bidirectionally (Cycle 4) despite `ai.content`'s own
+boundary from the others. `ai_layer.ai_service.content`/`ai_layer.explanation_ai` similarly mix
+concerns bidirectionally (Cycle 4) despite `ai_layer.ai_service.content`'s own
 docstring stating explanation should be strictly upstream.
 
 ## Single Responsibility
@@ -51,7 +51,7 @@ The "primitive-input, no LLM in the model layer" discipline (every
 `models.py` is `@dataclass(frozen=True)` with no I/O, no `AIService`
 calls) is real and consistently applied across all 30 subpackages —
 this is the strongest Clean-Architecture property found. The
-composition-root pattern (`ai.intelligence_runtime.IntelligenceRuntime`,
+composition-root pattern (`ai_layer.ai_engine.intelligence_runtime.IntelligenceRuntime`,
 documented as filling a gap where "no orchestrator existed anywhere in
 the codebase before" per `PHASE64_0_AUDIT.md`) is a genuine,
 deliberate Clean Architecture move. Weakness: with every `__init__.py`
@@ -69,8 +69,8 @@ structurally enforced). The closest thing to a documented internal
 layering is `ai/content/content_adapters.py`'s stated "Intelligence
 Dependency Principle" (Knowledge → Memory → Reasoning → Conversation →
 Explanation → Content → Media → Broadcast, per `ai/reasoning/`'s own
-README) — but this is violated by Cycle 4 (`ai.content` ↔
-`ai.explanation`), meaning the one documented layering rule inside
+README) — but this is violated by Cycle 4 (`ai_layer.ai_service.content` ↔
+`ai_layer.explanation_ai`), meaning the one documented layering rule inside
 `ai/` is not actually held to.
 
 ## Future Scalability
@@ -97,7 +97,7 @@ injection pattern used throughout (`*Runtime`/`*Engine` classes take
 their dependencies as constructor arguments, per
 `AI_RESPONSIBILITY_MATRIX.md`) supports test doubles cleanly. The 4
 real import cycles are a testability risk in one specific way: unit
-tests for `ai.runtime`, `ai.providers`, `ai.router`, or `ai.audit` in
+tests for `ai_layer.ai_engine.runtime`, `ai_layer.ai_engine.providers`, `ai_layer.ai_coordinator`, or `ai_layer.ai_service.audit` in
 isolation must be careful about import order, since the modules
 import each other.
 
@@ -107,7 +107,7 @@ Strong: the `*_adapter.py` pattern (pure `X_to_Y_input()` functions
 with no shared base class) means every 66.x subpackage can be
 consumed independently without inheriting a common framework — low
 coupling to reuse. Undermined by the two duplicate/collision findings
-(`TradeJournalEntry` defined twice; `ai.trade_journal.py` vs
+(`TradeJournalEntry` defined twice; `ai_layer.knowledge_ai.knowledge_base.trade_journal.py` vs
 `ai.trade_journal/`) — a consumer reusing "the trade journal" has two
 non-interchangeable options with the same class name, which is a
 reuse hazard, not a reuse asset.
@@ -128,12 +128,12 @@ point to hang it from — see `AI_FOUNDATION_READINESS.md`.
 ## Phase 6 — Personal AI Review (`assistant/` package)
 
 "Personal AI" in this codebase is the top-level `assistant/` package
-(confirmed via `assistant/README.md:1-8`, `assistant/access.py:23`'s
+(confirmed via `assistant/README.md:1-8`, `ai_layer/ai_service/assistant/access.py:23`'s
 `is_personal_ai_enabled_for()`, and cross-references in
 `docs/ai/AI_PERSONAL_ASSISTANT.md`) — a package *outside* `ai/`'s
 scope that composes on top of `ai/`'s infrastructure. `ai/` itself
 does not claim to be "Personal AI"; `ai/persona/` is explicitly and
-structurally walled off from it (`assistant/identity.py:2-13`: "Persona
+structurally walled off from it (`ai_layer/ai_service/assistant/identity.py:2-13`: "Persona
 is *how the AI thinks*... AssistantIdentity is *how the assistant
 presents itself*", and `assistant/` "never imports `ai/persona/` to
 keep that separation structural").
@@ -144,22 +144,22 @@ keep that separation structural").
 |---|---|---|---|
 | Trading Core (`core/decision/risk/execution/strategies/signals/context/data`) | No (except `core_layer.logger.logger`) | `assistant_manager.py:40` | Logging utility only |
 | Telegram/Platform | No | — | Zero imports; enforced by `tests/assistant/test_assistant_isolation.py` |
-| Media | No (direct) | — | Only transitive, via `ai.intelligence_runtime.IntelligenceRuntime.run()` |
-| Memory (`ai.memory`) | **Yes** | `runtime_adapter.py:38-39` | Direct import of `ai.memory.memory_runtime.MemoryRuntime` + `ai.memory.models`, confined to one file (`runtime_adapter.py`, the designated composition-root exception) |
-| LLM/AI providers (`ai.providers`, raw SDKs) | No (direct) | — | Never imports `ai.providers`/`ai.router`/raw SDKs anywhere; reaches an actual LLM call only transitively via `ai.conversation.conversation_engine.ConversationEngine.ask()` and `ai.intelligence_runtime.IntelligenceRuntime.run()`, both confined to `runtime_adapter.py` |
+| Media | No (direct) | — | Only transitive, via `ai_layer.ai_engine.intelligence_runtime.IntelligenceRuntime.run()` |
+| Memory (`ai_layer.knowledge_ai.memory_manager`) | **Yes** | `runtime_adapter.py:38-39` | Direct import of `ai_layer.knowledge_ai.memory_manager.memory_runtime.MemoryRuntime` + `ai_layer.knowledge_ai.memory_manager.models`, confined to one file (`runtime_adapter.py`, the designated composition-root exception) |
+| LLM/AI providers (`ai_layer.ai_engine.providers`, raw SDKs) | No (direct) | — | Never imports `ai_layer.ai_engine.providers`/`ai_layer.ai_coordinator`/raw SDKs anywhere; reaches an actual LLM call only transitively via `ai_layer.personal_ai.interaction_manager.conversation_engine.ConversationEngine.ask()` and `ai_layer.ai_engine.intelligence_runtime.IntelligenceRuntime.run()`, both confined to `runtime_adapter.py` |
 
 Enforced by `tests/assistant/test_assistant_isolation.py`, an
 AST-based import scanner asserting `assistant/` never imports
 `decision`/`risk`/`execution`/`strategies`/`signals`/`database`/
 `telegram`, and (outside `runtime_adapter.py`) never imports
-`voice`/`ai.conversation`/`ai.memory`/`ai.providers`/`ai.router`/raw
+`voice`/`ai_layer.personal_ai.interaction_manager`/`ai_layer.knowledge_ai.memory_manager`/`ai_layer.ai_engine.providers`/`ai_layer.ai_coordinator`/raw
 LLM SDKs.
 
 ### Assessment
 
 `assistant/` is architecturally well-placed relative to `ai/`: it
-consumes `ai/`'s infrastructure (`AIRole` from `ai.access`,
-`MemoryRuntime` from `ai.memory`, and transitively `ConversationEngine`
+consumes `ai/`'s infrastructure (`AIRole` from `ai_layer.ai_service.access`,
+`MemoryRuntime` from `ai_layer.knowledge_ai.memory_manager`, and transitively `ConversationEngine`
 and `IntelligenceRuntime`) through a single, narrow, well-tested seam
 (`runtime_adapter.py`), rather than reaching arbitrarily into `ai/`'s
 internals. This is the one place in the entire audited surface where

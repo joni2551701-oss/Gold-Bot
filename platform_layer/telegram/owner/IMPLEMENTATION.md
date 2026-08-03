@@ -45,7 +45,7 @@ changes neither flag system.
 ### `report_commands.py` (Phase 59.4, TASK 5)
 `format_daily_stats(signals, performances)` — the future `/stats`
 command's payload (Signals/Approved/TP/SL/Expired/Cancelled/Best
-Strategy), reusing `analytics/strategy_report.py`'s
+Strategy), reusing `backtesting_layer/statistics/strategy_report.py`'s
 `build_strategy_report()` rather than reimplementing the counting.
 `pick_best_strategy(reports, minimum_signals=1)` — highest `win_rate`,
 ties broken by more `total_signals`. Both take already-computed data
@@ -62,7 +62,7 @@ current value (Phase 59 Real Market Validation Foundation, TASK 1).
 already be filtered to "today" by the caller, same posture as
 `report_commands.format_daily_stats()`. `get_validation_report(signals,
 performances, period_start, period_end)` — wraps
-`analytics.validation_report.build_validation_report()`/
+`backtesting_layer.statistics.validation_report.build_validation_report()`/
 `format_validation_report()` (same phase, TASK 5) in a
 `ProviderCommandResult`, unmodified otherwise.
 
@@ -70,7 +70,7 @@ performances, period_start, period_end)` — wraps
 Validation Foundation, TASK 7)
 `get_dataset_status(symbol, timeframe)` — every stored candle for that
 key across all providers, summarized via
-`analytics.dataset_report.build_dataset_report()`/`format_dataset_report()`
+`backtesting_layer.statistics.dataset_report.build_dataset_report()`/`format_dataset_report()`
 (same phase, TASK 5). `get_history_status(symbol, timeframe)` — a
 lighter-weight candle count + oldest/newest timestamp view.
 `get_sync_status(provider, symbol, timeframe)` — the current
@@ -139,7 +139,7 @@ performances, period_start, period_end)` in this phase — the future
 `/validation_report` command's payload (`Signals`/`Win`/`Loss`/
 `Accuracy`/`Best Strategy`), reusing `build_strategy_report()`/
 `pick_best_strategy()` (both already in this file) and
-`analytics.strategy_report.compute_win_rate()` for `Accuracy` — the
+`backtesting_layer.statistics.strategy_report.compute_win_rate()` for `Accuracy` — the
 same win-rate formula every other figure in this codebase already
 uses.
 
@@ -187,8 +187,8 @@ live bot, same as every module in this package.
 ### `performance_commands.py` (Phase 60.4: Performance Validation Foundation)
 `get_performance_report()`, `get_equity_curve_report()`,
 `get_backtest_performance_report()` — thin wrappers over
-`analytics.performance_metrics`/`analytics.equity_curve`/
-`analytics.benchmark`'s own `compute_*()`/`format_*()` functions. No
+`backtesting_layer.statistics.performance_metrics`/`backtesting_layer.statistics.equity_curve`/
+`backtesting_layer.statistics.benchmark`'s own `compute_*()`/`format_*()` functions. No
 new metric/curve/comparison computation of its own. Same "compute from
 supplied data, don't fetch" posture as `validation_commands.py` — the
 caller supplies an already-built `Sequence[SignalPerformance]`. See
@@ -208,7 +208,7 @@ package.
 ### `learning_commands.py` (Phase 60.6: Learning Loop Foundation)
 `get_learning_status()`, `get_patterns_report()`,
 `get_failures_report()`, `get_best_conditions_report()` — thin
-wrappers over `analytics.learning_report`/`learning.pattern_detector`'s
+wrappers over `backtesting_layer.statistics.learning_report`/`ai_layer.knowledge_ai.learning_loop.pattern_detector`'s
 own `compute_*()`/`format_*()` functions. No new pattern-detection
 logic of its own. Never mutates a strategy parameter, confidence
 threshold, or risk value — see `docs/LEARNING_LOOP.md`'s own hard rule
@@ -222,12 +222,12 @@ imports `platform_layer.telegram.admin_service.AdminService` and
 `provider_commands.ProviderCommandResult`. `feature_commands.py`
 imports `config.Config`, `configuration.feature_flags.DEFAULT_FLAGS`,
 and `provider_commands.ProviderCommandResult`. `report_commands.py`
-imports `analytics.strategy_report`, `analytics.signal_performance`,
+imports `backtesting_layer.statistics.strategy_report`, `backtesting_layer.statistics.signal_performance`,
 `signal_layer.signal_builder.schema.SignalSchema`, and `provider_commands.ProviderCommandResult`.
-`validation_commands.py` imports `analytics.validation_report`,
-`analytics.signal_performance`, `config.Config`, `signal_layer.signal_builder.schema.SignalSchema`,
+`validation_commands.py` imports `backtesting_layer.statistics.validation_report`,
+`backtesting_layer.statistics.signal_performance`, `config.Config`, `signal_layer.signal_builder.schema.SignalSchema`,
 and `provider_commands.ProviderCommandResult`. `dataset_commands.py`
-imports `analytics.dataset_report`, `data_layer.providers.provider_comparison`,
+imports `backtesting_layer.statistics.dataset_report`, `data_layer.providers.provider_comparison`,
 `database_layer.market_repository.raw_candle_repository`, `database_layer.market_repository.sync_state_repository`,
 and `provider_commands.ProviderCommandResult`. `owner_roles.py`
 imports `platform_layer.telegram.permissions.is_owner` and, lazily (inside
@@ -258,14 +258,14 @@ imports `backtesting_layer.backtest_engine.backtest_engine.BacktestEngine`,
 imports `execution_layer.execution_engine.simulator.simulator_engine.ExecutionSimulator`,
 `execution_layer.execution_engine.simulator.slippage.SlippageConfig`, and
 `provider_commands.ProviderCommandResult`. `performance_commands.py`
-imports `analytics.performance_metrics`, `analytics.equity_curve`,
-`analytics.benchmark`, `analytics.signal_performance.SignalPerformance`,
+imports `backtesting_layer.statistics.performance_metrics`, `backtesting_layer.statistics.equity_curve`,
+`backtesting_layer.statistics.benchmark`, `backtesting_layer.statistics.signal_performance.SignalPerformance`,
 and `provider_commands.ProviderCommandResult`. `fundamental_commands.py`
 imports `context.fundamental_context.FundamentalContextSnapshot`,
 `context.fundamental_scoring.FundamentalScoreResult`/`format_fundamental_score()`,
 and `provider_commands.ProviderCommandResult`. `learning_commands.py`
-imports `analytics.learning_report`, `learning.pattern_detector`,
-`learning.models.LearningRecord`, and
+imports `backtesting_layer.statistics.learning_report`, `ai_layer.knowledge_ai.learning_loop.pattern_detector`,
+`ai_layer.knowledge_ai.learning_loop.models.LearningRecord`, and
 `provider_commands.ProviderCommandResult`.
 None imports `platform_layer.telegram.handlers`, `platform_layer.telegram.command_router`, or
 `platform_layer.telegram.commands` — this package is never itself imported by the

@@ -94,7 +94,7 @@ Signal Generation (signals/)     |  -- aggregates strategy output
       |     |          (Phase A9; advisory only, see
       |     |          docs/EXPLAINABILITY.md)
       |     |     |
-      |     |     '-- Feature Engineering (features/feature_engine.py)
+      |     |     '-- Feature Engineering (core_layer/features/feature_engine.py)
       |     |          -- standardizes Context + Signal Quality's
       |     |          grade + Explainability's confidence into one
       |     |          MarketFeatures object per candidate (Phase
@@ -388,7 +388,7 @@ section.
 
 ### Feature Engineering Foundation (Phase A10)
 
-`features/feature_engine.py`'s `compute_market_features(context,
+`core_layer/features/feature_engine.py`'s `compute_market_features(context,
 explanation, asset, timeframe, htf_bias)` builds one `MarketFeatures`
 snapshot per candidate (`asset`, `timeframe`, `htf_bias`,
 `market_regime`, `session`, `signal_quality`, `confidence`,
@@ -507,7 +507,7 @@ are read (never written) by `build_settings_from_config()`;
 constant of its own for either) — the same real-value-reuse pattern
 Phase A11/A12 followed. Every `FeatureFlags` default is `False`: none
 of the five reserved flags (AI, Crypto, Swing, AI Memory, Replay) is
-wired to an actual feature — `ai/ai_analyzer.py` stays a stub, no
+wired to an actual feature — `ai_layer/ai_engine/ai_analyzer.py` stays a stub, no
 Crypto/swing capability exists, regardless of flag value.
 
 Deliberately has **zero pipeline wiring** in this phase, same posture
@@ -875,13 +875,13 @@ OHLC/gap checks themselves rather than depending on
 `assess_data_quality()` — the same disclosed-duplication precedent
 that module's own docstring already established for `market_data.py`.
 
-**TASK 4 (Gap Detector)** — new `analytics/gap_report.py`.
+**TASK 4 (Gap Detector)** — new `backtesting_layer/statistics/gap_report.py`.
 `build_gap_report()` enumerates every individual missing/duplicated
 timestamp (capped at `MAX_GAP_ENTRIES = 1000`), where TASK 3's
 validator only counts gap *events*. `format_gap_report()` renders the
 brief's own worked `SYMBOL / TIMEFRAME / DATE / "HH:MM missing"` shape.
 
-**TASK 5 (Dataset Statistics)** — new `analytics/dataset_report.py`.
+**TASK 5 (Dataset Statistics)** — new `backtesting_layer/statistics/dataset_report.py`.
 `build_dataset_report()` groups a mixed `List[RawCandle]` by
 `(symbol, timeframe)`, reuses TASK 3's validator per group for
 duplicate/missing/invalid counts (summed across groups, not
@@ -1253,7 +1253,7 @@ fetch failure) since true multi-timeframe HTF replay is out of scope
 for this phase.
 
 **`backtesting_layer/backtest_report/backtest_result.py`** — `BacktestResult` + `build_backtest_result()`
-(wraps `analytics.strategy_report.build_strategy_report()`, unmodified)
+(wraps `backtesting_layer.statistics.strategy_report.build_strategy_report()`, unmodified)
 + `format_backtest_report()`.
 
 **`platform_layer/telegram/owner/backtest_commands.py`** — `backtest_run()`, a thin
@@ -1309,7 +1309,7 @@ session's spread is at or above the configured maximum. Never mutates
 the `PaperTrade` it reads; never calls `execution_engine.py`,
 `decision/`, or `risk/`.
 
-**`analytics/execution_report.py`** (TASK 8) — `ExecutionAnalyticsRecord`/
+**`backtesting_layer/statistics/execution_report.py`** (TASK 8) — `ExecutionAnalyticsRecord`/
 `ExecutionAnalyticsSummary` + `build_execution_record()`/
 `summarize_execution_records()`/`format_execution_record()`. Packages
 an already-computed `ExecutionSimulationResult` (requested price, fill
@@ -1453,28 +1453,28 @@ findings).
 
 New top-level `learning/` package — TASK 1's reuse audit found no
 existing pattern-detection or persisted-learning-memory module
-anywhere in this codebase; `analytics/signal_performance.py`'s
+anywhere in this codebase; `backtesting_layer/statistics/signal_performance.py`'s
 `SignalPerformance` shares 7 of `LearningRecord`'s 11 fields but is an
 in-memory, computed-on-demand analytics type with no persistence
 story, a different lifecycle from an append-only learning memory.
 
-**`learning/models.py`** (TASK 2) — `LearningRecord` (`record_id`,
+**`ai_layer/knowledge_ai/learning_loop/models.py`** (TASK 2) — `LearningRecord` (`record_id`,
 `trade_id`, `signal_id`, `strategy_name`, `market_phase`, `session`,
 `timeframe`, `result`, `r_multiple`, `failure_type`,
 `success_pattern`, `created_at`). `id` deliberately excluded — same
 convention `AuditLogEntry` already established.
 
-**`learning/outcome_analyzer.py`** (TASK 3) — `TradeAnalysis` +
+**`ai_layer/knowledge_ai/learning_loop/outcome_analyzer.py`** (TASK 3) — `TradeAnalysis` +
 `analyze_trade_result(paper_trade, context=None, performance=None,
 htf_bias=None)`. Purely observational: reads only already-detected
 structural facts (BOS/CHoCH/liquidity sweep/order block/FVG presence,
 HTF-direction alignment) — no new detection logic anywhere.
 
-**`learning/pattern_detector.py`** (TASK 4) — `PatternInsight` +
+**`ai_layer/knowledge_ai/learning_loop/pattern_detector.py`** (TASK 4) — `PatternInsight` +
 `detect_patterns()`/`filter_high_failure_patterns()`/
 `filter_high_success_patterns()`/`format_pattern_insight()`. Groups by
 `(strategy_name, session, market_phase)`, reusing
-`analytics.strategy_report.compute_win_rate()` directly. Does not
+`backtesting_layer.statistics.strategy_report.compute_win_rate()` directly. Does not
 parse `failure_type`/`success_pattern` free text into structured
 sub-conditions — a most-common-string example only, never a
 generalized rule.
@@ -1485,13 +1485,13 @@ generalized rule.
 **no `update()`/`delete()` method exists**. New `learning_records`
 table (`init_learning_schema()` in `database_layer/database_manager/models.py`).
 
-**`analytics/learning_report.py`** (TASK 6) — `LearningReport` +
+**`backtesting_layer/statistics/learning_report.py`** (TASK 6) — `LearningReport` +
 `build_learning_report()`/`format_learning_report()`, reusing
 `detect_patterns()` directly to pick the best/worst condition —
 matches the Director's own "Last 100 trades / Best condition / Worst
 condition" worked example shape.
 
-**`ai/learning_context.py`** (TASK 7) — `LearningContext` +
+**`ai_layer/knowledge_ai/learning_context.py`** (TASK 7) — `LearningContext` +
 `build_learning_context()`, matching the Director's own
 `{recent_failures, successful_patterns, strategy_stats}` JSON shape.
 Generates no explanation/recommendation text itself — left to a
@@ -1527,7 +1527,7 @@ backtest's `PaperTrade` stayed `CREATED` forever and
 Phase 60.2 shipped. Fixed (three lines, confined to that one file);
 see `backtest_engine.py`'s own module docstring for the full writeup.
 
-**`learning/trade_event_bridge.py`** (TASK 2) —
+**`ai_layer/knowledge_ai/learning_loop/trade_event_bridge.py`** (TASK 2) —
 `build_learning_record_from_trade()`/`bridge_closed_trade()`, the
 first real caller of `LearningRepository.record()`. This package's one
 disclosed exception to "does not persist anything itself"
@@ -1549,7 +1549,7 @@ additive, identical groups for any pre-existing record set. New
 gate). Grouping logic extracted into a reusable
 `group_records_for_patterns()` helper (behavior-preserving refactor).
 
-**`learning/confidence.py`** (TASK 5) — `PatternConfidence` +
+**`ai_layer/knowledge_ai/learning_loop/confidence.py`** (TASK 5) — `PatternConfidence` +
 `compute_pattern_confidence()`: LOW/MEDIUM/HIGH from four 0.0-1.0
 sub-scores, with sample size as a **multiplicative gate**
 (`sample_size_score * mean(consistency, recency, performance)`) rather
@@ -1558,13 +1558,13 @@ perfect-looking pattern reach HIGH, contradicting the Director's own
 worked example directly (caught by the worked-example test itself
 during this phase).
 
-**AI Memory Adapter** (TASK 6) — `ai/learning_context.py`'s
+**AI Memory Adapter** (TASK 6) — `ai_layer/knowledge_ai/learning_context.py`'s
 `LearningContext` gained `patterns`/`failures`/`regimes`/`confidence`
 alongside the unchanged Phase 60.6 three. `regimes` is a
 caller-supplied `Sequence[str]`, not an import of
-`learning.regime_memory` — loose coupling between TASK 6 and TASK 7.
+`ai_layer.knowledge_ai.learning_loop.regime_memory` — loose coupling between TASK 6 and TASK 7.
 
-**`learning/regime_memory.py`** (TASK 7) — `RegimeMemory` +
+**`ai_layer/knowledge_ai/learning_loop/regime_memory.py`** (TASK 7) — `RegimeMemory` +
 `record_from_context()` + `format_regime_summary()`, an in-memory,
 per-process log of the Director's own five named regimes. Four map
 onto `context.market_regime.MarketRegime` directly; `NEWS_EVENT` has
@@ -1756,10 +1756,10 @@ signal_layer/signal_engine/signal_engine.py, signal_layer/signal_scoring/signal_
 signal_layer/signal_scoring/explainability.py                                           (Signal)
   |
   v
-features/feature_engine.py                                          (Features)
+core_layer/features/feature_engine.py                                          (Features)
   |
   v
-ai/ai_analyzer.py (heuristic stub), ai/prompts/prompt_manager.py    (AI -- advisory only)
+ai_layer/ai_engine/ai_analyzer.py (heuristic stub), ai/prompts/prompt_manager.py    (AI -- advisory only)
   |
   v
 decision_layer/decision_engine/decision_engine.py                                         (Decision)
@@ -1775,16 +1775,16 @@ execution/simulator/simulator_engine.py                             (Execution S
 execution_layer/execution_engine/execution_engine.py                                       (Execution -- deliberately inert, v0.5 MT5)
   |
   v
-learning/trade_event_bridge.py, learning/outcome_analyzer.py,
-learning/pattern_detector.py, learning/confidence.py,
-learning/regime_memory.py                                            (Learning -- observe/analyze/report only)
+ai_layer/knowledge_ai/learning_loop/trade_event_bridge.py, ai_layer/knowledge_ai/learning_loop/outcome_analyzer.py,
+ai_layer/knowledge_ai/learning_loop/pattern_detector.py, ai_layer/knowledge_ai/learning_loop/confidence.py,
+ai_layer/knowledge_ai/learning_loop/regime_memory.py                                            (Learning -- observe/analyze/report only)
   |
   v
-ai/learning_context.py                                               (Adaptive -- AI memory adapter, read-only)
+ai_layer/knowledge_ai/learning_context.py                                               (Adaptive -- AI memory adapter, read-only)
   |
   v
-analytics/*_report.py, analytics/performance_metrics.py,
-analytics/equity_curve.py, analytics/benchmark.py                    (Analytics)
+analytics/*_report.py, backtesting_layer/statistics/performance_metrics.py,
+backtesting_layer/statistics/equity_curve.py, backtesting_layer/statistics/benchmark.py                    (Analytics)
   |
   v
 database/*_repository.py                                             (Database)
@@ -2073,7 +2073,7 @@ platform_layer/telegram/handlers.py                    (+3 runtime_*_handler -- 
 
 **Rule 4 (no duplicate provider state)**: `ProviderCircuitBreaker`'s
 `CLOSED`/`OPEN`/`HALF_OPEN` are breaker-internal bookkeeping only —
-every transition writes into the existing `ai.providers.provider_health.
+every transition writes into the existing `ai_layer.ai_engine.providers.provider_health.
 ProviderHealthTracker` (`OPEN`→`OFFLINE`, `HALF_OPEN`→`DEGRADED`,
 `CLOSED`→`ONLINE`). `ai/router/router.py` is unmodified — the router
 already reads `ProviderHealthTracker`, so "only healthy providers are
@@ -2431,7 +2431,7 @@ import sweep):
   imports `assets.profiles.gold` (same package) only.
 - `features/` imports `context/` (`context_layer.trend.market_regime`) and
   `signals/` (for `SignalExplanation`, `TYPE_CHECKING`-only) plus its
-  own `features.feature_model` — never `strategies/`, `ai/`,
+  own `core_layer.features.feature_model` — never `strategies/`, `ai/`,
   `decision/`, `risk/`, `database/`, or `telegram/`. `features/`
   sitting downstream of both `context/` and `signals/` mirrors
   `decision/`'s own pre-existing pattern of depending on two adjacent
@@ -2527,7 +2527,7 @@ import sweep):
 - `analytics/` (Phase 59 Preparation TASK 3) imports
   `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` and `signal_layer.signal_builder.schema.SignalSchema`
   (`TYPE_CHECKING`-only) plus, within the package,
-  `analytics.signal_performance` — no dependency on `context/`,
+  `backtesting_layer.statistics.signal_performance` — no dependency on `context/`,
   `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`,
   `database/`, or `telegram/`. Does not import
   `core_layer/health_monitor/performance.py` or `database_layer/trade_repository/signal_repository.py` —
@@ -2543,13 +2543,13 @@ import sweep):
   collector's whole job is persisting what it fetches; never reversed,
   and no other `data/` module gained this dependency). No dependency on
   `context/`, `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`,
-  `execution/`, or `telegram/`. `analytics/gap_report.py`/
+  `execution/`, or `telegram/`. `backtesting_layer/statistics/gap_report.py`/
   `dataset_report.py` (Phase 59.5) import `data_layer.data_validation.data_quality.INTERVAL_DELTAS`
   and, within `analytics/`, `dataset_report.py` imports
   `data_layer.data_validation.historical_validator` — no dependency on `context/`,
   `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`, or
   `telegram/`. `platform_layer/telegram/owner/dataset_commands.py` (Phase 59.5)
-  imports `analytics.dataset_report`, `data_layer.providers.provider_comparison`,
+  imports `backtesting_layer.statistics.dataset_report`, `data_layer.providers.provider_comparison`,
   `database_layer.market_repository.raw_candle_repository`, `database_layer.market_repository.sync_state_repository`,
   and `provider_commands.ProviderCommandResult` (same package) — not
   imported by `platform_layer/telegram/handlers.py`, `platform_layer/telegram/command_router.py`, or
@@ -2625,7 +2625,7 @@ import sweep):
   reversed: nothing in `configuration/` or `core_layer/emergency/` imports
   `core/pipeline.py` or `core/guards/`.
   `backtesting_layer/backtest_engine/backtest_engine.py` (Phase 60.8) gained
-  `learning.trade_event_bridge`, `trade_monitoring_layer.paper_trading.trade_state`, and
+  `ai_layer.knowledge_ai.learning_loop.trade_event_bridge`, `trade_monitoring_layer.paper_trading.trade_state`, and
   `database_layer.journal_repository.learning_repository` imports — confined to `backtesting/`,
   not `core/pipeline.py`.
 

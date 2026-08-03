@@ -26,7 +26,7 @@ position, never gives a signal, and performs no real AI inference of
 any kind. It never touches `decision/`, `risk/`, `execution/`,
 `strategies/`, `signals/`, `context/`, `telegram/`, `database/`,
 `voice/`, `assistant/`, `media/`, `broadcast/`, `academy/`,
-`portfolio/`, `research/`, `core.`, or `ai.memory` (TASK 8/9's own
+`portfolio/`, `research/`, `core.`, or `ai_layer.knowledge_ai.memory_manager` (TASK 8/9's own
 isolation list).
 
 ## Model (TASK 2)
@@ -38,10 +38,10 @@ isolation list).
   `discipline_score`, `risk_score`, `confidence_score`, `notes`,
   `created_at` — extended additively with `archived: bool = False` so
   TASK 3's `archive()` has a lifecycle field to archive onto, the same
-  precedent `ai.learning.models.LearningRecord`'s own `source`/`status`
+  precedent `ai_layer.knowledge_ai.learning_engine.models.LearningRecord`'s own `source`/`status`
   fields established). `PerformanceMetric` (TASK 2's own field list:
   `metric_name`, `value`, `period`, `created_at` — a generic named
-  observation, distinct from `analytics.performance_metrics.PerformanceMetrics`,
+  observation, distinct from `backtesting_layer.statistics.performance_metrics.PerformanceMetrics`,
   see "Naming note" below). `generate_performance_id()` — a stateless
   uuid4 generator.
 
@@ -49,7 +49,7 @@ isolation list).
 
 Documented in `docs/PHASE66_5_AUDIT.md`, not a defect: a *different*,
 fixed-shape portfolio-aggregate type with a similar bare name already
-exists at `analytics.performance_metrics.PerformanceMetrics` (plural,
+exists at `backtesting_layer.statistics.performance_metrics.PerformanceMetrics` (plural,
 Phase 60.4 — `total_trades`/`win_rate`/`expectancy`/`profit_factor`/
 etc., computed from `SignalPerformance.r_multiple`). This package's
 `PerformanceMetric` (singular) is a distinct, non-colliding
@@ -70,7 +70,7 @@ algoritm yaratmaydi."): `create()`/`get()`/`list()`/`update_notes()`/
 established. `update_notes()` only ever mutates `notes`; every other
 field is immutable after `create()`. `archive()` sets `archived=True`
 and never deletes a record. Owner-gated: every method re-checks
-`ai.performance.access.is_performance_intelligence_enabled_for()`
+`ai_layer.ai_engine.performance.access.is_performance_intelligence_enabled_for()`
 itself.
 
 ## Journal Adapter (TASK 4)
@@ -81,9 +81,9 @@ sabab topmaydi" (does not compute win/loss itself, does not find a
 cause). It reads an existing `TradeJournalEntry` (`ai/trade_journal/`,
 Phase 66.2) type-only. `entry_quality`/`exit_quality`/
 `discipline_score`/`risk_score` are deliberately absent — mirrors
-`ai.coaching.journal_adapter.journal_entry_to_coaching_input()`'s own
+`ai_layer.personal_ai.senior.journal_adapter.journal_entry_to_coaching_input()`'s own
 "field deliberately omitted" precedent exactly. The one file in
-`ai/performance/` permitted to import `ai.trade_journal.models`.
+`ai/performance/` permitted to import `ai_layer.knowledge_ai.knowledge_base.trade_journal.models`.
 
 ## Coaching Adapter (TASK 5)
 
@@ -93,18 +93,18 @@ only). It reads this package's own `PerformanceRecord` and returns a
 plain, untyped dict of `CoachingRuntime.create()`-shaped keyword
 arguments — `topic`/`priority`/`type`/`recommendation` are deliberately
 absent, since `PerformanceRecord` has no topic-shaped field to relay
-without inferring one. Unlike `ai.coaching.learning_adapter.py`, this
-adapter never imports `ai.coaching.models` or
-`ai.coaching.coaching_runtime` at all — no import is needed to return
-a dict, mirroring `ai.coaching.journal_adapter.py`'s own actual shape.
+without inferring one. Unlike `ai_layer.personal_ai.senior.learning_adapter.py`, this
+adapter never imports `ai_layer.personal_ai.senior.models` or
+`ai_layer.personal_ai.senior.coaching_runtime` at all — no import is needed to return
+a dict, mirroring `ai_layer.personal_ai.senior.journal_adapter.py`'s own actual shape.
 
 ## Analytics Adapter (TASK 6)
 
 `analytics_adapter.py`'s `performance_records_to_win_rate_metric()`
-reuses `analytics.strategy_report.compute_win_rate()` directly — a
+reuses `backtesting_layer.statistics.strategy_report.compute_win_rate()` directly — a
 plain, zero-division-safe `(wins, losses) -> float` utility already
-reused by `analytics/performance_metrics.py` itself. Full reuse of
-`analytics.performance_metrics.compute_performance_metrics()` does
+reused by `backtesting_layer/statistics/performance_metrics.py` itself. Full reuse of
+`backtesting_layer.statistics.performance_metrics.compute_performance_metrics()` does
 **not** fit: it requires `SignalPerformance.r_multiple`, a field
 `PerformanceRecord` carries no equivalent of, and synthesizing one from
 a quality score would be fabrication — that gap is documented, not
@@ -141,10 +141,10 @@ requires **both**
 `memory_adapter.py`'s `performance_memory_key(record) -> str` builds a
 plain string key (`"performance:{user_id}:{id}"`) for a future,
 separately-approved phase to use once real Memory storage is wired —
-this module never imports `ai.memory` at all, since
+this module never imports `ai_layer.knowledge_ai.memory_manager` at all, since
 `ai/memory/models.py`'s `MemoryScope` enum has no member shaped for a
 performance record and adding one is out of this phase's own scope.
-Mirrors `ai.learning.memory_adapter.memory_reference_key()`'s own
+Mirrors `ai_layer.knowledge_ai.learning_engine.memory_adapter.memory_reference_key()`'s own
 precedent exactly.
 
 ## What it is not
@@ -162,7 +162,7 @@ precedent exactly.
 - Never imports `decision/`, `risk/`, `execution/`, `strategies/`,
   `signals/`, `context/`, `telegram/`, `database/`, `voice/`,
   `assistant/`, `media/`, `broadcast/`, `academy/`, `portfolio/`,
-  `research/`, `core.`, or `ai.memory` — zero exceptions, permanently
+  `research/`, `core.`, or `ai_layer.knowledge_ai.memory_manager` — zero exceptions, permanently
   enforced by `tests/ai/performance/test_ai_performance_isolation.py`.
 - Not wired into `core/pipeline.py` or any Telegram command this
   phase — foundation only.

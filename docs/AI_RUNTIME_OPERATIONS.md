@@ -17,14 +17,14 @@ isolation):
    `execution/`, `risk/`, `strategies/`, `signals/` have **zero diff**
    at the end of this phase.
 2. AI still does not open trades — only explain/summarize/educate/
-   analyze, exactly as `ai/interfaces.py`'s `AIAnalyzerInterface`
+   analyze, exactly as `ai_layer/ai_service/interfaces.py`'s `AIAnalyzerInterface`
    already requires.
 3. New code extends existing foundation (`ai/runtime/`,
    `ai/providers/`, `ai/audit/`, `platform_layer/telegram/owner/`) — no new parallel
    manager.
 4. No duplicate state — provider state lives only in
-   `ai.providers.provider_manager.ProviderManager`/
-   `ai.providers.provider_health.ProviderHealthTracker`.
+   `ai_layer.ai_engine.providers.provider_manager.ProviderManager`/
+   `ai_layer.ai_engine.providers.provider_health.ProviderHealthTracker`.
 5. Every new function ships with tests.
 
 ## Runtime Lifecycle (TASK 2)
@@ -102,7 +102,7 @@ provider_stats.py kengayadi" (Not new. The existing provider_stats.py
 is extended), per the Director's own instruction:
 
 - `compute_requests_per_minute(requests, now=None)` — pure, over
-  `ai.audit.request_log.AIRequestLogEntry.created_at`, same "reuse the
+  `ai_layer.ai_service.audit.request_log.AIRequestLogEntry.created_at`, same "reuse the
   already-recorded timestamp" convention `compute_provider_stats()`
   already uses for `response_log.py`.
 - `RuntimeMetrics` dataclass — `requests_per_minute`, `cache_hits`,
@@ -250,12 +250,12 @@ the public channel.
 
 Reuses existing types for each knob rather than inventing a parallel
 representation: `cache_ttl_seconds` → `RuntimeProfile.to_cache_policy()`
-returns a real `ai.cache.cache_policy.CachePolicy`; `validation_schema`
-is a real `ai.validation.schemas.ResponseSchema` (already the
+returns a real `ai_layer.ai_engine.cache.cache_policy.CachePolicy`; `validation_schema`
+is a real `ai_layer.confidence_ai.schemas.ResponseSchema` (already the
 injectable "validation level" seam — `validate_response(result,
 schema=...)`); `provider_priority` is a `Tuple[str, ...]` consumed by
 `apply_provider_priority()`, which reorders whatever
-`ai.router.routing_rules.get_candidate_providers()` already returns —
+`ai_layer.ai_coordinator.routing_rules.get_candidate_providers()` already returns —
 never a second, competing source of candidate order.
 
 `PRODUCTION_PROFILE` matches this codebase's own existing production

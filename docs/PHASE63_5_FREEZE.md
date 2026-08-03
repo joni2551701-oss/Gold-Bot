@@ -49,7 +49,7 @@ Decision pause was required — no Constitution Article conflict.
   reads of `KnowledgeEntry`/`MemoryEntry`/`ReasoningResult`'s own
   metadata, never `KnowledgeManager`/`MemoryRuntime`/`ReasoningRuntime`'s
   internal state), `conversation_context_to_explanation_fields()`
-  (plain `dict`, never imports `ai.explanation` — downstream).
+  (plain `dict`, never imports `ai_layer.explanation_ai` — downstream).
 - `docs/ai/AI_CONVERSATION.md` — new. `docs/ai/AI_ARCHITECTURE.md`,
   `docs/architecture/MODULE_DEPENDENCIES.md` extended.
 - `docs/roadmap/AI_EVOLUTION.md`, `docs/roadmap/VERSIONS.md` — status
@@ -60,7 +60,7 @@ Decision pause was required — no Constitution Article conflict.
   in `tests/ai/session/test_session_manager.py` for `clear_turns()`),
   all passing, including a permanent AST regression guard for both the
   standard trading-layer imports and the downstream Intelligence layer
-  imports (`ai.explanation`/`ai.content`/`broadcast`/`media`/
+  imports (`ai_layer.explanation_ai`/`ai_layer.ai_service.content`/`broadcast`/`media`/
   `translation`), plus a dedicated adapter-file-only check on
   `conversation_adapters.py` specifically. The pre-existing 6 tests in
   `tests/ai/conversation/test_conversation_engine.py` (Phase 61.3,
@@ -111,14 +111,14 @@ Decision pause was required — no Constitution Article conflict.
 
 ## Dependency Compliance (Intelligence Dependency Principle)
 
-- `grep` sweep for `ai.explanation`/`ai.content`/`broadcast`/`media`/
+- `grep` sweep for `ai_layer.explanation_ai`/`ai_layer.ai_service.content`/`broadcast`/`media`/
   `translation` imports across every `ai/conversation/*.py` file: zero
   matches — confirmed both by the Bash grep run at TASK 10 and by the
   permanent AST regression tests in
   `tests/ai/conversation/test_conversation_isolation.py` and
   `tests/ai/conversation/test_conversation_adapters.py`.
-- `ai/conversation/` imports `knowledge.models.KnowledgeEntry`,
-  `ai.memory.models.MemoryEntry`, and `ai.reasoning.models.ReasoningResult`
+- `ai/conversation/` imports `ai_layer.knowledge_ai.knowledge_base.models.KnowledgeEntry`,
+  `ai_layer.knowledge_ai.memory_manager.models.MemoryEntry`, and `ai_layer.ai_engine.reasoning.models.ReasoningResult`
   — all three upstream, all type-only, none of their owning
   Manager/Runtime classes touched.
 

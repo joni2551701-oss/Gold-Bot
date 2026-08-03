@@ -1,5 +1,5 @@
-from ai.strategy.memory_adapter import strategy_reference_key
-from ai.strategy.models import StrategyRecord, StrategyType
+from ai_layer.ai_engine.strategy.memory_adapter import strategy_reference_key
+from ai_layer.ai_engine.strategy.models import StrategyRecord, StrategyType
 
 
 def _record(**overrides):

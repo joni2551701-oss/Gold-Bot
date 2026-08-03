@@ -13,20 +13,20 @@ are each justified below by the "Cannot reuse" rows that name them.
 
 | Module | Status | Reason |
 |---|---|---|
-| `ai/interfaces.py` (`AIAnalyzerInterface`, `MarketContext`, `UserContext`, `AIResponse`) | Already exists | Phase 55's provider-agnostic contract. `MarketContext`/`UserContext` are the exact shapes TASK 5's `ai/context/` composes into `AIContext`; `AIAnalyzerInterface`'s advisory-only boundary is restated, not re-invented, by TASK 3's `BaseAIProvider`. |
-| `ai/ai_analyzer.py` (`AIAnalyzer`, live, wired into `core/pipeline.py`) | Cannot reuse for TASK 2-9 | This is the live production pipeline stage (signal-candidate scoring), not a capability/provider abstraction. Phase 61.0's new packages sit beside it, never replace or call it — untouched this phase, per the brief's own restriction on `core/pipeline.py`. |
+| `ai_layer/ai_service/interfaces.py` (`AIAnalyzerInterface`, `MarketContext`, `UserContext`, `AIResponse`) | Already exists | Phase 55's provider-agnostic contract. `MarketContext`/`UserContext` are the exact shapes TASK 5's `ai/context/` composes into `AIContext`; `AIAnalyzerInterface`'s advisory-only boundary is restated, not re-invented, by TASK 3's `BaseAIProvider`. |
+| `ai_layer/ai_engine/ai_analyzer.py` (`AIAnalyzer`, live, wired into `core/pipeline.py`) | Cannot reuse for TASK 2-9 | This is the live production pipeline stage (signal-candidate scoring), not a capability/provider abstraction. Phase 61.0's new packages sit beside it, never replace or call it — untouched this phase, per the brief's own restriction on `core/pipeline.py`. |
 | `ai/analyzer/ai_analyzer.py` | Already exists | Phase 55 re-export shim for the above. No change needed. |
-| `ai/ai_prompt.py` (Gemini-specific signal-validation prompt+schema builder) | Cannot reuse | Tightly coupled to `SignalCandidate`/`ContextSnapshot`/`ConfidenceResult` for one job (signal validation JSON schema). Not a general capability/provider prompt shape — left untouched. |
+| `ai_layer/ai_engine/ai_prompt.py` (Gemini-specific signal-validation prompt+schema builder) | Cannot reuse | Tightly coupled to `SignalCandidate`/`ContextSnapshot`/`ConfidenceResult` for one job (signal validation JSON schema). Not a general capability/provider prompt shape — left untouched. |
 | `ai/prompts/prompt_manager.py` (`PromptManager`) | Can extend (future phase) | Already the general-purpose, `MarketContext`/`UserContext`-shaped template registry (Phase 55, extended Phase 60.5). TASK 3-4 (Provider Interface, Router) do not need prompt text this phase — placeholder providers return static stub responses, no prompt is built or sent. Left unmodified this phase; a future Phase 61.1 (Prompt System) is the natural extension point, not a new prompt module now. |
-| `ai/confidence_model.py` (`evaluate_confidence`) | Cannot reuse | Deterministic technical scoring over `SignalCandidate`/`ContextSnapshot`, unrelated to AI capability/provider selection. Untouched. |
-| `ai/learning_context.py` (`LearningContext`, `build_learning_context`) | Can extend (future phase) | Already the AI-facing bundling of learning data (recent_failures/successful_patterns/strategy_stats/patterns/failures/regimes/confidence). TASK 5's `ai/context/context_builder.py` composes an already-built `LearningContext` as one of its five named inputs rather than rebuilding any of this logic. |
+| `ai_layer/confidence_ai/confidence_model.py` (`evaluate_confidence`) | Cannot reuse | Deterministic technical scoring over `SignalCandidate`/`ContextSnapshot`, unrelated to AI capability/provider selection. Untouched. |
+| `ai_layer/knowledge_ai/learning_context.py` (`LearningContext`, `build_learning_context`) | Can extend (future phase) | Already the AI-facing bundling of learning data (recent_failures/successful_patterns/strategy_stats/patterns/failures/regimes/confidence). TASK 5's `ai/context/context_builder.py` composes an already-built `LearningContext` as one of its five named inputs rather than rebuilding any of this logic. |
 | `ai/memory/context_memory.py` (`ContextMemory`) | Cannot reuse for TASK 7 | In-memory per-key store keyed by a plain string, built for "what did I tell this user last" persistence across calls. TASK 7's Session is explicitly the opposite lifetime ("Session vaqtinchalik" — temporary, one conversation) — reusing `ContextMemory` for a session would conflate two different lifetimes the Director's own brief keeps distinct. `ai/session/` is justified as new; `ContextMemory` stays exactly as-is and is not modified or imported by it. |
 | `ai/profiles/user_profile.py` (`AIUserProfile`) | Can extend (used as-is) | Already the typed, database-independent AI-facing user projection (experience_level/preferred_strategy/risk_style/language). TASK 5's `ai/context/` reads this directly as one of its five named inputs ("User Profile") — no new user-profile type is created. |
 | `ai/journal/trade_journal.py` (`TradeJournalEntry`) | Can extend (used as-is) | Already the richer completed-trade record. TASK 5's `ai/context/` reads this directly for its "Trade History" input — no new trade-history type is created. |
 | `ai/journal/failure_analysis.py` (`FailureAnalysisEntry`) | Already exists | Narrower, failure-specific record; not needed by any Phase 61.0 TASK directly (learning_context.py already folds failure data in via `recent_failures`). Untouched. |
-| `ai/trade_journal.py` | Already exists | Phase 55 compatibility shim. Untouched. |
+| `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` | Already exists | Phase 55 compatibility shim. Untouched. |
 | `ai/capabilities/` | Cannot reuse — new (TASK 2) | No existing module names an independently-toggleable AI capability (CHAT/ANALYSIS/EXPLANATION/...). `configuration/feature_registry.py` is Infrastructure-only as of Phase 60.9 and structurally cannot hold Trading/AI-behavior concerns (see `docs/FEATURE_REGISTRY_SEPARATION.md`) — extending it would repeat the exact Phase 60.8 collision Phase 60.9 fixed. A new, AI-scoped registry is the correct boundary. |
-| `ai/providers/` | Cannot reuse — new (TASK 3) | `ai/ai_analyzer.py`/`ai/ai_prompt.py` are both single-provider-shaped (heuristic stub / Gemini-specific) with no vendor-selection abstraction. `ai/interfaces.py`'s `AIAnalyzerInterface` defines the *analysis* contract shape but has no notion of multiple named providers, a registry, or selection logic. Genuinely new. |
+| `ai/providers/` | Cannot reuse — new (TASK 3) | `ai_layer/ai_engine/ai_analyzer.py`/`ai_layer/ai_engine/ai_prompt.py` are both single-provider-shaped (heuristic stub / Gemini-specific) with no vendor-selection abstraction. `ai_layer/ai_service/interfaces.py`'s `AIAnalyzerInterface` defines the *analysis* contract shape but has no notion of multiple named providers, a registry, or selection logic. Genuinely new. |
 | `ai/router/` | Cannot reuse — new (TASK 4) | Nothing in the codebase today maps a capability to a provider; this selection logic does not exist anywhere else. |
 | `ai/context/` | Cannot reuse as a single module — new, but composes existing types | No existing module combines `MarketContext` + `SignalSchema` + `AIUserProfile` + `TradeJournalEntry` + `LearningContext` into one caller-facing `AIContext`. The new module's job is composition of the above already-existing types, not reimplementation of any of them. |
 | `ai/access/` | Cannot reuse — new (TASK 6) | See `platform_layer/telegram/owner/owner_roles.py` and `database_layer/database_manager/models.py` below — a role hierarchy exists, but no capability-permission matrix exists anywhere. |
@@ -38,14 +38,14 @@ are each justified below by the "Cannot reuse" rows that name them.
 
 | Module | Status | Reason |
 |---|---|---|
-| `context_layer/context_engine/context_orchestrator.py` (`ContextSnapshot`) | Cannot reuse directly by AI | Already deliberately excluded from the AI-facing surface — `ai/interfaces.py`'s own docstring states `MarketContext` is "deliberately narrower than `context.context_orchestrator.ContextSnapshot`... so a future provider's input contract doesn't leak internal Context Layer types into `ai/`." TASK 5's `ai/context/` continues this boundary: it composes from `MarketContext`, never imports `ContextSnapshot` itself. |
+| `context_layer/context_engine/context_orchestrator.py` (`ContextSnapshot`) | Cannot reuse directly by AI | Already deliberately excluded from the AI-facing surface — `ai_layer/ai_service/interfaces.py`'s own docstring states `MarketContext` is "deliberately narrower than `context.context_orchestrator.ContextSnapshot`... so a future provider's input contract doesn't leak internal Context Layer types into `ai/`." TASK 5's `ai/context/` continues this boundary: it composes from `MarketContext`, never imports `ContextSnapshot` itself. |
 | `context_layer/fundamental/fundamental_context.py` (`FundamentalContextSnapshot`) | Already exists, used indirectly | Already consumed by `PromptManager.get_fundamental_analysis_prompt()`. Not a direct TASK 5 input (the Director's brief names Market Context/Signal Schema/User Profile/Trade History/Learning Context, not fundamentals) — left as a future extension point, not added speculatively. |
 
 ## `learning/`
 
 | Module | Status | Reason |
 |---|---|---|
-| `learning/models.py` (`LearningRecord`), `learning/pattern_detector.py`, `learning/confidence.py`, `learning/regime_memory.py`, `learning/outcome_analyzer.py`, `learning/trade_event_bridge.py` | Already exists, reused via `ai/learning_context.py` | None of these are imported directly by any new Phase 61.0 package — `ai/context/context_builder.py` (TASK 5) takes an already-built `LearningContext` as input, matching this codebase's own established pattern (`ai/learning_context.py`'s docstring: "reuses... directly", "does NOT itself generate"). Re-importing `learning/` internals into `ai/context/` would duplicate `ai/learning_context.py`'s existing composition role. |
+| `ai_layer/knowledge_ai/learning_loop/models.py` (`LearningRecord`), `ai_layer/knowledge_ai/learning_loop/pattern_detector.py`, `ai_layer/knowledge_ai/learning_loop/confidence.py`, `ai_layer/knowledge_ai/learning_loop/regime_memory.py`, `ai_layer/knowledge_ai/learning_loop/outcome_analyzer.py`, `ai_layer/knowledge_ai/learning_loop/trade_event_bridge.py` | Already exists, reused via `ai_layer/knowledge_ai/learning_context.py` | None of these are imported directly by any new Phase 61.0 package — `ai/context/context_builder.py` (TASK 5) takes an already-built `LearningContext` as input, matching this codebase's own established pattern (`ai_layer/knowledge_ai/learning_context.py`'s docstring: "reuses... directly", "does NOT itself generate"). Re-importing `learning/` internals into `ai/context/` would duplicate `ai_layer/knowledge_ai/learning_context.py`'s existing composition role. |
 
 ## `database/`
 
@@ -85,11 +85,11 @@ Nine new packages are justified (`ai/capabilities/`, `ai/providers/`,
 `ai/audit/`) — in every case, TASK 1 found no existing module that
 already provides the capability/provider/routing/session/tool/audit
 abstraction, and in every case where an adjacent module exists
-(`ai/interfaces.py`, `ai/learning_context.py`, `ai/profiles/user_profile.py`,
+(`ai_layer/ai_service/interfaces.py`, `ai_layer/knowledge_ai/learning_context.py`, `ai/profiles/user_profile.py`,
 `ai/journal/trade_journal.py`, `ai/memory/context_memory.py`,
 `platform_layer/telegram/owner/owner_roles.py`, `platform_layer/telegram/permissions.py`,
 `configuration/feature_registry.py`), the new module composes or sits
 beside it rather than duplicating its logic. No existing module is
-modified by this phase's TASK 2-9 (`ai/interfaces.py`,
-`ai/learning_context.py`, `ai/profiles/user_profile.py`,
+modified by this phase's TASK 2-9 (`ai_layer/ai_service/interfaces.py`,
+`ai_layer/knowledge_ai/learning_context.py`, `ai/profiles/user_profile.py`,
 `ai/journal/trade_journal.py` are read, not written).

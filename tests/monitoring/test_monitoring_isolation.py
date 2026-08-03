@@ -70,7 +70,7 @@ def test_monitoring_commands_never_imports_decision_risk_execution():
 def test_decision_logger_never_imports_signals_or_context():
     """Belt-and-suspenders: the one file most likely to be tempted to import SignalQualityResult directly stays primitive-only."""
     decision_logger_file = pathlib.Path(__file__).resolve().parents[2] / "decision_layer" / "decision_logger" / "decision_logger.py"
-    forbidden_prefixes = ("signals", "context")
+    forbidden_prefixes = ("signal_layer", "context_layer")
     for name in _imported_names(decision_logger_file):
         assert not name.startswith(forbidden_prefixes), f"{decision_logger_file}: {name}"
 
@@ -92,7 +92,7 @@ def test_monitoring_never_imports_ai_package():
 
 def test_monitoring_never_imports_strategies_or_signals_directly_in_models_or_runtimes():
     """system_monitor.py/market_monitor.py/signal_monitor.py/error_monitor.py never import signals/ or strategies/ -- only decision_logger.py's own audited exception (primitive-only, see its own docstring) is even close to that concern, and it stays clear too (see test_decision_logger_never_imports_signals_or_context)."""
-    forbidden_prefixes = ("strategies", "signals")
+    forbidden_prefixes = ("strategy_layer", "signal_layer")
     for filename in ("system_monitor.py", "market_monitor.py", "signal_monitor.py", "error_monitor.py", "models.py"):
         py_file = _monitoring_dir() / filename
         for name in _imported_names(py_file):
@@ -102,6 +102,6 @@ def test_monitoring_never_imports_strategies_or_signals_directly_in_models_or_ru
 def test_monitoring_repository_module_confined_to_database_and_stdlib():
     """database_layer/audit_log/monitoring_repository.py imports only database/, core_layer.logger.logger, and stdlib -- no Trading Core, no monitoring/ (repository stays below monitoring/, never imports back up)."""
     repo_file = pathlib.Path(__file__).resolve().parents[2] / "database_layer" / "audit_log" / "monitoring_repository.py"
-    allowed_prefixes = ("database", "core_layer.logger.logger", "datetime", "typing")
+    allowed_prefixes = ("database_layer", "core_layer.logger.logger", "datetime", "typing")
     for name in _imported_names(repo_file):
         assert name.startswith(allowed_prefixes), f"{repo_file}: {name}"

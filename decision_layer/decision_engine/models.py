@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from signal_layer.signal_builder.models import SignalCandidate
-from ai.ai_analyzer import AIAnalysisResult
+from ai_layer.ai_engine.ai_analyzer import AIAnalysisResult
 
 
 class DecisionAction(Enum):

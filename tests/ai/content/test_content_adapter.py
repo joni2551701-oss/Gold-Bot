@@ -1,12 +1,12 @@
 """Phase 61.5 TASK 5 — AI Content Adapter. ContentEngine wraps AIService.ask() unmodified, same pattern as ExplanationEngine. Foundation only: no AIService dispatch mapping exists yet for any content capability, so generate() is always cleanly rejected today -- never fabricates content, never touches database/telegram, never produces a trading signal."""
 
-from ai.access.permissions import AIRole
-from ai.capabilities.capability import Capability
-from ai.content.content_adapter import ContentEngine
-from ai.content.content_schema import ContentRequest
-from ai.context.context_builder import build_ai_context
-from ai.interfaces import MarketContext
-from ai.runtime.ai_service import AIService
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_service.content.content_adapter import ContentEngine
+from ai_layer.ai_service.content.content_schema import ContentRequest
+from ai_layer.ai_engine.context.context_builder import build_ai_context
+from ai_layer.ai_service.interfaces import MarketContext
+from ai_layer.ai_engine.runtime.ai_service import AIService
 
 
 def _context():

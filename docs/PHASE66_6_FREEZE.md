@@ -20,7 +20,7 @@ making a new, independent `ai/strategy/models.py` the only
 constitutionally legal outcome rather than a reuse omission (a
 stricter conclusion than every prior `66.x` audit, where the blocking
 reason was always a field-shape mismatch, never an absolute import
-ban). `analytics/strategy_report.py` was reviewed and consciously not
+ban). `backtesting_layer/statistics/strategy_report.py` was reviewed and consciously not
 reused (no adapter task requests it, mirroring Phase 66.4's own
 "reviewed but declined" precedent for `analytics/`).
 
@@ -41,12 +41,12 @@ reused (no adapter task requests it, mirroring Phase 66.4's own
 - `ai/strategy/performance_adapter.py` (new) —
   `performance_record_to_strategy_input()`, a pure, type-only mapping
   from an existing `PerformanceRecord` (Phase 66.5) — never imports
-  `ai.performance.performance_runtime` (TASK 4's own rule).
+  `ai_layer.ai_engine.performance.performance_runtime` (TASK 4's own rule).
 - `ai/strategy/journal_adapter.py` (new) —
   `journal_entry_to_strategy_input()`, a pure mapping from an existing
   `TradeJournalEntry` (Phase 66.2).
 - `ai/strategy/memory_adapter.py` (new) —
-  `strategy_reference_key(record) -> str`, never imports `ai.memory`
+  `strategy_reference_key(record) -> str`, never imports `ai_layer.knowledge_ai.memory_manager`
   (TASK 6's own rule).
 - `configuration/feature_flags.py` — extended with
   `enable_strategy_intelligence: bool = False` (a dedicated flag).
@@ -106,12 +106,12 @@ reused (no adapter task requests it, mirroring Phase 66.4's own
 - **Article 3 (Import Rules), zero-exception rule** — AST sweep for
   `decision`/`risk`/`execution`/`signals`/`strategies`/`context`/
   `monitoring`/`telegram`/`database`/`assistant`/`voice`/`media`/
-  `broadcast`/`academy`/`portfolio`/`research`/`core.`/`ai.memory`
+  `broadcast`/`academy`/`portfolio`/`research`/`core.`/`ai_layer.knowledge_ai.memory_manager`
   imports (TASK 9's own list) plus the wider house-convention set
-  (`analytics`/the top-level `learning`/`ai.providers`/`ai.router`/
-  `ai.reasoning`/`ai.chart_intelligence`/`ai.trading_analyst`/
-  `ai.content`/`ai.conversation`/`ai.explanation`/`ai.coaching`/
-  `ai.learning`/`knowledge`/`sqlite3`/`psycopg2`/`redis`/`sqlalchemy`/
+  (`analytics`/the top-level `learning`/`ai_layer.ai_engine.providers`/`ai_layer.ai_coordinator`/
+  `ai_layer.ai_engine.reasoning`/`ai_layer.vision_ai`/`ai_layer.ai_engine.trading_analyst`/
+  `ai_layer.ai_service.content`/`ai_layer.personal_ai.interaction_manager`/`ai_layer.explanation_ai`/`ai_layer.personal_ai.senior`/
+  `ai_layer.knowledge_ai.learning_engine`/`knowledge`/`sqlite3`/`psycopg2`/`redis`/`sqlalchemy`/
   `openai`/`anthropic`/`google.generativeai`/`requests`/`httpx`/
   `urllib`) across `ai/strategy/**/*.py`: zero matches
   (`tests/ai/strategy/test_ai_strategy_isolation.py`).
@@ -138,29 +138,29 @@ reused (no adapter task requests it, mirroring Phase 66.4's own
 ## Dependency Compliance
 
 `ai/strategy/models.py` and `access.py` import nothing beyond
-`ai.access.permissions.AIRole`, `configuration.feature_flags`, and the
-standard library. `strategy_runtime.py` imports only `ai.access`,
-`ai.strategy`, `configuration`, and stdlib — confirmed by
+`ai_layer.ai_service.access.permissions.AIRole`, `configuration.feature_flags`, and the
+standard library. `strategy_runtime.py` imports only `ai_layer.ai_service.access`,
+`ai_layer.ai_engine.strategy`, `configuration`, and stdlib — confirmed by
 `test_strategy_runtime_module_has_no_persistence_import()`.
 `performance_adapter.py` is the one file permitted to import
-`ai.performance.models` (never `ai.performance.performance_runtime`) —
+`ai_layer.ai_engine.performance.models` (never `ai_layer.ai_engine.performance.performance_runtime`) —
 confirmed confined by `test_performance_import_confined_to_performance_adapter()`,
 `test_only_performance_adapter_imports_ai_performance()`, and
 `test_performance_adapter_never_imports_performance_runtime()`.
 `journal_adapter.py` is the one file permitted to import
-`ai.trade_journal.models` — confirmed confined by
+`ai_layer.knowledge_ai.knowledge_base.trade_journal.models` — confirmed confined by
 `test_trade_journal_import_confined_to_journal_adapter()` and
 `test_only_journal_adapter_imports_ai_trade_journal()`.
-`memory_adapter.py` never imports `ai.memory` — confirmed by
+`memory_adapter.py` never imports `ai_layer.knowledge_ai.memory_manager` — confirmed by
 `test_strategy_never_imports_ai_memory()`. No file in the package
-imports `ai.chart_intelligence`, `ai.trading_analyst`, `ai.reasoning`,
-`ai.explanation`, `ai.conversation`, `ai.coaching`, `ai.learning`,
-`knowledge/`, `ai.content`, `analytics/`, the top-level `learning/`
+imports `ai_layer.vision_ai`, `ai_layer.ai_engine.trading_analyst`, `ai_layer.ai_engine.reasoning`,
+`ai_layer.explanation_ai`, `ai_layer.personal_ai.interaction_manager`, `ai_layer.personal_ai.senior`, `ai_layer.knowledge_ai.learning_engine`,
+`knowledge/`, `ai_layer.ai_service.content`, `analytics/`, the top-level `learning/`
 package, `strategies/`, `voice/`, `assistant/`, `media/`,
 `broadcast/`, `telegram/`, `database/`, or `core.`. Nothing in
 `ai/trading_analyst/`, `ai/chart_intelligence/`, `ai/trade_journal/`,
 `ai/learning/`, `ai/coaching/`, `ai/performance/`, or `ai/memory/`
-imports `ai.strategy` back.
+imports `ai_layer.ai_engine.strategy` back.
 
 ## New / Extended / Reused (Constitution Article 12, mandatory table)
 

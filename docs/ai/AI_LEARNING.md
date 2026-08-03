@@ -27,16 +27,16 @@ lesson or quiz (Rules 6-9). It never touches `decision/`, `risk/`,
 `strategies/` (Rule 2), makes no LLM call and no network call
 (Rule 4/5), and performs no real AI inference of any kind (Rule 10).
 
-## `learning/` (top-level) and `ai/learning_context.py` already exist
+## `learning/` (top-level) and `ai_layer/knowledge_ai/learning_context.py` already exist
 ## — reviewed, not reused
 
-`learning/models.py`'s own `LearningRecord` (Phase 60.6/60.7) is a
+`ai_layer/knowledge_ai/learning_loop/models.py`'s own `LearningRecord` (Phase 60.6/60.7) is a
 **trade-outcome pattern-statistics record** (`trade_id`, `signal_id`,
 `failure_type`, `success_pattern`, `htf_bias`, etc.), real-DB-persisted
 via `database_layer/journal_repository/learning_repository.py` — a fundamentally different
 concept from this phase's own per-user, topic-mastery record, and
 reusing it would violate Rule 3 (no database) by association.
-`ai/learning_context.py`'s `LearningContext` (Phase 60.6/60.7) is a
+`ai_layer/knowledge_ai/learning_context.py`'s `LearningContext` (Phase 60.6/60.7) is a
 read-only aggregation bundle for a future AI explainer, built *from*
 that same trade-outcome system — also not reused. See
 `docs/PHASE66_3_AUDIT.md` for the full reasoning behind why neither
@@ -67,7 +67,7 @@ own `_entries` dict already established. `update()` only ever updates
 `level`/`confidence`/`notes` — `user_id`/`topic`/`source` are immutable
 after `create()`. `archive()` sets `status` to `ARCHIVED`, never
 deletes a record. Owner-gated: every method re-checks
-`ai.learning.access.is_learning_intelligence_enabled_for()` itself.
+`ai_layer.knowledge_ai.learning_engine.access.is_learning_intelligence_enabled_for()` itself.
 
 ## Journal Adapter (TASK 4)
 
@@ -80,12 +80,12 @@ keyword arguments `LearningRuntime.create()` accepts. It never calls
 — inferring those from a journal entry's own text would be real AI
 inference, forbidden by Rule 10; a caller supplies them explicitly.
 The one file in `ai/learning/` permitted to import
-`ai.trade_journal.models`.
+`ai_layer.knowledge_ai.knowledge_base.trade_journal.models`.
 
 ## Memory Reference (TASK 5)
 
 `memory_adapter.py`'s `memory_reference_key()` is a pure string-format
-function (`"learning:{id}"`) — this package never imports `ai.memory`
+function (`"learning:{id}"`) — this package never imports `ai_layer.knowledge_ai.memory_manager`
 at all (TASK 5: "Memory Runtime chaqirilmaydi"). Mirrors
 `ai/trade_journal/memory_adapter.py`'s own precedent exactly (Phase
 66.2, TASK 6).
@@ -122,8 +122,8 @@ class, or method anywhere in this package.
 - Never imports `decision/`, `risk/`, `execution/`, `signals/`,
   `telegram/`, `database/`, `monitoring/`, `strategies/`, `context/`,
   `learning/` (the pre-existing, unrelated top-level package),
-  `analytics/`, `ai.memory`, `ai.reasoning`, `knowledge/`,
-  `ai.chart_intelligence`, `ai.trading_analyst`, `ai.content/`,
+  `analytics/`, `ai_layer.knowledge_ai.memory_manager`, `ai_layer.ai_engine.reasoning`, `knowledge/`,
+  `ai_layer.vision_ai`, `ai_layer.ai_engine.trading_analyst`, `ai.content/`,
   `media/`, `broadcast/`, `assistant/`, or `voice/` — zero exceptions,
   permanently enforced by
   `tests/ai/learning/test_ai_learning_isolation.py`.
@@ -137,7 +137,7 @@ class, or method anywhere in this package.
 - `ai/learning/README.md` — the package's own top-level README.
 - `ai/trade_journal/` — the sibling package this phase's
   `journal_adapter.py` reads from (type-only).
-- `learning/`, `ai/learning_context.py` — the pre-existing, unrelated
+- `learning/`, `ai_layer/knowledge_ai/learning_context.py` — the pre-existing, unrelated
   trade-outcome-statistics types reviewed but not reused.
 - `docs/ai/AI_TRADE_JOURNAL.md` — the immediately preceding phase's
   own documentation.

@@ -2,17 +2,17 @@
 
 from datetime import datetime, timezone
 
-from ai.conversation.conversation_adapters import (
+from ai_layer.personal_ai.interaction_manager.conversation_adapters import (
     conversation_context_to_explanation_fields,
     knowledge_key_from_entry,
     memory_key_from_entry,
     reasoning_key_from_result,
 )
-from ai.conversation.models import ConversationContext, ConversationMode
-from ai.memory.models import MemoryEntry, MemoryScope, MemoryType
-from ai.reasoning.models import ReasoningMode, ReasoningResult, ReasoningType
-from ai.session.conversation_state import ConversationTurn
-from knowledge.models import KnowledgeCategory, KnowledgeEntry
+from ai_layer.personal_ai.interaction_manager.models import ConversationContext, ConversationMode
+from ai_layer.knowledge_ai.memory_manager.models import MemoryEntry, MemoryScope, MemoryType
+from ai_layer.ai_engine.reasoning.models import ReasoningMode, ReasoningResult, ReasoningType
+from ai_layer.ai_service.session.conversation_state import ConversationTurn
+from ai_layer.knowledge_ai.knowledge_base.models import KnowledgeCategory, KnowledgeEntry
 
 
 def test_knowledge_key_from_entry_combines_category_and_key():
@@ -57,12 +57,12 @@ def test_conversation_adapters_module_never_imports_ai_explanation():
     import ast
     import pathlib
 
-    adapters_file = pathlib.Path(__file__).resolve().parents[3] / "ai" / "conversation" / "conversation_adapters.py"
+    adapters_file = pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "personal_ai" / "interaction_manager" / "conversation_adapters.py"
     tree = ast.parse(adapters_file.read_text(), filename=str(adapters_file))
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                assert not alias.name.startswith("ai.explanation"), alias.name
+                assert not alias.name.startswith("ai_layer.explanation_ai"), alias.name
         elif isinstance(node, ast.ImportFrom):
             if node.module:
-                assert not node.module.startswith("ai.explanation"), node.module
+                assert not node.module.startswith("ai_layer.explanation_ai"), node.module

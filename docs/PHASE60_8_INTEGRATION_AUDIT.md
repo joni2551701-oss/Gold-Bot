@@ -5,7 +5,7 @@ instruction ("Hech qanday kod yozilmaydi"), this is read-only analysis
 of `core/pipeline.py`, `decision/`, `risk/`, `execution/`, `telegram/`,
 `configuration/runtime_feature_manager.py`,
 `core_layer/emergency/emergency_manager.py`,
-`database_layer/journal_repository/learning_repository.py` (+ `learning/trade_event_bridge.py`),
+`database_layer/journal_repository/learning_repository.py` (+ `ai_layer/knowledge_ai/learning_loop/trade_event_bridge.py`),
 and `backtesting_layer/replay_engine/replay_engine.py` (+ `backtesting_layer/data_feed/data_feed.py`).
 
 ## Method
@@ -138,7 +138,7 @@ non-mutating) per stage.
 **Gap found, not assumed away**: `configuration/feature_registry.py`'s
 current registry has no name that maps 1:1 onto "should stage X run" —
 the closest is `enable_ai` (`FeatureFlags.enable_ai`, currently
-documented as "Reserved ... `ai/ai_analyzer.py` stays a heuristic stub
+documented as "Reserved ... `ai_layer/ai_engine/ai_analyzer.py` stays a heuristic stub
 regardless"). None of `before_signal`/`before_ai`/`before_execution`/
 `before_database` (TASK 2's own named hook points) has an existing,
 real registry entry it would naturally read. This needs an explicit
@@ -171,7 +171,7 @@ Director's explicit decision.
 
 ---
 
-### `database_layer/journal_repository/learning_repository.py` / `learning/trade_event_bridge.py`
+### `database_layer/journal_repository/learning_repository.py` / `ai_layer/knowledge_ai/learning_loop/trade_event_bridge.py`
 
 `LearningRepository.record()` has **exactly one caller in the entire
 codebase**: `trade_event_bridge.bridge_closed_trade()` (Phase 60.7,

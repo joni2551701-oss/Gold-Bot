@@ -19,9 +19,9 @@ entry (cache miss every time).
 
 **Fix**: `AIContext` (`ai/context/context_snapshot.py`) gained
 `snapshot_id` — computed exclusively inside
-`ai.context.context_builder.build_ai_context()`, never by a caller,
+`ai_layer.ai_engine.context.context_builder.build_ai_context()`, never by a caller,
 never via `datetime.now()`/`uuid.uuid4()`. It is a deterministic
-SHA-256 (reusing `ai.cache.cache_policy.compute_context_hash()`, not a
+SHA-256 (reusing `ai_layer.ai_engine.cache.cache_policy.compute_context_hash()`, not a
 second hash implementation) over the built context's own `to_dict()`
 output with `built_at` removed — the one field that would otherwise
 make identical inputs produce different ids. `CacheKey` gained a sixth

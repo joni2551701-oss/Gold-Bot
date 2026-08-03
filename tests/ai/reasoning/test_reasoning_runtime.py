@@ -1,7 +1,7 @@
 """Phase 63.4 TASK 3 — ai/reasoning/reasoning_runtime.py: ReasoningRuntime (reason/explain/summarize/evaluate/compare/chain/history), all deterministic."""
 
-from ai.reasoning.models import ReasoningMode, ReasoningResult, ReasoningStep, ReasoningType
-from ai.reasoning.reasoning_runtime import ReasoningRuntime
+from ai_layer.ai_engine.reasoning.models import ReasoningMode, ReasoningResult, ReasoningStep, ReasoningType
+from ai_layer.ai_engine.reasoning.reasoning_runtime import ReasoningRuntime
 
 
 def _result(key="k1", conclusion="c1", confidence=0.5, steps=()):
@@ -98,14 +98,14 @@ def test_history_returns_every_result_in_first_stored_order():
 
 
 def test_reasoning_runtime_never_imports_trading_or_downstream_intelligence_layers():
-    """ai/reasoning/ never imports decision/risk/execution/strategies/database/telegram (Constitution Article 3), and never imports ai.explanation/ai.content/ai.conversation/broadcast/media/translation (Intelligence Dependency Principle -- all downstream of Reasoning)."""
+    """ai_layer/ai_engine/reasoning/ never imports decision/risk/execution/strategies/database/telegram (Constitution Article 3), and never imports ai.explanation/ai.content/ai.conversation/broadcast/media/translation (Intelligence Dependency Principle -- all downstream of Reasoning)."""
     import ast
     import pathlib
 
-    reasoning_dir = pathlib.Path(__file__).resolve().parents[3] / "ai" / "reasoning"
+    reasoning_dir = pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "explanation_ai" / "reasoning"
     forbidden_prefixes = (
-        "decision", "risk", "execution", "strategies", "database", "telegram",
-        "ai.explanation", "ai.content", "ai.conversation", "broadcast", "media", "translation",
+        "decision_layer", "risk_layer", "execution_layer", "strategy_layer", "database_layer", "platform_layer.telegram",
+        "ai_layer.explanation_ai", "ai_layer.ai_service.content", "ai_layer.personal_ai.interaction_manager", "media_layer.telegram_broadcast", "media_layer.content_manager", "media_layer.translation",
     )
 
     for py_file in reasoning_dir.glob("*.py"):

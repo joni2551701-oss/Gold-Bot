@@ -1,7 +1,7 @@
 """Phase 65.2 TASK 7/8 — voice/session/: VoiceSession + VoiceSessionManager."""
 
-from voice.session.manager import VoiceSessionManager
-from voice.session.models import VoiceSession
+from ai_layer.voice_ai.session.manager import VoiceSessionManager
+from ai_layer.voice_ai.session.models import VoiceSession
 
 
 def test_voice_session_defaults():

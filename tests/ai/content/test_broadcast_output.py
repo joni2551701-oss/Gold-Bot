@@ -1,7 +1,7 @@
 """Phase 61.5 TASK 6 — Broadcast Preparation Interface. Contract only -- no real send/schedule/media logic."""
 
-from ai.content.broadcast_output import prepare_broadcast
-from ai.content.content_schema import ContentResult
+from ai_layer.ai_service.content.broadcast_output import prepare_broadcast
+from ai_layer.ai_service.content.content_schema import ContentResult
 
 
 def _accepted_result(body="Gold is in an uptrend."):

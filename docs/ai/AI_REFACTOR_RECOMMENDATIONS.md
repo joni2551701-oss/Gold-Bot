@@ -15,8 +15,8 @@ Not a rewrite — a thin composition layer over what already exists.
 fully functional (Session, Context, Lifecycle, Interfaces) and the
 remaining 3 (Manager, Registry, Factory) missing only in *name*, not
 in underlying capability. Recommend: introduce one `AIManager` facade
-class in `ai/` (new file, e.g. `ai/foundation.py` or extend
-`ai/intelligence_runtime.py` — per the Module Reuse Principle, extend
+class in `ai/` (new file, e.g. `ai_layer/ai_engine/foundation.py` or extend
+`ai_layer/ai_engine/intelligence_runtime.py` — per the Module Reuse Principle, extend
 before creating) that composes `ProviderManager` + `CapabilityManager`
 + `SessionManager` + `RuntimeManager` behind one entry point, without
 changing any of their internals. This closes the naming gap cheaply
@@ -26,7 +26,7 @@ and gives future subpackages one obvious place to register against.
 Stay exactly where it is: `ai/persona/`. It is correctly scoped today
 (pure identity data, no prompt-building, no `AIService` calls) and is
 already structurally separated from `assistant/`'s `AssistantIdentity`
-by design (`assistant/identity.py`'s explicit "never imports
+by design (`ai_layer/ai_service/assistant/identity.py`'s explicit "never imports
 `ai/persona/`" rule) — this is the one boundary in the whole audited
 surface that needs no change.
 
@@ -35,8 +35,8 @@ No code for a "Senior AI" concept exists anywhere in `ai/` today (zero
 grep hits). Recommend it follow the same pattern every 66.x
 subpackage already uses successfully: a new `ai/senior/` subpackage
 with `access.py` + `models.py` + `*_runtime.py`, consuming
-`ai.reasoning`/`ai.memory`/`ai.knowledge` the same way
-`ai.trading_analyst` does — not a new top-level package, not a
+`ai_layer.ai_engine.reasoning`/`ai_layer.knowledge_ai.memory_manager`/`ai.knowledge` the same way
+`ai_layer.ai_engine.trading_analyst` does — not a new top-level package, not a
 rewrite of an existing one.
 
 **Seniorita qayerda yashaydi? (Where does "Seniorita" live?)**
@@ -49,7 +49,7 @@ implementation request.
 
 **Media qanday ulanadi? (How does Media connect?)**
 Exactly as it already does for the existing 66.x subpackages:
-transitively, through `ai.intelligence_runtime.IntelligenceRuntime.run()`
+transitively, through `ai_layer.ai_engine.intelligence_runtime.IntelligenceRuntime.run()`
 and each subpackage's own `content_adapter.py` /
 `*_to_content_body()` functions — never a direct
 `ai/<subpackage>/ → media` import. `ai/chart_intelligence/` and
@@ -61,18 +61,18 @@ It doesn't, and shouldn't, connect directly to `ai/` at all — this is
 already a hard, correctly-enforced rule (`AI_DEPENDENCY_GRAPH.md`
 confirms zero `telegram` imports anywhere in `ai/`). Platform reaches
 AI capability only through `platform_layer/telegram/owner/ai_commands.py` (outside
-this audit's scope) calling into `ai.runtime.ai_service.AIService`,
+this audit's scope) calling into `ai_layer.ai_engine.runtime.ai_service.AIService`,
 never the reverse.
 
 **Memory qayerga ulanadi? (Where does Memory connect?)**
-Stays exactly as it is: `ai.memory.memory_runtime.MemoryRuntime`, a
-5-layer facade, consumed directly by `ai.conversation` and
-`ai.reasoning`, and by exactly one external consumer,
-`assistant/runtime_adapter.py`, through a single confined import. This
+Stays exactly as it is: `ai_layer.knowledge_ai.memory_manager.memory_runtime.MemoryRuntime`, a
+5-layer facade, consumed directly by `ai_layer.personal_ai.interaction_manager` and
+`ai_layer.ai_engine.reasoning`, and by exactly one external consumer,
+`ai_layer/ai_service/assistant/runtime_adapter.py`, through a single confined import. This
 one-writer-many-readers shape (per `AI_ARCHITECTURE_REVIEW.md`'s
 Personal AI Review) is healthy and should be the template any future
 Senior/Seniorita/Voice memory access follows — a single named adapter
-file, never a direct scatter of `ai.memory` imports across many files.
+file, never a direct scatter of `ai_layer.knowledge_ai.memory_manager` imports across many files.
 
 **Voice qayerda bo'ladi? (Where does Voice live?)**
 Stays outside `ai/` in the existing top-level `voice/` package — it
@@ -95,9 +95,9 @@ consistent with the Module Reuse Principle.
 **Agent System qayerda bo'ladi? (Where does an Agent System live?)**
 No code for this exists anywhere in `ai/` today. If "Agent System"
 means autonomous multi-step tool-calling, the foundation it would
-build on already exists in `ai.tools` (`BaseAITool`/`ToolRegistry`,
+build on already exists in `ai_layer.ai_service.tools` (`BaseAITool`/`ToolRegistry`,
 5 tools registered) — recommend any future Agent System extend
-`ai.tools` rather than create a new top-level orchestration package,
+`ai_layer.ai_service.tools` rather than create a new top-level orchestration package,
 since the tool-calling contract is already there. This is explicitly
 **not** a request to build one now — Trading Core rules (Constitution
 Article 1, this repo's own CLAUDE.md) require any agentic system to
@@ -113,7 +113,7 @@ These map directly to `AI_GAP_ANALYSIS.md`'s High/Medium items.
 1. **Break the 4 circular dependencies** (AI_DEPENDENCY_GRAPH.md
    Section 3). For `runtime↔providers` and `audit↔runtime`: extract
    the shared piece (`EventBus`/`EventType`/`RuntimeEvent`) each side
-   needs into a module neither `ai.runtime` nor its counterpart owns,
+   needs into a module neither `ai_layer.ai_engine.runtime` nor its counterpart owns,
    or accept the dependency as one-directional by having
    `circuit_breaker.py`/`provider_stats.py` take an `EventBus`
    instance as a constructor argument instead of importing it. For
@@ -129,20 +129,20 @@ These map directly to `AI_GAP_ANALYSIS.md`'s High/Medium items.
    the newer `ai/trade_journal/models.py` version already carries
    self-documentation acknowledging the collision and is the more
    actively-extended of the two. Update its ~6 known consumers
-   (`database_layer/audit_log/audit_log_models.py`, `learning/regime_memory.py`,
-   `learning/pattern_detector.py`, `learning/models.py`,
+   (`database_layer/audit_log/audit_log_models.py`, `ai_layer/knowledge_ai/learning_loop/regime_memory.py`,
+   `ai_layer/knowledge_ai/learning_loop/pattern_detector.py`, `ai_layer/knowledge_ai/learning_loop/models.py`,
    `core_layer/system_state/system_state.py`, `ai/context/`).
 
-3. **Delete the 4 confirmed-dead files**: `ai/trade_journal.py`
+3. **Delete the 4 confirmed-dead files**: `ai_layer/knowledge_ai/knowledge_base/trade_journal.py`
    (permanently unreachable shim), `ai/analyzer/ai_analyzer.py`,
-   `ai/ai_prompt.py`, `ai/confidence_model.py`. Each has zero real
+   `ai_layer/ai_engine/ai_prompt.py`, `ai_layer/confidence_ai/confidence_model.py`. Each has zero real
    callers and zero test coverage; deletion is zero-risk per the
    evidence in `AI_RISK_REPORT.md`.
 
 4. **Standardize the `*_registry.py` pattern** on one shape (either
    always a stateful `XRegistry` class, or always a `build_x_registry()`
-   free function) across `ai.prompts`, `ai.tools`, `ai.memory`,
-   `ai.persona`, `ai.capabilities`, `ai.reasoning` — internal-only
+   free function) across `ai_layer.ai_engine.prompts`, `ai_layer.ai_service.tools`, `ai_layer.knowledge_ai.memory_manager`,
+   `ai_layer.personal_ai.persona_manager`, `ai_layer.ai_engine.capabilities`, `ai_layer.ai_engine.reasoning` — internal-only
    change, no external callers per each subpackage's empty
    `__init__.py`.
 

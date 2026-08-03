@@ -1,8 +1,8 @@
 """Phase 61.1 TASK 2 — Provider Health/Status/Failover. No real API call anywhere."""
 
-from ai.providers.provider_failover import select_available
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.providers.provider_status import AVAILABLE_STATUSES, HealthStatus
+from ai_layer.ai_engine.providers.provider_failover import select_available
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_engine.providers.provider_status import AVAILABLE_STATUSES, HealthStatus
 
 
 def test_every_registered_provider_starts_online():

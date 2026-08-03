@@ -2,9 +2,9 @@
 Phase 65.4 TASK 9 — assistant/ isolation, updated for the one
 deliberate widening this phase introduces: `runtime_adapter.py` is now
 the single file in `assistant/` permitted to import
-`ai.conversation.conversation_engine`, `ai.intelligence_runtime`,
-`ai.memory.memory_runtime`/`ai.memory.models`, and
-`voice.runtime`/`voice.models`. Every other file in `assistant/`
+`ai_layer.personal_ai.interaction_manager.conversation_engine`, `ai_layer.ai_engine.intelligence_runtime`,
+`ai_layer.knowledge_ai.memory_manager.memory_runtime`/`ai_layer.knowledge_ai.memory_manager.models`, and
+`ai_layer.voice_ai.runtime`/`ai_layer.voice_ai.models`. Every other file in `assistant/`
 (`identity.py`, `identity_registry.py`, `identity_manager.py`,
 `models.py`, `access.py`, `assistant_manager.py`,
 `conversation_adapter.py`) must still import nothing downstream at
@@ -33,7 +33,7 @@ def _imported_names(py_file: pathlib.Path):
 
 def test_assistant_package_still_never_imports_trading_telegram_or_database_layers():
     """Rule 2 (Trading Core ZERO DIFF) -- unaffected by this phase's widening, zero exemptions including runtime_adapter.py."""
-    forbidden_prefixes = ("decision", "risk", "execution", "strategies", "signals", "database", "telegram")
+    forbidden_prefixes = ("decision_layer", "risk_layer", "execution_layer", "strategy_layer", "signal_layer", "database_layer", "platform_layer.telegram")
 
     for py_file in _assistant_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -42,7 +42,7 @@ def test_assistant_package_still_never_imports_trading_telegram_or_database_laye
 
 def test_downstream_intelligence_imports_confined_to_runtime_adapter():
     """The strict rule this phase updates: voice/, ai.conversation/, ai.memory/, ai.intelligence_runtime are now permitted, but only in runtime_adapter.py -- every other file keeps zero downstream imports."""
-    widened_prefixes = ("voice", "ai.conversation", "ai.memory", "ai.intelligence_runtime")
+    widened_prefixes = ("voice", "ai_layer.personal_ai.interaction_manager", "ai_layer.knowledge_ai.memory_manager", "ai_layer.ai_engine.intelligence_runtime")
     adapter_file = _assistant_dir() / "runtime_adapter.py"
 
     for py_file in _assistant_dir().rglob("*.py"):
@@ -53,10 +53,10 @@ def test_downstream_intelligence_imports_confined_to_runtime_adapter():
 
 
 def test_still_permanently_forbidden_layers_even_in_runtime_adapter():
-    """ai.reasoning, ai.explanation, ai.persona, knowledge, ai.content, media, broadcast, translation stay forbidden everywhere in assistant/ -- including runtime_adapter.py, which reaches Reasoning/Explanation/Content/Media/Broadcast only indirectly through IntelligenceRuntime.run()."""
+    """ai_layer.ai_engine.reasoning, ai.explanation, ai.persona, knowledge, ai.content, media, broadcast, translation stay forbidden everywhere in assistant/ -- including runtime_adapter.py, which reaches Reasoning/Explanation/Content/Media/Broadcast only indirectly through IntelligenceRuntime.run()."""
     forbidden_prefixes = (
-        "ai.reasoning", "ai.explanation", "ai.persona", "knowledge",
-        "ai.content", "media", "broadcast", "translation",
+        "ai_layer.ai_engine.reasoning", "ai_layer.explanation_ai", "ai_layer.personal_ai.persona_manager", "knowledge",
+        "ai_layer.ai_service.content", "media_layer.content_manager", "media_layer.telegram_broadcast", "media_layer.translation",
     )
 
     for py_file in _assistant_dir().rglob("*.py"):
@@ -70,7 +70,7 @@ def test_ai_conversation_engine_real_call_confined_to_runtime_adapter():
 
     for py_file in _assistant_dir().rglob("*.py"):
         for name in _imported_names(py_file):
-            if name.startswith("ai.conversation.conversation_engine"):
+            if name.startswith("ai_layer.personal_ai.interaction_manager.conversation_engine"):
                 assert py_file == adapter_file, f"{py_file}: {name} (only runtime_adapter.py may import this)"
 
 
@@ -83,4 +83,4 @@ def test_only_permitted_ai_access_import_outside_runtime_adapter():
             continue
         for name in _imported_names(py_file):
             if name.startswith("ai."):
-                assert name == "ai.access.permissions", f"{py_file}: unexpected ai.* import {name}"
+                assert name == "ai_layer.ai_service.access.permissions", f"{py_file}: unexpected ai.* import {name}"

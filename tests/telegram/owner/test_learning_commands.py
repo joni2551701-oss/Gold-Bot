@@ -11,7 +11,7 @@ from platform_layer.telegram.owner.learning_commands import (
     get_patterns_report,
 )
 from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
-from learning.models import create_learning_record
+from ai_layer.knowledge_ai.learning_loop.models import create_learning_record
 
 
 def _record(strategy_name="A", session="LONDON", result="SL", failure_type=None, success_pattern=None):

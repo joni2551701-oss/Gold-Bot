@@ -1,8 +1,8 @@
 """Phase 61.0 TASK 2 — Capability Manager/Registry tests. No real AI call anywhere."""
 
-from ai.capabilities.capability import Capability
-from ai.capabilities.capability_manager import CapabilityManager, get_capability_manager
-from ai.capabilities.capability_registry import build_capability_registry
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.capabilities.capability_manager import CapabilityManager, get_capability_manager
+from ai_layer.ai_engine.capabilities.capability_registry import build_capability_registry
 
 
 def test_registry_declares_every_capability_exactly_once():

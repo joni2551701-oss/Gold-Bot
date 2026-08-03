@@ -3,7 +3,7 @@
 > **DOCUMENTATION ONLY.** Blueprint for the AI step. No code here.
 > `ai/` is **advisory input to `decision/` only**. It must never approve/
 > reject a trade, call the Risk Manager, or trigger a Telegram send or
-> execution action (CLAUDE.md Trading Safety; `ai/interfaces.py`
+> execution action (CLAUDE.md Trading Safety; `ai_layer/ai_service/interfaces.py`
 > `AIAnalyzerInterface` contract). STEP-14 wires *reads*, never *actions*.
 
 ## 1. Purpose
@@ -33,9 +33,9 @@ database ┘                                              │  AIResponse (advis
 ## 3. Input / Output
 
 - **Input (read-only):** `MarketContext` (AI-facing subset of the context
-  snapshot, `ai/interfaces.py`), the canonical signal, the `DecisionOutcome`,
+  snapshot, `ai_layer/ai_service/interfaces.py`), the canonical signal, the `DecisionOutcome`,
   and persisted history via a database read.
-- **Output:** `AIResponse` (`ai/interfaces.py`) — advisory `decision` +
+- **Output:** `AIResponse` (`ai_layer/ai_service/interfaces.py`) — advisory `decision` +
   `confidence` + rationale. Consumed as *one weighted input* to the frozen
   decision blend; never as an approval.
 
@@ -43,8 +43,8 @@ database ┘                                              │  AIResponse (advis
 
 | File | Role | Input | Output | Reads from | Passes to | New / Extend |
 |---|---|---|---|---|---|---|
-| `ai/interfaces.py` | provider contract (`MarketContext`/`UserContext`/`AIResponse`/`AIAnalyzerInterface`) | — | contract | — | providers | **reuse** (Phase 55, frozen shape) |
-| `ai/ai_analyzer.py` | production analyzer wired into pipeline | context | `AIAnalysisResult` | context | decision | **reuse** (retrofitting to interface is out of scope) |
+| `ai_layer/ai_service/interfaces.py` | provider contract (`MarketContext`/`UserContext`/`AIResponse`/`AIAnalyzerInterface`) | — | contract | — | providers | **reuse** (Phase 55, frozen shape) |
+| `ai_layer/ai_engine/ai_analyzer.py` | production analyzer wired into pipeline | context | `AIAnalysisResult` | context | decision | **reuse** (retrofitting to interface is out of scope) |
 | `ai/context/` | AIContext builder (context→AI-facing view) | context/signals/decision | `AIContext` | context/signals/decision | provider | **extend** (add DecisionOutcome as a read-only input field) |
 | `ai/providers/` | provider adapters (Gemini/OpenAI/…) | `AIContext` | `AIResponse` | context builder | decision blend | **reuse/extend** (no new action capability) |
 | `ai/access/` | AI access control (who may use AI) | user/tier | allow/deny | access rules | runtime | **reuse** |

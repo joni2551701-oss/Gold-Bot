@@ -1,7 +1,7 @@
-"""Phase 65.0 TASK 5 — voice/profiles.py: static profile catalog."""
+"""Phase 65.0 TASK 5 — ai_layer/voice_ai/profiles.py: static profile catalog."""
 
-from voice.profiles import NARRATOR_VOICE, SENIOR_VOICE, SENIORITA_VOICE, build_voice_profile_registry
-from voice.models import VoiceProviderType
+from ai_layer.voice_ai.profiles import NARRATOR_VOICE, SENIOR_VOICE, SENIORITA_VOICE, build_voice_profile_registry
+from ai_layer.voice_ai.models import VoiceProviderType
 
 
 def test_build_voice_profile_registry_returns_three_profiles():
@@ -29,7 +29,7 @@ def test_narrator_voice_shape():
 
 def test_seniorita_voice_profile_is_not_an_ai_persona():
     """Phase 63.8 established only SENIOR_TRADING_AI is a registered Persona; VoiceProfile('Seniorita', ...) must not reference or create one."""
-    from ai.persona.persona_manager import PersonaManager
+    from ai_layer.personal_ai.persona_manager.persona_manager import PersonaManager
 
     manager = PersonaManager()
     assert manager.get("Seniorita") is None

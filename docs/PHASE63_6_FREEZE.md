@@ -89,7 +89,7 @@ Constitution Article conflict.
   `ConversationEngine`/`ConversationContext` — all are read (via
   type-only adapters), never modified.
 - No fix to the pre-existing `ai/explanation/explanation_content_adapter.py`
-  → `ai.content.broadcast_output.BroadcastReadyContent` import found
+  → `ai_layer.ai_service.content.broadcast_output.BroadcastReadyContent` import found
   during TASK 0's audit — it predates the Intelligence Dependency
   Principle, is LOCKed since Phase 63.1, and is out of this phase's
   scope (`ai/content/` only). Documented for the record in
@@ -122,8 +122,8 @@ Constitution Article conflict.
   Bash grep run at TASK 10 and by the permanent AST regression tests
   in `tests/ai/content/test_content_isolation.py` and
   `test_content_adapters.py`.
-- `ai/content/` imports `ai.explanation.explanation_output.ExplanationOutput`
-  and `ai.conversation.models.ConversationContext`/`ConversationMode`
+- `ai/content/` imports `ai_layer.explanation_ai.explanation_output.ExplanationOutput`
+  and `ai_layer.personal_ai.interaction_manager.models.ConversationContext`/`ConversationMode`
   — both upstream, both type-only, neither owning Manager/Runtime
   class (`ExplanationBuilder`/`ConversationEngine`) touched.
 - `ai/content/broadcast_output.py`'s `BroadcastReadyContent` remains a

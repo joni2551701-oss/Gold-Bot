@@ -31,7 +31,7 @@ Contract here. `TradingAnalystRuntime.analyze()` composes
 `IntelligenceRuntime`/`ExplanationBuilder` only — no image/vision
 awareness anywhere in the package (confirmed via
 `tests/ai/trading_analyst/test_trading_analyst_isolation.py`, which
-already asserts zero `media`/`ai.content` imports outside
+already asserts zero `media`/`ai_layer.ai_service.content` imports outside
 `content_adapter.py`). **Reused, not duplicated**: Phase 66.1's own
 "Trading Analyst Integration" (TASK 5) reads `TradingAnalysis` type-only
 from this package's existing, unmodified `models.py`.

@@ -1,21 +1,21 @@
-"""Phase 65.0 TASK 7 — voice/adapter.py: content_result_to_voice_request(). Extended Phase 65.1 TASK 9 — media/broadcast/conversation integration points."""
+"""Phase 65.0 TASK 7 — ai_layer/voice_ai/adapter.py: content_result_to_voice_request(). Extended Phase 65.1 TASK 9 — media/broadcast/conversation integration points."""
 
 from datetime import datetime, timezone
 
-from ai.content.content_schema import ContentResult
-from ai.content_types import ContentType
-from ai.session.conversation_state import ConversationTurn
+from ai_layer.ai_service.content.content_schema import ContentResult
+from ai_layer.ai_service.content.content_type_vocabulary import ContentType
+from ai_layer.ai_service.session.conversation_state import ConversationTurn
 from media_layer.telegram_broadcast.models import BroadcastAsset, BroadcastStatus
 from media_layer.content_manager.media_types import MediaType
 from media_layer.content_manager.models import MediaAsset, MediaAssetStatus
-from voice.adapter import (
+from ai_layer.voice_ai.adapter import (
     broadcast_asset_to_voice_request,
     content_result_to_voice_request,
     conversation_turn_to_voice_request,
     media_asset_to_voice_request,
 )
-from voice.manager import VoiceManager
-from voice.models import VoiceProviderType, VoiceSettings
+from ai_layer.voice_ai.manager import VoiceManager
+from ai_layer.voice_ai.models import VoiceProviderType, VoiceSettings
 
 
 def _accepted_result(**overrides):

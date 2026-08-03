@@ -1,10 +1,10 @@
-"""Phase 65.0 TASK 8 — voice/runtime.py: VoiceRuntime facade over VoiceManager. Extended Phase 65.1 TASK 7/8 — provider resolution, real generation, fallback."""
+"""Phase 65.0 TASK 8 — ai_layer/voice_ai/runtime.py: VoiceRuntime facade over VoiceManager. Extended Phase 65.1 TASK 7/8 — provider resolution, real generation, fallback."""
 
-from voice.manager import VoiceManager
-from voice.models import VoiceProviderStatus, VoiceProviderType, VoiceResultStatus
-from voice.provider_adapters.local import LocalVoiceProvider
-from voice.provider_adapters.openai import OpenAIVoiceProvider
-from voice.runtime import VoiceRuntime
+from ai_layer.voice_ai.manager import VoiceManager
+from ai_layer.voice_ai.models import VoiceProviderStatus, VoiceProviderType, VoiceResultStatus
+from ai_layer.voice_ai.provider_adapters.local import LocalVoiceProvider
+from ai_layer.voice_ai.provider_adapters.openai import OpenAIVoiceProvider
+from ai_layer.voice_ai.runtime import VoiceRuntime
 
 
 def test_resolve_profile_delegates_to_manager():

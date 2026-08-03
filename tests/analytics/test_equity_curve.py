@@ -1,12 +1,12 @@
 """
 Phase 60.4: Performance Validation Foundation, TASK 3 --
-analytics/equity_curve.py tests.
+backtesting_layer/statistics/equity_curve.py tests.
 """
 
 from datetime import datetime, timedelta, timezone
 
-from analytics.equity_curve import EquityCurveConfig, build_equity_curve, max_drawdown
-from analytics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.equity_curve import EquityCurveConfig, build_equity_curve, max_drawdown
+from backtesting_layer.statistics.signal_performance import SignalPerformance
 
 
 def _perf(r_multiple, created_at=None, signal_id="s"):

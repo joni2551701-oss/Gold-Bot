@@ -24,7 +24,7 @@ Strategy           strategy_layer/strategy_manager/strategy_manager.py
 Signal                signal_layer/signal_engine/signal_engine.py
     │
     ▼
-AI Analysis              ai/ai_analyzer.py — advisory only, produces
+AI Analysis              ai_layer/ai_engine/ai_analyzer.py — advisory only, produces
                           AIAnalysisResult, never itself decides
                           (Constitution Article 1)
     │

@@ -6,7 +6,7 @@ ai/memory/context_memory.py, matching this phase's explicit
 "Database integration: QILINMASIN" scope.
 """
 
-from ai.memory.context_memory import ContextMemory
+from ai_layer.knowledge_ai.memory_manager.context_memory import ContextMemory
 
 
 def test_save_and_load_round_trip():
@@ -64,7 +64,7 @@ def test_two_instances_do_not_share_state():
 def test_context_memory_has_no_database_import():
     """Static contract check matching this phase's 'no database integration' rule."""
     import inspect
-    from ai.memory import context_memory
+    from ai_layer.knowledge_ai.memory_manager import context_memory
 
     source = inspect.getsource(context_memory)
     assert "import sqlite3" not in source

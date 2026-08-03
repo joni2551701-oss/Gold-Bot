@@ -1,6 +1,6 @@
-from ai.performance.models import PerformanceRecord
-from ai.research.models import ResearchCategory
-from ai.research.performance_adapter import performance_record_to_research_input
+from ai_layer.ai_engine.performance.models import PerformanceRecord
+from ai_layer.fundamental_ai.models import ResearchCategory
+from ai_layer.fundamental_ai.performance_adapter import performance_record_to_research_input
 
 
 def _record(**overrides):

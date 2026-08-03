@@ -10,7 +10,7 @@ code.
 
 A static, hand-authored catalog. `explanation_engine.py`'s
 `explain_topic()` already reads it by key
-(`knowledge.registry.get_entry()`); `explanation_builder.py`'s
+(`ai_layer.knowledge_ai.knowledge_base.registry.get_entry()`); `explanation_builder.py`'s
 templates (Phase 63.1 TASK 3) reference the same underlying concepts
 via `ExplanationInput.concept`/`example`/`lesson`, but as caller-supplied
 text, not a live lookup into `knowledge/` — no wiring between the two

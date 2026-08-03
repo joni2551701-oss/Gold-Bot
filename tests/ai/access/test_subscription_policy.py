@@ -1,7 +1,7 @@
 """Phase 61.4 TASK 2 — Subscription Policy: pure SubscriptionRecord.plan string -> AIRole mapping."""
 
-from ai.access.permissions import AIRole
-from ai.access.subscription_policy import plan_to_ai_role
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_service.access.subscription_policy import plan_to_ai_role
 
 
 def test_vip_plan_maps_to_vip_role():

@@ -1,8 +1,8 @@
 """Phase 61.6 TASK 2 — AI Runtime Lifecycle: runtime_state.py, runtime_manager.py, runtime_events.py."""
 
-from ai.event_bus import EventBus, EventType
-from ai.runtime.runtime_manager import RuntimeManager
-from ai.runtime.runtime_state import RuntimeState, VALID_TRANSITIONS, is_valid_transition
+from ai_layer.ai_service.event_bus import EventBus, EventType
+from ai_layer.ai_engine.runtime.runtime_manager import RuntimeManager
+from ai_layer.ai_engine.runtime.runtime_state import RuntimeState, VALID_TRANSITIONS, is_valid_transition
 
 
 def test_fresh_runtime_manager_defaults_to_ready():

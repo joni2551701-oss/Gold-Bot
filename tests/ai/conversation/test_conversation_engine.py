@@ -1,13 +1,13 @@
 """Phase 61.3 TASK 5 — Conversation Engine: thin orchestration over ai/session/ and ai/runtime/ai_service.py, both unmodified."""
 
-from ai.access.permissions import AIRole
-from ai.context.context_builder import build_ai_context
-from ai.conversation.conversation_engine import ConversationEngine
-from ai.providers.base_provider import ProviderResult
-from ai.providers.provider_manager import ProviderStatus
-from ai.runtime.ai_service import AIService
-from ai.session.context_window import ContextWindow
-from ai.session.session_manager import SessionManager
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.context.context_builder import build_ai_context
+from ai_layer.personal_ai.interaction_manager.conversation_engine import ConversationEngine
+from ai_layer.ai_engine.providers.base_provider import ProviderResult
+from ai_layer.ai_engine.providers.provider_manager import ProviderStatus
+from ai_layer.ai_engine.runtime.ai_service import AIService
+from ai_layer.ai_service.session.context_window import ContextWindow
+from ai_layer.ai_service.session.session_manager import SessionManager
 
 
 class _FakeProvider:
@@ -118,8 +118,8 @@ def test_context_window_trims_history_passed_to_the_prompt():
 
 
 def test_rejected_response_does_not_record_an_assistant_turn():
-    from ai.capabilities.capability import Capability
-    from ai.capabilities.capability_manager import CapabilityManager
+    from ai_layer.ai_engine.capabilities.capability import Capability
+    from ai_layer.ai_engine.capabilities.capability_manager import CapabilityManager
 
     capability_manager = CapabilityManager()
     capability_manager.disable(Capability.CHAT)

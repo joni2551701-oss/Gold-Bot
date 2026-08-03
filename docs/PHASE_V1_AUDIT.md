@@ -79,9 +79,9 @@ pair loops back on itself, so no `ImportError` occurs:
   `run_snapshot.py`, `snapshot_collector.py` import `telegram.*`;
   reverse, `platform_layer/telegram/owner/monitoring_commands.py` and others import
   `monitoring.*`.
-- **`analytics` ↔ `learning`**: `analytics/learning_report.py` imports
-  `learning.*`; reverse, `learning/pattern_detector.py` imports
-  `analytics.strategy_report`.
+- **`analytics` ↔ `learning`**: `backtesting_layer/statistics/learning_report.py` imports
+  `learning.*`; reverse, `ai_layer/knowledge_ai/learning_loop/pattern_detector.py` imports
+  `backtesting_layer.statistics.strategy_report`.
 
 Neither pair is documented as an allowed exception in
 `IMPORT_RULES.md`/`MODULE_DEPENDENCIES.md` — a **documentation gap**,
@@ -116,7 +116,7 @@ actual import failure results).
 4. `ai/chart_intelligence/content_adapter.py` and
    `ai/trading_analyst/content_adapter.py` both import
    `broadcast.*`/`media.*` at module level. `MODULE_DEPENDENCIES.md`
-   names `ai/intelligence_runtime.py` as "the one deliberate exception"
+   names `ai_layer/ai_engine/intelligence_runtime.py` as "the one deliberate exception"
    for this — these two files are a second and third undocumented
    exception. Also, neither `ai/chart_intelligence/` nor
    `ai/trading_analyst/` appears in `MODULE_DEPENDENCIES.md`'s AI

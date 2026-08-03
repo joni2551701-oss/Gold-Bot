@@ -1,16 +1,16 @@
 """Phase 61.2 TASK 6/7/8/9 — AI Runtime Service Layer. No real network call anywhere -- every provider is faked or the real (keyless) GeminiProvider, which never reaches the network without a key."""
 
-from ai.access.permissions import AIRole
-from ai.capabilities.capability import Capability
-from ai.capabilities.capability_manager import CapabilityManager
-from ai.context.context_builder import build_ai_context
-from ai.interfaces import MarketContext
-from ai.providers.base_provider import ProviderResult
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.providers.provider_manager import ProviderStatus
-from ai.providers.runtime_errors import ProviderTimeoutError
-from ai.runtime.ai_service import AIService
-from ai.runtime.runtime_request import RuntimeRequest
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.capabilities.capability_manager import CapabilityManager
+from ai_layer.ai_engine.context.context_builder import build_ai_context
+from ai_layer.ai_service.interfaces import MarketContext
+from ai_layer.ai_engine.providers.base_provider import ProviderResult
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_engine.providers.provider_manager import ProviderStatus
+from ai_layer.ai_engine.providers.runtime_errors import ProviderTimeoutError
+from ai_layer.ai_engine.runtime.ai_service import AIService
+from ai_layer.ai_engine.runtime.runtime_request import RuntimeRequest
 
 
 class _FakeProvider:

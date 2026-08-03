@@ -1,16 +1,16 @@
-"""Phase 65.4 TASK 2/3/4/5/6/9 — assistant/runtime_adapter.py, the third composition-root file."""
+"""Phase 65.4 TASK 2/3/4/5/6/9 — ai_layer/ai_service/assistant/runtime_adapter.py, the third composition-root file."""
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from ai.access.permissions import AIRole
-from ai.context.context_snapshot import AIContext
-from ai.intelligence_runtime import IntelligenceRuntime
-from ai.memory.memory_runtime import MemoryRuntime
-from ai.runtime.runtime_response import RuntimeResponse
-from assistant.identity_manager import IdentityManager
-from assistant.models import AssistantProfile, AssistantRuntime
-from assistant.runtime_adapter import (
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.context.context_snapshot import AIContext
+from ai_layer.ai_engine.intelligence_runtime import IntelligenceRuntime
+from ai_layer.knowledge_ai.memory_manager.memory_runtime import MemoryRuntime
+from ai_layer.ai_engine.runtime.runtime_response import RuntimeResponse
+from ai_layer.ai_service.assistant.identity_manager import IdentityManager
+from ai_layer.ai_service.assistant.models import AssistantProfile, AssistantRuntime
+from ai_layer.ai_service.assistant.runtime_adapter import (
     advance_conversation,
     recall_turn,
     remember_turn,
@@ -19,11 +19,11 @@ from assistant.runtime_adapter import (
     synthesize_voice,
 )
 from core_layer.configuration.feature_flags import FeatureFlags
-from voice.manager import VoiceManager
-from voice.models import VoiceProviderStatus, VoiceProviderType, VoiceResultStatus
-from voice.provider_adapters.local import LocalVoiceProvider
-from voice.provider_adapters.openai import OpenAIVoiceProvider
-from voice.runtime import VoiceRuntime
+from ai_layer.voice_ai.manager import VoiceManager
+from ai_layer.voice_ai.models import VoiceProviderStatus, VoiceProviderType, VoiceResultStatus
+from ai_layer.voice_ai.provider_adapters.local import LocalVoiceProvider
+from ai_layer.voice_ai.provider_adapters.openai import OpenAIVoiceProvider
+from ai_layer.voice_ai.runtime import VoiceRuntime
 
 ENABLED = FeatureFlags(enable_personal_ai=True)
 DISABLED = FeatureFlags(enable_personal_ai=False)

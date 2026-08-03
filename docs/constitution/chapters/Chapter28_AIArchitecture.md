@@ -3,7 +3,7 @@
 **Package:** GB-CONST-028 · **Document:** Chapter28_AIArchitecture.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Domain (Chapters 28–37)
 **Continuity:** Reuses the terminology of Chapters 01–27; does not contradict any approved chapter.
-**Operative sources:** [`docs/AI_ARCHITECTURE.md`](../../AI_ARCHITECTURE.md), [`ai/interfaces.py`](../../../ai/interfaces.py), [`contracts/ai_contract.md`](../../../contracts/ai_contract.md).
+**Operative sources:** [`docs/AI_ARCHITECTURE.md`](../../AI_ARCHITECTURE.md), [`ai_layer/ai_service/interfaces.py`](../../../ai_layer/ai_service/interfaces.py), [`contracts/ai_contract.md`](../../../contracts/ai_contract.md).
 
 ---
 

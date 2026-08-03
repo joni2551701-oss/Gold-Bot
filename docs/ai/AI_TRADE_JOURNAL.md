@@ -31,7 +31,7 @@ a different, Trading-Core-coupled type (imports
 `signal_layer.signal_builder.models.SignalType`, predates Constitution Article 3) —
 structurally different from this phase's own contract and left
 untouched. `ai/journal/failure_analysis.py`'s `FailureAnalysisEntry`
-(Phase 59) is narrower (failure-only). `learning/models.py`'s
+(Phase 59) is narrower (failure-only). `ai_layer/knowledge_ai/learning_loop/models.py`'s
 `LearningRecord` (Phase 60.6/60.7) is DB-persisted and
 pattern-analysis-shaped, not narrative. See `docs/PHASE66_2_AUDIT.md`
 for the full reasoning behind why none of these three was extended.
@@ -74,7 +74,7 @@ own `_history` list already established. `update_notes()` only ever
 updates the three narrative fields (`reason`/`lesson`/`mistakes`) —
 `chart_id`/`trade_id`/`direction`/`entry`/`sl`/`tp`/`result` are
 immutable after `create()`. Owner-gated: every method re-checks
-`ai.trade_journal.access.is_trade_journal_enabled_for()` itself.
+`ai_layer.knowledge_ai.knowledge_base.trade_journal.access.is_trade_journal_enabled_for()` itself.
 
 ## Trading Analyst / Chart Intelligence Integration (TASK 5)
 
@@ -88,17 +88,17 @@ relays `trading.recommendation` (falling back to `trading.summary`);
 as optional pass-through parameters — neither upstream contract
 carries price levels or a realized result in its own output, so this
 Foundation-only adapter never fabricates them. The one file in
-`ai/trade_journal/` permitted to import `ai.trading_analyst.models`
-and `ai.chart_intelligence.models`.
+`ai/trade_journal/` permitted to import `ai_layer.ai_engine.trading_analyst.models`
+and `ai_layer.vision_ai.models`.
 
 ## Memory Reference (TASK 6)
 
 `memory_adapter.py`'s `memory_reference_key()` is a pure string-format
 function (`"trade_journal:{journal_id}"`) — this package never imports
-`ai.memory` at all (Rule 6: "Memory o'zgarmaydi"). `ai/memory/models.py`'s
+`ai_layer.knowledge_ai.memory_manager` at all (Rule 6: "Memory o'zgarmaydi"). `ai/memory/models.py`'s
 `MemoryScope` enum has no member shaped for a trade journal entry, and
 adding one would violate Rule 6; a future, separately-approved phase
-would use this key as `ai.memory.models.MemoryEntry.key` when it
+would use this key as `ai_layer.knowledge_ai.memory_manager.models.MemoryEntry.key` when it
 decides to wire real Memory storage.
 
 ## Owner Mode (TASK 7)
@@ -132,7 +132,7 @@ from or writes to any of those future layers.
 - No new top-level package — lives inside the existing `ai/`.
 - Never imports `decision/`, `risk/`, `execution/`, `strategies/`,
   `signals/`, `context/`, `monitoring/`, `database/`, `telegram/`,
-  `assistant/`, `voice/`, `ai.memory`, `ai.reasoning`, `knowledge/`,
+  `assistant/`, `voice/`, `ai_layer.knowledge_ai.memory_manager`, `ai_layer.ai_engine.reasoning`, `knowledge/`,
   `ai.content/`, `media/`, or `broadcast/` — zero exceptions,
   permanently enforced by
   `tests/ai/trade_journal/test_trade_journal_isolation.py`.

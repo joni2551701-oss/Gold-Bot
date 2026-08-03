@@ -1,8 +1,8 @@
-from ai.access.permissions import AIRole
-from ai.chart_intelligence.models import ChartAnalysis, ChartAnalysisType, ChartImageType
-from ai.trade_journal.journal_runtime import TradeJournalRuntime
-from ai.trade_journal.trading_analyst_adapter import journal_entry_from_trading_and_chart
-from ai.trading_analyst.models import TradingAnalysis, TradingRiskLevel
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.vision_ai.models import ChartAnalysis, ChartAnalysisType, ChartImageType
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.journal_runtime import TradeJournalRuntime
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.trading_analyst_adapter import journal_entry_from_trading_and_chart
+from ai_layer.ai_engine.trading_analyst.models import TradingAnalysis, TradingRiskLevel
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_trade_journal=True)

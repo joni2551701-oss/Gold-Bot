@@ -1,13 +1,13 @@
 """Phase 65.2 TASK 1 — voice/stt/contract.py: STTProviderContract + STTProviderError hierarchy."""
 
-from voice.stt.contract import (
+from ai_layer.voice_ai.stt.contract import (
     STTProviderContract,
     STTProviderError,
     STTProviderInvalidResponseError,
     STTProviderTimeoutError,
     STTProviderUnavailableError,
 )
-from voice.stt.models import STTRequest, STTResult, STTResultStatus
+from ai_layer.voice_ai.stt.models import STTRequest, STTResult, STTResultStatus
 
 
 class _FakeSTTProvider(STTProviderContract):

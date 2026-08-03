@@ -1,9 +1,9 @@
 """Phase 61.5 TASK 2 — Provider Score. Recommendation/analytics only -- never imports or calls AIRouter.route()."""
 
-from ai.audit.provider_stats import ProviderStats
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.providers.provider_status import HealthStatus
-from ai.router.provider_score import score_provider, score_providers
+from ai_layer.ai_service.audit.provider_stats import ProviderStats
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_engine.providers.provider_status import HealthStatus
+from ai_layer.ai_coordinator.provider_score import score_provider, score_providers
 
 
 def _stats(success_rate=1.0, avg_latency_ms=100.0, total_cost=0.0, total_calls=10):
@@ -82,7 +82,7 @@ def test_score_providers_empty_list_returns_empty_list():
 
 
 def test_score_providers_never_calls_or_imports_router_route():
-    import ai.router.provider_score as module
+    import ai_layer.ai_coordinator.provider_score as module
     import inspect
     source = inspect.getsource(module)
     assert "AIRouter" not in source

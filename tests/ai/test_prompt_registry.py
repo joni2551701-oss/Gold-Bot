@@ -1,7 +1,7 @@
 """Phase 61.1 TASK 5 — Prompt Registry Extension. PromptManager itself is not replaced."""
 
-from ai.prompts.prompt_manager import PromptManager
-from ai.prompts.prompt_registry import PromptRegistry
+from ai_layer.ai_engine.prompts.prompt_manager import PromptManager
+from ai_layer.ai_engine.prompts.prompt_registry import PromptRegistry
 
 
 def test_prompt_manager_is_unmodified_by_the_registry():

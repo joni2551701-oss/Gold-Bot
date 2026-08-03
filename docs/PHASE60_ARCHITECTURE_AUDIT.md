@@ -83,8 +83,8 @@ docstrings rather than accidental orphans:
 |---|---|---|
 | `class DecisionResult` | `decision_layer/decision_engine/decision_engine.py:24` | Superseded — `DecisionEngine.decide()` actually returns `TradeDecision` (from `decision_layer/decision_engine/models.py`), never `DecisionResult`. Zero references anywhere. |
 | `class SignalMonitor` | `core_layer/health_monitor/signal_monitor.py:16` | Self-documented placeholder ("Currently a placeholder... Signal ID, state, and timestamp will arrive via a future event contract"). Never constructed anywhere. |
-| `def build_prompt()` | `ai/ai_prompt.py:40` | `ai/ai_analyzer.py` (the real, live AI analyzer) never imports `ai_prompt` — this is a disconnected, earlier-generation prompt builder. |
-| `def evaluate_confidence()` | `ai/confidence_model.py:23` | Same disconnection — `ai_analyzer.py` never imports `confidence_model`. Its own docstring already says it's a no-op until a future phase populates `SignalCandidate.context_refs`. |
+| `def build_prompt()` | `ai_layer/ai_engine/ai_prompt.py:40` | `ai_layer/ai_engine/ai_analyzer.py` (the real, live AI analyzer) never imports `ai_prompt` — this is a disconnected, earlier-generation prompt builder. |
+| `def evaluate_confidence()` | `ai_layer/confidence_ai/confidence_model.py:23` | Same disconnection — `ai_analyzer.py` never imports `confidence_model`. Its own docstring already says it's a no-op until a future phase populates `SignalCandidate.context_refs`. |
 | `def is_doji()`, `body_ratio()`, `upper_wick()`, `lower_wick()` | `context_layer/context_engine/candle.py:23,33,36,42` | Candle-shape helper functions with zero callers anywhere (sibling functions `direction()`/`is_bullish()`/`is_bearish()`/`body_size()`/`range_size()` in the same file *are* used elsewhere and were correctly not flagged). |
 | `def is_user()` | `platform_layer/telegram/permissions.py:59` | `get_permission_level()` in the same file falls through to `PermissionLevel.USER` directly without calling `is_user()` — the function exists but nothing calls it. |
 
@@ -134,8 +134,8 @@ performances, period_start, period_end)` (Phase 59.8) share an
 **identical call signature** and both explicitly target the same
 future command name — `get_validation_summary()`'s own docstring says
 "the future `/validation_report` command's payload." They differ only
-in which builder they wrap (`analytics.validation_report.build_validation_report()`
-vs `analytics.strategy_report.build_strategy_report()` +
+in which builder they wrap (`backtesting_layer.statistics.validation_report.build_validation_report()`
+vs `backtesting_layer.statistics.strategy_report.build_strategy_report()` +
 `compute_win_rate()`), producing two different text formats for what
 is meant to become the same one command. Unlike the
 `list_features()`/`get_feature_states()` pair (deliberately different

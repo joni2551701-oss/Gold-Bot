@@ -1,5 +1,5 @@
-from ai.trade_journal.memory_adapter import memory_reference_key
-from ai.trade_journal.models import TradeJournalEntry
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.memory_adapter import memory_reference_key
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.models import TradeJournalEntry
 
 
 def _entry(**overrides):

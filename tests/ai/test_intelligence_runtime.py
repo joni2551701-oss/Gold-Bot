@@ -1,6 +1,6 @@
-"""Phase 64.0 TASK 1-4 — ai/intelligence_runtime.py: IntelligenceRuntime composes all eight Official Intelligence Pipeline layers via their existing deterministic entry points, zero LLM calls."""
+"""Phase 64.0 TASK 1-4 — ai_layer/ai_engine/intelligence_runtime.py: IntelligenceRuntime composes all eight Official Intelligence Pipeline layers via their existing deterministic entry points, zero LLM calls."""
 
-from ai.intelligence_runtime import IntelligenceRuntime, PipelineStage, PipelineStageResult
+from ai_layer.ai_engine.intelligence_runtime import IntelligenceRuntime, PipelineStage, PipelineStageResult
 
 
 def test_run_walks_every_stage_in_official_intelligence_pipeline_order():
@@ -77,7 +77,7 @@ def test_intelligence_runtime_never_calls_ai_service():
     """No stage this module drives ever reaches AIService.ask() -- verified structurally: run() never constructs an AIContext or AIRole, both required by every AIService.ask()-calling path in this codebase."""
     import inspect
 
-    from ai.intelligence_runtime import IntelligenceRuntime as _Runtime
+    from ai_layer.ai_engine.intelligence_runtime import IntelligenceRuntime as _Runtime
 
     source = inspect.getsource(_Runtime.run)
     assert "ai_context" not in source

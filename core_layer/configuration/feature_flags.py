@@ -23,7 +23,7 @@ class FeatureFlags:
     dataclasses.replace()), not mutating one in place.
 
     enable_ai: reserved for a future real AI provider decision (see
-        docs/AI_ARCHITECTURE.md) -- ai/ai_analyzer.py stays a
+        docs/AI_ARCHITECTURE.md) -- ai_layer/ai_engine/ai_analyzer.py stays a
         heuristic stub regardless of this flag's value in this phase.
     enable_crypto: reserved for a future Crypto AssetType profile
         (assets/, Phase A12) -- no Crypto data provider exists.
@@ -39,23 +39,23 @@ class FeatureFlags:
         replay harness exists.
     enable_personal_ai: reserved for the Personal AI Assistant
         (Phase 65.3, `assistant/`) -- always False by default; even
-        when True, `assistant.access.is_personal_ai_enabled_for()`
+        when True, `ai_layer.ai_service.assistant.access.is_personal_ai_enabled_for()`
         additionally requires `AIRole.OWNER` (Admin/VIP/Premium/Free
         all BLOCK regardless of this flag's value, per TASK 7).
     enable_trading_analyst: reserved for the AI Trading Analyst
         (Phase 66.0, `ai/trading_analyst/`) -- always False by
         default; even when True,
-        `ai.trading_analyst.access.is_trading_analyst_enabled_for()`
+        `ai_layer.ai_engine.trading_analyst.access.is_trading_analyst_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 9).
     enable_chart_intelligence: reserved for AI Chart Intelligence
         (Phase 66.1, `ai/chart_intelligence/`) -- always False by
         default; even when True,
-        `ai.chart_intelligence.access.is_chart_intelligence_enabled_for()`
+        `ai_layer.vision_ai.access.is_chart_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 7).
     enable_trade_journal: reserved for AI Trade Journal Intelligence
         (Phase 66.2, `ai/trade_journal/`) -- always False by default;
         even when True,
-        `ai.trade_journal.access.is_trade_journal_enabled_for()`
+        `ai_layer.knowledge_ai.knowledge_base.trade_journal.access.is_trade_journal_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 7). Distinct from
         `enable_ai_memory` (whose own docstring already references
         `ai/journal/trade_journal.py` but does not govern it) -- this
@@ -64,35 +64,35 @@ class FeatureFlags:
     enable_learning_intelligence: reserved for AI Learning Intelligence
         (Phase 66.3, `ai/learning/`) -- always False by default; even
         when True,
-        `ai.learning.access.is_learning_intelligence_enabled_for()`
+        `ai_layer.knowledge_ai.learning_engine.access.is_learning_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 6). Distinct from
         the pre-existing, unrelated `learning/` top-level package
         (Phase 60.6/60.7), which reads no feature flag at all.
     enable_coaching_intelligence: reserved for AI Coaching Intelligence
         (Phase 66.4, `ai/coaching/`) -- always False by default; even
         when True,
-        `ai.coaching.access.is_coaching_intelligence_enabled_for()`
+        `ai_layer.personal_ai.senior.access.is_coaching_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 6).
     enable_performance_intelligence: reserved for AI Performance
         Intelligence (Phase 66.5, `ai/performance/`) -- always False
         by default; even when True,
-        `ai.performance.access.is_performance_intelligence_enabled_for()`
+        `ai_layer.ai_engine.performance.access.is_performance_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 8).
     enable_strategy_intelligence: reserved for AI Strategy Intelligence
         (Phase 66.6, `ai/strategy/`) -- always False by default; even
         when True,
-        `ai.strategy.access.is_strategy_intelligence_enabled_for()`
+        `ai_layer.ai_engine.strategy.access.is_strategy_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 7).
     enable_portfolio_intelligence: reserved for AI Portfolio
         Intelligence (Phase 66.7, `ai/portfolio/`) -- always False by
         default; even when True,
-        `ai.portfolio.access.is_portfolio_intelligence_enabled_for()`
+        `ai_layer.ai_engine.portfolio.access.is_portfolio_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 7).
     enable_research_intelligence: reserved for AI Research
         Intelligence (Phase 66.8, `ai/research/`, the final phase in
         the `66.x` AI Trading Intelligence sub-sequence) -- always
         False by default; even when True,
-        `ai.research.access.is_research_intelligence_enabled_for()`
+        `ai_layer.fundamental_ai.access.is_research_intelligence_enabled_for()`
         additionally requires `AIRole.OWNER` (TASK 8).
     enable_owner_monitoring: reserved for the GoldBot Core Owner
         Monitoring Alpha's own genuine-gap additions (Phase B.0 --

@@ -1,6 +1,6 @@
 import dataclasses
 
-from ai.strategy.models import (
+from ai_layer.ai_engine.strategy.models import (
     StrategyConfidence,
     StrategyRecord,
     StrategyStatus,

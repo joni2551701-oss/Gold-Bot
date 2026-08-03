@@ -1,7 +1,7 @@
 """Phase 63.4 TASK 3 — ai/reasoning/reasoning_registry.py: static ReasoningType catalog."""
 
-from ai.reasoning.models import ReasoningType
-from ai.reasoning.reasoning_registry import build_reasoning_type_registry, describe
+from ai_layer.ai_engine.reasoning.models import ReasoningType
+from ai_layer.ai_engine.reasoning.reasoning_registry import build_reasoning_type_registry, describe
 
 
 def test_registry_has_one_descriptor_per_reasoning_type():

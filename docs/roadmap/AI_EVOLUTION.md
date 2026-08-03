@@ -184,7 +184,7 @@ sequence — Broadcast is the pipeline's terminal layer; no real
 delivery exists yet. See `docs/PHASE63_8_FREEZE.md`.
 
 Built Phase 64.0 — **AI Intelligence Integration Layer**, the first
-phase after the `63.0`–`63.8` sequence closed: `ai/intelligence_runtime.py`'s
+phase after the `63.0`–`63.8` sequence closed: `ai_layer/ai_engine/intelligence_runtime.py`'s
 `IntelligenceRuntime`, the first orchestrator to actually call all
 eight layers (`Knowledge → Memory → Reasoning → Conversation →
 Explanation → Content → Media → Broadcast`) in sequence, deterministic
@@ -206,12 +206,12 @@ Built Phase 65.1 — **AI Voice Provider Integration**: real
 (`voice/provider_adapters/`, real HTTP via `requests`, gated on
 `core/secrets.py`'s `OPENAI_API_KEY`/new `ELEVENLABS_API_KEY`),
 `LocalVoiceProvider`/`CustomVoiceProvider` skeletons,
-`VoiceProviderContract` (`voice/provider_contract.py`), per-profile
+`VoiceProviderContract` (`ai_layer/voice_ai/provider_contract.py`), per-profile
 provider selection and adapter registry (extends `VoiceManager`, no
 duplicate Manager), fallback handling (extends `VoiceRuntime`), and
 three new Content-sibling integration adapters
 (`media_asset_to_voice_request()`/`broadcast_asset_to_voice_request()`/
-`conversation_turn_to_voice_request()`, extends `voice/adapter.py`).
+`conversation_turn_to_voice_request()`, extends `ai_layer/voice_ai/adapter.py`).
 Voice is now the terminal narrating stage of the Official Intelligence
 Pipeline below. See `docs/PHASE65_1_FREEZE.md`.
 
@@ -225,26 +225,26 @@ direction); `voice/intents/` (`VoiceIntent`, deterministic keyword
 `detect_intent()`, metadata only); `voice/session/` (`VoiceSession`/
 `VoiceSessionManager`, a genuinely different session concept from
 `ai/session/`'s `ConversationState`, linked by a
-`conversation_session_id` pointer); `voice/conversation_bridge.py`'s
+`conversation_session_id` pointer); `ai_layer/voice_ai/conversation_bridge.py`'s
 `handle_voice_turn()` — the second composition-root exception in this
-codebase (the first is `ai/intelligence_runtime.py`, Phase 64.0, which
+codebase (the first is `ai_layer/ai_engine/intelligence_runtime.py`, Phase 64.0, which
 stays deliberately deterministic) — composes STT → intent detection →
 the *existing*, unmodified `ConversationEngine.ask()` (real call) →
 the *existing*, unmodified `VoiceRuntime.generate_audio()`/
 `generate_with_fallback()`. Zero new business logic in any of the four
-systems it composes. `voice/` still never imports `ai.memory`/
-`ai.reasoning`/`ai.explanation`/top-level `knowledge` directly,
+systems it composes. `voice/` still never imports `ai_layer.knowledge_ai.memory_manager`/
+`ai_layer.ai_engine.reasoning`/`ai_layer.explanation_ai`/top-level `knowledge` directly,
 anywhere, with zero exemptions (Phase 65.2's own Rule 2). See
 `docs/PHASE65_2_FREEZE.md`.
 
 Built Phase 65.3 — **Personal AI Assistant Foundation**: top-level
 `assistant/` (`IdentityManager`/`AssistantIdentity`/
 `identity_registry.py`: Senior/Seniorita presentation metadata,
-deliberately not `ai.persona.Persona` — Rule 3 Persona Protection),
+deliberately not `ai_layer.personal_ai.persona_manager.Persona` — Rule 3 Persona Protection),
 `AssistantManager` (per-user `AssistantProfile` CRUD, Owner-only via
-`assistant/access.py`'s `is_personal_ai_enabled_for()`, deliberately
+`ai_layer/ai_service/assistant/access.py`'s `is_personal_ai_enabled_for()`, deliberately
 *not* `ai/access/access_control.py`'s matrix since that grants ADMIN
-equally), and `assistant/conversation_adapter.py`'s three structural
+equally), and `ai_layer/ai_service/assistant/conversation_adapter.py`'s three structural
 (not real-call) Conversation/Voice/Memory integration points. The
 brief's own diagram places Assistant *before* Conversation in the
 Official Intelligence Pipeline below, so — applying the Intelligence
@@ -259,12 +259,12 @@ imported before. `AssistantManager` extended in place with
 `AssistantRuntime` lifecycle methods (`create_runtime()`/
 `load_runtime()`/`restore_runtime()`/`close_runtime()`/
 `runtime_status()`, all Owner-gated, no new Manager). New
-`assistant/runtime_adapter.py` — the third composition-root-shaped
-file in this codebase (after `ai/intelligence_runtime.py` and
-`voice/conversation_bridge.py`) — is the one file in `assistant/`
-permitted to import `ai.conversation.conversation_engine`,
-`ai.intelligence_runtime`, `ai.memory.memory_runtime`, and
-`voice.runtime`: `advance_conversation()` (real `ConversationEngine.ask()`),
+`ai_layer/ai_service/assistant/runtime_adapter.py` — the third composition-root-shaped
+file in this codebase (after `ai_layer/ai_engine/intelligence_runtime.py` and
+`ai_layer/voice_ai/conversation_bridge.py`) — is the one file in `assistant/`
+permitted to import `ai_layer.personal_ai.interaction_manager.conversation_engine`,
+`ai_layer.ai_engine.intelligence_runtime`, `ai_layer.knowledge_ai.memory_manager.memory_runtime`, and
+`ai_layer.voice_ai.runtime`: `advance_conversation()` (real `ConversationEngine.ask()`),
 `synthesize_voice()` (real `VoiceRuntime.generate_audio()`/
 `generate_with_fallback()`), `remember_turn()`/`recall_turn()` (real
 `MemoryRuntime.store()`/`recall()`), `run_intelligence_pipeline()`
@@ -339,7 +339,7 @@ LLM, or image recognition model call anywhere in this phase (Rule 4).
 (Phase 66.0) with this phase's own `ChartAnalysis` into a combined
 Explanation — the pipeline's own "TradingAnalyst → ChartAnalysis →
 Explanation" order, the one file permitted to import
-`ai.trading_analyst`. `content_adapter.py` reuses the existing
+`ai_layer.ai_engine.trading_analyst`. `content_adapter.py` reuses the existing
 Content → Media → Broadcast pipeline (`ContentType.LIVE_ANALYSIS`
 reused a second time, `MediaType.IMAGE` reused as-is).
 `vision_provider_types.py`'s `ChartVisionProviderType` is pure
@@ -355,8 +355,8 @@ third phase in the `66.x` AI Trading Intelligence sub-sequence: new
 `ai/trade_journal/` subpackage (inside the existing `ai/` top-level
 package, confirmed by `docs/PHASE66_2_AUDIT.md`'s TASK 0 audit —
 which also reviewed the pre-existing, Trading-Core-coupled
-`ai.journal.trade_journal.TradeJournalEntry`, Phase 55, and
-DB-persisted `learning.models.LearningRecord`, Phase 60.6/60.7,
+`ai_layer.knowledge_ai.knowledge_base.journal.trade_journal.TradeJournalEntry`, Phase 55, and
+DB-persisted `ai_layer.knowledge_ai.learning_loop.models.LearningRecord`, Phase 60.6/60.7,
 neither reusable for this phase's own primitive-only, in-memory
 mandate). `TradeJournalEntry`/`ReplayContext` (`models.py`) are
 primitive-only, `chart_id`/`trade_id` mandatory links (Director Note
@@ -371,7 +371,7 @@ win rate/Sharpe/profit factor/drawdown belong to a future 66.5).
 (66.0) and `ChartAnalysis` (66.1) into a `TradeJournalEntry` — the
 pipeline's own "TradingAnalysis → ChartAnalysis → TradeJournal" order.
 `memory_adapter.py`'s `memory_reference_key()` never imports
-`ai.memory` at all (Rule 6 — Memory itself never changes). Owner-only
+`ai_layer.knowledge_ai.memory_manager` at all (Rule 6 — Memory itself never changes). Owner-only
 via a dedicated `enable_trade_journal` flag. Zero diff in `decision/`,
 `risk/`, `execution/`, `strategies/`, `signals/`, `context/`,
 `monitoring/` this phase (Rule 1). Not wired into `core/pipeline.py`
@@ -387,8 +387,8 @@ evaluation, coaching, or teaching of any kind. New `ai/learning/`
 subpackage (inside the existing `ai/` top-level package, confirmed by
 `docs/PHASE66_3_AUDIT.md`'s TASK 0 audit, which also reviewed and
 declined to reuse the pre-existing, DB-persisted
-`learning.models.LearningRecord`, Phase 60.6/60.7, and
-`ai/learning_context.py`'s `LearningContext`, both trade-outcome
+`ai_layer.knowledge_ai.learning_loop.models.LearningRecord`, Phase 60.6/60.7, and
+`ai_layer/knowledge_ai/learning_context.py`'s `LearningContext`, both trade-outcome
 statistics concerns rather than per-user topic mastery).
 `LearningRecord`/`LearningTopic`/`LearningLevel`/`LearningSource`/
 `LearningStatus` (`models.py`) are primitive-only, in-memory. `LearningRuntime`
@@ -398,7 +398,7 @@ inference, no performance computation, no coaching, no lesson/quiz
 generation. `journal_adapter.py` maps an existing `TradeJournalEntry`
 (Phase 66.2) into `LearningRuntime.create()`'s own keyword arguments —
 pure mapping, never infers `topic`/`level`. `memory_adapter.py`'s
-`memory_reference_key()` never imports `ai.memory`. Owner-only via a
+`memory_reference_key()` never imports `ai_layer.knowledge_ai.memory_manager`. Owner-only via a
 dedicated `enable_learning_intelligence` flag. Zero diff in
 `decision/`, `risk/`, `execution/`, `signals/`, `telegram/`,
 `database/`, `monitoring/`, `strategies/` this phase (Rule 1/2). Not
@@ -417,7 +417,7 @@ pre-existing Coaching model, Runtime, Manager, or Registry anywhere in
 the codebase). `CoachingRecommendation`/`CoachingTopic`/
 `CoachingPriority`/`CoachingType`/`CoachingStatus` (`models.py`) are
 primitive-only, in-memory — `CoachingTopic` mirrors
-`ai.learning.models.LearningTopic`'s own value set for coherence but
+`ai_layer.knowledge_ai.learning_engine.models.LearningTopic`'s own value set for coherence but
 is a separate, local enum (no cross-package import in `models.py`).
 `CoachingRuntime` (`coaching_runtime.py`) is CRUD-only —
 `create()`/`get()`/`list()`/`archive()`/`update_status()`, no LLM, no
@@ -451,13 +451,13 @@ outcome? → Where was the mistake? → Which habit keeps repeating?" New
 `ai/performance/` subpackage (inside the existing `ai/` top-level
 package, confirmed by `docs/PHASE66_5_AUDIT.md`'s TASK 0 audit, which
 found no pre-existing Performance model, Runtime, Manager, or Registry
-anywhere in the codebase — `analytics.performance_metrics.PerformanceMetrics`,
+anywhere in the codebase — `backtesting_layer.statistics.performance_metrics.PerformanceMetrics`,
 Phase 60.4, is a different, fixed-shape portfolio aggregate, not a
 duplicate). `PerformanceRecord`/`PerformanceMetric`/`PerformanceCategory`
 (`models.py`) are primitive-only, in-memory — `PerformanceRecord`
 extends TASK 2's own field list additively with `archived: bool =
 False` so TASK 3's `archive()` has a lifecycle field, mirroring
-`ai.learning.models.LearningRecord`'s own precedent. `PerformanceRuntime`
+`ai_layer.knowledge_ai.learning_engine.models.LearningRecord`'s own precedent. `PerformanceRuntime`
 (`performance_runtime.py`) is CRUD-only —
 `create()`/`get()`/`list()`/`update_notes()`/`archive()`, no AI
 conclusions, no GPT call, no scoring algorithm.
@@ -466,12 +466,12 @@ into `PerformanceRuntime.create()`'s own keyword arguments — pure
 mapping, never computes win/loss or finds a cause.
 `coaching_adapter.py` maps a `PerformanceRecord` into
 `CoachingRuntime.create()`-shaped keyword arguments, structure only,
-with no `ai.coaching` import needed at all. `analytics_adapter.py`
-reuses `analytics.strategy_report.compute_win_rate()` directly rather
+with no `ai_layer.personal_ai.senior` import needed at all. `analytics_adapter.py`
+reuses `backtesting_layer.statistics.strategy_report.compute_win_rate()` directly rather
 than force-fitting `compute_performance_metrics()` (which needs a
 field `PerformanceRecord` doesn't carry) — an honestly documented
 partial-reuse gap, not fabrication. `memory_adapter.py`'s
-`performance_memory_key()` never imports `ai.memory`. Owner-only via a
+`performance_memory_key()` never imports `ai_layer.knowledge_ai.memory_manager`. Owner-only via a
 dedicated `enable_performance_intelligence` flag. Zero diff in
 `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
 `context/`, `telegram/`, `database/`, `monitoring/` this phase (Rule
@@ -508,7 +508,7 @@ type-only, never imports the Performance Runtime.
 the same way, deliberately never relaying `TradeJournalEntry.confidence`
 (a per-trade value, not a per-strategy one -- relaying it would be
 inference). `memory_adapter.py`'s `strategy_reference_key()` never
-imports `ai.memory`. Owner-only via a dedicated
+imports `ai_layer.knowledge_ai.memory_manager`. Owner-only via a dedicated
 `enable_strategy_intelligence` flag. Zero diff in `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/`, `context/`, `monitoring/`
 this phase (Rule 1). Not wired into `core/pipeline.py` or any Telegram
@@ -541,9 +541,9 @@ type-only, relays `notes` only. `strategy_adapter.py` is the first
 66.6) rather than a single record, since `strategy_count`/
 `active_strategy_count` are aggregate counts no single record could
 supply -- deterministic counting, not inference, the same class of
-operation `ai.performance.analytics_adapter.py`'s own win-rate
+operation `ai_layer.ai_engine.performance.analytics_adapter.py`'s own win-rate
 counting (Phase 66.5) already performed. `memory_adapter.py`'s
-`portfolio_reference_key()` never imports `ai.memory`. Owner-only via
+`portfolio_reference_key()` never imports `ai_layer.knowledge_ai.memory_manager`. Owner-only via
 a dedicated `enable_portfolio_intelligence` flag. Zero diff in
 `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
 `context/`, `monitoring/` this phase (Rule 1). Not wired into
@@ -581,7 +581,7 @@ to single-record mapping -- `ResearchRecord.source_count` has no
 natural single-type counting target, so it stays a plain
 caller-supplied `int = 0` field, never computed by any adapter (see
 `docs/PHASE66_8_AUDIT.md`'s "Question 6"). `memory_adapter.py`'s
-`research_reference_key()` never imports `ai.memory`. Owner-only via a
+`research_reference_key()` never imports `ai_layer.knowledge_ai.memory_manager`. Owner-only via a
 dedicated `enable_research_intelligence` flag. Zero diff in
 `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
 `context/`, `monitoring/` this phase (Rule 1). Not wired into

@@ -54,8 +54,8 @@ Reasoning sits **between** Memory and Conversation in this chain.
 Applied to this phase's own TASK 4/5/6:
 
 - **TASK 4/5 (Knowledge, Memory — upstream, allowed)**: `ai/reasoning/`
-  may reference `knowledge.models.KnowledgeEntry`/`KnowledgeCategory`
-  and `ai.memory.models.MemoryEntry`/`MemoryScope`/`MemoryType` as
+  may reference `ai_layer.knowledge_ai.knowledge_base.models.KnowledgeEntry`/`KnowledgeCategory`
+  and `ai_layer.knowledge_ai.memory_manager.models.MemoryEntry`/`MemoryScope`/`MemoryType` as
   **types only** — the same "reference a data shape from an earlier
   stage" pattern already sanctioned for `decision/` accepting
   `AIAnalysisResult` from `ai/` (Constitution Article 3). It never
@@ -70,7 +70,7 @@ Applied to this phase's own TASK 4/5/6:
   language ("Real ulanish yo'q. Faqat interface.") is honored exactly
   this way: `reasoning_result_to_explanation_fields()` returns a plain
   `dict` of primitive values shaped like `ExplanationInput`'s own
-  fields, without importing `ai.explanation` at all. A future caller
+  fields, without importing `ai_layer.explanation_ai` at all. A future caller
   (e.g. `core/pipeline.py`, or a future `ai/conversation/`) is the one
   that would import both packages and bridge them — `ai/reasoning/`
   itself stays one-directional.

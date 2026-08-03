@@ -22,8 +22,8 @@ never mines a pattern, never detects a market regime, and performs no
 real AI inference of any kind (Rule 4: "GPT/Claude/Gemini/OpenAI/
 AI-inference/Reasoning YO'Q"). It never touches `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/`, `context/`, `monitoring/`,
-`telegram/`, `database/`, `voice/`, `assistant/`, `core.`, `ai.memory`,
-or `ai.reasoning` (Rule 1/TASK 7's own isolation list).
+`telegram/`, `database/`, `voice/`, `assistant/`, `core.`, `ai_layer.knowledge_ai.memory_manager`,
+or `ai_layer.ai_engine.reasoning` (Rule 1/TASK 7's own isolation list).
 
 ## Model (TASK 2)
 
@@ -55,14 +55,14 @@ own `_records` dict already established. `update()` mutates only
 its argument is `None`; `update_notes()` only ever mutates `notes`.
 `archive()` sets `status=ResearchStatus.ARCHIVED` and never deletes a
 record. Owner-gated: every method re-checks
-`ai.research.access.is_research_intelligence_enabled_for()` itself.
+`ai_layer.fundamental_ai.access.is_research_intelligence_enabled_for()` itself.
 
 ## Performance Adapter (TASK 4)
 
 `performance_adapter.py`'s `performance_record_to_research_input()` is
 a pure, type-only mapping — TASK 4's own instruction: "Reuse qiladi.
 Inference YO'Q." It reads an existing
-`ai.performance.models.PerformanceRecord` (Phase 66.5, LOCKed) and
+`ai_layer.ai_engine.performance.models.PerformanceRecord` (Phase 66.5, LOCKed) and
 relays `notes`, and sets `category=ResearchCategory.PERFORMANCE` — a
 **structural constant of this specific adapter, not content-based
 inference**: every record this adapter ever produces originates from a
@@ -70,14 +70,14 @@ inference**: every record this adapter ever produces originates from a
 zero ambiguity and zero content-reading. `title`/`priority`/`status`/
 `summary`/`source_count` are deliberately absent — `PerformanceRecord`
 carries no field shaped for any of the five. Never imports
-`ai.performance.performance_runtime`. The one file in `ai/research/`
-permitted to import `ai.performance.models`.
+`ai_layer.ai_engine.performance.performance_runtime`. The one file in `ai/research/`
+permitted to import `ai_layer.ai_engine.performance.models`.
 
 ## Strategy Adapter (TASK 5)
 
 `strategy_adapter.py`'s `strategy_record_to_research_input()` follows
 the identical single-record mapping posture, reading an existing
-`ai.strategy.models.StrategyRecord` (Phase 66.6, LOCKed) — relays
+`ai_layer.ai_engine.strategy.models.StrategyRecord` (Phase 66.6, LOCKed) — relays
 `notes`, sets `category=ResearchCategory.STRATEGY` (structural
 constant, not inference). Unlike Phase 66.7's own
 `strategy_adapter.py` (the first `66.x` adapter to operate over a
@@ -86,18 +86,18 @@ version reverts to the more common single-record precedent —
 `ResearchRecord.source_count` has no natural single-type counting
 target, so no sequence-aggregation logic exists here (see
 `docs/PHASE66_8_AUDIT.md`'s "Question 6"). Never imports
-`ai.strategy.strategy_runtime`. The one file in `ai/research/`
-permitted to import `ai.strategy.models`.
+`ai_layer.ai_engine.strategy.strategy_runtime`. The one file in `ai/research/`
+permitted to import `ai_layer.ai_engine.strategy.models`.
 
 ## Portfolio Adapter (TASK 6)
 
 `portfolio_adapter.py`'s `portfolio_record_to_research_input()` is the
 third and final sibling-Foundation adapter, reading an existing
-`ai.portfolio.models.PortfolioRecord` (Phase 66.7, LOCKed) — relays
+`ai_layer.ai_engine.portfolio.models.PortfolioRecord` (Phase 66.7, LOCKed) — relays
 `notes`, sets `category=ResearchCategory.PORTFOLIO` (structural
 constant, not inference). Never imports
-`ai.portfolio.portfolio_runtime`. The one file in `ai/research/`
-permitted to import `ai.portfolio.models`.
+`ai_layer.ai_engine.portfolio.portfolio_runtime`. The one file in `ai/research/`
+permitted to import `ai_layer.ai_engine.portfolio.models`.
 
 ## Owner Mode (TASK 8)
 
@@ -112,8 +112,8 @@ requires **both**
 `memory_adapter.py`'s `research_reference_key(record) -> str` builds a
 plain string key (`"research:{research_id}"`) for a future,
 separately-approved phase to use once real Memory storage is wired —
-this module never imports `ai.memory` at all. Mirrors
-`ai.portfolio.memory_adapter.portfolio_reference_key()`'s own
+this module never imports `ai_layer.knowledge_ai.memory_manager` at all. Mirrors
+`ai_layer.ai_engine.portfolio.memory_adapter.portfolio_reference_key()`'s own
 precedent exactly.
 
 ## Future Compatibility (TASK 9)
@@ -146,7 +146,7 @@ this package.
 - No new top-level package — lives inside the existing `ai/`.
 - Never imports `decision/`, `risk/`, `execution/`, `strategies/`,
   `signals/`, `context/`, `monitoring/`, `telegram/`, `database/`,
-  `voice/`, `assistant/`, `core.`, `ai.memory`, or `ai.reasoning` —
+  `voice/`, `assistant/`, `core.`, `ai_layer.knowledge_ai.memory_manager`, or `ai_layer.ai_engine.reasoning` —
   zero exceptions, permanently enforced by
   `tests/ai/research/test_ai_research_isolation.py`.
 - Not wired into `core/pipeline.py` or any Telegram command this

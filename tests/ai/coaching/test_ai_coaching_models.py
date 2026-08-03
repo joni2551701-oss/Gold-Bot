@@ -1,6 +1,6 @@
 import dataclasses
 
-from ai.coaching.models import (
+from ai_layer.personal_ai.senior.models import (
     CoachingPriority,
     CoachingRecommendation,
     CoachingStatus,
@@ -187,7 +187,7 @@ def test_generate_coach_id_unique():
 
 def test_coaching_topic_and_knowledge_category_are_distinct_enums():
     """docs/PHASE66_4_AUDIT.md: CoachingTopic is not a duplicate of knowledge.models.KnowledgeCategory despite some name overlap (RISK, PSYCHOLOGY)."""
-    from knowledge.models import KnowledgeCategory
+    from ai_layer.knowledge_ai.knowledge_base.models import KnowledgeCategory
 
     assert CoachingTopic is not KnowledgeCategory
     assert set(CoachingTopic) != set(KnowledgeCategory)
@@ -195,7 +195,7 @@ def test_coaching_topic_and_knowledge_category_are_distinct_enums():
 
 def test_coaching_topic_and_learning_topic_are_distinct_enums():
     """docs/PHASE66_4_AUDIT.md: CoachingTopic mirrors LearningTopic's value set for coherence but is a separate, local enum -- models.py never imports ai.learning."""
-    from ai.learning.models import LearningTopic
+    from ai_layer.knowledge_ai.learning_engine.models import LearningTopic
 
     assert CoachingTopic is not LearningTopic
 

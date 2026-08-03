@@ -1,4 +1,4 @@
-from ai.chart_intelligence.vision_provider_types import ChartVisionProviderType
+from ai_layer.vision_ai.vision_provider_types import ChartVisionProviderType
 
 
 def test_has_five_members():

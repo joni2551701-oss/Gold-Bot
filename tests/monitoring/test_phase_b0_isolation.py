@@ -27,7 +27,7 @@ def _imported_names(py_file: pathlib.Path):
 
 
 def test_phase_b0_files_never_import_decision_risk_execution_strategies_signals():
-    forbidden_prefixes = ("decision", "risk", "execution", "strategies", "signals")
+    forbidden_prefixes = ("decision_layer", "risk_layer", "execution_layer", "strategy_layer", "signal_layer")
     for filename in NEW_FILES:
         py_file = _monitoring_dir() / filename
         for name in _imported_names(py_file):

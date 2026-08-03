@@ -1,6 +1,6 @@
 """Phase 65.2 TASK 1 — voice/stt/models.py: STTRequest/STTResult/STTResultStatus."""
 
-from voice.stt.models import STTRequest, STTResult, STTResultStatus
+from ai_layer.voice_ai.stt.models import STTRequest, STTResult, STTResultStatus
 
 
 def test_stt_result_status_has_three_values():

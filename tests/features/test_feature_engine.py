@@ -1,6 +1,6 @@
 """
 Phase A10 (corrected) -- Feature Engineering foundation tests
-(features/feature_engine.py).
+(core_layer/features/feature_engine.py).
 
 No mocking -- real ContextSnapshot/MarketRegimeResult/SessionEvent/
 LiquidityZone/HTFBiasResult/SignalExplanation objects, same convention
@@ -16,8 +16,8 @@ are relayed directly from a SignalExplanation, never recomputed here.
 import dataclasses
 from datetime import datetime, timezone
 
-from features.feature_engine import compute_market_features
-from features.feature_model import MarketFeatures
+from core_layer.features.feature_engine import compute_market_features
+from core_layer.features.feature_model import MarketFeatures
 from context_layer.context_engine.context_orchestrator import ContextSnapshot
 from context_layer.trend.market_regime import MarketRegimeResult, MarketRegime, RegimeDirection
 from context_layer.session.session import Session, SessionEvent

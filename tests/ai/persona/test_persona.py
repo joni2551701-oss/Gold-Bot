@@ -1,8 +1,8 @@
 """Phase 63.0 TASK 1 — AI Persona Foundation. Pure identity data, no AI calls, no prompt building."""
 
-from ai.persona.persona import Persona
-from ai.persona.persona_manager import PersonaManager
-from ai.persona.persona_registry import SENIOR_TRADING_AI, build_persona_registry
+from ai_layer.personal_ai.persona_manager.persona import Persona
+from ai_layer.personal_ai.persona_manager.persona_manager import PersonaManager
+from ai_layer.personal_ai.persona_manager.persona_registry import SENIOR_TRADING_AI, build_persona_registry
 
 
 def test_persona_is_pure_data():

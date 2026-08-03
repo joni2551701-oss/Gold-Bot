@@ -1,7 +1,7 @@
 """
 Phase 55 — AI interface foundation tests.
 
-No real AI/LLM call anywhere in ai/interfaces.py -- these tests only
+No real AI/LLM call anywhere in ai_layer/ai_service/interfaces.py -- these tests only
 confirm the data contracts construct correctly and the abstract
 interface enforces its contract, matching this phase's explicit
 "real AI test kerak emas" scope.
@@ -9,7 +9,7 @@ interface enforces its contract, matching this phase's explicit
 
 import pytest
 
-from ai.interfaces import AIAnalyzerInterface, MarketContext, UserContext, AIResponse
+from ai_layer.ai_service.interfaces import AIAnalyzerInterface, MarketContext, UserContext, AIResponse
 
 
 def test_market_context_constructs_with_required_fields():
@@ -92,6 +92,6 @@ def test_production_analyzer_does_not_implement_the_new_interface_yet():
     of scope this phase. This test exists so that decision is visible
     and explicit in the test suite, not just in a doc.
     """
-    from ai.ai_analyzer import AIAnalyzer
+    from ai_layer.ai_engine.ai_analyzer import AIAnalyzer
 
     assert not issubclass(AIAnalyzer, AIAnalyzerInterface)

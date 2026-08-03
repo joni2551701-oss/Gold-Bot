@@ -30,8 +30,8 @@ remaining placeholder.
 ## TASK 2 — Router Intelligence (⚠️ most cautious)
 
 `ai/router/provider_score.py` (new) — `ProviderScore` composes health
-(`ai.providers.provider_health.ProviderHealthTracker`) + success rate
-+ latency + cost (`ai.audit.provider_stats.ProviderStats`) into one
+(`ai_layer.ai_engine.providers.provider_health.ProviderHealthTracker`) + success rate
++ latency + cost (`ai_layer.ai_service.audit.provider_stats.ProviderStats`) into one
 0.0-1.0 score, weighted health-first. `score_providers()` ranks an
 explicit provider-name list best-first. **`ai/router/router.py` is
 unmodified** — `AIRouter.route()` does not import, call, or otherwise
@@ -84,20 +84,20 @@ Trial Check → FREE account flow:
   `platform_layer.telegram.user_service.UserService.register_phone()`.
 - `register_phone()`: hashes the phone number immediately via
   `core_layer.secrets.phone_hash.hash_phone_number()` (the raw string never outlives
-  the method call), checks reuse via `ai.access.identity_checker.
+  the method call), checks reuse via `ai_layer.ai_service.access.identity_checker.
   is_phone_reused_by_another_account()` against
   `UserRepository.get_users_by_phone_hash()`'s result, persists the
   hash unconditionally, and — only if not reused and no trial has
   started yet — persists `trial_started_at` (a new, additive
   `UserRecord`/`users`-table column, same migration convention as
   `phone_hash`) and reports trial status via
-  `ai.access.trial_manager.trial_status_from_started_at()` (new: a
+  `ai_layer.ai_service.access.trial_manager.trial_status_from_started_at()` (new: a
   stateless extraction of `TrialManager.status_of()`'s own math, so
   this database-persisted caller doesn't duplicate it).
 - **`role` is not a new column.** It is already fully derivable from
   `platform_layer.telegram.permissions.is_owner()`/`is_admin()` (config-driven) and
   `SubscriptionRecord.plan` (already persisted) — exactly what
-  `ai.access.permission_service.resolve_ai_role()` (Phase 61.4 TASK 2)
+  `ai_layer.ai_service.access.permission_service.resolve_ai_role()` (Phase 61.4 TASK 2)
   already takes. A fourth persisted role would duplicate existing
   state.
 - **The raw phone number is never persisted** — same invariant Phase
@@ -160,7 +160,7 @@ closing. All five are addressed here:
    `AIRouter` nor `.route(` appears in it.
 2. **`ai_health()` enriched.** Now shows per-provider Latency/Success/
    Requests/Tokens/Today's Cost/Failures alongside the existing score
-   ranking — all reused from `ai.audit.provider_stats.ProviderStats`'s
+   ranking — all reused from `ai_layer.ai_service.audit.provider_stats.ProviderStats`'s
    existing fields, no new metric. A provider with no call history
    reports "N/A" per field, never a fabricated number.
    `ai_status()`/`ai_provider()`'s own inline online/current-provider
@@ -190,7 +190,7 @@ closing. All five are addressed here:
    helpers, `ai_cost()`, two new repository methods
    (`SubscriptionRepository.count_by_plan()`,
    `SignalRepository.count_signals_today()`/
-   `get_closed_signals_today()`), `analytics.strategy_report.compute_win_rate()`,
+   `get_closed_signals_today()`), `backtesting_layer.statistics.strategy_report.compute_win_rate()`,
    and `core_layer.emergency.emergency_manager.EmergencyManager`. Every
    section degrades to "N/A" independently on failure — never raises,
    never fabricates.

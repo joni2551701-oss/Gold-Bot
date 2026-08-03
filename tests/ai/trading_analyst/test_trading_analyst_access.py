@@ -1,5 +1,5 @@
-from ai.access.permissions import AIRole
-from ai.trading_analyst.access import is_trading_analyst_enabled_for
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.trading_analyst.access import is_trading_analyst_enabled_for
 from core_layer.configuration.feature_flags import FeatureFlags
 
 

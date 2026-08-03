@@ -1,14 +1,14 @@
 """
 Phase A19 -- Performance Metrics tests: timer and decorator
-(performance/timer.py).
+(core_layer/performance/timer.py).
 """
 
 import time
 
 import pytest
 
-from performance.collector import PerformanceCollector
-from performance.timer import PerformanceTimer, measure_performance
+from core_layer.performance.collector import PerformanceCollector
+from core_layer.performance.timer import PerformanceTimer, measure_performance
 from core_layer.errors.exceptions import StrategyError, DataError
 from core_layer.errors import codes
 

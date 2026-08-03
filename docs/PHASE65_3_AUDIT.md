@@ -21,14 +21,14 @@ hologram work, per Director Note 4).
 Protection) is explicit: *"Persona: AI qanday fikrlaydi. Voice
 Profile: AI qanday gapiradi. Ular aralashtirilmaydi."* (Persona is how
 the AI thinks; Voice Profile is how it speaks; they are not mixed.)
-`voice/profiles.py` already established the precedent this phase
+`ai_layer/voice_ai/profiles.py` already established the precedent this phase
 follows: `SENIORITA_VOICE.name == "Seniorita"` is a free-text
 identifier that coincidentally matches nothing in `ai/persona/`'s
 one-entry registry (`SENIOR_TRADING_AI`) — no import, no linkage. This
 phase's `AssistantIdentity` (Senior/Seniorita as *presentation*
 metadata: display name, description, default voice, default avatar,
 language support) extends that same precedent one layer further: it
-is deliberately **not** `ai.persona.Persona` and never imports
+is deliberately **not** `ai_layer.personal_ai.persona_manager.Persona` and never imports
 `ai/persona/` at all. This keeps Rule 3's separation airtight by
 construction rather than by convention alone.
 
@@ -103,16 +103,16 @@ for "Conversation bilan integratsiya" / "Voice bilan integratsiya" /
 prior Phase 6x.x's "foundation, not yet live-wired" posture (no phase
 before this one has ever had a brand-new top-level package make a real
 call into another LOCKed package's Manager on its first phase — even
-`voice/conversation_bridge.py`, Phase 65.2's real round trip, only
+`ai_layer/voice_ai/conversation_bridge.py`, Phase 65.2's real round trip, only
 called *existing, unmodified* `ConversationEngine`/`VoiceRuntime`
 methods, never reached into `ai/memory/` directly): **the integration
 this phase provides is structural, not a Python import.**
-`assistant/conversation_adapter.py`'s pure functions produce plain
+`ai_layer/ai_service/assistant/conversation_adapter.py`'s pure functions produce plain
 primitive values (`user_id`, `voice_profile_name`, `language`,
 `telegram_id`) shaped to exactly match the existing, public,
 already-LOCKed constructor signatures of
-`voice.session.manager.VoiceSessionManager.create_session()` and
-`ai.conversation.conversation_engine.ConversationEngine.start_session()`
+`ai_layer.voice_ai.session.manager.VoiceSessionManager.create_session()` and
+`ai_layer.personal_ai.interaction_manager.conversation_engine.ConversationEngine.start_session()`
 — without importing either class. A future, separately-approved
 live-wiring phase (the same pattern every dashboard/report/command
 foundation in this codebase has followed since Phase 59.x) is the one
@@ -124,7 +124,7 @@ This also resolves TASK 6 cleanly: `assistant_memory_scope_key()`
 returns a formatted string (`"USER_PREFERENCE:{user_id}"`) matching
 the exact convention `ai/conversation/conversation_adapters.py`'s
 `memory_key_from_entry()` already establishes, **without importing
-`ai.memory.models.MemoryScope`** — the string literal `"USER_PREFERENCE"`
+`ai_layer.knowledge_ai.memory_manager.models.MemoryScope`** — the string literal `"USER_PREFERENCE"`
 mirrors that enum's existing value by convention, the same
 coincidental-name-not-code-link pattern already used for
 `SENIORITA_VOICE.name`/persona names. The key point TASK 6 asks for —
@@ -144,10 +144,10 @@ and `FREE` all BLOCK. Reusing `AccessControl` (or adding a new
 silently grant `ADMIN` access too, contradicting the brief's explicit
 "Admin: BLOCK" line. This phase does not add a `Capability` member for
 Personal AI Assistant, and does not route through `AccessControl` —
-`assistant/access.py` implements a narrower, dedicated
+`ai_layer/ai_service/assistant/access.py` implements a narrower, dedicated
 `is_personal_ai_enabled_for(role)` check (`role == AIRole.OWNER` AND
 `FeatureFlags.enable_personal_ai` both true) instead. `AIRole` itself
-(the enum, not `AccessControl`) is read from `ai.access.permissions` —
+(the enum, not `AccessControl`) is read from `ai_layer.ai_service.access.permissions` —
 an access-control *type*, orthogonal to the Knowledge→...→Broadcast
 content chain, the same class every `platform_layer/telegram/owner/ai_commands.py`
 function already imports without violating any pipeline direction.

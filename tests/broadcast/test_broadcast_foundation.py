@@ -2,8 +2,8 @@
 
 from datetime import datetime, timezone
 
-from ai.content.broadcast_output import BroadcastReadyContent
-from ai.content_types import ContentType
+from ai_layer.ai_service.content.broadcast_output import BroadcastReadyContent
+from ai_layer.ai_service.content.content_type_vocabulary import ContentType
 from media_layer.telegram_broadcast.broadcast_manager import BroadcastManager
 from media_layer.telegram_broadcast.models import BroadcastProviderStatus, BroadcastProviderType, BroadcastTrigger
 from media_layer.telegram_broadcast.provider_manager import BroadcastProviderManager, build_broadcast_provider_registry

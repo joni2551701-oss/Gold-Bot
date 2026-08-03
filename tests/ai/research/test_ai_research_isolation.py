@@ -12,7 +12,7 @@ import pathlib
 
 
 def _research_dir():
-    return pathlib.Path(__file__).resolve().parents[3] / "ai" / "research"
+    return pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "fundamental_ai"
 
 
 def _imported_names(py_file: pathlib.Path):
@@ -28,7 +28,7 @@ def _imported_names(py_file: pathlib.Path):
 
 def test_research_never_imports_trading_core_layers():
     """Rule 1: decision/, risk/, execution/, signals/, strategies/ -- zero exceptions."""
-    forbidden_prefixes = ("decision", "risk", "execution", "signals", "strategies")
+    forbidden_prefixes = ("decision_layer", "risk_layer", "execution_layer", "signal_layer", "strategy_layer")
 
     for py_file in _research_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -37,7 +37,7 @@ def test_research_never_imports_trading_core_layers():
 
 def test_research_never_imports_context_telegram_database():
     """Rule 1: context/, telegram/, database/ -- zero exceptions."""
-    forbidden_prefixes = ("context", "telegram", "database")
+    forbidden_prefixes = ("context_layer", "platform_layer.telegram", "database_layer")
 
     for py_file in _research_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -54,7 +54,7 @@ def test_research_never_imports_assistant_voice():
 
 
 def test_research_never_imports_media_broadcast_academy():
-    forbidden_prefixes = ("media", "broadcast", "academy")
+    forbidden_prefixes = ("media_layer.content_manager", "media_layer.telegram_broadcast", "academy")
 
     for py_file in _research_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -95,7 +95,7 @@ def test_research_never_imports_analytics_or_the_top_level_learning_package():
 def test_research_never_imports_ai_provider_llm_or_reasoning_sdks():
     """Rule 4: 'LLM ishlatilmaydi. GPT/Claude/Gemini/OpenAI/AI-inference/Reasoning YO'Q' -- no LLM SDK or ai.reasoning anywhere in this Foundation-only phase."""
     forbidden_prefixes = (
-        "ai.providers", "ai.router", "ai.reasoning", "openai", "anthropic", "google.generativeai",
+        "ai_layer.ai_engine.providers", "ai_layer.ai_coordinator", "ai_layer.ai_engine.reasoning", "openai", "anthropic", "google.generativeai",
     )
 
     for py_file in _research_dir().rglob("*.py"):
@@ -108,8 +108,8 @@ def test_research_never_imports_ai_provider_llm_or_reasoning_sdks():
 
 
 def test_research_never_imports_ai_memory():
-    """TASK 7: 'ai.memory import qilish QAT'IY TAQIQLANADI' -- zero exceptions."""
-    forbidden_prefixes = ("ai.memory",)
+    """TASK 7: 'ai_layer.knowledge_ai.memory_manager import qilish QAT'IY TAQIQLANADI' -- zero exceptions."""
+    forbidden_prefixes = ("ai_layer.knowledge_ai.memory_manager",)
 
     for py_file in _research_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -118,7 +118,7 @@ def test_research_never_imports_ai_memory():
 
 def test_research_never_imports_knowledge_chart_intelligence_trading_analyst_or_coaching():
     """docs/PHASE66_8_AUDIT.md: only ai.performance, ai.strategy, and ai.portfolio are named as Research input sources -- Knowledge, Chart Intelligence, Trading Analyst, and Coaching are audited but never composed here."""
-    forbidden_prefixes = ("knowledge", "ai.chart_intelligence", "ai.trading_analyst", "ai.coaching")
+    forbidden_prefixes = ("knowledge", "ai_layer.vision_ai", "ai_layer.ai_engine.trading_analyst", "ai_layer.personal_ai.senior")
 
     for py_file in _research_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -126,7 +126,7 @@ def test_research_never_imports_knowledge_chart_intelligence_trading_analyst_or_
 
 
 def test_research_never_imports_ai_content_conversation_explanation_trade_journal_or_learning():
-    forbidden_prefixes = ("ai.content", "ai.conversation", "ai.explanation", "ai.trade_journal", "ai.learning")
+    forbidden_prefixes = ("ai_layer.ai_service.content", "ai_layer.personal_ai.interaction_manager", "ai_layer.explanation_ai", "ai_layer.knowledge_ai.knowledge_base.trade_journal", "ai_layer.knowledge_ai.learning_engine")
 
     for py_file in _research_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -141,20 +141,20 @@ def test_performance_import_confined_to_performance_adapter():
         if py_file == adapter_file:
             continue
         for name in _imported_names(py_file):
-            assert not name.startswith("ai.performance"), f"{py_file}: {name}"
+            assert not name.startswith("ai_layer.ai_engine.performance"), f"{py_file}: {name}"
 
 
 def test_only_performance_adapter_imports_ai_performance():
     adapter_file = _research_dir() / "performance_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert any(name.startswith("ai.performance") for name in imported)
+    assert any(name.startswith("ai_layer.ai_engine.performance") for name in imported)
 
 
 def test_performance_adapter_never_imports_performance_runtime():
     """TASK 4's own instruction: 'Type-only mapping.'"""
     adapter_file = _research_dir() / "performance_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert not any(name == "ai.performance.performance_runtime" for name in imported)
+    assert not any(name == "ai_layer.ai_engine.performance.performance_runtime" for name in imported)
 
 
 def test_strategy_import_confined_to_strategy_adapter():
@@ -165,20 +165,20 @@ def test_strategy_import_confined_to_strategy_adapter():
         if py_file == adapter_file:
             continue
         for name in _imported_names(py_file):
-            assert not name.startswith("ai.strategy"), f"{py_file}: {name}"
+            assert not name.startswith("ai_layer.ai_engine.strategy"), f"{py_file}: {name}"
 
 
 def test_only_strategy_adapter_imports_ai_strategy():
     adapter_file = _research_dir() / "strategy_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert any(name.startswith("ai.strategy") for name in imported)
+    assert any(name.startswith("ai_layer.ai_engine.strategy") for name in imported)
 
 
 def test_strategy_adapter_never_imports_strategy_runtime():
     """TASK 5's own instruction: 'Type-only mapping.'"""
     adapter_file = _research_dir() / "strategy_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert not any(name == "ai.strategy.strategy_runtime" for name in imported)
+    assert not any(name == "ai_layer.ai_engine.strategy.strategy_runtime" for name in imported)
 
 
 def test_portfolio_import_confined_to_portfolio_adapter():
@@ -189,26 +189,26 @@ def test_portfolio_import_confined_to_portfolio_adapter():
         if py_file == adapter_file:
             continue
         for name in _imported_names(py_file):
-            assert not name.startswith("ai.portfolio"), f"{py_file}: {name}"
+            assert not name.startswith("ai_layer.ai_engine.portfolio"), f"{py_file}: {name}"
 
 
 def test_only_portfolio_adapter_imports_ai_portfolio():
     adapter_file = _research_dir() / "portfolio_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert any(name.startswith("ai.portfolio") for name in imported)
+    assert any(name.startswith("ai_layer.ai_engine.portfolio") for name in imported)
 
 
 def test_portfolio_adapter_never_imports_portfolio_runtime():
     """TASK 6's own instruction: 'Type-only mapping.'"""
     adapter_file = _research_dir() / "portfolio_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert not any(name == "ai.portfolio.portfolio_runtime" for name in imported)
+    assert not any(name == "ai_layer.ai_engine.portfolio.portfolio_runtime" for name in imported)
 
 
 def test_research_runtime_module_has_no_persistence_import():
     """Belt-and-suspenders: research_runtime.py itself (the one file with a stateful store) imports nothing beyond ai.access/ai.research/configuration/stdlib."""
     runtime_file = _research_dir() / "research_runtime.py"
-    allowed_prefixes = ("ai.access", "ai.research", "core_layer.configuration", "dataclasses", "datetime", "typing")
+    allowed_prefixes = ("ai_layer.ai_service.access", "ai_layer.fundamental_ai", "core_layer.configuration", "dataclasses", "datetime", "typing")
     for name in _imported_names(runtime_file):
         assert name.startswith(allowed_prefixes), f"{runtime_file}: {name}"
 
@@ -217,7 +217,7 @@ def test_research_record_has_no_trading_core_object_field_type():
     """Belt-and-suspenders: no dataclass field on ResearchRecord may be typed as a Trading Core object -- every field is a primitive/enum/Optional only."""
     import dataclasses
 
-    from ai.research.models import ResearchRecord
+    from ai_layer.fundamental_ai.models import ResearchRecord
 
     allowed_type_fragments = ("str", "int", "ResearchStatus", "ResearchPriority", "ResearchCategory", "Optional")
     for f in dataclasses.fields(ResearchRecord):

@@ -1,7 +1,7 @@
 """Phase 63.0 TASK 3 — ExplanationOutput contract. Pure data, no generation logic, not read by ExplanationEngine yet."""
 
-from ai.content_types import ContentType
-from ai.explanation.explanation_output import ExplanationOutput
+from ai_layer.ai_service.content.content_type_vocabulary import ContentType
+from ai_layer.explanation_ai.explanation_output import ExplanationOutput
 
 
 def test_explanation_output_is_pure_data():

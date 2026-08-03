@@ -16,8 +16,8 @@ still needs that data source wired up first, a separate future step.
 from datetime import datetime
 from typing import Sequence
 
-from analytics.signal_performance import SignalPerformance
-from analytics.validation_report import build_validation_report, format_validation_report
+from backtesting_layer.statistics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.validation_report import build_validation_report, format_validation_report
 from config import Config
 from signal_layer.signal_builder.schema import SignalSchema
 from platform_layer.telegram.owner.provider_commands import ProviderCommandResult

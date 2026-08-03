@@ -8,7 +8,7 @@ AI/LLM API call anywhere in this phase, no change to
 `execution/`, or `lifecycle/`. Full reuse audit:
 `docs/PHASE61_AI_FOUNDATION_AUDIT.md`.
 
-AI stays advisory-only, exactly as `ai/interfaces.py`'s
+AI stays advisory-only, exactly as `ai_layer/ai_service/interfaces.py`'s
 `AIAnalyzerInterface` and `docs/FOUNDATION_FREEZE_v0.4.md`'s "AI
 Optional" principle already establish. Nothing built this phase
 approves/rejects a trade, calls `risk_layer.risk_engine.risk_manager.RiskManager`,
@@ -64,12 +64,12 @@ is supplied.
 ## `ai/context/`
 
 `AIContext` bundles the five inputs the brief names — Market Context
-(`ai.interfaces.MarketContext`, sanitized through
+(`ai_layer.ai_service.interfaces.MarketContext`, sanitized through
 `context_adapter.sanitize_market_context()` to strip any accidental
 raw-candle metadata key), Signal Schema (`signal_layer.signal_builder.schema.SignalSchema`),
-User Profile (`ai.profiles.user_profile.AIUserProfile`), Trade History
-(`ai.journal.trade_journal.TradeJournalEntry` list), and Learning
-Context (`ai.learning_context.LearningContext`). `build_ai_context()`
+User Profile (`ai_layer.personal_ai.user_profile.user_profile.AIUserProfile`), Trade History
+(`ai_layer.knowledge_ai.knowledge_base.journal.trade_journal.TradeJournalEntry` list), and Learning
+Context (`ai_layer.knowledge_ai.learning_context.LearningContext`). `build_ai_context()`
 is pure composition: every input is optional, none is fetched or
 computed by this package. **AI never receives raw market data** — no
 `data/` type is imported anywhere in `ai/context/`.

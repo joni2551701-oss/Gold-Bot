@@ -1,13 +1,13 @@
 """
 Phase 60.7: Adaptive Intelligence Layer Foundation, TASK 7 --
-learning/regime_memory.py tests.
+ai_layer/knowledge_ai/learning_loop/regime_memory.py tests.
 """
 
 from datetime import datetime, timedelta, timezone
 
 from context_layer.context_engine.context_orchestrator import ContextSnapshot
 from context_layer.trend.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
-from learning.regime_memory import (
+from ai_layer.knowledge_ai.learning_loop.regime_memory import (
     REGIME_HIGH_VOLATILITY,
     REGIME_LOW_VOLATILITY,
     REGIME_NEWS_EVENT,
@@ -133,7 +133,7 @@ def test_format_regime_summary_empty_for_empty_memory():
 
 
 def test_format_regime_summary_feeds_directly_into_learning_context():
-    from ai.learning_context import build_learning_context
+    from ai_layer.knowledge_ai.learning_context import build_learning_context
 
     memory = RegimeMemory()
     memory.record(REGIME_TRENDING, observed_at=NOW)

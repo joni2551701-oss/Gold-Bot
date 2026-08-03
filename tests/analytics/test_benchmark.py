@@ -1,13 +1,13 @@
 """
 Phase 60.4: Performance Validation Foundation, TASK 4 --
-analytics/benchmark.py tests.
+backtesting_layer/statistics/benchmark.py tests.
 """
 
 from datetime import datetime, timedelta, timezone
 
-from analytics.benchmark import compute_benchmark_comparison, format_benchmark_comparison
-from analytics.equity_curve import EquityCurveConfig, build_equity_curve
-from analytics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.benchmark import compute_benchmark_comparison, format_benchmark_comparison
+from backtesting_layer.statistics.equity_curve import EquityCurveConfig, build_equity_curve
+from backtesting_layer.statistics.signal_performance import SignalPerformance
 
 
 def _perf(r_multiple, created_at):

@@ -16,11 +16,11 @@ surface named in this phase's Rule 1 (`voice/*.py` from Phase
 `ai/session/session_manager.py`, `ai/memory/`, `ai/reasoning/`,
 `ai/knowledge/`/top-level `knowledge/`, `ai/explanation/`) already
 existed and stayed byte-for-byte unchanged — this phase's real work
-landed as extensions to `VoiceManager`/`VoiceRuntime`/`voice/adapter.py`
+landed as extensions to `VoiceManager`/`VoiceRuntime`/`ai_layer/voice_ai/adapter.py`
 (already extended Phase 65.1) plus five genuinely new files/packages.
 One deliberate architectural decision required explicit justification:
-`voice/conversation_bridge.py` is the second composition-root exception
-in this codebase (the first is `ai/intelligence_runtime.py`, Phase
+`ai_layer/voice_ai/conversation_bridge.py` is the second composition-root exception
+in this codebase (the first is `ai_layer/ai_engine/intelligence_runtime.py`, Phase
 64.0) — the one file permitted to *call* (not merely read the type of)
 `ConversationEngine.ask()`, because Phase 65.2's entire purpose is the
 real "user speaks → AI understands → AI replies by voice" round trip
@@ -48,7 +48,7 @@ required — no Constitution Article conflict.
   (`VoiceSessionManager`: create/get/end + `set_voice_profile()` +
   `link_conversation_session()`, validated against the existing
   `VoiceProfileRegistry`).
-- `voice/conversation_bridge.py` (new file) — `handle_voice_turn()`,
+- `ai_layer/voice_ai/conversation_bridge.py` (new file) — `handle_voice_turn()`,
   the second composition-root exception: composes
   `STTManager.transcribe()` → `detect_intent()` (metadata) → the
   *existing* `ConversationEngine.ask()` (real call, unmodified) → the
@@ -57,11 +57,11 @@ required — no Constitution Article conflict.
   composes.
 - `tests/voice/test_voice_isolation.py` restructured (not a new file)
   — the trading/translation forbidden list now also permanently
-  forbids `ai.memory`/`ai.reasoning`/`ai.explanation`/top-level
+  forbids `ai_layer.knowledge_ai.memory_manager`/`ai_layer.ai_engine.reasoning`/`ai_layer.explanation_ai`/top-level
   `knowledge`, with zero exemptions (Rule 2's explicit "Voice →
   Knowledge ❌, Voice → Reasoning ❌"); a new test confines the real
-  `ai.conversation.conversation_engine` import to
-  `voice/conversation_bridge.py` alone.
+  `ai_layer.personal_ai.interaction_manager.conversation_engine` import to
+  `ai_layer/voice_ai/conversation_bridge.py` alone.
 - Documentation: `docs/PHASE65_2_AUDIT.md`, `docs/PHASE65_2_FREEZE.md`
   (new); `docs/ai/AI_VOICE.md`, `docs/ai/AI_CONVERSATION.md`,
   `docs/ai/AI_ARCHITECTURE.md`, `docs/architecture/MODULE_DEPENDENCIES.md`,
@@ -88,7 +88,7 @@ required — no Constitution Article conflict.
   65.2's own brief explicitly scopes this out ("Bu bosqichda Personal
   AI Assistant hali to'liq ochilmaydi"), deferred to Phase 65.3.
 - No new Persona — `VoiceSession.set_voice_profile()` selects an
-  existing `VoiceProfile` by name; no `ai.persona.Persona` is created
+  existing `VoiceProfile` by name; no `ai_layer.personal_ai.persona_manager.Persona` is created
   or referenced (TASK 8).
 - No `ConversationEngine`/`SessionManager`/`VoiceManager`/`VoiceRuntime`
   code change beyond what Phase 65.0/65.1 already made — all four are
@@ -101,7 +101,7 @@ required — no Constitution Article conflict.
 
 - **Article 3 (Import Rules) / Rule 2** — AST sweep for `decision`/
   `risk`/`execution`/`strategies`/`signals`/`database`/`telegram`/
-  `translation`/`ai.memory`/`ai.reasoning`/`ai.explanation`/`knowledge`
+  `translation`/`ai_layer.knowledge_ai.memory_manager`/`ai_layer.ai_engine.reasoning`/`ai_layer.explanation_ai`/`knowledge`
   imports across `voice/**/*.py`: zero matches, zero exemptions
   (`tests/voice/test_voice_isolation.py`).
 - **Trading pipeline zero-modification** — `git diff --stat` against
@@ -121,14 +121,14 @@ required — no Constitution Article conflict.
 
 `voice/stt/*.py`, `voice/intents/*.py`, `voice/session/*.py` import
 only their own package plus `core_layer.logger.logger`/`core.secrets`/`requests` —
-no upstream Intelligence layer at all. `voice/conversation_bridge.py`
+no upstream Intelligence layer at all. `ai_layer/voice_ai/conversation_bridge.py`
 is the one file in the whole `voice/` package permitted to import
-`ai.conversation.conversation_engine.ConversationEngine` (real call);
-it also imports `ai.access.permissions.AIRole` and
-`ai.context.context_snapshot.AIContext` (pass-through types the
+`ai_layer.personal_ai.interaction_manager.conversation_engine.ConversationEngine` (real call);
+it also imports `ai_layer.ai_service.access.permissions.AIRole` and
+`ai_layer.ai_engine.context.context_snapshot.AIContext` (pass-through types the
 caller-supplied `ConversationEngine.ask()` call already required, not
-new coupling). Nothing in `voice/` imports `ai.memory`, `ai.reasoning`,
-`ai.explanation`, or top-level `knowledge` — anywhere, with zero
+new coupling). Nothing in `voice/` imports `ai_layer.knowledge_ai.memory_manager`, `ai_layer.ai_engine.reasoning`,
+`ai_layer.explanation_ai`, or top-level `knowledge` — anywhere, with zero
 exemptions, permanently enforced by
 `test_voice_package_never_imports_trading_translation_or_upstream_intelligence_layers`.
 Nothing downstream imports `voice/` back.
@@ -138,7 +138,7 @@ Nothing downstream imports `voice/` back.
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | `voice/stt/` (8 files), `voice/intents/` (3 files), `voice/session/` (3 files) (3 packages) | — | — |
-| Modules | `voice/conversation_bridge.py` (1) | `tests/voice/test_voice_isolation.py` (restructured) | `voice/manager.py`, `voice/runtime.py`, `voice/adapter.py`, `voice/models.py` (unchanged this phase) |
+| Modules | `ai_layer/voice_ai/conversation_bridge.py` (1) | `tests/voice/test_voice_isolation.py` (restructured) | `ai_layer/voice_ai/manager.py`, `ai_layer/voice_ai/runtime.py`, `ai_layer/voice_ai/adapter.py`, `ai_layer/voice_ai/models.py` (unchanged this phase) |
 | Classes | `STTProviderContract`, `OpenAISTTProvider`, `LocalSTTProvider`, `CustomSTTProvider`, `STTManager`, `VoiceSessionManager` (6) | — | `ConversationEngine`, `SessionManager`, `VoiceManager`, `VoiceRuntime` (called, not modified) |
 | Models | `STTRequest`, `STTResult`, `STTResultStatus`, `STTProviderError` + 3 subclasses, `VoiceIntent`, `VoiceSession` (9) | — | `VoiceRequest`, `VoiceResult`, `VoiceProfile`, `AIContext`, `AIRole`, `ConversationState`, `RuntimeResponse` |
 | Functions | `detect_intent()`, `handle_voice_turn()` (2) | — | `ConversationEngine.ask()`/`start_session()`, `VoiceRuntime.generate_audio()`/`generate_with_fallback()` |

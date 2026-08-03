@@ -19,7 +19,7 @@ expected_provider=None) -> ValidationReport` checks a
 
 | Check | What it means |
 |---|---|
-| Missing candles | A gap larger than the timeframe's expected step between two adjacent (sorted) candles. Counted per gap event, not per missing timestamp — see `analytics/gap_report.py` for a per-timestamp enumeration. |
+| Missing candles | A gap larger than the timeframe's expected step between two adjacent (sorted) candles. Counted per gap event, not per missing timestamp — see `backtesting_layer/statistics/gap_report.py` for a per-timestamp enumeration. |
 | Duplicate candles | A timestamp appearing more than once in the input. |
 | Timestamp ordering | An adjacent pair (in the order given, not re-sorted) where the later element isn't strictly after the earlier one. |
 | Future timestamps | A candle timestamped after "now". |
@@ -48,7 +48,7 @@ module's own docstring already established for `market_data.py`. The
 one piece safely reused is `data_quality.INTERVAL_DELTAS` — a public,
 same-package module constant, not a private method.
 
-## `analytics/gap_report.py`
+## `backtesting_layer/statistics/gap_report.py`
 
 Where `historical_validator.py` answers "how many gap events/
 duplicates exist", `gap_report.py`'s `build_gap_report(candles,
@@ -68,7 +68,7 @@ M15
 17:45 duplicate
 ```
 
-## `analytics/dataset_report.py`
+## `backtesting_layer/statistics/dataset_report.py`
 
 A dataset-wide overview, not a single-timeframe audit:
 `build_dataset_report(candles) -> DatasetReport` groups a mixed

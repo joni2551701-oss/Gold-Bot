@@ -15,9 +15,9 @@ audit list — the brief named `database/`, `analytics/`, `performance/`,
 `ai/chart_intelligence/`, but omitted `ai/journal/` and `learning/`,
 both of which already exist and are directly relevant. The audit found
 and reviewed two pre-existing types with the same or adjacent purpose:
-`ai.journal.trade_journal.TradeJournalEntry` (Phase 55, Trading-Core-
+`ai_layer.knowledge_ai.knowledge_base.journal.trade_journal.TradeJournalEntry` (Phase 55, Trading-Core-
 coupled — imports `signal_layer.signal_builder.models.SignalType`, predates Constitution
-Article 3) and `learning.models.LearningRecord` (Phase 60.6/60.7,
+Article 3) and `ai_layer.knowledge_ai.learning_loop.models.LearningRecord` (Phase 60.6/60.7,
 DB-persisted, pattern-analysis-shaped). Neither was reusable for this
 phase's own primitive-only, in-memory, narrative-journal mandate. No
 Director Decision pause was required — the genuine gap was clear and
@@ -47,10 +47,10 @@ established precedent exactly.
   `TradingAnalysis` (Phase 66.0) and `ChartAnalysis` (Phase 66.1) into
   a `TradeJournalEntry` — the pipeline's own "TradingAnalysis →
   ChartAnalysis → TradeJournal" order (TASK 5). The one file in the
-  package permitted to import `ai.trading_analyst.models` and
-  `ai.chart_intelligence.models`.
+  package permitted to import `ai_layer.ai_engine.trading_analyst.models` and
+  `ai_layer.vision_ai.models`.
 - `ai/trade_journal/memory_adapter.py` (new) — `memory_reference_key()`,
-  a pure string-format function; this package never imports `ai.memory`
+  a pure string-format function; this package never imports `ai_layer.knowledge_ai.memory_manager`
   at all (TASK 6, Rule 6 — "Memory o'zgarmaydi").
 - `ai/chart_intelligence/models.py` — extended in place with one new,
   additive, trailing-defaulted field: `ChartAnalysis.chart_id: str = ""`,
@@ -104,7 +104,7 @@ established precedent exactly.
   phase never reads from or writes to any of those future layers.
 - No modification to `ai/journal/` or `learning/` — both reviewed,
   neither touched.
-- No new `MemoryScope` member, no `ai.memory` import anywhere in
+- No new `MemoryScope` member, no `ai_layer.knowledge_ai.memory_manager` import anywhere in
   `ai/trade_journal/` (Rule 6).
 - No Telegram command, dashboard, or `core/pipeline.py` wiring this
   phase — foundation only, same "not yet live-wired" posture every
@@ -143,27 +143,27 @@ established precedent exactly.
   type-only, never duplicated; the one genuine gap (a narrative Trade
   Journal contract and runtime) was added as a new subpackage only
   after confirming neither pre-existing `ai/journal/` type nor
-  `learning/models.py`'s `LearningRecord` could be extended without
+  `ai_layer/knowledge_ai/learning_loop/models.py`'s `LearningRecord` could be extended without
   breaking Article 3, Article 9, or Rule 3. See
   `docs/PHASE66_2_AUDIT.md`.
 
 ## Dependency Compliance
 
 `ai/trade_journal/models.py` and `access.py` import nothing beyond
-`ai.access.permissions.AIRole`, `configuration.feature_flags`, and the
-standard library. `journal_runtime.py` imports only `ai.access`,
-`ai.trade_journal`, `configuration`, and stdlib — confirmed by
+`ai_layer.ai_service.access.permissions.AIRole`, `configuration.feature_flags`, and the
+standard library. `journal_runtime.py` imports only `ai_layer.ai_service.access`,
+`ai_layer.knowledge_ai.knowledge_base.trade_journal`, `configuration`, and stdlib — confirmed by
 `test_trade_journal_runtime_module_has_no_persistence_import()`.
 `trading_analyst_adapter.py` is the one file permitted to import
-`ai.trading_analyst.models` and `ai.chart_intelligence.models` —
+`ai_layer.ai_engine.trading_analyst.models` and `ai_layer.vision_ai.models` —
 confirmed confined by
 `test_trading_analyst_and_chart_intelligence_imports_confined_to_adapter()`
 and `test_only_trading_analyst_adapter_imports_upstream_packages()`.
 No file in the package imports `assistant/`, `voice/`, `knowledge/`,
-`ai.memory`, `ai.reasoning`, `ai.content/`, `media/`, `broadcast/`,
+`ai_layer.knowledge_ai.memory_manager`, `ai_layer.ai_engine.reasoning`, `ai.content/`, `media/`, `broadcast/`,
 `telegram/`, `database/`, or `core.`. Nothing in `ai/trading_analyst/`,
 `ai/chart_intelligence/`, `ai/memory/`, or `learning/` imports
-`ai.trade_journal` back.
+`ai_layer.knowledge_ai.knowledge_base.trade_journal` back.
 
 ## New / Extended / Reused (Constitution Article 12, mandatory table)
 

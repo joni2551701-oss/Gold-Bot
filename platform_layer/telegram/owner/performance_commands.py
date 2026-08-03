@@ -18,10 +18,10 @@ in this codebase persists one yet -- see analytics/README.md's own
 
 from typing import Optional, Sequence
 
-from analytics.benchmark import compute_benchmark_comparison, format_benchmark_comparison
-from analytics.equity_curve import EquityCurveConfig, build_equity_curve, format_equity_curve_summary
-from analytics.performance_metrics import compute_performance_metrics, format_performance_metrics
-from analytics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.benchmark import compute_benchmark_comparison, format_benchmark_comparison
+from backtesting_layer.statistics.equity_curve import EquityCurveConfig, build_equity_curve, format_equity_curve_summary
+from backtesting_layer.statistics.performance_metrics import compute_performance_metrics, format_performance_metrics
+from backtesting_layer.statistics.signal_performance import SignalPerformance
 from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
 
@@ -80,7 +80,7 @@ def get_backtest_performance_report(
     """
     The future `/backtest_report` command's payload -- combines
     get_performance_report()'s metrics with a benchmark comparison
-    (analytics.benchmark, TASK 4) when both benchmark prices are
+    (backtesting_layer.statistics.benchmark, TASK 4) when both benchmark prices are
     supplied; falls back to metrics only otherwise, matching this
     package's existing "don't fetch, only compute from what's given"
     posture (no candle/database access here). Never raises.

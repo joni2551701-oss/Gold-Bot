@@ -10,7 +10,7 @@ import pathlib
 
 
 def _trading_analyst_dir():
-    return pathlib.Path(__file__).resolve().parents[3] / "ai" / "trading_analyst"
+    return pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "fundamental_ai" / "trading_analyst"
 
 
 def _imported_names(py_file: pathlib.Path):
@@ -27,7 +27,7 @@ def _imported_names(py_file: pathlib.Path):
 def test_trading_analyst_never_imports_trading_core_layers():
     """Rule 1/4: decision/, risk/, execution/, strategies/, signals/, context/, monitoring/ -- zero exceptions, anywhere in this package, per Constitution Article 3's zero-exception rule."""
     forbidden_prefixes = (
-        "decision", "risk", "execution", "strategies", "signals", "context", "monitoring",
+        "decision_layer", "risk_layer", "execution_layer", "strategy_layer", "signal_layer", "context_layer", "core_layer.health_monitor",
     )
 
     for py_file in _trading_analyst_dir().rglob("*.py"):
@@ -36,7 +36,7 @@ def test_trading_analyst_never_imports_trading_core_layers():
 
 
 def test_trading_analyst_never_imports_telegram_or_database():
-    forbidden_prefixes = ("telegram", "database")
+    forbidden_prefixes = ("platform_layer.telegram", "database_layer")
 
     for py_file in _trading_analyst_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -44,7 +44,7 @@ def test_trading_analyst_never_imports_telegram_or_database():
 
 
 def test_trading_analyst_never_imports_ai_provider_or_llm_sdks():
-    forbidden_prefixes = ("ai.providers", "ai.router", "openai", "anthropic", "google.generativeai")
+    forbidden_prefixes = ("ai_layer.ai_engine.providers", "ai_layer.ai_coordinator", "openai", "anthropic", "google.generativeai")
 
     for py_file in _trading_analyst_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -53,7 +53,7 @@ def test_trading_analyst_never_imports_ai_provider_or_llm_sdks():
 
 def test_content_media_broadcast_imports_confined_to_content_adapter():
     """ai.content/, media/, broadcast/ are only permitted in content_adapter.py -- models.py, access.py, analyst_runtime.py never import them."""
-    widened_prefixes = ("ai.content", "media", "broadcast")
+    widened_prefixes = ("ai_layer.ai_service.content", "media", "broadcast")
     adapter_file = _trading_analyst_dir() / "content_adapter.py"
 
     for py_file in _trading_analyst_dir().rglob("*.py"):
@@ -85,14 +85,14 @@ def test_only_content_adapter_imports_ai_content():
         if py_file == adapter_file:
             continue
         for name in _imported_names(py_file):
-            assert not name.startswith("ai.content"), f"{py_file}: {name}"
+            assert not name.startswith("ai_layer.ai_service.content"), f"{py_file}: {name}"
 
 
 def test_trading_analysis_input_has_no_trading_core_object_field_type():
     """Belt-and-suspenders: no dataclass field on TradingAnalysisInput/TradingAnalysis may be typed as a Trading Core object -- every field is a primitive/enum/Sequence[str] only."""
     import dataclasses
 
-    from ai.trading_analyst.models import TradingAnalysis, TradingAnalysisInput
+    from ai_layer.ai_engine.trading_analyst.models import TradingAnalysis, TradingAnalysisInput
 
     allowed_type_fragments = ("str", "float", "int", "bool", "Sequence", "TradingRiskLevel", "Optional")
     for model in (TradingAnalysisInput, TradingAnalysis):

@@ -2,8 +2,8 @@
 
 from datetime import datetime, timezone
 
-from ai.conversation.models import ConversationContext, ConversationMode
-from ai.session.conversation_state import ConversationTurn
+from ai_layer.personal_ai.interaction_manager.models import ConversationContext, ConversationMode
+from ai_layer.ai_service.session.conversation_state import ConversationTurn
 
 
 def test_conversation_context_defaults_are_empty_tuples():

@@ -9,14 +9,14 @@ from context_layer.context_engine.context_orchestrator import build_context_snap
 from context_layer.trend.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
 from context_layer.trend.market_phase import compute_market_phase, MarketPhaseResult
 from context_layer.context_engine.snapshot import from_context_snapshot, ContextSnapshotSchema
-from features.feature_engine import compute_market_features
-from features.feature_model import MarketFeatures
+from core_layer.features.feature_engine import compute_market_features
+from core_layer.features.feature_model import MarketFeatures
 from signal_layer.signal_engine.signal_engine import SignalEngine
 from signal_layer.signal_scoring.signal_quality import compute_signal_quality, SignalQualityResult
 from signal_layer.signal_scoring.explainability import explain_signal, SignalExplanation
 from signal_layer.signal_builder.adapter import from_signal_candidate
 from signal_layer.signal_builder.schema import SignalSchema
-from ai.ai_analyzer import AIAnalyzer, AIAnalysisResult
+from ai_layer.ai_engine.ai_analyzer import AIAnalyzer, AIAnalysisResult
 from decision_layer.decision_engine.decision_engine import DecisionEngine
 from decision_layer.decision_engine.models import TradeDecision, DecisionAction
 from risk_layer.risk_engine.risk_manager import RiskManager, RiskResult
@@ -95,7 +95,7 @@ class TradingPipeline:
     in run()'s result dict ("context_snapshot", "signal_history") for
     a future, separately-approved persistence phase to consume.
 
-    Feature Engineering (Phase A10, features/feature_engine.py) is a
+    Feature Engineering (Phase A10, core_layer/features/feature_engine.py) is a
     standardization layer, not an analysis layer -- it does not
     analyze the market itself, it turns results already produced by
     Context/Signal Quality/Explainability into one standard

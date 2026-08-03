@@ -5,13 +5,13 @@ import pathlib
 
 
 def _content_dir():
-    return pathlib.Path(__file__).resolve().parents[3] / "ai" / "content"
+    return pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "ai_service" / "content"
 
 
 def test_content_package_never_imports_trading_or_downstream_intelligence_layers():
     forbidden_prefixes = (
-        "decision", "risk", "execution", "strategies", "database", "telegram",
-        "translation", "media", "broadcast",
+        "decision_layer", "risk_layer", "execution_layer", "strategy_layer", "database_layer", "platform_layer.telegram",
+        "media_layer.translation", "media_layer.content_manager", "media_layer.telegram_broadcast",
     )
 
     for py_file in _content_dir().glob("*.py"):

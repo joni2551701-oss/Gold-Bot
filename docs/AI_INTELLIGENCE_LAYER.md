@@ -61,11 +61,11 @@ matching this codebase's existing dependency-injection convention:
 
 | Tool | Accepts | Reuses |
 |---|---|---|
-| `market_tool` | `market_context: MarketContext` | `ai.interfaces.MarketContext` |
+| `market_tool` | `market_context: MarketContext` | `ai_layer.ai_service.interfaces.MarketContext` |
 | `news_tool` | `fundamental: FundamentalContextSnapshot` (`TYPE_CHECKING`-only) | same pattern as TASK 2 |
-| `analytics_tool` | `performances: Sequence[SignalPerformance]` | `analytics.strategy_report.build_strategy_report()` (the same `ai/` → `analytics/` import `ai/learning_context.py` already established, Phase 60.6) |
-| `education_tool` | `key` or `query` | `knowledge/registry.py` (TASK 3) |
-| `learning_tool` (new) | `learning_context: LearningContext` | `ai.learning_context.LearningContext` (unmodified, Phase 60.6/60.7) |
+| `analytics_tool` | `performances: Sequence[SignalPerformance]` | `backtesting_layer.statistics.strategy_report.build_strategy_report()` (the same `ai/` → `analytics/` import `ai_layer/knowledge_ai/learning_context.py` already established, Phase 60.6) |
+| `education_tool` | `key` or `query` | `ai_layer/knowledge_ai/knowledge_base/registry.py` (TASK 3) |
+| `learning_tool` (new) | `learning_context: LearningContext` | `ai_layer.knowledge_ai.learning_context.LearningContext` (unmodified, Phase 60.6/60.7) |
 
 No tool fetches its own data; every one formats data a caller already
 legitimately built. 15 tests (`tests/ai/tools/test_tool_registry.py`).
@@ -103,7 +103,7 @@ still passes. 6 tests (`tests/ai/conversation/test_conversation_engine.py`).
 ## TASK 6 — Memory Runtime
 
 `ai/memory/memory_runtime.py`'s `MemoryRuntime` — a thin facade over
-five namespaced `ai.memory.context_memory.ContextMemory` instances
+five namespaced `ai_layer.knowledge_ai.memory_manager.context_memory.ContextMemory` instances
 (`MemoryLayer.CONVERSATION`/`USER`/`TRADE`/`LEARNING`/`MARKET`), not
 five new storage implementations. `ContextMemory` (Phase 55, confirmed
 unused in production by TASK 1's audit) is unmodified — still
@@ -123,7 +123,7 @@ in-process, in-memory only, no persistence. 7 tests
   reasoning).
 - `summarize_report(report_text, ...)` — `Capability.SUMMARY`.
 - `explain_topic(key, ...)` — `Capability.EDUCATION`, looks up a
-  `knowledge/registry.py` entry (TASK 3) first.
+  `ai_layer/knowledge_ai/knowledge_base/registry.py` entry (TASK 3) first.
 - `analyze_market(...)` — `Capability.ANALYSIS`, a thin passthrough
   (`AIService` already derives the prompt from `market_context`).
 
@@ -182,8 +182,8 @@ AST-based import sweep (`ast.walk()` over every `.py` file under
 
 `context/` appears in 6 `ImportFrom` nodes total, but a second sweep
 distinguishing `TYPE_CHECKING`-guarded imports from runtime ones shows
-only 3 are real runtime imports — and all 3 (`ai/ai_analyzer.py`,
-`ai/ai_prompt.py`, `ai/confidence_model.py`) predate this entire v0.4
+only 3 are real runtime imports — and all 3 (`ai_layer/ai_engine/ai_analyzer.py`,
+`ai_layer/ai_engine/ai_prompt.py`, `ai_layer/confidence_ai/confidence_model.py`) predate this entire v0.4
 AI Core arc (the pre-existing, separately-documented production
 `ai_analyzer.py` path — see `ai/README.md`'s own "Dependencies"
 section). The other 3 (`ai/context/context_adapter.py`,

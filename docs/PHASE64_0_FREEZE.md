@@ -20,7 +20,7 @@ confirmed not a candidate for extension. Every one of the eight
 layers' own Foundation/Manager/Model/Contract/Runtime already existed,
 fully deterministic-callable without any LLM call — the audit's
 per-layer table records the exact entry point and adapter used from
-each. Resolution: one new file, `ai/intelligence_runtime.py`
+each. Resolution: one new file, `ai_layer/ai_engine/intelligence_runtime.py`
 (Article 11 — no existing single-file location owned this
 responsibility; no new subpackage was warranted for one class). No
 Director Decision pause was required — no Constitution Article
@@ -28,7 +28,7 @@ conflict.
 
 ## Built this phase
 
-- `ai/intelligence_runtime.py` — `PipelineStage` (enum, the eight
+- `ai_layer/ai_engine/intelligence_runtime.py` — `PipelineStage` (enum, the eight
   layers), `PipelineStageResult` (`stage`, `ok`, `detail: str` —
   primitive-only, Rule 4), `PipelineRun` (`topic: str`,
   `stages: List[PipelineStageResult]`), and `IntelligenceRuntime`, the
@@ -85,12 +85,12 @@ conflict.
 
 - **Article 3 (Import Rules) / Rule 1** — `grep` sweep for `decision`/
   `risk`/`execution`/`strategies`/`signals`/`database`/`telegram`
-  imports across `ai/intelligence_runtime.py`: zero matches.
+  imports across `ai_layer/ai_engine/intelligence_runtime.py`: zero matches.
 - **Trading pipeline zero-modification** — `git diff --stat` against
   `core/`, `decision/`, `risk/`, `execution/`, `strategies/`,
   `signals/`: no changes in any of those directories this phase.
 - **Article 9 (Version Compatibility)** — no existing module's public
-  API changed this phase; `ai/intelligence_runtime.py` is entirely new
+  API changed this phase; `ai_layer/ai_engine/intelligence_runtime.py` is entirely new
   content, so there is no LOCKed surface to preserve here (the LOCKed
   surfaces it *calls into* — all eight layers' deterministic methods —
   are used exactly as documented, none extended or altered).
@@ -103,15 +103,15 @@ conflict.
 
 ## Dependency Compliance (Rule 3 — the one explicit exception)
 
-`ai/intelligence_runtime.py` is the sole file in the codebase
+`ai_layer/ai_engine/intelligence_runtime.py` is the sole file in the codebase
 permitted to import every Intelligence layer at once — the
 composition root, the same role `core/pipeline.py` plays for the
 Trading layer (see the audit's own "why this one file may import
-every layer" section). It imports: `knowledge.knowledge_manager`,
-`ai.memory.memory_runtime`/`models`, `ai.reasoning.reasoning_runtime`/
-`models`/`reasoning_adapters`, `ai.conversation.conversation_engine`,
-`ai.explanation.explanation_builder`/`explanation_input`,
-`ai.content.content_adapter`/`content_types`, `media_layer.content_manager.media_manager`/
+every layer" section). It imports: `ai_layer.knowledge_ai.knowledge_base.knowledge_manager`,
+`ai_layer.knowledge_ai.memory_manager.memory_runtime`/`models`, `ai_layer.ai_engine.reasoning.reasoning_runtime`/
+`models`/`reasoning_adapters`, `ai_layer.personal_ai.interaction_manager.conversation_engine`,
+`ai_layer.explanation_ai.explanation_builder`/`explanation_input`,
+`ai_layer.ai_service.content.content_adapter`/`content_types`, `media_layer.content_manager.media_manager`/
 `media_pipeline`/`media_types`, `media_layer.telegram_broadcast.broadcast_manager`/
 `broadcast_adapter`. It never imports `decision/`/`risk/`/
 `execution/`/`strategies/`/`signals/`/`database/`/`telegram/` — the
@@ -125,7 +125,7 @@ layer's own pre-existing isolation test file.
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
-| Modules | `ai/intelligence_runtime.py` (1) | — | all 8 layers' own files (`knowledge_manager.py`, `memory_runtime.py`, `reasoning_runtime.py`, `conversation_engine.py`, `explanation_builder.py`, `content_adapter.py`, `media_manager.py`/`media_pipeline.py`, `broadcast_manager.py`/`broadcast_adapter.py`) — none modified |
+| Modules | `ai_layer/ai_engine/intelligence_runtime.py` (1) | — | all 8 layers' own files (`knowledge_manager.py`, `memory_runtime.py`, `reasoning_runtime.py`, `conversation_engine.py`, `explanation_builder.py`, `content_adapter.py`, `media_manager.py`/`media_pipeline.py`, `broadcast_manager.py`/`broadcast_adapter.py`) — none modified |
 | Managers | — | — | `KnowledgeManager`, `MemoryRuntime`, `ReasoningRuntime`, `ConversationEngine`, `ExplanationBuilder`, `ContentEngine`, `MediaManager`, `BroadcastManager` (all 8, called via their own existing deterministic methods, none modified) |
 | Models | `PipelineStage`, `PipelineStageResult`, `PipelineRun` (3) | — | `KnowledgeEntry`, `MemoryEntry`, `ReasoningResult`/`ReasoningStep`, `ExplanationInput`/`ExplanationOutput`, `ContentResult`, `MediaAsset`, `BroadcastAsset` (all reused as-is) |
 | Contracts | `PipelineRun` (the new pipeline-level contract) | — | every layer's own existing request/result contract |

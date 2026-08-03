@@ -13,7 +13,7 @@ it may depend on nothing after it: not `voice/`, not
 `tests/voice/test_voice_isolation.py`'s own AST-based pattern exactly.
 
 Phase 65.4 (Personal AI Runtime Integration) deliberately widened this
-one file further: `assistant/runtime_adapter.py` is now the single
+one file further: `ai_layer/ai_service/assistant/runtime_adapter.py` is now the single
 exception permitted to import `voice/`, `ai.conversation/`, and
 `ai.memory/` (real integration, per that phase's own brief). This
 file's two affected tests below exempt `runtime_adapter.py`
@@ -44,7 +44,7 @@ def _imported_names(py_file: pathlib.Path):
 
 
 def test_assistant_package_never_imports_trading_telegram_or_database_layers():
-    forbidden_prefixes = ("decision", "risk", "execution", "strategies", "signals", "database", "telegram")
+    forbidden_prefixes = ("decision_layer", "risk_layer", "execution_layer", "strategy_layer", "signal_layer", "database_layer", "platform_layer.telegram")
 
     for py_file in _assistant_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -54,9 +54,9 @@ def test_assistant_package_never_imports_trading_telegram_or_database_layers():
 def test_assistant_package_never_imports_downstream_intelligence_layers():
     """assistant/ sits before Conversation, so it must never import voice/, ai.conversation/, or ai.memory/ -- except runtime_adapter.py (Phase 65.4's one deliberate widening). ai.reasoning/, ai.explanation/, ai.persona/, knowledge/, ai.content/, media/, broadcast/, translation/ stay forbidden everywhere, zero exemptions."""
     always_forbidden_prefixes = (
-        "ai.reasoning", "ai.explanation", "ai.persona", "knowledge", "ai.content", "media", "broadcast", "translation",
+        "ai_layer.ai_engine.reasoning", "ai_layer.explanation_ai", "ai_layer.personal_ai.persona_manager", "knowledge", "ai_layer.ai_service.content", "media_layer.content_manager", "media_layer.telegram_broadcast", "media_layer.translation",
     )
-    widened_prefixes = ("voice", "ai.conversation", "ai.memory")
+    widened_prefixes = ("voice", "ai_layer.personal_ai.interaction_manager", "ai_layer.knowledge_ai.memory_manager")
     adapter_file = _assistant_dir() / "runtime_adapter.py"
 
     for py_file in _assistant_dir().rglob("*.py"):
@@ -68,7 +68,7 @@ def test_assistant_package_never_imports_downstream_intelligence_layers():
 
 def test_assistant_package_never_imports_ai_provider_or_llm_sdks():
     """No direct AI provider call, no LLM SDK, anywhere in assistant/ -- this package (including runtime_adapter.py) never reaches ai.providers/ai.router/a raw SDK; the one real LLM-backed call it may reach is ConversationEngine.ask(), one layer removed."""
-    forbidden_prefixes = ("ai.providers", "ai.router", "openai", "anthropic", "google.generativeai")
+    forbidden_prefixes = ("ai_layer.ai_engine.providers", "ai_layer.ai_coordinator", "openai", "anthropic", "google.generativeai")
 
     for py_file in _assistant_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -84,4 +84,4 @@ def test_assistant_package_only_reads_ai_access_permissions_type_outside_runtime
             continue
         for name in _imported_names(py_file):
             if name.startswith("ai."):
-                assert name == "ai.access.permissions", f"{py_file}: unexpected ai.* import {name}"
+                assert name == "ai_layer.ai_service.access.permissions", f"{py_file}: unexpected ai.* import {name}"

@@ -94,7 +94,7 @@ or reshaping the existing, LOCKed `clear()`. Every other name in the
 brief's TASK 4 list (`store`, `recall`, `search`, `filter`,
 `short_term`, `long_term`) is used as given; `list()` is implemented
 as `list_all()` to avoid shadowing the Python builtin, the same
-convention `knowledge/knowledge_manager.py`'s `KnowledgeManager`
+convention `ai_layer/knowledge_ai/knowledge_base/knowledge_manager.py`'s `KnowledgeManager`
 already used in Phase 63.2.
 
 ## TASK 2's model — primitive-only, no trading objects
@@ -123,7 +123,7 @@ guarantee Constitution Article 3 requires.
 
 - **Knowledge** — a future caller could `store()` a `MemoryEntry` with
   `scope=MemoryScope.KNOWLEDGE_REFERENCE` and `value` holding a
-  `knowledge.models.KnowledgeEntry.key` string, letting a later
+  `ai_layer.knowledge_ai.knowledge_base.models.KnowledgeEntry.key` string, letting a later
   `recall()` resolve back through `KnowledgeManager.lookup()`.
   `ai/memory/` does not import `knowledge/`; the caller performs the
   join, the same "caller assembles, module doesn't reach into another

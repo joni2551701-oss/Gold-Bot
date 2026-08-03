@@ -1,9 +1,9 @@
 """Phase 61.0 TASK 9 — AI Audit System: in-memory request/response log + provider stats."""
 
-from ai.audit.provider_stats import compute_provider_stats
-from ai.audit.request_log import RequestLog
-from ai.audit.response_log import ResponseLog
-from ai.capabilities.capability import Capability
+from ai_layer.ai_service.audit.provider_stats import compute_provider_stats
+from ai_layer.ai_service.audit.request_log import RequestLog
+from ai_layer.ai_service.audit.response_log import ResponseLog
+from ai_layer.ai_engine.capabilities.capability import Capability
 
 
 def test_request_log_records_and_lists_entries():
@@ -53,13 +53,13 @@ def test_provider_stats_on_empty_log_returns_empty_dict():
 
 
 def test_success_rate_is_zero_when_no_calls():
-    from ai.audit.provider_stats import ProviderStats
+    from ai_layer.ai_service.audit.provider_stats import ProviderStats
     stats = ProviderStats(provider_name="x", total_calls=0, success_count=0, avg_latency_ms=0.0, total_tokens=0, total_cost=0.0)
     assert stats.success_rate == 0.0
 
 
 def test_rank_providers_orders_by_success_rate_first():
-    from ai.audit.provider_stats import ProviderStats, rank_providers
+    from ai_layer.ai_service.audit.provider_stats import ProviderStats, rank_providers
 
     stats = {
         "slow_reliable": ProviderStats(provider_name="slow_reliable", total_calls=10, success_count=10, avg_latency_ms=500.0, total_tokens=0, total_cost=0.0),
@@ -70,7 +70,7 @@ def test_rank_providers_orders_by_success_rate_first():
 
 
 def test_rank_providers_breaks_success_rate_ties_by_latency():
-    from ai.audit.provider_stats import ProviderStats, rank_providers
+    from ai_layer.ai_service.audit.provider_stats import ProviderStats, rank_providers
 
     stats = {
         "slower": ProviderStats(provider_name="slower", total_calls=10, success_count=10, avg_latency_ms=300.0, total_tokens=0, total_cost=0.0),
@@ -81,7 +81,7 @@ def test_rank_providers_breaks_success_rate_ties_by_latency():
 
 
 def test_rank_providers_breaks_remaining_ties_by_cost():
-    from ai.audit.provider_stats import ProviderStats, rank_providers
+    from ai_layer.ai_service.audit.provider_stats import ProviderStats, rank_providers
 
     stats = {
         "expensive": ProviderStats(provider_name="expensive", total_calls=10, success_count=10, avg_latency_ms=100.0, total_tokens=0, total_cost=1.0),
@@ -92,12 +92,12 @@ def test_rank_providers_breaks_remaining_ties_by_cost():
 
 
 def test_rank_providers_on_empty_stats_returns_empty_list():
-    from ai.audit.provider_stats import rank_providers
+    from ai_layer.ai_service.audit.provider_stats import rank_providers
     assert rank_providers({}) == []
 
 
 def test_rank_providers_end_to_end_from_response_log():
-    from ai.audit.provider_stats import compute_provider_stats, rank_providers
+    from ai_layer.ai_service.audit.provider_stats import compute_provider_stats, rank_providers
 
     log = ResponseLog()
     log.record(request_id="r1", capability=Capability.CHAT, provider_name="gemini", latency_ms=100.0, tokens=10, cost=0.01, status="SUCCESS")
@@ -113,7 +113,7 @@ def test_rank_providers_end_to_end_from_response_log():
 
 def test_compute_daily_usage_sums_cost_and_tokens_across_providers():
     from datetime import datetime, timezone
-    from ai.audit.provider_stats import compute_daily_usage
+    from ai_layer.ai_service.audit.provider_stats import compute_daily_usage
 
     log = ResponseLog()
     log.record(request_id="r1", capability=Capability.CHAT, provider_name="gemini", latency_ms=100.0, tokens=100, cost=1.50, status="SUCCESS")
@@ -127,7 +127,7 @@ def test_compute_daily_usage_sums_cost_and_tokens_across_providers():
 
 def test_compute_daily_usage_excludes_entries_older_than_24h():
     from datetime import datetime, timedelta, timezone
-    from ai.audit.provider_stats import compute_daily_usage
+    from ai_layer.ai_service.audit.provider_stats import compute_daily_usage
 
     log = ResponseLog()
     log.record(request_id="r1", capability=Capability.CHAT, provider_name="gemini", latency_ms=100.0, tokens=100, cost=5.00, status="SUCCESS")
@@ -140,13 +140,13 @@ def test_compute_daily_usage_excludes_entries_older_than_24h():
 
 
 def test_evaluate_cost_protection_no_limits_configured_never_breaches():
-    from ai.audit.provider_stats import DailyUsage, evaluate_cost_protection
+    from ai_layer.ai_service.audit.provider_stats import DailyUsage, evaluate_cost_protection
 
     assert evaluate_cost_protection(DailyUsage(total_cost=1000.0, total_tokens=999999), None, None) is None
 
 
 def test_evaluate_cost_protection_reports_a_cost_breach():
-    from ai.audit.provider_stats import DailyUsage, evaluate_cost_protection
+    from ai_layer.ai_service.audit.provider_stats import DailyUsage, evaluate_cost_protection
 
     reason = evaluate_cost_protection(DailyUsage(total_cost=15.0, total_tokens=0), cost_limit=10.0, token_limit=None)
 
@@ -155,7 +155,7 @@ def test_evaluate_cost_protection_reports_a_cost_breach():
 
 
 def test_evaluate_cost_protection_reports_a_token_breach():
-    from ai.audit.provider_stats import DailyUsage, evaluate_cost_protection
+    from ai_layer.ai_service.audit.provider_stats import DailyUsage, evaluate_cost_protection
 
     reason = evaluate_cost_protection(DailyUsage(total_cost=0.0, total_tokens=50000), cost_limit=None, token_limit=10000)
 
@@ -164,6 +164,6 @@ def test_evaluate_cost_protection_reports_a_token_breach():
 
 
 def test_evaluate_cost_protection_under_both_limits_is_none():
-    from ai.audit.provider_stats import DailyUsage, evaluate_cost_protection
+    from ai_layer.ai_service.audit.provider_stats import DailyUsage, evaluate_cost_protection
 
     assert evaluate_cost_protection(DailyUsage(total_cost=1.0, total_tokens=100), cost_limit=10.0, token_limit=10000) is None

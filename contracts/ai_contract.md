@@ -5,12 +5,12 @@ Advisory interpretation only. **AI does not create a trade.** It
 reads a candidate and its context, and returns a confidence/risk read
 plus an explanation — never a `BUY`/`SELL` decision, never the final
 word. See `docs/DECISION_PRINCIPLES.md`'s Principle 1 and
-`ai/interfaces.py`'s `AIAnalyzerInterface` docstring, which states
+`ai_layer/ai_service/interfaces.py`'s `AIAnalyzerInterface` docstring, which states
 this contract in code, not just in this document.
 
 ## Input
 `signal_layer.signal_builder.models.SignalCandidate` and `context.context_orchestrator.ContextSnapshot`
-(`ai.ai_analyzer.AIAnalyzer.analyze(signal, context)`).
+(`ai_layer.ai_engine.ai_analyzer.AIAnalyzer.analyze(signal, context)`).
 
 A future real AI provider could additionally read
 `signal_layer.signal_builder.schema.SignalSchema`/`context.snapshot.ContextSnapshotSchema`
@@ -21,7 +21,7 @@ own "Future usage"/"Significance for AI" sections as the intended
 future input shape.
 
 ## Output
-`ai.ai_analyzer.AIAnalysisResult` — the real fields are `approved`
+`ai_layer.ai_engine.ai_analyzer.AIAnalysisResult` — the real fields are `approved`
 (`bool`), `confidence` (`float`, 0.0–1.0), `risk_score` (`float`,
 0.0–1.0, higher means riskier), `explanation` (`str`).
 

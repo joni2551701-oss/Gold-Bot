@@ -48,7 +48,7 @@ separately-approved persistence step.
 | FVG | `"FVG_STRATEGY"` |
 | AMD | `"AMD_STRATEGY"` |
 
-Per-strategy win/loss/RR aggregation is `analytics/strategy_report.py`'s
+Per-strategy win/loss/RR aggregation is `backtesting_layer/statistics/strategy_report.py`'s
 `build_strategy_report()` (Phase 59 Preparation, TASK 3) — the exact
 `Liquidity Sweep: 100 trades, Win: 62, Loss: 38, RR: 2.1` shape this
 document's own brief names. **Gap**: `build_strategy_report()` needs a
@@ -97,7 +97,7 @@ automatically yet — a live monitor comparing an `OPEN` `PaperTrade`'s
 | Metric | Source | Status |
 |---|---|---|
 | Drawdown | Would need a running equity curve across closed `PaperTrade`s | **Gap** — no equity/account-balance simulation exists anywhere in this codebase (deliberately: `risk_layer/risk_engine/risk_manager.py`'s `lot_size` is "a sizing suggestion for manual execution, never an order instruction" — see `risk_layer/risk_engine/risk_manager.py`'s own docstring). |
-| Max loss | The single worst `r_multiple` among closed `PaperTrade`s in the window | Computable once `SignalPerformance.r_multiple` values exist for the window (`analytics/signal_performance.py`, TASK 3) — same persistence gap as above. |
+| Max loss | The single worst `r_multiple` among closed `PaperTrade`s in the window | Computable once `SignalPerformance.r_multiple` values exist for the window (`backtesting_layer/statistics/signal_performance.py`, TASK 3) — same persistence gap as above. |
 | Consecutive losses | A streak count over closed `PaperTrade`s in chronological order | Computable the same way, once results exist for the window — no dedicated helper exists yet; a report generator would compute this directly from an ordered `List[SignalPerformance]`. |
 
 Per this phase's own boundary ("Risk o'zgarmaydi" — Risk Manager logic
@@ -127,7 +127,7 @@ would build.
    "Future Roadmap".
 3. **No PnL / drawdown simulation.** `SignalPerformance.profit_loss` is
    always `None` — an honest hook, not a fabricated number (see
-   `analytics/signal_performance.py`'s own docstring for why: it would
+   `backtesting_layer/statistics/signal_performance.py`'s own docstring for why: it would
    need account-currency/lot-value sizing logic, out of scope for a
    "no risk logic changes" phase).
 
@@ -145,8 +145,8 @@ against.
 data_layer/live_data/market_data_snapshot.py (TASK 1)  -- raw window identity/fingerprint
 trade_monitoring_layer/paper_trading/paper_trade.py (TASK 2)      -- simulated trade state machine
 trade_monitoring_layer/paper_trading/signal_state.py (TASK 4)     -- signal's own pipeline-stage state
-analytics/signal_performance.py,       -- per-signal/per-strategy result
-analytics/strategy_report.py (TASK 3)     aggregation
+backtesting_layer/statistics/signal_performance.py,       -- per-signal/per-strategy result
+backtesting_layer/statistics/strategy_report.py (TASK 3)     aggregation
         |
         v
    This document (TASK 5) -- names exactly what a 7-day report measures,
@@ -171,8 +171,8 @@ for how a validation run is actually carried out and
 | TASK 2 | `SignalSchema.market_phase` — every signal now carries its own market phase at creation time, relayed by `signal_layer/signal_builder/adapter.py`'s `from_signal_candidate()` and stamped by `core/pipeline.py`'s `signal_history` stage. | Narrows the Market Context gap: market phase is now on the signal record itself in-memory, not just in the same cycle's separate `result["market_phase"]`. **Still open**: `database_layer/trade_repository/signal_record.py`'s persisted `SignalRecord` has no `market_phase` column, so it is not yet part of the durable, cross-run `signals` table row — only of the in-memory `SignalSchema`. |
 | TASK 3 | `database_layer/market_repository/raw_candle_models.py`'s `from_market_candle()` + `RawCandleRepository.save_market_candles()` — bridges a provider's real `MarketCandle` output (e.g. `TwelveDataProvider.get_candles()`) into the already-persisted `raw_candles` table (Phase 59.3). | Closes the "real candles must be stored for future backtesting" requirement for whichever candles a caller chooses to save — still opt-in per call, nothing in `core/pipeline.py` calls it automatically yet (that would be a separate, explicit wiring decision). |
 | TASK 4 | Verification only, no new code: `trade_monitoring_layer/paper_trading/paper_trade.py` (`OPEN`→`TP`/`SL`/`BE`/`EXPIRED`/`CANCELLED`, via `TradeState`/`ALLOWED_PAPER_TRADE_RESULTS`) and `trade_monitoring_layer/paper_trading/paper_trade_monitor.py`'s `check_paper_trade_against_candles()` (Phase 59.4) already fully satisfy the "Paper Trading Validation Engine" requirement, confirmed to contain zero broker/lot-sizing/MetaTrader code (`grep -rn "broker\|lot_size\|MetaTrader\|real_order\|place_order" lifecycle/*.py` finds only docstring disclaimers). | Confirms Known gap #2's state machine and monitor are real and complete; the "nothing calls them automatically yet" half of that gap is unchanged by design (out of scope for this phase). |
-| TASK 5 | `analytics/validation_report.py` — `build_validation_report()`/`format_validation_report()`, the exact weekly-report shape this document's own Signal/Strategy/Market-Context sections describe, built from already-computed `Sequence[SignalSchema]`/`Sequence[SignalPerformance]`. | Gives the Signal/Strategy/Market-Context sections above a real, tested aggregation function — still needs its caller to supply 7 days' worth of `SignalSchema`/`SignalPerformance` (Known gap #1 persistence). |
-| TASK 6 | `SignalPerformance.timeframe` + `analytics/strategy_report.py`'s `filter_performances(performances, strategy_id=None, market_phase=None, session=None, timeframe=None)`. | Lets a report generator slice by the four declared dimensions (e.g. "Liquidity Sweep / London / M15") before calling `build_strategy_report()`. |
+| TASK 5 | `backtesting_layer/statistics/validation_report.py` — `build_validation_report()`/`format_validation_report()`, the exact weekly-report shape this document's own Signal/Strategy/Market-Context sections describe, built from already-computed `Sequence[SignalSchema]`/`Sequence[SignalPerformance]`. | Gives the Signal/Strategy/Market-Context sections above a real, tested aggregation function — still needs its caller to supply 7 days' worth of `SignalSchema`/`SignalPerformance` (Known gap #1 persistence). |
+| TASK 6 | `SignalPerformance.timeframe` + `backtesting_layer/statistics/strategy_report.py`'s `filter_performances(performances, strategy_id=None, market_phase=None, session=None, timeframe=None)`. | Lets a report generator slice by the four declared dimensions (e.g. "Liquidity Sweep / London / M15") before calling `build_strategy_report()`. |
 | TASK 7 | `ai/journal/failure_analysis.py`'s `FailureAnalysisEntry`/`create_failure_analysis_entry()` — `{signal_id, reason, context, result}` (plus an additive `created_at`), in-memory only. | New, not a gap-close: the future-AI-training-dataset goal this document's "Analytics Dataset" roadmap step names, one level more granular than `SignalPerformance` (records *why* a signal failed, not just that it did). |
 | TASK 8 | `platform_layer/telegram/owner/validation_commands.py` — `get_validation_status()`, `get_today_signals(signals)`, `get_validation_report(signals, performances, period_start, period_end)`. Same "real function, not live-wired" posture as the rest of `platform_layer/telegram/owner/` — not registered into the live bot's command surface. | Gives an owner-facing text view of TASK 5's report and TASK 1's flag; does not change the persistence gap. |
 

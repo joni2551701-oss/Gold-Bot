@@ -1,11 +1,11 @@
 """Phase 61.1 TASK 4/8 — Router Safety (capability matrix + health) and read-only Metrics Integration."""
 
-from ai.capabilities.capability import Capability
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.providers.provider_manager import ProviderManager
-from ai.providers.provider_status import HealthStatus
-from ai.router.router import AIRouter
-from ai.audit.response_log import ResponseLog
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_engine.providers.provider_manager import ProviderManager
+from ai_layer.ai_engine.providers.provider_status import HealthStatus
+from ai_layer.ai_coordinator.router import AIRouter
+from ai_layer.ai_service.audit.response_log import ResponseLog
 
 
 def test_router_without_health_tracker_behaves_exactly_like_phase_61_0():

@@ -24,12 +24,12 @@ naming correction).
 
 ## Built this phase
 
-- `knowledge/knowledge_manager.py` — `KnowledgeManager`: `lookup(key)`,
+- `ai_layer/knowledge_ai/knowledge_base/knowledge_manager.py` — `KnowledgeManager`: `lookup(key)`,
   `search(query)`, `by_category(category)`, `filter(predicate)`,
   `list_all()`. Dependency-injectable (its own entry set), zero AI
   reasoning, zero LLM/network call — matches the Manager-over-Registry
   shape `ai/persona/persona_manager.py` already established.
-- `knowledge/models.py` extended (Article 9 — LOCKed since Phase 61.3,
+- `ai_layer/knowledge_ai/knowledge_base/models.py` extended (Article 9 — LOCKed since Phase 61.3,
   safe-default optional field only): `KnowledgeEntry.source:
   Optional[str] = None` — free-text provenance for where an entry's
   content is traced from. Unset on all 26 pre-existing entries; not
@@ -93,11 +93,11 @@ naming correction).
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
-| Modules | `knowledge/knowledge_manager.py` (1) | `knowledge/models.py` (1) | `knowledge/registry.py`, `knowledge/smc.py`, `knowledge/wyckoff.py`, `knowledge/risk.py`, `knowledge/psychology.py`, `knowledge/examples.py`, `knowledge/faq.py` (7, untouched) |
+| Modules | `ai_layer/knowledge_ai/knowledge_base/knowledge_manager.py` (1) | `ai_layer/knowledge_ai/knowledge_base/models.py` (1) | `ai_layer/knowledge_ai/knowledge_base/registry.py`, `ai_layer/knowledge_ai/knowledge_base/smc.py`, `ai_layer/knowledge_ai/knowledge_base/wyckoff.py`, `ai_layer/knowledge_ai/knowledge_base/risk.py`, `ai_layer/knowledge_ai/knowledge_base/psychology.py`, `ai_layer/knowledge_ai/knowledge_base/examples.py`, `ai_layer/knowledge_ai/knowledge_base/faq.py` (7, untouched) |
 | Managers | `KnowledgeManager` (1) | — | `PersonaManager` (pattern reference only, not imported) |
 | Models | — | `KnowledgeEntry` (+1 optional field) | `KnowledgeCategory` (unchanged) |
 | Contracts | — | `KnowledgeEntry` (same as above — the entry *is* the contract) | — |
-| Registries | — | — | `knowledge/registry.py`'s `all_entries()`/`get_entry()`/`entries_by_category()`/`search()` (1, fully reused, zero changes) |
+| Registries | — | — | `ai_layer/knowledge_ai/knowledge_base/registry.py`'s `all_entries()`/`get_entry()`/`entries_by_category()`/`search()` (1, fully reused, zero changes) |
 | Capabilities | — | — | `Capability.EDUCATION` (audited, no change made) |
 | Tests | `tests/knowledge/test_knowledge_manager.py` (1 new file, 10 tests) | `tests/knowledge/test_knowledge_registry.py` (+2 tests) | existing `tests/knowledge/` fixtures/conventions |
 | Docs | `docs/PHASE63_2_AUDIT.md`, `docs/PHASE63_2_FREEZE.md` (this file) | `docs/ai/AI_KNOWLEDGE.md`, `docs/ai/AI_ARCHITECTURE.md`, `knowledge/README.md` | — |
@@ -115,7 +115,7 @@ strategies/ signals/` returns no output.
 
 ## Next phase recommendation
 
-`knowledge/knowledge_manager.py` is built and tested standalone, not
+`ai_layer/knowledge_ai/knowledge_base/knowledge_manager.py` is built and tested standalone, not
 wired into `ai/explanation/`, `ai/tools/`, or `core/pipeline.py` this
 phase. The natural next step — named in `knowledge/README.md`'s own
 "Future Roadmap" section since Phase 61.3 and reaffirmed by this

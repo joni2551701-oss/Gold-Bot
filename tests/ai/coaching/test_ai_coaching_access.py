@@ -1,5 +1,5 @@
-from ai.access.permissions import AIRole
-from ai.coaching.access import is_coaching_intelligence_enabled_for
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.personal_ai.senior.access import is_coaching_intelligence_enabled_for
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_coaching_intelligence=True)

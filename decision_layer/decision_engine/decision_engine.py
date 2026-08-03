@@ -7,7 +7,7 @@ from context_layer.trend.htf_bias import HTFBias
 
 if TYPE_CHECKING:
     from signal_layer.signal_builder.models import SignalCandidate
-    from ai.ai_analyzer import AIAnalysisResult
+    from ai_layer.ai_engine.ai_analyzer import AIAnalysisResult
     from context_layer.trend.htf_bias import HTFBiasResult
 
 
@@ -112,7 +112,7 @@ def _build_decision_input(
     computed by the AI layer, before Decision Engine runs -- unlike
     risk.risk_manager.RiskResult, which is only produced AFTER a
     TradeDecision exists and therefore cannot be an input to this
-    formula). AIAnalysisResult.risk_score is documented (ai/ai_analyzer.py)
+    formula). AIAnalysisResult.risk_score is documented (ai_layer/ai_engine/ai_analyzer.py)
     as 0.0 = no risk .. 1.0 = maximum risk; DecisionInput.risk_score is
     inverted (1.0 - ai_analysis.risk_score) so every one of the four
     components is consistently "higher is better," matching

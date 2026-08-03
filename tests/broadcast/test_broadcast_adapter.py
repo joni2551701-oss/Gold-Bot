@@ -1,8 +1,8 @@
 """Phase 63.8 TASK 6 — media_layer/telegram_broadcast/broadcast_adapter.py: Content/Media (upstream, type-only) integration, optional Persona reference."""
 
-from ai.content.content_schema import ContentResult
-from ai.content_types import ContentType
-from ai.persona.persona_registry import SENIOR_TRADING_AI
+from ai_layer.ai_service.content.content_schema import ContentResult
+from ai_layer.ai_service.content.content_type_vocabulary import ContentType
+from ai_layer.personal_ai.persona_manager.persona_registry import SENIOR_TRADING_AI
 from media_layer.telegram_broadcast.broadcast_adapter import broadcast_asset_from_content_and_media
 from media_layer.telegram_broadcast.broadcast_manager import BroadcastManager
 from media_layer.telegram_broadcast.models import BroadcastStatus
@@ -92,7 +92,7 @@ def test_broadcast_adapter_module_never_imports_decision_risk_execution():
 
     adapter_file = pathlib.Path(__file__).resolve().parents[2] / "media_layer" / "telegram_broadcast" / "broadcast_adapter.py"
     tree = ast.parse(adapter_file.read_text(), filename=str(adapter_file))
-    forbidden_prefixes = ("decision", "risk", "execution", "strategies", "signals", "database", "telegram")
+    forbidden_prefixes = ("decision_layer", "risk_layer", "execution_layer", "strategy_layer", "signal_layer", "database_layer", "platform_layer.telegram")
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:

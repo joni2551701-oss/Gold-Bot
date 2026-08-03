@@ -78,7 +78,7 @@ and `ai/explanation/` and bridge them.
 `ConversationEngine.ask()` itself is unmodified, unmoved, and its
 signature unchanged (Phase 65.2's own Rule 1: no rename/move/breaking
 API) — but as of Phase 65.2 it has a second real caller:
-`voice/conversation_bridge.py`'s `handle_voice_turn()`, which passes
+`ai_layer/voice_ai/conversation_bridge.py`'s `handle_voice_turn()`, which passes
 an STT-transcribed message through it as the one real, LLM-backed step
 of a voice round trip. `ai/conversation/` itself required zero code
 change for this — `voice/` simply calls the same public method a
@@ -87,21 +87,21 @@ future `platform_layer/telegram/command_router.py` text-chat caller would.
 ## Personal AI Assistant params (Phase 65.3, structural only)
 
 Top-level `assistant/`'s `assistant_to_conversation_params()`
-(`assistant/conversation_adapter.py`) returns a plain
+(`ai_layer/ai_service/assistant/conversation_adapter.py`) returns a plain
 `{"telegram_id": ...}` dict shaped to match `start_session()`'s
 existing parameter — but `assistant/` does not import
-`ai.conversation` at all, and this module requires zero code change
+`ai_layer.personal_ai.interaction_manager` at all, and this module requires zero code change
 for it. See `docs/PHASE65_3_AUDIT.md`'s "core architectural
 resolution" for why the integration stays one-directional and
 structural rather than a real call this phase.
 
-## Third real caller: `assistant/runtime_adapter.py` (Phase 65.4)
+## Third real caller: `ai_layer/ai_service/assistant/runtime_adapter.py` (Phase 65.4)
 
 Phase 65.4 (Personal AI Runtime Integration) gives `ConversationEngine`
-a third real caller: `assistant/runtime_adapter.py`'s
+a third real caller: `ai_layer/ai_service/assistant/runtime_adapter.py`'s
 `advance_conversation()`, which calls `start_session()`/`ask()`
-exactly as `voice/conversation_bridge.py` does, gated by
-`assistant.access.is_personal_ai_enabled_for()` (Owner-only). Zero
+exactly as `ai_layer/voice_ai/conversation_bridge.py` does, gated by
+`ai_layer.ai_service.assistant.access.is_personal_ai_enabled_for()` (Owner-only). Zero
 code change to `ConversationEngine` itself was required.
 
 ## What it is not
@@ -119,7 +119,7 @@ code change to `ConversationEngine` itself was required.
 - `docs/PHASE63_5_AUDIT.md`, `docs/PHASE63_5_FREEZE.md` — TASK 0's
   audit and the phase this extension was built in.
 - `docs/PHASE65_2_AUDIT.md`, `docs/PHASE65_2_FREEZE.md`,
-  `docs/ai/AI_VOICE.md` — `voice/conversation_bridge.py`'s own
+  `docs/ai/AI_VOICE.md` — `ai_layer/voice_ai/conversation_bridge.py`'s own
   real-call integration, this package's second real caller.
 - `docs/PHASE65_3_AUDIT.md`, `docs/PHASE65_4_AUDIT.md`,
   `docs/ai/AI_PERSONAL_ASSISTANT.md` — `assistant/`'s integration

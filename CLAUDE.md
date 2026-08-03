@@ -171,7 +171,7 @@ Specific hard rules:
   input to `decision_layer.decision_engine.decision_engine.DecisionEngine` only — it must
   never itself approve/reject a trade, call the Risk Manager, or
   trigger a Telegram send or an execution action. See
-  `ai/interfaces.py`'s `AIAnalyzerInterface` docstring for the
+  `ai_layer/ai_service/interfaces.py`'s `AIAnalyzerInterface` docstring for the
   contract this applies to any future AI provider.
 - The full "why" behind this boundary — the REJECT/BLOCKED-signals-
   reaching-Telegram incident and its fix — is documented in

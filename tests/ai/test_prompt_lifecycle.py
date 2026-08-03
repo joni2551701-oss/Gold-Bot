@@ -1,6 +1,6 @@
 """Phase 61.1.1 TASK 3/5 — Prompt Lifecycle: ACTIVE/DEPRECATED/ARCHIVED."""
 
-from ai.prompts.prompt_registry import PromptLifecycleState, PromptRegistry
+from ai_layer.ai_engine.prompts.prompt_registry import PromptLifecycleState, PromptRegistry
 
 
 def test_newly_registered_version_defaults_to_active():

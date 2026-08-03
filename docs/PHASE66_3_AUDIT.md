@@ -12,7 +12,7 @@ requires.
 
 ### `learning/` (top-level package, Phase 60.6/60.7)
 
-- **Learning modeli bormi?** **YES** — `learning/models.py`'s
+- **Learning modeli bormi?** **YES** — `ai_layer/knowledge_ai/learning_loop/models.py`'s
   `LearningRecord` (`record_id`, `trade_id`, `signal_id`,
   `strategy_name`, `market_phase`, `session`, `timeframe`, `result`,
   `r_multiple`, `failure_type`, `success_pattern`, `htf_bias`,
@@ -25,8 +25,8 @@ requires.
   phase's own `LearningRecord` (TASK 2).
 - **Learning Runtime bormi?** **NO** — no class named `LearningRuntime`
   exists anywhere in `learning/`. The closest is
-  `learning/outcome_analyzer.py`'s `analyze_trade_result()` (a pure
-  function, not a CRUD runtime) and `learning/pattern_detector.py`'s
+  `ai_layer/knowledge_ai/learning_loop/outcome_analyzer.py`'s `analyze_trade_result()` (a pure
+  function, not a CRUD runtime) and `ai_layer/knowledge_ai/learning_loop/pattern_detector.py`'s
   `detect_patterns()` (statistical grouping, not CRUD).
 - **Learning Manager bormi?** **NO** — no Manager class in `learning/`.
 - **Learning Registry bormi?** **NO** — no Registry in `learning/`.
@@ -52,24 +52,24 @@ in `learning/`'s own DB-touching import chain).
 ### `ai/` (top-level package)
 
 - **Learning modeli bormi?** **NO new dataclass**, but **YES, one
-  directly relevant existing file**: `ai/learning_context.py`'s
+  directly relevant existing file**: `ai_layer/knowledge_ai/learning_context.py`'s
   `LearningContext` (Phase 60.6, extended Phase 60.7) — a
   **read-only, already-computed-data bundle** (`recent_failures`,
   `successful_patterns`, `strategy_stats`, `patterns`, `failures`,
-  `regimes`, `confidence`) built *from* `learning.models.LearningRecord`
-  via `learning.pattern_detector`/`learning.confidence`/
-  `analytics.strategy_report`. This is a **different concept
+  `regimes`, `confidence`) built *from* `ai_layer.knowledge_ai.learning_loop.models.LearningRecord`
+  via `ai_layer.knowledge_ai.learning_loop.pattern_detector`/`ai_layer.knowledge_ai.learning_loop.confidence`/
+  `backtesting_layer.statistics.strategy_report`. This is a **different concept
   entirely** — it packages statistical trade-pattern summaries for a
   *future AI explainer* to read, not a per-user learning-progress
   record with a `topic`/`level`. It also transitively imports
   `learning/` and `analytics/`, both out of scope for this phase's own
   narrow, database-free Foundation. **Not reused** — `ai/learning/`
-  and `ai/learning_context.py` remain two separate, unrelated files
-  (`ai.learning` the new package vs. `ai.learning_context` the
+  and `ai_layer/knowledge_ai/learning_context.py` remain two separate, unrelated files
+  (`ai_layer.knowledge_ai.learning_engine` the new package vs. `ai_layer.knowledge_ai.learning_context` the
   existing single-file module — no Python namespace collision, and no
   import either direction).
 - **Learning Runtime/Manager/Registry bormi?** **NO** — nothing in
-  `ai/` (outside `ai/learning_context.py`'s own module-level functions)
+  `ai/` (outside `ai_layer/knowledge_ai/learning_context.py`'s own module-level functions)
   matches.
 
 ### `ai/trade_journal/` (Phase 66.2, LOCKed)
@@ -79,7 +79,7 @@ in `learning/`'s own DB-touching import chain).
   `direction`, `entry`, `sl`, `tp`, `result`, `confidence`, `reason`,
   `lesson`, `mistakes`, `created_at`). This is the exact upstream
   contract TASK 4's `journal_adapter.py` reads type-only (never
-  imports `ai.trade_journal` anywhere else in the new package) — a
+  imports `ai_layer.knowledge_ai.knowledge_base.trade_journal` anywhere else in the new package) — a
   real composition, not a duplicate.
 - **Learning model/Runtime/Manager/Registry bormi?** **NO** —
   `ai/trade_journal/` is CRUD-only over journal entries, no learning
@@ -91,7 +91,7 @@ in `learning/`'s own DB-touching import chain).
   audited for completeness per the brief's own list; this phase's
   TASK 4/5 do not compose it directly (only `ai/trade_journal/` is
   named as the Learning input source), so `ai/learning/` never imports
-  `ai.chart_intelligence`.
+  `ai_layer.vision_ai`.
 
 ### `ai/trading_analyst/` (Phase 66.0, LOCKed)
 
@@ -100,7 +100,7 @@ in `learning/`'s own DB-touching import chain).
 
 ### `knowledge/`
 
-- **Learning model bormi?** **NO** — `knowledge/models.py`'s
+- **Learning model bormi?** **NO** — `ai_layer/knowledge_ai/knowledge_base/models.py`'s
   `KnowledgeCategory` (SMC/WYCKOFF/RISK/PSYCHOLOGY/EXAMPLES/FAQ) is a
   coarse **content-category** taxonomy for static knowledge articles,
   not a per-user skill-topic tracker. `LearningTopic` (TASK 2, 12
@@ -119,7 +119,7 @@ in `learning/`'s own DB-touching import chain).
   instruction ("Memory Runtime chaqirilmaydi" — Memory Runtime is
   never called) means this phase does not add one either. Mirrors
   Phase 66.2's own `memory_adapter.py` precedent exactly: a plain
-  string-key generator, zero `ai.memory` import.
+  string-key generator, zero `ai_layer.knowledge_ai.memory_manager` import.
 
 ### `database/`
 
@@ -132,9 +132,9 @@ in `learning/`'s own DB-touching import chain).
 ### `analytics/`
 
 - **Learning model/Runtime bormi?** **NO** new model, but
-  `analytics/strategy_report.py`'s `compute_win_rate()` is reused
-  *indirectly* by `ai/learning_context.py` (not by this phase).
-  `analytics/performance_metrics.py` (win rate/Sharpe/drawdown/profit
+  `backtesting_layer/statistics/strategy_report.py`'s `compute_win_rate()` is reused
+  *indirectly* by `ai_layer/knowledge_ai/learning_context.py` (not by this phase).
+  `backtesting_layer/statistics/performance_metrics.py` (win rate/Sharpe/drawdown/profit
   factor) is explicitly out of scope — Rule 6 forbids performance
   computation of any kind in this phase. Not imported by
   `ai/learning/`.
@@ -142,12 +142,12 @@ in `learning/`'s own DB-touching import chain).
 ## Conclusion — genuine gap, TASK 1's package decision
 
 Per Constitution Article 11 step 2 ("can an existing module be
-extended without breaking its contract"): `learning/models.py`'s
+extended without breaking its contract"): `ai_layer/knowledge_ai/learning_loop/models.py`'s
 `LearningRecord` fails this test on two independent grounds — its
 field shape answers a different question (trade-outcome statistics,
 not per-user topic mastery) and its own package already has real,
 wired database persistence, which Rule 3 forbids this phase's
-Foundation from acquiring by association. `ai/learning_context.py`'s
+Foundation from acquiring by association. `ai_layer/knowledge_ai/learning_context.py`'s
 `LearningContext` is a read-only aggregation bundle for a future AI
 explainer, not a CRUD-able per-user record, and itself transitively
 depends on `learning/`/`analytics/` — also unsuitable to extend.
@@ -160,9 +160,9 @@ phase's own TASK 1 instruction.
 
 **Naming note (documented, not a defect):** `LearningRecord` is used
 by two, non-colliding fully-qualified paths in this codebase after
-this phase: `learning.models.LearningRecord` (Phase 60.6, trade-outcome
+this phase: `ai_layer.knowledge_ai.learning_loop.models.LearningRecord` (Phase 60.6, trade-outcome
 statistics, DB-persisted, untouched by this phase) and
-`ai.learning.models.LearningRecord` (this phase, per-user topic
+`ai_layer.knowledge_ai.learning_engine.models.LearningRecord` (this phase, per-user topic
 mastery, in-memory only). The two are never imported into the same
 file and serve genuinely different purposes — recorded here explicitly
 so no future reader mistakes the bare class name for a duplicate, the

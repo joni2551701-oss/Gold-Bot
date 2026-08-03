@@ -1,5 +1,5 @@
-from ai.research.memory_adapter import research_reference_key
-from ai.research.models import ResearchCategory, ResearchRecord
+from ai_layer.fundamental_ai.memory_adapter import research_reference_key
+from ai_layer.fundamental_ai.models import ResearchCategory, ResearchRecord
 
 
 def _record(**overrides):

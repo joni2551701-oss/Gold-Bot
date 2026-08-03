@@ -1,6 +1,6 @@
 """Phase 63.1 TASK 2 — ExplanationInput contract. Primitive values only, never a decision/risk object."""
 
-from ai.explanation.explanation_input import ExplanationInput, ExplanationMode
+from ai_layer.explanation_ai.explanation_input import ExplanationInput, ExplanationMode
 
 
 def test_explanation_input_trade_mode():

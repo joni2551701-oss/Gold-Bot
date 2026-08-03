@@ -1,5 +1,5 @@
-from ai.performance.journal_adapter import journal_entry_to_performance_input
-from ai.trade_journal.models import TradeJournalEntry
+from ai_layer.ai_engine.performance.journal_adapter import journal_entry_to_performance_input
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.models import TradeJournalEntry
 
 
 def _entry(**overrides):
@@ -98,8 +98,8 @@ def test_different_entries_produce_independent_mappings():
 
 def test_mapped_output_is_accepted_by_performance_runtime_create():
     """Integration-shaped: the dict this adapter returns must be a valid **kwargs for PerformanceRuntime.create()."""
-    from ai.access.permissions import AIRole
-    from ai.performance.performance_runtime import PerformanceRuntime
+    from ai_layer.ai_service.access.permissions import AIRole
+    from ai_layer.ai_engine.performance.performance_runtime import PerformanceRuntime
     from core_layer.configuration.feature_flags import FeatureFlags
 
     runtime = PerformanceRuntime(flags=FeatureFlags(enable_performance_intelligence=True))

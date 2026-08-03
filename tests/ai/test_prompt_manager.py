@@ -5,8 +5,8 @@ Static template rendering only -- no LLM call anywhere in
 ai/prompts/prompt_manager.py, matching this phase's explicit scope.
 """
 
-from ai.interfaces import MarketContext, UserContext
-from ai.prompts.prompt_manager import PromptManager
+from ai_layer.ai_service.interfaces import MarketContext, UserContext
+from ai_layer.ai_engine.prompts.prompt_manager import PromptManager
 from context_layer.fundamental.fundamental_context import compute_fundamental_context, merge_fundamental_score
 from context_layer.fundamental.fundamental_scoring import compute_fundamental_score
 
@@ -55,7 +55,7 @@ def test_user_assistant_prompt_with_user_context_includes_personalization():
 def test_prompt_manager_never_calls_a_network_or_llm_client():
     """No aiogram/requests/google-genai import anywhere in prompt_manager.py."""
     import inspect
-    from ai.prompts import prompt_manager
+    from ai_layer.ai_engine.prompts import prompt_manager
 
     source = inspect.getsource(prompt_manager)
     for forbidden in ("import requests", "import aiogram", "genai", "openai"):

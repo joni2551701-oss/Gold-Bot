@@ -87,10 +87,10 @@ Article 7). Core-audit summary:
 | `context/` | Stateless SMC structure detection → `ContextSnapshot`/`ContextSnapshotSchema` | `data/` | strategies/, signals/, decision/(HTF type), market/(schema) | `context_orchestrator.build_context_snapshot` |
 | `strategies/` | 3 SMC methodologies → `List[SignalCandidate]` | context/ | signals/ | `strategy_layer.strategy_manager.strategy_manager.StrategyManager` |
 | `signals/` | Candidate contract, quality grade, explainability, schema; STEP-08 `SignalManager` parallel pipeline | context/, strategies/ | decision/(types), pipeline | `signal_layer.signal_engine.signal_engine.SignalEngine` |
-| `decision/` | Weighted APPROVE/REJECT/NO_TRADE; STEP-09 `decision_manager` parallel | signals/, context/(HTF), `ai.ai_analyzer.AIAnalysisResult` (type) | risk/, pipeline | `decision_layer.decision_engine.decision_engine.DecisionEngine` |
+| `decision/` | Weighted APPROVE/REJECT/NO_TRADE; STEP-09 `decision_manager` parallel | signals/, context/(HTF), `ai_layer.ai_engine.ai_analyzer.AIAnalysisResult` (type) | risk/, pipeline | `decision_layer.decision_engine.decision_engine.DecisionEngine` |
 | `risk/` | Geometry/SL validation + sizing; last gate | decision/ | pipeline | `risk_layer.risk_engine.risk_manager.RiskManager` |
 | `monitoring/` | Health/error/resource/risk/signal/performance/system observers | many (observes) | telegram owner cmds | per-monitor classes |
-| `features/` | Standardization layer (`MarketFeatures`) | context/signals output | future AI/ML | `features.feature_engine` |
+| `features/` | Standardization layer (`MarketFeatures`) | context/signals output | future AI/ML | `core_layer.features.feature_engine` |
 | `assets/` | Asset metadata registry | config | future multi-asset | `assets.asset_registry` |
 | `lifecycle/` | Strategy/paper-trade lifecycle metadata | decision/risk | future | `lifecycle/*` |
 | `backtesting/` | Replay chain over context→…→risk (Simulation) | all Core (unmodified) | analytics/owner | `backtesting_layer.backtest_engine.backtest_engine` |
@@ -109,7 +109,7 @@ Platform / Telegram / UI FORBIDDEN.
 | Core → UI | ✅ none | zero imports |
 | **Core → Telegram (FORBIDDEN)** | ⚠ **PRESENT** | `core/pipeline.py` imports `platform_layer.telegram.signal_formatter.SignalFormatter` + `platform_layer.telegram.notifier.Notifier` (the pipeline's delivery-boundary wiring); `monitoring/` imports `platform_layer.telegram.admin_service.AdminService` in 7 files (system/decision/risk/error/signal/performance/resource monitors) |
 | **Core → Database (persistence)** | ⚠ **PRESENT** | `core/pipeline.py` (SignalRepository/SignalRecord), `core_layer/emergency/emergency_manager.py`, and `monitoring/*` write/read the DB |
-| Core → AI (type-only) | ⚠ present, documented | `decision_layer/decision_engine/models.py` imports `ai.ai_analyzer.AIAnalysisResult` — a TYPE only (Constitution Article 1/3; `IMPORT_RULES.md`); the Decision Engine reads the AI's result value, never calls the AI layer |
+| Core → AI (type-only) | ⚠ present, documented | `decision_layer/decision_engine/models.py` imports `ai_layer.ai_engine.ai_analyzer.AIAnalysisResult` — a TYPE only (Constitution Article 1/3; `IMPORT_RULES.md`); the Decision Engine reads the AI's result value, never calls the AI layer |
 
 **Reading of the crossings (audit judgment, not a fix):** the
 `core/pipeline.py` → telegram/database crossings are the pipeline's own
@@ -146,7 +146,7 @@ Proposal to confirm whether the engine and its manager should consolidate
 - **Invalid import / layer violation:** the §4 crossings (Core →
   Telegram/Database; monitoring → AdminService). These are the only
   upward/sideways imports found.
-- **Hidden dependency:** `decision_layer/decision_engine/models.py` → `ai.ai_analyzer` is a
+- **Hidden dependency:** `decision_layer/decision_engine/models.py` → `ai_layer.ai_engine.ai_analyzer` is a
   type-only import that is easy to miss in a dependency scan; recorded
   here explicitly. It is intentional and documented.
 - Authoritative living dependency map: `docs/architecture/

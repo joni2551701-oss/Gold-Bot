@@ -63,7 +63,7 @@ etc.).
   services recompute the same metric with different formulas (every
   win-rate figure in `platform_layer/telegram/owner/report_commands.py` — daily
   stats, validation summary — routes through the single
-  `analytics.strategy_report.compute_win_rate()`).
+  `backtesting_layer.statistics.strategy_report.compute_win_rate()`).
 - The one place two *different* upsert conventions coexist
   (`runtime_features`: one row per name, upsert; `emergency_states`:
   append-only) is intentional and documented in both tables' own

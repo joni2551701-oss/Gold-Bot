@@ -131,7 +131,7 @@ def build_feature_registry() -> List[FeatureDescriptor]:
         ),
         FeatureDescriptor(
             name="enable_ai", enabled=DEFAULT_FLAGS.enable_ai, implemented=True,
-            source="configuration.feature_flags.FeatureFlags", description="Reserved (Phase A13) -- ai/ai_analyzer.py stays a heuristic stub regardless.",
+            source="configuration.feature_flags.FeatureFlags", description="Reserved (Phase A13) -- ai_layer/ai_engine/ai_analyzer.py stays a heuristic stub regardless.",
         ),
         FeatureDescriptor(
             name="enable_crypto", enabled=DEFAULT_FLAGS.enable_crypto, implemented=True,

@@ -10,15 +10,15 @@ exactly.
 
 import pathlib
 
-import ai.coaching.access
-import ai.coaching.coaching_runtime
-import ai.coaching.journal_adapter
-import ai.coaching.learning_adapter
-import ai.coaching.models
+import ai_layer.personal_ai.senior.access
+import ai_layer.personal_ai.senior.coaching_runtime
+import ai_layer.personal_ai.senior.journal_adapter
+import ai_layer.personal_ai.senior.learning_adapter
+import ai_layer.personal_ai.senior.models
 
 
 def _coaching_dir():
-    return pathlib.Path(__file__).resolve().parents[3] / "ai" / "coaching"
+    return pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "personal_ai" / "senior"
 
 
 def test_no_lesson_module_exists():
@@ -58,7 +58,7 @@ def test_no_voice_coach_module_exists():
 
 
 def test_models_module_has_no_future_concept_classes():
-    names = dir(ai.coaching.models)
+    names = dir(ai_layer.personal_ai.senior.models)
     forbidden = {
         "Lesson", "Exercise", "Homework", "DailyPlan", "WeeklyPlan",
         "MonthlyGoal", "Certification", "Academy", "VoiceCoach", "AICoach",
@@ -67,7 +67,7 @@ def test_models_module_has_no_future_concept_classes():
 
 
 def test_coaching_runtime_has_no_generation_or_evaluation_method():
-    from ai.coaching.coaching_runtime import CoachingRuntime
+    from ai_layer.personal_ai.senior.coaching_runtime import CoachingRuntime
     public_methods = {name for name in dir(CoachingRuntime) if not name.startswith("_")}
     forbidden = {
         "generate_lesson", "generate_exercise", "generate_homework",
@@ -78,9 +78,11 @@ def test_coaching_runtime_has_no_generation_or_evaluation_method():
 
 
 def test_package_only_has_the_seven_expected_files():
+    # .py only: since Order No. 005/006 each module folder also holds its
+    # canonical documents (README/Contracts/ModuleMap/SequenceDiagram).
     expected = {
         "__init__.py", "models.py", "access.py", "coaching_runtime.py",
-        "learning_adapter.py", "journal_adapter.py", "README.md",
+        "learning_adapter.py", "journal_adapter.py",
     }
-    actual = {p.name for p in _coaching_dir().iterdir() if p.is_file()}
+    actual = {p.name for p in _coaching_dir().iterdir() if p.is_file() and p.suffix == ".py"}
     assert actual == expected

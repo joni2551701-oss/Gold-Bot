@@ -1,9 +1,9 @@
 """Phase 63.6 TASK 3 — ContentEngine's deterministic surface (create/format/preview/validate/history), all additive to the existing, LOCKed generate()."""
 
-from ai.content.content_adapter import ContentEngine
-from ai.content_types import ContentType
-from ai.content.content_schema import ContentResult
-from ai.content.models import ContentMetadata
+from ai_layer.ai_service.content.content_adapter import ContentEngine
+from ai_layer.ai_service.content.content_type_vocabulary import ContentType
+from ai_layer.ai_service.content.content_schema import ContentResult
+from ai_layer.ai_service.content.models import ContentMetadata
 
 
 def test_create_builds_an_accepted_result_without_calling_ai_service():

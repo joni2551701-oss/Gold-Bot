@@ -14,7 +14,7 @@ from signal_layer.signal_scoring.signal_quality import SignalQualityResult, Qual
 from signal_layer.signal_builder.adapter import from_signal_candidate
 from signal_layer.signal_builder.schema import validate_signal
 from decision_layer.decision_engine.models import TradeDecision, DecisionAction
-from ai.ai_analyzer import AIAnalysisResult
+from ai_layer.ai_engine.ai_analyzer import AIAnalysisResult
 
 
 def _candidate(signal_type=SignalType.BUY, entry=4200.0, stop_loss=4190.0, take_profit=4220.0, strategy_name="LIQUIDITY_SWEEP_STRATEGY", confidence=0.85):

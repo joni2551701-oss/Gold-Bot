@@ -232,7 +232,7 @@ is foundation, not wired into the pipeline.
 **Public interfaces**: `AIAnalyzer().analyze(signal, context) ->
 AIAnalysisResult`.
 
-**Future expansion points**: `ai/interfaces.py`'s
+**Future expansion points**: `ai_layer/ai_service/interfaces.py`'s
 `AIAnalyzerInterface` is the documented contract a future real
 provider (Phase 55) must implement; `docs/AI_ARCHITECTURE.md` covers
 this in full.
@@ -254,7 +254,7 @@ entire audit:
   59's "Real Market Validation" scans producing zero approved signals
   by construction, independent of market conditions or any other
   layer's correctness.
-- `ai/ai_prompt.py` and `ai/confidence_model.py` are fully built,
+- `ai_layer/ai_engine/ai_prompt.py` and `ai_layer/confidence_ai/confidence_model.py` are fully built,
   0% test coverage, imported by nothing (re-confirmed by grep this
   phase) — but this is already documented as intentional
   (`docs/AI_ARCHITECTURE.md`'s own audit table), not a new finding.

@@ -6,7 +6,7 @@ Foundation, TASK 1/3/4).
 Pure data. No network client, no channel SDK, no streaming library
 import anywhere in this package (Rule 2 — no YouTube API/OBS/RTMP/
 socket/video/stream). `BroadcastRequest` composes
-`ai.content.broadcast_output.BroadcastReadyContent` (Phase 61.5 TASK 6)
+`ai_layer.ai_service.content.broadcast_output.BroadcastReadyContent` (Phase 61.5 TASK 6)
 as its content input rather than re-declaring a content shape (Module
 Reuse Principle).
 
@@ -17,7 +17,7 @@ its own new `BroadcastTriggerType` enum; `BroadcastStatus`/
 `BroadcastAsset` are the two genuine new models
 `docs/PHASE63_8_AUDIT.md`'s Foundation Reuse Audit found -- no
 `BroadcastType` enum was created (see that audit's own naming
-resolution: `ai.content_types.ContentType`, already the type
+resolution: `ai_layer.ai_service.content.content_types.ContentType`, already the type
 `BroadcastTrigger.content_type` references, covers that vocabulary).
 """
 
@@ -26,8 +26,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, Optional
 
-from ai.content.broadcast_output import BroadcastReadyContent
-from ai.content_types import ContentType
+from ai_layer.ai_service.content.broadcast_output import BroadcastReadyContent
+from ai_layer.ai_service.content.content_type_vocabulary import ContentType
 
 
 class BroadcastProviderType(Enum):
@@ -66,7 +66,7 @@ class BroadcastTriggerType(Enum):
 @dataclass(frozen=True)
 class BroadcastTrigger:
     """
-    content_type: which `ai.content_types.ContentType` this
+    content_type: which `ai_layer.ai_service.content.content_types.ContentType` this
         trigger watches for.
     enabled: Owner-set intent -- whether this trigger is armed. Never
         actually fires anything this phase; `TriggerManager.is_armed()`
@@ -113,7 +113,7 @@ class BroadcastAsset:
     `MediaAsset` object, the same "never carry another package's object
     graph" posture `media_layer/content_manager/models.py`'s `MediaAsset.content_id` already
     established. `persona_name` is likewise a free-text reference, never
-    an embedded `ai.persona.persona.Persona` -- see
+    an embedded `ai_layer.personal_ai.persona_manager.persona.Persona` -- see
     `docs/PHASE63_8_AUDIT.md`'s Persona resolution.
     """
     id: str

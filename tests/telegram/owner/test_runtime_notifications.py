@@ -1,7 +1,7 @@
 """Phase 61.6 TASK 7 — Runtime Notification Layer. Owner-only alerts for Provider DOWN/RECOVERED, Runtime FAILED, High Cost, Cache Disabled."""
 
-from ai.audit.provider_stats import ProviderStats
-from ai.event_bus import EventBus, EventType, RuntimeEvent
+from ai_layer.ai_service.audit.provider_stats import ProviderStats
+from ai_layer.ai_service.event_bus import EventBus, EventType, RuntimeEvent
 from platform_layer.telegram.owner.runtime_notifications import (
     RuntimeNotifier,
     deliver_alerts,

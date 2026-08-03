@@ -17,16 +17,16 @@ it never imports `decision/`/`risk/`/`execution/`/`strategies/`/
 Per `docs/PHASE63_8_AUDIT.md`'s TASK 6 resolution, this adapter's
 output *is* `BroadcastAsset` (TASK 1's own model) -- no second,
 competing "BroadcastReady" dataclass is declared here;
-`ai.content.broadcast_output.BroadcastReadyContent`/`prepare_broadcast()`
+`ai_layer.ai_service.content.broadcast_output.BroadcastReadyContent`/`prepare_broadcast()`
 (Phase 61.5) remain untouched and continue to exist as the narrower,
 Content-only path.
 """
 
 from typing import Optional
 
-from ai.content.content_schema import ContentResult
-from ai.content_types import ContentType
-from ai.persona.persona import Persona
+from ai_layer.ai_service.content.content_schema import ContentResult
+from ai_layer.ai_service.content.content_type_vocabulary import ContentType
+from ai_layer.personal_ai.persona_manager.persona import Persona
 from media_layer.telegram_broadcast.broadcast_manager import BroadcastManager
 from media_layer.telegram_broadcast.models import BroadcastAsset
 from media_layer.content_manager.models import MediaAsset

@@ -1,7 +1,7 @@
 """Phase 61.1 TASK 3 — Provider Capability Matrix."""
 
-from ai.capabilities.capability import Capability
-from ai.providers.provider_capabilities import PROVIDER_CAPABILITIES, capabilities_of, supports
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.providers.provider_capabilities import PROVIDER_CAPABILITIES, capabilities_of, supports
 
 
 def test_gemini_supports_chat_vision_document_per_worked_example():

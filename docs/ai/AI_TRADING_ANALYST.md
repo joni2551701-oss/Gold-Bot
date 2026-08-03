@@ -79,7 +79,7 @@ new BUY/SELL/NO_TRADE verdict (Director Note 1).
 `ExplanationOutput.educational_note` — no new teaching logic.
 
 Owner-gated: `analyze()` re-checks
-`ai.trading_analyst.access.is_trading_analyst_enabled_for()` itself,
+`ai_layer.ai_engine.trading_analyst.access.is_trading_analyst_enabled_for()` itself,
 returning `None` for a denied caller before either composed system is
 ever touched.
 
@@ -107,7 +107,7 @@ This is the one file in `ai/trading_analyst/` permitted to import
 `access.py`'s `is_trading_analyst_enabled_for(role, flags)` requires
 **both** `configuration.feature_flags.FeatureFlags.enable_trading_analyst`
 (default `False`) **and** `role == AIRole.OWNER`. Mirrors
-`assistant/access.py`'s `is_personal_ai_enabled_for()` shape exactly —
+`ai_layer/ai_service/assistant/access.py`'s `is_personal_ai_enabled_for()` shape exactly —
 a dedicated flag, not a reuse of `enable_personal_ai` (Trading Analyst
 is a sibling concern to Personal AI Assistant, not a dependent one;
 `ai/trading_analyst/` never imports `assistant/` or `voice/`).
@@ -137,7 +137,7 @@ is a sibling concern to Personal AI Assistant, not a dependent one;
 - `docs/PHASE66_0_AUDIT.md`, `docs/PHASE66_0_FREEZE.md` — full
   documentation of this phase.
 - `ai/trading_analyst/README.md` — the package's own top-level README.
-- `ai/explanation/`, `ai/intelligence_runtime.py` — the two existing
+- `ai/explanation/`, `ai_layer/ai_engine/intelligence_runtime.py` — the two existing
   systems `analyst_runtime.py` composes.
 - `ai/content/`, `media/`, `broadcast/` — the three existing systems
   `content_adapter.py` composes.

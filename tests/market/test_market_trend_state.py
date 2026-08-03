@@ -8,7 +8,7 @@ context reports no directional bias.
 
 from types import SimpleNamespace
 
-from market.trend_state import TrendState
+from data_layer.live_data.market.trend_state import TrendState
 
 
 def _schema(trend=None, bos=False, choch=False):

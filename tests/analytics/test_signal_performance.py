@@ -1,11 +1,11 @@
 """
-Phase 59 Preparation, TASK 3 -- analytics/signal_performance.py tests.
+Phase 59 Preparation, TASK 3 -- backtesting_layer/statistics/signal_performance.py tests.
 """
 
 import dataclasses
 from datetime import datetime, timedelta, timezone
 
-from analytics.signal_performance import (
+from backtesting_layer.statistics.signal_performance import (
     compute_r_multiple,
     compute_signal_performance,
     generate_performance_id,

@@ -13,7 +13,7 @@ TASK 0's audit (`docs/PHASE66_5_AUDIT.md`) reviewed `ai/coaching/`,
 `ai/learning/`, `ai/trade_journal/`, `analytics/` (specifically
 `performance_metrics.py` and `strategy_report.py`), `database/`, and
 confirmed no `PerformanceRecord`-shaped model existed anywhere in the
-repository before this phase. `analytics.performance_metrics.PerformanceMetrics`
+repository before this phase. `backtesting_layer.statistics.performance_metrics.PerformanceMetrics`
 (plural) is a different, fixed-shape portfolio aggregate — not a
 duplicate of this phase's singular, generic `PerformanceMetric`. The
 audit identified exactly one directly-reusable primitive
@@ -41,17 +41,17 @@ fabrication and not an unnecessary new abstraction.
   `journal_entry_to_performance_input()`, a pure mapping from an
   existing `TradeJournalEntry` (Phase 66.2) to `PerformanceRuntime.create()`
   keyword arguments. The one file in the package permitted to import
-  `ai.trade_journal.models`.
+  `ai_layer.knowledge_ai.knowledge_base.trade_journal.models`.
 - `ai/performance/coaching_adapter.py` (new) —
   `performance_record_to_coaching_input()`, a pure mapping from this
   package's own `PerformanceRecord` to a plain, untyped dict of
-  `CoachingRuntime.create()`-shaped keyword arguments — no `ai.coaching`
+  `CoachingRuntime.create()`-shaped keyword arguments — no `ai_layer.personal_ai.senior`
   import needed at all.
 - `ai/performance/analytics_adapter.py` (new) —
   `performance_records_to_win_rate_metric()`, reusing
-  `analytics.strategy_report.compute_win_rate()` directly.
+  `backtesting_layer.statistics.strategy_report.compute_win_rate()` directly.
 - `ai/performance/memory_adapter.py` (new) —
-  `performance_memory_key(record) -> str`, never imports `ai.memory`
+  `performance_memory_key(record) -> str`, never imports `ai_layer.knowledge_ai.memory_manager`
   (TASK 9's own rule).
 - `configuration/feature_flags.py` — extended with
   `enable_performance_intelligence: bool = False` (a dedicated flag).
@@ -106,10 +106,10 @@ fabrication and not an unnecessary new abstraction.
 - **Article 3 (Import Rules), zero-exception rule** — AST sweep for
   `decision`/`risk`/`execution`/`strategies`/`signals`/`context`/
   `telegram`/`database`/`voice`/`assistant`/`media`/`broadcast`/
-  `academy`/`portfolio`/`research`/`core.`/`ai.memory` imports (TASK
+  `academy`/`portfolio`/`research`/`core.`/`ai_layer.knowledge_ai.memory_manager` imports (TASK
   8/9's own list) plus the wider house-convention set (`monitoring`/
-  `learning`/`ai.reasoning`/`ai.chart_intelligence`/`ai.trading_analyst`/
-  `ai.content`/`ai.conversation`/`ai.explanation`/`ai.coaching`/
+  `learning`/`ai_layer.ai_engine.reasoning`/`ai_layer.vision_ai`/`ai_layer.ai_engine.trading_analyst`/
+  `ai_layer.ai_service.content`/`ai_layer.personal_ai.interaction_manager`/`ai_layer.explanation_ai`/`ai_layer.personal_ai.senior`/
   `knowledge`/`sqlite3`/`psycopg2`/`redis`/`sqlalchemy`/`openai`/
   `anthropic`/`google.generativeai`/`requests`/`httpx`/`urllib`) across
   `ai/performance/**/*.py`: zero matches
@@ -137,35 +137,35 @@ fabrication and not an unnecessary new abstraction.
 ## Dependency Compliance
 
 `ai/performance/models.py` and `access.py` import nothing beyond
-`ai.access.permissions.AIRole`, `configuration.feature_flags`, and the
-standard library. `performance_runtime.py` imports only `ai.access`,
-`ai.performance`, `configuration`, and stdlib — confirmed by
+`ai_layer.ai_service.access.permissions.AIRole`, `configuration.feature_flags`, and the
+standard library. `performance_runtime.py` imports only `ai_layer.ai_service.access`,
+`ai_layer.ai_engine.performance`, `configuration`, and stdlib — confirmed by
 `test_performance_runtime_module_has_no_persistence_import()`.
 `journal_adapter.py` is the one file permitted to import
-`ai.trade_journal.models` — confirmed confined by
+`ai_layer.knowledge_ai.knowledge_base.trade_journal.models` — confirmed confined by
 `test_trade_journal_import_confined_to_journal_adapter()` and
 `test_only_journal_adapter_imports_ai_trade_journal()`.
-`coaching_adapter.py` never imports `ai.coaching.models` or
-`ai.coaching.coaching_runtime` at all — confirmed by
+`coaching_adapter.py` never imports `ai_layer.personal_ai.senior.models` or
+`ai_layer.personal_ai.senior.coaching_runtime` at all — confirmed by
 `test_performance_never_imports_ai_coaching_models_or_runtime()`.
 `analytics_adapter.py` is the one file permitted to import
-`analytics.strategy_report` — confirmed by
+`backtesting_layer.statistics.strategy_report` — confirmed by
 `test_performance_never_imports_the_top_level_learning_or_analytics_packages_except_analytics_adapter()`.
-`memory_adapter.py` never imports `ai.memory` — confirmed by
+`memory_adapter.py` never imports `ai_layer.knowledge_ai.memory_manager` — confirmed by
 `test_performance_never_imports_ai_memory()`. No file in the package
-imports `ai.chart_intelligence`, `ai.trading_analyst`, `ai.reasoning`,
-`ai.explanation`, `ai.conversation`, `knowledge/`, `ai.content`,
+imports `ai_layer.vision_ai`, `ai_layer.ai_engine.trading_analyst`, `ai_layer.ai_engine.reasoning`,
+`ai_layer.explanation_ai`, `ai_layer.personal_ai.interaction_manager`, `knowledge/`, `ai_layer.ai_service.content`,
 `voice/`, `assistant/`, `media/`, `broadcast/`, `telegram/`,
 `database/`, or `core.`. Nothing in `ai/trading_analyst/`,
 `ai/chart_intelligence/`, `ai/trade_journal/`, `ai/learning/`,
-`ai/coaching/`, or `ai/memory/` imports `ai.performance` back.
+`ai/coaching/`, or `ai/memory/` imports `ai_layer.ai_engine.performance` back.
 
 ## New / Extended / Reused (Constitution Article 12, mandatory table)
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | `ai/performance/` (1, inside existing `ai/`) | — | `ai/` (top-level, unchanged itself) |
-| Modules | `models.py`, `access.py`, `performance_runtime.py`, `journal_adapter.py`, `coaching_adapter.py`, `analytics_adapter.py`, `memory_adapter.py`, `README.md` (8) | `configuration/feature_flags.py` (1) | `ai/trade_journal/models.py`, `analytics/strategy_report.py` (read/called type-only or directly) |
+| Modules | `models.py`, `access.py`, `performance_runtime.py`, `journal_adapter.py`, `coaching_adapter.py`, `analytics_adapter.py`, `memory_adapter.py`, `README.md` (8) | `configuration/feature_flags.py` (1) | `ai/trade_journal/models.py`, `backtesting_layer/statistics/strategy_report.py` (read/called type-only or directly) |
 | Classes | `PerformanceRuntime` (1) | — | `TradeJournalEntry` (read type-only, not modified as a class) |
 | Models | `PerformanceRecord`, `PerformanceMetric`, `PerformanceCategory` (3) | `FeatureFlags` (+1 field) | `TradeJournalEntry` |
 | Functions | `is_performance_intelligence_enabled_for()`, `create()`, `get()`, `list()`, `update_notes()`, `archive()`, `journal_entry_to_performance_input()`, `performance_record_to_coaching_input()`, `performance_records_to_win_rate_metric()`, `performance_memory_key()`, `generate_performance_id()` (11) | — | `compute_win_rate()` (called directly, not modified) |

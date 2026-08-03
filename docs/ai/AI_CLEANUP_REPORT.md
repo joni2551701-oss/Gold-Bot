@@ -21,9 +21,9 @@ dependencies**. All 4 are now removed. Post-cleanup cycle count
 
 ### Cycles 1–3 (the runtime/providers/router/audit cluster) — one fix
 
-- `ai.runtime ↔ ai.providers`
-- `ai.audit ↔ ai.runtime`
-- `ai.audit → ai.runtime → ai.router → ai.audit` (3-node)
+- `ai_layer.ai_engine.runtime ↔ ai.providers`
+- `ai_layer.ai_service.audit ↔ ai.runtime`
+- `ai_layer.ai_service.audit → ai.runtime → ai.router → ai.audit` (3-node)
 
 **Root cause:** all three back-edges existed only because the shared
 event-bus primitive (`EventBus`/`EventType`/`RuntimeEvent`) lived
@@ -32,15 +32,15 @@ event-bus primitive (`EventBus`/`EventType`/`RuntimeEvent`) lived
 while `ai/runtime/` imported *down* into providers/audit/router.
 
 **Fix (approved strategy #1/#2):** the event bus was relocated to a
-neutral top-level module, `ai/runtime/event_bus.py` → **`ai/event_bus.py`**.
+neutral top-level module, `ai/runtime/event_bus.py` → **`ai_layer/ai_service/event_bus.py`**.
 `event_bus.py` depends only on `core_layer.logger.logger` + stdlib (no `ai/`
 dependency), so every consumer now depends on it *downward*. The three
 cycles vanish at once — the minimal cut that breaks all of them. The
 `EventBus`/`EventType`/`RuntimeEvent` public classes are byte-for-byte
 unchanged; only the module's import path moved. 14 code files (7
-source, 7 test) updated from `ai.runtime.event_bus` → `ai.event_bus`.
+source, 7 test) updated from `ai_layer.ai_engine.runtime.event_bus` → `ai_layer.ai_service.event_bus`.
 
-### Cycle 4 (`ai.explanation ↔ ai.content`) — HIGH priority, two fixes
+### Cycle 4 (`ai_layer.explanation_ai ↔ ai.content`) — HIGH priority, two fixes
 
 This cycle also violated the documented **Intelligence Dependency
 Principle** (`docs/policies/DIRECTOR_POLICY.md`: Explanation sits
@@ -49,7 +49,7 @@ the violation; the one content→explanation edge is the correct
 direction and was kept.
 
 - **Edge B** — `ai/explanation/explanation_content_adapter.py` imported
-  `ai.content.broadcast_output.BroadcastReadyContent`. **Fix:** the
+  `ai_layer.ai_service.content.broadcast_output.BroadcastReadyContent`. **Fix:** the
   adapter (which bridges an upstream `ExplanationOutput` into a
   content-package type) was moved **into `ai/content/`**, the
   downstream package that is legitimately allowed to import
@@ -57,10 +57,10 @@ direction and was kept.
   its own docstring); its single test moved with it
   (`tests/ai/explanation/` → `tests/ai/content/`).
 - **Edge A** — `ai/explanation/explanation_output.py` imported
-  `ai.content.content_types.ContentType`, because `ExplanationOutput`
+  `ai_layer.ai_service.content.content_types.ContentType`, because `ExplanationOutput`
   has a public, test-locked `content_type: Optional[ContentType]`
   field. **Fix (approved strategy #1):** `ContentType` was extracted
-  to a neutral top-level module, **`ai/content_types.py`**. It is a
+  to a neutral top-level module, **`ai_layer/ai_service/content/content_types.py`**. It is a
   genuinely cross-cutting vocabulary used by 5 packages across the
   pipeline (`ai/explanation/`, `ai/trading_analyst/`,
   `ai/chart_intelligence/`, `ai/content/`, `broadcast/`), so a neutral
@@ -79,9 +79,9 @@ imports `ai/content/`.
 ## Stage 2 — Duplicate Class Resolution
 
 Two unrelated classes were both named `TradeJournalEntry`:
-`ai.journal.trade_journal.TradeJournalEntry` (Phase 55, a
+`ai_layer.knowledge_ai.knowledge_base.journal.trade_journal.TradeJournalEntry` (Phase 55, a
 `signals.SignalType`-coupled completed-trade record) and
-`ai.trade_journal.models.TradeJournalEntry` (Phase 66.2, a narrative
+`ai_layer.knowledge_ai.knowledge_base.trade_journal.models.TradeJournalEntry` (Phase 66.2, a narrative
 journal entry). The name is now unique.
 
 **Approved decision applied:** the older, Trading-Core-coupled
@@ -92,7 +92,7 @@ disambiguating docstring). This was the lower-blast-radius choice: the
 old class had only 3 real code importers vs. ~20 for the new one.
 Fields and the `create_journal_entry()` factory are unchanged — only
 the class name. Consumers updated: `ai/context/context_builder.py`,
-`ai/context/context_snapshot.py`, `ai/trade_journal.py` (the shim's
+`ai/context/context_snapshot.py`, `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` (the shim's
 re-export), plus a docstring in `ai/journal/failure_analysis.py`.
 
 Public API stability: no external caller passed a `TradeJournalEntry`
@@ -136,7 +136,7 @@ from the TASK-AI-000 audit were assessed:
 ## Stage 5 — Dependency Direction
 
 The corrected graph is acyclic and flows in one direction. The neutral
-primitives (`ai/event_bus.py`, `ai/content_types.py`) sit at the
+primitives (`ai_layer/ai_service/event_bus.py`, `ai_layer/ai_service/content/content_types.py`) sit at the
 foundation level with no `ai/` dependencies of their own; the
 runtime/provider/router/audit cluster and the content/explanation
 cluster now have strictly one-directional edges. See

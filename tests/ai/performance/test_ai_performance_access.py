@@ -1,5 +1,5 @@
-from ai.access.permissions import AIRole
-from ai.performance.access import is_performance_intelligence_enabled_for
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.performance.access import is_performance_intelligence_enabled_for
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_performance_intelligence=True)

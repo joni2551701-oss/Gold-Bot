@@ -10,16 +10,16 @@ MarketData computes nothing itself -- it only carries the projections.
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
-from market.candle import Candle
-from market.current_price import MarketPrice
-from market.liquidity_state import LiquidityState
-from market.market_data import MarketData, MarketSnapshot
-from market.market_manager import MarketManager
-from market.market_structure import MarketStructureView
-from market.regime_state import RegimeState
-from market.session_state import SessionState
-from market.trend_state import TrendState
-from market.volatility_state import VolatilityLevel
+from data_layer.live_data.market.candle import Candle
+from data_layer.live_data.market.current_price import MarketPrice
+from data_layer.live_data.market.liquidity_state import LiquidityState
+from data_layer.live_data.market.market_data import MarketData, MarketSnapshot
+from data_layer.live_data.market.market_manager import MarketManager
+from data_layer.live_data.market.market_structure import MarketStructureView
+from data_layer.live_data.market.regime_state import RegimeState
+from data_layer.live_data.market.session_state import SessionState
+from data_layer.live_data.market.trend_state import TrendState
+from data_layer.live_data.market.volatility_state import VolatilityLevel
 
 # A deterministic non-weekend instant (Wed 2026-01-07 12:00 UTC).
 _WEEKDAY = datetime(2026, 1, 7, 12, 0, tzinfo=timezone.utc)

@@ -33,9 +33,9 @@ repository. Phase 61.2 proceeds.
 ## The six `signals/` import sites — not a violation
 
 ```
-ai/ai_analyzer.py          :: from signals.models import SignalCandidate, SignalType
-ai/ai_prompt.py            :: from signals.models import SignalCandidate
-ai/confidence_model.py     :: from signals.models import SignalCandidate
+ai_layer/ai_engine/ai_analyzer.py          :: from signals.models import SignalCandidate, SignalType
+ai_layer/ai_engine/ai_prompt.py            :: from signals.models import SignalCandidate
+ai_layer/confidence_ai/confidence_model.py     :: from signals.models import SignalCandidate
 ai/journal/trade_journal.py :: from signals.models import SignalType
 ai/context/context_snapshot.py :: from signals.schema import SignalSchema
 ai/context/context_builder.py  :: from signals.schema import SignalSchema
@@ -48,12 +48,12 @@ immediately below it" — `signals/` is the layer immediately below
 `ai/` in that chain, so `ai/` importing `signal_layer.signal_builder.models`/
 `signal_layer.signal_builder.schema` is the architecturally *correct*, intended
 relationship, not a boundary violation. Every one of these six sites
-predates this phase (`ai/ai_analyzer.py` since Phase 6.0.1,
+predates this phase (`ai_layer/ai_engine/ai_analyzer.py` since Phase 6.0.1,
 `ai/context/context_snapshot.py` since Phase 61.0 TASK 5) and reads
 `SignalCandidate`/`SignalSchema` only — never writes to `signals/`,
 never calls a strategy, never generates a signal itself. This is the
 same distinction Phase 61.0's own TASK 1 audit already drew for
-`ai/ai_analyzer.py` importing `signal_layer.signal_builder.models`.
+`ai_layer/ai_engine/ai_analyzer.py` importing `signal_layer.signal_builder.models`.
 
 ## strategies/ — genuinely zero
 

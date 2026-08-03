@@ -115,7 +115,7 @@ not an import of the top-level `broadcast/` package; this is the
 existing, LOCKed (Phase 61.5) shape and is unchanged this phase.
 
 **Pre-existing note, not fixed this phase**: `ai/explanation/explanation_content_adapter.py`
-(Phase 63.1) already imports `ai.content.broadcast_output.BroadcastReadyContent`
+(Phase 63.1) already imports `ai_layer.ai_service.content.broadcast_output.BroadcastReadyContent`
 — i.e. Explanation (upstream) reading a Content (downstream) type.
 This predates the Intelligence Dependency Principle (established at
 Phase 63.3's close) and is LOCKed since Phase 63.1; per Article 9 it

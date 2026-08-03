@@ -1,9 +1,9 @@
 """Phase 61.4 TASK 6 — AI Usage Accounting: per-telegram_id cost aggregation, generalizing trace.py's request_id -> telegram_id join."""
 
-from ai.audit.request_log import RequestLog
-from ai.audit.response_log import ResponseLog
-from ai.audit.usage_accounting import compute_user_usage
-from ai.capabilities.capability import Capability
+from ai_layer.ai_service.audit.request_log import RequestLog
+from ai_layer.ai_service.audit.response_log import ResponseLog
+from ai_layer.ai_service.audit.usage_accounting import compute_user_usage
+from ai_layer.ai_engine.capabilities.capability import Capability
 
 
 def test_aggregates_calls_tokens_and_cost_for_one_user():

@@ -23,8 +23,8 @@ Collection is observation, not intervention.
 | Signal records (durable) | `database_layer.trade_repository.signal_record.SignalRecord` | SQLite, `signals` table | `database_layer/trade_repository/signal_repository.py` |
 | Signal schema (in-memory, per cycle) | `signal_layer.signal_builder.schema.SignalSchema` (includes `market_phase` as of this phase) | `core/pipeline.py`'s `run()` result dict — not persisted as its own row | `signal_layer/signal_builder/schema.py` |
 | Paper trades | `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` | In-memory only — no `paper_trades` table exists | `trade_monitoring_layer/paper_trading/paper_trade.py` |
-| Signal performance | `analytics.signal_performance.SignalPerformance` | In-memory only | `analytics/signal_performance.py` |
-| Failure analysis entries | `ai.journal.failure_analysis.FailureAnalysisEntry` | In-memory only | `ai/journal/failure_analysis.py` |
+| Signal performance | `backtesting_layer.statistics.signal_performance.SignalPerformance` | In-memory only | `backtesting_layer/statistics/signal_performance.py` |
+| Failure analysis entries | `ai_layer.knowledge_ai.knowledge_base.journal.failure_analysis.FailureAnalysisEntry` | In-memory only | `ai/journal/failure_analysis.py` |
 
 Only `raw_candles`, `market_snapshots`, and `signals` are durable
 (SQLite). Everything else is a plain Python object a caller builds,
@@ -67,7 +67,7 @@ is explicitly out of scope for this phase (see
 
 ## Failure analysis entries specifically
 
-`ai.journal.failure_analysis.FailureAnalysisEntry`'s `reason`/`context`
+`ai_layer.knowledge_ai.knowledge_base.journal.failure_analysis.FailureAnalysisEntry`'s `reason`/`context`
 fields are free text, written by whoever runs the validation cycle
 (today: a human; nothing in this codebase auto-generates them). Two
 rules for what belongs there, since these entries are the seed of a

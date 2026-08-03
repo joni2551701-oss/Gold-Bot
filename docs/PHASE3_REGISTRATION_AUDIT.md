@@ -349,8 +349,8 @@ is created.
 **No file is proposed for deletion or refactor beyond what's listed.**
 Trading Core (`core/`, `decision/`, `risk/`, `execution/`,
 `strategies/`, `signals/`, `context/`, `ai/`) is untouched by every
-item above except *reading* (never modifying) `ai.access.
-identity_checker`/`ai.access.trial_manager` — both already-existing
+item above except *reading* (never modifying) `ai_layer.ai_service.access.
+identity_checker`/`ai_layer.ai_service.access.trial_manager` — both already-existing
 read-only dependencies of `register_phone()`, unchanged by this
 phase.
 

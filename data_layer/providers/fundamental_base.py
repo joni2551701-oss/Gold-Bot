@@ -22,7 +22,7 @@ Architecture this feeds (per this task's own brief):
     AI Analyzer
 
 Not built in this phase: no `Fundamental Context` consumer exists yet,
-and `ai/ai_analyzer.py` (a heuristic stub, per every prior phase's own
+and `ai_layer/ai_engine/ai_analyzer.py` (a heuristic stub, per every prior phase's own
 audit) reads nothing from this module. This is upstream foundation
 only, same "zero pipeline wiring" posture as every other Phase A/AC/
 Phase-59 module.

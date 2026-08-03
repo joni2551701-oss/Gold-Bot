@@ -77,7 +77,7 @@ lifecycle record, not an AI-authored journal entry.
 | `signal_quality` | Score/filter candidate signals | `signals/` |
 | `explainability` | Build the explainability payload for the signal | `signals/`, `ai/explanation/` (type-only) |
 | `features` | Assemble feature values for AI context | `context/`, `signals/` |
-| `ai` | `AIAnalyzer.analyze()` — produces `AIAnalysisResult` | `ai/ai_analyzer.py` |
+| `ai` | `AIAnalyzer.analyze()` — produces `AIAnalysisResult` | `ai_layer/ai_engine/ai_analyzer.py` |
 | `decision` | Blend confidence, APPROVE/REJECT/NO_TRADE | `decision_layer/decision_engine/decision_engine.py` |
 | `risk` | Geometry/stop-loss validation, sizing | `risk_layer/risk_engine/risk_manager.py` |
 | `signal_history` | Persist the signal's lifecycle record | `lifecycle/` |

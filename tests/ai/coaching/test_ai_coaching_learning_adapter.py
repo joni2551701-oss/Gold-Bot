@@ -1,5 +1,5 @@
-from ai.coaching.learning_adapter import learning_record_to_coaching_input
-from ai.learning.models import LearningLevel, LearningRecord, LearningSource, LearningTopic
+from ai_layer.personal_ai.senior.learning_adapter import learning_record_to_coaching_input
+from ai_layer.knowledge_ai.learning_engine.models import LearningLevel, LearningRecord, LearningSource, LearningTopic
 
 
 def _record(**overrides):

@@ -1,19 +1,19 @@
-"""Phase 65.2 TASK 4/6 — voice/conversation_bridge.py: handle_voice_turn(), the composition-root function."""
+"""Phase 65.2 TASK 4/6 — ai_layer/voice_ai/conversation_bridge.py: handle_voice_turn(), the composition-root function."""
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from ai.access.permissions import AIRole
-from ai.context.context_snapshot import AIContext
-from ai.runtime.runtime_response import RuntimeResponse
-from voice.conversation_bridge import handle_voice_turn
-from voice.manager import VoiceManager
-from voice.models import VoiceProviderStatus, VoiceProviderType, VoiceResultStatus
-from voice.provider_adapters.openai import OpenAIVoiceProvider
-from voice.runtime import VoiceRuntime
-from voice.session.models import VoiceSession
-from voice.stt.manager import STTManager
-from voice.stt.providers.openai import OpenAISTTProvider
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.context.context_snapshot import AIContext
+from ai_layer.ai_engine.runtime.runtime_response import RuntimeResponse
+from ai_layer.voice_ai.conversation_bridge import handle_voice_turn
+from ai_layer.voice_ai.manager import VoiceManager
+from ai_layer.voice_ai.models import VoiceProviderStatus, VoiceProviderType, VoiceResultStatus
+from ai_layer.voice_ai.provider_adapters.openai import OpenAIVoiceProvider
+from ai_layer.voice_ai.runtime import VoiceRuntime
+from ai_layer.voice_ai.session.models import VoiceSession
+from ai_layer.voice_ai.stt.manager import STTManager
+from ai_layer.voice_ai.stt.providers.openai import OpenAISTTProvider
 
 
 class _FakeSecrets:
@@ -208,7 +208,7 @@ def test_handle_voice_turn_uses_fallback_providers_when_given():
 
     manager.register_adapter(VoiceProviderType.OPENAI, OpenAIVoiceProvider(session=_FailingSession(), secrets=_FakeSecrets()))
     manager.set_provider_status(VoiceProviderType.LOCAL, VoiceProviderStatus.ENABLED)
-    from voice.provider_adapters.local import LocalVoiceProvider
+    from ai_layer.voice_ai.provider_adapters.local import LocalVoiceProvider
     manager.register_adapter(VoiceProviderType.LOCAL, LocalVoiceProvider())
     runtime = VoiceRuntime(manager)
 

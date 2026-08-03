@@ -1,9 +1,9 @@
 """Phase 63.0 TASK 8 — four new Capability members (AI_CONTENT/AI_MEDIA/AI_TRANSLATION/AI_BROADCAST). Purely additive -- no runtime dispatch mapping, no router.py selection-logic change."""
 
-from ai.access.access_control import AccessControl
-from ai.access.permissions import AIRole
-from ai.capabilities.capability import Capability
-from ai.router.routing_rules import ROUTING_RULES, get_candidate_providers
+from ai_layer.ai_service.access.access_control import AccessControl
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_coordinator.routing_rules import ROUTING_RULES, get_candidate_providers
 
 
 def test_four_new_capabilities_exist():

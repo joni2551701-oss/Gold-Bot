@@ -75,7 +75,7 @@ new name would duplicate, not add, capability:
 
 ## `ai/content/broadcast_output.py` — the pre-existing Content→Broadcast shortcut
 
-`ai.content.broadcast_output.prepare_broadcast(ContentResult) -> BroadcastReadyContent`
+`ai_layer.ai_service.content.broadcast_output.prepare_broadcast(ContentResult) -> BroadcastReadyContent`
 (Phase 61.5 TASK 6) already adapts Content directly into a
 broadcast-ready shape, skipping over Media entirely. This predates
 Media's real foundation (Phase 63.0) and the Official Intelligence
@@ -93,7 +93,7 @@ from, not this one).
 (`core_layer.logger.logger`) — zero dependency on `ai/`, `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/`, `broadcast/`, or
 `translation/`. TASK 4 will add one new, type-only import:
-`ai.content.content_schema.ContentResult` — allowed, since `ai/content/`
+`ai_layer.ai_service.content.content_schema.ContentResult` — allowed, since `ai/content/`
 sits immediately upstream of `media/` in the Official Intelligence
 Pipeline (`... → Content → Media → Broadcast`, `docs/roadmap/AI_EVOLUTION.md`).
 `media/` will continue to never import `broadcast/` or `translation/`

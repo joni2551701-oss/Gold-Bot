@@ -12,9 +12,9 @@ research-item metadata records. Mirrors
 
 import pathlib
 
-import ai.research as research_package
-from ai.research.models import ResearchRecord
-from ai.research.research_runtime import ResearchRuntime
+import ai_layer.fundamental_ai as research_package
+from ai_layer.fundamental_ai.models import ResearchRecord
+from ai_layer.fundamental_ai.research_runtime import ResearchRuntime
 
 FORBIDDEN_NAMES = (
     "ResearchDataset",

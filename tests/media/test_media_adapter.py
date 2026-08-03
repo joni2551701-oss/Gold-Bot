@@ -1,6 +1,6 @@
 """Phase 63.7 TASK 4/5 — media_layer/content_manager/media_adapter.py and media_layer/content_manager/media_pipeline.py: Content (upstream, type-only) integration."""
 
-from ai.content.content_schema import ContentResult
+from ai_layer.ai_service.content.content_schema import ContentResult
 from media_layer.content_manager.media_adapter import content_result_to_media_asset
 from media_layer.content_manager.media_manager import MediaManager
 from media_layer.content_manager.media_pipeline import prepare_media_from_content
@@ -90,7 +90,7 @@ def test_media_adapter_module_never_imports_translation_or_broadcast():
     for filename in ("media_adapter.py", "media_pipeline.py"):
         module_file = pathlib.Path(__file__).resolve().parents[2] / "media_layer" / "content_manager" / filename
         tree = ast.parse(module_file.read_text(), filename=str(module_file))
-        forbidden_prefixes = ("translation", "broadcast")
+        forbidden_prefixes = ("media_layer.translation", "media_layer.telegram_broadcast")
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:

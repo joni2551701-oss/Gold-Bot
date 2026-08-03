@@ -1,13 +1,13 @@
 """Phase 63.4 TASK 4/5/6 — ai/reasoning/reasoning_adapters.py: Knowledge/Memory (upstream, type-only) and Explanation (downstream, dict-only) integration points."""
 
-from ai.memory.models import MemoryEntry, MemoryScope, MemoryType
-from ai.reasoning.models import ReasoningMode, ReasoningResult, ReasoningType
-from ai.reasoning.reasoning_adapters import (
+from ai_layer.knowledge_ai.memory_manager.models import MemoryEntry, MemoryScope, MemoryType
+from ai_layer.ai_engine.reasoning.models import ReasoningMode, ReasoningResult, ReasoningType
+from ai_layer.ai_engine.reasoning.reasoning_adapters import (
     reasoning_result_to_explanation_fields,
     step_from_knowledge_entry,
     step_from_memory_entry,
 )
-from knowledge.models import KnowledgeCategory, KnowledgeEntry
+from ai_layer.knowledge_ai.knowledge_base.models import KnowledgeCategory, KnowledgeEntry
 
 
 def test_step_from_knowledge_entry_maps_title_summary_and_key():
@@ -51,12 +51,12 @@ def test_reasoning_adapters_module_never_imports_ai_explanation():
     import ast
     import pathlib
 
-    adapters_file = pathlib.Path(__file__).resolve().parents[3] / "ai" / "reasoning" / "reasoning_adapters.py"
+    adapters_file = pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "ai_engine" / "reasoning" / "reasoning_adapters.py"
     tree = ast.parse(adapters_file.read_text(), filename=str(adapters_file))
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                assert not alias.name.startswith("ai.explanation"), alias.name
+                assert not alias.name.startswith("ai_layer.explanation_ai"), alias.name
         elif isinstance(node, ast.ImportFrom):
             if node.module:
-                assert not node.module.startswith("ai.explanation"), node.module
+                assert not node.module.startswith("ai_layer.explanation_ai"), node.module

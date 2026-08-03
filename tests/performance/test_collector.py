@@ -1,10 +1,10 @@
 """
 Phase A19 -- Performance Metrics tests: collector
-(performance/collector.py).
+(core_layer/performance/collector.py).
 """
 
-from performance.collector import PerformanceCollector
-from performance.metrics import PerformanceMetric
+from core_layer.performance.collector import PerformanceCollector
+from core_layer.performance.metrics import PerformanceMetric
 
 
 def _metric(name="x", module="M", duration_ms=1):

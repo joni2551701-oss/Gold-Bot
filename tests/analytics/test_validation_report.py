@@ -1,12 +1,12 @@
 """
 Phase 59 Real Market Validation Foundation, TASK 5 --
-analytics/validation_report.py tests.
+backtesting_layer/statistics/validation_report.py tests.
 """
 
 from datetime import datetime, timezone
 
-from analytics.signal_performance import SignalPerformance
-from analytics.validation_report import ValidationReport, build_validation_report, format_validation_report
+from backtesting_layer.statistics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.validation_report import ValidationReport, build_validation_report, format_validation_report
 from signal_layer.signal_builder.schema import SignalSchema
 
 P0 = datetime(2026, 8, 1, tzinfo=timezone.utc)

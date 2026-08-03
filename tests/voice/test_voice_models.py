@@ -1,6 +1,6 @@
-"""Phase 65.0 TASK 2 — voice/models.py: dataclasses + enums."""
+"""Phase 65.0 TASK 2 — ai_layer/voice_ai/models.py: dataclasses + enums."""
 
-from voice.models import (
+from ai_layer.voice_ai.models import (
     VoiceProvider,
     VoiceProviderStatus,
     VoiceProviderType,

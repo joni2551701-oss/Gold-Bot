@@ -418,7 +418,7 @@ Consistent with Article 1 and the Director's Stage 0 scope item "No
 autonomous execution": no AI-layer code calls the Risk Manager,
 triggers a Telegram send, or performs an execution action directly, in
 any of the 30+ subpackages inventoried. This matches
-`ai/interfaces.py`'s `AIAnalyzerInterface` contract as documented.
+`ai_layer/ai_service/interfaces.py`'s `AIAnalyzerInterface` contract as documented.
 
 ---
 

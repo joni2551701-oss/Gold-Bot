@@ -29,7 +29,7 @@ from `decision/`.
   of the eight provider types plus Owner-set ENABLED/DISABLED intent.
   Every provider starts `DISABLED`.
 - `trigger_manager.py` — `BroadcastTriggerManager`, Owner-armed intent
-  per `ai.content.content_types.ContentType`. Nothing is armed by
+  per `ai_layer.ai_service.content.content_types.ContentType`. Nothing is armed by
   default.
 - `broadcast_manager.py` — `BroadcastManager`, composes the two above
   into `would_broadcast()`/`prepare()`. `prepare()` only ever builds a
@@ -38,8 +38,8 @@ from `decision/`.
   `validate_broadcast()`/`prepare_broadcast()`/`get_broadcast()`/
   `list_broadcasts()`.
 - `broadcast_adapter.py` (Phase 63.8) — `broadcast_asset_from_content_and_media()`,
-  type-only reads of an upstream `ai.content.content_schema.ContentResult`/
-  `media_layer.content_manager.models.MediaAsset`/(optional) `ai.persona.persona.Persona`.
+  type-only reads of an upstream `ai_layer.ai_service.content.content_schema.ContentResult`/
+  `media_layer.content_manager.models.MediaAsset`/(optional) `ai_layer.personal_ai.persona_manager.persona.Persona`.
 
 ## What this package is not
 

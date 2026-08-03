@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from assistant.models import AssistantRuntime
+from ai_layer.ai_service.assistant.models import AssistantRuntime
 
 
 def test_assistant_runtime_required_fields():

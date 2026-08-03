@@ -1,6 +1,6 @@
 """Phase 63.3 TASK 2 — ai/memory/models.py: MemoryType/MemoryPriority/MemoryScope/MemoryEntry."""
 
-from ai.memory.models import MemoryEntry, MemoryPriority, MemoryScope, MemoryType
+from ai_layer.knowledge_ai.memory_manager.models import MemoryEntry, MemoryPriority, MemoryScope, MemoryType
 
 
 def test_memory_entry_defaults_priority_to_normal():

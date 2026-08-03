@@ -1,10 +1,10 @@
 """Phase 61.7 TASK 8 — Runtime Self Check."""
 
-from ai.providers.circuit_breaker import CircuitBreakerConfig, ProviderCircuitBreaker
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.runtime.runtime_manager import RuntimeManager
-from ai.runtime.runtime_state import RuntimeState
-from ai.runtime.self_check import CheckStatus, run_self_check
+from ai_layer.ai_engine.providers.circuit_breaker import CircuitBreakerConfig, ProviderCircuitBreaker
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_engine.runtime.runtime_manager import RuntimeManager
+from ai_layer.ai_engine.runtime.runtime_state import RuntimeState
+from ai_layer.ai_engine.runtime.self_check import CheckStatus, run_self_check
 
 
 class _FakeProviderManager:
@@ -27,7 +27,7 @@ def test_self_check_with_no_providers_registered_reports_failed_and_overall_fail
 
 
 def test_self_check_with_registered_but_unhealthy_providers_reports_warning():
-    from ai.providers.provider_status import HealthStatus
+    from ai_layer.ai_engine.providers.provider_status import HealthStatus
 
     health_tracker = ProviderHealthTracker()
     health_tracker.record("gemini", HealthStatus.OFFLINE, reason="test setup")
@@ -84,5 +84,5 @@ def test_self_check_never_raises_with_all_defaults():
 
 
 def test_overall_status_is_pass_with_no_results():
-    from ai.runtime.self_check import RuntimeSelfCheckReport
+    from ai_layer.ai_engine.runtime.self_check import RuntimeSelfCheckReport
     assert RuntimeSelfCheckReport(results=[]).overall_status == CheckStatus.PASS

@@ -35,16 +35,16 @@ own docstring already promises for its own empty-dict input today.
 
 from typing import Optional
 
-from ai.audit.provider_stats import RuntimeMetricsCollector, compute_daily_usage, compute_provider_stats
-from ai.audit.response_log import ResponseLog
-from ai.providers.circuit_breaker import ProviderCircuitBreaker
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.providers.provider_manager import ProviderManager
-from ai.event_bus import EventBus
-from ai.runtime.runtime_manager import RuntimeManager
-from ai.runtime.runtime_profiles import RuntimeProfile
-from ai.runtime.runtime_state import RuntimeState
-from ai.runtime.self_check import CheckStatus, RuntimeSelfCheckReport, run_self_check
+from ai_layer.ai_service.audit.provider_stats import RuntimeMetricsCollector, compute_daily_usage, compute_provider_stats
+from ai_layer.ai_service.audit.response_log import ResponseLog
+from ai_layer.ai_engine.providers.circuit_breaker import ProviderCircuitBreaker
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_engine.providers.provider_manager import ProviderManager
+from ai_layer.ai_service.event_bus import EventBus
+from ai_layer.ai_engine.runtime.runtime_manager import RuntimeManager
+from ai_layer.ai_engine.runtime.runtime_profiles import RuntimeProfile
+from ai_layer.ai_engine.runtime.runtime_state import RuntimeState
+from ai_layer.ai_engine.runtime.self_check import CheckStatus, RuntimeSelfCheckReport, run_self_check
 from core_layer.logger.logger import setup_logger
 from platform_layer.telegram.owner.owner_roles import OwnerRole
 from platform_layer.telegram.owner.security import log_owner_action, require_role
@@ -207,7 +207,7 @@ def runtime_full_status(
 def runtime_check(report: Optional[RuntimeSelfCheckReport] = None) -> RuntimeCommandResult:
     """
     The `/runtime_check` command's payload (Phase 61.7 TASK 8) --
-    formats an `ai.runtime.self_check.RuntimeSelfCheckReport`. `report`
+    formats an `ai_layer.ai_engine.runtime.self_check.RuntimeSelfCheckReport`. `report`
     is preferred pre-computed (e.g. against a live AIService's own
     components); if omitted, `run_self_check()` is called with every
     default (fresh instances, same fresh-state posture as every other
@@ -235,7 +235,7 @@ def runtime_restart(
     (`require_role(telegram_id, OwnerRole.OWNER)`).
 
     "Restart" means "force the runtime back to READY," not a literal
-    shutdown-then-initialize two-step: `ai.runtime.runtime_state.
+    shutdown-then-initialize two-step: `ai_layer.ai_engine.runtime.runtime_state.
     VALID_TRANSITIONS` (Phase 61.6, exhaustively verified by the
     36-pair matrix in `tests/ai/runtime/test_runtime_state_matrix.py`)
     makes `SHUTDOWN` terminal by design -- no outgoing edge exists, and
@@ -299,8 +299,8 @@ def runtime_provider(
     Director's own worked panel (Provider/Health/Circuit/Latency/
     Requests) for one named provider. Same fresh-defaults-report-fresh-
     state posture as every other function in this file; `response_log`
-    (unmodified `ai.audit.response_log.ResponseLog`) is the same source
-    `ai.audit.provider_stats.compute_provider_stats()` already reads
+    (unmodified `ai_layer.ai_service.audit.response_log.ResponseLog`) is the same source
+    `ai_layer.ai_service.audit.provider_stats.compute_provider_stats()` already reads
     for `/runtime_status` and Owner AI dashboards -- no new metrics
     store.
     """

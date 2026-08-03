@@ -1,5 +1,5 @@
-from ai.learning.memory_adapter import memory_reference_key
-from ai.learning.models import LearningRecord, LearningTopic
+from ai_layer.knowledge_ai.learning_engine.memory_adapter import memory_reference_key
+from ai_layer.knowledge_ai.learning_engine.models import LearningRecord, LearningTopic
 
 
 def _record(**overrides):

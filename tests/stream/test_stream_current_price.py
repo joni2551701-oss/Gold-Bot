@@ -2,8 +2,8 @@
 
 from datetime import datetime, timezone
 
-from stream.current_price import CurrentPrice
-from stream.stream_event import StreamEvent
+from data_layer.live_data.stream.current_price import CurrentPrice
+from data_layer.live_data.stream.stream_event import StreamEvent
 
 
 def test_set_and_get():

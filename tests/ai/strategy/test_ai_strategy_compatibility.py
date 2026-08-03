@@ -11,9 +11,9 @@ strategy metadata records. Mirrors
 
 import pathlib
 
-import ai.strategy as strategy_package
-from ai.strategy.models import StrategyRecord
-from ai.strategy.strategy_runtime import StrategyRuntime
+import ai_layer.ai_engine.strategy as strategy_package
+from ai_layer.ai_engine.strategy.models import StrategyRecord
+from ai_layer.ai_engine.strategy.strategy_runtime import StrategyRuntime
 
 FORBIDDEN_NAMES = (
     "StrategyVersionHistory",

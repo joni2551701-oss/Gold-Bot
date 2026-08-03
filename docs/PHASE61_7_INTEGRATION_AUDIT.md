@@ -52,10 +52,10 @@ top-level module beyond one small self-check utility (TASK 8).
   profiles, `to_cache_policy()` already produces a real `CachePolicy`.
   **Not used**: `AIService` has no `runtime_profile` parameter at all.
   - **Reuse**: `validation_schema` plugs directly into
-    `ai.validation.response_validator.validate_response(result,
+    `ai_layer.confidence_ai.response_validator.validate_response(result,
     schema=...)`'s existing optional parameter — zero change to that
     function. `to_cache_policy()` plugs directly into
-    `ai.cache.response_cache.ResponseCache(policy=...)`'s existing
+    `ai_layer.ai_engine.cache.response_cache.ResponseCache(policy=...)`'s existing
     constructor parameter — zero change to that class.
   - **Honest gap, still not wired this phase**: `timeout_seconds` has
     no injectable seam anywhere in this codebase — every real

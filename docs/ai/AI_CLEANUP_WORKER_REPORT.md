@@ -37,11 +37,11 @@ discipline this task itself enforced on `TradeJournalEntry`.)*
 ## What was done (one line each)
 
 - **Stage 1 (CRITICAL):** removed all 4 cycles. The runtime-cluster
-  three collapsed with one move — `event_bus` → neutral `ai.event_bus`.
+  three collapsed with one move — `event_bus` → neutral `ai_layer.ai_service.event_bus`.
   The `explanation↔content` cycle (HIGH, and a documented-principle
   violation) removed by moving the explanation→content adapter into
   `ai/content/` and extracting the shared `ContentType` vocabulary to
-  neutral `ai.content_types`. No lazy import, no hack.
+  neutral `ai_layer.ai_service.content.content_types`. No lazy import, no hack.
 - **Stage 2 (HIGH):** renamed the Phase-55 record
   `TradeJournalEntry` → `TradeJournalRecord`; the Phase-66.2 narrative
   `TradeJournalEntry` keeps its name. The name is now unique.
@@ -52,7 +52,7 @@ discipline this task itself enforced on `TradeJournalEntry`.)*
 - **Stage 4:** pyflakes clean, zero wildcard imports, no duplicate
   imports introduced.
 - **Stage 5:** graph verified acyclic and one-directional; neutral
-  foundation modules (`ai.event_bus`, `ai.content_types`) sit at the
+  foundation modules (`ai_layer.ai_service.event_bus`, `ai_layer.ai_service.content.content_types`) sit at the
   base with no `ai/` dependencies.
 
 ## Validation (Commit Protocol)
@@ -65,8 +65,8 @@ all under `ai/`, `broadcast/`, `platform_layer/telegram/owner/`, `tests/`.
 ## Handoff to the next task
 
 - **TASK-AI-000B (Dead Code Cleanup)** is now unblocked to evaluate the
-  4 dead files (`ai/trade_journal.py`, `ai/analyzer/ai_analyzer.py`,
-  `ai/ai_prompt.py`, `ai/confidence_model.py`) with usage/Git-history/
+  4 dead files (`ai_layer/knowledge_ai/knowledge_base/trade_journal.py`, `ai/analyzer/ai_analyzer.py`,
+  `ai_layer/ai_engine/ai_prompt.py`, `ai_layer/confidence_ai/confidence_model.py`) with usage/Git-history/
   regression analysis, as the Director scoped.
 - **TASK-AI-001 (AI Foundation Activation)** now sits on a clean,
   acyclic, unique-named `ai/` base. The deferred `*_registry.py`

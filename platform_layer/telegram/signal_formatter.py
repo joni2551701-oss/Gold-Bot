@@ -2,7 +2,7 @@ from typing import Optional
 from dataclasses import dataclass
 
 from signal_layer.signal_builder.models import SignalCandidate
-from ai.ai_analyzer import AIAnalysisResult
+from ai_layer.ai_engine.ai_analyzer import AIAnalysisResult
 from decision_layer.decision_engine.models import TradeDecision
 from risk_layer.risk_engine.risk_manager import RiskResult
 

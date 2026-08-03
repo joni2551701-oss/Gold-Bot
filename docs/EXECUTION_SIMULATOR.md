@@ -118,7 +118,7 @@ approved the trade.
 - `ExecutionSimulator(slippage_config=None, spread_config=None, latency_config=None)`.
 - `.simulate(paper_trade, risk_result, session=None, signal_time=None) -> ExecutionSimulationResult`.
 
-### `analytics/execution_report.py`
+### `backtesting_layer/statistics/execution_report.py`
 - `ExecutionAnalyticsRecord(order_id, trade_id, symbol, direction, requested_price, filled, fill_price=None, slippage_points=None, spread_points=None, latency_ms=None, rejection_reason=None, created_at=None)` — frozen.
 - `ExecutionAnalyticsSummary(total_orders, filled_count, rejected_count, average_slippage_points=None, average_latency_ms=None)` — frozen; `.fill_rate` derived property.
 - `build_execution_record(result) -> ExecutionAnalyticsRecord`.
@@ -154,7 +154,7 @@ approved the trade.
 docs/EXECUTION_SIMULATOR.md (Phase 60.3 -- foundation, this document)
         |
         v
-execution_layer/execution_engine/simulator/*.py, analytics/execution_report.py,
+execution_layer/execution_engine/simulator/*.py, backtesting_layer/statistics/execution_report.py,
 platform_layer/telegram/owner/execution_commands.py (Phase 60.3 -- real logic, not wired)
         |
         v

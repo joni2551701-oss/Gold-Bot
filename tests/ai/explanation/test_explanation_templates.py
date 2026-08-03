@@ -1,7 +1,7 @@
 """Phase 63.1 TASK 3 — Explanation Templates. Pure, deterministic text assembly, no AI call."""
 
-from ai.explanation.explanation_input import ExplanationInput, ExplanationMode
-from ai.explanation.explanation_templates import (
+from ai_layer.explanation_ai.explanation_input import ExplanationInput, ExplanationMode
+from ai_layer.explanation_ai.explanation_templates import (
     build_education_explanation,
     build_no_trade_explanation,
     build_trade_explanation,

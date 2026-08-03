@@ -10,8 +10,8 @@ def _media_dir():
 
 def test_media_package_never_imports_trading_or_downstream_intelligence_layers():
     forbidden_prefixes = (
-        "decision", "risk", "execution", "strategies", "database", "telegram",
-        "broadcast", "translation",
+        "decision_layer", "risk_layer", "execution_layer", "strategy_layer", "database_layer", "platform_layer.telegram",
+        "media_layer.telegram_broadcast", "media_layer.translation",
     )
 
     for py_file in _media_dir().glob("*.py"):

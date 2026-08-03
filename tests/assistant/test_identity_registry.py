@@ -1,4 +1,4 @@
-from assistant.identity_registry import SENIOR_IDENTITY, SENIORITA_IDENTITY, build_identity_registry
+from ai_layer.ai_service.assistant.identity_registry import SENIOR_IDENTITY, SENIORITA_IDENTITY, build_identity_registry
 
 
 def test_build_identity_registry_returns_exactly_two_entries():

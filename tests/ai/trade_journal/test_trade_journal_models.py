@@ -1,6 +1,6 @@
 import dataclasses
 
-from ai.trade_journal.models import ReplayContext, TradeJournalEntry, generate_journal_id
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.models import ReplayContext, TradeJournalEntry, generate_journal_id
 
 
 def _entry(**overrides):

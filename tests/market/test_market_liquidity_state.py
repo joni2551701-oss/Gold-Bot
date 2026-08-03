@@ -8,7 +8,7 @@ running any liquidity detection of its own.
 
 from types import SimpleNamespace
 
-from market.liquidity_state import LiquidityState
+from data_layer.live_data.market.liquidity_state import LiquidityState
 
 
 def test_buy_side_sweep():

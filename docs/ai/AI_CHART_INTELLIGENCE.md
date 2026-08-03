@@ -77,7 +77,7 @@ system — zero new business logic:
 
 `trading_analyst_adapter.py`'s `combined_explanation()` (TASK 5) is
 the one file in this package permitted to import
-`ai.trading_analyst.models` — it composes an existing `TradingAnalysis`
+`ai_layer.ai_engine.trading_analyst.models` — it composes an existing `TradingAnalysis`
 (Phase 66.0) alongside this phase's own `ChartAnalysis` into a single
 TRADE-mode `ExplanationOutput`, the pipeline's own "TradingAnalysis →
 ChartAnalysis → Explanation" order. `direction`/`market_bias` are
@@ -129,7 +129,7 @@ shape exactly — a dedicated flag, not a reuse of
 `enable_trading_analyst` (Chart Intelligence is a sibling concern to
 Trading Analyst, not a dependent one — `ai/chart_intelligence/` never
 imports `assistant/` or `voice/`, and only `trading_analyst_adapter.py`
-imports `ai.trading_analyst`, and only type-only).
+imports `ai_layer.ai_engine.trading_analyst`, and only type-only).
 
 ## What it is not
 

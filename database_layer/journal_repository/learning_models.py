@@ -2,7 +2,7 @@
 Database Layer — Learning Record persistence model (Phase 60.6:
 Learning Loop Foundation, TASK 5).
 
-`LearningRecordRow` deliberately does not reuse `learning.models.LearningRecord`
+`LearningRecordRow` deliberately does not reuse `ai_layer.knowledge_ai.learning_loop.models.LearningRecord`
 directly -- same disambiguation-by-naming discipline this codebase has
 used repeatedly (`RawCandle` vs. `data_layer.providers.twelve_data_client.Candle`,
 `FundamentalContextSnapshot` vs. `FundamentalSnapshot`,
@@ -11,13 +11,13 @@ repository in this codebase owns its own row-shaped model
 (`database_layer.trade_repository.signal_record.SignalRecord`, `database_layer.market_repository.raw_candle_models.RawCandle`,
 `database_layer.audit_log.audit_log_models.AuditLogEntry`), never imports a domain
 type from a non-`database/` package directly. `LearningRecordRow`
-mirrors `learning.models.LearningRecord`'s fields exactly, plus the one
+mirrors `ai_layer.knowledge_ai.learning_loop.models.LearningRecord`'s fields exactly, plus the one
 field that domain type intentionally excludes: a real database `id`
 (see `LearningRecord`'s own docstring for why).
 
 Phase 60.7 (Adaptive Intelligence Layer Foundation, TASK 3) extends
 this same `LearningRecordRow` with the same six additional fields
-`learning.models.LearningRecord` gained in lockstep
+`ai_layer.knowledge_ai.learning_loop.models.LearningRecord` gained in lockstep
 (`htf_bias`/`volatility_state`/`fundamental_bias`/`confidence_score`/
 `engine_version`/`sample_size`) — see that module's own docstring for
 each field's meaning.
@@ -35,7 +35,7 @@ class LearningRecordRow:
     id: the real, autoincrement database identity -- None until a row
         has actually been inserted and re-read (same convention every
         other Phase 59.x/60.x model that carries a real db id uses).
-    record_id: the originating `learning.models.LearningRecord.record_id`
+    record_id: the originating `ai_layer.knowledge_ai.learning_loop.models.LearningRecord.record_id`
         -- unique, generated before persistence.
     trade_id/signal_id: the originating `PaperTrade.trade_id`/
         `signal_id` -- required.

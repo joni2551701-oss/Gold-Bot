@@ -34,9 +34,9 @@ or GitHub Actions) -- reported as "N/A (external scheduler)" rather
 than a fabricated ✓/✗.
 """
 
-from ai.cache.response_cache import ResponseCache
-from ai.capabilities.capability import Capability
-from analytics.strategy_report import compute_win_rate
+from ai_layer.ai_engine.cache.response_cache import ResponseCache
+from ai_layer.ai_engine.capabilities.capability import Capability
+from backtesting_layer.statistics.strategy_report import compute_win_rate
 from core_layer.emergency.emergency_manager import EmergencyManager
 from core_layer.emergency.emergency_state import EmergencyState
 from core_layer.logger.logger import setup_logger

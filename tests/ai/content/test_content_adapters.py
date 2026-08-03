@@ -2,15 +2,15 @@
 
 from datetime import datetime, timezone
 
-from ai.content.content_adapters import (
+from ai_layer.ai_service.content.content_adapters import (
     content_context_from_conversation,
     content_context_from_explanation,
 )
-from ai.content_types import ContentType
-from ai.content.models import ContentMode
-from ai.conversation.models import ConversationContext, ConversationMode
-from ai.explanation.explanation_output import ExplanationOutput
-from ai.session.conversation_state import ConversationTurn
+from ai_layer.ai_service.content.content_type_vocabulary import ContentType
+from ai_layer.ai_service.content.models import ContentMode
+from ai_layer.personal_ai.interaction_manager.models import ConversationContext, ConversationMode
+from ai_layer.explanation_ai.explanation_output import ExplanationOutput
+from ai_layer.ai_service.session.conversation_state import ConversationTurn
 
 
 def _explanation_output(summary="Gold remains bullish.", language="uz"):
@@ -77,9 +77,9 @@ def test_content_adapters_module_never_imports_translation_media_or_broadcast():
     import ast
     import pathlib
 
-    adapters_file = pathlib.Path(__file__).resolve().parents[3] / "ai" / "content" / "content_adapters.py"
+    adapters_file = pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "ai_service" / "content" / "content_adapters.py"
     tree = ast.parse(adapters_file.read_text(), filename=str(adapters_file))
-    forbidden_prefixes = ("translation", "media", "broadcast")
+    forbidden_prefixes = ("media_layer.translation", "media_layer.content_manager", "media_layer.telegram_broadcast")
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:

@@ -1,6 +1,6 @@
-from ai.access.permissions import AIRole
-from ai.research.models import ResearchCategory, ResearchPriority, ResearchStatus
-from ai.research.research_runtime import ResearchRuntime
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.fundamental_ai.models import ResearchCategory, ResearchPriority, ResearchStatus
+from ai_layer.fundamental_ai.research_runtime import ResearchRuntime
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_research_intelligence=True)

@@ -1,12 +1,12 @@
 """Phase 61.3 TASK 7 — Explanation Engine: thin wrapper over AIService (unmodified) for EXPLANATION/SUMMARY/EDUCATION/ANALYSIS."""
 
-from ai.access.permissions import AIRole
-from ai.context.context_builder import build_ai_context
-from ai.explanation.explanation_engine import ExplanationEngine
-from ai.interfaces import MarketContext
-from ai.providers.base_provider import ProviderResult
-from ai.providers.provider_manager import ProviderStatus
-from ai.runtime.ai_service import AIService
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.context.context_builder import build_ai_context
+from ai_layer.explanation_ai.explanation_engine import ExplanationEngine
+from ai_layer.ai_service.interfaces import MarketContext
+from ai_layer.ai_engine.providers.base_provider import ProviderResult
+from ai_layer.ai_engine.providers.provider_manager import ProviderStatus
+from ai_layer.ai_engine.runtime.ai_service import AIService
 from signal_layer.signal_scoring.explainability import SignalExplanation
 
 

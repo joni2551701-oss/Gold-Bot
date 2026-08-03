@@ -1,8 +1,8 @@
 """Phase 61.0 TASK 6 — AI Access Control: Role x Capability permission matrix, not a global AI on/off."""
 
-from ai.access.access_control import AccessControl
-from ai.access.permissions import AIRole
-from ai.capabilities.capability import Capability
+from ai_layer.ai_service.access.access_control import AccessControl
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.capabilities.capability import Capability
 
 
 def test_owner_and_admin_are_allowed_every_capability():

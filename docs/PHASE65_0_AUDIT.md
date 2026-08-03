@@ -67,7 +67,7 @@ different purpose. **Critical resolution, carried forward from
 registers exactly one real `Persona`, `SENIOR_TRADING_AI` — no
 "Seniorita" `Persona` exists, and Phase 63.8's brief explicitly forbade
 creating one this program. This phase's `VoiceProfile` named
-`"Seniorita"` is **not** an `ai.persona.Persona` and does not create
+`"Seniorita"` is **not** an `ai_layer.personal_ai.persona_manager.Persona` and does not create
 one — it is a self-contained voice-delivery metadata record inside the
 new `voice/` package, referencing the *name* `"Seniorita"` as a
 free-text string only (the same "never carry another package's object
@@ -87,9 +87,9 @@ codebase uses that shape: `ai/persona/persona_registry.py` (one
 `media_layer/telegram_broadcast/provider_manager.py` (one `BroadcastProviderDescriptor` per
 list entry, one file) are the three closest precedents, and all three
 use a single file with a `build_*_registry()` function. **Decision:
-`voice/profiles.py`** (module-level `VoiceProfile` constants —
+`ai_layer/voice_ai/profiles.py`** (module-level `VoiceProfile` constants —
 `SENIOR_VOICE`, `SENIORITA_VOICE`, `NARRATOR_VOICE` — plus
-`build_voice_profile_registry()`) **and `voice/providers.py`**
+`build_voice_profile_registry()`) **and `ai_layer/voice_ai/providers.py`**
 (`build_voice_provider_registry()`, four `VoiceProvider` descriptors)
 — matching the established pattern exactly, not the brief's literal
 one-file-per-item suggestion. Rule 8 ("mavjud pattern'dan foydalanish")
@@ -106,28 +106,28 @@ separate files with overlapping-sounding responsibilities. Per
 CLAUDE.md's "No duplicate logic" restriction, these are composed, not
 reimplemented three times:
 
-- `voice/registry.py`'s `VoiceProfileRegistry` owns the actual
+- `ai_layer/voice_ai/registry.py`'s `VoiceProfileRegistry` owns the actual
   profile store (register/get/exists/list_all/default) — the same
   "class wrapping a dict, pre-seeded from the static catalog" shape
   `media_layer/telegram_broadcast/trigger_manager.py`'s `BroadcastTriggerManager` already
   established (the one existing Phase 63.0 class with a real,
   runtime-mutable `register()`).
-- `voice/manager.py`'s `VoiceManager` owns provider status
+- `ai_layer/voice_ai/manager.py`'s `VoiceManager` owns provider status
   (ENABLED/DISABLED intent, the same shape
   `MediaManager`/`BroadcastProviderManager` already established) and
   *delegates* `register_profile()`/`get_profile()` to an injected
   `VoiceProfileRegistry` rather than re-implementing profile storage.
   `validate()`/`prepare()` are the one real deterministic-logic home.
-- `voice/runtime.py`'s `VoiceRuntime` is a thin façade: every one of
+- `ai_layer/voice_ai/runtime.py`'s `VoiceRuntime` is a thin façade: every one of
   its six methods delegates directly to `VoiceManager` (or, for
   `build_request()`/`build_result()`, assembles a `VoiceRequest`/
   `VoiceResult` from already-validated primitive values) — it computes
   nothing `VoiceManager` doesn't already compute.
 
-## `voice/adapter.py`'s scope (TASK 7)
+## `ai_layer/voice_ai/adapter.py`'s scope (TASK 7)
 
 Mirrors `media_layer/content_manager/media_adapter.py`'s `content_result_to_media_asset()`
-shape exactly: one pure function reading an upstream `ai.content.content_schema.ContentResult`'s
+shape exactly: one pure function reading an upstream `ai_layer.ai_service.content.content_schema.ContentResult`'s
 own already-public fields (never `ContentEngine`'s internal state)
 into a `VoiceRequest` via `VoiceManager`. `voice/` may read `ai/content/`
 (type-only, upstream) but never `media/`/`broadcast/` (this phase adds
@@ -138,7 +138,7 @@ phase implements).
 
 ## Dependency Compliance
 
-`voice/*.py` imports only `ai.content.content_schema` (type-only,
+`voice/*.py` imports only `ai_layer.ai_service.content.content_schema` (type-only,
 TASK 7's adapter) and `core_layer.logger.logger` (the same logging convention
 `MediaManager`/`BroadcastProviderManager` already use) — zero
 dependency on `decision/`, `risk/`, `execution/`, `strategies/`,

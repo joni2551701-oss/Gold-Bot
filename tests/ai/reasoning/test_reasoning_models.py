@@ -1,6 +1,6 @@
 """Phase 63.4 TASK 2 — ai/reasoning/models.py: ReasoningMode/ReasoningType/ReasoningPriority/ReasoningStep/ReasoningResult."""
 
-from ai.reasoning.models import ReasoningMode, ReasoningPriority, ReasoningResult, ReasoningStep, ReasoningType
+from ai_layer.ai_engine.reasoning.models import ReasoningMode, ReasoningPriority, ReasoningResult, ReasoningStep, ReasoningType
 
 
 def test_reasoning_result_defaults_priority_to_normal_and_confidence_to_zero():

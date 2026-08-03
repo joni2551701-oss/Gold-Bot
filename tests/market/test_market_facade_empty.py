@@ -9,13 +9,13 @@ a defined shape, never an exception.
 
 from types import SimpleNamespace
 
-from market.liquidity_state import LiquidityState
-from market.market_data import MarketSnapshot
-from market.market_manager import MarketManager
-from market.market_structure import MarketStructureView
-from market.regime_state import RegimeState
-from market.trend_state import TrendState
-from market.volatility_state import VolatilityLevel
+from data_layer.live_data.market.liquidity_state import LiquidityState
+from data_layer.live_data.market.market_data import MarketSnapshot
+from data_layer.live_data.market.market_manager import MarketManager
+from data_layer.live_data.market.market_structure import MarketStructureView
+from data_layer.live_data.market.regime_state import RegimeState
+from data_layer.live_data.market.trend_state import TrendState
+from data_layer.live_data.market.volatility_state import VolatilityLevel
 
 
 def test_none_context_yields_empty_marketdata():

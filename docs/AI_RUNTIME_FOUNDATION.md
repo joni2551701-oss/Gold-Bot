@@ -21,14 +21,14 @@ Validator -> Cache -> Audit -> Response
 
 `AIService.ask(RuntimeRequest) -> RuntimeResponse`:
 
-1. **Access** — `ai.access.access_control.AccessControl.is_allowed(role, capability)`.
-2. **Capability** — `ai.capabilities.capability_manager.CapabilityManager.is_enabled(capability)`.
+1. **Access** — `ai_layer.ai_service.access.access_control.AccessControl.is_allowed(role, capability)`.
+2. **Capability** — `ai_layer.ai_engine.capabilities.capability_manager.CapabilityManager.is_enabled(capability)`.
 3. **Prompt** — explicit `RuntimeRequest.prompt`, or derived via
-   `ai.prompts.prompt_manager.PromptManager.get_market_analysis_prompt()`
+   `ai_layer.ai_engine.prompts.prompt_manager.PromptManager.get_market_analysis_prompt()`
    from `ai_context.market_context` when no explicit prompt is given.
-4. **Router** — `ai.router.router.AIRouter.route(capability)` (Phase
+4. **Router** — `ai_layer.ai_coordinator.router.AIRouter.route(capability)` (Phase
    61.0/61.1, untouched this phase).
-5. **Cache check** — `ai.cache.cache_policy.build_cache_key_from_context()`,
+5. **Cache check** — `ai_layer.ai_engine.cache.cache_policy.build_cache_key_from_context()`,
    now including `user_role` (TASK 7, see below) — a hit returns
    immediately, `from_cache=True`, no provider call.
 6. **Provider call** — the real `BaseAIProvider` method
@@ -36,16 +36,16 @@ Validator -> Cache -> Audit -> Response
    selected provider. A `ProviderRuntimeError` (TASK 4) or
    `NotImplementedError` (a provider declaring a capability it hasn't
    really implemented, e.g. Gemini's `vision()` this phase) is caught,
-   the failure is recorded (`ai.providers.runtime_errors.record_provider_failure()`
+   the failure is recorded (`ai_layer.ai_engine.providers.runtime_errors.record_provider_failure()`
    updates `ProviderHealthTracker`), and the loop re-routes — the next
    `AIRouter.route()` call naturally skips the now-unhealthy provider.
    Bounded to one attempt per registered provider.
-7. **Validator** — `ai.validation.response_validator.validate_response()`
+7. **Validator** — `ai_layer.confidence_ai.response_validator.validate_response()`
    (TASK 5). A rejected response returns `accepted=False` with the
    validator's `errors` — never cached, never silently passed through.
 8. **Cache write + Audit** — an accepted result is cached
-   (`ai.cache.response_cache.ResponseCache.put()`) and both
-   `ai.audit.request_log.RequestLog`/`ai.audit.response_log.ResponseLog`
+   (`ai_layer.ai_engine.cache.response_cache.ResponseCache.put()`) and both
+   `ai_layer.ai_service.audit.request_log.RequestLog`/`ai_layer.ai_service.audit.response_log.ResponseLog`
    (TASK 8) are written on every attempt, success or failure — no API
    key in either.
 9. **Response** — a `RuntimeResponse`, never a raised exception.
@@ -94,7 +94,7 @@ duplicated) once the real one took over its registry slot.
 `BaseAIProvider` gained `health_check()`/`capabilities()` as concrete
 default methods (not abstract) — every existing placeholder provider
 inherits them unchanged; `capabilities()` reuses
-`ai.providers.provider_capabilities.capabilities_of()` directly.
+`ai_layer.ai_engine.providers.provider_capabilities.capabilities_of()` directly.
 
 ## TASK 4 — Provider Runtime Error Handling
 
@@ -116,7 +116,7 @@ lives here without a real import cycle.
 min content length, required metadata keys, confidence range),
 `safety.py` (`check_safety()` — heuristic trade-directive-language and
 leaked-API-key-pattern checks; a second, independent safety net beside
-`ai/ai_prompt.py`'s existing system-prompt-level restriction),
+`ai_layer/ai_engine/ai_prompt.py`'s existing system-prompt-level restriction),
 `response_validator.py` (`validate_response()`, composing both).
 
 ## TASK 6/7/8 — AI Runtime Service Layer, Cache Integration, Audit Wiring

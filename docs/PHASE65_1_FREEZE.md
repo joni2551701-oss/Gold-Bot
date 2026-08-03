@@ -11,15 +11,15 @@ Constitution/Dependency compliance checks run at close.
 
 TASK 0's audit (`docs/PHASE65_1_AUDIT.md`) confirmed every LOCKed
 Phase 65.0 surface (`VoiceManager`, `VoiceProfileRegistry`,
-`VoiceRuntime`, `voice/models.py`, `voice/profiles.py`,
-`voice/providers.py`) already existed and stayed untouched in shape —
+`VoiceRuntime`, `ai_layer/voice_ai/models.py`, `ai_layer/voice_ai/profiles.py`,
+`ai_layer/voice_ai/providers.py`) already existed and stayed untouched in shape —
 this phase's real work landed as extensions to `VoiceManager`/
-`VoiceRuntime`/`voice/adapter.py` plus four genuinely new files. Two
+`VoiceRuntime`/`ai_layer/voice_ai/adapter.py` plus four genuinely new files. Two
 naming resolutions were required: (1) the brief's literal
-`voice/providers/` directory collides with `voice/providers.py`, a
+`voice/providers/` directory collides with `ai_layer/voice_ai/providers.py`, a
 LOCKed file since Phase 65.0 — resolved as `voice/provider_adapters/`
 instead, the same "consolidate to the codebase's real shape" move
-Phase 65.0 itself used for TASK 5/6; (2) `voice/provider_contract.py`
+Phase 65.0 itself used for TASK 5/6; (2) `ai_layer/voice_ai/provider_contract.py`
 is a new, TTS-shaped contract rather than an extension of
 `ai/providers/base_provider.py`'s `BaseAIProvider` (LLM-chat-shaped, a
 different domain) — see the audit's own resolution section. No
@@ -28,7 +28,7 @@ conflict.
 
 ## Built this phase
 
-- `voice/provider_contract.py` — `VoiceProviderContract` (ABC:
+- `ai_layer/voice_ai/provider_contract.py` — `VoiceProviderContract` (ABC:
   `generate_audio()` abstract, `validate()`/`health_check()` concrete
   overridable defaults) and the `VoiceProviderError`/
   `VoiceProviderTimeoutError`/`VoiceProviderUnavailableError`/
@@ -44,30 +44,30 @@ conflict.
   `VoiceProviderUnavailableError`.
 - `core/secrets.py` — one new optional property, `ELEVENLABS_API_KEY`
   (additive; `OPENAI_API_KEY`, Phase 61.2, reused as-is).
-- `voice/models.py` — `VoiceResult` gained one new optional field,
+- `ai_layer/voice_ai/models.py` — `VoiceResult` gained one new optional field,
   `metadata: Dict[str, Any] = field(default_factory=dict)` (additive
   per Article 9; carries reference info like
   `content_type`/`byte_length`/`provider`, never raw audio bytes).
-- `voice/manager.py` extension — adapter registry
+- `ai_layer/voice_ai/manager.py` extension — adapter registry
   (`register_adapter()`/`get_adapter()`/`list_adapters()`) and
   per-profile provider selection (`set_provider_for_profile()`/
   `provider_for_profile()`, falling back to the LOCKed
   `VoiceProfile.default_provider` when unset). Every Phase 65.0 method
   on `VoiceManager` is unchanged.
-- `voice/runtime.py` extension — `resolve_provider_for_profile()`,
+- `ai_layer/voice_ai/runtime.py` extension — `resolve_provider_for_profile()`,
   `generate_audio()` (validates then delegates to the registered real
   adapter, never fabricates a `READY` result), `generate_with_fallback()`
   (tries the primary provider then each fallback in order, returns the
   first `READY` result or the last `REJECTED` one). Every Phase 65.0
   method on `VoiceRuntime` is unchanged.
-- `voice/adapter.py` extension — three new pure functions:
+- `ai_layer/voice_ai/adapter.py` extension — three new pure functions:
   `media_asset_to_voice_request()`, `broadcast_asset_to_voice_request()`
   (narration `text` is an explicit parameter — `BroadcastAsset` carries
   no text of its own), `conversation_turn_to_voice_request()` (only
   narrates `role == "assistant"` turns). `content_result_to_voice_request()`
   (Phase 65.0) is unchanged.
 - `tests/voice/test_voice_isolation.py` updated (not a new file) —
-  permanently allows `media`/`broadcast`/`ai.session`/`ai.conversation`
+  permanently allows `media`/`broadcast`/`ai_layer.ai_service.session`/`ai_layer.personal_ai.interaction_manager`
   imports (type-only, confined to `adapter.py` — enforced by a new
   test), while `translation` and every trading-layer prefix remain
   permanently forbidden.
@@ -128,11 +128,11 @@ conflict.
 
 `voice/*.py` (excluding `adapter.py`) still imports only its own
 package plus `core_layer.logger.logger`/`core.secrets`/`requests` — no trading
-layer, no `media`/`broadcast`/`ai.conversation` import anywhere except
-`voice/adapter.py`, which now also imports `media_layer.content_manager.models`,
-`media_layer.telegram_broadcast.models`, and `ai.session.conversation_state` (all
+layer, no `media`/`broadcast`/`ai_layer.personal_ai.interaction_manager` import anywhere except
+`ai_layer/voice_ai/adapter.py`, which now also imports `media_layer.content_manager.models`,
+`media_layer.telegram_broadcast.models`, and `ai_layer.ai_service.session.conversation_state` (all
 type-only, read-only, mirroring the exact posture `adapter.py` already
-used for `ai.content` since Phase 65.0). This is Phase 65.0's own
+used for `ai_layer.ai_service.content` since Phase 65.0). This is Phase 65.0's own
 explicit deferral ("a future phase may compose them") being exercised,
 per the Director's own Phase 65.1 pipeline diagram
 (`Content → Media → Broadcast → Voice Narration`). Nothing in
@@ -148,7 +148,7 @@ permanent forbidden list) and
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
-| Modules | `voice/provider_contract.py`, `voice/provider_adapters/__init__.py`/`openai.py`/`elevenlabs.py`/`local.py`/`custom.py` (6) | `voice/manager.py`, `voice/runtime.py`, `voice/adapter.py`, `voice/models.py`, `core/secrets.py` (5) | `voice/registry.py`, `voice/profiles.py`, `voice/providers.py` (unchanged) |
+| Modules | `ai_layer/voice_ai/provider_contract.py`, `voice/provider_adapters/__init__.py`/`openai.py`/`elevenlabs.py`/`local.py`/`custom.py` (6) | `ai_layer/voice_ai/manager.py`, `ai_layer/voice_ai/runtime.py`, `ai_layer/voice_ai/adapter.py`, `ai_layer/voice_ai/models.py`, `core/secrets.py` (5) | `ai_layer/voice_ai/registry.py`, `ai_layer/voice_ai/profiles.py`, `ai_layer/voice_ai/providers.py` (unchanged) |
 | Classes | `VoiceProviderContract`, `OpenAIVoiceProvider`, `ElevenLabsVoiceProvider`, `LocalVoiceProvider`, `CustomVoiceProvider` (5) | `VoiceManager`, `VoiceRuntime` (2) | `VoiceProfileRegistry` |
 | Models | `VoiceProviderError` + 3 subclasses (4) | `VoiceResult` (+`metadata` field) (1) | `VoiceProviderType`, `VoiceProviderStatus`, `VoiceResultStatus`, `VoiceProvider`, `VoiceProfile`, `VoiceSettings`, `VoiceRequest` |
 | Secrets | `ELEVENLABS_API_KEY` (1) | — | `OPENAI_API_KEY` |

@@ -8,7 +8,7 @@ never re-analyzes the market itself — see
 "whose read wins" framing this whole document follows.
 
 ## Input
-`signal_layer.signal_builder.models.SignalCandidate`, `ai.ai_analyzer.AIAnalysisResult`,
+`signal_layer.signal_builder.models.SignalCandidate`, `ai_layer.ai_engine.ai_analyzer.AIAnalysisResult`,
 and an optional `context.htf_bias.HTFBiasResult`
 (`decision_layer.decision_engine.decision_engine.DecisionEngine.evaluate(signal, ai_analysis, htf_bias=None)`).
 

@@ -1,5 +1,5 @@
-from ai.access.permissions import AIRole
-from ai.trade_journal.journal_runtime import TradeJournalRuntime
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.journal_runtime import TradeJournalRuntime
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_trade_journal=True)

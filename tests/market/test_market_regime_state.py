@@ -8,7 +8,7 @@ convenience flags -- it is market context, NOT a strategy choice.
 
 from types import SimpleNamespace
 
-from market.regime_state import RegimeState
+from data_layer.live_data.market.regime_state import RegimeState
 
 
 def _schema(regime):

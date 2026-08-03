@@ -40,7 +40,7 @@ this is real and intended, not a violation. What never happens, under
 any configuration: the AI layer itself calling
 `decision_layer.decision_engine.decision_engine.DecisionEngine`, calling
 `risk_layer.risk_engine.risk_manager.RiskManager`, triggering execution, or triggering a
-Telegram send (`ai/interfaces.py`'s `AIAnalyzerInterface` docstring
+Telegram send (`ai_layer/ai_service/interfaces.py`'s `AIAnalyzerInterface` docstring
 states this contract for any future provider). The Decision Engine
 reads the AI's answer; the AI layer never acts on it.
 
@@ -66,7 +66,7 @@ telegram → database
 
 A later stage may receive/reference a **type or data value** produced
 by an earlier stage (the concrete case: `decision/` importing
-`AIAnalysisResult` from `ai.ai_analyzer` to accept it as a parameter —
+`AIAnalysisResult` from `ai_layer.ai_engine.ai_analyzer` to accept it as a parameter —
 see Article 1). An earlier stage must never import from, call, or
 depend on a later stage. `core/` sits beneath this entire chain — every
 stage may depend on it, and it depends on nothing else.
@@ -126,8 +126,8 @@ since (61.1 through 61.7). It stays true forever.
 `ai/` importing `signals/` or `context/` for **type definitions only**
 (e.g. `SignalCandidate`, `SignalSchema`, `MarketContext`) is the one
 standing exception, and it is narrow: a handful of specific,
-already-audited files (`ai/ai_analyzer.py`, `ai/ai_prompt.py`,
-`ai/confidence_model.py`, `ai/journal/trade_journal.py`,
+already-audited files (`ai_layer/ai_engine/ai_analyzer.py`, `ai_layer/ai_engine/ai_prompt.py`,
+`ai_layer/confidence_ai/confidence_model.py`, `ai/journal/trade_journal.py`,
 `ai/explanation/explanation_engine.py`, `ai/context/context_snapshot.py`,
 `ai/context/context_builder.py`) import a *data shape* from
 `signals/`, never a decision, never a risk calculation, never an
@@ -138,7 +138,7 @@ cross-layer import (see Article 7).
 `decision/` importing `ai/` is the one sanctioned exception in this
 direction, and it is exactly as narrow as it sounds: `decision_layer/decision_engine/models.py`
 and `decision_layer/decision_engine/decision_engine.py` import `AIAnalysisResult` from
-`ai.ai_analyzer` — a **type only**, to accept the AI's analysis as a
+`ai_layer.ai_engine.ai_analyzer` — a **type only**, to accept the AI's analysis as a
 parameter — per Article 1 and `CLAUDE.md`'s own `signals/ -> ai/ ->
 decision/` ordering. `decision/` never imports `ai/router/`,
 `ai/providers/`, `ai/runtime/`, or calls into `AIService.ask()`

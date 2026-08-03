@@ -1,5 +1,5 @@
-from ai.performance.analytics_adapter import performance_records_to_win_rate_metric
-from ai.performance.models import PerformanceMetric, PerformanceRecord
+from ai_layer.ai_engine.performance.analytics_adapter import performance_records_to_win_rate_metric
+from ai_layer.ai_engine.performance.models import PerformanceMetric, PerformanceRecord
 
 
 def _record(**overrides):

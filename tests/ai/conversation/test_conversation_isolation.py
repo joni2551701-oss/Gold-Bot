@@ -5,13 +5,13 @@ import pathlib
 
 
 def _conversation_dir():
-    return pathlib.Path(__file__).resolve().parents[3] / "ai" / "conversation"
+    return pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "personal_ai" / "interaction_manager"
 
 
 def test_conversation_package_never_imports_trading_or_downstream_intelligence_layers():
     forbidden_prefixes = (
-        "decision", "risk", "execution", "strategies", "database", "telegram",
-        "ai.explanation", "ai.content", "broadcast", "media", "translation",
+        "decision_layer", "risk_layer", "execution_layer", "strategy_layer", "database_layer", "platform_layer.telegram",
+        "ai_layer.explanation_ai", "ai_layer.ai_service.content", "media_layer.telegram_broadcast", "media_layer.content_manager", "media_layer.translation",
     )
 
     for py_file in _conversation_dir().glob("*.py"):

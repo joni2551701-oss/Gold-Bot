@@ -72,7 +72,7 @@ platform_layer.telegram.owner.learning_commands                        -- TASK 8
 Full findings in `docs/LEARNING_LOOP_AUDIT.md`. Summary: no existing
 pattern-detection module, no existing `learning/` package, no
 Gemini/AI training-data exporter anywhere in this codebase.
-`analytics/signal_performance.py`'s `SignalPerformance` shares 7 of
+`backtesting_layer/statistics/signal_performance.py`'s `SignalPerformance` shares 7 of
 `LearningRecord`'s 11 fields but is an in-memory, computed-on-demand
 analytics type with no persistence story — a different lifecycle from
 an append-only learning memory, so it was not reused directly (only
@@ -82,7 +82,7 @@ loss-specific by contract; TASK 3 needed a shape covering wins and
 losses alike, so a new, disclosed near-duplicate type was built rather
 than broadening `FailureAnalysisEntry` past its own stated purpose.
 
-## TASK 2: `learning/models.py`
+## TASK 2: `ai_layer/knowledge_ai/learning_loop/models.py`
 
 `LearningRecord` (`record_id`, `trade_id`, `signal_id`,
 `strategy_name`, `market_phase`, `session`, `timeframe`, `result`,
@@ -92,7 +92,7 @@ dataclass — same convention `database_layer/audit_log/audit_log_models.py`'s
 `AuditLogEntry` already established (a database auto-increment id is
 repository-internal, and a record built here has no row yet).
 
-## TASK 3: `learning/outcome_analyzer.py`
+## TASK 3: `ai_layer/knowledge_ai/learning_loop/outcome_analyzer.py`
 
 `TradeAnalysis` (`trade_id`, `result`, `reasons`, `lesson`) +
 `analyze_trade_result(paper_trade, context=None, performance=None,
@@ -107,16 +107,16 @@ structural break, with a generic fallback (`"Review: ..."`/
 `"Repeat: ..."`) otherwise — never a fabricated conclusion `reasons`
 doesn't already support.
 
-## TASK 4: `learning/pattern_detector.py`
+## TASK 4: `ai_layer/knowledge_ai/learning_loop/pattern_detector.py`
 
 `PatternInsight` + `detect_patterns(records, min_occurrences=3,
 high_threshold=0.65)` + `filter_high_failure_patterns()`/
 `filter_high_success_patterns()`/`format_pattern_insight()`. Groups
 `LearningRecord`s by `(strategy_name, session, market_phase)` — the
 same three real, structured dimensions
-`analytics/context_report.py` already groups `SignalPerformance` by —
+`backtesting_layer/statistics/context_report.py` already groups `SignalPerformance` by —
 and classifies each group `HIGH_SUCCESS`/`HIGH_FAILURE`/`MIXED` off
-its win rate, reusing `analytics.strategy_report.compute_win_rate()`
+its win rate, reusing `backtesting_layer.statistics.strategy_report.compute_win_rate()`
 directly. Does **not** parse `failure_type`/`success_pattern` free
 text into structured sub-conditions — the single most common string in
 a group is surfaced as an illustrative example only, never as a
@@ -134,7 +134,7 @@ own brief ("append only, tarix o'chirilmaydi, auditga mos").
 `strategy_name`/`session`/`trade_id`) was added to `database_layer/database_manager/models.py`,
 the same file every other schema already lives in.
 
-## TASK 6: `analytics/learning_report.py`
+## TASK 6: `backtesting_layer/statistics/learning_report.py`
 
 `LearningReport` (`total_records`, `best_condition`, `worst_condition`)
 + `build_learning_report(records, min_occurrences=3)` +
@@ -148,7 +148,7 @@ report reproduces the shape with the three real dimensions
 (`session`/`strategy_name`/`market_phase`), not a fabricated fourth
 one.
 
-## TASK 7: `ai/learning_context.py`
+## TASK 7: `ai_layer/knowledge_ai/learning_context.py`
 
 `LearningContext` (`recent_failures`, `successful_patterns`,
 `strategy_stats`) + `build_learning_context(records, patterns=None,
@@ -202,7 +202,7 @@ Strategy Improvement Suggestions
 Owner Approval
 ```
 
-`ai/learning_context.py`'s `LearningContext` is the concrete input
+`ai_layer/knowledge_ai/learning_context.py`'s `LearningContext` is the concrete input
 shape that future AI Analyst step would consume. Every step after
 "Learning Memory" in that diagram remains unbuilt and unapproved —
 this phase does not implement, wire, or scope any of it; it only
@@ -212,9 +212,9 @@ work to read from.
 ## Known gaps (disclosed, not hidden)
 
 - `failure_type`/`success_pattern` remain free text with no fixed
-  taxonomy — same disclosed gap `ai.journal.failure_analysis.FailureAnalysisEntry.reason`
+  taxonomy — same disclosed gap `ai_layer.knowledge_ai.knowledge_base.journal.failure_analysis.FailureAnalysisEntry.reason`
   already carries.
-- `learning/outcome_analyzer.py`'s HTF-alignment/structural reasons
+- `ai_layer/knowledge_ai/learning_loop/outcome_analyzer.py`'s HTF-alignment/structural reasons
   depend on the caller supplying a real `ContextSnapshot`/
   `HTFBiasResult` — with neither supplied, `analyze_trade_result()`
   still returns a valid `TradeAnalysis`, just with empty `reasons`.
@@ -253,7 +253,7 @@ here and in `backtest_engine.py`'s own module docstring, per the
 Director's standing "never hide a fundamental problem found during
 validation" instruction.
 
-## TASK 2: `learning/trade_event_bridge.py`
+## TASK 2: `ai_layer/knowledge_ai/learning_loop/trade_event_bridge.py`
 
 `build_learning_record_from_trade()` + `bridge_closed_trade()` — the
 first real caller of `LearningRepository.record()`, closing Phase
@@ -283,7 +283,7 @@ session, market_phase)` to a 5-tuple including `htf_bias`/
 `volatility_state` — purely additive, since every Phase 60.6 record
 has both new fields `None`, producing identical groups for any
 pre-existing record set. A new `MIN_PATTERN_SAMPLE = 20` constant is
-exported for `learning.confidence` (TASK 5) to consume — `detect_patterns()`'s
+exported for `ai_layer.knowledge_ai.learning_loop.confidence` (TASK 5) to consume — `detect_patterns()`'s
 own `min_occurrences` exclusion gate is deliberately left at its
 original default of 3 (the Director's "Samples: 5 -> LOW /Samples: 100
 -> HIGH" example is about a confidence *label*, not an exclusion
@@ -292,7 +292,7 @@ a new, separately-exposed `group_records_for_patterns()` helper
 (a behavior-preserving refactor, verified against the full existing
 test suite) so TASK 6 could reuse it without duplicating the grouping.
 
-## TASK 5: `learning/confidence.py`
+## TASK 5: `ai_layer/knowledge_ai/learning_loop/confidence.py`
 
 `PatternConfidence` + `compute_pattern_confidence()` — LOW/MEDIUM/HIGH
 from four disclosed 0.0-1.0 sub-scores (sample size, consistency,
@@ -306,7 +306,7 @@ draft's formula — the initial additive design produced HIGH for a
 5-sample pattern, failing the test, and was corrected before this
 phase closed.
 
-## TASK 6: AI Memory Adapter (`ai/learning_context.py`)
+## TASK 6: AI Memory Adapter (`ai_layer/knowledge_ai/learning_context.py`)
 
 `LearningContext` gained four new fields (`patterns`, `failures`,
 `regimes`, `confidence`) alongside the unchanged Phase 60.6 three
@@ -316,13 +316,13 @@ phase closed.
 `confidence` reuses `group_records_for_patterns()` (TASK 4) +
 `compute_pattern_confidence()` (TASK 5); `regimes` is relayed as a
 caller-supplied `Sequence[str]` (e.g. from
-`learning.regime_memory.format_regime_summary()`, TASK 7) rather than
-this module importing `learning.regime_memory` directly — loose
-coupling, so `ai/learning_context.py`'s own dependency set didn't need
+`ai_layer.knowledge_ai.learning_loop.regime_memory.format_regime_summary()`, TASK 7) rather than
+this module importing `ai_layer.knowledge_ai.learning_loop.regime_memory` directly — loose
+coupling, so `ai_layer/knowledge_ai/learning_context.py`'s own dependency set didn't need
 to grow again once that module existed. Still context only: none of
 the four new fields is itself an explanation/conclusion/recommendation.
 
-## TASK 7: `learning/regime_memory.py`
+## TASK 7: `ai_layer/knowledge_ai/learning_loop/regime_memory.py`
 
 `RegimeObservation` + `RegimeMemory` + `record_from_context()` +
 `format_regime_summary()` — an in-memory, per-process log of the

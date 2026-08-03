@@ -2,10 +2,10 @@
 
 from datetime import datetime, timedelta, timezone
 
-from ai.providers.circuit_breaker import CircuitBreakerConfig, CircuitState, ProviderCircuitBreaker
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.providers.provider_status import HealthStatus
-from ai.event_bus import EventBus, EventType
+from ai_layer.ai_engine.providers.circuit_breaker import CircuitBreakerConfig, CircuitState, ProviderCircuitBreaker
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_engine.providers.provider_status import HealthStatus
+from ai_layer.ai_service.event_bus import EventBus, EventType
 
 
 def test_fresh_provider_starts_closed():
@@ -170,9 +170,9 @@ def test_no_injected_event_bus_never_raises_on_open_or_recover():
 
 def test_router_only_uses_healthy_providers_because_breaker_writes_into_the_same_tracker():
     """No change to ai/router/router.py is needed -- confirmed here directly against the real AIRouter/ProviderManager, not a fake."""
-    from ai.capabilities.capability import Capability
-    from ai.providers.provider_manager import ProviderManager
-    from ai.router.router import AIRouter
+    from ai_layer.ai_engine.capabilities.capability import Capability
+    from ai_layer.ai_engine.providers.provider_manager import ProviderManager
+    from ai_layer.ai_coordinator.router import AIRouter
 
     health_tracker = ProviderHealthTracker()
     breaker = ProviderCircuitBreaker(health_tracker=health_tracker, config=CircuitBreakerConfig(failure_threshold=2))

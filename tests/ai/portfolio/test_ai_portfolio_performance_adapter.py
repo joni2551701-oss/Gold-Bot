@@ -1,5 +1,5 @@
-from ai.performance.models import PerformanceRecord
-from ai.portfolio.performance_adapter import performance_record_to_portfolio_input
+from ai_layer.ai_engine.performance.models import PerformanceRecord
+from ai_layer.ai_engine.portfolio.performance_adapter import performance_record_to_portfolio_input
 
 
 def _record(**overrides):

@@ -1,6 +1,6 @@
 """
 Phase A19 -- Performance Metrics tests: model, serialization,
-validation (performance/metrics.py).
+validation (core_layer/performance/metrics.py).
 """
 
 import dataclasses
@@ -8,7 +8,7 @@ import json
 
 import pytest
 
-from performance.metrics import (
+from core_layer.performance.metrics import (
     PerformanceMetric,
     ValidationResult,
     generate_metric_id,

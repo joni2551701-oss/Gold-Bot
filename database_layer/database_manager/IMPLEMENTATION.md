@@ -31,7 +31,7 @@ append-only — `LearningRepository` exposes no update/delete method,
 same "history must never be lost" posture `emergency_states`/
 `audit_log` already established. `LearningRecordRow`
 (`database_layer/journal_repository/learning_models.py`) deliberately does not reuse
-`learning.models.LearningRecord` directly — same disambiguation-by-
+`ai_layer.knowledge_ai.learning_loop.models.LearningRecord` directly — same disambiguation-by-
 naming discipline every other database-layer model in this codebase
 follows (`RawCandle` vs. `Candle`, `SignalRecord` vs. `SignalSchema`).
 Nothing calls `LearningRepository.record()` automatically yet — no

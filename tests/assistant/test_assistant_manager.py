@@ -1,6 +1,6 @@
-from ai.access.permissions import AIRole
-from assistant.assistant_manager import AssistantManager
-from assistant.identity_manager import IdentityManager
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_service.assistant.assistant_manager import AssistantManager
+from ai_layer.ai_service.assistant.identity_manager import IdentityManager
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_personal_ai=True)

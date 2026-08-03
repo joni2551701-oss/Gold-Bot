@@ -4,9 +4,9 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from ai.cache.cache_policy import CacheKey, CachePolicy, compute_context_hash
-from ai.cache.response_cache import ResponseCache
-from ai.capabilities.capability import Capability
+from ai_layer.ai_engine.cache.cache_policy import CacheKey, CachePolicy, compute_context_hash
+from ai_layer.ai_engine.cache.response_cache import ResponseCache
+from ai_layer.ai_engine.capabilities.capability import Capability
 
 
 def _make_key(**overrides):

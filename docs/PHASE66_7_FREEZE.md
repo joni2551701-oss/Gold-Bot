@@ -36,15 +36,15 @@ outright by this brief's own Rule 1, the same absolute-ban conclusion
 - `ai/portfolio/performance_adapter.py` (new) —
   `performance_record_to_portfolio_input()`, a pure, type-only mapping
   from an existing `PerformanceRecord` (Phase 66.5) — relays `notes`
-  only, never imports `ai.performance.performance_runtime`.
+  only, never imports `ai_layer.ai_engine.performance.performance_runtime`.
 - `ai/portfolio/strategy_adapter.py` (new) —
   `strategy_records_to_portfolio_input()`, the first `66.x` adapter to
   operate over a `Sequence[StrategyRecord]` rather than a single
   record — computes `strategy_count`/`active_strategy_count` via
   deterministic counting (not inference), never imports
-  `ai.strategy.strategy_runtime`.
+  `ai_layer.ai_engine.strategy.strategy_runtime`.
 - `ai/portfolio/memory_adapter.py` (new) —
-  `portfolio_reference_key(record) -> str`, never imports `ai.memory`
+  `portfolio_reference_key(record) -> str`, never imports `ai_layer.knowledge_ai.memory_manager`
   (TASK 6's own rule).
 - `configuration/feature_flags.py` — extended with
   `enable_portfolio_intelligence: bool = False` (a dedicated flag).
@@ -104,12 +104,12 @@ outright by this brief's own Rule 1, the same absolute-ban conclusion
 - **Article 3 (Import Rules), zero-exception rule** — AST sweep for
   `decision`/`risk`/`execution`/`signals`/`strategies`/`context`/
   `monitoring`/`telegram`/`database`/`assistant`/`voice`/`media`/
-  `broadcast`/`academy`/`research`/`core.`/`ai.memory` imports (TASK
+  `broadcast`/`academy`/`research`/`core.`/`ai_layer.knowledge_ai.memory_manager` imports (TASK
   9's own list) plus the wider house-convention set (`analytics`/the
-  top-level `learning`/`ai.providers`/`ai.router`/`ai.reasoning`/
-  `ai.chart_intelligence`/`ai.trading_analyst`/`ai.coaching`/
-  `ai.content`/`ai.conversation`/`ai.explanation`/`ai.trade_journal`/
-  `ai.learning`/`knowledge`/`sqlite3`/`psycopg2`/`redis`/`sqlalchemy`/
+  top-level `learning`/`ai_layer.ai_engine.providers`/`ai_layer.ai_coordinator`/`ai_layer.ai_engine.reasoning`/
+  `ai_layer.vision_ai`/`ai_layer.ai_engine.trading_analyst`/`ai_layer.personal_ai.senior`/
+  `ai_layer.ai_service.content`/`ai_layer.personal_ai.interaction_manager`/`ai_layer.explanation_ai`/`ai_layer.knowledge_ai.knowledge_base.trade_journal`/
+  `ai_layer.knowledge_ai.learning_engine`/`knowledge`/`sqlite3`/`psycopg2`/`redis`/`sqlalchemy`/
   `openai`/`anthropic`/`google.generativeai`/`requests`/`httpx`/
   `urllib`) across `ai/portfolio/**/*.py`: zero matches
   (`tests/ai/portfolio/test_ai_portfolio_isolation.py`).
@@ -136,30 +136,30 @@ outright by this brief's own Rule 1, the same absolute-ban conclusion
 ## Dependency Compliance
 
 `ai/portfolio/models.py` and `access.py` import nothing beyond
-`ai.access.permissions.AIRole`, `configuration.feature_flags`, and the
-standard library. `portfolio_runtime.py` imports only `ai.access`,
-`ai.portfolio`, `configuration`, and stdlib — confirmed by
+`ai_layer.ai_service.access.permissions.AIRole`, `configuration.feature_flags`, and the
+standard library. `portfolio_runtime.py` imports only `ai_layer.ai_service.access`,
+`ai_layer.ai_engine.portfolio`, `configuration`, and stdlib — confirmed by
 `test_portfolio_runtime_module_has_no_persistence_import()`.
 `performance_adapter.py` is the one file permitted to import
-`ai.performance.models` (never `ai.performance.performance_runtime`) —
+`ai_layer.ai_engine.performance.models` (never `ai_layer.ai_engine.performance.performance_runtime`) —
 confirmed confined by `test_performance_import_confined_to_performance_adapter()`,
 `test_only_performance_adapter_imports_ai_performance()`, and
 `test_performance_adapter_never_imports_performance_runtime()`.
 `strategy_adapter.py` is the one file permitted to import
-`ai.strategy.models` (never `ai.strategy.strategy_runtime`) —
+`ai_layer.ai_engine.strategy.models` (never `ai_layer.ai_engine.strategy.strategy_runtime`) —
 confirmed confined by `test_strategy_import_confined_to_strategy_adapter()`,
 `test_only_strategy_adapter_imports_ai_strategy()`, and
 `test_strategy_adapter_never_imports_strategy_runtime()`.
-`memory_adapter.py` never imports `ai.memory` — confirmed by
+`memory_adapter.py` never imports `ai_layer.knowledge_ai.memory_manager` — confirmed by
 `test_portfolio_never_imports_ai_memory()`. No file in the package
-imports `ai.chart_intelligence`, `ai.trading_analyst`, `ai.coaching`,
-`ai.reasoning`, `ai.explanation`, `ai.conversation`, `ai.trade_journal`,
-`ai.learning`, `knowledge/`, `ai.content`, `analytics/`, the top-level
+imports `ai_layer.vision_ai`, `ai_layer.ai_engine.trading_analyst`, `ai_layer.personal_ai.senior`,
+`ai_layer.ai_engine.reasoning`, `ai_layer.explanation_ai`, `ai_layer.personal_ai.interaction_manager`, `ai_layer.knowledge_ai.knowledge_base.trade_journal`,
+`ai_layer.knowledge_ai.learning_engine`, `knowledge/`, `ai_layer.ai_service.content`, `analytics/`, the top-level
 `learning/` package, `strategies/`, `risk/`, `voice/`, `assistant/`,
 `media/`, `broadcast/`, `telegram/`, `database/`, or `core.`. Nothing
 in `ai/trading_analyst/`, `ai/chart_intelligence/`, `ai/trade_journal/`,
 `ai/learning/`, `ai/coaching/`, `ai/performance/`, `ai/strategy/`, or
-`ai/memory/` imports `ai.portfolio` back.
+`ai/memory/` imports `ai_layer.ai_engine.portfolio` back.
 
 ## New / Extended / Reused (Constitution Article 12, mandatory table)
 

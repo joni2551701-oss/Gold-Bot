@@ -10,7 +10,7 @@ def _broadcast_dir():
 
 def test_broadcast_package_never_imports_trading_layers():
     forbidden_prefixes = (
-        "decision", "risk", "execution", "strategies", "signals", "database", "telegram",
+        "decision_layer", "risk_layer", "execution_layer", "strategy_layer", "signal_layer", "database_layer", "platform_layer.telegram",
     )
 
     for py_file in _broadcast_dir().glob("*.py"):

@@ -20,7 +20,7 @@ phase followed rather than duplicated. `ai/journal/`'s
 `TradeJournalEntry`/`FailureAnalysisEntry`/`learning/`'s
 `LearningRecord` are all post-trade review, not live pre-trade
 narration — kept separate, left for Phase 66.2's own future scope.
-`analytics/performance_metrics.py` is real and out of scope (named for
+`backtesting_layer/statistics/performance_metrics.py` is real and out of scope (named for
 a future Phase 66.5). `ai/explanation/explanation_builder.py`'s
 `ExplanationBuilder.build()` is real and reused, unmodified. The
 central finding was the resolution of an apparent conflict between the
@@ -50,7 +50,7 @@ existing precedent.
   `FeatureFlags.enable_trading_analyst` and `role == AIRole.OWNER`.
   Deliberately not routed through `ai/access/access_control.py`'s
   `AccessControl` matrix (would grant `ADMIN` equally). Mirrors
-  `assistant/access.py`'s `is_personal_ai_enabled_for()` shape.
+  `ai_layer/ai_service/assistant/access.py`'s `is_personal_ai_enabled_for()` shape.
 - `ai/trading_analyst/analyst_runtime.py` (new) —
   `TradingAnalystRuntime.analyze()`, composing two real, unmodified
   systems: `IntelligenceRuntime.run(topic=symbol)` (Phase 64.0,
@@ -159,11 +159,11 @@ existing precedent.
 ## Dependency Compliance
 
 `ai/trading_analyst/models.py` and `access.py` import nothing beyond
-`ai.access.permissions.AIRole`, `configuration.feature_flags`, and the
+`ai_layer.ai_service.access.permissions.AIRole`, `configuration.feature_flags`, and the
 standard library — confirmed by
 `tests/ai/trading_analyst/test_trading_analyst_isolation.py`.
-`analyst_runtime.py` imports `ai.explanation.*` and
-`ai.intelligence_runtime` only — never `ai.content/`, `media/`, or
+`analyst_runtime.py` imports `ai_layer.explanation_ai.*` and
+`ai_layer.ai_engine.intelligence_runtime` only — never `ai.content/`, `media/`, or
 `broadcast/`. `content_adapter.py` is the one file in the package
 permitted to import `ai.content/`, `media/`, `broadcast/` — confirmed
 confined to exactly this file by
@@ -172,15 +172,15 @@ and `test_only_content_adapter_imports_ai_content()`. No file in the
 package imports `assistant/`, `voice/`, `knowledge/`, or `core.` —
 `ai/trading_analyst/` is a sibling concern to Personal AI Assistant,
 not a dependent one. Nothing in `ai/explanation/`,
-`ai/intelligence_runtime.py`, `ai/content/`, `media/`, or `broadcast/`
-imports `ai.trading_analyst` back.
+`ai_layer/ai_engine/intelligence_runtime.py`, `ai/content/`, `media/`, or `broadcast/`
+imports `ai_layer.ai_engine.trading_analyst` back.
 
 ## New / Extended / Reused (Constitution Article 12, mandatory table)
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | `ai/trading_analyst/` (1, inside existing `ai/`) | — | `ai/` (top-level, unchanged itself) |
-| Modules | `models.py`, `access.py`, `analyst_runtime.py`, `content_adapter.py`, `README.md` (5) | `configuration/feature_flags.py` (1) | `ai/explanation/explanation_builder.py`, `explanation_input.py`, `ai/intelligence_runtime.py`, `ai/content/content_adapter.py`, `media_layer/content_manager/media_pipeline.py`, `media_layer/telegram_broadcast/broadcast_adapter.py`, `media_layer/telegram_broadcast/broadcast_manager.py` (called, not modified) |
+| Modules | `models.py`, `access.py`, `analyst_runtime.py`, `content_adapter.py`, `README.md` (5) | `configuration/feature_flags.py` (1) | `ai/explanation/explanation_builder.py`, `explanation_input.py`, `ai_layer/ai_engine/intelligence_runtime.py`, `ai/content/content_adapter.py`, `media_layer/content_manager/media_pipeline.py`, `media_layer/telegram_broadcast/broadcast_adapter.py`, `media_layer/telegram_broadcast/broadcast_manager.py` (called, not modified) |
 | Classes | `TradingAnalystRuntime` (1) | — | `IntelligenceRuntime`, `ExplanationBuilder`, `ContentEngine`, `MediaManager`, `BroadcastManager` (called, not modified) |
 | Models | `TradingRiskLevel`, `TradingAnalysisInput`, `TradingAnalysis` (3) | `FeatureFlags` (+1 field) | `ExplanationInput`, `ExplanationOutput`, `ContentResult`, `MediaAsset`, `BroadcastAsset`, `PipelineRun` |
 | Functions | `is_trading_analyst_enabled_for()`, `analyze()`, `prepare_content()`, `trading_analysis_to_content_body()` (4) | — | `IntelligenceRuntime.run()`, `ExplanationBuilder.build()`, `ContentEngine.create()`, `prepare_media_from_content()`, `broadcast_asset_from_content_and_media()`, `BroadcastManager.prepare_broadcast()` |

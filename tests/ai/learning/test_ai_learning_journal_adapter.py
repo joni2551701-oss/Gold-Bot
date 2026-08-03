@@ -1,6 +1,6 @@
-from ai.learning.journal_adapter import journal_entry_to_learning_input
-from ai.learning.models import LearningSource
-from ai.trade_journal.models import TradeJournalEntry
+from ai_layer.knowledge_ai.learning_engine.journal_adapter import journal_entry_to_learning_input
+from ai_layer.knowledge_ai.learning_engine.models import LearningSource
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.models import TradeJournalEntry
 
 
 def _entry(**overrides):

@@ -6,7 +6,7 @@ ai/profiles/user_profile.py, matching this phase's explicit
 "Databasega ulanmasin" scope.
 """
 
-from ai.profiles.user_profile import AIUserProfile
+from ai_layer.personal_ai.user_profile.user_profile import AIUserProfile
 
 
 def test_profile_requires_only_telegram_id():
@@ -41,7 +41,7 @@ def test_profile_is_immutable():
 
 def test_user_profile_has_no_database_import():
     import inspect
-    from ai.profiles import user_profile
+    from ai_layer.personal_ai.user_profile import user_profile
 
     for name, module in inspect.getmembers(user_profile, inspect.ismodule):
         assert not module.__name__.startswith("database"), f"unexpected database import: {module.__name__}"

@@ -47,17 +47,17 @@ during the test window:
    let it resolve to `TP`/`SL`/`EXPIRED` on its own — see
    `lifecycle/README.md`.
 4. **Build a SignalPerformance per resolved trade.** Call
-   `analytics.signal_performance.compute_signal_performance(signal,
+   `backtesting_layer.statistics.signal_performance.compute_signal_performance(signal,
    paper_trade=trade, session=..., market_phase=...)` once a trade has
    closed or been cancelled.
 5. **Record failures.** For any signal whose paper trade resolves to
    `SL`, optionally call
-   `ai.journal.failure_analysis.create_failure_analysis_entry()` with a
+   `ai_layer.knowledge_ai.knowledge_base.journal.failure_analysis.create_failure_analysis_entry()` with a
    short `reason`/`context` note — see `docs/DATA_COLLECTION_RULES.md`
    for what belongs in these fields.
 6. **Generate the report.** Once the accumulated `SignalSchema`/
    `SignalPerformance` lists span the desired window, call
-   `analytics.validation_report.build_validation_report(signals,
+   `backtesting_layer.statistics.validation_report.build_validation_report(signals,
    performances, period_start, period_end)` and
    `format_validation_report()` for the text report, or
    `platform_layer.telegram.owner.validation_commands.get_validation_report()` for the
@@ -72,13 +72,13 @@ real source:
 | Metric | Where it comes from |
 |---|---|
 | Total / BUY / SELL signal counts | `SignalSchema.direction` across the window's `signal_history` |
-| Per-strategy Win/Loss/Winrate/Average R | `analytics.strategy_report.build_strategy_report()`, fed by `SignalPerformance.result`/`r_multiple` |
-| Best session / best market phase | `analytics.validation_report.build_validation_report()`'s `best_session`/`best_market_phase` (highest win rate among decided TP/SL results, ties broken by more signals) |
-| Failure patterns | `ai.journal.failure_analysis.FailureAnalysisEntry` records, one per `SL` result an operator chose to annotate |
+| Per-strategy Win/Loss/Winrate/Average R | `backtesting_layer.statistics.strategy_report.build_strategy_report()`, fed by `SignalPerformance.result`/`r_multiple` |
+| Best session / best market phase | `backtesting_layer.statistics.validation_report.build_validation_report()`'s `best_session`/`best_market_phase` (highest win rate among decided TP/SL results, ties broken by more signals) |
+| Failure patterns | `ai_layer.knowledge_ai.knowledge_base.journal.failure_analysis.FailureAnalysisEntry` records, one per `SL` result an operator chose to annotate |
 
 `profit_loss` and any drawdown/equity metric are **not** gathered —
 `SignalPerformance.profit_loss` stays an honest `None` (see
-`analytics/signal_performance.py`'s own docstring); no PnL simulation
+`backtesting_layer/statistics/signal_performance.py`'s own docstring); no PnL simulation
 exists in this codebase.
 
 ## When Phase 59 is considered complete

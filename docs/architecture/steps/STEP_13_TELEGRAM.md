@@ -23,10 +23,10 @@ trade decision.
 ## 2. Position in the flow
 
 ```
-stream/current_price.py  (PricePoint, live single-value store)   ← anchor
+data_layer/live_data/stream/current_price.py  (PricePoint, live single-value store)   ← anchor
         │  read-only
         ▼
-market/current_price.py  (MarketPrice façade over stream)        ← reuse, no re-fetch
+data_layer/live_data/market/current_price.py  (MarketPrice façade over stream)        ← reuse, no re-fetch
         │
         ▼
 platform_layer/telegram/signal_formatter.py  (+ price header block)  ─┐
@@ -40,8 +40,8 @@ telegram/command_router.route_command()  (reply-button label → existing /comma
 ## 3. Input / Output
 
 - **Input:** a to-be-sent message (signal/status/market) + `symbol`; the
-  latest `MarketPrice` (from `market/current_price.py`, which reads
-  `stream/current_price.py`); session/regime from the existing context/market
+  latest `MarketPrice` (from `data_layer/live_data/market/current_price.py`, which reads
+  `data_layer/live_data/stream/current_price.py`); session/regime from the existing context/market
   snapshot already available to the formatter.
 - **Output:** the same message with a price-header block prepended; a reply
   keyboard carrying the new buttons; button taps mapped to existing commands.
@@ -50,8 +50,8 @@ telegram/command_router.route_command()  (reply-button label → existing /comma
 
 | File | Role | Input | Output | Reads from | Passes to | New / Extend |
 |---|---|---|---|---|---|---|
-| `stream/current_price.py` | live single-value price store | provider tick | `PricePoint` | stream | market façade | **reuse** (TASK-CORE-004, unchanged) |
-| `market/current_price.py` | market-facing price façade | stream store | `MarketPrice` | stream/current_price | telegram | **reuse** (TASK-CORE-005, unchanged) |
+| `data_layer/live_data/stream/current_price.py` | live single-value price store | provider tick | `PricePoint` | stream | market façade | **reuse** (TASK-CORE-004, unchanged) |
+| `data_layer/live_data/market/current_price.py` | market-facing price façade | stream store | `MarketPrice` | stream/current_price | telegram | **reuse** (TASK-CORE-005, unchanged) |
 | `telegram/price_header.py` | build the `Symbol · Price · Session · Regime · Change` header string | `MarketPrice` + session/regime | header text | market/current_price | formatter/notify | **new** (only if no existing formatter helper fits — reuse audit first) |
 | `platform_layer/telegram/signal_formatter.py` | signal message text | signal + models | `FormattedSignal` | decision/risk models | notify | **extend** (prepend header block; body unchanged) |
 | `platform_layer/telegram/notification_service.py` | notification gate + send text | text + prefs | sent/skipped | UserRepository | Telegram | **extend** (prepend header on eligible sends) |
@@ -64,8 +64,8 @@ telegram/command_router.route_command()  (reply-button label → existing /comma
 ### Existing files to EXTEND (reuse-first, no duplicates)
 - `signal_formatter.py`, `notification_service.py`, `reply_keyboard_manager.py`,
   `menu_commands.py`, `keyboards.py` — extended in place.
-- Price comes **only** from the existing `stream/current_price.py` via the
-  `market/current_price.py` façade — no new fetch, no duplicate price store.
+- Price comes **only** from the existing `data_layer/live_data/stream/current_price.py` via the
+  `data_layer/live_data/market/current_price.py` façade — no new fetch, no duplicate price store.
 - New reply buttons route through the existing `command_router.route_command()`
   to commands that already exist — **no new dispatch path** (same pattern
   `menu_commands.py` already documents).

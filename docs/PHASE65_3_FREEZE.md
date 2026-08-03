@@ -53,7 +53,7 @@ Decision pause was required — no Constitution Article conflict.
   `translation/`, `decision/`, `risk/`, `execution/`, `strategies/`,
   `signals/`, `database/`, or `telegram/` — with zero exemptions, and
   the only permitted `ai.*` import anywhere in the package is
-  `ai.access.permissions`.
+  `ai_layer.ai_service.access.permissions`.
 - Documentation: `docs/PHASE65_3_AUDIT.md`, `docs/PHASE65_3_FREEZE.md`,
   `docs/ai/AI_PERSONAL_ASSISTANT.md` (new); `docs/ai/AI_ARCHITECTURE.md`,
   `docs/ai/AI_CONVERSATION.md`, `docs/ai/AI_VOICE.md`,
@@ -75,7 +75,7 @@ Decision pause was required — no Constitution Article conflict.
 ## Not Built this phase
 
 - No real call into `ConversationEngine`/`VoiceRuntime`/`MemoryRuntime`
-  — `assistant/conversation_adapter.py`'s three functions return plain
+  — `ai_layer/ai_service/assistant/conversation_adapter.py`'s three functions return plain
   dicts/strings only; a future, separately-approved live-wiring phase
   performs the actual call.
 - No Telegram/Mini App/Web/Desktop/Mobile command or handler —
@@ -123,7 +123,7 @@ Decision pause was required — no Constitution Article conflict.
 ## Dependency Compliance (one layer earlier than ever applied)
 
 `assistant/*.py` imports only its own package, `core_layer.logger.logger`,
-`configuration.feature_flags`, and `ai.access.permissions.AIRole` (the
+`configuration.feature_flags`, and `ai_layer.ai_service.access.permissions.AIRole` (the
 one permitted `ai.*` import — an access-control type, orthogonal to
 the content chain). Nothing in `assistant/` imports `voice/`,
 `ai.conversation/`, `ai.memory/`, `ai.reasoning/`, `ai.explanation/`,
@@ -142,7 +142,7 @@ phase existed).
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | `assistant/` (8 files) (1 package) | — | — |
-| Modules | — | `configuration/feature_flags.py` (+1 field) | `ai.access.permissions` (AIRole, read-only) |
+| Modules | — | `configuration/feature_flags.py` (+1 field) | `ai_layer.ai_service.access.permissions` (AIRole, read-only) |
 | Classes | `IdentityManager`, `AssistantManager` (2) | — | — |
 | Models | `AssistantIdentity`, `AssistantProfile` (2) | `FeatureFlags` (+`enable_personal_ai` field) | — |
 | Functions | `is_personal_ai_enabled_for()`, `assistant_to_voice_session_params()`, `assistant_to_conversation_params()`, `assistant_memory_scope_key()`, `build_identity_registry()` (5) | — | — |

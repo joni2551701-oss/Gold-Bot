@@ -1,8 +1,8 @@
 """Phase 61.4 TASK 2 — User Capability: one "can this real user do X" lookup composing AccessControl/ToolPermissions/UsageLimiter, no new entitlement logic."""
 
-from ai.access.permissions import AIRole
-from ai.access.user_capability import UserCapability, UserCapabilityService
-from ai.capabilities.capability import Capability
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_service.access.user_capability import UserCapability, UserCapabilityService
+from ai_layer.ai_engine.capabilities.capability import Capability
 
 
 def test_can_use_capability_delegates_to_access_control():

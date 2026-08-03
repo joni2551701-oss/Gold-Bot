@@ -1,7 +1,7 @@
 """Phase 61.0 TASK 3 — Provider Manager Preferred -> Fallback -> Disabled selection."""
 
-from ai.providers.provider_manager import ProviderManager, ProviderStatus
-from ai.providers.provider_registry import build_provider_registry
+from ai_layer.ai_engine.providers.provider_manager import ProviderManager, ProviderStatus
+from ai_layer.ai_engine.providers.provider_registry import build_provider_registry
 
 
 def test_registry_lists_the_five_named_placeholder_providers():

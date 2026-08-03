@@ -1,10 +1,10 @@
 """
 Phase 60.6: Learning Loop Foundation, TASK 4 --
-learning/pattern_detector.py tests.
+ai_layer/knowledge_ai/learning_loop/pattern_detector.py tests.
 """
 
-from learning.models import create_learning_record
-from learning.pattern_detector import (
+from ai_layer.knowledge_ai.learning_loop.models import create_learning_record
+from ai_layer.knowledge_ai.learning_loop.pattern_detector import (
     HIGH_FAILURE,
     HIGH_SUCCESS,
     MIN_PATTERN_SAMPLE,

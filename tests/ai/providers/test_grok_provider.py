@@ -3,9 +3,9 @@
 import requests
 import pytest
 
-from ai.capabilities.capability import Capability
-from ai.providers.grok_provider import GrokProvider
-from ai.providers.runtime_errors import (
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.providers.grok_provider import GrokProvider
+from ai_layer.ai_engine.providers.runtime_errors import (
     ProviderInvalidResponseError,
     ProviderRateLimitError,
     ProviderTimeoutError,

@@ -1,16 +1,16 @@
 """Phase 61.3 TASK 8 — Runtime Trace: RuntimeResponse.request_id + trace_request() join over RequestLog/ResponseLog."""
 
-from ai.access.permissions import AIRole
-from ai.audit.request_log import RequestLog
-from ai.audit.response_log import ResponseLog
-from ai.audit.trace import trace_request
-from ai.capabilities.capability import Capability
-from ai.context.context_builder import build_ai_context
-from ai.interfaces import MarketContext
-from ai.providers.base_provider import ProviderResult
-from ai.providers.provider_manager import ProviderStatus
-from ai.runtime.ai_service import AIService
-from ai.runtime.runtime_request import RuntimeRequest
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_service.audit.request_log import RequestLog
+from ai_layer.ai_service.audit.response_log import ResponseLog
+from ai_layer.ai_service.audit.trace import trace_request
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.context.context_builder import build_ai_context
+from ai_layer.ai_service.interfaces import MarketContext
+from ai_layer.ai_engine.providers.base_provider import ProviderResult
+from ai_layer.ai_engine.providers.provider_manager import ProviderStatus
+from ai_layer.ai_engine.runtime.ai_service import AIService
+from ai_layer.ai_engine.runtime.runtime_request import RuntimeRequest
 
 
 class _FakeProvider:

@@ -1,5 +1,5 @@
-from ai.access.permissions import AIRole
-from ai.strategy.access import is_strategy_intelligence_enabled_for
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.strategy.access import is_strategy_intelligence_enabled_for
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_strategy_intelligence=True)

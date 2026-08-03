@@ -16,7 +16,7 @@ Phase 63.0 (Senior Trading AI Foundation), TASK 5; extended Phase 63.7
 - `models.py` (Phase 63.7) — `MediaAsset`/`MediaAssetStatus`
   (`PENDING`/`READY`/`REJECTED`).
 - `media_adapter.py` (Phase 63.7) — `content_result_to_media_asset()`,
-  a type-only read of an upstream `ai.content.content_schema.ContentResult`.
+  a type-only read of an upstream `ai_layer.ai_service.content.content_schema.ContentResult`.
 - `media_pipeline.py` (Phase 63.7) — `prepare_media_from_content()`,
   composes the adapter with `MediaManager.prepare_asset()`.
 

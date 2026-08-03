@@ -3,7 +3,7 @@
 **Package:** GB-CONST-025 · **Document:** Chapter25_ContractArchitecture.md · **Status:** Approved — GoldBot Constitution v1.0 (Frozen Baseline, DR-013 and DR-014)
 **Part of:** GoldBot Constitution v1.0 (chaptered edition) · **Block:** Architecture (Chapters 18–27)
 **Continuity:** Reuses the terminology of Chapters 01–24; does not contradict any approved chapter.
-**Operative source:** [`contracts/`](../../../contracts/) (the layer contracts), [`ai/interfaces.py`](../../../ai/interfaces.py) (advisory interface).
+**Operative source:** [`contracts/`](../../../contracts/) (the layer contracts), [`ai_layer/ai_service/interfaces.py`](../../../ai_layer/ai_service/interfaces.py) (advisory interface).
 
 ---
 

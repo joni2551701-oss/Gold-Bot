@@ -30,7 +30,7 @@ class TranslationResult:
     """
     accepted: always False this phase -- `TranslationManager.translate()`
         never actually translates anything (Rule 4), same "never
-        fabricate" convention `ai.runtime.runtime_response.RuntimeResponse`
+        fabricate" convention `ai_layer.ai_engine.runtime.runtime_response.RuntimeResponse`
         already established for a rejected AI call.
     translated_text: always None while `accepted` is False.
     """

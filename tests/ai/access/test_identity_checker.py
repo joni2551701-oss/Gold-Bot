@@ -1,6 +1,6 @@
 """Phase 61.4 TASK 5 — AI Identity Checker: pure phone-reuse check over caller-supplied telegram_ids, no database/telegram import."""
 
-from ai.access.identity_checker import is_phone_reused_by_another_account
+from ai_layer.ai_service.access.identity_checker import is_phone_reused_by_another_account
 
 
 def test_empty_sequence_is_not_reuse():

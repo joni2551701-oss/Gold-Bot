@@ -1,8 +1,8 @@
-"""Phase 63.2 TASK 4/8 — knowledge/knowledge_manager.py: KnowledgeManager (lookup/search/by_category/filter/list_all), dependency injection, isolation."""
+"""Phase 63.2 TASK 4/8 — ai_layer/knowledge_ai/knowledge_base/knowledge_manager.py: KnowledgeManager (lookup/search/by_category/filter/list_all), dependency injection, isolation."""
 
-from knowledge.knowledge_manager import KnowledgeManager
-from knowledge.models import KnowledgeCategory, KnowledgeEntry
-from knowledge.registry import all_entries
+from ai_layer.knowledge_ai.knowledge_base.knowledge_manager import KnowledgeManager
+from ai_layer.knowledge_ai.knowledge_base.models import KnowledgeCategory, KnowledgeEntry
+from ai_layer.knowledge_ai.knowledge_base.registry import all_entries
 
 
 def test_lookup_returns_matching_entry():
@@ -74,8 +74,8 @@ def test_knowledge_manager_never_imports_trading_layers():
     import ast
     import pathlib
 
-    manager_file = pathlib.Path(__file__).resolve().parents[2] / "knowledge" / "knowledge_manager.py"
-    forbidden_prefixes = ("decision", "risk", "execution", "strategies", "database", "telegram")
+    manager_file = pathlib.Path(__file__).resolve().parents[2] / "ai_layer" / "knowledge_ai" / "knowledge_base" / "knowledge_manager.py"
+    forbidden_prefixes = ("decision_layer", "risk_layer", "execution_layer", "strategy_layer", "database_layer", "platform_layer.telegram")
 
     tree = ast.parse(manager_file.read_text(), filename=str(manager_file))
     for node in ast.walk(tree):

@@ -1,5 +1,5 @@
-from ai.performance.memory_adapter import performance_memory_key
-from ai.performance.models import PerformanceRecord
+from ai_layer.ai_engine.performance.memory_adapter import performance_memory_key
+from ai_layer.ai_engine.performance.models import PerformanceRecord
 
 
 def _record(**overrides):

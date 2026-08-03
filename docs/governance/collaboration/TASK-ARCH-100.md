@@ -78,14 +78,14 @@ across the three trees; full per-file detail available on request).
 | `data_layer/providers/` | Vendor adapters (TwelveData real; MT5/Binance/Bitget/FRED stubs) | Historical + live provider access | **Historical Providers** + **Live Providers** | No | Yes | Keep |
 | `data_layer/historical_data/` | Historical bootstrap orchestration, gap recovery | Historical load + recovery | **Bootstrap**, **Recovery** | No | Yes | Keep |
 | `data_layer/historical_data/historical_data_collector.py`, `historical_validator.py` | Historical range collection + validation | Historical collection/validation | **Historical Data → Data Validation** | No | Yes | Keep, maybe rename for clarity (Step 3) |
-| `data_layer/live_data/market_data.py` (`MarketDataNormalizer`) | Fetch/validate/dedupe candles, the pipeline's real data source | Live fetch (despite the name, not history-only) | **HistoricalDataService** input OR its own thing — see Conflict below | Partial (name vs. `market/market_data.py`) | Yes | Keep; **rename collision with `market/market_data.py` flagged, not resolved** |
+| `data_layer/live_data/market_data.py` (`MarketDataNormalizer`) | Fetch/validate/dedupe candles, the pipeline's real data source | Live fetch (despite the name, not history-only) | **HistoricalDataService** input OR its own thing — see Conflict below | Partial (name vs. `data_layer/live_data/market/market_data.py`) | Yes | Keep; **rename collision with `data_layer/live_data/market/market_data.py` flagged, not resolved** |
 | `data_layer/live_data/market_data_service.py` (`MarketDataService`, TASK-DATA-001/002/004) | Facade: candles/snapshot/history + optional MarketMemory hydrate | Wired into `core/pipeline.py` today | **HistoricalDataService** (closest real match to the target box) | No | Yes | Keep — this is the target's `HistoricalDataService`, just not yet renamed to match |
 | **`data_layer/live_data/` (TASK-DATA-001, this session)** | `PriceStreamService`, `PriceCache`, `PriceTick`, `PriceProvider`, `PriceStream`, `StreamManager`, vendor adapters | Live tick API, not wired into pipeline | **Live Data → PriceStreamService** | **YES — vs. `stream/`** | Yes | Keep as primary candidate — see Conflict below |
 | **`stream/` (TASK-CORE-004, pre-existing)** | `PriceStream`, `StreamEvent`, `CurrentPrice`, `StreamValidator`, `StreamRouter`, `StreamMode` | Live tick flow, zero consumers anywhere | **Live Data → PriceStreamService** (same target box as `data_layer/live_data/`) | **YES — vs. `data_layer/live_data/`** | Partial (real, tested, but unconsumed) | **Do not touch without Owner decision** — see Conflict |
 | `data_layer/market_memory/` (MA-001, Director-accepted) | `MarketMemory`, `TimeframeMemory`, `MemoryReader`, `MarketMemoryRegistry` | Candle Single Source of Truth, not yet the pipeline's read path | **MarketMemory** | No | Yes | Keep — this is the canonical, Constitution/MA-001-governed target |
 | `data_layer/live_data/candle_builder.py` | Aggregates ticks into OHLC, single writer into `MarketMemory` | Foundation, wired to `data_layer/live_data/price_stream_service.py`'s optional memory path | **CandleBuilder** | No | Yes | Keep |
-| **`market/` (TASK-CORE-005, pre-existing)** | Read-only facade over `context/` + `stream/current_price.py`; `MarketData`/`MarketSnapshot`, structure/trend/liquidity/session/volatility/regime projections | Zero consumers anywhere | Not named in the target diagram at all (Historical Data / Live Data split has no "read facade" box) | **Partial — vs. `data_layer/live_data/market_data_service.py`'s `MarketSnapshot` name, and conceptually vs. what `MemoryReader` (MA-002) is meant to become** | Partial | **Do not touch without Owner decision** — see Conflict |
-| `data_layer/live_data/current_price_provider.py` (Phase 1/3) | `CurrentPriceProvider`, the real Telegram-facing current-price seam, now backed by `PriceStreamService` | **Wired — Telegram's actual live path** | **Live Data → CurrentPriceProvider** | **YES — vs. `stream/current_price.py`'s `CurrentPrice`** | Yes | Keep — this is the one with a real consumer |
+| **`market/` (TASK-CORE-005, pre-existing)** | Read-only facade over `context/` + `data_layer/live_data/stream/current_price.py`; `MarketData`/`MarketSnapshot`, structure/trend/liquidity/session/volatility/regime projections | Zero consumers anywhere | Not named in the target diagram at all (Historical Data / Live Data split has no "read facade" box) | **Partial — vs. `data_layer/live_data/market_data_service.py`'s `MarketSnapshot` name, and conceptually vs. what `MemoryReader` (MA-002) is meant to become** | Partial | **Do not touch without Owner decision** — see Conflict |
+| `data_layer/live_data/current_price_provider.py` (Phase 1/3) | `CurrentPriceProvider`, the real Telegram-facing current-price seam, now backed by `PriceStreamService` | **Wired — Telegram's actual live path** | **Live Data → CurrentPriceProvider** | **YES — vs. `data_layer/live_data/stream/current_price.py`'s `CurrentPrice`** | Yes | Keep — this is the one with a real consumer |
 | `data_layer/event_system/` | `EventBus`, `Event`/`EventType`, bridges, metrics | Central pub/sub, foundation only | **EventBus** | No | Yes | Keep |
 | `data_layer/market_memory/persistence/`, `data_layer/snapshots/`, `backtesting_layer/replay_engine/` | Durable storage, snapshot lifecycle, replay | Foundation only, not in target diagram explicitly | Supporting infra for **Historical Database** / **MarketMemory** persistence | No | Yes | Keep |
 | `data_layer/normalization/` | Candle/symbol/timeframe mapping helpers | Used by provider path | Supporting infra for **Historical Providers** | No | Yes | Keep |
@@ -113,8 +113,8 @@ DATA LAYER
 │   └── Historical Database      -> database_layer/market_repository/raw_candle_repository.py + data_layer/market_memory/persistence/
 │
 └── Live Data
-    ├── PriceStreamService        -> data_layer/live_data/price_stream_service.py  (CONFLICT: stream/price_stream.py)
-    ├── CurrentPriceProvider      -> data_layer/live_data/current_price_provider.py       (CONFLICT: stream/current_price.py)
+    ├── PriceStreamService        -> data_layer/live_data/price_stream_service.py  (CONFLICT: data_layer/live_data/stream/price_stream.py)
+    ├── CurrentPriceProvider      -> data_layer/live_data/current_price_provider.py       (CONFLICT: data_layer/live_data/stream/current_price.py)
     ├── CandleBuilder             -> data_layer/live_data/candle_builder.py
     ├── MarketMemory               -> data_layer/market_memory/  (MA-001, unconflicted)
     ├── EventBus                   -> data_layer/event_system/
@@ -138,8 +138,8 @@ architecture decision. Not resolved in this document.
 | `data_layer/providers/` | → | Data Layer → Historical Data → Historical Providers |
 | `data_layer/data_validation/data_quality.py`, `historical_validator.py` | → | Data Layer → Historical Data → Data Validation |
 | `database_layer/market_repository/raw_candle_repository.py` + `data_layer/market_memory/persistence/` | → | Data Layer → Historical Data → Historical Database |
-| `data_layer/live_data/price_stream_service.py` **or** `stream/price_stream.py` | → | Data Layer → Live Data → PriceStreamService (CONFLICT) |
-| `data_layer/live_data/current_price_provider.py` **or** `stream/current_price.py` | → | Data Layer → Live Data → CurrentPriceProvider (CONFLICT) |
+| `data_layer/live_data/price_stream_service.py` **or** `data_layer/live_data/stream/price_stream.py` | → | Data Layer → Live Data → PriceStreamService (CONFLICT) |
+| `data_layer/live_data/current_price_provider.py` **or** `data_layer/live_data/stream/current_price.py` | → | Data Layer → Live Data → CurrentPriceProvider (CONFLICT) |
 | `data_layer/live_data/candle_builder.py` | → | Data Layer → Live Data → CandleBuilder |
 | `data_layer/market_memory/` | → | Data Layer → Live Data → MarketMemory |
 | `data_layer/event_system/` | → | Data Layer → Live Data → EventBus |
@@ -181,7 +181,7 @@ First and Law 4 exist to prevent.
    passing test suites (108 tests) that this task's own Acceptance
    Criteria ("✓ Testlar o'tgan bo'lsa") would need to account for either
    way.
-3. `data_layer/live_data/market_data.py`'s `MarketSnapshot` vs. `market/market_data.py`'s
+3. `data_layer/live_data/market_data.py`'s `MarketSnapshot` vs. `data_layer/live_data/market/market_data.py`'s
    `MarketSnapshot` — same name, different shape, in whichever of the
    two trees survives decision 1, this naming collision needs its own
    resolution (rename one, or it stops being a collision once one tree
@@ -220,7 +220,7 @@ executed here.
    passing suite as of the last commit) both currently pass, unaffected
    by an audit-only task.
 9. **Known Issues** — the three CONFLICT rows in Step 2/3/4 above; the
-   `data_layer/live_data/market_data.py` vs. `market/market_data.py` naming collision;
+   `data_layer/live_data/market_data.py` vs. `data_layer/live_data/market/market_data.py` naming collision;
    `market/` has no target box in the brief's own diagram.
 10. **Recommendations** — Option (a) in Decision 1 (keep `data_layer/live_data/`
     as canonical) is the lowest-risk path given it already has the real
@@ -276,7 +276,7 @@ reduction.
 ## What was executed this turn (concrete, reversible, no feature loss)
 
 ### Step 8 — MarketSnapshot Refactor (DONE)
-`market/market_data.py`'s projection-snapshot class (a market-*state*
+`data_layer/live_data/market/market_data.py`'s projection-snapshot class (a market-*state*
 summary: trend/liquidity/session/volatility/regime/structure primitives)
 was **renamed** `MarketSnapshot` → `MarketStateSnapshot`, with a
 backward-compatible `MarketSnapshot = MarketStateSnapshot` alias kept in
@@ -287,10 +287,10 @@ the module. Result:
   — a genuinely different shape) — satisfies Owner decision 3.
 - No delete; the projection class and every field/method are intact —
   satisfies decision 4 and feature preservation.
-- `market/__init__.py` and `market/market_manager.py` updated to the new
+- `market/__init__.py` and `data_layer/live_data/market/market_manager.py` updated to the new
   canonical name; the `MarketSnapshot` alias is still exported.
 - The three `tests/market/*` suites that import `MarketSnapshot` from
-  `market.market_data` were deliberately left importing via the alias —
+  `data_layer.live_data.market.market_data` were deliberately left importing via the alias —
   so they now actively **prove** the backward-compat shim works. All 108
   `tests/market/` + `tests/stream/` tests pass unchanged.
 
@@ -306,18 +306,18 @@ Migration Proposal (Step 7) that must not be moved without approval.
 
 | Module | Purpose | Consumer | Producer | Tests | Docs | Status |
 |---|---|---|---|---|---|---|
-| `stream/price_stream.py` (`PriceStream`) | Composition root: ingest/poll → validate → state → route | none (only `tests/stream/`) | `data_layer/providers` (via poll) | `tests/stream/` | `stream/README.md` | LEGACY |
-| `stream/stream_event.py` (`StreamEvent`) | Transport shape + `from_candle()` | `stream/` internals | — | yes | README | LEGACY |
-| `stream/stream_validator.py` (`StreamValidator`) | `validate()`→`ValidationResult` (empty/OHLC/future ts/dup/out-of-seq) | `stream/price_stream.py` | — | yes | README | LEGACY — **unique validation contract** (see Step 3) |
-| `stream/stream_state.py` (`StreamState`) | Last price/event/ts/provider/mode runtime state | `stream/price_stream.py` | — | yes | README | LEGACY |
-| `stream/current_price.py` (`CurrentPrice`) | Fast single-value latest-price read | `stream/`, `market/current_price.py` | — | yes | README | LEGACY (canonical: `data_layer.live_data.current_price_provider.CurrentPrice`) |
-| `stream/stream_mode.py` (`StreamMode`) | Forex 24×5 weekend/market-closed clock + `resolve_mode()` | `stream/`, `market/session_state.py` | — | yes | README | LEGACY — **unique Forex clock** (see Step 3) |
-| `stream/stream_router.py` (`StreamRouter`) | Fan-out to subscribers, per-subscriber fault isolation | `stream/price_stream.py` | — | yes | README | LEGACY (canonical: `data_layer.event_system.EventBus`) |
-| `stream/stream_subscriber.py` (`StreamSubscriber`) | Subscriber ABC + `CallbackSubscriber` | `stream/` | — | yes | README | LEGACY (canonical: `EventBus` subscription) |
-| `market/market_manager.py` (`MarketManager`) | Facade entry: build/store current market view | none (only `tests/market/`) | `context/` snapshot + `stream/CurrentPrice` | `tests/market/` | `market/README.md` | LEGACY — **unique projection facade** |
-| `market/market_data.py` (`MarketData`, `MarketStateSnapshot`) | Aggregated read container + immutable projection snapshot | `market/` | — | yes | README | LEGACY; snapshot renamed (Step 8) |
-| `market/market_structure.py`, `trend_state.py`, `liquidity_state.py`, `session_state.py`, `volatility_state.py`, `regime_state.py` | Read-only projections of `context/` snapshot into typed view models | `market/market_manager.py` | `context.snapshot.ContextSnapshotSchema` | yes | README | LEGACY — **unique projection capability** |
-| `market/candle.py`, `ticker.py`, `orderbook.py`, `current_price.py` (`MarketPrice`) | Read models + adapters | `market/` | `stream/` / `data_layer.providers` | yes | README | LEGACY |
+| `data_layer/live_data/stream/price_stream.py` (`PriceStream`) | Composition root: ingest/poll → validate → state → route | none (only `tests/stream/`) | `data_layer/providers` (via poll) | `tests/stream/` | `stream/README.md` | LEGACY |
+| `data_layer/live_data/stream/stream_event.py` (`StreamEvent`) | Transport shape + `from_candle()` | `stream/` internals | — | yes | README | LEGACY |
+| `data_layer/live_data/stream/stream_validator.py` (`StreamValidator`) | `validate()`→`ValidationResult` (empty/OHLC/future ts/dup/out-of-seq) | `data_layer/live_data/stream/price_stream.py` | — | yes | README | LEGACY — **unique validation contract** (see Step 3) |
+| `data_layer/live_data/stream/stream_state.py` (`StreamState`) | Last price/event/ts/provider/mode runtime state | `data_layer/live_data/stream/price_stream.py` | — | yes | README | LEGACY |
+| `data_layer/live_data/stream/current_price.py` (`CurrentPrice`) | Fast single-value latest-price read | `stream/`, `data_layer/live_data/market/current_price.py` | — | yes | README | LEGACY (canonical: `data_layer.live_data.current_price_provider.CurrentPrice`) |
+| `data_layer/live_data/stream/stream_mode.py` (`StreamMode`) | Forex 24×5 weekend/market-closed clock + `resolve_mode()` | `stream/`, `data_layer/live_data/market/session_state.py` | — | yes | README | LEGACY — **unique Forex clock** (see Step 3) |
+| `data_layer/live_data/stream/stream_router.py` (`StreamRouter`) | Fan-out to subscribers, per-subscriber fault isolation | `data_layer/live_data/stream/price_stream.py` | — | yes | README | LEGACY (canonical: `data_layer.event_system.EventBus`) |
+| `data_layer/live_data/stream/stream_subscriber.py` (`StreamSubscriber`) | Subscriber ABC + `CallbackSubscriber` | `stream/` | — | yes | README | LEGACY (canonical: `EventBus` subscription) |
+| `data_layer/live_data/market/market_manager.py` (`MarketManager`) | Facade entry: build/store current market view | none (only `tests/market/`) | `context/` snapshot + `stream/CurrentPrice` | `tests/market/` | `market/README.md` | LEGACY — **unique projection facade** |
+| `data_layer/live_data/market/market_data.py` (`MarketData`, `MarketStateSnapshot`) | Aggregated read container + immutable projection snapshot | `market/` | — | yes | README | LEGACY; snapshot renamed (Step 8) |
+| `data_layer/live_data/market/market_structure.py`, `trend_state.py`, `liquidity_state.py`, `session_state.py`, `volatility_state.py`, `regime_state.py` | Read-only projections of `context/` snapshot into typed view models | `data_layer/live_data/market/market_manager.py` | `context.snapshot.ContextSnapshotSchema` | yes | README | LEGACY — **unique projection capability** |
+| `data_layer/live_data/market/candle.py`, `ticker.py`, `orderbook.py`, `current_price.py` (`MarketPrice`) | Read models + adapters | `market/` | `stream/` / `data_layer.providers` | yes | README | LEGACY |
 
 `data/` canonical modules (already inventoried in `02_Data_Layer.md` and
 Step 2 of this document's Phase-01 audit) are unchanged by this step.
@@ -326,15 +326,15 @@ Step 2 of this document's Phase-01 audit) are unchanged by this step.
 
 | Legacy | Canonical equivalent | Relationship |
 |---|---|---|
-| `stream/price_stream.py` `PriceStream` | `data_layer/live_data/price_stream.py` `PriceStream` + `price_stream_service.py` | canonical is the lifecycle state machine + service |
-| `stream/current_price.py` `CurrentPrice` | `data_layer/live_data/current_price_provider.py` `CurrentPrice` (wired to Telegram) | canonical has the real consumer |
-| `stream/stream_state.py` `StreamState` | `data_layer/live_data/price_cache.py` `PriceCache` | last-value runtime store |
-| `stream/stream_router.py` + `stream_subscriber.py` | `data_layer/event_system/event_bus.py` `EventBus` (`PRICE.UPDATED`) | canonical uses pub/sub instead of router/subscriber |
-| `stream/stream_mode.py` `StreamMode` | `data_layer/live_data/price_stream.py` `MarketCalendar`/waiting-mode (DD-047) | **partial** — see Step 3 gap |
-| `stream/stream_validator.py` `StreamValidator` | `data_layer/live_data/market_data.py` `_validate_and_clean` + `data_layer/data_validation/data_quality.py` | **partial** — see Step 3 gap |
-| `stream/stream_event.py` `StreamEvent` | `data_layer/live_data/stream_event.py` `StreamEvent` | same concept |
+| `data_layer/live_data/stream/price_stream.py` `PriceStream` | `data_layer/live_data/price_stream.py` `PriceStream` + `price_stream_service.py` | canonical is the lifecycle state machine + service |
+| `data_layer/live_data/stream/current_price.py` `CurrentPrice` | `data_layer/live_data/current_price_provider.py` `CurrentPrice` (wired to Telegram) | canonical has the real consumer |
+| `data_layer/live_data/stream/stream_state.py` `StreamState` | `data_layer/live_data/price_cache.py` `PriceCache` | last-value runtime store |
+| `data_layer/live_data/stream/stream_router.py` + `stream_subscriber.py` | `data_layer/event_system/event_bus.py` `EventBus` (`PRICE.UPDATED`) | canonical uses pub/sub instead of router/subscriber |
+| `data_layer/live_data/stream/stream_mode.py` `StreamMode` | `data_layer/live_data/price_stream.py` `MarketCalendar`/waiting-mode (DD-047) | **partial** — see Step 3 gap |
+| `data_layer/live_data/stream/stream_validator.py` `StreamValidator` | `data_layer/live_data/market_data.py` `_validate_and_clean` + `data_layer/data_validation/data_quality.py` | **partial** — see Step 3 gap |
+| `data_layer/live_data/stream/stream_event.py` `StreamEvent` | `data_layer/live_data/stream_event.py` `StreamEvent` | same concept |
 | `market/*` projection facade | **none** | **no canonical equivalent — Step 7 proposal** |
-| `market/market_data.py` `MarketSnapshot` | `data_layer.live_data.market_data.MarketSnapshot` (canonical) | resolved via rename+alias (Step 8) |
+| `data_layer/live_data/market/market_data.py` `MarketSnapshot` | `data_layer.live_data.market_data.MarketSnapshot` (canonical) | resolved via rename+alias (Step 8) |
 
 ## Step 3 — Feature Comparison (no feature may be lost)
 
@@ -381,7 +381,7 @@ none is executed here.
 |---|---|---|
 | `MarketSnapshot` (canonical candle container) | unchanged | ✅ 5375 tests pass |
 | `market/` projection snapshot (now `MarketStateSnapshot`) | preserved (renamed only) | ✅ 108 market/stream tests pass via alias |
-| Backward-compat `market.market_data.MarketSnapshot` import | preserved (alias) | ✅ tests import via alias and pass |
+| Backward-compat `data_layer.live_data.market.market_data.MarketSnapshot` import | preserved (alias) | ✅ tests import via alias and pass |
 | All `stream/` + `market/` behavior | preserved (status-only markers) | ✅ unchanged, tests pass |
 
 Nothing was migrated *away* this turn, so nothing could be lost. The
@@ -414,7 +414,7 @@ gaps in Step 3 are documented as pre-conditions for future deprecation.
 
 - Broken imports after this step: **0** (verified — all 657 modules
   import cleanly; full suite green).
-- `market.market_data.MarketSnapshot` importers: still resolve (alias).
+- `data_layer.live_data.market.market_data.MarketSnapshot` importers: still resolve (alias).
 - Canonical `data_layer.live_data.market_data.MarketSnapshot` importers (`core/pipeline.py`,
   `context_layer/trend/htf_bias.py`, `backtesting/`, many tests): unaffected — that
   class was never touched.

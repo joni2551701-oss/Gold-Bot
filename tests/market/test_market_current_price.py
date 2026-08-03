@@ -13,9 +13,9 @@ from types import SimpleNamespace
 from data_layer.market_memory import MarketMemoryRegistry, MemoryReader
 from data_layer.providers.twelve_data_client import Candle
 
-from market.current_price import MarketPrice, read_current_price
-from market.market_manager import MarketManager
-from market.ticker import Ticker
+from data_layer.live_data.market.current_price import MarketPrice, read_current_price
+from data_layer.live_data.market.market_manager import MarketManager
+from data_layer.live_data.market.ticker import Ticker
 
 _WEEKDAY = datetime(2026, 1, 7, 12, 0, tzinfo=timezone.utc)
 

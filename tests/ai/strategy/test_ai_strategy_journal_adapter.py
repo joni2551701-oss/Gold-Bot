@@ -1,5 +1,5 @@
-from ai.strategy.journal_adapter import journal_entry_to_strategy_input
-from ai.trade_journal.models import TradeJournalEntry
+from ai_layer.ai_engine.strategy.journal_adapter import journal_entry_to_strategy_input
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.models import TradeJournalEntry
 
 
 def _entry(**overrides):
@@ -77,9 +77,9 @@ def test_different_entries_produce_independent_mappings():
 
 def test_mapped_output_is_accepted_by_strategy_runtime_create():
     """Integration-shaped: the dict this adapter returns must be a valid **kwargs (plus required fields) for StrategyRuntime.create()."""
-    from ai.access.permissions import AIRole
-    from ai.strategy.models import StrategyType
-    from ai.strategy.strategy_runtime import StrategyRuntime
+    from ai_layer.ai_service.access.permissions import AIRole
+    from ai_layer.ai_engine.strategy.models import StrategyType
+    from ai_layer.ai_engine.strategy.strategy_runtime import StrategyRuntime
     from core_layer.configuration.feature_flags import FeatureFlags
 
     runtime = StrategyRuntime(flags=FeatureFlags(enable_strategy_intelligence=True))

@@ -1,6 +1,6 @@
-from assistant.identity import AssistantIdentity
-from assistant.identity_manager import IdentityManager
-from assistant.identity_registry import SENIOR_IDENTITY, SENIORITA_IDENTITY
+from ai_layer.ai_service.assistant.identity import AssistantIdentity
+from ai_layer.ai_service.assistant.identity_manager import IdentityManager
+from ai_layer.ai_service.assistant.identity_registry import SENIOR_IDENTITY, SENIORITA_IDENTITY
 
 
 def test_identity_manager_default_registry_get():

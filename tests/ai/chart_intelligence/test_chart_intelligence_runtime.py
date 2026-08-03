@@ -1,6 +1,6 @@
-from ai.access.permissions import AIRole
-from ai.chart_intelligence.chart_runtime import ChartRuntime
-from ai.chart_intelligence.models import ChartAnalysisInput, ChartAnalysisType, ChartImageType
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.vision_ai.chart_runtime import ChartRuntime
+from ai_layer.vision_ai.models import ChartAnalysisInput, ChartAnalysisType, ChartImageType
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_chart_intelligence=True)
@@ -136,7 +136,7 @@ def test_runtime_default_construction_never_raises():
 
 
 def test_runtime_accepts_injected_explanation_builder():
-    from ai.explanation.explanation_builder import ExplanationBuilder
+    from ai_layer.explanation_ai.explanation_builder import ExplanationBuilder
     injected = ExplanationBuilder()
     runtime = ChartRuntime(explanation_builder=injected, flags=ENABLED)
     result = runtime.analyze(_input(), AIRole.OWNER)

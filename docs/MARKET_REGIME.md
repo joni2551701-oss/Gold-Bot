@@ -154,7 +154,7 @@ not Wyckoff/Session's event-list shape).
 
 ## Significance for AI
 
-`ai/ai_analyzer.py`'s `AIAnalyzer.analyze()` is still a permanent-
+`ai_layer/ai_engine/ai_analyzer.py`'s `AIAnalyzer.analyze()` is still a permanent-
 reject heuristic stub (`docs/AI_ARCHITECTURE.md`) — this phase does
 not connect Market Regime to it. But regime context is exactly the
 kind of structured, human-readable signal a future real AI provider
@@ -162,7 +162,7 @@ would benefit from having available without re-deriving it from raw
 candles on every call: "the market is currently TRENDING BULLISH with
 85% confidence because HTF bias and execution-timeframe structure
 agree" is a far more useful prompt input than a bare OHLC series. When
-`ai/interfaces.py`'s `AIAnalyzerInterface` gains a real implementation
+`ai_layer/ai_service/interfaces.py`'s `AIAnalyzerInterface` gains a real implementation
 (v0.4 AI Assistant Core, per `docs/v0.3_RELEASE_NOTES.md`'s Known
 Limitations), `ContextSnapshot.market_regime` is already sitting in
 the same `ContextSnapshot` object `AIAnalyzer.analyze()` already

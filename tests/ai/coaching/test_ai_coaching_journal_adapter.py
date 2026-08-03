@@ -1,5 +1,5 @@
-from ai.coaching.journal_adapter import journal_entry_to_coaching_input
-from ai.trade_journal.models import TradeJournalEntry
+from ai_layer.personal_ai.senior.journal_adapter import journal_entry_to_coaching_input
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.models import TradeJournalEntry
 
 
 def _entry(**overrides):

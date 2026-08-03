@@ -97,7 +97,7 @@ document is the finer, file-granularity companion to
 | `data_layer/providers/{fred_provider,fundamental_base}.py` | OK | raw macro data, not TA. |
 | `data_layer/providers/{provider_manager,registry,provider_errors}.py` | OK | orchestration/errors, no analysis. |
 | `stream/*.py` (all 8) | Keep as-is | data-flow only; docstrings enforce boundary. |
-| `market/market_structure.py` | Keep as-is | `from_context()` projection, never recomputes. |
+| `data_layer/live_data/market/market_structure.py` | Keep as-is | `from_context()` projection, never recomputes. |
 | `market/{liquidity,regime,session,trend,volatility}_state.py` | OK | façade DTOs. |
 | `market/{candle,current_price,ticker,orderbook,market_data,market_manager}.py` | OK | façade views/aggregation. |
 | `context/*.py` (all) | OK — FROZEN | SSoT for structure math. |

@@ -51,7 +51,7 @@ educational note.
 `ai/journal/failure_analysis.py`'s `FailureAnalysisEntry` both record
 **completed** trades (`exit_price`, `pnl`, `outcome`) — retrospective
 journaling, not the live "WHY BUY / WHY SELL / WHY WAIT / WHY SKIP"
-pre-trade narration TASK 5 asks for. `learning/models.py`'s
+pre-trade narration TASK 5 asks for. `ai_layer/knowledge_ai/learning_loop/models.py`'s
 `LearningRecord` is the same shape again, one layer more detailed
 (`failure_type`/`success_pattern`/`htf_bias`), still post-trade only.
 None of the three is duplicated or modified this phase — TASK 5's
@@ -63,7 +63,7 @@ roadmap).
 
 ## Question 3 — Does a Performance module already exist?
 
-**Yes**, `analytics/performance_metrics.py`'s `PerformanceMetrics`
+**Yes**, `backtesting_layer/statistics/performance_metrics.py`'s `PerformanceMetrics`
 (win rate, expectancy, profit factor, drawdown, recovery factor) —
 portfolio-wide, already real and unmodified by this phase. Out of
 scope for Phase 66.0 (named for Phase 66.5 "Performance Intelligence"
@@ -79,8 +79,8 @@ already produces `TRADE`-mode explanations from primitive inputs. TASK
 `TradingAnalystRuntime` calls the existing `ExplanationBuilder.build()`
 with a `TRADE`-mode `ExplanationInput` assembled from
 `TradingAnalysisInput`'s own fields — the same "compose, don't
-duplicate" posture `ai/intelligence_runtime.py` and
-`voice/conversation_bridge.py` both already established for other
+duplicate" posture `ai_layer/ai_engine/intelligence_runtime.py` and
+`ai_layer/voice_ai/conversation_bridge.py` both already established for other
 existing classes.
 
 ## The central architectural resolution: Constitution Article 3 vs. the brief's own diagram
@@ -144,7 +144,7 @@ duplicate Managers/Engines; zero new top-level package; zero changes
 to any file in `decision/`, `risk/`, `execution/`, `strategies/`,
 `signals/`, `context/`, `monitoring/` (Rule 1) — all seven stay
 byte-for-byte unchanged and are never imported by the new package.
-`ExplanationBuilder` (TASK 7) and `ai/intelligence_runtime.py`'s
+`ExplanationBuilder` (TASK 7) and `ai_layer/ai_engine/intelligence_runtime.py`'s
 `IntelligenceRuntime` (TASK 3, Knowledge/Memory/Reasoning/Conversation
 grounding) are both reused via their existing, unmodified public APIs.
 

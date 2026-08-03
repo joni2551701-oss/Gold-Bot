@@ -120,7 +120,7 @@ boundaries is already true of the real code referenced.
 - ✅ Context interpretation (advisory confidence/risk scoring)
 
 **Forbidden**
-- ❌ Producing a `BUY`/`SELL` decision itself — `ai/interfaces.py`'s
+- ❌ Producing a `BUY`/`SELL` decision itself — `ai_layer/ai_service/interfaces.py`'s
   `AIAnalyzerInterface` docstring states this contract explicitly;
   see `docs/DECISION_PRINCIPLES.md`'s Principle 1.
 - ❌ Making the final call — `AIAnalysisResult` is one of four

@@ -52,7 +52,7 @@ turning a narrow AI-content adapter into a channel-management system
 keeps `execution/` a top-level package distinct from `decision/`,
 per `docs/architecture/ARCHITECTURE_MASTER.md`). **Decision: TASK 4
 creates `broadcast/` as a new top-level package**, and it imports
-`ai.content.broadcast_output.BroadcastReadyContent` as its input type
+`ai_layer.ai_service.content.broadcast_output.BroadcastReadyContent` as its input type
 rather than re-declaring a content shape.
 
 ### Everything else the brief names — confirmed genuinely absent

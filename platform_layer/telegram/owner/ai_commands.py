@@ -18,17 +18,17 @@ caller passes in.
 
 from typing import Dict, Optional
 
-from ai.access.permissions import AIRole
-from ai.access.usage_limits import UsageLimiter
-from ai.audit.provider_stats import ProviderStats
-from ai.audit.usage_accounting import UserUsageStats
-from ai.capabilities.capability import Capability
-from ai.capabilities.capability_manager import CapabilityManager
-from ai.persona.persona_manager import PersonaManager
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.providers.provider_manager import ProviderManager
-from ai.router.provider_score import score_providers
-from ai.router.routing_rules import get_candidate_providers
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_service.access.usage_limits import UsageLimiter
+from ai_layer.ai_service.audit.provider_stats import ProviderStats
+from ai_layer.ai_service.audit.usage_accounting import UserUsageStats
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.capabilities.capability_manager import CapabilityManager
+from ai_layer.personal_ai.persona_manager.persona_manager import PersonaManager
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_engine.providers.provider_manager import ProviderManager
+from ai_layer.ai_coordinator.provider_score import score_providers
+from ai_layer.ai_coordinator.routing_rules import get_candidate_providers
 from core_layer.logger.logger import setup_logger
 from media_layer.translation.language_registry import build_language_registry
 
@@ -249,7 +249,7 @@ def ai_cost(provider_stats: Dict[str, ProviderStats]) -> AICommandResult:
     The future /ai_cost command's payload -- matches the Director's
     own worked example shape exactly ("Today AI Cost: Gemini $12.40 /
     GPT $8.20 / Total $20.60"). `provider_stats` is
-    `ai.audit.provider_stats.compute_provider_stats()`'s own,
+    `ai_layer.ai_service.audit.provider_stats.compute_provider_stats()`'s own,
     unmodified output -- this function only formats it, never
     recomputes a cost. An empty dict (no calls logged yet) reports
     $0.00, not an error.
@@ -267,7 +267,7 @@ def ai_cost(provider_stats: Dict[str, ProviderStats]) -> AICommandResult:
 def ai_usage(telegram_id: str, user_usage: Dict[str, UserUsageStats]) -> AICommandResult:
     """
     The future /ai_usage <telegram_id> command's payload. `user_usage`
-    is `ai.audit.usage_accounting.compute_user_usage()`'s own,
+    is `ai_layer.ai_service.audit.usage_accounting.compute_user_usage()`'s own,
     unmodified output. A telegram_id with no logged calls reports zero
     usage, not an error -- absence of activity is not a failure.
     """
@@ -298,14 +298,14 @@ def ai_health(
     """
     The /ai_health command's payload (Phase 61.5 TASK 2/3; extended
     Phase 61.5 Addendum per Director review). Best-first ranking via
-    `ai.router.provider_score.score_providers()` -- recommendation/
+    `ai_layer.ai_coordinator.provider_score.score_providers()` -- recommendation/
     analytics only, matching that module's own docstring:
     `AIRouter.route()` is never called or influenced by this.
     `provider_names` comes from `provider_manager.list_providers()` so
     a provider with zero call history still appears in the ranking.
 
     Per-provider Latency/Success/Requests/Tokens/Cost/Failures (the
-    Director's own worked example) reuse `ai.audit.provider_stats.
+    Director's own worked example) reuse `ai_layer.ai_service.audit.provider_stats.
     ProviderStats`'s existing fields directly -- no new metric, no
     re-fetch, same "reuse the already-computed record" convention
     `ai_cost()`/`ai_usage()` already use. A provider with no entry in
@@ -346,7 +346,7 @@ def ai_explanation_status(persona_manager: Optional[PersonaManager] = None) -> A
     """
     /ai_explanation_status payload (Phase 63.1, TASK 7). Reports the
     AI Explanation Intelligence Layer's own composition -- template
-    count is the fixed number `ai.explanation.explanation_templates.py`
+    count is the fixed number `ai_layer.explanation_ai.explanation_templates.py`
     ships (3: Trade/No-Trade/Education), never a live count of
     anything that could drift; persona/language counts are read from
     the real registries, never hardcoded.

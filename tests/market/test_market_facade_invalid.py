@@ -9,10 +9,10 @@ context/. A projection never trusts its input to be well-formed.
 
 from types import SimpleNamespace
 
-from market.market_manager import MarketManager
-from market.orderbook import OrderBook
-from market.trend_state import TrendState
-from market.volatility_state import VolatilityLevel
+from data_layer.live_data.market.market_manager import MarketManager
+from data_layer.live_data.market.orderbook import OrderBook
+from data_layer.live_data.market.trend_state import TrendState
+from data_layer.live_data.market.volatility_state import VolatilityLevel
 
 
 def test_schema_with_wrong_typed_groups_does_not_raise():

@@ -6,7 +6,7 @@ A genuinely different concern from every other `platform_layer/telegram/owner/
 *_commands.py` module (per this phase's own reuse audit, `docs/
 PHASE61_6_RUNTIME_OPERATIONS_AUDIT.md`): those are pull-based (a
 command handler calls a function, gets a message back). This module is
-push-based -- an `ai.event_bus.EventBus` subscriber that turns
+push-based -- an `ai_layer.ai_service.event_bus.EventBus` subscriber that turns
 a handful of already-existing/newly-added event types into queued
 `RuntimeAlert`s, plus a small `deliver_alerts()` that actually sends
 them, Owner-only, via the already-existing `platform_layer.telegram.notifier.
@@ -17,7 +17,7 @@ Six alert conditions (the Director's own list), three different
 sourcing strategies depending on what already exists to trigger them:
 
   Provider DOWN / Circuit OPEN -- one signal, not two. This codebase's
-  circuit breaker (`ai.providers.circuit_breaker.ProviderCircuitBreaker`,
+  circuit breaker (`ai_layer.ai_engine.providers.circuit_breaker.ProviderCircuitBreaker`,
   extended this same task) is the thing that decides a provider is
   truly down (5 consecutive failures, not one), so "Provider DOWN" and
   "Circuit OPEN" collapse onto the same event: the breaker's `_open()`
@@ -31,12 +31,12 @@ sourcing strategies depending on what already exists to trigger them:
   existing `EventType.PROVIDER_RECOVERED` when it closes from
   OPEN/HALF_OPEN.
 
-  Runtime FAILED -- `ai.runtime.runtime_manager.RuntimeManager.
+  Runtime FAILED -- `ai_layer.ai_engine.runtime.runtime_manager.RuntimeManager.
   transition()` publishes the new `EventType.RUNTIME_FAILED` (this
   task's one, in-place `EventType` addition -- see `event_bus.py`'s
   own docstring) on any transition into `RuntimeState.FAILED`.
 
-  Cost Protection DEGRADED (Phase 62.2 TASK 8) -- `ai.runtime.
+  Cost Protection DEGRADED (Phase 62.2 TASK 8) -- `ai_layer.ai_engine.runtime.
   ai_service.AIService._check_cost_protection()` transitions into
   `RuntimeState.DEGRADED` with a reason prefixed `"cost protection: "`
   on a daily cost/token breach. Every valid `RuntimeManager.transition()`
@@ -64,8 +64,8 @@ sourcing strategies depending on what already exists to trigger them:
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
-from ai.audit.provider_stats import ProviderStats
-from ai.event_bus import EventBus, EventType, RuntimeEvent
+from ai_layer.ai_service.audit.provider_stats import ProviderStats
+from ai_layer.ai_service.event_bus import EventBus, EventType, RuntimeEvent
 from core_layer.logger.logger import setup_logger
 from core_layer.secrets import Secrets
 from platform_layer.telegram.notifier import Notifier
@@ -86,7 +86,7 @@ class RuntimeNotifier:
     sends a Telegram message itself -- `drain()` hands the queue to a
     caller, which passes it to `deliver_alerts()` (kept separate so
     "decide there's something to say" and "actually send it" can be
-    tested independently, same separation `ai.audit.provider_stats.
+    tested independently, same separation `ai_layer.ai_service.audit.provider_stats.
     RuntimeMetricsCollector` already established for metrics).
     """
 

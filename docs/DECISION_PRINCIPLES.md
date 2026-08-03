@@ -24,7 +24,7 @@ Decision Engine
 Final decision
 ```
 
-`ai/ai_analyzer.py`'s `AIAnalyzer.analyze()` produces an
+`ai_layer/ai_engine/ai_analyzer.py`'s `AIAnalyzer.analyze()` produces an
 `AIAnalysisResult` — advisory confidence and risk scoring, nothing
 more. It is never itself an `APPROVE`/`REJECT` decision.
 `decision_layer/decision_engine/decision_engine.py`'s `DecisionEngine.evaluate()` is the
@@ -32,7 +32,7 @@ only place a `TradeDecision` is produced, blending `AIAnalysisResult`
 with signal confidence and HTF bias (Phase A3, "Decision Engine v2" —
 see `docs/ARCHITECTURE.md`). This is a hard rule, not a style
 preference: see `CLAUDE.md`'s Trading Safety section ("Never allow AI
-direct execution") and `ai/interfaces.py`'s `AIAnalyzerInterface`
+direct execution") and `ai_layer/ai_service/interfaces.py`'s `AIAnalyzerInterface`
 docstring, and `docs/AUDIT_REPORT.md` for the incident (REJECT/BLOCKED
 signals reaching Telegram) that made this boundary explicit.
 

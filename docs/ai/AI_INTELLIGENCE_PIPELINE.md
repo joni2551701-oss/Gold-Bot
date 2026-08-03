@@ -2,7 +2,7 @@
 
 Governed by `docs/constitution/CONSTITUTION.md` Article 1 and the
 Intelligence Dependency Principle (Director Policy,
-`docs/policies/DIRECTOR_POLICY.md`). `ai/intelligence_runtime.py`
+`docs/policies/DIRECTOR_POLICY.md`). `ai_layer/ai_engine/intelligence_runtime.py`
 (Phase 64.0), real code, foundation-only — no live Telegram handler
 calls this yet.
 
@@ -82,7 +82,7 @@ signature unchanged (Phase 65.4's own Rule 1, still honored by Phase
 66.0's own Rule 1: no rename/move/breaking API) — but it now has two
 real callers:
 
-- `assistant/runtime_adapter.py`'s `run_intelligence_pipeline()`
+- `ai_layer/ai_service/assistant/runtime_adapter.py`'s `run_intelligence_pipeline()`
   (Phase 65.4) — a thin wrapper that Owner-gates the call and passes
   `profile.user_id` as `telegram_id`.
 - `ai/trading_analyst/analyst_runtime.py`'s
@@ -93,14 +93,14 @@ real callers:
   from a separate, second `ExplanationBuilder.build()` call built from
   `TradingAnalysisInput`'s richer TRADE-mode fields.
 
-`ai/intelligence_runtime.py` itself required zero code change for
+`ai_layer/ai_engine/intelligence_runtime.py` itself required zero code change for
 either caller.
 
 ## Why this one file may import every layer
 
 Every individual layer's own isolation is unchanged and still
 independently tested (Broadcast still cannot import Reasoning
-directly, etc.). `ai/intelligence_runtime.py` is the **composition
+directly, etc.). `ai_layer/ai_engine/intelligence_runtime.py` is the **composition
 root** — the one place allowed to import every layer it composes,
 the same role `core/pipeline.py` plays for the Trading layer. See
 `docs/PHASE64_0_AUDIT.md` for the full reasoning.

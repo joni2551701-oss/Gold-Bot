@@ -1,6 +1,6 @@
-from ai.access.permissions import AIRole
-from ai.coaching.coaching_runtime import CoachingRuntime
-from ai.coaching.models import CoachingPriority, CoachingStatus, CoachingTopic, CoachingType
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.personal_ai.senior.coaching_runtime import CoachingRuntime
+from ai_layer.personal_ai.senior.models import CoachingPriority, CoachingStatus, CoachingTopic, CoachingType
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_coaching_intelligence=True)

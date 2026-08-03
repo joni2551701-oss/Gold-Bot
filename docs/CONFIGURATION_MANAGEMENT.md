@@ -95,7 +95,7 @@ its feature exists or is safe to use:
 
 | Flag | Status |
 |---|---|
-| `enable_ai` | OFF — `ai/ai_analyzer.py` is still a heuristic stub regardless of this flag's value. |
+| `enable_ai` | OFF — `ai_layer/ai_engine/ai_analyzer.py` is still a heuristic stub regardless of this flag's value. |
 | `enable_crypto` | OFF — no Crypto data provider or `AssetType.CRYPTO` profile (`assets/`, Phase A12) exists. |
 | `enable_swing` | OFF — no swing-timeframe strategy exists. |
 | `enable_ai_memory` | OFF — reserved for a future AI Assistant memory feature. |

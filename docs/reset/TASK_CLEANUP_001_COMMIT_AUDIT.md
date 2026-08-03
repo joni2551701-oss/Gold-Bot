@@ -12,8 +12,8 @@ Verified against `origin/main`:
 
 | Refactor artifact (this branch) | State on `main` |
 |---|---|
-| `ai/event_bus.py` (moved out of `ai/runtime/`) | `main` LACKS it — still `ai/runtime/event_bus.py` |
-| `ai/content_types.py` (neutral `ContentType`) | `main` LACKS it |
+| `ai_layer/ai_service/event_bus.py` (moved out of `ai/runtime/`) | `main` LACKS it — still `ai/runtime/event_bus.py` |
+| `ai_layer/ai_service/content/content_types.py` (neutral `ContentType`) | `main` LACKS it |
 | `ai/foundation/` (whole package) | `main` has **no** `ai/foundation/` |
 | `TradeJournalRecord` rename | `main` LACKS it — still `TradeJournalEntry` |
 | `ai/content/explanation_content_adapter.py` (relocated) | `main` still has it at `ai/explanation/` |
@@ -27,7 +27,7 @@ Foundation are genuinely **missing from `main`**, not redundant.
 |---|---|---|---|---|
 | 1 | `3baae51` | Constitution v2.0 Stage 0 Audit → `docs/CONSTITUTION_V2_AUDIT.md` | **MERGE** | doc, unique |
 | 2 | `4d7c0c4` | TASK-AI-000 AI Architecture Audit → `docs/ai/*` (9 files) | **MERGE** | audit docs, unique |
-| 3 | `805b8d4` | TASK-AI-000A AI Cleanup → **code**: `event_bus` move, `ai/content_types.py`, `TradeJournalEntry→Record`, ~20 test import updates | **MERGE** | approved cleanup, not in `main`; **conflict-check needed** (main diverged) |
+| 3 | `805b8d4` | TASK-AI-000A AI Cleanup → **code**: `event_bus` move, `ai_layer/ai_service/content/content_types.py`, `TradeJournalEntry→Record`, ~20 test import updates | **MERGE** | approved cleanup, not in `main`; **conflict-check needed** (main diverged) |
 | 4 | `05d4024` | TASK-AI-001 AI Foundation → `ai/foundation/` (15 files) | **MERGE** | approved, not in `main` |
 | 5 | `fcdfbe5` | Branch Management Policy → `docs/policies/BRANCH_MANAGEMENT_POLICY.md` | **MERGE** | permanent policy |
 | 6 | `837a3a0` | Branch Management Policy Rev 1 (Rule 11) | **MERGE** | squashes with #5 |

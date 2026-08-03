@@ -8,9 +8,9 @@ blocks excluded). Cycle detection over this exact graph reports
 
 ## Neutral foundation nodes (no outgoing `ai.` edges)
 
-`ai.event_bus`, `ai.content_types`, `ai.capabilities`, `ai.memory`,
-`ai.interfaces`, `ai.persona`, `ai.session`, `ai.profiles`,
-`ai.ai_analyzer`, `ai.confidence_model`, `ai.validation` (→providers
+`ai_layer.ai_service.event_bus`, `ai_layer.ai_service.content.content_types`, `ai_layer.ai_engine.capabilities`, `ai_layer.knowledge_ai.memory_manager`,
+`ai_layer.ai_service.interfaces`, `ai_layer.personal_ai.persona_manager`, `ai_layer.ai_service.session`, `ai_layer.personal_ai.user_profile`,
+`ai_layer.ai_engine.ai_analyzer`, `ai_layer.confidence_ai.confidence_model`, `ai_layer.confidence_ai` (→providers
 only), etc. These are imported by others but import nothing else in
 `ai/` — the base of the DAG.
 
@@ -47,14 +47,14 @@ ai.validation        -> ai.providers
 
 ## Key verification points
 
-- **`ai.explanation`** now points at `ai.content_types` (neutral) and
-  **no longer at `ai.content`** → the `explanation ↔ content` cycle is
+- **`ai_layer.explanation_ai`** now points at `ai_layer.ai_service.content.content_types` (neutral) and
+  **no longer at `ai_layer.ai_service.content`** → the `explanation ↔ content` cycle is
   broken and the Intelligence Dependency Principle (Content downstream
-  of Explanation) holds: `ai.content → ai.explanation` exists, the
+  of Explanation) holds: `ai_layer.ai_service.content → ai.explanation` exists, the
   reverse does not.
-- **`ai.providers`/`ai.audit`/`ai.runtime`** all point at
-  `ai.event_bus` (neutral) → no subpackage imports *up* into
-  `ai.runtime`; runtime orchestrates providers/router/audit
+- **`ai_layer.ai_engine.providers`/`ai_layer.ai_service.audit`/`ai_layer.ai_engine.runtime`** all point at
+  `ai_layer.ai_service.event_bus` (neutral) → no subpackage imports *up* into
+  `ai_layer.ai_engine.runtime`; runtime orchestrates providers/router/audit
   one-directionally. The three runtime-cluster cycles are broken.
 - No edge from any `ai/` module targets `decision`/`risk`/`execution`/
   `database`/`telegram`/`strategies` (Constitution Article 3 — checked

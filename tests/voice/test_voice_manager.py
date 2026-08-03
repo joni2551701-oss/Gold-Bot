@@ -1,11 +1,11 @@
-"""Phase 65.0 TASK 4 — voice/manager.py: VoiceManager. Extended Phase 65.1 TASK 6/7 — adapter registry + per-profile provider selection."""
+"""Phase 65.0 TASK 4 — ai_layer/voice_ai/manager.py: VoiceManager. Extended Phase 65.1 TASK 6/7 — adapter registry + per-profile provider selection."""
 
-from voice.manager import VoiceManager
-from voice.models import VoiceProvider, VoiceProviderStatus, VoiceProviderType, VoiceRequest, VoiceSettings
-from voice.profiles import SENIOR_VOICE, SENIORITA_VOICE
-from voice.provider_adapters.local import LocalVoiceProvider
-from voice.provider_adapters.openai import OpenAIVoiceProvider
-from voice.registry import VoiceProfileRegistry
+from ai_layer.voice_ai.manager import VoiceManager
+from ai_layer.voice_ai.models import VoiceProvider, VoiceProviderStatus, VoiceProviderType, VoiceRequest, VoiceSettings
+from ai_layer.voice_ai.profiles import SENIOR_VOICE, SENIORITA_VOICE
+from ai_layer.voice_ai.provider_adapters.local import LocalVoiceProvider
+from ai_layer.voice_ai.provider_adapters.openai import OpenAIVoiceProvider
+from ai_layer.voice_ai.registry import VoiceProfileRegistry
 
 
 def _valid_request(**overrides):

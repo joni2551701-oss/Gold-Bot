@@ -11,22 +11,22 @@ white/gray/black cycle detector over every `.py` under `ai/`, with
 
 | Cycle (before) | Status now | How removed |
 |---|---|---|
-| `ai.runtime ↔ ai.providers` | **gone** | `event_bus` extracted to neutral `ai.event_bus` |
-| `ai.audit ↔ ai.runtime` | **gone** | same (event_bus extraction) |
-| `ai.audit → ai.runtime → ai.router → ai.audit` | **gone** | same (event_bus extraction) |
-| `ai.explanation ↔ ai.content` | **gone** | adapter moved to `ai/content/`; `ContentType` extracted to neutral `ai.content_types` |
+| `ai_layer.ai_engine.runtime ↔ ai.providers` | **gone** | `event_bus` extracted to neutral `ai_layer.ai_service.event_bus` |
+| `ai_layer.ai_service.audit ↔ ai.runtime` | **gone** | same (event_bus extraction) |
+| `ai_layer.ai_service.audit → ai.runtime → ai.router → ai.audit` | **gone** | same (event_bus extraction) |
+| `ai_layer.explanation_ai ↔ ai.content` | **gone** | adapter moved to `ai/content/`; `ContentType` extracted to neutral `ai_layer.ai_service.content.content_types` |
 
 ## The two new neutral foundation modules
 
 Both sit at the bottom of the graph — nothing in `ai/` is imported by
 them, so every consumer depends on them strictly downward:
 
-- **`ai.event_bus`** (`EventBus`, `EventType`, `RuntimeEvent`) —
-  depends only on `core_layer.logger.logger` + stdlib. Consumers: `ai.runtime`,
-  `ai.providers`, `ai.audit`, `platform_layer.telegram.owner`.
-- **`ai.content_types`** (`ContentType` enum) — depends only on stdlib
-  `enum`. Consumers: `ai.explanation`, `ai.content`,
-  `ai.trading_analyst`, `ai.chart_intelligence`, `ai.intelligence_runtime`,
+- **`ai_layer.ai_service.event_bus`** (`EventBus`, `EventType`, `RuntimeEvent`) —
+  depends only on `core_layer.logger.logger` + stdlib. Consumers: `ai_layer.ai_engine.runtime`,
+  `ai_layer.ai_engine.providers`, `ai_layer.ai_service.audit`, `platform_layer.telegram.owner`.
+- **`ai_layer.ai_service.content.content_types`** (`ContentType` enum) — depends only on stdlib
+  `enum`. Consumers: `ai_layer.explanation_ai`, `ai_layer.ai_service.content`,
+  `ai_layer.ai_engine.trading_analyst`, `ai_layer.vision_ai`, `ai_layer.ai_engine.intelligence_runtime`,
   `broadcast`.
 
 ## Corrected key edges (formerly bidirectional)
@@ -56,8 +56,8 @@ ai.explanation  ────────►  ai.content   (content is DOWNSTREAM
 - The `ai/` → `decision/`/`risk/`/`execution/`/`database/`/`telegram/`/
   `strategies/` absolute no-import rule (Constitution Article 3) — still
   zero real import statements; the cleanup touched none of these edges.
-- The `ai.context ↔ ai.cache` relationship remains one-directional at
-  runtime (`ai.cache`'s reference to `ai.context` is `TYPE_CHECKING`-only,
+- The `ai_layer.ai_engine.context ↔ ai.cache` relationship remains one-directional at
+  runtime (`ai_layer.ai_engine.cache`'s reference to `ai_layer.ai_engine.context` is `TYPE_CHECKING`-only,
   never executed) — untouched by this task, and the cycle detector
   (which excludes TYPE_CHECKING) confirms it is not a cycle.
 - The 66.x-family subpackages (`coaching`…`research`) remain a clean

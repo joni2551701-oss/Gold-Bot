@@ -48,7 +48,7 @@ class ValidationReport:
     total_candles: len(candles) as given -- before any de-duplication.
     missing_count: number of gap intervals detected (a single 3-hour
         gap in an M15 series with an expected 15-minute step counts as
-        one gap event here -- see analytics/gap_report.py, same phase,
+        one gap event here -- see backtesting_layer/statistics/gap_report.py, same phase,
         for an enumeration of every individual missing timestamp).
     duplicate_count: number of timestamps that appear more than once.
     ordering_violations: number of adjacent pairs (in the order the

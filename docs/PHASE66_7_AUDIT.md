@@ -19,7 +19,7 @@ contract, but it operates per-trade (`lot_size`/`risk_amount`/
 Trading Core (`risk/`), one of this brief's own Rule 1 LOCKed
 directories — import forbidden outright, the same absolute-ban
 posture `docs/PHASE66_6_AUDIT.md` already established for
-`strategies/`. `analytics/performance_metrics.py`'s own docstring uses
+`strategies/`. `backtesting_layer/statistics/performance_metrics.py`'s own docstring uses
 the word "portfolio-wide" only descriptively (to mean "aggregated
 across all trades, not grouped by strategy") — it names no
 `Portfolio`-shaped class of any kind. No reuse candidate, no naming
@@ -57,7 +57,7 @@ new Portfolio model to duplicate anywhere:**
   `status`/`risk_level`/`health`/`strategy_count`/
   `active_strategy_count` field of any kind. TASK 4's
   `performance_adapter.py` relays only `notes`, deliberately leaving
-  the rest absent — mirrors `ai.strategy.performance_adapter.py`'s own
+  the rest absent — mirrors `ai_layer.ai_engine.strategy.performance_adapter.py`'s own
   "field deliberately omitted" precedent (Phase 66.6) exactly.
 - `ai/strategy/models.py`'s `StrategyRecord` (Phase 66.6, LOCKed) —
   carries no field a single record could map into
@@ -104,8 +104,8 @@ model anywhere to consolidate — `ai/portfolio/` is a genuine gap.
    absolute-ban conclusion `docs/PHASE66_6_AUDIT.md` already reached
    for `strategies/`).
 4. Two sibling `66.x` Foundations are reused type-only:
-   `ai.performance.models.PerformanceRecord` (relay `notes` only) and
-   `ai.strategy.models.StrategyRecord` (deterministic count over a
+   `ai_layer.ai_engine.performance.models.PerformanceRecord` (relay `notes` only) and
+   `ai_layer.ai_engine.strategy.models.StrategyRecord` (deterministic count over a
    sequence, not inference).
 
 `ai/portfolio/` is confirmed as a genuine new subpackage inside the

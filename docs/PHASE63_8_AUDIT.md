@@ -26,7 +26,7 @@ mavjud bo'lmasa yaratish") anticipates as the likely case:
 The brief's `BroadcastType` (`MARKET_UPDATE`/`WEEKLY_REPORT`/
 `TRADE_REPLAY`/`EDUCATION`/`LIVE_ANALYSIS`) is not a new, parallel
 enum — `BroadcastTrigger.content_type: ContentType` (Phase 63.0) has
-already tied broadcast triggers to `ai.content.content_types.ContentType`
+already tied broadcast triggers to `ai_layer.ai_service.content.content_types.ContentType`
 directly, and a second "BroadcastType" enum covering the same
 vocabulary would violate Article 11 the moment it is compared against
 `ContentType`, exactly like Phase 63.6's own `ContentType`-vs-brief's-
@@ -88,7 +88,7 @@ object, the same "never carry another package's object graph"
 convention `ai/conversation/models.py`'s `ConversationContext` and
 `ai/content/models.py`'s `ContentContext` already established.
 `media_layer/telegram_broadcast/broadcast_adapter.py` (TASK 6) reads an optional, upstream
-`ai.persona.persona.Persona`'s own already-public `.name` field
+`ai_layer.personal_ai.persona_manager.persona.Persona`'s own already-public `.name` field
 type-only (never `PersonaManager`'s internal state) to populate it.
 Today only `"Senior Trading AI"` maps to a real registered `Persona`;
 `"Seniorita"` remains a documented future label with no backing
@@ -117,13 +117,13 @@ already flagged for its own future audit's attention.
 
 ## Dependency Compliance (Rule 3)
 
-`broadcast/*.py` today imports only `ai.content.broadcast_output`,
-`ai.content.content_types`, other `broadcast.*` modules, and
+`broadcast/*.py` today imports only `ai_layer.ai_service.content.broadcast_output`,
+`ai_layer.ai_service.content.content_types`, other `broadcast.*` modules, and
 `core_layer.logger.logger` — zero dependency on `decision/`, `risk/`, `execution/`,
 `strategies/`, `signals/`, or `database/`. This phase adds one new,
 type-only import: `media_layer.content_manager.models.MediaAsset` (media sits immediately
 upstream of broadcast in the Official Intelligence Pipeline) and
-`ai.persona.persona.Persona` (type-only, per Rule 3's explicit "Broadcast
+`ai_layer.personal_ai.persona_manager.persona.Persona` (type-only, per Rule 3's explicit "Broadcast
 o'qishi mumkin: media, content, ai" allowance). `broadcast/` continues
 to never import `decision/`, `risk/`, `execution/`, `strategies/`,
 `signals/`, or `database/` — TASK 7's isolation test enforces this

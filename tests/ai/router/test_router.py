@@ -1,10 +1,10 @@
 """Phase 61.0 TASK 4 — AI Router: Capability -> Provider -> Return. No real API call anywhere."""
 
-from ai.capabilities.capability import Capability
-from ai.capabilities.capability_manager import CapabilityManager
-from ai.providers.provider_manager import ProviderManager, ProviderStatus
-from ai.router.router import AIRouter
-from ai.router.routing_rules import ROUTING_RULES, get_candidate_providers
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.capabilities.capability_manager import CapabilityManager
+from ai_layer.ai_engine.providers.provider_manager import ProviderManager, ProviderStatus
+from ai_layer.ai_coordinator.router import AIRouter
+from ai_layer.ai_coordinator.routing_rules import ROUTING_RULES, get_candidate_providers
 
 
 def test_every_capability_has_a_routing_rule():

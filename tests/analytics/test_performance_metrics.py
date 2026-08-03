@@ -1,13 +1,13 @@
 """
 Phase 60.4: Performance Validation Foundation, TASK 2 --
-analytics/performance_metrics.py tests.
+backtesting_layer/statistics/performance_metrics.py tests.
 """
 
 from datetime import datetime, timedelta, timezone
 
-from analytics.equity_curve import build_equity_curve
-from analytics.performance_metrics import compute_performance_metrics
-from analytics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.equity_curve import build_equity_curve
+from backtesting_layer.statistics.performance_metrics import compute_performance_metrics
+from backtesting_layer.statistics.signal_performance import SignalPerformance
 
 
 def _perf(result, r_multiple=None, created_at=None, signal_id="s"):

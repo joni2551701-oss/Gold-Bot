@@ -2,12 +2,12 @@
 
 from datetime import datetime, timezone
 
-from ai.context.context_adapter import sanitize_market_context
-from ai.context.context_builder import build_ai_context
-from ai.interfaces import MarketContext
-from ai.journal.trade_journal import DecisionType, SignalType, TradeOutcome, create_journal_entry
-from ai.learning_context import build_learning_context
-from ai.profiles.user_profile import AIUserProfile
+from ai_layer.ai_engine.context.context_adapter import sanitize_market_context
+from ai_layer.ai_engine.context.context_builder import build_ai_context
+from ai_layer.ai_service.interfaces import MarketContext
+from ai_layer.knowledge_ai.knowledge_base.journal.trade_journal import DecisionType, SignalType, TradeOutcome, create_journal_entry
+from ai_layer.knowledge_ai.learning_context import build_learning_context
+from ai_layer.personal_ai.user_profile.user_profile import AIUserProfile
 from signal_layer.signal_builder.schema import SignalSchema, generate_signal_id
 
 

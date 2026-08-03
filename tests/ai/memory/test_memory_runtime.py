@@ -1,7 +1,7 @@
 """Phase 61.3 TASK 6 — Memory Runtime: thin facade over five namespaced ContextMemory instances. Extended Phase 63.3 TASK 4 with a structured MemoryEntry surface (store/recall/search/filter/list_all/short_term/long_term/forget)."""
 
-from ai.memory.memory_runtime import MemoryLayer, MemoryRuntime
-from ai.memory.models import MemoryEntry, MemoryScope, MemoryType
+from ai_layer.knowledge_ai.memory_manager.memory_runtime import MemoryLayer, MemoryRuntime
+from ai_layer.knowledge_ai.memory_manager.models import MemoryEntry, MemoryScope, MemoryType
 
 
 def test_save_and_load_round_trips_within_a_layer():
@@ -137,12 +137,12 @@ def test_structured_entries_are_isolated_from_the_original_layer_store():
 
 
 def test_memory_runtime_never_imports_trading_layers():
-    """ai/memory/ stays pure foundation even with the Phase 63.3 extension -- no dependency on decision/risk/execution/strategies/database/telegram."""
+    """ai_layer/knowledge_ai/memory_manager/ stays pure foundation even with the Phase 63.3 extension -- no dependency on decision/risk/execution/strategies/database/telegram."""
     import ast
     import pathlib
 
-    memory_dir = pathlib.Path(__file__).resolve().parents[3] / "ai" / "memory"
-    forbidden_prefixes = ("decision", "risk", "execution", "strategies", "database", "telegram")
+    memory_dir = pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "knowledge_ai" / "memory_manager"
+    forbidden_prefixes = ("decision_layer", "risk_layer", "execution_layer", "strategy_layer", "database_layer", "platform_layer.telegram")
 
     for py_file in memory_dir.glob("*.py"):
         tree = ast.parse(py_file.read_text(), filename=str(py_file))

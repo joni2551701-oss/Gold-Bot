@@ -2,7 +2,7 @@
 
 import sys
 
-from ai.context.context_adapter import market_context_from_snapshot
+from ai_layer.ai_engine.context.context_adapter import market_context_from_snapshot
 
 
 def _schema(**overrides):
@@ -38,20 +38,20 @@ def test_ai_context_adapter_module_never_imports_context_at_runtime():
         mod: sys.modules[mod] for mod in list(sys.modules)
         if mod == "context_layer" or mod.startswith("context_layer.")
     }
-    saved_adapter = sys.modules.pop("ai.context.context_adapter", None)
+    saved_adapter = sys.modules.pop("ai_layer.ai_engine.context.context_adapter", None)
     for mod in saved_context_modules:
         del sys.modules[mod]
 
     try:
-        import ai.context.context_adapter
+        import ai_layer.ai_engine.context.context_adapter
 
-        assert hasattr(ai.context.context_adapter, "market_context_from_snapshot")
+        assert hasattr(ai_layer.ai_engine.context.context_adapter, "market_context_from_snapshot")
         assert "context_layer.context_engine.snapshot" not in sys.modules
         assert "context_layer" not in sys.modules
     finally:
         sys.modules.update(saved_context_modules)
         if saved_adapter is not None:
-            sys.modules["ai.context.context_adapter"] = saved_adapter
+            sys.modules["ai_layer.ai_engine.context.context_adapter"] = saved_adapter
 
 
 def test_symbol_and_timeframe_carry_through():

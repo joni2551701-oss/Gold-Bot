@@ -1,6 +1,6 @@
-from ai.access.permissions import AIRole
-from ai.learning.learning_runtime import LearningRuntime
-from ai.learning.models import LearningLevel, LearningSource, LearningStatus, LearningTopic
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.knowledge_ai.learning_engine.learning_runtime import LearningRuntime
+from ai_layer.knowledge_ai.learning_engine.models import LearningLevel, LearningSource, LearningStatus, LearningTopic
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_learning_intelligence=True)

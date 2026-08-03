@@ -4,10 +4,10 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from ai.audit.provider_stats import RuntimeMetricsCollector, compute_requests_per_minute
-from ai.audit.request_log import AIRequestLogEntry
-from ai.capabilities.capability import Capability
-from ai.event_bus import EventBus, EventType, RuntimeEvent
+from ai_layer.ai_service.audit.provider_stats import RuntimeMetricsCollector, compute_requests_per_minute
+from ai_layer.ai_service.audit.request_log import AIRequestLogEntry
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_service.event_bus import EventBus, EventType, RuntimeEvent
 
 
 def _request(created_at):

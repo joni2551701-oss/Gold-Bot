@@ -31,32 +31,32 @@ Constitution Article conflict.
 
 ## Built this phase
 
-- `voice/models.py` — `VoiceProviderType` (`OPENAI`/`ELEVENLABS`/
+- `ai_layer/voice_ai/models.py` — `VoiceProviderType` (`OPENAI`/`ELEVENLABS`/
   `LOCAL`/`CUSTOM`), `VoiceProviderStatus` (`ENABLED`/`DISABLED`),
   `VoiceResultStatus` (`PENDING`/`READY`/`REJECTED`), and five frozen
   dataclasses: `VoiceProvider`, `VoiceProfile`, `VoiceSettings`,
   `VoiceRequest`, `VoiceResult`. Primitive/enum/same-file-dataclass
   fields only.
-- `voice/profiles.py` — `SENIOR_VOICE`/`SENIORITA_VOICE`/
+- `ai_layer/voice_ai/profiles.py` — `SENIOR_VOICE`/`SENIORITA_VOICE`/
   `NARRATOR_VOICE` static constants, `build_voice_profile_registry()`.
-- `voice/providers.py` — `build_voice_provider_registry()`, four
+- `ai_layer/voice_ai/providers.py` — `build_voice_provider_registry()`, four
   static descriptors (OpenAI/ElevenLabs/Local/Custom).
-- `voice/registry.py` — `VoiceProfileRegistry`, a real runtime-mutable
+- `ai_layer/voice_ai/registry.py` — `VoiceProfileRegistry`, a real runtime-mutable
   registry (`register()`/`get()`/`exists()`/`list_all()`/`default()`),
   pre-seeded from `profiles.py`, modeled on
   `media_layer/telegram_broadcast/trigger_manager.py`'s `BroadcastTriggerManager`.
-- `voice/manager.py` — `VoiceManager`; delegates profile storage to
+- `ai_layer/voice_ai/manager.py` — `VoiceManager`; delegates profile storage to
   the injected `VoiceProfileRegistry` (no duplicate storage), owns its
   own provider ENABLED/DISABLED intent tracking (every provider starts
   `DISABLED`), deterministic `validate()`/`prepare()` request
   lifecycle.
-- `voice/adapter.py` — `content_result_to_voice_request(result,
+- `ai_layer/voice_ai/adapter.py` — `content_result_to_voice_request(result,
   manager, profile_name, provider_type, settings=None)`, a type-only
-  read of an upstream `ai.content.content_schema.ContentResult`,
+  read of an upstream `ai_layer.ai_service.content.content_schema.ContentResult`,
   mirroring `media_layer/content_manager/media_adapter.py`'s
   `content_result_to_media_asset()` shape exactly. Returns `None` for
   a rejected/empty-body `ContentResult` or an unknown profile/provider.
-- `voice/runtime.py` — `VoiceRuntime`, a thin façade over
+- `ai_layer/voice_ai/runtime.py` — `VoiceRuntime`, a thin façade over
   `VoiceManager` (`resolve_profile()`/`resolve_provider()`/
   `validate()`/`build_request()`/`build_result()`/`prepare_voice()`);
   computes nothing `VoiceManager` doesn't already compute.
@@ -88,7 +88,7 @@ Constitution Article conflict.
 - No LLM call anywhere — every method in `voice/` is deterministic
   (Rule 5); `test_voice_isolation.py`'s own structural test enforces
   this permanently.
-- No new `ai.persona.persona.Persona` — `SENIORITA_VOICE` is a
+- No new `ai_layer.personal_ai.persona_manager.persona.Persona` — `SENIORITA_VOICE` is a
   self-contained `VoiceProfile`, not a `Persona`; only
   `SENIOR_TRADING_AI` remains the one registered real `Persona`
   (Phase 63.8's own finding, carried forward unchanged).
@@ -121,12 +121,12 @@ Constitution Article conflict.
 
 ## Dependency Compliance
 
-`voice/*.py` imports only `ai.content.content_schema` (type-only,
+`voice/*.py` imports only `ai_layer.ai_service.content.content_schema` (type-only,
 `adapter.py` only) and `core_layer.logger.logger` (`manager.py` only) outside its
 own package. It never imports `media/`, `broadcast/`, `translation/`,
 `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
 `database/`, or `telegram/` — the permanent AST regression test in
-`tests/voice/test_voice_isolation.py` enforces this. `voice/providers.py`'s
+`tests/voice/test_voice_isolation.py` enforces this. `ai_layer/voice_ai/providers.py`'s
 `VoiceProviderType.OPENAI` descriptor is unrelated to
 `ai/providers/openai_provider.py`'s real, `AIService`-calling
 `OpenAIProvider` — different package, different concern, no shared
@@ -160,7 +160,7 @@ strategies/ signals/` returns no output.
 ## Next phase recommendation
 
 Per the Director's own closing note on the Phase 65.0 brief: Phase
-65.1 will add real STT/TTS providers (wiring `voice/providers.py`'s
+65.1 will add real STT/TTS providers (wiring `ai_layer/voice_ai/providers.py`'s
 descriptors to actual OpenAI/ElevenLabs/local backends), and Phase
 65.2 will add live Voice Conversation. Both are deliberately kept
 separate from this Foundation phase and require their own dedicated

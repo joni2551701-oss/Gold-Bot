@@ -1,7 +1,7 @@
-"""Phase 65.1 TASK 1 — voice/provider_contract.py: VoiceProviderContract + VoiceProviderError hierarchy."""
+"""Phase 65.1 TASK 1 — ai_layer/voice_ai/provider_contract.py: VoiceProviderContract + VoiceProviderError hierarchy."""
 
-from voice.models import VoiceRequest, VoiceResult, VoiceResultStatus, VoiceProviderType
-from voice.provider_contract import (
+from ai_layer.voice_ai.models import VoiceRequest, VoiceResult, VoiceResultStatus, VoiceProviderType
+from ai_layer.voice_ai.provider_contract import (
     VoiceProviderContract,
     VoiceProviderError,
     VoiceProviderInvalidResponseError,

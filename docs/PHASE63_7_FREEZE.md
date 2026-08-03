@@ -43,7 +43,7 @@ required — no Constitution Article conflict.
   `MediaType` (`media_types.py`) was reused as-is — the one genuine
   gap this phase's audit found.
 - `media_layer/content_manager/media_adapter.py` — `content_result_to_media_asset()` (type-only
-  read of an upstream `ai.content.content_schema.ContentResult`'s own
+  read of an upstream `ai_layer.ai_service.content.content_schema.ContentResult`'s own
   already-public fields, never `ContentEngine`'s internal state).
 - `media_layer/content_manager/media_pipeline.py` — `prepare_media_from_content()`, composing
   the adapter with `MediaManager.prepare_asset()` into the one-call
@@ -114,7 +114,7 @@ required — no Constitution Article conflict.
   `media/*.py` file: zero matches — confirmed both by the Bash grep
   run at TASK 10 and by the permanent AST regression tests in
   `tests/media/test_media_isolation.py` and `test_media_adapter.py`.
-- `media/` imports `ai.content.content_schema.ContentResult` — upstream,
+- `media/` imports `ai_layer.ai_service.content.content_schema.ContentResult` — upstream,
   type-only, `ContentEngine` itself never touched.
 - `media/` continues to import nothing from `decision/`, `risk/`,
   `execution/`, `strategies/`, `database/`, or `telegram/`.

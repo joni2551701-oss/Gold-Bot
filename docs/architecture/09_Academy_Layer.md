@@ -18,7 +18,7 @@ ruling separates them permanently:
   `learning/` (`confidence.py`, `outcome_analyzer.py`,
   `pattern_detector.py`, `regime_memory.py`, `trade_event_bridge.py`)
   plus `database_layer/journal_repository/learning_repository.py` and `ai/learning/`/
-  `ai/learning_context.py`. The system learning from its own trade
+  `ai_layer/knowledge_ai/learning_context.py`. The system learning from its own trade
   outcomes. **Status: real, implemented.** Belongs conceptually to
   GoldBot Core (Section 5) even though it has no dedicated diagram box
   there yet (no box was added by this rename — see Section 21, adding

@@ -74,7 +74,7 @@ between the two shapes.
 - **`/stats`** (Phase 59.4) — `platform_layer/telegram/owner/report_commands.py`'s
   `format_daily_stats(signals, performances)` already does the
   Signals/Approved/TP/SL/Expired/Cancelled/Best-Strategy formatting,
-  reusing `analytics/strategy_report.py` — but needs a real *data
+  reusing `backtesting_layer/statistics/strategy_report.py` — but needs a real *data
   source* wired up first, not just a handler: nothing in this codebase
   persists a day's worth of `SignalSchema`/`SignalPerformance` records
   anywhere yet. A future implementer would need to decide where

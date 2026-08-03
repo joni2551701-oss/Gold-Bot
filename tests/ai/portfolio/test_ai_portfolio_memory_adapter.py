@@ -1,5 +1,5 @@
-from ai.portfolio.memory_adapter import portfolio_reference_key
-from ai.portfolio.models import PortfolioRecord
+from ai_layer.ai_engine.portfolio.memory_adapter import portfolio_reference_key
+from ai_layer.ai_engine.portfolio.models import PortfolioRecord
 
 
 def _record(**overrides):

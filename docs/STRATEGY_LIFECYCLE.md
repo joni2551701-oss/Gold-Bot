@@ -179,7 +179,7 @@ placeholders, never a synthetic estimate.
 - **AI Integration**: a future AI Assistant could query
   `StrategyRegistry.active()` to describe available strategies to a
   user, or reason about a strategy's `status`/`version` — not wired
-  into `ai/ai_analyzer.py` in this phase.
+  into `ai_layer/ai_engine/ai_analyzer.py` in this phase.
 - **Analytics**: joins `StrategyDefinition.id` against
   `SignalRecord.strategy_name` (both use the exact same string) to
   group results by strategy metadata (status, version) without a

@@ -1,6 +1,6 @@
-from ai.research.models import ResearchCategory
-from ai.research.strategy_adapter import strategy_record_to_research_input
-from ai.strategy.models import StrategyRecord, StrategyType
+from ai_layer.fundamental_ai.models import ResearchCategory
+from ai_layer.fundamental_ai.strategy_adapter import strategy_record_to_research_input
+from ai_layer.ai_engine.strategy.models import StrategyRecord, StrategyType
 
 
 def _record(**overrides):

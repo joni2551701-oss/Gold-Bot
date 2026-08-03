@@ -3,7 +3,7 @@
 **Not wired into the live bot.** Same "real function, not live-wired"
 posture as every phase before it. Nothing in `core/pipeline.py` or any
 Telegram routing surface constructs or reads anything in
-`analytics/performance_metrics.py`/`equity_curve.py`/`benchmark.py`/
+`backtesting_layer/statistics/performance_metrics.py`/`equity_curve.py`/`benchmark.py`/
 `platform_layer/telegram/owner/performance_commands.py` this phase.
 
 ## Where this sits
@@ -34,14 +34,14 @@ section, unchanged by this phase.
 
 Read `core_layer/health_monitor/performance.py` (`PerformanceTracker`: database-driven
 win/loss/win_rate off the persisted `signals` table via
-`SignalRepository`) and `analytics/validation_report.py`
+`SignalRepository`) and `backtesting_layer/statistics/validation_report.py`
 (`ValidationReport`: per-strategy breakdown + best session/market
 phase). Neither computes expectancy, profit factor, drawdown, recovery
 factor, or a risk-adjusted return — confirmed no overlap with TASK 2's
 scope. Both are read-only inputs to this audit, not extended or
 imported by any new module in this phase.
 
-## TASK 2: `analytics/performance_metrics.py`
+## TASK 2: `backtesting_layer/statistics/performance_metrics.py`
 
 `PerformanceMetrics` (frozen) + `compute_performance_metrics(performances,
 equity_curve=None)` + `format_performance_metrics(metrics)`. Portfolio-wide
@@ -70,11 +70,11 @@ in this codebase — see `signal_performance.py`'s own docstring):
   the supplied curve was already built against — no new dollar
   assumption invented here.
 
-`compute_win_rate()` is imported from `analytics.strategy_report`
+`compute_win_rate()` is imported from `backtesting_layer.statistics.strategy_report`
 directly, not reimplemented — the same WIN/(WIN+LOSS) convention this
 codebase has used since Phase 59.
 
-## TASK 3: `analytics/equity_curve.py`
+## TASK 3: `backtesting_layer/statistics/equity_curve.py`
 
 `EquityCurveConfig` (`starting_balance=1000.0`, `unit_risk_amount=100.0`)
 + `EquityPoint` (`timestamp`, `balance`, `drawdown`) +
@@ -97,7 +97,7 @@ timestamp — not a close time, since none exists on that model either).
 Records with `r_multiple is None` are skipped. Never raises: an empty
 or all-unresolved list produces a single starting point.
 
-## TASK 4: `analytics/benchmark.py`
+## TASK 4: `backtesting_layer/statistics/benchmark.py`
 
 `BenchmarkComparison` (`strategy_return_pct`, `benchmark_return_pct`,
 `alpha_pct`) + `compute_benchmark_comparison(equity_curve,
@@ -169,13 +169,13 @@ foundation posture as `backtest_commands.py`/`execution_commands.py`.
 
 ## Dependencies
 
-`performance_metrics.py` imports `analytics.signal_performance` and
-`analytics.strategy_report.compute_win_rate` (reused, not
-reimplemented); imports `analytics.equity_curve.max_drawdown` locally
+`performance_metrics.py` imports `backtesting_layer.statistics.signal_performance` and
+`backtesting_layer.statistics.strategy_report.compute_win_rate` (reused, not
+reimplemented); imports `backtesting_layer.statistics.equity_curve.max_drawdown` locally
 inside `compute_performance_metrics()` only when an equity curve is
 supplied, avoiding an unconditional import-time dependency between the
-two sibling modules. `equity_curve.py` imports `analytics.signal_performance`
-(`TYPE_CHECKING`-only). `benchmark.py` imports `analytics.equity_curve`
+two sibling modules. `equity_curve.py` imports `backtesting_layer.statistics.signal_performance`
+(`TYPE_CHECKING`-only). `benchmark.py` imports `backtesting_layer.statistics.equity_curve`
 (`TYPE_CHECKING`-only). `performance_commands.py` imports all three
 plus `platform_layer.telegram.owner.provider_commands.ProviderCommandResult`, the same
 envelope every other module in `platform_layer/telegram/owner/` already uses. None of

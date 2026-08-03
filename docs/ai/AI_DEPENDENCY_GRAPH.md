@@ -61,33 +61,33 @@ as idealized.
 | ai.trading_analyst | ai.access, ai.content, ai.explanation, ai.intelligence_runtime (top-level) | ai/trading_analyst/*.py |
 | ai.validation | ai.providers | ai/validation/response_validator.py |
 | ai.analyzer (top-level) | ai.ai_analyzer (top-level shim) | ai/analyzer/ai_analyzer.py:16 |
-| ai.ai_prompt (top-level) | ai.confidence_model (top-level) | ai/ai_prompt.py:4 |
-| ai.trade_journal.py (shim) | ai.journal | ai/trade_journal.py:9-15 |
-| ai.intelligence_runtime (top-level) | ai.content, ai.conversation, ai.explanation, ai.memory, ai.reasoning | ai/intelligence_runtime.py |
+| ai.ai_prompt (top-level) | ai.confidence_model (top-level) | ai_layer/ai_engine/ai_prompt.py:4 |
+| ai.trade_journal.py (shim) | ai.journal | ai_layer/knowledge_ai/knowledge_base/trade_journal.py:9-15 |
+| ai.intelligence_runtime (top-level) | ai.content, ai.conversation, ai.explanation, ai.memory, ai.reasoning | ai_layer/ai_engine/intelligence_runtime.py |
 
 ## 2. External edges (`ai.X → non-ai top-level package`)
 
 | Source | Depends on | Evidence |
 |---|---|---|
 | Most subpackages | `dataclasses` (stdlib) | ubiquitous |
-| ai.ai_analyzer.py | context, core, signals | ai/ai_analyzer.py:1-4 |
-| ai.ai_prompt.py, ai.confidence_model.py | context, signals | ai/ai_prompt.py:2-3, ai/confidence_model.py:3-4 |
+| ai.ai_analyzer.py | context, core, signals | ai_layer/ai_engine/ai_analyzer.py:1-4 |
+| ai.ai_prompt.py, ai.confidence_model.py | context, signals | ai_layer/ai_engine/ai_prompt.py:2-3, ai_layer/confidence_ai/confidence_model.py:3-4 |
 | ai.capabilities, ai.prompts, ai.providers, ai.runtime, ai.session | core (`core_layer.logger.logger`) | e.g. ai/providers/openai_provider.py:30 |
 | ai.chart_intelligence | broadcast, configuration, media | ai/chart_intelligence/content_adapter.py:34,37 |
 | ai.coaching, ai.learning, ai.portfolio, ai.research, ai.strategy, ai.trade_journal | configuration | e.g. ai/coaching/access.py:10 |
 | ai.context | context (top-level), signals | ai/context/context_adapter.py:35, ai/context/context_snapshot.py:37 |
 | ai.conversation, ai.explanation, ai.reasoning, ai.intelligence_runtime.py | knowledge | ai/conversation/conversation_adapters.py:27 |
 | ai.explanation | signals | ai/explanation/explanation_engine.py:35 |
-| ai.intelligence_runtime.py, ai.trading_analyst | broadcast, media | ai/intelligence_runtime.py:53,56 |
+| ai.intelligence_runtime.py, ai.trading_analyst | broadcast, media | ai_layer/ai_engine/intelligence_runtime.py:53,56 |
 | ai.journal | signals | ai/journal/trade_journal.py:4 |
-| ai.learning_context.py (top-level) | analytics, learning (top-level) | ai/learning_context.py:66-67 |
+| ai.learning_context.py (top-level) | analytics, learning (top-level) | ai_layer/knowledge_ai/learning_context.py:66-67 |
 | ai.performance, ai.tools | analytics | ai/performance/analytics_adapter.py:26 |
 
 **Confirmed absent**: no file under `ai/` imports `decision`, `risk`,
 `execution`, `database`, `telegram`, or `strategies` — anchored greps
 returned zero real import statements for all six. Every unanchored
 match on these strings inside `ai/` is prose in a docstring/comment
-restating the forbidden-import rule itself (e.g. `ai/interfaces.py:74-76`).
+restating the forbidden-import rule itself (e.g. `ai_layer/ai_service/interfaces.py:74-76`).
 This confirms Article 3 / Constitution's AI-never-imports-Trading-Core
 rule holds with no exceptions anywhere in `ai/`.
 
@@ -102,7 +102,7 @@ unguarded, module-level import.
 
 **Result: 4 real circular dependencies, 1 false positive.**
 
-### Cycle 1 (real) — `ai.runtime ↔ ai.providers`
+### Cycle 1 (real) — `ai_layer.ai_engine.runtime ↔ ai.providers`
 - `ai/runtime/ai_service.py:167` — `from ai.providers.circuit_breaker import ProviderCircuitBreaker`
 - `ai/providers/circuit_breaker.py:51` — `from ai.runtime.event_bus import EventBus, EventType, RuntimeEvent`
 
@@ -110,16 +110,16 @@ Both unguarded, module-level. No `ImportError` occurs in practice only
 because neither file imports the other's *importer* module directly —
 but the subpackage-level dependency is genuinely bidirectional.
 
-### Cycle 2 (real) — `ai.audit ↔ ai.runtime`
+### Cycle 2 (real) — `ai_layer.ai_service.audit ↔ ai.runtime`
 - `ai/audit/provider_stats.py:61` — `from ai.runtime.event_bus import ...`
 - `ai/runtime/ai_service.py:159` — `from ai.audit.provider_stats import compute_daily_usage, evaluate_cost_protection`
 
-### Cycle 3 (real, 3-node) — `ai.audit → ai.runtime → ai.router → ai.audit`
+### Cycle 3 (real, 3-node) — `ai_layer.ai_service.audit → ai.runtime → ai.router → ai.audit`
 - `ai/audit/provider_stats.py:61` — audit → runtime (same edge as Cycle 2)
 - `ai/runtime/ai_service.py:178` — `from ai.router.router import AIRouter`
 - `ai/router/router.py:34` — `from ai.audit.provider_stats import ProviderStats, compute_provider_stats`
 
-### Cycle 4 (real) — `ai.explanation ↔ ai.content`
+### Cycle 4 (real) — `ai_layer.explanation_ai ↔ ai.content`
 - `ai/explanation/explanation_output.py:29` — `from ai.content.content_types import ContentType`
 - `ai/explanation/explanation_content_adapter.py:15` — `from ai.content.broadcast_output import BroadcastReadyContent`
 - `ai/content/content_adapters.py:17` — `from ai.explanation.explanation_output import ExplanationOutput`
@@ -131,11 +131,11 @@ never the reverse. `explanation_output.py:29` and
 `explanation_content_adapter.py:15` both import from `ai/content/`,
 directly contradicting that stated one-directional policy.
 
-### Not a real cycle — `ai.context ↔ ai.cache`
+### Not a real cycle — `ai_layer.ai_engine.context ↔ ai.cache`
 - `ai/context/context_builder.py:34` — `from ai.cache.cache_policy import compute_context_hash` (real, unguarded, context → cache)
 - `ai/cache/cache_policy.py:47` — `from ai.context.context_snapshot import AIContext` — inside `if TYPE_CHECKING:` (lines 46-47), never executes at runtime.
 
-Confirmed no other file under `ai/cache/` references `ai.context`
+Confirmed no other file under `ai/cache/` references `ai_layer.ai_engine.context`
 outside comments — this relationship is one-directional at runtime.
 
 ---
@@ -144,18 +144,18 @@ outside comments — this relationship is one-directional at runtime.
 
 Grouping the 4 real cycles by the runtime relationships they sit in:
 
-- **Runtime/Provider/Router/Audit cluster**: `ai.runtime`, `ai.providers`,
-  `ai.router`, `ai.audit` form a tightly bidirectionally-coupled group
+- **Runtime/Provider/Router/Audit cluster**: `ai_layer.ai_engine.runtime`, `ai_layer.ai_engine.providers`,
+  `ai_layer.ai_coordinator`, `ai_layer.ai_service.audit` form a tightly bidirectionally-coupled group
   (Cycles 1-3). This is the AI Service orchestration core.
-- **Content/Explanation cluster**: `ai.content` and `ai.explanation`
+- **Content/Explanation cluster**: `ai_layer.ai_service.content` and `ai_layer.explanation_ai`
   are bidirectionally coupled (Cycle 4), despite a documented
   one-directional design intent.
 - **Everything else is acyclic**: the 66.x-family subpackages
   (`coaching`, `learning`, `performance`, `portfolio`, `research`,
   `strategy`, `trade_journal`, `trading_analyst`, `chart_intelligence`)
-  form a forward-only DAG rooted at `ai.access` + earlier
-  foundational subpackages (`ai.memory`, `ai.reasoning`, `ai.context`,
-  `ai.persona`, `ai.session`) — no cycles found among any of them.
+  form a forward-only DAG rooted at `ai_layer.ai_service.access` + earlier
+  foundational subpackages (`ai_layer.knowledge_ai.memory_manager`, `ai_layer.ai_engine.reasoning`, `ai_layer.ai_engine.context`,
+  `ai_layer.personal_ai.persona_manager`, `ai_layer.ai_service.session`) — no cycles found among any of them.
 
 See `AI_ARCHITECTURE_REVIEW.md` for the Clean Architecture / Dependency
 Direction assessment of these cycles, and

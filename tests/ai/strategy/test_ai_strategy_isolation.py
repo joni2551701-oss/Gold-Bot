@@ -12,7 +12,7 @@ import pathlib
 
 
 def _strategy_dir():
-    return pathlib.Path(__file__).resolve().parents[3] / "ai" / "strategy"
+    return pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "ai_engine" / "strategy"
 
 
 def _imported_names(py_file: pathlib.Path):
@@ -28,7 +28,7 @@ def _imported_names(py_file: pathlib.Path):
 
 def test_strategy_never_imports_trading_core_layers():
     """TASK 9: decision/, risk/, execution/, signals/, strategies/ -- zero exceptions."""
-    forbidden_prefixes = ("decision", "risk", "execution", "signals", "strategies")
+    forbidden_prefixes = ("decision_layer", "risk_layer", "execution_layer", "signal_layer", "strategy_layer")
 
     for py_file in _strategy_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -37,7 +37,7 @@ def test_strategy_never_imports_trading_core_layers():
 
 def test_strategy_never_imports_context_telegram_database():
     """TASK 9: context/, telegram/, database/ -- zero exceptions."""
-    forbidden_prefixes = ("context", "telegram", "database")
+    forbidden_prefixes = ("context_layer", "platform_layer.telegram", "database_layer")
 
     for py_file in _strategy_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -54,7 +54,7 @@ def test_strategy_never_imports_assistant_voice():
 
 
 def test_strategy_never_imports_media_broadcast_academy_portfolio_research():
-    forbidden_prefixes = ("media", "broadcast", "academy", "portfolio", "research")
+    forbidden_prefixes = ("media_layer.content_manager", "media_layer.telegram_broadcast", "academy", "portfolio", "research")
 
     for py_file in _strategy_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -95,7 +95,7 @@ def test_strategy_never_imports_analytics_or_the_top_level_learning_package():
 def test_strategy_never_imports_ai_provider_or_llm_sdks():
     """Rule 4: 'LLM ishlatilmaydi. GPT/Claude/Gemini/Reasoning/Inference YO'Q' -- no LLM SDK anywhere in this Foundation-only phase."""
     forbidden_prefixes = (
-        "ai.providers", "ai.router", "ai.reasoning", "openai", "anthropic", "google.generativeai",
+        "ai_layer.ai_engine.providers", "ai_layer.ai_coordinator", "ai_layer.ai_engine.reasoning", "openai", "anthropic", "google.generativeai",
     )
 
     for py_file in _strategy_dir().rglob("*.py"):
@@ -108,8 +108,8 @@ def test_strategy_never_imports_ai_provider_or_llm_sdks():
 
 
 def test_strategy_never_imports_ai_memory():
-    """TASK 6: 'ai.memory import qilish taqiqlanadi' -- zero exceptions."""
-    forbidden_prefixes = ("ai.memory",)
+    """TASK 6: 'ai_layer.knowledge_ai.memory_manager import qilish taqiqlanadi' -- zero exceptions."""
+    forbidden_prefixes = ("ai_layer.knowledge_ai.memory_manager",)
 
     for py_file in _strategy_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -118,7 +118,7 @@ def test_strategy_never_imports_ai_memory():
 
 def test_strategy_never_imports_knowledge_chart_intelligence_or_trading_analyst():
     """docs/PHASE66_6_AUDIT.md: only ai.performance and ai.trade_journal are named as Strategy input sources -- Knowledge, Chart Intelligence, and Trading Analyst are audited but never composed here."""
-    forbidden_prefixes = ("knowledge", "ai.chart_intelligence", "ai.trading_analyst")
+    forbidden_prefixes = ("knowledge", "ai_layer.vision_ai", "ai_layer.ai_engine.trading_analyst")
 
     for py_file in _strategy_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -126,7 +126,7 @@ def test_strategy_never_imports_knowledge_chart_intelligence_or_trading_analyst(
 
 
 def test_strategy_never_imports_ai_content_conversation_or_coaching():
-    forbidden_prefixes = ("ai.content", "ai.conversation", "ai.explanation", "ai.coaching", "ai.learning")
+    forbidden_prefixes = ("ai_layer.ai_service.content", "ai_layer.personal_ai.interaction_manager", "ai_layer.explanation_ai", "ai_layer.personal_ai.senior", "ai_layer.knowledge_ai.learning_engine")
 
     for py_file in _strategy_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -141,20 +141,20 @@ def test_performance_import_confined_to_performance_adapter():
         if py_file == adapter_file:
             continue
         for name in _imported_names(py_file):
-            assert not name.startswith("ai.performance"), f"{py_file}: {name}"
+            assert not name.startswith("ai_layer.ai_engine.performance"), f"{py_file}: {name}"
 
 
 def test_only_performance_adapter_imports_ai_performance():
     adapter_file = _strategy_dir() / "performance_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert any(name.startswith("ai.performance") for name in imported)
+    assert any(name.startswith("ai_layer.ai_engine.performance") for name in imported)
 
 
 def test_performance_adapter_never_imports_performance_runtime():
     """TASK 4's own instruction: 'Type-only. Runtime import emas.'"""
     adapter_file = _strategy_dir() / "performance_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert not any(name == "ai.performance.performance_runtime" for name in imported)
+    assert not any(name == "ai_layer.ai_engine.performance.performance_runtime" for name in imported)
 
 
 def test_trade_journal_import_confined_to_journal_adapter():
@@ -165,19 +165,19 @@ def test_trade_journal_import_confined_to_journal_adapter():
         if py_file == adapter_file:
             continue
         for name in _imported_names(py_file):
-            assert not name.startswith("ai.trade_journal"), f"{py_file}: {name}"
+            assert not name.startswith("ai_layer.knowledge_ai.knowledge_base.trade_journal"), f"{py_file}: {name}"
 
 
 def test_only_journal_adapter_imports_ai_trade_journal():
     adapter_file = _strategy_dir() / "journal_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert any(name.startswith("ai.trade_journal") for name in imported)
+    assert any(name.startswith("ai_layer.knowledge_ai.knowledge_base.trade_journal") for name in imported)
 
 
 def test_strategy_runtime_module_has_no_persistence_import():
     """Belt-and-suspenders: strategy_runtime.py itself (the one file with a stateful store) imports nothing beyond ai.access/ai.strategy/configuration/stdlib."""
     runtime_file = _strategy_dir() / "strategy_runtime.py"
-    allowed_prefixes = ("ai.access", "ai.strategy", "core_layer.configuration", "dataclasses", "datetime", "typing")
+    allowed_prefixes = ("ai_layer.ai_service.access", "ai_layer.ai_engine.strategy", "core_layer.configuration", "dataclasses", "datetime", "typing")
     for name in _imported_names(runtime_file):
         assert name.startswith(allowed_prefixes), f"{runtime_file}: {name}"
 
@@ -186,7 +186,7 @@ def test_strategy_record_has_no_trading_core_object_field_type():
     """Belt-and-suspenders: no dataclass field on StrategyRecord may be typed as a Trading Core object -- every field is a primitive/enum/Optional only."""
     import dataclasses
 
-    from ai.strategy.models import StrategyRecord
+    from ai_layer.ai_engine.strategy.models import StrategyRecord
 
     allowed_type_fragments = ("str", "StrategyType", "StrategyStatus", "Optional")
     for f in dataclasses.fields(StrategyRecord):

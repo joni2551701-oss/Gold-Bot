@@ -111,7 +111,7 @@ Signal Quality Score  -- per-candidate letter grade (Phase A4)
 Explainability  -- per-candidate reasons + quality + confidence (Phase A9)
       |
       v
-Feature Engineering (features/feature_engine.py, Phase A10)
+Feature Engineering (core_layer/features/feature_engine.py, Phase A10)
       |         compute_market_features(context, explanation, asset, timeframe, htf_bias)
       |         -> MarketFeatures, one per candidate
       v
@@ -148,7 +148,7 @@ one new key, `"features"` (`List[MarketFeatures]`, same order as
 
 ## Significance for AI
 
-`ai/ai_analyzer.py`'s `AIAnalyzer.analyze()` is still a permanent-
+`ai_layer/ai_engine/ai_analyzer.py`'s `AIAnalyzer.analyze()` is still a permanent-
 reject heuristic stub (`docs/AI_ARCHITECTURE.md`). `MarketFeatures` is
 exactly the flat, numeric/categorical shape a future real AI
 provider's prompt or feature vector would want for a specific

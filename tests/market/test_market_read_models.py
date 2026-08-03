@@ -9,9 +9,9 @@ or a provider candle using public attributes only.
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
-from market.candle import Candle
-from market.orderbook import OrderBook
-from market.ticker import Ticker
+from data_layer.live_data.market.candle import Candle
+from data_layer.live_data.market.orderbook import OrderBook
+from data_layer.live_data.market.ticker import Ticker
 
 _TS = datetime(2026, 1, 7, 12, 0, tzinfo=timezone.utc)
 

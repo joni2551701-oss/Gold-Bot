@@ -1,11 +1,11 @@
 """Phase 65.1 TASK 2-5 — voice/provider_adapters/: openai.py, elevenlabs.py, local.py, custom.py."""
 
-from voice.models import VoiceProviderType, VoiceRequest, VoiceResultStatus
-from voice.provider_adapters.custom import CustomVoiceProvider
-from voice.provider_adapters.elevenlabs import ElevenLabsVoiceProvider
-from voice.provider_adapters.local import LocalVoiceProvider
-from voice.provider_adapters.openai import OpenAIVoiceProvider
-from voice.provider_contract import (
+from ai_layer.voice_ai.models import VoiceProviderType, VoiceRequest, VoiceResultStatus
+from ai_layer.voice_ai.provider_adapters.custom import CustomVoiceProvider
+from ai_layer.voice_ai.provider_adapters.elevenlabs import ElevenLabsVoiceProvider
+from ai_layer.voice_ai.provider_adapters.local import LocalVoiceProvider
+from ai_layer.voice_ai.provider_adapters.openai import OpenAIVoiceProvider
+from ai_layer.voice_ai.provider_contract import (
     VoiceProviderInvalidResponseError,
     VoiceProviderTimeoutError,
     VoiceProviderUnavailableError,

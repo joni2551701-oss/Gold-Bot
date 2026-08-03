@@ -10,7 +10,7 @@ carries no volatility signal, and never fabricates EXTREME.
 
 from types import SimpleNamespace
 
-from market.volatility_state import VolatilityLevel
+from data_layer.live_data.market.volatility_state import VolatilityLevel
 
 
 def _schema(regime):

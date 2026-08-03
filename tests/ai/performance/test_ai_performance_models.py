@@ -1,6 +1,6 @@
 import dataclasses
 
-from ai.performance.models import (
+from ai_layer.ai_engine.performance.models import (
     PerformanceCategory,
     PerformanceMetric,
     PerformanceRecord,
@@ -191,7 +191,7 @@ def test_generate_performance_id_unique():
 
 def test_performance_metric_and_analytics_performance_metrics_are_distinct_types():
     """docs/PHASE66_5_AUDIT.md: PerformanceMetric (singular) is not a duplicate of analytics.performance_metrics.PerformanceMetrics (plural)."""
-    from analytics.performance_metrics import PerformanceMetrics
+    from backtesting_layer.statistics.performance_metrics import PerformanceMetrics
 
     assert PerformanceMetric is not PerformanceMetrics
     assert {f.name for f in dataclasses.fields(PerformanceMetric)} != {f.name for f in dataclasses.fields(PerformanceMetrics)}

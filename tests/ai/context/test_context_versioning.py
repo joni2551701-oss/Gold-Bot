@@ -1,6 +1,6 @@
 """Phase 61.1 TASK 7 — AI Context Version. Additive, backwards compatible."""
 
-from ai.context.context_builder import build_ai_context
+from ai_layer.ai_engine.context.context_builder import build_ai_context
 
 
 def test_default_context_has_version_1_0():

@@ -30,9 +30,9 @@ class UserRecord:
     trial_started_at (Phase 61.5 TASK 4): an ISO-8601 timestamp string,
     same storage convention as `last_activity` -- set once, the first
     time this user's shared phone passes
-    `ai.access.identity_checker.is_phone_reused_by_another_account()`.
+    `ai_layer.ai_service.access.identity_checker.is_phone_reused_by_another_account()`.
     None for a user who has not started a trial yet. Paired with
-    `ai.access.trial_manager.trial_status_from_started_at()` to
+    `ai_layer.ai_service.access.trial_manager.trial_status_from_started_at()` to
     compute active/expires_at without a second, database-specific
     reimplementation of that math.
 

@@ -1,6 +1,6 @@
-from ai.chart_intelligence.content_adapter import chart_analysis_to_content_body, prepare_content
-from ai.chart_intelligence.models import ChartAnalysis, ChartAnalysisType, ChartImageType
-from ai.content.content_adapter import ContentEngine
+from ai_layer.vision_ai.content_adapter import chart_analysis_to_content_body, prepare_content
+from ai_layer.vision_ai.models import ChartAnalysis, ChartAnalysisType, ChartImageType
+from ai_layer.ai_service.content.content_adapter import ContentEngine
 from media_layer.telegram_broadcast.broadcast_manager import BroadcastManager
 from media_layer.telegram_broadcast.models import BroadcastStatus
 from media_layer.content_manager.media_manager import MediaManager

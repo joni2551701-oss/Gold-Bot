@@ -27,7 +27,7 @@ remembers to name.
 
 - **`ai/journal/trade_journal.py`'s `TradeJournalEntry`** (Phase 55 AI
   folder restructure, re-exported by a compatibility shim at
-  `ai/trade_journal.py`). Fields: `signal_id`, `strategy_name`,
+  `ai_layer/knowledge_ai/knowledge_base/trade_journal.py`). Fields: `signal_id`, `strategy_name`,
   `signal_type` (typed as `signal_layer.signal_builder.models.SignalType`!),
   `technical_score`, `ai_confidence`, `decision` (`DecisionType`:
   APPROVED/REJECTED/NO_TRADE), `entry`, `stop_loss`, `take_profit`,
@@ -57,7 +57,7 @@ remembers to name.
 
 ### `learning/`
 
-`learning/models.py`'s `LearningRecord` (Phase 60.6/60.7) is the
+`ai_layer/knowledge_ai/learning_loop/models.py`'s `LearningRecord` (Phase 60.6/60.7) is the
 closest-shaped existing record: `trade_id`, `signal_id`,
 `strategy_name`, `market_phase`, `session`, `timeframe`, `result`,
 `r_multiple`, `failure_type`, `success_pattern`, `htf_bias`,
@@ -89,10 +89,10 @@ into (and this phase must not create one).
 ### `analytics/`, `performance/`
 
 No `performance/` top-level package exists in this repository (the
-closest real module is `analytics/performance_metrics.py`, Phase
+closest real module is `backtesting_layer/statistics/performance_metrics.py`, Phase
 60.4) — confirms the brief's own audit-list naming discrepancy, same
 pattern as `docs/PHASE63_0_FOUNDATION_AUDIT.md`'s original corrections
-for `knowledge/`/`media/`/`broadcast/`. `analytics/performance_metrics.py`
+for `knowledge/`/`media/`/`broadcast/`. `backtesting_layer/statistics/performance_metrics.py`
 computes win rate/Sharpe/profit factor/drawdown — Director Note 1
 explicitly rules this kind of computation out of Trade Journal's scope
 ("Bu 66.5 ga tegishli" — that belongs to 66.5). Not composed by this
@@ -105,7 +105,7 @@ phase.
 `EXPLANATION_HISTORY`, `KNOWLEDGE_REFERENCE` — none fits a trade
 journal entry, and Rule 6 ("Memory o'zgarmaydi") forbids adding a
 seventh. TASK 6's own "reference tayyorlansin" (reference prepared) is
-satisfied without any `ai.memory` import at all — a plain string key
+satisfied without any `ai_layer.knowledge_ai.memory_manager` import at all — a plain string key
 generator lives in this phase's own package instead (see TASK 6
 below). `ai/memory/` is not imported by this phase.
 
@@ -164,7 +164,7 @@ previously-LOCKed module this phase makes.
    (`journal_id`/`chart_id`/`trade_id`/`symbol`/`timeframe`/
    `direction`/`entry`/`sl`/`tp`/`result`/`confidence`/`reason`/
    `lesson`/`mistakes`/`created_at`) anywhere in the repository.
-3. **Trade History Contract bormi?** `learning/models.py`'s
+3. **Trade History Contract bormi?** `ai_layer/knowledge_ai/learning_loop/models.py`'s
    `LearningRecord` is the closest, but it is a DB-persisted,
    pattern-analysis record (Rule 3 forbids reusing a DB-backed type),
    not a narrative journal contract.
@@ -180,7 +180,7 @@ previously-LOCKed module this phase makes.
 
 Per Constitution Article 11 step 2 ("can an existing module be
 extended without breaking its contract"): both existing `ai/journal/`
-types and `learning/models.py`'s `LearningRecord` fail this test for
+types and `ai_layer/knowledge_ai/learning_loop/models.py`'s `LearningRecord` fail this test for
 the specific reasons above (Trading Core coupling, DB persistence,
 purpose mismatch). Per the brief's own TASK 1 fallback instruction
 ("Agar mavjud bo'lmasa `ai/trade_journal/` yaratiladi"):
@@ -194,9 +194,9 @@ new top-level package.
 
 **Naming note (documented, not a defect):** the new contract is named
 `TradeJournalEntry` per the brief's own TASK 2 instruction, living at
-`ai.trade_journal.models.TradeJournalEntry` — a different,
+`ai_layer.knowledge_ai.knowledge_base.trade_journal.models.TradeJournalEntry` — a different,
 non-colliding fully-qualified path from the pre-existing
-`ai.journal.trade_journal.TradeJournalEntry` (Phase 55). The two types
+`ai_layer.knowledge_ai.knowledge_base.journal.trade_journal.TradeJournalEntry` (Phase 55). The two types
 are never imported into the same file and serve genuinely different
 purposes (see above); this is recorded here explicitly so no future
 reader mistakes the bare class name for a duplicate.

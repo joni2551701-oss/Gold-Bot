@@ -12,8 +12,8 @@ code is written.
 |---|---|---|
 | Knowledge Foundation | ✅ Yes — **not** `ai/knowledge/`, see finding below | `knowledge/` (top-level package, Phase 61.3) |
 | Knowledge Manager | ❌ No | none — `registry.py` exposes module-level functions, not a class |
-| Knowledge Registry | ✅ Yes | `knowledge/registry.py` — `get_entry()`, `entries_by_category()`, `search()`, `all_entries()` |
-| Knowledge Contract/Model | ✅ Yes (mostly) | `knowledge/models.py` — `KnowledgeCategory` (enum), `KnowledgeEntry` (frozen dataclass: `key`, `category`, `title`, `summary`, `tags`) — no `source` field yet |
+| Knowledge Registry | ✅ Yes | `ai_layer/knowledge_ai/knowledge_base/registry.py` — `get_entry()`, `entries_by_category()`, `search()`, `all_entries()` |
+| Knowledge Contract/Model | ✅ Yes (mostly) | `ai_layer/knowledge_ai/knowledge_base/models.py` — `KnowledgeCategory` (enum), `KnowledgeEntry` (frozen dataclass: `key`, `category`, `title`, `summary`, `tags`) — no `source` field yet |
 | Knowledge Capability | ➖ Partial | `ai/capabilities/capability.py`'s `Capability.EDUCATION` is the closest existing member; no dedicated `KNOWLEDGE` member |
 | `ai/persona/` (referenced for pattern) | ✅ Yes | `Persona`, `PersonaManager`, `persona_registry.py` (Phase 63.0) — the Manager-over-Registry pattern this phase's Manager follows |
 | `ai/content/` (referenced for pattern) | ✅ Yes | `ContentRequest`/`ContentResult`/`ContentType` (Phase 61.5) — untouched this phase |
@@ -58,15 +58,15 @@ names.** TASK 1 asks for `knowledge_manager.py` / `knowledge_registry.py`
 
 | Brief's name | Real file | Status |
 |---|---|---|
-| `knowledge_models.py` | `knowledge/models.py` | Exists — Article 9 LOCKed (Phase 61.3 frozen), not renamed |
-| `knowledge_registry.py` | `knowledge/registry.py` | Exists — Article 9 LOCKed, not renamed |
+| `knowledge_models.py` | `ai_layer/knowledge_ai/knowledge_base/models.py` | Exists — Article 9 LOCKed (Phase 61.3 frozen), not renamed |
+| `knowledge_registry.py` | `ai_layer/knowledge_ai/knowledge_base/registry.py` | Exists — Article 9 LOCKed, not renamed |
 | `README.md` | `knowledge/README.md` | Exists — extended, not rewritten |
 | `knowledge_manager.py` | *(none)* | **Genuine gap** — the one file this phase actually creates |
 
 Renaming `models.py`/`registry.py` to `knowledge_models.py`/
 `knowledge_registry.py` would violate Article 9 (a LOCKed module's file
 path does not move). The package name itself already carries
-"knowledge" (`knowledge.models`, `knowledge.registry`), so the prefix
+"knowledge" (`ai_layer.knowledge_ai.knowledge_base.models`, `ai_layer.knowledge_ai.knowledge_base.registry`), so the prefix
 the brief's literal filenames imply is redundant, not missing.
 
 ## TASK 2's contract naming ("KnowledgeItem, KnowledgeCategory,

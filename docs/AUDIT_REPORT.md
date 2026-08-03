@@ -163,7 +163,7 @@ correctly-typed `SignalCandidate`.
 
 **Status:** Functioning as designed — but the design is an incomplete stub.
 
-- `AIAnalyzer.analyze()` (`ai/ai_analyzer.py:24-37`) unconditionally
+- `AIAnalyzer.analyze()` (`ai_layer/ai_engine/ai_analyzer.py:24-37`) unconditionally
   returns `AIAnalysisResult(approved=False, confidence=0.0, risk_score=1.0, ...)`
   for every input, with an explicit code comment: "Heuristic scoring
   logic will be implemented in Phase 6.0.1." This matches the README's
@@ -172,11 +172,11 @@ correctly-typed `SignalCandidate`.
   `ContextSnapshot`/`SignalCandidate`, never mutates a signal, never
   calls Risk or Decision directly, never touches Telegram or the
   database. Confirmed — no bypass path exists.
-- `ai/confidence_model.py` (deterministic technical scoring) and
-  `ai/ai_prompt.py` (Gemini prompt/schema builder) are fully built but
+- `ai_layer/confidence_ai/confidence_model.py` (deterministic technical scoring) and
+  `ai_layer/ai_engine/ai_prompt.py` (Gemini prompt/schema builder) are fully built but
   **not called from `AIAnalyzer.analyze()` or anywhere else** — dead
   code, apparently staged for the Phase 6.0.1 integration.
-- `ai/trade_journal.py` is a complete, self-contained data model,
+- `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` is a complete, self-contained data model,
   also not wired to any caller.
 - **P1 — Production risk (already known/documented, restated here for
   visibility):** because `AIAnalyzer.analyze()` always returns
@@ -397,7 +397,7 @@ runtime pass agree: nothing in this audit's scope is broken.
 **P0 — Critical:** None found.
 
 **P1 — High:**
-- AI Layer (`ai/ai_analyzer.py:24-37`) is a permanent-reject stub,
+- AI Layer (`ai_layer/ai_engine/ai_analyzer.py:24-37`) is a permanent-reject stub,
   which makes the Decision Engine reject every signal, which means no
   real trading signal can currently reach Telegram in production. This
   is a known, documented, intentional placeholder — not a hidden bug —
@@ -435,9 +435,9 @@ docs/handler argument-signature mismatch.
 
 (List only — not implemented as part of this audit.)
 
-1. Implement real AI heuristic/model scoring in `ai/ai_analyzer.py`
-   (wire up the already-built `ai/confidence_model.py` and/or
-   `ai/ai_prompt.py` + Gemini), replacing the permanent-reject stub.
+1. Implement real AI heuristic/model scoring in `ai_layer/ai_engine/ai_analyzer.py`
+   (wire up the already-built `ai_layer/confidence_ai/confidence_model.py` and/or
+   `ai_layer/ai_engine/ai_prompt.py` + Gemini), replacing the permanent-reject stub.
 2. Wire `data_layer/market_memory/data_cache.py` (`SmartDataCache`) into `core/pipeline.py`
    or `main.py` to reduce redundant Twelve Data API calls across
    5-minute cron ticks.

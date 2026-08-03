@@ -1,11 +1,11 @@
 """
-Phase 60.6: Learning Loop Foundation, TASK 2 -- learning/models.py
+Phase 60.6: Learning Loop Foundation, TASK 2 -- ai_layer/knowledge_ai/learning_loop/models.py
 tests.
 """
 
 from datetime import datetime, timezone
 
-from learning.models import LEARNING_ENGINE_VERSION, LearningRecord, create_learning_record, generate_learning_record_id
+from ai_layer.knowledge_ai.learning_loop.models import LEARNING_ENGINE_VERSION, LearningRecord, create_learning_record, generate_learning_record_id
 
 
 def test_create_learning_record_stamps_identity_and_timestamp():
@@ -140,7 +140,7 @@ def test_phase_606_callers_are_unaffected_by_the_extension():
 
 def test_never_generates_a_signal_or_decision():
     """Structural guard matching this whole phase's boundary: no signal/decision-shaped attribute anywhere on the module."""
-    import learning.models as module
+    import ai_layer.knowledge_ai.learning_loop.models as module
 
     forbidden_terms = ("signal_", "decision", "approve", "reject")
     public_names = [name for name in dir(module) if not name.startswith("_")]

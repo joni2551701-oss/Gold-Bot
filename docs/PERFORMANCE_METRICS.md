@@ -100,7 +100,7 @@ construction form.
 | Decision | `decision_time` |
 | Database | `database_query_time` |
 
-Named as constants in `performance/metrics.py`
+Named as constants in `core_layer/performance/metrics.py`
 (`METRIC_PIPELINE_TOTAL_TIME`, etc.) — a convention, not an enforced,
 closed vocabulary; `validate_metric()` does not reject an unlisted
 name.

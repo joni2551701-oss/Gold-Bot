@@ -1,9 +1,9 @@
 """Phase 63.1 TASK 2/4 — ExplanationBuilder. Deterministic, no AI call, uses the real (one) Persona."""
 
-from ai.explanation.explanation_builder import ExplanationBuilder
-from ai.explanation.explanation_input import ExplanationInput, ExplanationMode
-from ai.explanation.explanation_output import ExplanationOutput
-from ai.persona.persona_manager import PersonaManager
+from ai_layer.explanation_ai.explanation_builder import ExplanationBuilder
+from ai_layer.explanation_ai.explanation_input import ExplanationInput, ExplanationMode
+from ai_layer.explanation_ai.explanation_output import ExplanationOutput
+from ai_layer.personal_ai.persona_manager.persona_manager import PersonaManager
 
 
 def test_build_trade_explanation_returns_explanation_output():

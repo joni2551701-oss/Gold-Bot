@@ -1,6 +1,6 @@
-from ai.access.permissions import AIRole
-from ai.strategy.models import StrategyStatus, StrategyType
-from ai.strategy.strategy_runtime import StrategyRuntime
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_engine.strategy.models import StrategyStatus, StrategyType
+from ai_layer.ai_engine.strategy.strategy_runtime import StrategyRuntime
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_strategy_intelligence=True)

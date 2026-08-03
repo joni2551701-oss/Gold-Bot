@@ -6,12 +6,12 @@ logic over already-built input objects.
 
 import pytest
 
-from ai.tools.analytics_tool import AnalyticsTool
-from ai.tools.education_tool import EducationTool
-from ai.tools.learning_tool import LearningTool
-from ai.tools.market_tool import MarketTool
-from ai.tools.news_tool import NewsTool
-from ai.tools.tool_registry import BaseAITool, ToolRegistry, build_default_tool_registry
+from ai_layer.ai_service.tools.analytics_tool import AnalyticsTool
+from ai_layer.ai_service.tools.education_tool import EducationTool
+from ai_layer.ai_service.tools.learning_tool import LearningTool
+from ai_layer.ai_service.tools.market_tool import MarketTool
+from ai_layer.ai_service.tools.news_tool import NewsTool
+from ai_layer.ai_service.tools.tool_registry import BaseAITool, ToolRegistry, build_default_tool_registry
 
 ALL_TOOLS = [MarketTool, NewsTool, AnalyticsTool, EducationTool, LearningTool]
 
@@ -49,7 +49,7 @@ def test_build_default_tool_registry_registers_all_five_named_tools():
 
 
 def test_market_tool_formats_a_supplied_market_context():
-    from ai.interfaces import MarketContext
+    from ai_layer.ai_service.interfaces import MarketContext
 
     tool = MarketTool()
     context = MarketContext(symbol="XAUUSD", timeframe="M15", summary="Regime: TRENDING, Trend: BULLISH")
@@ -78,7 +78,7 @@ def test_news_tool_formats_a_supplied_fundamental_snapshot():
 
 
 def test_analytics_tool_builds_a_real_strategy_report():
-    from analytics.signal_performance import SignalPerformance, generate_performance_id
+    from backtesting_layer.statistics.signal_performance import SignalPerformance, generate_performance_id
 
     tool = AnalyticsTool()
     performances = [
@@ -106,7 +106,7 @@ def test_education_tool_searches_by_query():
 
 
 def test_learning_tool_formats_a_supplied_learning_context():
-    from ai.learning_context import LearningContext
+    from ai_layer.knowledge_ai.learning_context import LearningContext
 
     tool = LearningTool()
     context = LearningContext(strategy_stats=["amd_strategy: 60.0%"], recent_failures=["SL_TOO_TIGHT"])

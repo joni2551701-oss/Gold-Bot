@@ -132,7 +132,7 @@ by the very next one.
   risk_score=0.5, ...)` per candidate — the exact midpoint, matching
   this codebase's own "AI optional" architecture: AI's absence must
   never itself force a reject, and must never be worse than AI's own
-  current heuristic-stub verdict (`ai/ai_analyzer.py`'s `analyze()`
+  current heuristic-stub verdict (`ai_layer/ai_engine/ai_analyzer.py`'s `analyze()`
   today always returns `approved=False` — a fact this phase does not
   change, only avoids making worse when AI is explicitly disabled).
 - **`before_execution()` gates only delivery, not formatting**: a

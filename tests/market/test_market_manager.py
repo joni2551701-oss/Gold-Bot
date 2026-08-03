@@ -10,8 +10,8 @@ history).
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
-from market.market_data import MarketData, MarketSnapshot
-from market.market_manager import MarketManager, MarketState
+from data_layer.live_data.market.market_data import MarketData, MarketSnapshot
+from data_layer.live_data.market.market_manager import MarketManager, MarketState
 
 _WEEKDAY = datetime(2026, 1, 7, 12, 0, tzinfo=timezone.utc)
 

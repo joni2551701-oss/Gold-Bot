@@ -34,7 +34,7 @@ All timestamps converted to UTC for a single consistent ordering
 | 2026-07-11 10:18:23 | `e1fa1291` renames `signal/` → `signals/` (directory typo partially fixed); invisible character still present. |
 | 2026-07-12 11:22:29 | `30eaf766` renames `signals/` → `strategies/` (directory typo fully fixed) but introduces a stray **leading space** before the filename; invisible character still present. **This commit is shared history — it predates the branch split and both branches inherit it.** |
 | **2026-07-12 13:10:54** | **`ad1affe` "Update config.py" — the last commit both branches share.** Confirmed via `git merge-base` and `git merge-base --is-ancestor` (true for both `main` and the production branch). |
-| 2026-07-12 13:46:38 | `e67e5e4` (main-only) — repairs `ai/ai_analyzer.py⁠`'s own corrupted name. |
+| 2026-07-12 13:46:38 | `e67e5e4` (main-only) — repairs `ai_layer/ai_engine/ai_analyzer.py⁠`'s own corrupted name. |
 | 2026-07-12 13:48:34 | `acc844a` (main-only) — renames `"strategies/ liquidity_strategy.py⁠"` → `"strategie/lsiquidity_strategy.py⁠"`. **This is where the `strategie/` (missing "s") directory typo is introduced** — a regression relative to the already-correct `strategies/` spelling one commit earlier. |
 | 2026-07-12 13:48:59 | `8c69ae77` (main-only) — renames `"strategies/ strategy_manager.py⁠"` → `"strategy_layer/strategy_manager/strategy_manager.py⁠"`: **removes the leading space but does not remove the trailing invisible character.** This is `main`'s own final, incomplete fix for this file — no later commit touches it, so this exact (still-corrupted) name persists to `main`'s current tip. |
 | 2026-07-12 14:04:41 | `f78461b` (production branch's **first** post-divergence commit, "fix: stabilize imports and config path") — renames `"strategies/ strategy_manager.py⁠"` → `strategy_layer/strategy_manager/strategy_manager.py`, cleanly, in one step: removes both the leading space and the trailing invisible character. Production's copy is fully clean from this point on. |
@@ -85,7 +85,7 @@ reconcile.
 
 **How the corruption itself originated** (not just how it was
 fixed): every `git log --follow` trace on this file (and the parallel
-trace on `ai/ai_analyzer.py`, `strategy_layer/strategy_library/liquidity_strategy.py`)
+trace on `ai_layer/ai_engine/ai_analyzer.py`, `strategy_layer/strategy_library/liquidity_strategy.py`)
 begins with the *very first* commits that created these files, on
 2026-07-11 — the invisible-character pattern is not something either
 branch introduced; it was present in this repository from its

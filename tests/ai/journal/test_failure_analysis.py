@@ -6,7 +6,7 @@ ai/journal/failure_analysis.py tests.
 import json
 from datetime import datetime
 
-from ai.journal.failure_analysis import FailureAnalysisEntry, create_failure_analysis_entry
+from ai_layer.knowledge_ai.knowledge_base.journal.failure_analysis import FailureAnalysisEntry, create_failure_analysis_entry
 
 
 def test_create_failure_analysis_entry_matches_the_briefs_own_worked_example():

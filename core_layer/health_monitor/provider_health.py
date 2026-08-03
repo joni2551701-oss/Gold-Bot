@@ -11,13 +11,13 @@ without a try/except.
 Same "monitoring, never mutates behavior" posture as
 core_layer/health_monitor/performance.py's pre-existing PerformanceTracker (reads
 already-persisted signals, computes stats, changes nothing) and
-performance/timer.py (Phase A19, measures duration, decides nothing).
+core_layer/performance/timer.py (Phase A19, measures duration, decides nothing).
 This module does not gate, retry, or fail over between providers --
 it only reports.
 
 Not the same concept as performance/ (Phase A19, system-timing
 infrastructure like pipeline stage duration) or
-analytics/signal_performance.py (Phase 59 Preparation, trading
+backtesting_layer/statistics/signal_performance.py (Phase 59 Preparation, trading
 outcome performance) -- this is a third, distinct kind of
 "performance": a data provider's own live availability/latency, not
 the pipeline's or a trade's.

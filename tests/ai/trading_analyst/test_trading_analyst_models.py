@@ -1,4 +1,4 @@
-from ai.trading_analyst.models import TradingAnalysis, TradingAnalysisInput, TradingRiskLevel
+from ai_layer.ai_engine.trading_analyst.models import TradingAnalysis, TradingAnalysisInput, TradingRiskLevel
 
 
 def test_trading_analysis_input_required_fields():

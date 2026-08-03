@@ -1,11 +1,11 @@
 """
-Phase 59 Preparation, TASK 3 -- analytics/strategy_report.py tests.
+Phase 59 Preparation, TASK 3 -- backtesting_layer/statistics/strategy_report.py tests.
 """
 
 from datetime import datetime, timezone
 
-from analytics.signal_performance import SignalPerformance
-from analytics.strategy_report import build_strategy_report, filter_performances
+from backtesting_layer.statistics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.strategy_report import build_strategy_report, filter_performances
 
 
 def _perf(strategy_id, result, r_multiple=None, signal_id="s", session=None, market_phase=None, timeframe=None):

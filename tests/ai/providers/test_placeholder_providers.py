@@ -2,7 +2,7 @@
 
 import pytest
 
-from ai.providers.placeholder_providers import LocalLLMProvider
+from ai_layer.ai_engine.providers.placeholder_providers import LocalLLMProvider
 
 ALL_PROVIDERS = [LocalLLMProvider]
 

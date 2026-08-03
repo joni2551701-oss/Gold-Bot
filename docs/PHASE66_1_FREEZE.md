@@ -54,7 +54,7 @@ precedent exactly.
   (Phase 66.0) with this phase's own `ChartAnalysis` into a single
   TRADE-mode `ExplanationOutput` — the pipeline's own "TradingAnalysis
   → ChartAnalysis → Explanation" order (TASK 5). The one file in the
-  package permitted to import `ai.trading_analyst.models`.
+  package permitted to import `ai_layer.ai_engine.trading_analyst.models`.
 - `ai/chart_intelligence/content_adapter.py` (new) — `prepare_content()`,
   composing the same three real, unmodified Content → Media → Broadcast
   functions `ai/trading_analyst/content_adapter.py` already uses
@@ -160,11 +160,11 @@ precedent exactly.
 ## Dependency Compliance
 
 `ai/chart_intelligence/models.py` and `access.py` import nothing
-beyond `ai.access.permissions.AIRole`, `configuration.feature_flags`,
-and the standard library. `chart_runtime.py` imports `ai.explanation.*`
+beyond `ai_layer.ai_service.access.permissions.AIRole`, `configuration.feature_flags`,
+and the standard library. `chart_runtime.py` imports `ai_layer.explanation_ai.*`
 only — never `ai.content/`, `media/`, `broadcast/`, or
-`ai.trading_analyst`. `trading_analyst_adapter.py` is the one file in
-the package permitted to import `ai.trading_analyst.models` —
+`ai_layer.ai_engine.trading_analyst`. `trading_analyst_adapter.py` is the one file in
+the package permitted to import `ai_layer.ai_engine.trading_analyst.models` —
 confirmed confined to exactly this file by
 `test_trading_analyst_import_confined_to_trading_analyst_adapter()`
 and `test_only_trading_analyst_adapter_imports_ai_trading_analyst()`.
@@ -172,10 +172,10 @@ and `test_only_trading_analyst_adapter_imports_ai_trading_analyst()`.
 `media/`, `broadcast/` — confirmed confined by
 `test_content_media_broadcast_imports_confined_to_content_adapter()`
 and `test_only_content_adapter_imports_ai_content()`. No file in the
-package imports `assistant/`, `voice/`, `knowledge/`, `ai.memory`,
-`ai.reasoning`, or `core.`. Nothing in `ai/trading_analyst/`,
+package imports `assistant/`, `voice/`, `knowledge/`, `ai_layer.knowledge_ai.memory_manager`,
+`ai_layer.ai_engine.reasoning`, or `core.`. Nothing in `ai/trading_analyst/`,
 `ai/explanation/`, `ai/content/`, `media/`, or `broadcast/` imports
-`ai.chart_intelligence` back.
+`ai_layer.vision_ai` back.
 
 ## New / Extended / Reused (Constitution Article 12, mandatory table)
 

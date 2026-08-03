@@ -1,9 +1,9 @@
 """Phase 61.2 TASK 5 — Response Validator Foundation."""
 
-from ai.providers.base_provider import ProviderResult
-from ai.validation.response_validator import ValidationResult, validate_response
-from ai.validation.safety import check_safety
-from ai.validation.schemas import DEFAULT_SCHEMA, ResponseSchema
+from ai_layer.ai_engine.providers.base_provider import ProviderResult
+from ai_layer.confidence_ai.response_validator import ValidationResult, validate_response
+from ai_layer.confidence_ai.safety import check_safety
+from ai_layer.confidence_ai.schemas import DEFAULT_SCHEMA, ResponseSchema
 
 
 def test_valid_response_is_accepted():

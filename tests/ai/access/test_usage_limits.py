@@ -1,8 +1,8 @@
 """Phase 61.0 TASK 6 — AI Usage Limits: in-memory per-user/capability daily ceiling."""
 
-from ai.access.permissions import AIRole
-from ai.access.usage_limits import UsageLimiter
-from ai.capabilities.capability import Capability
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_service.access.usage_limits import UsageLimiter
+from ai_layer.ai_engine.capabilities.capability import Capability
 
 
 def test_owner_has_unlimited_usage():

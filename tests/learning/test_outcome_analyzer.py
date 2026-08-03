@@ -1,6 +1,6 @@
 """
 Phase 60.6: Learning Loop Foundation, TASK 3 --
-learning/outcome_analyzer.py tests. Real ContextSnapshot/PaperTrade/
+ai_layer/knowledge_ai/learning_loop/outcome_analyzer.py tests. Real ContextSnapshot/PaperTrade/
 HTFBiasResult/SignalPerformance objects, no mocks -- same convention
 as tests/context/test_market_phase.py.
 """
@@ -15,10 +15,10 @@ from context_layer.liquidity.liquidity import LiquiditySweepEvent, LiquidityType
 from context_layer.trend.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
 from context_layer.market_structure.market_structure import StructurePoint, StructureType, SwingPoint, SwingType
 from context_layer.order_block.order_block import OrderBlock, OrderBlockType
-from learning.outcome_analyzer import TradeAnalysis, analyze_trade_result
+from ai_layer.knowledge_ai.learning_loop.outcome_analyzer import TradeAnalysis, analyze_trade_result
 from trade_monitoring_layer.paper_trading.paper_trade import PaperTrade
 from trade_monitoring_layer.paper_trading.trade_state import TradeState
-from analytics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.signal_performance import SignalPerformance
 
 TS = datetime(2024, 1, 2, 9, 0, tzinfo=timezone.utc)
 

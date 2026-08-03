@@ -12,9 +12,9 @@ records. Mirrors
 
 import pathlib
 
-import ai.portfolio as portfolio_package
-from ai.portfolio.models import PortfolioRecord
-from ai.portfolio.portfolio_runtime import PortfolioRuntime
+import ai_layer.ai_engine.portfolio as portfolio_package
+from ai_layer.ai_engine.portfolio.models import PortfolioRecord
+from ai_layer.ai_engine.portfolio.portfolio_runtime import PortfolioRuntime
 
 FORBIDDEN_NAMES = (
     "CapitalAllocation",

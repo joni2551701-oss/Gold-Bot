@@ -23,7 +23,7 @@ of any kind (Rule 4: "GPT/Claude/Gemini/Reasoning/Inference YO'Q"). It
 never touches `decision/`, `risk/`, `execution/`, `strategies/`,
 `signals/`, `context/`, `monitoring/`, `telegram/`, `database/`,
 `voice/`, `assistant/`, `media/`, `broadcast/`, `academy/`,
-`portfolio/`, `research/`, `core.`, or `ai.memory` (TASK 9's own
+`portfolio/`, `research/`, `core.`, or `ai_layer.knowledge_ai.memory_manager` (TASK 9's own
 isolation list).
 
 ## Model (TASK 2)
@@ -65,32 +65,32 @@ established. `update()` mutates only `strategy_version`/`confidence`/
 `update_notes()` only ever mutates `notes`. `archive()` sets
 `status=StrategyStatus.ARCHIVED` and never deletes a record.
 Owner-gated: every method re-checks
-`ai.strategy.access.is_strategy_intelligence_enabled_for()` itself.
+`ai_layer.ai_engine.strategy.access.is_strategy_intelligence_enabled_for()` itself.
 
 ## Performance Adapter (TASK 4)
 
 `performance_adapter.py`'s `performance_record_to_strategy_input()` is
 a pure mapping — TASK 4's own instruction: "Type-only. Runtime import
-emas." It reads an existing `ai.performance.models.PerformanceRecord`
+emas." It reads an existing `ai_layer.ai_engine.performance.models.PerformanceRecord`
 (Phase 66.5, LOCKed) type-only and relays `confidence_score` →
 `confidence` and `notes` → `notes`. `strategy_name`/`strategy_type`/
 `strategy_version` are deliberately absent — `PerformanceRecord`
 carries no field shaped for any of the three. Never imports
-`ai.performance.performance_runtime` — confirmed by
+`ai_layer.ai_engine.performance.performance_runtime` — confirmed by
 `test_performance_adapter_never_imports_performance_runtime()`. The
-one file in `ai/strategy/` permitted to import `ai.performance.models`.
+one file in `ai/strategy/` permitted to import `ai_layer.ai_engine.performance.models`.
 
 ## Journal Adapter (TASK 5)
 
 `journal_adapter.py`'s `journal_entry_to_strategy_input()` is a pure
 mapping — TASK 5's own instruction: "Hech qanday inference yo'q." It
-reads an existing `ai.trade_journal.models.TradeJournalEntry` (Phase
+reads an existing `ai_layer.knowledge_ai.knowledge_base.trade_journal.models.TradeJournalEntry` (Phase
 66.2) type-only, relaying `lesson` (falling back to `reason`) into
 `notes`. `strategy_name`/`strategy_type`/`strategy_version` are
 deliberately absent (no field to relay), and `confidence` is also
 deliberately absent — `TradeJournalEntry.confidence` is a per-trade
 value, not a per-strategy one, so relaying it would be inference. The
-one file in `ai/strategy/` permitted to import `ai.trade_journal.models`.
+one file in `ai/strategy/` permitted to import `ai_layer.knowledge_ai.knowledge_base.trade_journal.models`.
 
 ## Owner Mode (TASK 7)
 
@@ -105,8 +105,8 @@ requires **both**
 `memory_adapter.py`'s `strategy_reference_key(record) -> str` builds a
 plain string key (`"strategy:{strategy_id}"`) for a future,
 separately-approved phase to use once real Memory storage is wired —
-this module never imports `ai.memory` at all. Mirrors
-`ai.performance.memory_adapter.performance_memory_key()`'s own
+this module never imports `ai_layer.knowledge_ai.memory_manager` at all. Mirrors
+`ai_layer.ai_engine.performance.memory_adapter.performance_memory_key()`'s own
 precedent exactly.
 
 ## Future Compatibility (TASK 8)
@@ -138,7 +138,7 @@ class, or method anywhere in this package.
 - Never imports `decision/`, `risk/`, `execution/`, `strategies/`,
   `signals/`, `context/`, `monitoring/`, `telegram/`, `database/`,
   `voice/`, `assistant/`, `media/`, `broadcast/`, `academy/`,
-  `portfolio/`, `research/`, `core.`, or `ai.memory` — zero
+  `portfolio/`, `research/`, `core.`, or `ai_layer.knowledge_ai.memory_manager` — zero
   exceptions, permanently enforced by
   `tests/ai/strategy/test_ai_strategy_isolation.py`.
 - Not wired into `core/pipeline.py` or any Telegram command this

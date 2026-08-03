@@ -19,10 +19,10 @@ Low today, Medium as latent risk (see Circular dependency below).
 
 | Cycle | Severity | Likelihood | Note |
 |---|---|---|---|
-| `ai.runtime ↔ ai.providers` | Medium | Low (currently stable) | A future refactor to either file that adds one more cross-import could trip a real `ImportError` with no warning today |
-| `ai.audit ↔ ai.runtime` | Medium | Low | Same class of latent risk |
-| `ai.audit → ai.runtime → ai.router → ai.audit` (3-node) | Medium | Low | Same class of latent risk, larger blast radius (3 subpackages) |
-| `ai.explanation ↔ ai.content` | **High** | Medium | Directly contradicts a **documented** architectural rule (`ai/content/content_adapters.py`'s own "Intelligence Dependency Principle" states Explanation sits upstream of Content) — this is a real, self-acknowledged design violation, not just a structural tangle |
+| `ai_layer.ai_engine.runtime ↔ ai.providers` | Medium | Low (currently stable) | A future refactor to either file that adds one more cross-import could trip a real `ImportError` with no warning today |
+| `ai_layer.ai_service.audit ↔ ai.runtime` | Medium | Low | Same class of latent risk |
+| `ai_layer.ai_service.audit → ai.runtime → ai.router → ai.audit` (3-node) | Medium | Low | Same class of latent risk, larger blast radius (3 subpackages) |
+| `ai_layer.explanation_ai ↔ ai.content` | **High** | Medium | Directly contradicts a **documented** architectural rule (`ai/content/content_adapters.py`'s own "Intelligence Dependency Principle" states Explanation sits upstream of Content) — this is a real, self-acknowledged design violation, not just a structural tangle |
 
 Full evidence in `AI_DEPENDENCY_GRAPH.md` Section 3. No fix is
 proposed here — see `AI_REFACTOR_RECOMMENDATIONS.md`.
@@ -32,19 +32,19 @@ proposed here — see `AI_REFACTOR_RECOMMENDATIONS.md`.
 | Finding | Severity | Detail |
 |---|---|---|
 | Two unrelated classes both named `TradeJournalEntry` | **High** | `ai/journal/trade_journal.py:20` (Phase 55, `SignalType`-coupled) vs `ai/trade_journal/models.py:38` (Phase 66.2, primitive-only). Both are live and imported by multiple other subpackages/top-level packages. The collision is self-documented in `ai/trade_journal/models.py:13-20`'s own comment, but self-documentation doesn't prevent a future engineer from importing the wrong one by name-only reasoning. |
-| `ai/trade_journal.py` (shim) permanently shadowed by `ai/trade_journal/` (package) | **Medium** | Same import name, same parent directory — Python always resolves the package over the sibling module, so the shim is unreachable by any interpreter, confirmed empirically. Not a runtime bug (nothing calls it), but dead, misleading code that looks load-bearing from its docstring. |
+| `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` (shim) permanently shadowed by `ai/trade_journal/` (package) | **Medium** | Same import name, same parent directory — Python always resolves the package over the sibling module, so the shim is unreachable by any interpreter, confirmed empirically. Not a runtime bug (nothing calls it), but dead, misleading code that looks load-bearing from its docstring. |
 | `ai/content/content_adapter.py` vs `ai/content/content_adapters.py` | Low | Not a functional duplicate — singular defines `ContentEngine`, plural defines two unrelated adapter functions — but the near-identical filenames in the same directory are a readability/maintenance hazard. |
-| `ai/analyzer/ai_analyzer.py` vs `ai/ai_analyzer.py` | Low | Re-export shim in the opposite direction of the `trade_journal` case; unlike that case this one is not shadowed (it's importable), it is simply unused (see Dead code below). |
+| `ai/analyzer/ai_analyzer.py` vs `ai_layer/ai_engine/ai_analyzer.py` | Low | Re-export shim in the opposite direction of the `trade_journal` case; unlike that case this one is not shadowed (it's importable), it is simply unused (see Dead code below). |
 | `*_registry.py` naming inconsistency | Medium | `prompt_registry.py`/`tool_registry.py` implement a stateful `XRegistry` class; `memory_registry.py`/`persona_registry.py`/`capability_registry.py`/`reasoning_registry.py` implement no class at all, just a `build_x_registry()` free function. Same filename suffix, two incompatible architectural patterns — increases onboarding cost and risks a future subpackage picking the "wrong" one inconsistently. |
 
 ## Dead code / unused files
 
 | File | Severity | Evidence |
 |---|---|---|
-| `ai/analyzer/ai_analyzer.py` | Low | Zero references anywhere in the repo to `ai.analyzer.ai_analyzer` or `ai.analyzer` outside its own docstring; zero test coverage in `tests/`. |
-| `ai/trade_journal.py` (top-level shim) | Low (unreachable, not harmful) | Permanently shadowed by the `ai/trade_journal/` package — see Duplicate modules above. |
-| `ai/ai_prompt.py` | Low | No file anywhere imports it (`from ai.ai_prompt import`/`from ai import ai_prompt`/`import ai.ai_prompt` all return 0 hits); only comment/docstring mentions exist. |
-| `ai/confidence_model.py` | Low | Only consumer is the also-dead `ai/ai_prompt.py`; no other file references `confidence_model` or `ConfidenceResult`. |
+| `ai/analyzer/ai_analyzer.py` | Low | Zero references anywhere in the repo to `ai_layer.ai_engine.ai_analyzer` or `ai_layer.ai_engine` outside its own docstring; zero test coverage in `tests/`. |
+| `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` (top-level shim) | Low (unreachable, not harmful) | Permanently shadowed by the `ai/trade_journal/` package — see Duplicate modules above. |
+| `ai_layer/ai_engine/ai_prompt.py` | Low | No file anywhere imports it (`from ai.ai_prompt import`/`from ai import ai_prompt`/`import ai.ai_prompt` all return 0 hits); only comment/docstring mentions exist. |
+| `ai_layer/confidence_ai/confidence_model.py` | Low | Only consumer is the also-dead `ai_layer/ai_engine/ai_prompt.py`; no other file references `confidence_model` or `ConfidenceResult`. |
 
 All four are transitively dead — nothing exercises them at runtime,
 none appear in any test file. Severity is Low individually (no runtime

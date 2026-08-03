@@ -52,13 +52,13 @@ names are all new).
   `CoachingRuntime.create()` keyword arguments — unlike the Journal
   Adapter, this one *can* relay `topic` directly since `LearningRecord`
   already carries an explicit one. The one file in the package
-  permitted to import `ai.learning.models`.
+  permitted to import `ai_layer.knowledge_ai.learning_engine.models`.
 - `ai/coaching/journal_adapter.py` (new) —
   `journal_entry_to_coaching_input()`, a pure mapping from an existing
   `TradeJournalEntry` (Phase 66.2) — `topic` deliberately absent
   (`TradeJournalEntry` has no topic-shaped field to relay without
   inferring one). The one file in the package permitted to import
-  `ai.trade_journal.models`.
+  `ai_layer.knowledge_ai.knowledge_base.trade_journal.models`.
 - `configuration/feature_flags.py` — extended with
   `enable_coaching_intelligence: bool = False` (a dedicated flag).
 - `ai/coaching/README.md` (new) — package-level documentation.
@@ -110,9 +110,9 @@ names are all new).
   `telegram`/`database`/`voice`/`assistant`/`media`/`broadcast`/
   `academy`/`performance`/`portfolio`/`research`/`core.` imports
   (TASK 8's own list) plus the wider house-convention set (`monitoring`/
-  `learning`/`analytics`/`ai.memory`/`knowledge`/`ai.reasoning`/
-  `ai.chart_intelligence`/`ai.trading_analyst`/`ai.content`/
-  `ai.conversation`/`ai.explanation`/`sqlite3`/`psycopg2`/`redis`/
+  `learning`/`analytics`/`ai_layer.knowledge_ai.memory_manager`/`knowledge`/`ai_layer.ai_engine.reasoning`/
+  `ai_layer.vision_ai`/`ai_layer.ai_engine.trading_analyst`/`ai_layer.ai_service.content`/
+  `ai_layer.personal_ai.interaction_manager`/`ai_layer.explanation_ai`/`sqlite3`/`psycopg2`/`redis`/
   `sqlalchemy`/`openai`/`anthropic`/`google.generativeai`/`requests`/
   `httpx`/`urllib`) across `ai/coaching/**/*.py`: zero matches
   (`tests/ai/coaching/test_ai_coaching_isolation.py`).
@@ -140,31 +140,31 @@ names are all new).
 ## Dependency Compliance
 
 `ai/coaching/models.py` and `access.py` import nothing beyond
-`ai.access.permissions.AIRole`, `configuration.feature_flags`, and the
-standard library. `coaching_runtime.py` imports only `ai.access`,
-`ai.coaching`, `configuration`, and stdlib — confirmed by
+`ai_layer.ai_service.access.permissions.AIRole`, `configuration.feature_flags`, and the
+standard library. `coaching_runtime.py` imports only `ai_layer.ai_service.access`,
+`ai_layer.personal_ai.senior`, `configuration`, and stdlib — confirmed by
 `test_coaching_runtime_module_has_no_persistence_import()`.
 `learning_adapter.py` is the one file permitted to import
-`ai.learning.models` — confirmed confined by
+`ai_layer.knowledge_ai.learning_engine.models` — confirmed confined by
 `test_learning_import_confined_to_learning_adapter()` and
 `test_only_learning_adapter_imports_ai_learning()`. `journal_adapter.py`
-is the one file permitted to import `ai.trade_journal.models` —
+is the one file permitted to import `ai_layer.knowledge_ai.knowledge_base.trade_journal.models` —
 confirmed confined by
 `test_trade_journal_import_confined_to_journal_adapter()` and
 `test_only_journal_adapter_imports_ai_trade_journal()`. No file in the
-package imports `ai.chart_intelligence`, `ai.trading_analyst`,
-`ai.reasoning`, `ai.explanation`, `ai.conversation`, `knowledge/`,
-`ai.memory`, `ai.content`, `voice/`, `assistant/`, `media/`,
+package imports `ai_layer.vision_ai`, `ai_layer.ai_engine.trading_analyst`,
+`ai_layer.ai_engine.reasoning`, `ai_layer.explanation_ai`, `ai_layer.personal_ai.interaction_manager`, `knowledge/`,
+`ai_layer.knowledge_ai.memory_manager`, `ai_layer.ai_service.content`, `voice/`, `assistant/`, `media/`,
 `broadcast/`, `telegram/`, `database/`, or `core.`. Nothing in
 `ai/trading_analyst/`, `ai/chart_intelligence/`, `ai/trade_journal/`,
-`ai/learning/`, or `ai/memory/` imports `ai.coaching` back.
+`ai/learning/`, or `ai/memory/` imports `ai_layer.personal_ai.senior` back.
 
 ## New / Extended / Reused (Constitution Article 12, mandatory table)
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | `ai/coaching/` (1, inside existing `ai/`) | — | `ai/` (top-level, unchanged itself) |
-| Modules | `models.py`, `access.py`, `coaching_runtime.py`, `learning_adapter.py`, `journal_adapter.py`, `README.md` (6) | `configuration/feature_flags.py` (1) | `ai/learning/models.py`, `ai/trade_journal/models.py` (both read type-only) |
+| Modules | `models.py`, `access.py`, `coaching_runtime.py`, `learning_adapter.py`, `journal_adapter.py`, `README.md` (6) | `configuration/feature_flags.py` (1) | `ai/ai_layer/knowledge_ai/learning_loop/models.py`, `ai/trade_journal/models.py` (both read type-only) |
 | Classes | `CoachingRuntime` (1) | — | `LearningRecord`, `TradeJournalEntry` (read type-only, not modified as classes) |
 | Models | `CoachingRecommendation`, `CoachingTopic`, `CoachingPriority`, `CoachingType`, `CoachingStatus` (5) | `FeatureFlags` (+1 field) | `LearningRecord`, `TradeJournalEntry` |
 | Functions | `is_coaching_intelligence_enabled_for()`, `create()`, `get()`, `list()`, `archive()`, `update_status()`, `learning_record_to_coaching_input()`, `journal_entry_to_coaching_input()`, `generate_coach_id()` (9) | — | none composed by call this phase (Foundation-only, no downstream engine call) |

@@ -1,13 +1,13 @@
 """Phase 61.6 TASK 6 — Owner Runtime Dashboard (/runtime, /runtime_events, /runtime_metrics). Extended Phase 61.7 TASK 7/8 — /runtime_status, /runtime_check."""
 
-from ai.audit.provider_stats import RuntimeMetricsCollector
-from ai.providers.circuit_breaker import CircuitBreakerConfig, ProviderCircuitBreaker
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.event_bus import EventBus, EventType, RuntimeEvent
-from ai.runtime.runtime_manager import RuntimeManager
-from ai.runtime.runtime_profiles import PRODUCTION_PROFILE
-from ai.runtime.runtime_state import RuntimeState
-from ai.runtime.self_check import CheckStatus, RuntimeSelfCheckReport, SelfCheckResult
+from ai_layer.ai_service.audit.provider_stats import RuntimeMetricsCollector
+from ai_layer.ai_engine.providers.circuit_breaker import CircuitBreakerConfig, ProviderCircuitBreaker
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_service.event_bus import EventBus, EventType, RuntimeEvent
+from ai_layer.ai_engine.runtime.runtime_manager import RuntimeManager
+from ai_layer.ai_engine.runtime.runtime_profiles import PRODUCTION_PROFILE
+from ai_layer.ai_engine.runtime.runtime_state import RuntimeState
+from ai_layer.ai_engine.runtime.self_check import CheckStatus, RuntimeSelfCheckReport, SelfCheckResult
 from platform_layer.telegram.owner.runtime_commands import (
     runtime_check,
     runtime_events,
@@ -162,7 +162,7 @@ def test_runtime_full_status_reports_cost_protection_as_na_with_no_injected_log(
 
 
 def test_runtime_full_status_reflects_real_daily_usage_against_configured_limits():
-    from ai.audit.response_log import ResponseLog
+    from ai_layer.ai_service.audit.response_log import ResponseLog
 
     response_log = ResponseLog()
     response_log.record(request_id="r1", capability=None, provider_name="gemini", latency_ms=0.0, tokens=500, cost=2.50, status="SUCCESS")
@@ -269,7 +269,7 @@ def test_runtime_provider_reports_unknown_provider_honestly():
 
 
 def test_runtime_provider_reflects_circuit_and_latency_from_real_history():
-    from ai.audit.response_log import ResponseLog
+    from ai_layer.ai_service.audit.response_log import ResponseLog
 
     health_tracker = ProviderHealthTracker()
     breaker = ProviderCircuitBreaker(health_tracker=health_tracker, config=CircuitBreakerConfig(failure_threshold=2))

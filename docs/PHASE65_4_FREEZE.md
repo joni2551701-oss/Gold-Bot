@@ -29,16 +29,16 @@ conflict.
 
 ## Built this phase
 
-- `assistant/models.py` — `AssistantRuntime` (`session_id`,
+- `ai_layer/ai_service/assistant/models.py` — `AssistantRuntime` (`session_id`,
   `assistant_id`, `started_at`, `updated_at`, `active`,
   `conversation_id`), a new dataclass in an already-existing file.
-- `assistant/assistant_manager.py` — `AssistantManager` extended in
+- `ai_layer/ai_service/assistant/assistant_manager.py` — `AssistantManager` extended in
   place with `create_runtime()`/`load_runtime()`/`restore_runtime()`/
   `close_runtime()`/`runtime_status()`. All mutators Owner-gated; no
   new Manager class.
-- `assistant/runtime_adapter.py` (new file) — the third
+- `ai_layer/ai_service/assistant/runtime_adapter.py` (new file) — the third
   composition-root-shaped file in this codebase (after
-  `ai/intelligence_runtime.py` and `voice/conversation_bridge.py`):
+  `ai_layer/ai_engine/intelligence_runtime.py` and `ai_layer/voice_ai/conversation_bridge.py`):
   `advance_conversation()` (real `ConversationEngine.start_session()`/
   `ask()`), `synthesize_voice()` (real `VoiceRuntime.generate_audio()`/
   `generate_with_fallback()`), `remember_turn()`/`recall_turn()` (real
@@ -120,15 +120,15 @@ conflict.
 
 ## Dependency Compliance (the one deliberate widening, precisely confined)
 
-`assistant/identity.py`, `identity_registry.py`, `identity_manager.py`,
+`ai_layer/ai_service/assistant/identity.py`, `identity_registry.py`, `identity_manager.py`,
 `models.py`, `access.py`, `assistant_manager.py`, and
 `conversation_adapter.py` keep Phase 65.3's exact zero-downstream-
 import posture — confirmed unchanged by
 `tests/assistant/test_assistant_isolation.py`.
-`assistant/runtime_adapter.py` is the one file in the whole package
-permitted to import `ai.conversation.conversation_engine`,
-`ai.intelligence_runtime`, `ai.memory.memory_runtime`/`models`, and
-`voice.runtime`/`models` — confirmed confined to exactly this file by
+`ai_layer/ai_service/assistant/runtime_adapter.py` is the one file in the whole package
+permitted to import `ai_layer.personal_ai.interaction_manager.conversation_engine`,
+`ai_layer.ai_engine.intelligence_runtime`, `ai_layer.knowledge_ai.memory_manager.memory_runtime`/`models`, and
+`ai_layer.voice_ai.runtime`/`models` — confirmed confined to exactly this file by
 `tests/assistant/runtime/test_runtime_isolation.py`'s
 `test_downstream_intelligence_imports_confined_to_runtime_adapter()`
 and `test_ai_conversation_engine_real_call_confined_to_runtime_adapter()`.
@@ -137,14 +137,14 @@ Even `runtime_adapter.py` never imports `ai.reasoning/`,
 `media/`, or `broadcast/` — permanently enforced with zero exemptions
 by `test_still_permanently_forbidden_layers_even_in_runtime_adapter()`.
 Nothing in `voice/`, `ai/conversation/`, `ai/memory/`, or
-`ai/intelligence_runtime.py` imports `assistant/` back.
+`ai_layer/ai_engine/intelligence_runtime.py` imports `assistant/` back.
 
 ## New / Extended / Reused (Constitution Article 12, mandatory table)
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | — | — | `assistant/` (Phase 65.3, extended in place) |
-| Modules | `assistant/runtime_adapter.py` (1) | `assistant/assistant_manager.py`, `assistant/models.py` (2) | `assistant/identity.py`, `identity_registry.py`, `identity_manager.py`, `access.py`, `conversation_adapter.py` (unchanged this phase) |
+| Modules | `ai_layer/ai_service/assistant/runtime_adapter.py` (1) | `ai_layer/ai_service/assistant/assistant_manager.py`, `ai_layer/ai_service/assistant/models.py` (2) | `ai_layer/ai_service/assistant/identity.py`, `identity_registry.py`, `identity_manager.py`, `access.py`, `conversation_adapter.py` (unchanged this phase) |
 | Classes | — | `AssistantManager` (+5 methods) | `ConversationEngine`, `VoiceRuntime`, `MemoryRuntime`, `ReasoningRuntime`, `IntelligenceRuntime`, `IdentityManager` (called, not modified) |
 | Models | `AssistantRuntime` (1) | — | `AssistantProfile`, `AssistantIdentity`, `VoiceRequest`, `VoiceResult`, `ConversationResult`, `PipelineRun`, `MemoryEntry` |
 | Functions | `advance_conversation()`, `synthesize_voice()`, `remember_turn()`, `recall_turn()`, `run_intelligence_pipeline()`, `run_personal_ai_turn()` (6) | — | `assistant_to_voice_session_params()`, `assistant_to_conversation_params()`, `assistant_memory_scope_key()` (Phase 65.3, called internally) |

@@ -4,8 +4,8 @@ TASK 4).
 
 BacktestResult is the final report `backtesting_layer/backtest_engine/backtest_engine.py`
 (TASK 3) produces -- one record per backtest run, holding every
-`analytics.signal_performance.SignalPerformance` it computed plus the
-`analytics.strategy_report.build_strategy_report()` grouping over
+`backtesting_layer.statistics.signal_performance.SignalPerformance` it computed plus the
+`backtesting_layer.statistics.strategy_report.build_strategy_report()` grouping over
 them. No new performance-computation logic here: this module only
 packages already-computed `analytics/` output into one immutable
 value and formats it for `platform_layer/telegram/owner/backtest_commands.py`
@@ -17,8 +17,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from analytics.signal_performance import SignalPerformance
-from analytics.strategy_report import StrategyPerformanceReport, build_strategy_report, compute_win_rate
+from backtesting_layer.statistics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.strategy_report import StrategyPerformanceReport, build_strategy_report, compute_win_rate
 
 
 @dataclass(frozen=True)
@@ -32,7 +32,7 @@ class BacktestResult:
     trades_opened: how many of those were APPROVE + risk-approved,
         i.e. how many actually became a `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade`.
     performances: one `SignalPerformance` per generated signal (Phase
-        60.2's own new caller of `analytics.signal_performance.compute_signal_performance()`
+        60.2's own new caller of `backtesting_layer.statistics.signal_performance.compute_signal_performance()`
         -- unmodified, same function every other performance figure in
         this codebase already uses).
     strategy_report: `build_strategy_report(performances)`'s own
@@ -66,7 +66,7 @@ def build_backtest_result(
     started_at: Optional[datetime] = None,
     finished_at: Optional[datetime] = None,
 ) -> BacktestResult:
-    """Wraps build_strategy_report(performances) (analytics/strategy_report.py, unmodified) alongside the run's own counters."""
+    """Wraps build_strategy_report(performances) (backtesting_layer/statistics/strategy_report.py, unmodified) alongside the run's own counters."""
     return BacktestResult(
         symbol=symbol,
         timeframe=timeframe,

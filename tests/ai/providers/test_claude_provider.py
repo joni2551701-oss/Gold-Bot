@@ -3,9 +3,9 @@
 import requests
 import pytest
 
-from ai.capabilities.capability import Capability
-from ai.providers.claude_provider import ClaudeProvider
-from ai.providers.runtime_errors import (
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.providers.claude_provider import ClaudeProvider
+from ai_layer.ai_engine.providers.runtime_errors import (
     ProviderInvalidResponseError,
     ProviderRateLimitError,
     ProviderTimeoutError,

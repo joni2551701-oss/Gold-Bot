@@ -17,7 +17,7 @@ here.
 
 from typing import Optional
 
-from ai.content.content_schema import ContentResult
+from ai_layer.ai_service.content.content_schema import ContentResult
 from media_layer.content_manager.media_manager import MediaManager
 from media_layer.content_manager.media_types import MediaType
 from media_layer.content_manager.models import MediaAsset

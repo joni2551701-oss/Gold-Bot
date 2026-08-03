@@ -10,7 +10,7 @@ phase, not transcribed from assumption.
 ```
 ai/
   access/          capability/permission gating for AI requests
-  analyzer/        Phase 55 compat entry point -> re-exports ai/ai_analyzer.py
+  analyzer/        Phase 55 compat entry point -> re-exports ai_layer/ai_engine/ai_analyzer.py
   audit/           provider_stats.py - call/provider auditing, DailyUsage/AI Cost Protection (Phase 62.2)
   cache/           response caching (ResponseCache, cache policy)
   capabilities/    Capability enum + permission matrix
@@ -185,13 +185,13 @@ not have either:
   extended Phase 65.4) — a sibling of `ai/`, not `ai/assistant/`. Same
   genuine-new-package reasoning as `voice/` above (see
   `docs/PHASE65_3_AUDIT.md`). Phase 65.3 built it importing
-  **nothing** from `ai/` except `ai.access.permissions.AIRole` (it
+  **nothing** from `ai/` except `ai_layer.ai_service.access.permissions.AIRole` (it
   sits before Conversation in the Official Intelligence Pipeline, so
   per the Intelligence Dependency Principle it may depend on nothing
   downstream of it). Phase 65.4 adds one deliberate, narrow exception:
-  `assistant/runtime_adapter.py` — and only that one file — is now
+  `ai_layer/ai_service/assistant/runtime_adapter.py` — and only that one file — is now
   permitted to import `ai.conversation/`, `ai.memory/`, and
-  `ai.intelligence_runtime` for real integration; every other file in
+  `ai_layer.ai_engine.intelligence_runtime` for real integration; every other file in
   `assistant/` keeps the original zero-downstream-import posture (see
   `docs/PHASE65_4_AUDIT.md`).
 
@@ -255,7 +255,7 @@ above:
 - `docs/ai/AI_BROADCAST.md` — top-level `broadcast/`'s `BroadcastManager`
   (would_broadcast/prepare plus the deterministic `BroadcastAsset`
   surface) and its Content/Media integration point (Phase 63.8).
-- `docs/ai/AI_INTELLIGENCE_PIPELINE.md` — `ai/intelligence_runtime.py`'s
+- `docs/ai/AI_INTELLIGENCE_PIPELINE.md` — `ai_layer/ai_engine/intelligence_runtime.py`'s
   `IntelligenceRuntime`, the composition root that calls all eight
   layers above in Official Intelligence Pipeline order (Phase 64.0).
 - `docs/ai/AI_VOICE.md` — top-level `voice/`'s `VoiceManager`/
@@ -265,7 +265,7 @@ above:
   selection, and fallback handling (Phase 65.1), real OpenAI STT
   (Whisper), intent detection, voice sessions, and the real "user
   speaks → AI understands → AI replies by voice" round trip via
-  `voice/conversation_bridge.py` (Phase 65.2), and its Content/
+  `ai_layer/voice_ai/conversation_bridge.py` (Phase 65.2), and its Content/
   Media/Broadcast/Conversation integration points.
 - `docs/ai/AI_PERSONAL_ASSISTANT.md` — top-level `assistant/`'s
   `IdentityManager`/`AssistantManager` (Senior/Seniorita identity
@@ -306,7 +306,7 @@ above:
   (CRUD-only, in-memory, no scoring algorithm, no BUY/SELL/verdict
   field of any kind), its primitive-only `PerformanceRecord`/
   `PerformanceMetric` contracts (distinct from
-  `analytics.performance_metrics.PerformanceMetrics`), and its Trade
+  `backtesting_layer.statistics.performance_metrics.PerformanceMetrics`), and its Trade
   Journal/Coaching/Analytics/Memory integration points (Phase 66.5).
 - `docs/ai/AI_STRATEGY.md` — `ai/strategy/`'s `StrategyRuntime`
   (CRUD-only, in-memory, no LLM/reasoning/inference, no BUY/SELL/

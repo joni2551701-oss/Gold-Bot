@@ -121,7 +121,7 @@ already uses.
 
 **Freshness chain: Snapshot identity -> Cache freshness -> TTL.**
 `snapshot_id` is produced exclusively by
-`ai.context.context_builder.build_ai_context()` — never by a caller,
+`ai_layer.ai_engine.context.context_builder.build_ai_context()` — never by a caller,
 never via `datetime.now()`/`uuid.uuid4()` at cache-key-construction
 time. It is a deterministic SHA-256 (via `compute_context_hash()`)
 over the built `AIContext`'s own content with `built_at` excluded:

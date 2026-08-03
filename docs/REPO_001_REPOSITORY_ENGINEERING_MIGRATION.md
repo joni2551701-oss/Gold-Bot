@@ -123,7 +123,7 @@ inferred:
    formal review from anyone.
 3. **The structural reason a clean merge was never realistic**: `main`'s
    5 post-divergence commits are themselves a chain of broken-filename
-   repairs. `git log --name-status` shows `ai/ai_analyzer.py`,
+   repairs. `git log --name-status` shows `ai_layer/ai_engine/ai_analyzer.py`,
    `strategy_layer/strategy_manager/strategy_manager.py`, and `strategy_layer/strategy_library/liquidity_strategy.py`
    were each renamed one or more times on `main` to fix invisible
    Unicode word-joiner characters and a typo'd `strategie/` directory

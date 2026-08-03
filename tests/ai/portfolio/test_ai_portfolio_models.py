@@ -1,6 +1,6 @@
 import dataclasses
 
-from ai.portfolio.models import (
+from ai_layer.ai_engine.portfolio.models import (
     PortfolioHealth,
     PortfolioRecord,
     PortfolioRiskLevel,

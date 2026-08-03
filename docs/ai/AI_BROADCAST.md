@@ -50,7 +50,7 @@ phase's Foundation Reuse Audit found — `BroadcastProviderType`/
 `BroadcastProviderStatus`/`BroadcastProviderDescriptor`/
 `BroadcastTrigger`/`BroadcastRequest` (Phase 63.0) already existed and
 are reused as-is. No `BroadcastType` enum was created — `broadcast_type`
-reuses `ai.content.content_types.ContentType`, the same type
+reuses `ai_layer.ai_service.content.content_types.ContentType`, the same type
 `BroadcastTrigger.content_type` already referenced; the one genuine
 gap in that vocabulary, `LIVE_ANALYSIS`, was added as an additive
 `ContentType` member (not a new, parallel enum).
@@ -71,7 +71,7 @@ reads an upstream `ContentResult`'s and `MediaAsset`'s own
 already-public fields into a `BroadcastAsset` via
 `BroadcastManager.create_broadcast()` — never touches `ContentEngine`/
 `MediaManager`'s internal state. An optional `persona` parameter
-(type-only `ai.persona.persona.Persona` reference) populates
+(type-only `ai_layer.personal_ai.persona_manager.persona.Persona` reference) populates
 `BroadcastAsset.persona_name` as a free-text string — never an
 embedded `Persona` object.
 
@@ -103,7 +103,7 @@ per the brief's own instruction.
 - Not wired into `platform_layer/telegram/owner/broadcast_commands.py` this phase —
   those commands still report `NOT IMPLEMENTED` (Phase 63.0 TASK 7).
 - Not a second "BroadcastReady" contract — `broadcast_adapter.py`'s
-  output *is* `BroadcastAsset`; `ai.content.broadcast_output.BroadcastReadyContent`/
+  output *is* `BroadcastAsset`; `ai_layer.ai_service.content.broadcast_output.BroadcastReadyContent`/
   `prepare_broadcast()` (Phase 61.5) remain untouched, a separate,
   narrower Content-only path.
 

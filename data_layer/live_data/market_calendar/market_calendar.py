@@ -1,7 +1,7 @@
 """
 ForexMarketCalendar -- canonical Forex 24x5 market calendar for the
 Live Data stream (TASK-ARCH-101, migrated from the legacy
-`stream/stream_mode.py`'s clock, TASK-CORE-004).
+`data_layer/live_data/stream/stream_mode.py`'s clock, TASK-CORE-004).
 
 Reuse-First (Constitution Article 7): `data_layer.live_data.price_stream` already
 defines the `MarketCalendar` Protocol (`is_open(now)` / `next_open(now)`)
@@ -23,7 +23,7 @@ exchange-holiday calendar (a later, separately-approved addition), same
 scope as the legacy clock it replaces.
 
 The module-level `is_weekend()` / `is_market_open()` helpers are kept
-(same names/semantics as the legacy `stream/stream_mode.py`) so the
+(same names/semantics as the legacy `data_layer/live_data/stream/stream_mode.py`) so the
 capability is fully present in the canonical layer for any caller that
 wants the boolean clock without a full calendar instance.
 

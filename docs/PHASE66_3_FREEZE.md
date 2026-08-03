@@ -11,13 +11,13 @@ compliance checks run at close.
 
 TASK 0's audit (`docs/PHASE66_3_AUDIT.md`) reviewed `learning/`
 (top-level, Phase 60.6/60.7), `ai/` (specifically
-`ai/learning_context.py`), `ai/trade_journal/`, `ai/chart_intelligence/`,
+`ai_layer/knowledge_ai/learning_context.py`), `ai/trade_journal/`, `ai/chart_intelligence/`,
 `ai/trading_analyst/`, `knowledge/`, `ai/memory/`, `database/`, and
 `analytics/`. It found two pre-existing modules with strong surface
-similarity to what this phase needed — `learning.models.LearningRecord`
+similarity to what this phase needed — `ai_layer.knowledge_ai.learning_loop.models.LearningRecord`
 (a trade-outcome pattern-statistics record with real, wired SQLite
 persistence via `database_layer/journal_repository/learning_repository.py`) and
-`ai/learning_context.py`'s `LearningContext` (a read-only aggregation
+`ai_layer/knowledge_ai/learning_context.py`'s `LearningContext` (a read-only aggregation
 bundle transitively dependent on `learning/`/`analytics/`) — and
 confirmed neither could be extended without violating Rule 3 (no
 database) or answering a fundamentally different question (trade-outcome
@@ -27,7 +27,7 @@ follows Phase 66.0/66.1/66.2's own established precedent exactly.
 
 ## Built this phase
 
-- `ai/learning/models.py` (new) — `LearningTopic` (12-value vocabulary:
+- `ai/ai_layer/knowledge_ai/learning_loop/models.py` (new) — `LearningTopic` (12-value vocabulary:
   DISCIPLINE/ENTRY/EXIT/RISK/PATIENCE/STRUCTURE/FVG/OB/LIQUIDITY/TREND/
   SESSION/PSYCHOLOGY), `LearningLevel` (UNKNOWN/BEGINNER/INTERMEDIATE/
   ADVANCED/MASTERED, always caller-supplied), `LearningSource` (TRADE/
@@ -51,10 +51,10 @@ follows Phase 66.0/66.1/66.2's own established precedent exactly.
   `LearningRuntime.create()` keyword arguments — never calls `create()`
   itself, never returns `topic`/`level` (inferring those would be real
   AI inference, forbidden by Rule 10). The one file in the package
-  permitted to import `ai.trade_journal.models`.
+  permitted to import `ai_layer.knowledge_ai.knowledge_base.trade_journal.models`.
 - `ai/learning/memory_adapter.py` (new) — `memory_reference_key()`, a
   pure string-format function (`"learning:{id}"`); this package never
-  imports `ai.memory` at all (TASK 5).
+  imports `ai_layer.knowledge_ai.memory_manager` at all (TASK 5).
 - `configuration/feature_flags.py` — extended with
   `enable_learning_intelligence: bool = False` (a dedicated flag,
   distinct from the pre-existing `learning/` package, which reads no
@@ -92,9 +92,9 @@ follows Phase 66.0/66.1/66.2's own established precedent exactly.
   `ai/learning/` (Rule 3); `LearningRuntime` is a private in-memory
   dict.
 - No LLM, no network call (Rule 4/5).
-- No modification to `learning/` or `ai/learning_context.py` — both
+- No modification to `learning/` or `ai_layer/knowledge_ai/learning_context.py` — both
   reviewed, neither touched.
-- No new `MemoryScope` member, no `ai.memory` import anywhere in
+- No new `MemoryScope` member, no `ai_layer.knowledge_ai.memory_manager` import anywhere in
   `ai/learning/` (TASK 5).
 - No Telegram command, dashboard, or `core/pipeline.py` wiring this
   phase — foundation only.
@@ -107,9 +107,9 @@ follows Phase 66.0/66.1/66.2's own established precedent exactly.
 - **Article 3 (Import Rules), zero-exception rule** — AST sweep for
   `decision`/`risk`/`execution`/`signals`/`telegram`/`database`/
   `monitoring`/`strategies` imports (Rule 2's own list) plus the wider
-  house-convention set (`context`/`learning`/`analytics`/`ai.memory`/
-  `ai.reasoning`/`knowledge`/`ai.chart_intelligence`/`ai.trading_analyst`/
-  `ai.content`/`media`/`broadcast`/`assistant`/`voice`/`core.`/
+  house-convention set (`context`/`learning`/`analytics`/`ai_layer.knowledge_ai.memory_manager`/
+  `ai_layer.ai_engine.reasoning`/`knowledge`/`ai_layer.vision_ai`/`ai_layer.ai_engine.trading_analyst`/
+  `ai_layer.ai_service.content`/`media`/`broadcast`/`assistant`/`voice`/`core.`/
   `sqlite3`/`psycopg2`/`redis`/`sqlalchemy`/`openai`/`anthropic`/
   `google.generativeai`/`requests`/`httpx`/`urllib`) across
   `ai/learning/**/*.py`: zero matches
@@ -130,30 +130,30 @@ follows Phase 66.0/66.1/66.2's own established precedent exactly.
   `TradeJournalEntry` already existed and was read type-only, never
   duplicated; the one genuine gap (a per-user topic-mastery Learning
   contract and runtime) was added as a new subpackage only after
-  confirming neither `learning/models.py`'s `LearningRecord` nor
-  `ai/learning_context.py`'s `LearningContext` could be extended
+  confirming neither `ai_layer/knowledge_ai/learning_loop/models.py`'s `LearningRecord` nor
+  `ai_layer/knowledge_ai/learning_context.py`'s `LearningContext` could be extended
   without breaking Rule 3 or answering a different question. See
   `docs/PHASE66_3_AUDIT.md`.
 
 ## Dependency Compliance
 
-`ai/learning/models.py` and `access.py` import nothing beyond
-`ai.access.permissions.AIRole`, `configuration.feature_flags`, and the
-standard library. `learning_runtime.py` imports only `ai.access`,
-`ai.learning`, `configuration`, and stdlib — confirmed by
+`ai/ai_layer/knowledge_ai/learning_loop/models.py` and `access.py` import nothing beyond
+`ai_layer.ai_service.access.permissions.AIRole`, `configuration.feature_flags`, and the
+standard library. `learning_runtime.py` imports only `ai_layer.ai_service.access`,
+`ai_layer.knowledge_ai.learning_engine`, `configuration`, and stdlib — confirmed by
 `test_learning_runtime_module_has_no_persistence_import()`.
 `journal_adapter.py` is the one file permitted to import
-`ai.trade_journal.models` — confirmed confined by
+`ai_layer.knowledge_ai.knowledge_base.trade_journal.models` — confirmed confined by
 `test_trade_journal_import_confined_to_journal_adapter()` and
 `test_only_journal_adapter_imports_ai_trade_journal()`.
-`memory_adapter.py` never imports `ai.memory` — confirmed by
+`memory_adapter.py` never imports `ai_layer.knowledge_ai.memory_manager` — confirmed by
 `test_memory_adapter_never_imports_ai_memory()`. No file in the package
-imports `assistant/`, `voice/`, `knowledge/`, `ai.memory`,
-`ai.reasoning`, `ai.content/`, `media/`, `broadcast/`, `telegram/`,
+imports `assistant/`, `voice/`, `knowledge/`, `ai_layer.knowledge_ai.memory_manager`,
+`ai_layer.ai_engine.reasoning`, `ai.content/`, `media/`, `broadcast/`, `telegram/`,
 `database/`, `learning/` (the pre-existing, unrelated top-level
 package), `analytics/`, or `core.`. Nothing in `ai/trading_analyst/`,
 `ai/chart_intelligence/`, `ai/trade_journal/`, `ai/memory/`, or
-`learning/` imports `ai.learning` back.
+`learning/` imports `ai_layer.knowledge_ai.learning_engine` back.
 
 ## New / Extended / Reused (Constitution Article 12, mandatory table)
 
@@ -189,7 +189,7 @@ per this session's Director Policy.
 ## Related documents
 
 - `docs/PHASE66_3_AUDIT.md` — TASK 0's Foundation Reuse Audit,
-  including the `learning/`/`ai/learning_context.py` review and the
+  including the `learning/`/`ai_layer/knowledge_ai/learning_context.py` review and the
   `LearningRecord` two-namesake naming note.
 - `docs/ai/AI_LEARNING.md` — the full, current documentation of
   `ai/learning/`'s model/runtime/adapter surfaces.

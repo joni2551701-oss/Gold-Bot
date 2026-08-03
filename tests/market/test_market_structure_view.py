@@ -9,7 +9,7 @@ invents nothing when they are absent.
 
 from types import SimpleNamespace
 
-from market.market_structure import MarketStructureView
+from data_layer.live_data.market.market_structure import MarketStructureView
 
 
 def test_projects_context_structure_and_zones_verbatim():

@@ -180,7 +180,7 @@ trading logic was touched by this fix; it is entirely contained to
 
 ### `backtesting_layer/backtest_report/backtest_result.py`
 - `BacktestResult(symbol, timeframe, candles_processed, signals_generated, trades_opened, performances, strategy_report, started_at=None, finished_at=None)` — frozen; `.overall_win_rate` derived property.
-- `build_backtest_result(...)` — wraps `analytics.strategy_report.build_strategy_report()`.
+- `build_backtest_result(...)` — wraps `backtesting_layer.statistics.strategy_report.build_strategy_report()`.
 - `format_backtest_report(result) -> str` — the future `/backtest_report` payload text.
 
 ### `platform_layer/telegram/owner/backtest_commands.py`
@@ -188,7 +188,7 @@ trading logic was touched by this fix; it is entirely contained to
 
 ## What this phase does NOT do
 
-- Does not compute PnL — `analytics.signal_performance.SignalPerformance.profit_loss`
+- Does not compute PnL — `backtesting_layer.statistics.signal_performance.SignalPerformance.profit_loss`
   stays `None`, same honest hook that module already documents; no PnL
   computation exists anywhere in this codebase.
 - Does not replay multiple timeframes together — HTF Bias is a fixed
@@ -197,7 +197,7 @@ trading logic was touched by this fix; it is entirely contained to
 - Does not register `/backtest_run` into `platform_layer/telegram/commands.py`/
   `command_router.py`/`handlers.py`.
 - Does not touch `core/pipeline.py`, `strategies/`, `signals/`,
-  `ai/ai_analyzer.py`, `decision_layer/decision_engine/decision_engine.py`, or
+  `ai_layer/ai_engine/ai_analyzer.py`, `decision_layer/decision_engine/decision_engine.py`, or
   `risk_layer/risk_engine/risk_manager.py` — every one of these was read, never written,
   this phase.
 

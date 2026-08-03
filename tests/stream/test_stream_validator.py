@@ -2,8 +2,8 @@
 
 from datetime import datetime, timedelta, timezone
 
-from stream.stream_event import StreamEvent
-from stream.stream_validator import StreamValidator
+from data_layer.live_data.stream.stream_event import StreamEvent
+from data_layer.live_data.stream.stream_validator import StreamValidator
 
 _NOW = datetime(2026, 1, 2, 12, tzinfo=timezone.utc)
 

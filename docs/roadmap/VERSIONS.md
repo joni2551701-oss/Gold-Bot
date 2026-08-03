@@ -84,7 +84,7 @@ sub-phase sequence, formalized in `docs/roadmap/AI_EVOLUTION.md`
 `63.2` Knowledge, `63.3` Memory, `63.4` Reasoning, `63.5` Conversation,
 `63.6` Content, `63.7` Media, `63.8` Broadcast (all DONE) — closes the
 `63.0`–`63.8` AI Intelligence Layer sub-phase sequence. `64.0` AI
-Intelligence Integration Layer (DONE) — `ai/intelligence_runtime.py`'s
+Intelligence Integration Layer (DONE) — `ai_layer/ai_engine/intelligence_runtime.py`'s
 `IntelligenceRuntime`, the first orchestrator composing all eight
 layers, deterministic only. `65.0` AI Voice Intelligence Foundation
 (DONE) — top-level `voice/`, a genuine new package (not a naming
@@ -96,17 +96,17 @@ fallback handling, and Content/Media/Broadcast/Conversation
 integration adapters; Voice is now the terminal stage of the Official
 Intelligence Pipeline. `65.2` AI Voice Conversation Intelligence
 (DONE) — real OpenAI STT (Whisper), intent detection, voice sessions,
-and `voice/conversation_bridge.py`'s real "user speaks → AI
+and `ai_layer/voice_ai/conversation_bridge.py`'s real "user speaks → AI
 understands → AI replies by voice" round trip via the existing,
 unmodified `ConversationEngine.ask()`. `65.3` Personal AI Assistant
 Foundation (DONE) — top-level `assistant/`, Senior/Seniorita Identity
-metadata (deliberately not `ai.persona.Persona`), a per-user
+metadata (deliberately not `ai_layer.personal_ai.persona_manager.Persona`), a per-user
 `AssistantProfile` + `AssistantManager` gated strictly Owner-only, and
 structural (not real-call) Conversation/Voice/Memory integration
 points. `65.4` Personal AI Runtime Integration (DONE) — real
-composition via `assistant/runtime_adapter.py` (the third
-composition-root-shaped file, after `ai/intelligence_runtime.py` and
-`voice/conversation_bridge.py`): real `ConversationEngine.ask()`,
+composition via `ai_layer/ai_service/assistant/runtime_adapter.py` (the third
+composition-root-shaped file, after `ai_layer/ai_engine/intelligence_runtime.py` and
+`ai_layer/voice_ai/conversation_bridge.py`): real `ConversationEngine.ask()`,
 `VoiceRuntime.generate_audio()`, `MemoryRuntime.store()`/`recall()`,
 and `IntelligenceRuntime.run()` calls, plus `AssistantRuntime`
 session-lifecycle management on the existing `AssistantManager`.
@@ -139,7 +139,7 @@ Rule 3, no statistics — Rule 4), `TradeJournalRuntime` (CRUD-only:
 `create()`/`get()`/`list()`/`update_notes()`), `trading_analyst_adapter.py`
 (composes `TradingAnalysis` + `ChartAnalysis` into a `TradeJournalEntry`),
 and `memory_adapter.py` (`memory_reference_key()`, never imports
-`ai.memory`) — Owner-only via a dedicated `enable_trade_journal` flag.
+`ai_layer.knowledge_ai.memory_manager`) — Owner-only via a dedicated `enable_trade_journal` flag.
 This same phase also extended the Phase 66.1 LOCKed `ChartAnalysis`
 with one new, additive `chart_id` field (LOCK-permitted extension).
 `66.3` AI Learning Intelligence Foundation (DONE) — new `ai/learning/`
@@ -148,13 +148,13 @@ to learn from the user (though this phase itself performs no
 evaluation, coaching, or teaching): primitive-only, in-memory
 `LearningRecord`/`LearningTopic`/`LearningLevel`/`LearningSource`/
 `LearningStatus` (distinct from the pre-existing, DB-persisted
-`learning.models.LearningRecord`, Phase 60.6/60.7, reviewed but not
+`ai_layer.knowledge_ai.learning_loop.models.LearningRecord`, Phase 60.6/60.7, reviewed but not
 reused), `LearningRuntime` (CRUD-only:
 `create()`/`get()`/`list()`/`update()`/`archive()`, no real AI
 inference), `journal_adapter.py` (pure `TradeJournalEntry` ->
 `LearningRuntime.create()` input mapping, never infers `topic`/`level`),
 and `memory_adapter.py` (`memory_reference_key()`, never imports
-`ai.memory`) — Owner-only via a dedicated `enable_learning_intelligence`
+`ai_layer.knowledge_ai.memory_manager`) — Owner-only via a dedicated `enable_learning_intelligence`
 flag. `66.4` AI Coaching Intelligence Foundation (DONE) — new
 `ai/coaching/` subpackage: AI still never decides a trade (GoldBot's
 Trading Core and AI Analyst remain the only decision source); this
@@ -176,15 +176,15 @@ trade performance (quality scores, discipline tracking, pattern
 storage). Primitive-only, in-memory `PerformanceRecord`/
 `PerformanceMetric`/`PerformanceCategory` (`PerformanceMetric`, a
 generic named observation, distinct from the pre-existing, fixed-shape
-`analytics.performance_metrics.PerformanceMetrics`), `PerformanceRuntime`
+`backtesting_layer.statistics.performance_metrics.PerformanceMetrics`), `PerformanceRuntime`
 (CRUD-only: `create()`/`get()`/`list()`/`update_notes()`/`archive()`,
 no scoring algorithm), `journal_adapter.py` (pure `TradeJournalEntry`
 -> `PerformanceRuntime.create()` input mapping, never computes win/loss),
 `coaching_adapter.py` (pure `PerformanceRecord` -> `CoachingRuntime.create()`
 input mapping, structure only), `analytics_adapter.py` (reuses
-`analytics.strategy_report.compute_win_rate()` directly), and
+`backtesting_layer.statistics.strategy_report.compute_win_rate()` directly), and
 `memory_adapter.py` (`performance_memory_key()`, never imports
-`ai.memory`) — Owner-only via a dedicated
+`ai_layer.knowledge_ai.memory_manager`) — Owner-only via a dedicated
 `enable_performance_intelligence` flag. `66.6` AI Strategy Intelligence
 Foundation (DONE) — new `ai/strategy/` subpackage: AI still never
 opens a trade, gives a signal, manages risk, or affects the Decision
@@ -204,7 +204,7 @@ input mapping, never imports the Performance Runtime),
 `journal_adapter.py` (pure `TradeJournalEntry` -> Strategy input
 mapping, never relays per-trade confidence as a per-strategy value),
 and `memory_adapter.py` (`strategy_reference_key()`, never imports
-`ai.memory`) — Owner-only via a dedicated `enable_strategy_intelligence`
+`ai_layer.knowledge_ai.memory_manager`) — Owner-only via a dedicated `enable_strategy_intelligence`
 flag. `66.7` AI Portfolio Intelligence Foundation (DONE) — new
 `ai/portfolio/` subpackage: AI still never opens a trade, sizes a lot,
 replaces the Risk Manager, or affects the Decision Engine (GoldBot's
@@ -223,7 +223,7 @@ input mapping, relays `notes` only), `strategy_adapter.py` (the first
 `66.x` adapter to operate over a `Sequence[StrategyRecord]` rather
 than a single record, deterministically counting `strategy_count`/
 `active_strategy_count`, not inference), and `memory_adapter.py`
-(`portfolio_reference_key()`, never imports `ai.memory`) — Owner-only
+(`portfolio_reference_key()`, never imports `ai_layer.knowledge_ai.memory_manager`) — Owner-only
 via a dedicated `enable_portfolio_intelligence` flag. `66.8` AI
 Research Intelligence Foundation (DONE, final phase of the `66.x`
 sub-sequence) — new `ai/research/` subpackage: AI still never opens a
@@ -241,7 +241,7 @@ no LLM/GPT/Claude/Gemini/OpenAI/reasoning/inference of any kind),
 `StrategyRecord`/`PortfolioRecord`, relaying `notes` and setting a
 fixed `category` value that is a structural constant of that adapter,
 never content-based inference), and `memory_adapter.py`
-(`research_reference_key()`, never imports `ai.memory`) — Owner-only
+(`research_reference_key()`, never imports `ai_layer.knowledge_ai.memory_manager`) — Owner-only
 via a dedicated `enable_research_intelligence` flag. This closes the
 `66.x` AI Trading Intelligence sub-sequence entirely; the Director's
 own next roadmap moves to GoldBot Core Owner Monitoring Alpha (Track

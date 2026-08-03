@@ -1,7 +1,7 @@
 """Phase 65.2 TASK 3 — voice/intents/: VoiceIntent + detect_intent()."""
 
-from voice.intents.detector import detect_intent
-from voice.intents.models import VoiceIntent
+from ai_layer.voice_ai.intents.detector import detect_intent
+from ai_layer.voice_ai.intents.models import VoiceIntent
 
 
 def test_voice_intent_has_five_values():

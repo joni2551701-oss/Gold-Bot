@@ -1,9 +1,9 @@
 """Phase 65.2 TASK 1/2 — voice/stt/manager.py: STTManager (adapter registry + single active provider)."""
 
-from voice.stt.manager import STTManager
-from voice.stt.models import STTRequest, STTResultStatus
-from voice.stt.providers.local import LocalSTTProvider
-from voice.stt.providers.openai import OpenAISTTProvider
+from ai_layer.voice_ai.stt.manager import STTManager
+from ai_layer.voice_ai.stt.models import STTRequest, STTResultStatus
+from ai_layer.voice_ai.stt.providers.local import LocalSTTProvider
+from ai_layer.voice_ai.stt.providers.openai import OpenAISTTProvider
 
 
 def _request(**overrides):

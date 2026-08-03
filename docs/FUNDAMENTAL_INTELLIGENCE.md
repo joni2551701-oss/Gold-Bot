@@ -80,7 +80,7 @@ audit, to already have a better home:
   general-purpose, `MarketContext`-shaped template registry a
   fundamental-analysis prompt belongs in (see that module's own
   docstring, which explicitly distinguishes it from the older,
-  Gemini-specific `ai/ai_prompt.py`). TASK 7 adds one new method to
+  Gemini-specific `ai_layer/ai_engine/ai_prompt.py`). TASK 7 adds one new method to
   the existing class instead.
 
 ## TASK 2: `context_layer/fundamental/fundamental_context.py` -- scoring-field extension
@@ -181,7 +181,7 @@ path this phase.
 
 ## TASK 7: AI Preparation Layer -- `PromptManager.get_fundamental_analysis_prompt()`
 
-One new method on the existing `ai.prompts.prompt_manager.PromptManager`
+One new method on the existing `ai_layer.ai_engine.prompts.prompt_manager.PromptManager`
 class (see TASK 1). Builds a combined technical + fundamental prompt
 from an already-built `MarketContext` and `FundamentalContextSnapshot`,
 matching the Director's own worked example shape ("Technical: H4

@@ -3,7 +3,7 @@ market/ facade — SessionState projection (TASK-CORE-005).
 
 Proves the session view reads context.session.current_session and
 combines it with stream/'s shared weekend clock
-(stream.stream_mode.is_weekend), so the market façade's session label
+(data_layer.live_data.stream.stream_mode.is_weekend), so the market façade's session label
 agrees with the stream layer. `now` is injected for deterministic
 weekend behaviour.
 """
@@ -11,7 +11,7 @@ weekend behaviour.
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
-from market.session_state import SessionState
+from data_layer.live_data.market.session_state import SessionState
 
 # Sat 2026-01-03 12:00 UTC (forex weekend) and Wed 2026-01-07 12:00 UTC (open).
 _WEEKEND = datetime(2026, 1, 3, 12, 0, tzinfo=timezone.utc)

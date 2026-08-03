@@ -20,9 +20,9 @@ only report what has already been observed.
 
 from typing import Sequence
 
-from analytics.learning_report import build_learning_report, format_learning_report
-from learning.models import LearningRecord
-from learning.pattern_detector import detect_patterns, filter_high_failure_patterns, filter_high_success_patterns, format_pattern_insight
+from backtesting_layer.statistics.learning_report import build_learning_report, format_learning_report
+from ai_layer.knowledge_ai.learning_loop.models import LearningRecord
+from ai_layer.knowledge_ai.learning_loop.pattern_detector import detect_patterns, filter_high_failure_patterns, filter_high_success_patterns, format_pattern_insight
 from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
 
@@ -46,7 +46,7 @@ def get_learning_status(records: Sequence[LearningRecord], min_occurrences: int 
 def get_patterns_report(records: Sequence[LearningRecord], min_occurrences: int = 3) -> ProviderCommandResult:
     """
     The future `/patterns` command's payload -- every condition
-    combination `learning.pattern_detector.detect_patterns()` found,
+    combination `ai_layer.knowledge_ai.learning_loop.pattern_detector.detect_patterns()` found,
     regardless of classification (HIGH_SUCCESS/HIGH_FAILURE/MIXED).
     Never raises: no patterns produces a plain "no patterns" message,
     not an exception.

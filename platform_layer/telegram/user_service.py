@@ -12,7 +12,7 @@ failure never propagates up to a command handler.
 register_phone() (Phase 61.5: AI Production Integration Foundation,
 TASK 4) is the real Phone Share Button flow's service-layer step:
 Phone Hash -> UserRecord -> Trial Check -> FREE account. It imports
-`core_layer.secrets.phone_hash`/`ai.access.identity_checker`/`ai.access.trial_manager`
+`core_layer.secrets.phone_hash`/`ai_layer.ai_service.access.identity_checker`/`ai_layer.ai_service.access.trial_manager`
 directly -- the same "telegram/ may consume already-built ai/ output"
 relationship `platform_layer/telegram/owner/ai_commands.py` already established (this
 codebase's pipeline layering is data -> ... -> ai -> decision -> ...
@@ -31,8 +31,8 @@ from database_layer.user_repository.user_repository import UserRepository
 from database_layer.user_repository.user_models import UserRecord
 from core_layer.logger.logger import setup_logger
 from core_layer.secrets.phone_hash import hash_phone_number
-from ai.access.identity_checker import is_phone_reused_by_another_account
-from ai.access.trial_manager import DEFAULT_TRIAL_DURATION, trial_status_from_started_at
+from ai_layer.ai_service.access.identity_checker import is_phone_reused_by_another_account
+from ai_layer.ai_service.access.trial_manager import DEFAULT_TRIAL_DURATION, trial_status_from_started_at
 
 logger = setup_logger("UserService")
 
@@ -204,7 +204,7 @@ class UserService:
         telegram_id blocks a new trial outright (the phone_hash is
         still recorded on this account -- storage is unconditional, only
         the trial start is gated) -- see
-        `ai.access.identity_checker.is_phone_reused_by_another_account()`.
+        `ai_layer.ai_service.access.identity_checker.is_phone_reused_by_another_account()`.
         A telegram_id that already has `trial_started_at` set keeps its
         original start time; this method never resets an existing
         trial window.

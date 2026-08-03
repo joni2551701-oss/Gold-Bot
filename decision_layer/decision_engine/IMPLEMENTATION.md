@@ -28,7 +28,7 @@ it already receives — no new fetch, no new pipeline stage:
 | `signal_confidence` | `SignalCandidate.confidence` | Unchanged from pre-A3. |
 | `htf_bias` | `HTFBiasResult.bias` (or `HTFBias.UNKNOWN` if `htf_bias=None`) | `context_layer/trend/htf_bias.py`, Phase A2. |
 | `htf_quality_score` | `HTFBiasResult.quality_score` (or `0.0` if `htf_bias=None`) | Drives Step-5 quality dampening — see below. |
-| `risk_score` | `1.0 - AIAnalysisResult.risk_score` | **Inverted** — `AIAnalysisResult.risk_score` is `0.0`=no risk .. `1.0`=max risk (`ai/ai_analyzer.py`); `DecisionInput.risk_score` is flipped so "higher is always better," matching the other three inputs. Note this is *not* `risk_layer.risk_engine.risk_manager.RiskResult` — that object doesn't exist yet at Decision Engine time (Risk runs *after* Decision in the pipeline). |
+| `risk_score` | `1.0 - AIAnalysisResult.risk_score` | **Inverted** — `AIAnalysisResult.risk_score` is `0.0`=no risk .. `1.0`=max risk (`ai_layer/ai_engine/ai_analyzer.py`); `DecisionInput.risk_score` is flipped so "higher is always better," matching the other three inputs. Note this is *not* `risk_layer.risk_engine.risk_manager.RiskResult` — that object doesn't exist yet at Decision Engine time (Risk runs *after* Decision in the pipeline). |
 | `ai_score` | `AIAnalysisResult.confidence` | Unchanged from pre-A3. |
 
 A caller that omits `htf_bias` (any pre-Phase-A2/A3 call site) still

@@ -45,18 +45,18 @@ codebase has now applied five times — `TradeJournalEntry`,
 a bare name with `strategy_layer.strategy_manager.lifecycle.strategy_status.StrategyStatus`
 but is a **different value set** (`ARCHIVED` vs `DEPRECATED`) at a
 distinct, non-colliding fully-qualified path
-(`ai.strategy.models.StrategyStatus`), never imported alongside the
+(`ai_layer.ai_engine.strategy.models.StrategyStatus`), never imported alongside the
 Trading Core one, confirmed by the isolation test forbidding any
 `strategies` import in `ai/strategy/`.
 
 ## Question 2 — Analytics modulidan foydalanish mumkinmi?
 
-**Reviewed, not reused this phase.** `analytics/strategy_report.py`
+**Reviewed, not reused this phase.** `backtesting_layer/statistics/strategy_report.py`
 already exposes `StrategyPerformanceReport` (a fixed-shape aggregate:
 `total_signals`/`win_count`/`loss_count`/`win_rate`/
 `average_r_multiple`, keyed by `strategy_id` string), `compute_win_rate()`,
 `filter_performances()`, and `build_strategy_report()` — all operating
-over `analytics.signal_performance.SignalPerformance`, a Trading-Core-
+over `backtesting_layer.statistics.signal_performance.SignalPerformance`, a Trading-Core-
 derived record (`strategy_id` is a plain string join-key, not a live
 object). This brief's own TASK 1 file tree names no `analytics_adapter.py`
 for `ai/strategy/` (unlike Phase 66.5's `ai/performance/`, which was
@@ -71,16 +71,16 @@ allowed-import list for any file in the package).
 
 **Sufficient for TASK 5's own mapping, with the same "field
 deliberately omitted" posture every prior `journal_adapter.py` in this
-codebase already uses.** `ai.trade_journal.models.TradeJournalEntry`
+codebase already uses.** `ai_layer.knowledge_ai.knowledge_base.trade_journal.models.TradeJournalEntry`
 (Phase 66.2) carries `trade_id`/`direction`/`result`/`confidence`/
 `reason`/`lesson`/`mistakes` — enough to populate `StrategyRecord.notes`
-(from `lesson` or `reason`, mirroring `ai.performance.journal_adapter`'s
+(from `lesson` or `reason`, mirroring `ai_layer.ai_engine.performance.journal_adapter`'s
 own fallback chain) and `StrategyRecord.confidence` is *not* filled
 from `TradeJournalEntry.confidence` (a per-trade confidence, not a
 per-strategy one — conflating the two would be inference, forbidden by
 Rule 5). `TradeJournalEntry` carries no `strategy_id`/`strategy_type`/
 `strategy_name` field of any kind, so those three remain absent from
-the adapter's output, exactly as `ai.performance.journal_adapter.py`
+the adapter's output, exactly as `ai_layer.ai_engine.performance.journal_adapter.py`
 already left `entry_quality`/`exit_quality`/`discipline_score`/
 `risk_score` absent for the identical reason.
 
@@ -88,7 +88,7 @@ already left `entry_quality`/`exit_quality`/`discipline_score`/
 
 **No new `PerformanceMetric` of any kind is created by this phase.**
 TASK 4's own `performance_adapter.py` reads
-`ai.performance.models.PerformanceRecord` (Phase 66.5, LOCKed) type-only
+`ai_layer.ai_engine.performance.models.PerformanceRecord` (Phase 66.5, LOCKed) type-only
 and produces `StrategyRuntime.create()`-shaped keyword arguments —
 `PerformanceRecord.confidence_score` maps to `StrategyRecord.confidence`
 (both already "a single caller-supplied score, no scale conversion")
@@ -96,7 +96,7 @@ and `PerformanceRecord.notes` maps directly. `PerformanceRecord` has no
 `strategy_type`/`strategy_name`/`strategy_version` field, so those stay
 absent from the mapping, same "deliberately omitted, not inferred"
 posture as Question 3. This adapter never imports
-`ai.performance.performance_runtime` (Runtime import forbidden by
+`ai_layer.ai_engine.performance.performance_runtime` (Runtime import forbidden by
 TASK 4's own instruction: "Type-only. Runtime import emas.") —
 confirmed by the isolation test's allowed-import allowlist.
 
@@ -121,7 +121,7 @@ confirmed by the isolation test's allowed-import allowlist.
    forbidden by this brief's own Rule 1, making a new, independent
    `ai/strategy/models.py` the only legal outcome, not a reuse
    omission.
-2. `analytics/strategy_report.py` is reviewed and consciously not
+2. `backtesting_layer/statistics/strategy_report.py` is reviewed and consciously not
    reused this phase (no adapter task requests it, mirroring Phase
    66.4's own precedent).
 3. `TradeJournalEntry` is sufficient for TASK 5's mapping with three

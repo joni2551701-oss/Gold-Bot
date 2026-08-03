@@ -54,7 +54,7 @@ Verified against the real codebase:
   class by this name in any package. It is not a real type to import.
 - **`DecisionResult`** is real — `decision_layer/decision_engine/models.py`/`decision_layer/decision_engine/decision_engine.py`.
 - **`RiskResult`** is real — `risk_layer/risk_engine/risk_manager.py`.
-- **`MarketContext`** is real — `ai/interfaces.py` (already `ai/`-owned,
+- **`MarketContext`** is real — `ai_layer/ai_service/interfaces.py` (already `ai/`-owned,
   no conflict).
 
 `docs/architecture/IMPORT_RULES.md`'s Forbidden table states this with
@@ -95,7 +95,7 @@ ExplanationBuilder.build(
     lot_size: float,                 # RiskResult.lot_size
     risk_reward: float,              # RiskResult's own computed ratio
     entry: float, stop_loss: float, take_profit: float,
-    market_context: MarketContext,   # ai/interfaces.py's own type — no conflict
+    market_context: MarketContext,   # ai_layer/ai_service/interfaces.py's own type — no conflict
     persona: Optional[Persona] = None,
     reasons: Optional[List[str]] = None,  # from SignalExplanation.reasons, already ai/-legal via signals/ type-only exception
 ) -> ExplanationOutput

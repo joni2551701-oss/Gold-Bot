@@ -1,7 +1,7 @@
 """Phase 63.6 TASK 2 — ai/content/models.py: ContentMode/ContentMetadata/ContentContext."""
 
-from ai.content_types import ContentType
-from ai.content.models import ContentContext, ContentMetadata, ContentMode
+from ai_layer.ai_service.content.content_type_vocabulary import ContentType
+from ai_layer.ai_service.content.models import ContentContext, ContentMetadata, ContentMode
 
 
 def test_content_metadata_defaults():

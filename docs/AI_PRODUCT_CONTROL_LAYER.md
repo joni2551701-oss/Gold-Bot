@@ -58,7 +58,7 @@ injectable, this module never constructs a live `AIService` or reads
 its internal state. "Runtime: Online/Offline" is derived from whether
 any registered provider is currently healthy — never a hardcoded
 constant. "Health: N%" in `ai_provider()` reads
-`ai.audit.provider_stats.ProviderStats.success_rate` when call history
+`ai_layer.ai_service.audit.provider_stats.ProviderStats.success_rate` when call history
 exists, or reports "N/A" rather than fabricating a percentage.
 Confirmed (per TASK 1's audit): none of the 18 pre-existing
 `platform_layer/telegram/owner/*.py` modules are registered into

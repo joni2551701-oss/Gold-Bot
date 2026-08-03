@@ -1,14 +1,14 @@
 """Phase 61.4 TASK 3 — platform_layer/telegram/owner/ai_commands.py tests. Not registered into command_router.py -- these call the functions directly."""
 
-from ai.access.permissions import AIRole
-from ai.access.usage_limits import UsageLimiter
-from ai.audit.provider_stats import ProviderStats
-from ai.audit.usage_accounting import UserUsageStats
-from ai.capabilities.capability import Capability
-from ai.capabilities.capability_manager import CapabilityManager
-from ai.providers.provider_health import ProviderHealthTracker
-from ai.providers.provider_status import HealthStatus
-from ai.providers.provider_manager import ProviderStatus
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_service.access.usage_limits import UsageLimiter
+from ai_layer.ai_service.audit.provider_stats import ProviderStats
+from ai_layer.ai_service.audit.usage_accounting import UserUsageStats
+from ai_layer.ai_engine.capabilities.capability import Capability
+from ai_layer.ai_engine.capabilities.capability_manager import CapabilityManager
+from ai_layer.ai_engine.providers.provider_health import ProviderHealthTracker
+from ai_layer.ai_engine.providers.provider_status import HealthStatus
+from ai_layer.ai_engine.providers.provider_manager import ProviderStatus
 from platform_layer.telegram.owner.ai_commands import (
     AICommandResult,
     ai_cost,

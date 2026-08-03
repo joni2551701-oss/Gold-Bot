@@ -7,8 +7,8 @@ that RuntimeManager.transition() honors it in both directions.
 
 import pytest
 
-from ai.runtime.runtime_manager import RuntimeManager
-from ai.runtime.runtime_state import VALID_TRANSITIONS, RuntimeState, is_valid_transition
+from ai_layer.ai_engine.runtime.runtime_manager import RuntimeManager
+from ai_layer.ai_engine.runtime.runtime_state import VALID_TRANSITIONS, RuntimeState, is_valid_transition
 
 _ALL_STATES = list(RuntimeState)
 _ALL_PAIRS = [(f, t) for f in _ALL_STATES for t in _ALL_STATES]

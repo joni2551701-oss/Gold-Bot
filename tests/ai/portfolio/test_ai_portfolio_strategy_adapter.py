@@ -1,5 +1,5 @@
-from ai.portfolio.strategy_adapter import strategy_records_to_portfolio_input
-from ai.strategy.models import StrategyRecord, StrategyStatus, StrategyType
+from ai_layer.ai_engine.portfolio.strategy_adapter import strategy_records_to_portfolio_input
+from ai_layer.ai_engine.strategy.models import StrategyRecord, StrategyStatus, StrategyType
 
 
 def _record(**overrides):

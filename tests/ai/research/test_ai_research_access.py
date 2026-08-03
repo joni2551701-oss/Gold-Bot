@@ -1,5 +1,5 @@
-from ai.access.permissions import AIRole
-from ai.research.access import is_research_intelligence_enabled_for
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.fundamental_ai.access import is_research_intelligence_enabled_for
 from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_research_intelligence=True)

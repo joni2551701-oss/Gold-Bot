@@ -82,7 +82,7 @@ config.py → data_layer/providers/ → stream/ → market/ → context/ → str
   states it "never recomputes and never modifies context/".
 - `*_state.py` (liquidity/regime/session/trend/volatility) + `candle.py`
   = documented thin façade DTOs (41–56 lines each), no detectors.
-- **Duplicate check:** `market/candle.py` is a deliberate façade view,
+- **Duplicate check:** `data_layer/live_data/market/candle.py` is a deliberate façade view,
   not a second `Candle` detector. `context_layer/context_engine/candle.py` remains the SSoT
   for candle sentiment (`direction()` / `is_bullish()`).
 

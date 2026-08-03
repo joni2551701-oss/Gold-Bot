@@ -11,7 +11,7 @@ import pathlib
 
 
 def _trade_journal_dir():
-    return pathlib.Path(__file__).resolve().parents[3] / "ai" / "trade_journal"
+    return pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "knowledge_ai" / "knowledge_base" / "trade_journal"
 
 
 def _imported_names(py_file: pathlib.Path):
@@ -28,7 +28,7 @@ def _imported_names(py_file: pathlib.Path):
 def test_trade_journal_never_imports_trading_core_layers():
     """Rule 1/2: decision/, risk/, execution/, strategies/, signals/, context/, monitoring/ -- zero exceptions."""
     forbidden_prefixes = (
-        "decision", "risk", "execution", "strategies", "signals", "context", "monitoring",
+        "decision_layer", "risk_layer", "execution_layer", "strategy_layer", "signal_layer", "context_layer", "core_layer.health_monitor",
     )
 
     for py_file in _trade_journal_dir().rglob("*.py"):
@@ -38,7 +38,7 @@ def test_trade_journal_never_imports_trading_core_layers():
 
 def test_trade_journal_never_imports_telegram_or_database():
     """Rule 3: Journal is a Foundation, not a database -- no telegram/ or database/ import anywhere."""
-    forbidden_prefixes = ("telegram", "database")
+    forbidden_prefixes = ("platform_layer.telegram", "database_layer")
 
     for py_file in _trade_journal_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -55,7 +55,7 @@ def test_trade_journal_never_imports_sql_or_persistence_libraries():
 
 
 def test_trade_journal_never_imports_ai_provider_or_llm_sdks():
-    forbidden_prefixes = ("ai.providers", "ai.router", "openai", "anthropic", "google.generativeai")
+    forbidden_prefixes = ("ai_layer.ai_engine.providers", "ai_layer.ai_coordinator", "openai", "anthropic", "google.generativeai")
 
     for py_file in _trade_journal_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -74,11 +74,11 @@ def test_trade_journal_never_imports_ai_memory():
     """TASK 6: Memory o'zgarmaydi -- ai.memory is never imported anywhere in this package, not even memory_adapter.py."""
     for py_file in _trade_journal_dir().rglob("*.py"):
         for name in _imported_names(py_file):
-            assert not name.startswith("ai.memory"), f"{py_file}: {name}"
+            assert not name.startswith("ai_layer.knowledge_ai.memory_manager"), f"{py_file}: {name}"
 
 
 def test_trade_journal_never_imports_knowledge_or_reasoning():
-    forbidden_prefixes = ("knowledge", "ai.reasoning")
+    forbidden_prefixes = ("knowledge", "ai_layer.ai_engine.reasoning")
 
     for py_file in _trade_journal_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -87,7 +87,7 @@ def test_trade_journal_never_imports_knowledge_or_reasoning():
 
 def test_trade_journal_never_imports_ai_content_media_broadcast():
     """This phase never composes Content/Media/Broadcast -- distinct from ai/trading_analyst/ and ai/chart_intelligence/, which do."""
-    forbidden_prefixes = ("ai.content", "media", "broadcast")
+    forbidden_prefixes = ("ai_layer.ai_service.content", "media_layer.content_manager", "media_layer.telegram_broadcast")
 
     for py_file in _trade_journal_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -103,7 +103,7 @@ def test_trade_journal_never_imports_core_package():
 def test_trading_analyst_and_chart_intelligence_imports_confined_to_adapter():
     """TASK 5: ai.trading_analyst and ai.chart_intelligence are only permitted in trading_analyst_adapter.py."""
     adapter_file = _trade_journal_dir() / "trading_analyst_adapter.py"
-    widened_prefixes = ("ai.trading_analyst", "ai.chart_intelligence")
+    widened_prefixes = ("ai_layer.ai_engine.trading_analyst", "ai_layer.vision_ai")
 
     for py_file in _trade_journal_dir().rglob("*.py"):
         if py_file == adapter_file:
@@ -115,15 +115,15 @@ def test_trading_analyst_and_chart_intelligence_imports_confined_to_adapter():
 def test_only_trading_analyst_adapter_imports_upstream_packages():
     adapter_file = _trade_journal_dir() / "trading_analyst_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert any(name.startswith("ai.trading_analyst") for name in imported)
-    assert any(name.startswith("ai.chart_intelligence") for name in imported)
+    assert any(name.startswith("ai_layer.ai_engine.trading_analyst") for name in imported)
+    assert any(name.startswith("ai_layer.vision_ai") for name in imported)
 
 
 def test_trade_journal_entry_has_no_trading_core_object_field_type():
     """Belt-and-suspenders: no dataclass field on TradeJournalEntry/ReplayContext may be typed as a Trading Core object."""
     import dataclasses
 
-    from ai.trade_journal.models import ReplayContext, TradeJournalEntry
+    from ai_layer.knowledge_ai.knowledge_base.trade_journal.models import ReplayContext, TradeJournalEntry
 
     allowed_type_fragments = ("str", "float", "int", "Sequence", "Optional")
     for model in (TradeJournalEntry, ReplayContext):
@@ -135,7 +135,7 @@ def test_trade_journal_entry_has_no_trading_core_object_field_type():
 def test_trade_journal_runtime_module_has_no_persistence_import():
     """Rule 3 belt-and-suspenders: journal_runtime.py itself (the one file with a stateful store) imports nothing beyond ai.access/ai.trade_journal/configuration/stdlib."""
     runtime_file = _trade_journal_dir() / "journal_runtime.py"
-    allowed_prefixes = ("ai.access", "ai.trade_journal", "core_layer.configuration", "dataclasses", "datetime", "typing")
+    allowed_prefixes = ("ai_layer.ai_service.access", "ai_layer.knowledge_ai.knowledge_base.trade_journal", "core_layer.configuration", "dataclasses", "datetime", "typing")
     for name in _imported_names(runtime_file):
         assert name.startswith(allowed_prefixes), f"{runtime_file}: {name}"
 

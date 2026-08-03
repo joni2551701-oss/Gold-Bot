@@ -1,6 +1,6 @@
 """
 StreamValidator -- canonical per-tick validation for the Live Data
-stream (TASK-ARCH-101, migrated from the legacy `stream/stream_validator.py`,
+stream (TASK-ARCH-101, migrated from the legacy `data_layer/live_data/stream/stream_validator.py`,
 TASK-CORE-004).
 
 Checks each canonical `data_layer.live_data.stream_event.StreamEvent` (a price

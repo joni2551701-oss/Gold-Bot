@@ -4,7 +4,7 @@ Foundation, TASK 4; extended Phase 63.8: AI Broadcast Intelligence
 Foundation, TASK 3).
 
 Same "static catalog + Owner-set status" shape
-`ai.providers.provider_manager.ProviderManager` already established
+`ai_layer.ai_engine.providers.provider_manager.ProviderManager` already established
 for AI providers (Rule 8 — reuse the pattern, not the code, since this
 manages channel *intent*, not AI vendors). Every provider starts
 `DISABLED` — no channel is enabled until an Owner explicitly turns one

@@ -1,6 +1,6 @@
 import dataclasses
 
-from ai.research.models import (
+from ai_layer.fundamental_ai.models import (
     ResearchCategory,
     ResearchPriority,
     ResearchRecord,

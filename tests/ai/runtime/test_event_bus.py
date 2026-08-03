@@ -1,6 +1,6 @@
 """Phase 61.6 TASK 5 — Runtime Event Bus. In-memory pub/sub, no module calls another directly."""
 
-from ai.event_bus import EventBus, EventType, RuntimeEvent
+from ai_layer.ai_service.event_bus import EventBus, EventType, RuntimeEvent
 
 
 def test_publish_calls_the_subscribed_handler():

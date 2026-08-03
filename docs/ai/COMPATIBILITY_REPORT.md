@@ -8,8 +8,8 @@ the same change.
 
 ## 1. `EventBus` / `EventType` / `RuntimeEvent` — module relocated
 
-- **Before:** `ai.runtime.event_bus`
-- **After:** `ai.event_bus`
+- **Before:** `ai_layer.ai_engine.runtime.event_bus`
+- **After:** `ai_layer.ai_service.event_bus`
 - **Class-level API:** unchanged — same three public classes, same
   members, same behavior (byte-identical class bodies). Only the import
   path changed.
@@ -28,12 +28,12 @@ the same change.
 
 ## 2. `ContentType` — enum relocated
 
-- **Before:** `ai.content.content_types.ContentType`
-- **After:** `ai.content_types.ContentType`
+- **Before:** `ai_layer.ai_service.content.content_types.ContentType`
+- **After:** `ai_layer.ai_service.content.content_types.ContentType`
 - **Enum API:** unchanged — same 9 members, same string values.
 - **The `Capability`-based helpers stay put:** `CONTENT_CAPABILITIES`,
   `is_content_capability()`, `content_title()` remain importable from
-  `ai.content.content_types` exactly as before (they are content-service
+  `ai_layer.ai_service.content.content_types` exactly as before (they are content-service
   internals, not shared vocabulary). Files that imported both a helper
   and `ContentType` from that one path now use two import lines.
 - **Consumers updated (21 files):** 19 `ContentType`-only imports
@@ -48,17 +48,17 @@ the same change.
 
 ## 3. `TradeJournalEntry` (Phase 55 record) — class renamed
 
-- **Before:** `ai.journal.trade_journal.TradeJournalEntry`
-- **After:** `ai.journal.trade_journal.TradeJournalRecord`
+- **Before:** `ai_layer.knowledge_ai.knowledge_base.journal.trade_journal.TradeJournalEntry`
+- **After:** `ai_layer.knowledge_ai.knowledge_base.journal.trade_journal.TradeJournalRecord`
 - **Unchanged:** all 15 fields, and the `create_journal_entry()`
   factory (same name, same signature, same behavior — it simply returns
   a `TradeJournalRecord` now).
 - **The unrelated Phase 66.2 class keeps its name:**
-  `ai.trade_journal.models.TradeJournalEntry` is **not** touched. After
+  `ai_layer.knowledge_ai.knowledge_base.trade_journal.models.TradeJournalEntry` is **not** touched. After
   this change the name `TradeJournalEntry` resolves to exactly one
   class in the codebase.
 - **Consumers updated (all in-repo):** `ai/context/context_builder.py`,
-  `ai/context/context_snapshot.py`, the `ai/trade_journal.py`
+  `ai/context/context_snapshot.py`, the `ai_layer/knowledge_ai/knowledge_base/trade_journal.py`
   re-export shim, and a docstring in `ai/journal/failure_analysis.py`.
   The `create_journal_entry`/`TradeOutcome`/`DecisionType`/`SignalType`
   importers (e.g. `tests/ai/context/test_context_builder.py`) were
@@ -89,5 +89,5 @@ context builder, not the Trading-Core `context/` package.
 Every change is a relocation or rename with all in-repo consumers
 updated in the same commit; no public class/function signature, field,
 or behavior changed. The only externally-observable delta is three
-import *paths* (`ai.event_bus`, `ai.content_types`, and the
+import *paths* (`ai_layer.ai_service.event_bus`, `ai_layer.ai_service.content.content_types`, and the
 `TradeJournalRecord` name), each documented above.

@@ -1,6 +1,6 @@
 import dataclasses
 
-from ai.learning.models import (
+from ai_layer.knowledge_ai.learning_engine.models import (
     LearningLevel,
     LearningRecord,
     LearningSource,
@@ -152,7 +152,7 @@ def test_generate_learning_id_unique():
 
 def test_learning_topic_and_knowledge_category_are_distinct_enums():
     """docs/PHASE66_3_AUDIT.md: LearningTopic is not a duplicate of knowledge.models.KnowledgeCategory despite some name overlap (RISK, PSYCHOLOGY)."""
-    from knowledge.models import KnowledgeCategory
+    from ai_layer.knowledge_ai.knowledge_base.models import KnowledgeCategory
 
     assert LearningTopic is not KnowledgeCategory
     assert set(LearningTopic) != set(KnowledgeCategory)

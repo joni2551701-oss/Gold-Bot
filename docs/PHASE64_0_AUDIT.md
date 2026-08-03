@@ -42,7 +42,7 @@ confirmed by re-reading each manager's own source this phase:
 
 | Layer | Foundation/Manager | Deterministic entry point(s) used | Adapter(s) reused |
 |---|---|---|---|
-| Knowledge | `knowledge/knowledge_manager.py`'s `KnowledgeManager` | `search(query) -> Sequence[KnowledgeEntry]` | — |
+| Knowledge | `ai_layer/knowledge_ai/knowledge_base/knowledge_manager.py`'s `KnowledgeManager` | `search(query) -> Sequence[KnowledgeEntry]` | — |
 | Memory | `ai/memory/memory_runtime.py`'s `MemoryRuntime` | `store(MemoryEntry)`, `recall(key)` | — |
 | Reasoning | `ai/reasoning/reasoning_runtime.py`'s `ReasoningRuntime` | `reason(ReasoningResult)` | `ai/reasoning/reasoning_adapters.py`'s `step_from_knowledge_entry()`, `reasoning_result_to_explanation_fields()` |
 | Conversation | `ai/conversation/conversation_engine.py`'s `ConversationEngine` | `start_session()`, `append()` (never `ask()`) | — |
@@ -66,11 +66,11 @@ own layer. A new top-level `ai/intelligence/` **package** is
 unwarranted (Rule/TASK 1's own instruction: "shoshilmang... faqat
 bitta orchestrator") since the entire deliverable is one class in one
 file, not a multi-file subsystem. **Decision: one new file,
-`ai/intelligence_runtime.py`**, matching this codebase's own
+`ai_layer/ai_engine/intelligence_runtime.py`**, matching this codebase's own
 established convention for a single-purpose top-level module directly
-under `ai/` (`ai/ai_analyzer.py`, `ai/ai_prompt.py`,
-`ai/confidence_model.py`, `ai/interfaces.py`,
-`ai/learning_context.py`, `ai/trade_journal.py` — none of these are
+under `ai/` (`ai_layer/ai_engine/ai_analyzer.py`, `ai_layer/ai_engine/ai_prompt.py`,
+`ai_layer/confidence_ai/confidence_model.py`, `ai_layer/ai_service/interfaces.py`,
+`ai_layer/knowledge_ai/learning_context.py`, `ai_layer/knowledge_ai/knowledge_base/trade_journal.py` — none of these are
 subpackages either).
 
 ## Why this one file may import every layer (an explicit, narrow exception)
@@ -78,7 +78,7 @@ subpackages either).
 Every individual layer's own isolation is unchanged and remains tested
 (each layer still only imports its upstream layers — Broadcast still
 cannot import Reasoning directly, etc.; TASK 5 adds a permanent AST
-test for this). `ai/intelligence_runtime.py` is different in kind: it
+test for this). `ai_layer/ai_engine/intelligence_runtime.py` is different in kind: it
 is the **composition root** for the Intelligence layer, the same role
 `core/pipeline.py` already plays for the Trading layer (which itself
 legitimately imports `data/`, `context/`, `strategies/`, `signals/`,
@@ -93,11 +93,11 @@ completely untouched.
 
 ## Dependency Compliance (Rule 3)
 
-`ai/intelligence_runtime.py` imports: `knowledge.knowledge_manager`,
-`ai.memory.memory_runtime`/`models`, `ai.reasoning.reasoning_runtime`/
-`models`/`reasoning_adapters`, `ai.conversation.conversation_engine`,
-`ai.explanation.explanation_builder`/`explanation_input`,
-`ai.content.content_adapter`/`content_types`, `media_layer.content_manager.media_manager`/
+`ai_layer/ai_engine/intelligence_runtime.py` imports: `ai_layer.knowledge_ai.knowledge_base.knowledge_manager`,
+`ai_layer.knowledge_ai.memory_manager.memory_runtime`/`models`, `ai_layer.ai_engine.reasoning.reasoning_runtime`/
+`models`/`reasoning_adapters`, `ai_layer.personal_ai.interaction_manager.conversation_engine`,
+`ai_layer.explanation_ai.explanation_builder`/`explanation_input`,
+`ai_layer.ai_service.content.content_adapter`/`content_types`, `media_layer.content_manager.media_manager`/
 `media_pipeline`/`media_types`, `media_layer.telegram_broadcast.broadcast_manager`/
 `broadcast_adapter`. It never imports `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/`, `database/`, or `telegram/`

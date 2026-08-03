@@ -5,7 +5,7 @@ list ("Models, Runtime, Replay, Integration, Isolation, Trading Core
 ZERO DIFF").
 """
 
-from ai.trade_journal.models import ReplayContext
+from ai_layer.knowledge_ai.knowledge_base.trade_journal.models import ReplayContext
 
 
 def test_replay_context_trade_id_and_chart_id_required():

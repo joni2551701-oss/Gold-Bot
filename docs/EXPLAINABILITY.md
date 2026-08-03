@@ -137,7 +137,7 @@ omits those specific reasons rather than raising.
 
 ## How AI will use this in the future
 
-`ai/ai_analyzer.py`'s `AIAnalyzer.analyze()` is still a permanent-
+`ai_layer/ai_engine/ai_analyzer.py`'s `AIAnalyzer.analyze()` is still a permanent-
 reject heuristic stub (`docs/AI_ARCHITECTURE.md`) — this phase does
 not connect `SignalExplanation` to it. But a structured, human-
 readable reason list is exactly the shape a future real AI provider's

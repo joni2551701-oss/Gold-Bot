@@ -63,7 +63,7 @@ Tests: `tests/data_layer/live_data/test_canonical_stream_validator.py` (13) +
 
 New: `data_layer/live_data/market_calendar.py` — `ForexMarketCalendar` +
 module-level `is_weekend()` / `is_market_open()` (same names/semantics
-as the legacy `stream/stream_mode.py`).
+as the legacy `data_layer/live_data/stream/stream_mode.py`).
 
 **Reuse-First win:** `data_layer/live_data/price_stream.py` already defined the
 `MarketCalendar` Protocol (`is_open(now)` / `next_open(now)`) and an
@@ -304,7 +304,7 @@ market structure of its own (that is `context/`, FROZEN):
 Output: the existing read models (`MarketStateSnapshot` + per-aspect
 view states), unchanged in shape — only their *price input source*
 changes from the legacy `stream.CurrentPrice` to `MemoryReader`, and
-their *weekend clock* from `stream.stream_mode.is_weekend` to the
+their *weekend clock* from `data_layer.live_data.stream.stream_mode.is_weekend` to the
 canonical `data_layer.live_data.market_calendar.is_weekend` (already built,
 TASK-ARCH-101 Part 2).
 
@@ -325,7 +325,7 @@ option; prefer reusing/relocating an existing one.
   Layer price; nothing in Data Layer or Core imports it). The only
   non-canonical thing about it is *what it reads price from*. So the
   "migration" is: swap `stream.CurrentPrice` → `MemoryReader` and
-  `stream.stream_mode.is_weekend` → `data_layer.live_data.market_calendar`. No
+  `data_layer.live_data.stream.stream_mode.is_weekend` → `data_layer.live_data.market_calendar`. No
   folder move, no new package (lowest cost, Article 7-aligned). The
   package could optionally be renamed `market_view/` or
   `market_projection/` for clarity, but that is cosmetic and separable.
@@ -398,15 +398,15 @@ that is the whole point of the projection (one surface).
 
 Per-file, re-point-only, no logic rewrite:
 
-1. `market/current_price.py` — read latest price from `MemoryReader`
+1. `data_layer/live_data/market/current_price.py` — read latest price from `MemoryReader`
    (`get_last_candle(...).close` / forming candle) instead of
-   `stream.current_price.CurrentPrice`. Keep the `MarketPrice`
+   `data_layer.live_data.stream.current_price.CurrentPrice`. Keep the `MarketPrice`
    output shape.
-2. `market/session_state.py` — import `is_weekend` from
-   `data_layer.live_data.market_calendar` instead of `stream.stream_mode`.
-3. `market/market_manager.py` — its price input already comes via
+2. `data_layer/live_data/market/session_state.py` — import `is_weekend` from
+   `data_layer.live_data.market_calendar` instead of `data_layer.live_data.stream.stream_mode`.
+3. `data_layer/live_data/market/market_manager.py` — its price input already comes via
    `current_price.py`; update the type/source references accordingly.
-4. `market/candle.py` — adapt from `MemoryReader`'s `CandleRecord` /
+4. `data_layer/live_data/market/candle.py` — adapt from `MemoryReader`'s `CandleRecord` /
    canonical `data_layer.live_data.StreamEvent` instead of `stream.StreamEvent`.
 5. Everything reading `ContextSnapshotSchema` — UNCHANGED (already
    canonical Core contract).
@@ -442,7 +442,7 @@ Every projection capability, and where it comes from after 3A:
 | Volatility state | `ContextSnapshotSchema.regime` | same | ✅ unchanged |
 | Regime state | `ContextSnapshotSchema.regime` | same | ✅ unchanged |
 | Structure view (BOS/CHoCH/OB/FVG) | `ContextSnapshotSchema.structure/zones` | same | ✅ unchanged |
-| `MarketStateSnapshot` (serializable summary) | `market/market_data.py` | same (already renamed, Step 8) | ✅ unchanged |
+| `MarketStateSnapshot` (serializable summary) | `data_layer/live_data/market/market_data.py` | same (already renamed, Step 8) | ✅ unchanged |
 | Candle read model | `stream.StreamEvent` adapter | `MemoryReader` `CandleRecord` / canonical `StreamEvent` adapter | ✅ re-point |
 
 No feature is dropped; only the two Data-Layer input *sources* change
@@ -455,17 +455,17 @@ The Owner selected **L1** (keep top-level `market/`, re-point only its
 legacy `stream/` couplings). Executed exactly as the §5 plan, minimal,
 no logic rewrite, all features preserved:
 
-1. `market/session_state.py` — `from stream.stream_mode import
+1. `data_layer/live_data/market/session_state.py` — `from stream.stream_mode import
    is_weekend` → `from data_layer.live_data.market_calendar import is_weekend`
    (the canonical clock built in Part 2; identical semantics).
-2. `market/current_price.py` — `read_current_price` now reads the
+2. `data_layer/live_data/market/current_price.py` — `read_current_price` now reads the
    freshest last candle from a `data_layer.market_memory.MemoryReader` (was a
    duck-typed `stream.CurrentPrice`). Added `MarketPrice.from_candle_record`.
    Fail-safe (unknown asset → None).
-3. `market/market_manager.py` — `build_market_data(..., stream_current_price=)`
+3. `data_layer/live_data/market/market_manager.py` — `build_market_data(..., stream_current_price=)`
    → `build_market_data(..., memory_reader=)`; reads price via the
    canonical `MemoryReader`.
-4. `market/candle.py` — added `from_candle_record` (MemoryReader
+4. `data_layer/live_data/market/candle.py` — added `from_candle_record` (MemoryReader
    CandleRecord adapter); `from_stream_event` kept as a generic,
    duck-typed, `stream`-import-free adapter (backward-compatible name).
 5. Tests — `tests/market/test_market_current_price.py` rewritten to use

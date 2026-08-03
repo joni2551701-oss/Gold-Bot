@@ -61,8 +61,8 @@ Article conflict.
 - 31 new tests, all passing, including two permanent regression
   guards: one parsing every `ai/reasoning/*.py` file's own AST for any
   `decision`/`risk`/`execution`/`strategies`/`database`/`telegram`
-  import (Constitution Article 3) **and** any `ai.explanation`/
-  `ai.content`/`ai.conversation`/`broadcast`/`media`/`translation`
+  import (Constitution Article 3) **and** any `ai_layer.explanation_ai`/
+  `ai_layer.ai_service.content`/`ai_layer.personal_ai.interaction_manager`/`broadcast`/`media`/`translation`
   import (Intelligence Dependency Principle — all downstream of
   Reasoning), plus a dedicated adapter-file-only check on
   `reasoning_adapters.py` specifically.
@@ -103,14 +103,14 @@ Article conflict.
 
 ## Dependency Compliance (Intelligence Dependency Principle)
 
-- `grep` sweep for `ai.explanation`/`ai.content`/`ai.conversation`/
+- `grep` sweep for `ai_layer.explanation_ai`/`ai_layer.ai_service.content`/`ai_layer.personal_ai.interaction_manager`/
   `broadcast`/`media`/`translation` imports across every
   `ai/reasoning/*.py` file: zero matches — confirmed both by the
   Bash grep run at TASK 8 and by the permanent AST regression test in
   `tests/ai/reasoning/test_reasoning_runtime.py` and
   `tests/ai/reasoning/test_reasoning_adapters.py`.
-- `ai/reasoning/` imports `knowledge.models.KnowledgeEntry` and
-  `ai.memory.models.MemoryEntry` — both upstream, both type-only,
+- `ai/reasoning/` imports `ai_layer.knowledge_ai.knowledge_base.models.KnowledgeEntry` and
+  `ai_layer.knowledge_ai.memory_manager.models.MemoryEntry` — both upstream, both type-only,
   neither package's Manager/Runtime class touched.
 
 ## New / Extended / Reused (Constitution Article 12, mandatory table)

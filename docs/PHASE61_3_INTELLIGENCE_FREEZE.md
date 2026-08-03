@@ -24,7 +24,7 @@ isolation re-verification), and the test suite (342 tests across
   everything else; it is a correctness fix, not a scope expansion, and
   every pre-existing cache-hit test still passes unchanged.
 - `strategies/`, `signals/`, `decision/`, `risk/`, live `execution/`,
-  and the production `ai/ai_analyzer.py` heuristic-stub path remain
+  and the production `ai_layer/ai_engine/ai_analyzer.py` heuristic-stub path remain
   completely untouched — this phase's own closing AST sweep confirms
   zero new `ai/` → `decision/`/`risk/`/`execution/`/`strategies/`
   imports, matching every prior Phase 61.x closing audit.

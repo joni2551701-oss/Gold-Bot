@@ -1,10 +1,10 @@
 """
 Phase 60.6: Learning Loop Foundation, TASK 7 --
-ai/learning_context.py tests.
+ai_layer/knowledge_ai/learning_context.py tests.
 """
 
-from ai.learning_context import LearningContext, build_learning_context
-from learning.models import create_learning_record
+from ai_layer.knowledge_ai.learning_context import LearningContext, build_learning_context
+from ai_layer.knowledge_ai.learning_loop.models import create_learning_record
 
 
 def _record(strategy_name="A", session="LONDON", result="SL", failure_type=None, success_pattern=None):
@@ -105,7 +105,7 @@ def test_never_raises_on_records_with_no_strategy_name():
 
 
 def test_precomputed_patterns_can_be_supplied_directly():
-    from learning.pattern_detector import detect_patterns
+    from ai_layer.knowledge_ai.learning_loop.pattern_detector import detect_patterns
 
     records = [_record(strategy_name="Winner", session="LONDON", result="TP") for _ in range(3)]
     patterns = detect_patterns(records)

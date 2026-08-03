@@ -16,8 +16,8 @@ analytics/), none of which the pipeline calls itself.
 
 from datetime import datetime, timezone
 
-from analytics.signal_performance import compute_signal_performance
-from analytics.strategy_report import build_strategy_report
+from backtesting_layer.statistics.signal_performance import compute_signal_performance
+from backtesting_layer.statistics.strategy_report import build_strategy_report
 from data_layer.live_data.market_data_snapshot import capture_market_data_snapshot
 from trade_monitoring_layer.paper_trading.paper_trade import (
     cancel_paper_trade,

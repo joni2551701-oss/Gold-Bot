@@ -33,7 +33,7 @@ class ProviderComparison:
     One row per timestamp present in BOTH candle lists -- a timestamp
     only one provider has is not comparable and is silently excluded
     (not reported as a "missing" issue; that is
-    data_layer/data_validation/historical_validator.py's/analytics/gap_report.py's job, not
+    data_layer/data_validation/historical_validator.py's/backtesting_layer/statistics/gap_report.py's job, not
     this module's).
     spread_a/spread_b: each provider's own (high - low) for that
         candle -- a same-provider intra-candle range, not a bid/ask
@@ -69,7 +69,7 @@ def compare_providers(
     `candles_b` each already share one symbol/timeframe internally (a
     caller should pass one (symbol, timeframe) group per side, the
     same "caller decides the grouping" posture
-    analytics/dataset_report.py's per-group loop already uses) -- if
+    backtesting_layer/statistics/dataset_report.py's per-group loop already uses) -- if
     they don't, each pair still compares by timestamp alone and simply
     reports whichever symbol/timeframe candles_a's own candle carries.
     """

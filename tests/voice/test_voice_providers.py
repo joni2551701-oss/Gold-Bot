@@ -1,7 +1,7 @@
-"""Phase 65.0 TASK 6 — voice/providers.py: static provider catalog."""
+"""Phase 65.0 TASK 6 — ai_layer/voice_ai/providers.py: static provider catalog."""
 
-from voice.providers import build_voice_provider_registry
-from voice.models import VoiceProviderType
+from ai_layer.voice_ai.providers import build_voice_provider_registry
+from ai_layer.voice_ai.models import VoiceProviderType
 
 
 def test_build_voice_provider_registry_returns_four_providers():

@@ -11,7 +11,7 @@ from platform_layer.telegram.owner.validation_commands import (
     get_validation_report,
     get_validation_status,
 )
-from analytics.signal_performance import SignalPerformance
+from backtesting_layer.statistics.signal_performance import SignalPerformance
 from config import Config
 from signal_layer.signal_builder.schema import SignalSchema
 

@@ -1,5 +1,5 @@
-from ai.access.permissions import AIRole
-from assistant.access import is_personal_ai_enabled_for
+from ai_layer.ai_service.access.permissions import AIRole
+from ai_layer.ai_service.assistant.access import is_personal_ai_enabled_for
 from core_layer.configuration.feature_flags import FeatureFlags
 
 

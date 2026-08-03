@@ -12,7 +12,7 @@ import pathlib
 
 
 def _coaching_dir():
-    return pathlib.Path(__file__).resolve().parents[3] / "ai" / "coaching"
+    return pathlib.Path(__file__).resolve().parents[3] / "ai_layer" / "personal_ai" / "senior"
 
 
 def _imported_names(py_file: pathlib.Path):
@@ -28,7 +28,7 @@ def _imported_names(py_file: pathlib.Path):
 
 def test_coaching_never_imports_trading_core_layers():
     """TASK 8: decision/, risk/, execution/, strategies/, signals/ -- zero exceptions."""
-    forbidden_prefixes = ("decision", "risk", "execution", "strategies", "signals")
+    forbidden_prefixes = ("decision_layer", "risk_layer", "execution_layer", "strategy_layer", "signal_layer")
 
     for py_file in _coaching_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -37,7 +37,7 @@ def test_coaching_never_imports_trading_core_layers():
 
 def test_coaching_never_imports_context_telegram_database():
     """TASK 8: context/, telegram/, database/ -- zero exceptions."""
-    forbidden_prefixes = ("context", "telegram", "database")
+    forbidden_prefixes = ("context_layer", "platform_layer.telegram", "database_layer")
 
     for py_file in _coaching_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -46,7 +46,7 @@ def test_coaching_never_imports_context_telegram_database():
 
 def test_coaching_never_imports_voice_assistant_media_broadcast():
     """TASK 8: voice/, assistant/, media/, broadcast/ -- zero exceptions."""
-    forbidden_prefixes = ("voice", "assistant", "media", "broadcast")
+    forbidden_prefixes = ("voice", "assistant", "media_layer.content_manager", "media_layer.telegram_broadcast")
 
     for py_file in _coaching_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -94,7 +94,7 @@ def test_coaching_never_imports_the_top_level_learning_or_analytics_packages():
 
 def test_coaching_never_imports_ai_provider_or_llm_sdks():
     """TASK 3: 'LLM yo'q' -- no LLM SDK anywhere in this Foundation-only phase."""
-    forbidden_prefixes = ("ai.providers", "ai.router", "openai", "anthropic", "google.generativeai")
+    forbidden_prefixes = ("ai_layer.ai_engine.providers", "ai_layer.ai_coordinator", "openai", "anthropic", "google.generativeai")
 
     for py_file in _coaching_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -106,7 +106,7 @@ def test_coaching_never_imports_ai_provider_or_llm_sdks():
 
 
 def test_coaching_never_imports_ai_memory():
-    forbidden_prefixes = ("ai.memory",)
+    forbidden_prefixes = ("ai_layer.knowledge_ai.memory_manager",)
 
     for py_file in _coaching_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -115,7 +115,7 @@ def test_coaching_never_imports_ai_memory():
 
 def test_coaching_never_imports_knowledge_ai_reasoning_chart_or_trading_analyst():
     """docs/PHASE66_4_AUDIT.md: only ai.learning and ai.trade_journal are named as Coaching input sources -- Knowledge, Reasoning, Chart Intelligence, and Trading Analyst are audited but never composed here."""
-    forbidden_prefixes = ("knowledge", "ai.reasoning", "ai.chart_intelligence", "ai.trading_analyst")
+    forbidden_prefixes = ("knowledge", "ai_layer.ai_engine.reasoning", "ai_layer.vision_ai", "ai_layer.ai_engine.trading_analyst")
 
     for py_file in _coaching_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -123,7 +123,7 @@ def test_coaching_never_imports_knowledge_ai_reasoning_chart_or_trading_analyst(
 
 
 def test_coaching_never_imports_ai_content_or_ai_conversation():
-    forbidden_prefixes = ("ai.content", "ai.conversation", "ai.explanation")
+    forbidden_prefixes = ("ai_layer.ai_service.content", "ai_layer.personal_ai.interaction_manager", "ai_layer.explanation_ai")
 
     for py_file in _coaching_dir().rglob("*.py"):
         for name in _imported_names(py_file):
@@ -138,13 +138,13 @@ def test_learning_import_confined_to_learning_adapter():
         if py_file == adapter_file:
             continue
         for name in _imported_names(py_file):
-            assert not name.startswith("ai.learning"), f"{py_file}: {name}"
+            assert not name.startswith("ai_layer.knowledge_ai.learning_engine"), f"{py_file}: {name}"
 
 
 def test_only_learning_adapter_imports_ai_learning():
     adapter_file = _coaching_dir() / "learning_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert any(name.startswith("ai.learning") for name in imported)
+    assert any(name.startswith("ai_layer.knowledge_ai.learning_engine") for name in imported)
 
 
 def test_trade_journal_import_confined_to_journal_adapter():
@@ -155,19 +155,19 @@ def test_trade_journal_import_confined_to_journal_adapter():
         if py_file == adapter_file:
             continue
         for name in _imported_names(py_file):
-            assert not name.startswith("ai.trade_journal"), f"{py_file}: {name}"
+            assert not name.startswith("ai_layer.knowledge_ai.knowledge_base.trade_journal"), f"{py_file}: {name}"
 
 
 def test_only_journal_adapter_imports_ai_trade_journal():
     adapter_file = _coaching_dir() / "journal_adapter.py"
     imported = list(_imported_names(adapter_file))
-    assert any(name.startswith("ai.trade_journal") for name in imported)
+    assert any(name.startswith("ai_layer.knowledge_ai.knowledge_base.trade_journal") for name in imported)
 
 
 def test_coaching_runtime_module_has_no_persistence_import():
     """Belt-and-suspenders: coaching_runtime.py itself (the one file with a stateful store) imports nothing beyond ai.access/ai.coaching/configuration/stdlib."""
     runtime_file = _coaching_dir() / "coaching_runtime.py"
-    allowed_prefixes = ("ai.access", "ai.coaching", "core_layer.configuration", "dataclasses", "datetime", "typing")
+    allowed_prefixes = ("ai_layer.ai_service.access", "ai_layer.personal_ai.senior", "core_layer.configuration", "dataclasses", "datetime", "typing")
     for name in _imported_names(runtime_file):
         assert name.startswith(allowed_prefixes), f"{runtime_file}: {name}"
 
@@ -176,7 +176,7 @@ def test_coaching_recommendation_has_no_trading_core_object_field_type():
     """Belt-and-suspenders: no dataclass field on CoachingRecommendation may be typed as a Trading Core object -- every field is a primitive/enum/Mapping only."""
     import dataclasses
 
-    from ai.coaching.models import CoachingRecommendation
+    from ai_layer.personal_ai.senior.models import CoachingRecommendation
 
     allowed_type_fragments = (
         "str", "float", "int", "CoachingTopic", "CoachingPriority", "CoachingType", "CoachingStatus",

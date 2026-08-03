@@ -1,13 +1,13 @@
 """
 Phase 60.7: Adaptive Intelligence Layer Foundation, TASK 5 --
-learning/confidence.py tests.
+ai_layer/knowledge_ai/learning_loop/confidence.py tests.
 """
 
 from datetime import datetime, timedelta, timezone
 
-from learning.confidence import HIGH, LOW, MEDIUM, compute_pattern_confidence
-from learning.models import create_learning_record
-from learning.pattern_detector import detect_patterns
+from ai_layer.knowledge_ai.learning_loop.confidence import HIGH, LOW, MEDIUM, compute_pattern_confidence
+from ai_layer.knowledge_ai.learning_loop.models import create_learning_record
+from ai_layer.knowledge_ai.learning_loop.pattern_detector import detect_patterns
 
 NOW = datetime(2026, 1, 30, tzinfo=timezone.utc)
 
@@ -42,7 +42,7 @@ def test_matches_the_directors_own_high_sample_worked_example():
 
 
 def test_sample_size_score_scales_with_min_pattern_sample():
-    from learning.pattern_detector import MIN_PATTERN_SAMPLE
+    from ai_layer.knowledge_ai.learning_loop.pattern_detector import MIN_PATTERN_SAMPLE
 
     few_records = [_record() for _ in range(3)]
     full_records = [_record() for _ in range(MIN_PATTERN_SAMPLE)]
