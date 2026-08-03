@@ -20,7 +20,7 @@ from typing import Optional
 import requests
 
 from core.logger import setup_logger
-from core.secrets import Secrets
+from goldbot.core_layer.secrets import Secrets
 from voice.models import VoiceRequest, VoiceResult, VoiceResultStatus
 from voice.provider_contract import (
     VoiceProviderContract,

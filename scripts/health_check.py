@@ -49,7 +49,7 @@ def check_config():
 
 
 def check_secrets():
-    from core.secrets import Secrets
+    from goldbot.core_layer.secrets import Secrets
 
     required = ["TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID", "TWELVE_DATA_API_KEY"]
     secrets = Secrets()

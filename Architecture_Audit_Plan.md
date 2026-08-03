@@ -825,6 +825,21 @@ must be performed:
 ```
 Sabab: Director Order No. 002 (Phase B). MIR-001 migratsiyani kichik bo'laklarga ajratadi, MVR-001 esa har bir bo'lakning to'g'riligini kafolatlaydi. Worker ushbu qoidani Director'siz mustaqil qo'llaydi. Amalda bu GoldBot'ning mavjud Commit Protocol'i bilan birlashadi: `git add -A` → `pyflakes` → `compileall` → `pytest` → `python main.py` → toza `git status` → commit.
 ---
+## Stable Migration Rule (SMR-001)
+```text
+If an existing module
+works and matches the
+architecture, its
+internal structure is
+not changed during
+migration.
+
+Internal refactoring
+happens only after the
+migration is complete.
+```
+Sabab: Phase B.2 (Secrets). `core/secrets.py` toza ko'chdi, lekin `config.py` (471 qator, 29 ta importer) Configuration va Secrets domenlarini aralashtiradi — `Settings` bloklari bilan `MaskedSecret` bir faylda. Uni migratsiya davomida ikkiga bo'lish bitta commit ichida migratsiya, refactoring va import o'zgarishini aralashtirardi, bu esa MIR-001'ga zid. Director Decision: hozirgi maqsad **Migration Stability**, Architecture Refactoring emas. `config.py` migratsiya yakunlanguncha o'z holicha qoladi; KG-001 / RT-001 / RT-002 bo'yicha ajratish Phase E'dan keyin yoki Implementation v1.1'da bajariladi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.

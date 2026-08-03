@@ -34,7 +34,7 @@ from database.signal_repository import SignalRepository
 from database.feedback_models import FeedbackRecord
 from telegram.bot import TelegramBot
 from telegram.feedback_service import FeedbackService
-from core.secrets import Secrets
+from goldbot.core_layer.secrets import Secrets
 from core.logger import setup_logger
 
 logger = setup_logger("AdminService")

@@ -81,7 +81,7 @@ names). `ExternalAPIError` (`classify_api_error()`, AC-07) — `code`
 returned to a caller.
 
 ## Dependencies
-`core/secrets.py` (API key), `config.py` (timeframe sizes, including
+`goldbot/core_layer/secrets/secrets.py` (API key), `config.py` (timeframe sizes, including
 `"Daily"` as of Phase A2). No dependency on `context/`, `signals/`,
 `database/`, or `telegram/` — `data_quality.py` follows the same
 isolation as every other file in this package.

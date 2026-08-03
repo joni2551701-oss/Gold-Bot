@@ -29,7 +29,7 @@ Telegram messages (text + optional keyboard hint).
 
 ## Dependencies
 `database/` (via services, never directly from handlers — see
-`CLAUDE.md`), `core/secrets.py`. No dependency on `context/`,
+`CLAUDE.md`), `goldbot/core_layer/secrets/secrets.py`. No dependency on `context/`,
 `strategies/`, `signals/`, `ai/`, `decision/`, or `risk/` — this layer
 only ever sees their already-computed output via
 `telegram/signal_formatter.py`'s typed parameters.

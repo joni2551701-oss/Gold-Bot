@@ -9,7 +9,7 @@ value into a log line, an exception message, or a Telegram response?
 
 import logging
 
-from core.secrets import Secrets
+from goldbot.core_layer.secrets import Secrets
 
 
 def test_config_class_has_no_hardcoded_secret_looking_values():

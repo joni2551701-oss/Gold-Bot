@@ -111,7 +111,7 @@ linked from `docs/ARCHITECTURE.md`'s own per-phase sections.
 
 ## Environment variables
 
-Read exclusively through `core/secrets.py` (never hardcoded, no
+Read exclusively through `goldbot/core_layer/secrets/secrets.py` (never hardcoded, no
 `.env` file in production).
 
 | Variable | Required | Notes |

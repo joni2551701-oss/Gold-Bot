@@ -68,7 +68,7 @@ from aiogram.types import BotCommand, BotCommandScopeChat, BotCommandScopeDefaul
 from database.admin_repository import AdminRepository
 from database.user_repository import UserRepository
 from translation.ui_catalog import t
-from core.secrets import Secrets
+from goldbot.core_layer.secrets import Secrets
 from core.logger import setup_logger
 
 logger = setup_logger("MenuCommands")

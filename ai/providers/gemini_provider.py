@@ -45,7 +45,7 @@ from ai.providers.runtime_errors import (
     ProviderUnavailableError,
 )
 from core.logger import setup_logger
-from core.secrets import Secrets
+from goldbot.core_layer.secrets import Secrets
 
 logger = setup_logger("GeminiProvider")
 

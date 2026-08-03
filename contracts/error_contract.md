@@ -62,7 +62,7 @@ this codebase:
 |---|---|---|
 | `DataError` | `data/twelve_data_client.py` fetch failures, malformed `Candle` | Logged, degrades to 0 candles — never raises past `MarketDataNormalizer.get_candles()`. |
 | `ValidationError` | `signals.schema.validate_signal()`, `context.snapshot.validate_snapshot()` | Returns `ValidationResult(valid=False, errors=[...])` — never raises today; see "When to raise vs. return a result" below. |
-| `ConfigurationError` | `core/secrets.py`'s `Secrets.get()` (raises a bare `ValueError` today when a required secret is missing and no default given) | A real, existing raise-on-missing-required-secret path — the first concrete candidate for this subtype. |
+| `ConfigurationError` | `goldbot/core_layer/secrets/secrets.py`'s `Secrets.get()` (raises a bare `ValueError` today when a required secret is missing and no default given) | A real, existing raise-on-missing-required-secret path — the first concrete candidate for this subtype. |
 | `PermissionError` | `telegram/permissions.py` (fail-closed: nobody is `OWNER` if `TELEGRAM_OWNER_ID` is unset) | Currently a boolean/role check, not an exception. |
 | `ExternalAPIError` | `data/twelve_data_client.py`, `telegram/notifier.py`, a future real AI provider call | Currently caught and logged at the call site, degrading to an empty/failed result, never propagated as a typed exception. |
 
@@ -109,7 +109,7 @@ Implementing this hierarchy (a real `core/errors.py` or similar) is
 explicitly **not** part of Phase A17 — this phase is documentation
 only, per its own scope ("Kod refactor yo'q, Business logic
 o'zgartirish yo'q"). A future, separately-approved phase would: (1)
-add the six classes above, (2) migrate `core/secrets.py`'s bare
+add the six classes above, (2) migrate `goldbot/core_layer/secrets/secrets.py`'s bare
 `ValueError` to `ConfigurationError`, (3) migrate
 `DuplicateAssetSymbolError`/`DuplicateStrategyIdError` to subclass
 `GoldBotError` instead of `ValueError` directly (a breaking change for

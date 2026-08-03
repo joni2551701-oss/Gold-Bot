@@ -82,7 +82,7 @@ flags = FeatureFlags()  # every flag False -- the safe default
   reads a runtime feature's state.
 - Does not read a credential — `TELEGRAM_BOT_TOKEN`/
   `TWELVE_DATA_API_KEY`/etc. stay exclusively behind
-  `core/secrets.py`, per the existing rule (`docs/SECURITY.md`).
+  `goldbot/core_layer/secrets/secrets.py`, per the existing rule (`docs/SECURITY.md`).
   `configuration/` only ever reads `Config.APP_ENV`/`Config.TIMEZONE`,
   neither a credential.
 - Does not break `config.Config.ENABLE_MT5`/`ENABLE_TWELVEDATA`/etc.

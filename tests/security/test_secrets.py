@@ -11,7 +11,7 @@ test's environment.
 
 import pytest
 
-from core.secrets import Secrets
+from goldbot.core_layer.secrets import Secrets
 
 
 def test_secrets_get_raises_when_required_value_missing(monkeypatch):

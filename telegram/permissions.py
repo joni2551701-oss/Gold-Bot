@@ -6,7 +6,7 @@ logic beyond tier classification -- what each tier is allowed to do
 is command_router.py's decision (Phase 37: per-command permission
 check against telegram.commands.OWNER_COMMANDS / ADMIN_COMMANDS).
 
-OWNER_ID is sourced from core.secrets.Secrets (env var
+OWNER_ID is sourced from goldbot.core_layer.secrets.Secrets (env var
 TELEGRAM_OWNER_ID), never hardcoded. ADMIN membership is sourced from
 the 'admins' table via telegram.admin_service.AdminService, never
 hardcoded.
@@ -14,7 +14,7 @@ hardcoded.
 
 from enum import Enum
 
-from core.secrets import Secrets
+from goldbot.core_layer.secrets import Secrets
 from core.logger import setup_logger
 
 logger = setup_logger("Permissions")

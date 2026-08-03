@@ -30,7 +30,7 @@ Nom konversiyasi: `01_Data_Layer` → `data_layer`, `HistoricalDataService` → 
 | Phase | Qamrov | Holat |
 |---|---|---|
 | A | Skeleton — papka strukturasi, `__init__.py`, README havolalari | ✅ COMPLETE |
-| B | Infrastructure — Configuration → Secrets → Core → Event → Performance → Database | 🔄 1/6 |
+| B | Infrastructure — Configuration → Secrets → Core → Event → Performance → Database | 🔄 2/6 |
 | C | Trading Pipeline — Data → Context → Indicator → Strategy → Signal → AI → Decision → Risk → Execution → Trade Monitoring | ⏳ |
 | D | Platform — Telegram, API, Media, Chart | ⏳ |
 | E | Cleanup — eski kodni olib tashlash, duplicate yo'qotish, TODO yopish | ⏳ |
@@ -89,7 +89,7 @@ Director tomonidan tasdiqlangan tartib: Configuration → Secrets → Core → E
 | # | Modul | Canonical package | Holat | Izoh |
 |---|---|---|---|---|
 | 1 | Configuration | `goldbot.core_layer.configuration` | ✅ MIGRATED | 9 fayl ko'chirildi, 68 fayldagi importlar yangilandi, wrapper yaratilmadi |
-| 2 | Secrets | `goldbot.core_layer.secrets` | ⏳ | `core/secrets.py` + `config.py`ning `MaskedSecret` qismi (RT-001, RT-002) |
+| 2 | Secrets | `goldbot.core_layer.secrets` | ✅ MIGRATED | faqat `core/secrets.py`; `config.py` Director qarori bo'yicha tegilmadi (SMR-001) |
 | 3 | Core | `goldbot.core_layer.*` | ⏳ | |
 | 4 | Event | `goldbot.data_layer.event_system` | ⏳ | |
 | 5 | Performance | `goldbot.core_layer.performance` | ⏳ | |
@@ -115,7 +115,21 @@ Yon ta'sir: 8 ta arxitektura-izolyatsiya testida ruxsat etilgan import prefiksi 
 
 MVR-001 natijasi: import ✅ · pyflakes ✅ · compileall ✅ · pytest 5400/5400 ✅ · `python main.py` ✅
 
-Joriy holat: **210 moduldan 1 tasi MIGRATED, 209 tasi SKELETON**.
+### 2. Secrets — MIGRATED
+
+```text
+core/secrets.py -> goldbot/core_layer/secrets/secrets.py
+```
+
+`Secrets` paket darajasida re-export qilindi, shuning uchun chaqiruvchilar `from goldbot.core_layer.secrets import Secrets` deb yozadi — fayl nomi takrorlanmaydi.
+
+20 ta importer yangilandi. Wrapper yaratilmadi (Configuration bilan bir xil sabab).
+
+**`config.py` tegilmadi.** Director Decision (Phase B.2): migratsiya vaqtida `config.py`ni Configuration va Secrets domenlariga ajratish taqiqlanadi — bu bir commit ichida migratsiya, refactoring va import o'zgarishini aralashtirardi. `MaskedSecret` `config.py`da qoladi. KG-001 / RT-001 / RT-002 migratsiya to'liq yakunlangandan keyingi refactoring bosqichida (Phase E'dan keyin yoki Implementation v1.1'da) bajariladi. Yangi ACR: **Stable Migration Rule (SMR-001)**.
+
+MVR-001 natijasi: import ✅ · eski/yangi parity ✅ · pyflakes ✅ · compileall ✅ · pytest 5400/5400 ✅ · `python main.py` ✅
+
+Joriy holat: **210 moduldan 2 tasi MIGRATED, 208 tasi SKELETON**.
 
 ---
 

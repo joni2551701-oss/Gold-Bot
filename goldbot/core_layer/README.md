@@ -9,6 +9,7 @@ Bu papka repository root'dagi Canonical Architecture'ning importga yaroqli aksi.
 | Modul | Holat | Manba |
 |---|---|---|
 | `configuration` | ✅ MIGRATED | eski `configuration/` paketi |
+| `secrets` | ✅ MIGRATED | eski `core/secrets.py` |
 | qolganlari | SKELETON | — |
 
 ## Canonical hujjatlar
