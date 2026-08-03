@@ -42,11 +42,11 @@ def test_phase_b0_files_never_import_ai_package():
 
 
 def test_phase_b0_files_never_import_context_or_core_pipeline():
-    """Rule 1: monitoring never touches core/pipeline.py -- confirmed no context/ or goldbot.core_layer.pipeline import."""
+    """Rule 1: monitoring never touches core/pipeline.py -- confirmed no context/ or core_layer.pipeline import."""
     for filename in NEW_FILES:
         py_file = _monitoring_dir() / filename
         for name in _imported_names(py_file):
-            assert name != "goldbot.core_layer.pipeline", f"{py_file}: {name}"
+            assert name != "core_layer.pipeline", f"{py_file}: {name}"
             assert not name.startswith("context"), f"{py_file}: {name}"
 
 
@@ -73,7 +73,7 @@ def test_performance_collector_confined_to_stdlib_and_monitoring_models():
 
 def test_access_confined_to_configuration_feature_flags():
     py_file = _monitoring_dir() / "access.py"
-    allowed_prefixes = ("goldbot.core_layer.configuration.feature_flags",)
+    allowed_prefixes = ("core_layer.configuration.feature_flags",)
     for name in _imported_names(py_file):
         assert name.startswith(allowed_prefixes), f"{py_file}: {name}"
 

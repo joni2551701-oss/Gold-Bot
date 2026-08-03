@@ -1,7 +1,7 @@
 from typing import Optional
 from dataclasses import dataclass
 from aiogram import Bot
-from goldbot.core_layer.secrets import Secrets
+from core_layer.secrets import Secrets
 from core.logger import setup_logger
 
 logger = setup_logger("TelegramBot")
@@ -24,7 +24,7 @@ class TelegramBot:
     No signal logic, no formatter logic, no decision/risk/execution
     imports, no database, no retry system, no queue, no commands.
 
-    Token is sourced strictly from goldbot.core_layer.secrets.Secrets — never
+    Token is sourced strictly from core_layer.secrets.Secrets — never
     hardcoded.
     """
 

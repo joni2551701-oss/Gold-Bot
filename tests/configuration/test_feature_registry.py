@@ -2,7 +2,7 @@
 Phase 59.6, TASK 4 -- configuration/feature_registry.py tests.
 """
 
-from goldbot.core_layer.configuration.feature_registry import FeatureDescriptor, build_feature_registry
+from core_layer.configuration.feature_registry import FeatureDescriptor, build_feature_registry
 
 
 def test_build_feature_registry_returns_a_list_of_descriptors():

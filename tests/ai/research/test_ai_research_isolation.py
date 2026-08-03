@@ -208,7 +208,7 @@ def test_portfolio_adapter_never_imports_portfolio_runtime():
 def test_research_runtime_module_has_no_persistence_import():
     """Belt-and-suspenders: research_runtime.py itself (the one file with a stateful store) imports nothing beyond ai.access/ai.research/configuration/stdlib."""
     runtime_file = _research_dir() / "research_runtime.py"
-    allowed_prefixes = ("ai.access", "ai.research", "goldbot.core_layer.configuration", "dataclasses", "datetime", "typing")
+    allowed_prefixes = ("ai.access", "ai.research", "core_layer.configuration", "dataclasses", "datetime", "typing")
     for name in _imported_names(runtime_file):
         assert name.startswith(allowed_prefixes), f"{runtime_file}: {name}"
 

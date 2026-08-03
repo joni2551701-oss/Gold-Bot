@@ -4,20 +4,37 @@ AI-assisted, semi-automated trading signal system for XAUUSD, built on Smart Mon
 
 ## Canonical architecture
 
-GoldBot v1's architecture is frozen and lives at the repository root as 17
-numbered Layers (`01_Data_Layer/` … `17_Backtesting_Layer/`), each documenting
-its modules via README/Contracts/ModuleMap/SequenceDiagram.
+GoldBot v1's architecture is frozen. Each Layer is a single folder holding
+its documentation **and** its Python code together — one source of truth:
+
+```text
+core_layer/
+├── README.md  Layer_Contracts.md  Layer_ModuleMap.md  …
+├── configuration/
+│   ├── README.md  Contracts.md  ModuleMap.md  SequenceDiagram.md
+│   └── settings.py  feature_flags.py  …
+└── secrets/
+    ├── README.md  Contracts.md  …
+    └── secrets.py
+```
+
+The 17 Layers are `data_layer/`, `core_layer/`, `context_layer/`,
+`indicator_layer/`, `strategy_layer/`, `signal_layer/`, `ai_layer/`,
+`decision_layer/`, `risk_layer/`, `execution_layer/`,
+`trade_monitoring_layer/`, `database_layer/`, `platform_layer/`,
+`media_layer/`, `future_expansion/`, `chart_layer/`, `backtesting_layer/`.
+Their canonical ordering (01…17) is recorded in the architecture documents,
+not in folder names — a Python package name cannot start with a digit.
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — architecture index and repository rules
 - [FOUNDATION_FREEZE_V1.md](FOUNDATION_FREEZE_V1.md) — what the freeze permits and forbids
 - [Architecture_Audit_Plan.md](Architecture_Audit_Plan.md) — audit methodology and every Canonical Rule / ACR
 - [Architecture_Audit_Tracker.md](Architecture_Audit_Tracker.md) — audit history, Known Gaps, refactoring TODOs
-- [MIGRATION_TRACKER.md](MIGRATION_TRACKER.md) — migration of the pre-freeze code into `goldbot/`
+- [MIGRATION_TRACKER.md](MIGRATION_TRACKER.md) — migration of the pre-freeze code into the Layers
 
-`goldbot/` mirrors those Layers as importable Python packages
-(`goldbot.risk_layer.risk_engine`, …). Migration is in progress: pre-freeze
-top-level packages (`core/`, `data/`, `ai/`, …) still hold most of the running
-code and are moved module by module.
+Migration is in progress: pre-freeze top-level packages (`core/`, `data/`,
+`ai/`, …) still hold most of the running code and move into their Layer
+module by module.
 
 ## Production branch
 
@@ -111,7 +128,7 @@ linked from `docs/ARCHITECTURE.md`'s own per-phase sections.
 
 ## Environment variables
 
-Read exclusively through `goldbot/core_layer/secrets/secrets.py` (never hardcoded, no
+Read exclusively through `core_layer/secrets/secrets.py` (never hardcoded, no
 `.env` file in production).
 
 | Variable | Required | Notes |

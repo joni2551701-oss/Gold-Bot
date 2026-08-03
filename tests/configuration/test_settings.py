@@ -8,8 +8,8 @@ import dataclasses
 import pytest
 
 from config import Config
-from goldbot.core_layer.configuration.environment import Environment
-from goldbot.core_layer.configuration.settings import ApplicationSettings, build_settings_from_config
+from core_layer.configuration.environment import Environment
+from core_layer.configuration.settings import ApplicationSettings, build_settings_from_config
 
 
 def test_settings_creation_matches_director_example():

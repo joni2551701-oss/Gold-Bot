@@ -54,7 +54,7 @@ top-level directory (Module Reuse Principle).
 ## 3. `deployment/`
 
 Does not exist. Not created — the brief's own target layout
-(`/opt/goldbot/{releases,shared,current,backups}`) is a **VPS-side**
+(`/opt/{releases,shared,current,backups}`) is a **VPS-side**
 filesystem layout, not a repository directory; nothing repository-side
 needs a `deployment/` folder. `deploy/` (see below) already serves the
 "deployment artifacts live here" role this repository uses.
@@ -66,7 +66,7 @@ at `/opt/goldbot` (Phase 58, `docs/production_setup.md`):
 
 | File | Type | Targets |
 |---|---|---|
-| `goldbot-polling.service` | `simple`, `Restart=always` | Long-running `telegram/polling.py` — `WorkingDirectory=/opt/goldbot`, `ExecStart=/opt/goldbot/venv/bin/python -m telegram.polling`. |
+| `goldbot-polling.service` | `simple`, `Restart=always` | Long-running `telegram/polling.py` — `WorkingDirectory=/opt/goldbot`, `ExecStart=/opt/venv/bin/python -m telegram.polling`. |
 | `goldbot-pipeline.service` + `.timer` | `oneshot` + timer | `main.py` every 5 min — an *alternative* to `trading_bot.yml`, not meant to run alongside it. |
 | `goldbot-healthcheck.service` + `.timer` | `oneshot` + timer | Runs `scripts/health_check.py` every 10 min. |
 | `goldbot-notify-failure@.service` | `oneshot`, templated | `OnFailure=` target for the three units above; sends a Telegram alert naming the failed unit. |

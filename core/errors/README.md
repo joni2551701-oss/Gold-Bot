@@ -42,7 +42,7 @@ except GoldBotError as error:
   `is_valid_code_format()`/`is_known_code()`.
 
 ## What this does NOT do
-- Does not migrate any existing raise site (`goldbot/core_layer/secrets/secrets.py`'s bare
+- Does not migrate any existing raise site (`core_layer/secrets/secrets.py`'s bare
   `ValueError`, `assets.asset_registry.DuplicateAssetSymbolError`,
   `strategies.lifecycle.strategy_registry.DuplicateStrategyIdError`)
   to this hierarchy — a named, explicitly deferred future step.
@@ -59,7 +59,7 @@ except GoldBotError as error:
 ## Dependencies
 `core/errors/` imports only the standard library (`datetime`,
 `typing`, `re`). No dependency on any other GoldBot package —
-cross-cutting, like `core/logger.py`/`goldbot/core_layer/secrets/secrets.py`, so every
+cross-cutting, like `core/logger.py`/`core_layer/secrets/secrets.py`, so every
 layer may import from it without creating a new architecture
 boundary.
 

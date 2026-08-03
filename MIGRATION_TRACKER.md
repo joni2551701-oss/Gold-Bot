@@ -15,16 +15,29 @@ Buyruq: Director Order No. 002 — Migration Strategy
 
 ---
 
-# Fizik Joylashuv
+# Fizik Joylashuv (Director Order No. 006)
 
-Yangi arxitektura `goldbot/` namespace paketida joylashadi. Eski top-level paketlar (`core/`, `data/`, `ai/`, `risk/` va h.k.) migratsiya davomida o'z joyida ishlab turadi va Phase E'da olib tashlanadi.
+Har bir Layer o'z hujjatlari **va** Python kodini bir papkada saqlaydi — bitta Source of Truth:
 
-Sabab: `goldbot/` yagona chegara beradi — eski va yangi kod aralashmaydi, rollback bitta papkani o'chirish bilan amalga oshadi, va 29 ta mavjud top-level paket bilan nom to'qnashuvi bo'lmaydi.
+```text
+core_layer/
+├── README.md  Layer_Contracts.md  Layer_ModuleMap.md  Layer_DataFlow.md  Layer_SequenceDiagram.md
+├── configuration/
+│   ├── README.md  Contracts.md  ModuleMap.md  SequenceDiagram.md
+│   ├── IMPLEMENTATION.md          (paketning o'z eski README'si)
+│   └── settings.py  feature_flags.py  runtime_state.py  …
+└── secrets/
+    ├── README.md  Contracts.md  ModuleMap.md  SequenceDiagram.md
+    └── secrets.py
+```
 
-Nom konversiyasi: `01_Data_Layer` → `data_layer`, `HistoricalDataService` → `historical_data_service` (CamelCase → snake_case, raqamli prefiks olib tashlanadi).
+**Nomlash:** Layer va modul papkalari snake_case, raqamsiz — `data_layer`, `core_layer`, `ai_layer`. Sabab: Python moduli nomi raqam bilan boshlana olmaydi (`import 02_Core_Layer` → `SyntaxError`). Canonical tartib (01…17) faqat `ARCHITECTURE.md`, `FOUNDATION_FREEZE_V1.md` va boshqa arxitektura hujjatlarida saqlanadi.
+
+**`goldbot/` olib tashlandi.** U Phase A–B.3 davomida vaqtinchalik migratsiya vositasi bo'lgan; Order No. 006 bo'yicha uning tarkibi tegishli Layer papkalariga ko'chirildi va namespace butunlay yo'q qilindi. Import `goldbot.core_layer.X` o'rniga `core_layer.X` bo'ldi.
+
+Eski pre-freeze paketlar (`core/`, `data/`, `ai/`, `risk/` va h.k.) migratsiya davomida o'z joyida ishlab turadi va Phase E'da olib tashlanadi.
 
 ---
-
 # Bosqichlar
 
 | Phase | Qamrov | Holat |
@@ -50,23 +63,23 @@ Business code moved .. 0   (Phase A bo'yicha ataylab)
 
 | Canonical Layer | Python package | Modullar |
 |---|---|---|
-| 01_Data_Layer | `goldbot.data_layer` | 38 |
-| 02_Core_Layer | `goldbot.core_layer` | 12 |
-| 03_Context_Layer | `goldbot.context_layer` | 11 |
-| 04_Indicator_Layer | `goldbot.indicator_layer` | 9 |
-| 05_Strategy_Layer | `goldbot.strategy_layer` | 17 |
-| 06_Signal_Layer | `goldbot.signal_layer` | 7 |
-| 07_AI_Layer | `goldbot.ai_layer` | 39 |
-| 08_Decision_Layer | `goldbot.decision_layer` | 6 |
-| 09_Risk_Layer | `goldbot.risk_layer` | 8 |
-| 10_Execution_Layer | `goldbot.execution_layer` | 7 |
-| 11_Trade_Monitoring_Layer | `goldbot.trade_monitoring_layer` | 9 |
-| 12_Database_Layer | `goldbot.database_layer` | 9 |
-| 13_Platform_Layer | `goldbot.platform_layer` | 7 |
-| 14_Media_Layer | `goldbot.media_layer` | 3 |
-| 15_Future_Expansion | `goldbot.future_expansion` | 0 |
-| 16_Chart_Layer | `goldbot.chart_layer` | 20 |
-| 17_Backtesting_Layer | `goldbot.backtesting_layer` | 8 |
+| 01_Data_Layer | `data_layer` | 38 |
+| 02_Core_Layer | `core_layer` | 12 |
+| 03_Context_Layer | `context_layer` | 11 |
+| 04_Indicator_Layer | `indicator_layer` | 9 |
+| 05_Strategy_Layer | `strategy_layer` | 17 |
+| 06_Signal_Layer | `signal_layer` | 7 |
+| 07_AI_Layer | `ai_layer` | 39 |
+| 08_Decision_Layer | `decision_layer` | 6 |
+| 09_Risk_Layer | `risk_layer` | 8 |
+| 10_Execution_Layer | `execution_layer` | 7 |
+| 11_Trade_Monitoring_Layer | `trade_monitoring_layer` | 9 |
+| 12_Database_Layer | `database_layer` | 9 |
+| 13_Platform_Layer | `platform_layer` | 7 |
+| 14_Media_Layer | `media_layer` | 3 |
+| 15_Future_Expansion | `future_expansion` | 0 |
+| 16_Chart_Layer | `chart_layer` | 20 |
+| 17_Backtesting_Layer | `backtesting_layer` | 8 |
 
 ---
 
@@ -88,40 +101,40 @@ Director tomonidan tasdiqlangan tartib: Configuration → Secrets → Core → E
 
 | # | Modul | Canonical package | Holat | Izoh |
 |---|---|---|---|---|
-| 1 | Configuration | `goldbot.core_layer.configuration` | ✅ MIGRATED | 9 fayl ko'chirildi, 68 fayldagi importlar yangilandi, wrapper yaratilmadi |
-| 2 | Secrets | `goldbot.core_layer.secrets` | ✅ MIGRATED | faqat `core/secrets.py`; `config.py` Director qarori bo'yicha tegilmadi (SMR-001) |
-| 3 | Core | `goldbot.core_layer.*` | 🔄 | Pipeline ✅; qolgani xaritalanmoqda — quyidagi jadvalga qarang |
-| 4 | Event | `goldbot.data_layer.event_system` | ⏳ | |
-| 5 | Performance | `goldbot.core_layer.performance` | ⏳ | |
-| 6 | Database | `goldbot.database_layer.*` | ⏳ | |
+| 1 | Configuration | `core_layer.configuration` | ✅ MIGRATED | 9 fayl ko'chirildi, 68 fayldagi importlar yangilandi, wrapper yaratilmadi |
+| 2 | Secrets | `core_layer.secrets` | ✅ MIGRATED | faqat `core/secrets.py`; `config.py` Director qarori bo'yicha tegilmadi (SMR-001) |
+| 3 | Core | `core_layer.*` | 🔄 | Pipeline ✅; qolgani xaritalanmoqda — quyidagi jadvalga qarang |
+| 4 | Event | `data_layer.event_system` | ⏳ | |
+| 5 | Performance | `core_layer.performance` | ⏳ | |
+| 6 | Database | `database_layer.*` | ⏳ | |
 
 ### 1. Configuration — MIGRATED
 
 ```text
-configuration/environment.py                  -> goldbot/core_layer/configuration/environment.py
-configuration/settings.py                     -> goldbot/core_layer/configuration/settings.py
-configuration/feature_flags.py                -> goldbot/core_layer/configuration/feature_flags.py
-configuration/feature_registry.py             -> goldbot/core_layer/configuration/feature_registry.py
-configuration/feature_dependency_validator.py -> goldbot/core_layer/configuration/feature_dependency_validator.py
-configuration/runtime_state.py                -> goldbot/core_layer/configuration/runtime_state.py
-configuration/runtime_api.py                  -> goldbot/core_layer/configuration/runtime_api.py
-configuration/runtime_feature_manager.py      -> goldbot/core_layer/configuration/runtime_feature_manager.py
-configuration/README.md                       -> goldbot/core_layer/configuration/README.md
+configuration/environment.py                  -> core_layer/configuration/environment.py
+configuration/settings.py                     -> core_layer/configuration/settings.py
+configuration/feature_flags.py                -> core_layer/configuration/feature_flags.py
+configuration/feature_registry.py             -> core_layer/configuration/feature_registry.py
+configuration/feature_dependency_validator.py -> core_layer/configuration/feature_dependency_validator.py
+configuration/runtime_state.py                -> core_layer/configuration/runtime_state.py
+configuration/runtime_api.py                  -> core_layer/configuration/runtime_api.py
+configuration/runtime_feature_manager.py      -> core_layer/configuration/runtime_feature_manager.py
+configuration/README.md                       -> core_layer/configuration/README.md
 ```
 
 Compatibility wrapper **yaratilmadi**: 68 fayldagi importlar to'g'ridan-to'g'ri yangilandi. ICR-001 wrapper'ga ruxsat beradi, lekin bu holatda to'g'ridan-to'g'ri yangilash Phase E'da tozalanadigan o'lik qatlam qoldirmadi va qaysi yo'l canonical ekanligida noaniqlik yaratmadi.
 
-Yon ta'sir: 8 ta arxitektura-izolyatsiya testida ruxsat etilgan import prefiksi `"configuration"` → `"goldbot.core_layer.configuration"` deb yangilandi. Testlarning kuchi kamaymadi — ular xuddi shu izolyatsiyani yangi yo'l bo'yicha tekshiradi.
+Yon ta'sir: 8 ta arxitektura-izolyatsiya testida ruxsat etilgan import prefiksi `"configuration"` → `"core_layer.configuration"` deb yangilandi. Testlarning kuchi kamaymadi — ular xuddi shu izolyatsiyani yangi yo'l bo'yicha tekshiradi.
 
 MVR-001 natijasi: import ✅ · pyflakes ✅ · compileall ✅ · pytest 5400/5400 ✅ · `python main.py` ✅
 
 ### 2. Secrets — MIGRATED
 
 ```text
-core/secrets.py -> goldbot/core_layer/secrets/secrets.py
+core/secrets.py -> core_layer/secrets/secrets.py
 ```
 
-`Secrets` paket darajasida re-export qilindi, shuning uchun chaqiruvchilar `from goldbot.core_layer.secrets import Secrets` deb yozadi — fayl nomi takrorlanmaydi.
+`Secrets` paket darajasida re-export qilindi, shuning uchun chaqiruvchilar `from core_layer.secrets import Secrets` deb yozadi — fayl nomi takrorlanmaydi.
 
 20 ta importer yangilandi. Wrapper yaratilmadi (Configuration bilan bir xil sabab).
 
@@ -153,7 +166,7 @@ MVR-001 natijasi: import ✅ · eski/yangi parity ✅ · pyflakes ✅ · compile
 #### 3.1 Pipeline — MIGRATED
 
 ```text
-core/pipeline.py -> goldbot/core_layer/pipeline/pipeline.py
+core/pipeline.py -> core_layer/pipeline/pipeline.py
 ```
 
 `TradingPipeline` paket darajasida re-export qilindi. 10 ta fayl yangilandi (4 ta haqiqiy importer + 6 ta docstring/prose havolasi). SMR-001 bo'yicha fayl ichi tegilmagan — Data→Context→Signal→AI→Decision→Risk→Telegram oqimi va notification-eligibility filtri o'zgarmagan.
@@ -166,13 +179,13 @@ Joriy holat: **210 moduldan 3 tasi MIGRATED, 207 tasi SKELETON**.
 
 # Summary
 
-Phase A yakunlandi: Canonical Architecture'ning 17 Layer / 210 modul tuzilmasi `goldbot/` paketida importga yaroqli skelet sifatida aks ettirildi. Hech qanday biznes kodi ko'chirilmadi — bu Phase B'dan boshlanadi.
+Phase A yakunlandi: Canonical Architecture'ning 17 Layer / 210 modul tuzilmasi (o'sha paytda `goldbot/` paketida) importga yaroqli skelet sifatida aks ettirildi. Hech qanday biznes kodi ko'chirilmadi — bu Phase B'dan boshlanadi.
 
 ---
 
-# ⛔ BLOCKER — Director Order No. 005 va Python import cheklovi
+# ✅ RESOLVED — Director Order No. 005/006 va Python import cheklovi
 
-**Status:** Director qarori kutilmoqda. Migratsiya to'xtatildi.
+**Status:** Yopildi. Director Order No. 006 bilan hal qilindi — Layer papkalari snake_case, raqamsiz; kod Layer ichida; `goldbot/` olib tashlandi. Quyidagi tahlil qaror qanday qabul qilinganini qayd etadi.
 
 Order No. 005 yakuniy maqsadni belgiladi: Python kod `goldbot/` da emas, Layer papkalari ichida yashashi kerak:
 
@@ -209,7 +222,7 @@ Ya'ni raqamli papka ichidagi kodni faqat `importlib.import_module()` orqali yukl
 |---|---|---|---|---|
 | 1 | Raqamli prefiksni olib tashlash: `data_layer/`, `core_layer/` | `from core_layer.configuration.settings import X` | ❌ (faqat hujjatda) | ✅ |
 | 2 | Harf prefiksi: `l01_data_layer/`, `l02_core_layer/` | `from l02_core_layer.configuration.settings import X` | ✅ | ⚠️ |
-| 3 | Hozirgi holat: hujjat raqamli papkada, kod `goldbot/` da | `from goldbot.core_layer.configuration.settings import X` | ✅ | ✅ |
+| 3 | Hozirgi holat: hujjat raqamli papkada, kod `goldbot/` da | `from core_layer.configuration.settings import X` | ✅ | ✅ |
 | 4 | Raqamli papka + hamma joyda `importlib` | `importlib.import_module("02_Core_Layer...")` | ✅ | ❌ yaroqsiz |
 
 Variant 4 texnik jihatdan mumkin, lekin amalda ishlamaydi.
@@ -220,5 +233,7 @@ Order No. 005: *"Agar bugungi qaror keyinchalik kodni yana ko'chirishga majbur q
 
 Hozir `goldbot/` ichiga ko'chirishni davom ettirish aynan shunday holat yaratadi — variant 1 yoki 2 tanlansa, ko'chirilgan barcha kod ikkinchi marta ko'chiriladi. Shuning uchun Configuration, Secrets va Pipeline'dan keyin migratsiya to'xtatildi.
 
-Layer papkalari nomini o'zgartirish Foundation Freeze tarkibiga tegadi (WAR-005 / WAR-007), shuning uchun Worker o'zi hal qilmaydi.
+Layer papkalari nomini o'zgartirish Foundation Freeze tarkibiga tegadi (WAR-005 / WAR-007), shuning uchun Worker o'zi hal qilmadi.
+
+**Yechim (Order No. 006):** Variant 1 tanlandi — raqamsiz snake_case. Layer papkalari `data_layer`, `core_layer`, `ai_layer` va h.k.; raqamli tartib faqat arxitektura hujjatlarida saqlanadi; kod va hujjat bir papkada; `goldbot/` butunlay olib tashlandi.
 

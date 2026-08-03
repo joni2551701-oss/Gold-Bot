@@ -141,7 +141,7 @@ The first real, end-to-end AI request lifecycle — see
 
 - `providers/gemini_provider.py` — the first non-placeholder
   `BaseAIProvider`; real Gemini REST calls via `requests`, key read
-  only through `goldbot/core_layer/secrets/secrets.py`, never in a URL. Replaced the
+  only through `core_layer/secrets/secrets.py`, never in a URL. Replaced the
   placeholder Gemini entry in `placeholder_providers.py`/
   `provider_registry.py`.
 - `providers/runtime_errors.py` — `ProviderRuntimeError` hierarchy +
@@ -160,7 +160,7 @@ The first real, end-to-end AI request lifecycle — see
 - `audit/provider_stats.py` — `ProviderStats.failure_count` added;
   now fed by real `AIService` calls, still observability-only (the
   router never reads it back).
-- `goldbot/core_layer/secrets/secrets.py` — `OPENAI_API_KEY`/`CLAUDE_API_KEY`/
+- `core_layer/secrets/secrets.py` — `OPENAI_API_KEY`/`CLAUDE_API_KEY`/
   `GROK_API_KEY`/`LOCAL_LLM_CONFIG`, all optional.
 
 ## AI Intelligence Layer (Phase 61.3)

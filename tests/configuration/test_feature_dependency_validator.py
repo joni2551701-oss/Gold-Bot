@@ -7,12 +7,12 @@ docstring for why the original ENABLE_EXECUTION/ENABLE_RISK/
 ENABLE_DECISION example was replaced.
 """
 
-from goldbot.core_layer.configuration.feature_dependency_validator import (
+from core_layer.configuration.feature_dependency_validator import (
     DependencyValidationResult,
     format_dependency_violations,
     validate_feature_dependencies,
 )
-from goldbot.core_layer.configuration.feature_registry import FeatureDescriptor, build_feature_registry
+from core_layer.configuration.feature_registry import FeatureDescriptor, build_feature_registry
 
 
 def _descriptor(name, enabled):

@@ -143,7 +143,7 @@ def mock_pipeline():
     production code. `candidates` is a list[SignalCandidate];
     `ai_results` is a same-length list[AIAnalysisResult].
     """
-    from goldbot.core_layer.pipeline import TradingPipeline
+    from core_layer.pipeline import TradingPipeline
     from data.market_data import MarketSnapshot
 
     def _make(candidates, ai_results):

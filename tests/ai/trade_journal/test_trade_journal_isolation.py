@@ -135,7 +135,7 @@ def test_trade_journal_entry_has_no_trading_core_object_field_type():
 def test_trade_journal_runtime_module_has_no_persistence_import():
     """Rule 3 belt-and-suspenders: journal_runtime.py itself (the one file with a stateful store) imports nothing beyond ai.access/ai.trade_journal/configuration/stdlib."""
     runtime_file = _trade_journal_dir() / "journal_runtime.py"
-    allowed_prefixes = ("ai.access", "ai.trade_journal", "goldbot.core_layer.configuration", "dataclasses", "datetime", "typing")
+    allowed_prefixes = ("ai.access", "ai.trade_journal", "core_layer.configuration", "dataclasses", "datetime", "typing")
     for name in _imported_names(runtime_file):
         assert name.startswith(allowed_prefixes), f"{runtime_file}: {name}"
 

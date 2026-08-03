@@ -1,7 +1,7 @@
 from ai.access.permissions import AIRole
 from ai.coaching.coaching_runtime import CoachingRuntime
 from ai.coaching.models import CoachingPriority, CoachingStatus, CoachingTopic, CoachingType
-from goldbot.core_layer.configuration.feature_flags import FeatureFlags
+from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_coaching_intelligence=True)
 DISABLED = FeatureFlags(enable_coaching_intelligence=False)

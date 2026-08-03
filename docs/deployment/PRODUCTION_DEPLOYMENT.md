@@ -46,7 +46,7 @@ GitHub Actions: production_deploy.yml
 ## VPS filesystem layout
 
 ```
-/opt/goldbot/
+/opt/
 ├── releases/
 │   ├── 20260721101500/          # one full, self-contained checkout + its own venv/
 │   ├── 20260721180912/
@@ -95,7 +95,7 @@ section for the incident).
    `senior`, matching `deploy/systemd/goldbot.service`'s `User=`):
    ```bash
    sudo useradd -r -m -d /opt/goldbot senior   # or your actual deploy user
-   sudo mkdir -p /opt/goldbot/{releases,shared/database,shared/logs,backups}
+   sudo mkdir -p /opt/{releases,shared/database,shared/logs,backups}
    sudo chown -R senior:senior /opt/goldbot
    ```
 2. Create `/opt/goldbot/shared/.env` **manually**, with real secret

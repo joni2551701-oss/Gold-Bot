@@ -17,7 +17,7 @@ finding down as a regression test, not just a doc note.
 
 import os
 
-from goldbot.core_layer.secrets import Secrets
+from core_layer.secrets import Secrets
 
 
 def test_telegram_bot_token_reads_exact_env_var_name(monkeypatch):
@@ -48,7 +48,7 @@ def test_gemini_api_key_reads_exact_env_var_name(monkeypatch):
 def test_bitget_api_key_is_not_a_real_secret():
     """
     Audit finding: BITGET_API_KEY does not exist as a used secret
-    anywhere in this codebase. goldbot.core_layer.secrets.Secrets has no
+    anywhere in this codebase. core_layer.secrets.Secrets has no
     BITGET_API_KEY property -- confirm that stays true rather than
     silently gaining one without a corresponding provider/audit doc
     update.

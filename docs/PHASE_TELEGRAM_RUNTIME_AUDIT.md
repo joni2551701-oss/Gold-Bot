@@ -19,7 +19,7 @@ consistent entry point across every deployment surface:
 
 | Surface | Command |
 |---|---|
-| `deploy/systemd/goldbot-polling.service` | `ExecStart=/opt/goldbot/venv/bin/python -m telegram.polling` |
+| `deploy/systemd/goldbot-polling.service` | `ExecStart=/opt/venv/bin/python -m telegram.polling` |
 | `docker-compose.yml`'s `telegram-polling` service | `command: python -m telegram.polling` |
 | `docs/DEPLOYMENT.md`'s "Run" section | `python -m telegram.polling` |
 | `Dockerfile`'s own header comment | `docker run --env-file .env goldbot python -m telegram.polling` |
@@ -94,7 +94,7 @@ audit separately; the router (not the Dispatcher) is where the
 
 `deploy/systemd/goldbot-polling.service`: `Type=simple`,
 `Restart=always`, `RestartSec=5`, `OnFailure=goldbot-notify-failure@%n.service`,
-`ExecStart=... -m telegram.polling`, `EnvironmentFile=/opt/goldbot/.env.production`.
+`ExecStart=... -m telegram.polling`, `EnvironmentFile=/opt/.env.production`.
 Already production-shaped (crash recovery + failure alerting exist).
 Not touched this phase (Strict Rule: "Hozir VPSga o'tmaymiz").
 

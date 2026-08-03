@@ -4,7 +4,7 @@ tests. Real repositories (SQLite, tests/conftest.py's autouse
 fresh_database fixture) -- no mocks.
 """
 
-from goldbot.core_layer.configuration.runtime_feature_manager import RuntimeFeatureManager, ToggleResult
+from core_layer.configuration.runtime_feature_manager import RuntimeFeatureManager, ToggleResult
 from database.audit_log_repository import AuditLogRepository
 from database.config_snapshot_repository import ConfigSnapshotRepository
 from database.runtime_feature_repository import RuntimeFeatureRepository

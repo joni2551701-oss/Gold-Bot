@@ -80,7 +80,7 @@ def test_mapped_output_is_accepted_by_strategy_runtime_create():
     from ai.access.permissions import AIRole
     from ai.strategy.models import StrategyType
     from ai.strategy.strategy_runtime import StrategyRuntime
-    from goldbot.core_layer.configuration.feature_flags import FeatureFlags
+    from core_layer.configuration.feature_flags import FeatureFlags
 
     runtime = StrategyRuntime(flags=FeatureFlags(enable_strategy_intelligence=True))
     mapped = journal_entry_to_strategy_input(_entry(lesson="wait for retest"))

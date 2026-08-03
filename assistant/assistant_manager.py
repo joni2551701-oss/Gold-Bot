@@ -36,7 +36,7 @@ from ai.access.permissions import AIRole
 from assistant.access import is_personal_ai_enabled_for
 from assistant.identity_manager import IdentityManager
 from assistant.models import AssistantProfile, AssistantRuntime
-from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 from core.logger import setup_logger
 
 logger = setup_logger("AssistantManager")

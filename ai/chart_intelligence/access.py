@@ -11,7 +11,7 @@ other `65.x`/`66.x` Owner-gated feature this codebase has built.
 """
 
 from ai.access.permissions import AIRole
-from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 def is_chart_intelligence_enabled_for(role: AIRole, flags: FeatureFlags = DEFAULT_FLAGS) -> bool:

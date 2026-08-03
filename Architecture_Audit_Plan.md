@@ -1084,7 +1084,7 @@ Architecture_Audit_Plan.md
 Architecture_Audit_Tracker.md
 README.md
 MIGRATION_TRACKER.md
-goldbot/                     (Canonical implementatsiya namespace'i — Phase A.5'da tasdiqlangan)
+                     (Canonical implementatsiya namespace'i — Phase A.5'da tasdiqlangan)
 ```
 
 ## 12.3 Foundation Freeze tarkibiga KIRMAYDI
@@ -1095,14 +1095,14 @@ goldbot/                     (Canonical implementatsiya namespace'i — Phase A.
 * Keraksiz migration artefaktlari
 
 ## 12.4 Eski implementatsiya
-`core/`, `data/`, `ai/`, `execution/` va boshqa pre-freeze paketlar Foundation Freeze arxitekturasi **emas**. Ular faqat migratsiya tugaguncha implementatsiya manbai sifatida mavjud bo'ladi va bosqichma-bosqich `goldbot/` namespace'iga ko'chiriladi (Phase B-E).
+`core/`, `data/`, `ai/`, `execution/` va boshqa pre-freeze paketlar Foundation Freeze arxitekturasi **emas**. Ular faqat migratsiya tugaguncha implementatsiya manbai sifatida mavjud bo'ladi va bosqichma-bosqich o'z Layer papkasiga ko'chiriladi (Phase B-E).
 
 ## 12.5 Loyiha infratuzilmasi — RESOLVED (Deferred to Phase E)
 Quyidagilar arxitektura hujjati ham, pre-freeze implementatsiya ham emas: `main.py`, `config.py`, `tests/`, `docs/`, `contracts/`, `scripts/`, `deploy/`, `assets/`, `logs/`, `requirements*.txt`, `Dockerfile`, `docker-compose.yml`, `.github/`, `.gitignore`, `.env.example`, `.env.production`, `CLAUDE.md`. Ular **Repository Infrastructure** hisoblanadi va hozir ko'chirilmaydi ham, o'chirilmaydi ham (WAR-008).
 
 Director Decision: Phase E — Cleanup davomida ular uchta toifaga ajratiladi:
 1. **Repository Infrastructure (saqlanadi)** — `.github/`, `tests/`, `docs/`, `scripts/`, `Dockerfile`, `requirements*.txt` va shu kabilar.
-2. **Application Implementation** — `goldbot/` ichiga tegishli kod.
+2. **Application Implementation** — tegishli Layer papkasi ichiga ko'chadigan kod.
 3. **Legacy** — migratsiya tugagach olib tashlanadigan eski paketlar.
 
 ## 12.6 Worker vakolati

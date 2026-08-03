@@ -1,7 +1,7 @@
 from ai.access.permissions import AIRole
 from ai.research.models import ResearchCategory, ResearchPriority, ResearchStatus
 from ai.research.research_runtime import ResearchRuntime
-from goldbot.core_layer.configuration.feature_flags import FeatureFlags
+from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_research_intelligence=True)
 DISABLED = FeatureFlags(enable_research_intelligence=False)

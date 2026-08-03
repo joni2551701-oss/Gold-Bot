@@ -5,7 +5,7 @@ Phase A13 -- Configuration Layer tests: Environment
 
 import pytest
 
-from goldbot.core_layer.configuration.environment import Environment, resolve_environment
+from core_layer.configuration.environment import Environment, resolve_environment
 
 
 def test_enum_creation_has_exactly_three_values():

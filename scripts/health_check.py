@@ -49,7 +49,7 @@ def check_config():
 
 
 def check_secrets():
-    from goldbot.core_layer.secrets import Secrets
+    from core_layer.secrets import Secrets
 
     required = ["TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID", "TWELVE_DATA_API_KEY"]
     secrets = Secrets()
@@ -77,7 +77,7 @@ def check_database():
 
 def check_main_imports():
     try:
-        importlib.import_module("goldbot.core_layer.pipeline")
+        importlib.import_module("core_layer.pipeline")
         return True, "main: OK"
     except Exception as e:
         return False, f"main: FAILED ({e})"

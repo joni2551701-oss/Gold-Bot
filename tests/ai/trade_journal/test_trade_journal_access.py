@@ -1,6 +1,6 @@
 from ai.access.permissions import AIRole
 from ai.trade_journal.access import is_trade_journal_enabled_for
-from goldbot.core_layer.configuration.feature_flags import FeatureFlags
+from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_trade_journal=True)
 DISABLED = FeatureFlags(enable_trade_journal=False)

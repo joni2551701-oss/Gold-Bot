@@ -1,6 +1,6 @@
 from ai.access.permissions import AIRole
 from assistant.access import is_personal_ai_enabled_for
-from goldbot.core_layer.configuration.feature_flags import FeatureFlags
+from core_layer.configuration.feature_flags import FeatureFlags
 
 
 def test_owner_allowed_when_flag_on():

@@ -152,7 +152,7 @@ _KEYBOARD_BY_COMMAND) is what makes the Telegram client show the
 "Share Phone Number" button that produces this contact message in the
 first place.
 
-A handler must never import database.* or goldbot.core_layer.pipeline directly --
+A handler must never import database.* or core_layer.pipeline directly --
 only Handler -> Service. telegram.command_router routes incoming
 commands to these functions and is the only place a keyboard
 (telegram/keyboards.py) gets attached.

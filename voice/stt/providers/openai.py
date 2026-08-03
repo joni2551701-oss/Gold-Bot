@@ -17,7 +17,7 @@ from typing import Optional
 import requests
 
 from core.logger import setup_logger
-from goldbot.core_layer.secrets import Secrets
+from core_layer.secrets import Secrets
 from voice.stt.contract import (
     STTProviderContract,
     STTProviderInvalidResponseError,

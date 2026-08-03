@@ -100,7 +100,7 @@ def test_mapped_output_is_accepted_by_performance_runtime_create():
     """Integration-shaped: the dict this adapter returns must be a valid **kwargs for PerformanceRuntime.create()."""
     from ai.access.permissions import AIRole
     from ai.performance.performance_runtime import PerformanceRuntime
-    from goldbot.core_layer.configuration.feature_flags import FeatureFlags
+    from core_layer.configuration.feature_flags import FeatureFlags
 
     runtime = PerformanceRuntime(flags=FeatureFlags(enable_performance_intelligence=True))
     mapped = journal_entry_to_performance_input(_entry())

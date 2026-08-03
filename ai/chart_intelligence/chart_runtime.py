@@ -27,7 +27,7 @@ from ai.chart_intelligence.models import ChartAnalysis, ChartAnalysisInput, gene
 from ai.explanation.explanation_builder import ExplanationBuilder
 from ai.explanation.explanation_input import ExplanationInput, ExplanationMode
 from ai.explanation.explanation_output import ExplanationOutput
-from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 def _confidence_to_unit_scale(confidence: float) -> float:

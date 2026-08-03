@@ -47,7 +47,7 @@ Recommended VPS layout (paths the systemd units in Section 2 assume;
 adjust both together if you deploy elsewhere):
 
 ```
-/opt/goldbot/
+/opt/
 ├── venv/                     # Python 3.11 virtualenv
 ├── database/
 │   └── goldbot.db             # created automatically on first run
@@ -184,7 +184,7 @@ deployment. `.env.production`'s own header explains this.
   pause needed). For unattended VPS backups, a simple daily cron
   entry is enough given the file's small size and low write volume:
   ```
-  0 3 * * * sqlite3 /opt/goldbot/database/goldbot.db ".backup /opt/goldbot/backups/goldbot-$(date +\%Y\%m\%d).db"
+  0 3 * * * sqlite3 /opt/database/goldbot.db ".backup /opt/goldbot/backups/goldbot-$(date +\%Y\%m\%d).db"
   ```
   (create `/opt/goldbot/backups/` and prune old files with your own
   retention policy — no retention tooling exists in this codebase, and

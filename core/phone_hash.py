@@ -7,7 +7,7 @@ number) -- this module is the one place a phone number is ever
 touched before being discarded; only its hash is ever persisted
 (`database/user_models.py`'s `UserRecord.phone_hash`).
 
-Uses HMAC-SHA256 with a pepper (`goldbot.core_layer.secrets.Secrets.PHONE_HASH_SALT`),
+Uses HMAC-SHA256 with a pepper (`core_layer.secrets.Secrets.PHONE_HASH_SALT`),
 not a bare `hashlib.sha256(phone)` -- a phone number has far less
 entropy than a typical secret (a fixed country-code prefix + a handful
 of digits), so an unsalted hash is practically reversible via a
@@ -28,10 +28,10 @@ import hmac
 import re
 from typing import Optional
 
-from goldbot.core_layer.secrets import Secrets
+from core_layer.secrets import Secrets
 
 # Fallback pepper only -- every deployment should set PHONE_HASH_SALT
-# via goldbot.core_layer.secrets.Secrets.PHONE_HASH_SALT instead. Committed to
+# via core_layer.secrets.Secrets.PHONE_HASH_SALT instead. Committed to
 # source control, so it provides no real secrecy on its own; it exists
 # only so hash_phone_number() is still deterministic (never raises,
 # never produces a different hash for the same phone number across

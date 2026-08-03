@@ -35,7 +35,7 @@ The pipeline is real, complete, and follows a release/symlink model.
 | Health check | `scripts/health_check.py` | pre-activation smoke + post-restart health |
 | systemd unit | (referenced) `goldbot.service` | process supervision on VPS |
 
-**Layout:** `/opt/goldbot/{releases/<id>,shared,current}` — release-based,
+**Layout:** `/opt/{releases/<id>,shared,current}` — release-based,
 symlink-switched, shared `.env`+DB never overwritten. A broken release
 never goes live (pre-activation smoke gate); a failed post-restart health
 check auto-rolls-back and still marks the run failed.

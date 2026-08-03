@@ -117,7 +117,7 @@ subset — see `docs/PERFORMANCE.md` for why this one repository's
 `SELECT *` calls were deliberately not narrowed).
 
 ## Dependencies
-`goldbot/core_layer/secrets/secrets.py` is not used here — no database credential exists
+`core_layer/secrets/secrets.py` is not used here — no database credential exists
 beyond a local file path (`config.Config.DB_PATH`). No dependency on
 `telegram/`, `ai/`, `decision/`, `risk/`, `context/`, or `strategies/`
 — a repository knows nothing about any of them.

@@ -34,7 +34,7 @@ package, confirmed by `docs/PHASE65_0_AUDIT.md`'s TASK 0 audit
   `generate_audio()`/`validate()`/`health_check()`) and the
   `VoiceProviderError` exception hierarchy every real adapter raises.
 - `provider_adapters/` (Phase 65.1) — `openai.py`/`elevenlabs.py`
-  (real HTTP TTS calls via `requests`, gated on `goldbot/core_layer/secrets/secrets.py`'s
+  (real HTTP TTS calls via `requests`, gated on `core_layer/secrets/secrets.py`'s
   `OPENAI_API_KEY`/`ELEVENLABS_API_KEY`), `local.py`/`custom.py`
   (skeletons, no real backend).
 - `adapter.py` — four pure functions reading one upstream type each

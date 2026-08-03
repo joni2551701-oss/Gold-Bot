@@ -1,6 +1,6 @@
 from ai.access.permissions import AIRole
 from ai.chart_intelligence.access import is_chart_intelligence_enabled_for
-from goldbot.core_layer.configuration.feature_flags import FeatureFlags
+from core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_chart_intelligence=True)
 DISABLED = FeatureFlags(enable_chart_intelligence=False)

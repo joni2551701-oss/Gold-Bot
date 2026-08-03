@@ -6,7 +6,7 @@ autouse fresh_database fixture), no mocks.
 
 from datetime import datetime
 
-from goldbot.core_layer.configuration.feature_registry import build_feature_registry
+from core_layer.configuration.feature_registry import build_feature_registry
 from database.config_snapshot_models import create_config_snapshot
 from database.config_snapshot_repository import ConfigSnapshotRepository
 

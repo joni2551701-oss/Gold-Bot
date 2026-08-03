@@ -315,7 +315,7 @@ selection/rollback logic — no VPS needed to test it),
 `scripts/health_check.py` gained two import-level checks
 (`main`/`telegram.polling`), reused as both the pre-activation smoke
 test and the post-restart health check. Release-based layout
-(`/opt/goldbot/{releases,shared,current,backups}`) never writes
+(`/opt/{releases,shared,current,backups}`) never writes
 directly into `current`, never overwrites `shared/.env`/`database`/
 `logs`, and keeps every previous release on disk so rollback is always
 a symlink switch plus a restart — never a rebuild. 155 new tests. See

@@ -4,7 +4,7 @@ Phase 59.7, TASK 2 -- configuration/runtime_state.py tests.
 
 from datetime import datetime
 
-from goldbot.core_layer.configuration.runtime_state import (
+from core_layer.configuration.runtime_state import (
     FeatureRuntimeState,
     RuntimeStateCache,
     create_feature_runtime_state,

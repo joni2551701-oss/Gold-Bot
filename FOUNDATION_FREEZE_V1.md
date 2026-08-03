@@ -33,6 +33,33 @@ Critical Findings ............ 0
 08_Decision_Layer           16_Chart_Layer
                             17_Backtesting_Layer
 ```
+
+---
+# Canonical nom ↔ Repository papkasi (Director Order No. 006)
+Canonical Layer nomlari raqamli tartibni saqlaydi va faqat arxitektura hujjatlarida ishlatiladi. Repository ichida papkalar Python standartiga mos snake_case nomlardan foydalanadi, chunki Python moduli nomi raqam bilan boshlana olmaydi.
+
+| Canonical nom | Repository papkasi |
+|---|---|
+| 01_Data_Layer | `data_layer/` |
+| 02_Core_Layer | `core_layer/` |
+| 03_Context_Layer | `context_layer/` |
+| 04_Indicator_Layer | `indicator_layer/` |
+| 05_Strategy_Layer | `strategy_layer/` |
+| 06_Signal_Layer | `signal_layer/` |
+| 07_AI_Layer | `ai_layer/` |
+| 08_Decision_Layer | `decision_layer/` |
+| 09_Risk_Layer | `risk_layer/` |
+| 10_Execution_Layer | `execution_layer/` |
+| 11_Trade_Monitoring_Layer | `trade_monitoring_layer/` |
+| 12_Database_Layer | `database_layer/` |
+| 13_Platform_Layer | `platform_layer/` |
+| 14_Media_Layer | `media_layer/` |
+| 15_Future_Expansion | `future_expansion/` |
+| 16_Chart_Layer | `chart_layer/` |
+| 17_Backtesting_Layer | `backtesting_layer/` |
+
+Modul papkalari ham snake_case: `Configuration/` → `configuration/`, `HistoricalDataService/` → `historical_data_service/`.
+Har bir Layer papkasi o'z hujjatlari va Python kodini birga saqlaydi (Order No. 005 — bitta Source of Truth).
 ---
 # Freeze Qoidalari
 Foundation Freeze v1.0 kuchga kirgan vaqtdan boshlab quyidagilar **taqiqlanadi**:

@@ -31,7 +31,7 @@ def test_check_telegram_imports_succeeds():
 
 def test_check_main_imports_reports_failure_on_import_error(monkeypatch):
     def _fake_import_module(name, *args, **kwargs):
-        if name == "goldbot.core_layer.pipeline":
+        if name == "core_layer.pipeline":
             raise ImportError("simulated import failure")
         return importlib.import_module(name, *args, **kwargs)
 
@@ -56,7 +56,7 @@ def test_check_telegram_imports_reports_failure_on_import_error(monkeypatch):
 def test_check_main_imports_never_starts_the_pipeline():
     """
     An import-only check must never actually run a pipeline cycle --
-    goldbot.core_layer.pipeline importing successfully is not the same as it having
+    core_layer.pipeline importing successfully is not the same as it having
     executed anything. Confirmed by the fact the check completes
     without network access / real secrets in this test environment.
     """

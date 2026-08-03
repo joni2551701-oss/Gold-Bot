@@ -178,7 +178,7 @@ def test_performance_counters_inequality_by_value():
 # -- monitoring/access.py: additional coverage --
 
 def test_is_owner_monitoring_enabled_independent_of_other_flags():
-    from goldbot.core_layer.configuration.feature_flags import FeatureFlags
+    from core_layer.configuration.feature_flags import FeatureFlags
     from monitoring.access import is_owner_monitoring_enabled
 
     flags = FeatureFlags(enable_ai=True, enable_owner_monitoring=False)
@@ -186,7 +186,7 @@ def test_is_owner_monitoring_enabled_independent_of_other_flags():
 
 
 def test_is_owner_monitoring_enabled_true_alongside_other_flags():
-    from goldbot.core_layer.configuration.feature_flags import FeatureFlags
+    from core_layer.configuration.feature_flags import FeatureFlags
     from monitoring.access import is_owner_monitoring_enabled
 
     flags = FeatureFlags(enable_ai=True, enable_owner_monitoring=True)

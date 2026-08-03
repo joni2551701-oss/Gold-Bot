@@ -11,7 +11,7 @@ by default" convention every other `enable_*` flag in
 `configuration/feature_flags.py` already follows.
 """
 
-from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 def is_owner_monitoring_enabled(flags: FeatureFlags = DEFAULT_FLAGS) -> bool:

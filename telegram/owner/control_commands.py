@@ -31,9 +31,9 @@ same-named competing implementation.
 
 from typing import Optional
 
-from goldbot.core_layer.configuration.runtime_api import disable_feature as _runtime_disable_feature
-from goldbot.core_layer.configuration.runtime_api import enable_feature as _runtime_enable_feature
-from goldbot.core_layer.configuration.runtime_api import list_runtime_features
+from core_layer.configuration.runtime_api import disable_feature as _runtime_disable_feature
+from core_layer.configuration.runtime_api import enable_feature as _runtime_enable_feature
+from core_layer.configuration.runtime_api import list_runtime_features
 from telegram.owner.provider_commands import ProviderCommandResult
 from core.logger import setup_logger
 

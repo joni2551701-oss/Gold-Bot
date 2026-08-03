@@ -32,7 +32,7 @@ from ai.explanation.explanation_input import ExplanationInput, ExplanationMode
 from ai.intelligence_runtime import IntelligenceRuntime
 from ai.trading_analyst.access import is_trading_analyst_enabled_for
 from ai.trading_analyst.models import TradingAnalysis, TradingAnalysisInput
-from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 def _confidence_to_unit_scale(confidence: float) -> float:

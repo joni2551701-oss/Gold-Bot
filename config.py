@@ -32,7 +32,7 @@ maps the same raw APP_ENV string -- not duplicated here).
 Secret handling: secrets are wrapped in `MaskedSecret`, whose repr/str
 render `***`, so a secret value can never appear in a log line, a
 `repr(settings)`, or a stack trace. Only an explicit `.reveal()` call
-returns the real value. `goldbot.core_layer.secrets.Secrets` remains the runtime
+returns the real value. `core_layer.secrets.Secrets` remains the runtime
 secret accessor existing modules use; both read the same process
 environment, so there is one environment source, not two.
 

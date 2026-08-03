@@ -7,7 +7,7 @@ own shape exactly: Owner-only, gated by a dedicated feature flag.
 """
 
 from ai.access.permissions import AIRole
-from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 def is_performance_intelligence_enabled_for(

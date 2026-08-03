@@ -32,7 +32,7 @@ from ai.strategy.models import (
     StrategyType,
     generate_strategy_id,
 )
-from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 class StrategyRuntime:
