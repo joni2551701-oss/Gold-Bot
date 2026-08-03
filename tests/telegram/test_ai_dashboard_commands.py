@@ -1,8 +1,8 @@
-"""Phase 61.5 TASK 3 — Telegram Owner AI Dashboard Integration. The first live wiring of telegram/owner/ai_commands.py into command_router/handlers."""
+"""Phase 61.5 TASK 3 — Telegram Owner AI Dashboard Integration. The first live wiring of platform_layer/telegram/owner/ai_commands.py into command_router/handlers."""
 
 import asyncio
 
-from telegram.command_router import route_command, PERMISSION_DENIED_TEXT, UNKNOWN_COMMAND_TEXT
+from platform_layer.telegram.command_router import route_command, PERMISSION_DENIED_TEXT, UNKNOWN_COMMAND_TEXT
 
 OWNER_ID = "111"  # matches conftest's TELEGRAM_OWNER_ID
 USER_ID = "333"

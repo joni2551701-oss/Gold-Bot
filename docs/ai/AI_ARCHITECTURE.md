@@ -162,7 +162,7 @@ not have either:
   `ai/knowledge/`.**
 - **There is no dedicated `ai/security/` folder.** AI-relevant safety
   checks live in `ai/validation/safety.py`; Telegram-side security
-  concerns live in `telegram/owner/security.py`, outside `ai/`
+  concerns live in `platform_layer/telegram/owner/security.py`, outside `ai/`
   entirely.
 - **`media/` is a separate, top-level package** (Phase 63.0 TASK 5,
   extended Phase 63.7) — a sibling of `ai/`, not `ai/media/`. A Phase

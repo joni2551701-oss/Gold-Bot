@@ -4,7 +4,7 @@
 posture as every phase before it. Nothing in `core/pipeline.py` or any
 Telegram routing surface constructs or reads anything in
 `analytics/performance_metrics.py`/`equity_curve.py`/`benchmark.py`/
-`telegram/owner/performance_commands.py` this phase.
+`platform_layer/telegram/owner/performance_commands.py` this phase.
 
 ## Where this sits
 
@@ -20,7 +20,7 @@ Historical Data -> Replay Engine (60.1) -> Backtesting Engine (60.2)
       analytics.benchmark             -- TASK 4, this phase
               |
               v
-      telegram.owner.performance_commands  -- TASK 7, this phase
+      platform_layer.telegram.owner.performance_commands  -- TASK 7, this phase
 ```
 
 Every module in this phase consumes an already-built
@@ -118,12 +118,12 @@ percentage base).
 
 `docs/PHASE60_ARCHITECTURE_AUDIT.md` already found and the Director
 already decided (finding 1, Director decision 1):
-`telegram/owner/validation_commands.py`'s `get_validation_report()` is
-deprecated in favor of `telegram/owner/report_commands.py`'s
+`platform_layer/telegram/owner/validation_commands.py`'s `get_validation_report()` is
+deprecated in favor of `platform_layer/telegram/owner/report_commands.py`'s
 `get_validation_summary()`. That same document is explicit that **none
 of the six Phase 60.0 decisions are implemented yet** — each is "a
 target shape for a future, separately-approved wiring/consolidation
-phase, not an instruction to refactor `telegram/owner/` in this pass."
+phase, not an instruction to refactor `platform_layer/telegram/owner/` in this pass."
 
 This phase's TASK 5 re-read both functions and confirmed the finding
 still holds exactly as documented (both still exist, same signature,
@@ -144,7 +144,7 @@ persisted. `analytics/README.md`'s own "Future Roadmap" already names
 persistence as a separate, explicitly-approvable future step; this
 phase does not change that.
 
-## TASK 7: `telegram/owner/performance_commands.py`
+## TASK 7: `platform_layer/telegram/owner/performance_commands.py`
 
 Three thin wrappers, same "compute from supplied data, don't fetch"
 posture as `validation_commands.py`:
@@ -163,8 +163,8 @@ posture as `validation_commands.py`:
   with a benchmark-comparison section when both prices are supplied,
   falling back to metrics-only otherwise.
 
-Not registered into `telegram/commands.py`, not called from
-`telegram/command_router.py` or `telegram/handlers.py` — same
+Not registered into `platform_layer/telegram/commands.py`, not called from
+`platform_layer/telegram/command_router.py` or `platform_layer/telegram/handlers.py` — same
 foundation posture as `backtest_commands.py`/`execution_commands.py`.
 
 ## Dependencies
@@ -177,8 +177,8 @@ supplied, avoiding an unconditional import-time dependency between the
 two sibling modules. `equity_curve.py` imports `analytics.signal_performance`
 (`TYPE_CHECKING`-only). `benchmark.py` imports `analytics.equity_curve`
 (`TYPE_CHECKING`-only). `performance_commands.py` imports all three
-plus `telegram.owner.provider_commands.ProviderCommandResult`, the same
-envelope every other module in `telegram/owner/` already uses. None of
+plus `platform_layer.telegram.owner.provider_commands.ProviderCommandResult`, the same
+envelope every other module in `platform_layer/telegram/owner/` already uses. None of
 the four modules import `database/`, `risk/`, `decision/`, `ai/`,
 `strategies/`, or `signals/`.
 

@@ -2,7 +2,7 @@
 Voice Layer — Voice Providers (Phase 65.0, TASK 6).
 
 Static catalog, same "descriptor list + build function" pattern
-`media/media_registry.py` and `broadcast/provider_manager.py` already
+`media_layer/content_manager/media_registry.py` and `media_layer/telegram_broadcast/provider_manager.py` already
 established (Rule 8 — reuse the pattern). No network client, no SDK
 import (Rule 3). Consolidated into one file rather than the brief's
 literal `providers/openai.py`/`elevenlabs.py`/`local.py`/`custom.py`

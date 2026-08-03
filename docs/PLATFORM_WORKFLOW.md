@@ -80,7 +80,7 @@ platform exists.
 
 Every Architecture step (step 2) states, for every component it
 defines, its compatibility with all five target platforms — using
-`platforms/capability_model.py`'s existing `SupportStatus` contract —
+`platform_layer/platform_service/capability_model.py`'s existing `SupportStatus` contract —
 even for platforms with zero code today. See Article 13's full text
 for what this does and does not require.
 
@@ -187,7 +187,7 @@ formalizes.
 
 ## Fail Closed Permission Policy (ADR-010)
 
-Any permission check — present or future, in `platforms/navigation_core.py`
+Any permission check — present or future, in `platform_layer/platform_service/navigation_core.py`
 or any later Permission/Authentication/Authorization/Session/Navigation
 module — must fail closed: an unknown, invalid, missing, or malformed
 value, on either side of the comparison, never grants access. See

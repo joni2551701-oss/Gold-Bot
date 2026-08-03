@@ -74,7 +74,7 @@ flags = FeatureFlags()  # every flag False -- the safe default
   CI/CD.
 - Does not change `core/pipeline.py`, `strategies/`, `signals/`,
   `ai/`, `decision/`, `risk/`, `execution/`, `context/`, or any
-  Telegram handler/`telegram/command_router.py` — none import from
+  Telegram handler/`platform_layer/telegram/command_router.py` — none import from
   `configuration/` in any phase to date, and `runtime_feature_manager.py`
   is never constructed from any of them. Toggling a feature at runtime
   (Phase 59.7) changes only what `RuntimeFeatureManager`/`runtime_api.py`

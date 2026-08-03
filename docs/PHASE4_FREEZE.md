@@ -12,13 +12,13 @@ two stages:
   confirmed every USER-tier command handler was already reusable
   as-is.
 - **Stage 1 (Implementation, commit `56f6878`)**: new
-  `telegram/menu_commands.py` registers the Menu Button via
+  `platform_layer/telegram/menu_commands.py` registers the Menu Button via
   `Bot.set_my_commands()` — `BotCommandScopeDefault` for the localized
   (UZ/RU/EN) USER menu (🏠 Home / 👤 Profile / 📊 Signals / 💳
   Subscription / ⚙️ Settings / ❓ Help), `BotCommandScopeChat` per
   known ADMIN/OWNER for their richer menu in their own stored
   language. Registered once at bot startup
-  (`telegram/polling.py`). No change to `command_router.py`,
+  (`platform_layer/telegram/polling.py`). No change to `command_router.py`,
   `handlers.py`, `callback_router.py`, or the Registration Wizard.
   Trading Core: zero-diff. 15 new tests, GitHub Actions green.
 
@@ -33,7 +33,7 @@ end-to-end and found:
 > mavjud). Bu avvaldan mavjud cheklov bo'lib, Phase 4 regressiyasi
 > emas. Ushbu ish alohida bosqichga rejalashtirilsin.
 
-Confirmed against the code: `telegram/callback_router.py`'s
+Confirmed against the code: `platform_layer/telegram/callback_router.py`'s
 `_RECOGNIZED_PREFIXES` has always listed `risk_`, `strategy_`,
 `timeframe_`, `notifications_`, `settings_`, and `admin_` as
 "recognized category, not yet implemented" — only `lang_uz`/`lang_ru`/
@@ -82,6 +82,6 @@ Phase 5.x — Settings Callback Completion
 Settings Callback Completion scope (for whichever phase slot it lands
 in): wire `risk_*`/`strategy_*`/`timeframe_*`/`notifications_*`
 callback_data to real `UserService`/`NotificationService` calls in
-`telegram/callback_router.py`, mirroring `_handle_language()`'s
+`platform_layer/telegram/callback_router.py`, mirroring `_handle_language()`'s
 existing shape — no new architecture, a direct extension of the
 pattern already proven for language.

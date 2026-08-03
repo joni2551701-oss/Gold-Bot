@@ -1,9 +1,9 @@
 """TASK-002D -- Navigation Core tests (platforms/). Real Registry + real stack behavior, no mocking."""
 
-from platforms.menu_registry import MenuDefinition, MenuRegistry
-from platforms.navigation_core import NavigationCore, has_sufficient_permission
-from platforms.navigation_events import NavigationEventType
-from platforms.platform_model import PlatformName
+from platform_layer.platform_service.menu_registry import MenuDefinition, MenuRegistry
+from platform_layer.platform_service.navigation_core import NavigationCore, has_sufficient_permission
+from platform_layer.platform_service.navigation_events import NavigationEventType
+from platform_layer.platform_service.platform_model import PlatformName
 
 
 def _registry():

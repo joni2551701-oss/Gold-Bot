@@ -7,7 +7,7 @@ A genuinely different session concept from `ai/session/`'s
 `language`) plus a `conversation_session_id` *pointer* into
 `ai.session.SessionManager`'s own store -- never an embedded
 `ConversationState` object, the same "never carry another package's
-object graph" posture `media/models.py`'s `MediaAsset.content_id`
+object graph" posture `media_layer/content_manager/models.py`'s `MediaAsset.content_id`
 already established. Mutable (unlike most `voice/` dataclasses)
 because a session's `conversation_session_id`/`voice_profile_name` are
 each set after construction -- same "genuinely accumulates state"

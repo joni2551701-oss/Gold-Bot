@@ -147,8 +147,8 @@ depends on getting it right).
 
 **Changes**: `docs/NAVIGATION_ANALYSIS.md` (new) — records the current
 Telegram-specific navigation implementation
-(`telegram/keyboards.py`/`telegram/reply_keyboard_manager.py`), the
-unwired foundation `platforms/navigation_model.py`/`menu_registry.py`
+(`platform_layer/telegram/keyboards.py`/`platform_layer/telegram/reply_keyboard_manager.py`), the
+unwired foundation `platform_layer/platform_service/navigation_model.py`/`menu_registry.py`
 already provide, six open questions for TASK-002B to resolve, and the
 constraints (Phase 6 Freeze, No Silent Decisions Policy) any future
 architecture must respect. `communication/task_queue/TASK-002.md`
@@ -196,7 +196,7 @@ Navigation, Navigation Events, Screen Lifecycle, Platform Capability
 Mapping, plus the Universal Navigation umbrella), each with a
 cross-platform compatibility table (Constitution Article 13) and a
 proposed design extending TASK-001's existing foundation
-(`platforms/navigation_model.py`/`menu_registry.py`/`capability_model.py`)
+(`platform_layer/platform_service/navigation_model.py`/`menu_registry.py`/`capability_model.py`)
 rather than replacing it. Ends with 6 Director Questions — no design
 decision in this document is final until those are answered.
 
@@ -234,15 +234,15 @@ implementation must follow.
 
 ## TASK-002C — Navigation Registry
 
-**Changes**: `platforms/navigation_model.py` — `is_valid_screen_id()`
+**Changes**: `platform_layer/platform_service/navigation_model.py` — `is_valid_screen_id()`
 (ADR-002 validator, not enforced retroactively on TASK-001's frozen
 registrations) and `NavigationNode.category`/`content_type` (additive
-fields, Screen Model). `platforms/menu_registry.py` —
+fields, Screen Model). `platform_layer/platform_service/menu_registry.py` —
 `MenuDefinition.target_bindings` (additive field, Route Registry) and
 `DEFAULT_MENUS`/`build_default_menu_registry()`: a read-only mirror of
 GoldBot's real, live 25 Telegram screens under Universal Screen IDs
 with real `"/command"` target bindings — no fictitious AI/Education/
-Marketplace/Trading entries. `platforms/navigation_events.py` (new) —
+Marketplace/Trading entries. `platform_layer/platform_service/navigation_events.py` (new) —
 `NavigationEventType`/`NavigationEvent`, the ADR-004 Event Bus
 vocabulary, interface only, no dispatcher. 15 new tests
 (`tests/platforms/`, 39 total). `docs/PLATFORM_FOUNDATION.md` updated
@@ -250,7 +250,7 @@ per the Documentation Policy.
 
 **Architecture Impact**: First real Platform code since PLATFORM-001.
 Zero diff to Trading Core or any `telegram/*.py` file —
-`telegram/reply_keyboard_manager.py`'s live behavior is completely
+`platform_layer/telegram/reply_keyboard_manager.py`'s live behavior is completely
 unchanged; the Registry is a parallel, unwired mirror, per ADR-003.
 Full suite: 4648 passed.
 
@@ -285,12 +285,12 @@ Migration Task can touch it again.
 
 ## TASK-002D — Navigation Implementation
 
-**Changes**: `platforms/navigation_core.py` (new) — `NavigationCore`
+**Changes**: `platform_layer/platform_service/navigation_core.py` (new) — `NavigationCore`
 (Registry lookup + Permission Flow `Request → Permission → Navigation
 → Screen` + per-session Navigation State, a real stack with no
 Telegram exception + Event Interface via `NavigationResult`/
 `NavigationEvent`), `has_sufficient_permission()` (platform-agnostic
-tier rank comparison). `platforms/platform_adapter.py` (new) —
+tier rank comparison). `platform_layer/platform_service/platform_adapter.py` (new) —
 `PlatformAdapterBase`, an abstract interface only, no concrete
 per-platform subclass. 12 new tests (`tests/platforms/`, 51 total).
 `docs/PLATFORM_FOUNDATION.md` updated per the Documentation Policy.
@@ -395,8 +395,8 @@ a stress test (50 sessions × 20 ops each). `docs/PLATFORM_FOUNDATION.md`'s
 Testing section updated to reflect 80 total tests
 (28 PLATFORM-001 + 11 TASK-002C + 12 TASK-002D + 29 TASK-002E).
 
-Zero changes to `platforms/navigation_core.py`, `platforms/platform_adapter.py`,
-`platforms/navigation_events.py`, or `platforms/menu_registry.py` — all
+Zero changes to `platform_layer/platform_service/navigation_core.py`, `platform_layer/platform_service/platform_adapter.py`,
+`platform_layer/platform_service/navigation_events.py`, or `platform_layer/platform_service/menu_registry.py` — all
 Frozen contracts stayed exactly as TASK-002D left them.
 
 **Validation finding surfaced, not fixed**: `has_sufficient_permission()`

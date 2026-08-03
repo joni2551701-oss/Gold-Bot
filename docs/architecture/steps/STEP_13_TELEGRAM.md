@@ -29,9 +29,9 @@ stream/current_price.py  (PricePoint, live single-value store)   ← anchor
 market/current_price.py  (MarketPrice façade over stream)        ← reuse, no re-fetch
         │
         ▼
-telegram/signal_formatter.py  (+ price header block)  ─┐
-telegram/notification_service.py (prepend header)      ├─► outgoing message text
-telegram/reply_keyboard_manager.py (📈📩🛰ℹ️⚙️ buttons) ─┘
+platform_layer/telegram/signal_formatter.py  (+ price header block)  ─┐
+platform_layer/telegram/notification_service.py (prepend header)      ├─► outgoing message text
+platform_layer/telegram/reply_keyboard_manager.py (📈📩🛰ℹ️⚙️ buttons) ─┘
         │
         ▼
 telegram/command_router.route_command()  (reply-button label → existing /command)
@@ -53,12 +53,12 @@ telegram/command_router.route_command()  (reply-button label → existing /comma
 | `stream/current_price.py` | live single-value price store | provider tick | `PricePoint` | stream | market façade | **reuse** (TASK-CORE-004, unchanged) |
 | `market/current_price.py` | market-facing price façade | stream store | `MarketPrice` | stream/current_price | telegram | **reuse** (TASK-CORE-005, unchanged) |
 | `telegram/price_header.py` | build the `Symbol · Price · Session · Regime · Change` header string | `MarketPrice` + session/regime | header text | market/current_price | formatter/notify | **new** (only if no existing formatter helper fits — reuse audit first) |
-| `telegram/signal_formatter.py` | signal message text | signal + models | `FormattedSignal` | decision/risk models | notify | **extend** (prepend header block; body unchanged) |
-| `telegram/notification_service.py` | notification gate + send text | text + prefs | sent/skipped | UserRepository | Telegram | **extend** (prepend header on eligible sends) |
-| `telegram/reply_keyboard_manager.py` | which reply keyboard per screen + button→command map | tier/screen | keyboard + mapping | keyboards | command_router | **extend** (add 📈/📩/🛰/ℹ️/⚙️ rows + reverse map) |
-| `telegram/menu_commands.py` | native menu-button command list | tier/lang | `set_my_commands` | admin/user repo | Telegram | **extend** (register Price/Market entries if surfaced there too) |
-| `telegram/command_router.py` | route a command (typed or button) | command | handler call | routers | handlers/services | **reuse** (new buttons map to existing commands — no new dispatch path) |
-| `telegram/keyboards.py` | keyboard button definitions | — | keyboards | — | reply_keyboard_manager | **extend** (button labels only; tier logic unchanged) |
+| `platform_layer/telegram/signal_formatter.py` | signal message text | signal + models | `FormattedSignal` | decision/risk models | notify | **extend** (prepend header block; body unchanged) |
+| `platform_layer/telegram/notification_service.py` | notification gate + send text | text + prefs | sent/skipped | UserRepository | Telegram | **extend** (prepend header on eligible sends) |
+| `platform_layer/telegram/reply_keyboard_manager.py` | which reply keyboard per screen + button→command map | tier/screen | keyboard + mapping | keyboards | command_router | **extend** (add 📈/📩/🛰/ℹ️/⚙️ rows + reverse map) |
+| `platform_layer/telegram/menu_commands.py` | native menu-button command list | tier/lang | `set_my_commands` | admin/user repo | Telegram | **extend** (register Price/Market entries if surfaced there too) |
+| `platform_layer/telegram/command_router.py` | route a command (typed or button) | command | handler call | routers | handlers/services | **reuse** (new buttons map to existing commands — no new dispatch path) |
+| `platform_layer/telegram/keyboards.py` | keyboard button definitions | — | keyboards | — | reply_keyboard_manager | **extend** (button labels only; tier logic unchanged) |
 | `telegram/README.md` / `docs/telegram/TELEGRAM_ARCHITECTURE.md` | append STEP-13 section | — | — | — | — | **extend** |
 
 ### Existing files to EXTEND (reuse-first, no duplicates)

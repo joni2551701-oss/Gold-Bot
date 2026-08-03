@@ -3,9 +3,9 @@ Voice Layer — Voice Profile Registry (Phase 65.0, TASK 3).
 
 A real, runtime-mutable registry -- same "class wrapping a dict,
 pre-seeded from the static catalog, with a genuine register()" shape
-`broadcast/trigger_manager.py`'s `BroadcastTriggerManager` already
+`media_layer/telegram_broadcast/trigger_manager.py`'s `BroadcastTriggerManager` already
 established (the one existing Phase 63.0 class with a real,
-runtime-mutable `register()`, as opposed to `media/media_registry.py`'s
+runtime-mutable `register()`, as opposed to `media_layer/content_manager/media_registry.py`'s
 deliberately-fixed catalog). No processing logic, no audio, no client
 (Rule 3).
 """

@@ -214,7 +214,7 @@ see `docs/AI_PRODUCT_CONTROL_LAYER.md` and
   join.
 - `core_layer/secrets/phone_hash.py` (outside `ai/`) — salted phone-number hashing;
   the raw phone number is never stored.
-- `telegram/owner/ai_commands.py` (outside `ai/`) — `/ai_status`,
+- `platform_layer/telegram/owner/ai_commands.py` (outside `ai/`) — `/ai_status`,
   `/ai_provider`, `/ai_disable`, `/ai_enable`, `/ai_limit`,
   `/ai_cost`, `/ai_usage`, foundation only.
 
@@ -233,20 +233,20 @@ The first phase in the entire 61.x arc with real live-wiring — see
   recommendation/analytics only. `AIRouter.route()` is unmodified and
   does not consume this — no auto-switching, per the Director's own
   explicit constraint this phase.
-- `telegram/owner/ai_commands.py` (outside `ai/`) — **live-wired**:
+- `platform_layer/telegram/owner/ai_commands.py` (outside `ai/`) — **live-wired**:
   `/ai_status`, `/ai_provider`, `/ai_cost`, `/ai_usage`, and the new
   `/ai_health` are now real Telegram commands, ADMIN+OWNER for the
-  five read-only ones (`telegram/commands.py`'s `OWNER_COMMANDS` and
-  `ADMIN_COMMANDS`, `telegram/handlers.py`'s `{command}_handler`
+  five read-only ones (`platform_layer/telegram/commands.py`'s `OWNER_COMMANDS` and
+  `ADMIN_COMMANDS`, `platform_layer/telegram/handlers.py`'s `{command}_handler`
   functions) — the first live callers this module has ever had.
   `ai_health()` shows per-provider Latency/Success/Requests/Tokens/
   Cost/Failures (Addendum, per Director review). Two new public
   helpers, `ai_runtime_online()`/`current_provider_for()`, de-duplicate
   logic `ai_status()`/`ai_provider()` already had inline and are
-  reused by `telegram/owner/dashboard.py`'s new `/owner` command
+  reused by `platform_layer/telegram/owner/dashboard.py`'s new `/owner` command
   (`get_owner_summary()`) and `/doctor` (`get_doctor_report()`,
   OWNER-only self-diagnostic).
-- `telegram/user_service.py`'s `register_phone()` (outside `ai/`) —
+- `platform_layer/telegram/user_service.py`'s `register_phone()` (outside `ai/`) —
   **live-wired**: the real `/start` → Phone Share Button → Phone Hash
   → `UserRecord` → Trial Check → FREE account flow.
   `access/identity_checker.py`/`trial_manager.py` (Phase 61.4) are now
@@ -293,7 +293,7 @@ the existing AI Core observable, self-aware, and resilient:
   `runtime/ai_service.py` (extended, not rewritten), `runtime/
   runtime_manager.py`, and `providers/circuit_breaker.py` each
   publish; `audit/provider_stats.py`'s `RuntimeMetricsCollector` and
-  `telegram/owner/runtime_notifications.py`'s `RuntimeNotifier` each
+  `platform_layer/telegram/owner/runtime_notifications.py`'s `RuntimeNotifier` each
   subscribe — no module in this list imports another.
 - `audit/provider_stats.py` (extended, not new) —
   `compute_requests_per_minute()`, `RuntimeMetrics`,
@@ -302,7 +302,7 @@ the existing AI Core observable, self-aware, and resilient:
   (Development/Testing/Production), reusing `cache/cache_policy.py`'s
   `CachePolicy` and `validation/schemas.py`'s `ResponseSchema` rather
   than inventing parallel config types.
-- `telegram/owner/runtime_commands.py` / `runtime_notifications.py`
+- `platform_layer/telegram/owner/runtime_commands.py` / `runtime_notifications.py`
   (new) — `/runtime`, `/runtime_events`, `/runtime_metrics` (pull) and
   Owner-only Provider DOWN/RECOVERED/Runtime FAILED/High Cost/Cache
   Disabled alerts (push).
@@ -337,7 +337,7 @@ foundation:
 - `runtime/self_check.py` (new) — `run_self_check()`, seven
   independently-wrapped PASS/WARNING/FAILED checks over Provider/
   Runtime/Validation/Cache/Audit/EventBus/CircuitBreaker.
-- `telegram/owner/runtime_commands.py` gained `runtime_full_status()`
+- `platform_layer/telegram/owner/runtime_commands.py` gained `runtime_full_status()`
   (`/runtime_status`) and `runtime_check()` (`/runtime_check`).
 
 **A discovered, intentional behavior change**: a single provider

@@ -44,7 +44,7 @@ path targets `main`: `.github/workflows/trading_bot.yml` checks it out
 explicitly (`ref: main`) for the scheduled trading pipeline, and
 `.github/workflows/production_deploy.yml` deploys `main` on both its
 automatic `push:` trigger and manual `workflow_dispatch`. `main` holds
-the full production surface (`telegram/polling.py`, `core/pipeline.py`,
+the full production surface (`platform_layer/telegram/polling.py`, `core/pipeline.py`,
 `main.py`, and `scripts/deploy/`). The `claude/**` development branches
 are validated by `ci.yml` but are no longer a deploy or runtime target.
 See `docs/DEPLOYMENT.md` for the current branch/deploy model and
@@ -79,7 +79,7 @@ full inventory):
   Persistence, gated at four points by `core_layer/pipeline/pipeline_guard.py`'s
   `PipelineGuard` (Emergency-controlled: Pause/Kill/Maintenance/Resume,
   Phase 60.8/60.9). One run per invocation; exits when done.
-- **Telegram product layer** (`telegram/polling.py`, run as a
+- **Telegram product layer** (`platform_layer/telegram/polling.py`, run as a
   long-lived process): user registration, settings, subscription
   (`FREE`/`PREMIUM`/`VIP`), signal access control, an admin panel, and
   a feedback system — built entirely on top of the pipeline's output,

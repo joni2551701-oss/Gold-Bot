@@ -1,5 +1,5 @@
 """
-Phase 59.8, Owner Control Center -- telegram/owner/status_commands.py
+Phase 59.8, Owner Control Center -- platform_layer/telegram/owner/status_commands.py
 tests. Real repositories (SQLite, tests/conftest.py's autouse
 fresh_database fixture) -- no mocks. TWELVE_DATA_API_KEY="unused" is
 set by conftest.py, so the twelvedata provider reports available=True
@@ -9,8 +9,8 @@ set by conftest.py, so the twelvedata provider reports available=True
 from datetime import datetime, timedelta, timezone
 
 from database_layer.trade_repository.signal_repository import SignalRepository
-from telegram.owner.provider_commands import ProviderCommandResult
-from telegram.owner.status_commands import _format_time_ago, get_system_status
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.status_commands import _format_time_ago, get_system_status
 
 
 def _signal_data(signal_id="s1"):

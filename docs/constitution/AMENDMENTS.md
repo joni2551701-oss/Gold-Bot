@@ -66,7 +66,7 @@ around Telegram Bot with other clients added later:
 - **Article 13 — Future First Principle.** Every Architecture document
   states its compatibility with all five target platforms, even for
   the four with zero code today, using the existing
-  `platforms/capability_model.py`'s `SupportStatus` contract
+  `platform_layer/platform_service/capability_model.py`'s `SupportStatus` contract
   (Article 11's Foundation Reuse Law already required checking for
   this before building anything new — `SupportStatus` already existed
   from TASK-001, reused here rather than duplicated). Governs

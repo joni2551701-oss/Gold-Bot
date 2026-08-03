@@ -16,7 +16,7 @@ questions.
 ## 1. Existing `ReplyKeyboardMarkup` Usage
 
 Repo-wide search confirms exactly **one** `ReplyKeyboardMarkup` in the
-entire codebase: `telegram/keyboards.py`'s `phone_share_keyboard()`
+entire codebase: `platform_layer/telegram/keyboards.py`'s `phone_share_keyboard()`
 (Phase 61.5 TASK 4). Every other keyboard (`language_keyboard`,
 `risk_keyboard`, `timeframe_keyboard`, `strategy_keyboard`,
 `settings_keyboard`, `notifications_keyboard`, `admin_panel_keyboard`)
@@ -24,10 +24,10 @@ is `InlineKeyboardMarkup`.
 
 `phone_share_keyboard()` is attached to a reply in exactly two places:
 
-1. **`telegram/command_router.py`**'s `_start_keyboard()` — when
+1. **`platform_layer/telegram/command_router.py`**'s `_start_keyboard()` — when
    `registration_step == "PHONE"`, `/start`'s `RouterResult.keyboard`
    is `phone_share_keyboard(language)`.
-2. **`telegram/callback_router.py`**'s `_handle_language()` — after a
+2. **`platform_layer/telegram/callback_router.py`**'s `_handle_language()` — after a
    language tap advances the Wizard from `LANGUAGE` to `PHONE`
    (`RegistrationService().advance_past_language()` returns `True`), a
    **new** message is sent via `callback.message.answer(t("registration.phone_prompt", ...), reply_markup=phone_share_keyboard(language))`.
@@ -81,7 +81,7 @@ once the Wizard reaches `COMPLETE` — see Section 5.
 - **Creation**: `ReplyKeyboardMarkup(keyboard=[[KeyboardButton(...), ...], ...], resize_keyboard=True, one_time_keyboard=<bool>)` — same constructor `phone_share_keyboard()` already uses. `resize_keyboard=True` is the established convention (fits the button row to content rather than full-height).
 - **Replacement**: automatic and free — any message sent with a *different* `ReplyKeyboardMarkup` replaces the visible one. No explicit teardown step is needed to swap one Reply Keyboard for another.
 - **Removal**: requires sending `ReplyKeyboardRemove()` as a message's `reply_markup` — the one operation with no current call site in this codebase (Section 1). A persistent Reply Keyboard, by definition, is not expected to be removed under normal use; `ReplyKeyboardRemove` would only matter for a BANNED user (Section 5) or an explicit "hide keyboard" affordance, neither of which exists as a command today.
-- **Attachment point**: identical to every other keyboard type — `RouterResult.keyboard` (already a generic `Optional[object]`, per `telegram/command_router.py`'s own dataclass) flows straight into `message.answer(result.text, reply_markup=result.keyboard)` in `telegram/polling.py`'s `_on_message`. `reply_markup` accepts `InlineKeyboardMarkup`, `ReplyKeyboardMarkup`, or `ReplyKeyboardRemove` interchangeably — no dispatch-layer change needed to attach a Reply Keyboard instead of an inline one.
+- **Attachment point**: identical to every other keyboard type — `RouterResult.keyboard` (already a generic `Optional[object]`, per `platform_layer/telegram/command_router.py`'s own dataclass) flows straight into `message.answer(result.text, reply_markup=result.keyboard)` in `platform_layer/telegram/polling.py`'s `_on_message`. `reply_markup` accepts `InlineKeyboardMarkup`, `ReplyKeyboardMarkup`, or `ReplyKeyboardRemove` interchangeably — no dispatch-layer change needed to attach a Reply Keyboard instead of an inline one.
 
 ---
 
@@ -132,7 +132,7 @@ reply.
 **No conflict** — these are two structurally independent Telegram UI
 surfaces:
 
-- **Persistent Menu** (Phase 4, `telegram/menu_commands.py`): a
+- **Persistent Menu** (Phase 4, `platform_layer/telegram/menu_commands.py`): a
   `BotCommand` list attached to the client's own "/" menu-button /
   command-suggestion UI, set once via `Bot.set_my_commands()`. It does
   not occupy the message compose area.
@@ -153,7 +153,7 @@ and `phone_share_keyboard()` are (Section 2).
 ## 7. Localization
 
 Existing pattern, no new mechanism needed:
-`translation.ui_catalog.t(key, language)` — `phone_share_keyboard()`
+`media_layer.translation.ui_catalog.t(key, language)` — `phone_share_keyboard()`
 already resolves its one button's label via `t("keyboard.phone_share", language)`.
 A persistent Reply Keyboard's buttons would add new catalog keys
 (e.g. `keyboard.persistent.*`) following the exact `menu.*` precedent
@@ -178,7 +178,7 @@ Two concrete candidates surfaced by this audit (neither exists today):
    for completeness; not an active requirement given the existing
    no-reopen guarantee.
 
-No other command in `telegram/commands.py`'s `COMMANDS` registry
+No other command in `platform_layer/telegram/commands.py`'s `COMMANDS` registry
 implies "the user wants their keyboard cleared" — this is a small
 surface, not a general mechanism.
 
@@ -193,7 +193,7 @@ Reply Keyboard button tapped
         ↓
 Telegram Client sends button text as an ordinary text message
         ↓
-telegram/polling.py  (_on_message, message.contact is None)
+platform_layer/telegram/polling.py  (_on_message, message.contact is None)
         ↓
 telegram/command_router.route_message()
         ↓
@@ -247,13 +247,13 @@ to keep untouched for callback dispatch.
 | `RouterResult(text, keyboard)` | ✅ Already polymorphic, no change needed |
 | `command_router.py`'s `_KEYBOARD_BY_COMMAND` dict-lookup pattern | ✅ Same shape extends to a new step-aware table |
 | `_START_KEYBOARD_BY_STEP` / `_start_keyboard()` | ✅ Direct precedent for the `registration_step`-gated logic Section 5 needs |
-| `translation.ui_catalog.t()` | ✅ No change |
+| `media_layer.translation.ui_catalog.t()` | ✅ No change |
 | `handlers._registration_step()` | ✅ No change, already public |
-| `telegram/keyboards.py` | ✅ New builder function(s) added the same way `phone_share_keyboard()` was (Phase 61.5), `notifications_keyboard()` was (Phase 43), etc. |
+| `platform_layer/telegram/keyboards.py` | ✅ New builder function(s) added the same way `phone_share_keyboard()` was (Phase 61.5), `notifications_keyboard()` was (Phase 43), etc. |
 | `phone_share_keyboard()` itself | ✅ Unchanged, still the PHONE-step keyboard |
 
 **No new top-level module needed.** Everything fits inside
-`telegram/keyboards.py` (new builder) and `telegram/command_router.py`
+`platform_layer/telegram/keyboards.py` (new builder) and `platform_layer/telegram/command_router.py`
 (new attachment logic) — the same two files every prior keyboard
 phase (40, 41, 43, 61.5, V2 Phase 3) has extended.
 
@@ -299,7 +299,7 @@ should never see a raw slash command on the persistent keyboard.
 
 ### Navigation Mapping
 
-`telegram/keyboards.py` owns the mapping, right next to the keyboard
+`platform_layer/telegram/keyboards.py` owns the mapping, right next to the keyboard
 builders it serves — no new top-level module, per the Module Reuse
 Principle:
 
@@ -333,7 +333,7 @@ first step, before `_parse_command()`. No second dispatch path exists:
 a tapped label and a typed `/profile` produce byte-identical
 `RouterResult.text` (see
 `tests/telegram/test_phone_registration.py::test_navigation_label_from_the_reply_keyboard_routes_to_the_same_handler_as_its_command`).
-`telegram/handlers.py` and `telegram/callback_router.py` are untouched.
+`platform_layer/telegram/handlers.py` and `platform_layer/telegram/callback_router.py` are untouched.
 
 ### Reply Keyboard lifecycle (unchanged from Phase 5)
 
@@ -345,7 +345,7 @@ only changes what the buttons *say*, not *when* they appear:
     -> persistent Reply Keyboard (now with localized labels)
 ```
 
-`_persistent_reply_keyboard()` (`telegram/command_router.py`) now
+`_persistent_reply_keyboard()` (`platform_layer/telegram/command_router.py`) now
 resolves the caller's language (`handlers._current_language()`, the
 same lookup every other localized keyboard builder in this module
 already performs) and passes it to `reply_keyboard()`/
@@ -356,11 +356,11 @@ before — Section 5/8's reasoning is unaffected by this phase.
 
 ### Telegram Menu coexistence
 
-Unaffected: `telegram/menu_commands.py`'s native `☰ Menu` (Phase 4,
+Unaffected: `platform_layer/telegram/menu_commands.py`'s native `☰ Menu` (Phase 4,
 `Bot.set_my_commands()`) is a structurally separate Telegram surface
 from `ReplyKeyboardMarkup` (Section 2's platform-constraint finding
 still holds — this phase touches neither `menu_commands.py` nor its
-registration call in `telegram/polling.py`). A user who prefers typing
+registration call in `platform_layer/telegram/polling.py`). A user who prefers typing
 `/profile` via the `☰ Menu` still reaches the exact same
 `command_router.route_command()` path the Reply Keyboard now also
 funnels through via Navigation Mapping.

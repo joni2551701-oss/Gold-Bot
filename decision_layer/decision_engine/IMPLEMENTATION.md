@@ -99,7 +99,7 @@ in addition to the pre-existing `action`/`confidence`/`reason`/
 | `final_score` | The full weighted blend — always equal to `confidence`; a separate named field only because it's one of the formula's five components, not because it carries different information. |
 
 This is data exposure only — no UI/Telegram change was made to
-surface it (`telegram/signal_formatter.py` is untouched).
+surface it (`platform_layer/telegram/signal_formatter.py` is untouched).
 
 ## Backward compatibility
 

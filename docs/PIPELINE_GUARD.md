@@ -173,7 +173,7 @@ by the very next one.
    26 tests failed — all 18 in
    `tests/configuration/test_runtime_feature_manager.py`,
    `test_default_registry_has_no_violations`, and three
-   `telegram/owner/` tests — because toggling even an unrelated
+   `platform_layer/telegram/owner/` tests — because toggling even an unrelated
    feature like `ENABLE_NEWS` was rejected: the dry-run's hypothetical
    snapshot still carried `ENABLE_EXECUTION=True` forward against its
    permanently-unmet dependencies. The Phase 60.8 mitigation was
@@ -235,7 +235,7 @@ Trading-pipeline name ever again tripping every unrelated
 - Does not wire `execution_layer/execution_engine/execution_engine.py` — it stays untouched
   and inert.
 - Does not register any Telegram command (`/dashboard`, `/pause`,
-  etc.) — no `telegram/command_router.py`/`telegram/handlers.py`
+  etc.) — no `platform_layer/telegram/command_router.py`/`platform_layer/telegram/handlers.py`
   change.
 - Does not add owner-toggle capability for the `before_execution()`
   gate, or for any other hook — as of Phase 60.9, none of the four

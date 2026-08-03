@@ -103,7 +103,7 @@ own mechanism can never again be tripped by a Trading-pipeline concern.
 ~17 pre-existing tests (`tests/configuration/test_feature_dependency_validator.py`,
 `tests/configuration/test_runtime_feature_manager.py`,
 `tests/configuration/test_runtime_api.py`,
-`tests/telegram/owner/test_control_commands.py`) that used
+`tests/platform_layer/telegram/owner/test_control_commands.py`) that used
 `ENABLE_EXECUTION`/`ENABLE_RISK`/`ENABLE_DECISION` purely as their
 worked example for exercising the dependency-rejection *mechanism*
 (dry-run rejection, audit-on-reject, snapshot-on-reject, the friendly
@@ -137,14 +137,14 @@ remove; audit only.
 
 ## TASK 6: Owner Command audit
 
-Grepped `telegram/owner/*.py` and this codebase's full `*.py` tree for
+Grepped `platform_layer/telegram/owner/*.py` and this codebase's full `*.py` tree for
 `enable_execution`/`disable_execution`/`enable_risk`/`disable_risk`/
 `enable_decision`/`disable_decision` — zero matches anywhere.
-`telegram/owner/control_commands.py`'s `enable_feature(name)`/
+`platform_layer/telegram/owner/control_commands.py`'s `enable_feature(name)`/
 `disable_feature(name)` are (like `runtime_api.py`) fully generic and
 name-driven; no `/enable_execution`-style command was ever registered
-in `telegram/command_router.py`/`telegram/handlers.py`/
-`telegram/commands.py` (confirmed in Phase 60.8's own TASK 1 audit,
+in `platform_layer/telegram/command_router.py`/`platform_layer/telegram/handlers.py`/
+`platform_layer/telegram/commands.py` (confirmed in Phase 60.8's own TASK 1 audit,
 unchanged since). **No deprecated command exists to mark** — this
 STRICT RULE was already satisfied before this phase; only
 `control_commands.py`'s own illustrative docstring example (which

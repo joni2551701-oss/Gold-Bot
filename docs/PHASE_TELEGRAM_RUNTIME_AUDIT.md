@@ -7,13 +7,13 @@ observable and startup-safe, not changing what it already does.
 Builds directly on the prior GitHub Secrets / Environment
 Configuration Audit, whose root-cause finding (`docs/DEPLOYMENT.md`'s
 "Troubleshooting" section) this phase acts on: secrets are correct,
-`telegram/polling.py` just needs to actually run somewhere, and once
+`platform_layer/telegram/polling.py` just needs to actually run somewhere, and once
 it does, the Owner needs proof of that without SSHing in to read
 `journalctl`.
 
 ## 1. Which file does the Telegram runtime start from?
 
-**`telegram/polling.py`**, module-level `main()` (`asyncio.run(run_polling())`),
+**`platform_layer/telegram/polling.py`**, module-level `main()` (`asyncio.run(run_polling())`),
 invoked as `python -m telegram.polling`. Confirmed as the single,
 consistent entry point across every deployment surface:
 
@@ -26,7 +26,7 @@ consistent entry point across every deployment surface:
 
 No second, competing entry point exists anywhere (`main.py` is the
 separate, one-shot trading pipeline -- see `docs/ARCHITECTURE.md`'s
-System Overview; it never imports `telegram.polling`).
+System Overview; it never imports `platform_layer.telegram.polling`).
 
 `run_polling()`'s existing shape: read `TELEGRAM_BOT_TOKEN` ->
 construct an aiogram `Bot` -> `create_dispatcher()` (wires
@@ -39,7 +39,7 @@ separate module it calls into.
 
 `core.secrets.Secrets` — the sole `os.environ` read point repo-wide
 (confirmed by the prior audit's `docs/DEPLOYMENT.md` section and this
-codebase's own `docs/SECURITY.md`). `telegram/polling.py` reads
+codebase's own `docs/SECURITY.md`). `platform_layer/telegram/polling.py` reads
 exactly one secret directly: `Secrets().TELEGRAM_BOT_TOKEN` (line 88).
 No `.env`/`load_dotenv()` anywhere — plain `os.environ`, populated
 identically by a local shell export, systemd's `EnvironmentFile=`, a
@@ -47,10 +47,10 @@ container's `--env-file`, or (for `main.py`/CI only) GitHub Actions'
 `env:` block.
 
 `TELEGRAM_OWNER_ID`, `TWELVE_DATA_API_KEY`, and `GEMINI_API_KEY` are
-**not** currently read anywhere in `telegram/polling.py` itself --
-`TELEGRAM_OWNER_ID` is read downstream, inside `telegram.permissions`
+**not** currently read anywhere in `platform_layer/telegram/polling.py` itself --
+`TELEGRAM_OWNER_ID` is read downstream, inside `platform_layer.telegram.permissions`
 (see #3 below), and the other two are trading-pipeline/AI-layer
-secrets `telegram/polling.py` has never needed. TASK 6 below adds an
+secrets `platform_layer/telegram/polling.py` has never needed. TASK 6 below adds an
 explicit startup validation pass that checks all four (per the
 brief), while being honest in its own docstring about which one is
 actually load-bearing for polling to function.
@@ -59,9 +59,9 @@ actually load-bearing for polling to function.
 
 Yes, already verified end-to-end in the prior audit's smoke test and
 unchanged since. Chain: `core.secrets.Secrets.TELEGRAM_OWNER_ID`
-(defaults to `""`, fail-closed) -> `telegram.permissions.is_owner(user_id)`
+(defaults to `""`, fail-closed) -> `platform_layer.telegram.permissions.is_owner(user_id)`
 (`str(user_id) == owner_id`, `bool(owner_id)` guard) ->
-`get_permission_level()` -> `telegram.command_router._required_level()`
+`get_permission_level()` -> `platform_layer.telegram.command_router._required_level()`
 gates every command in `OWNER_COMMANDS` (never `ADMIN_COMMANDS`-only
 membership) to `PermissionLevel.OWNER`. No separate `OWNER_ID`/
 `OWNER_IDS` name exists anywhere -- one canonical name,
@@ -77,13 +77,13 @@ missing = [c for c in all_commands if not hasattr(handlers, f"{c}_handler")]
 # missing == []
 ```
 
-Every one of the 49 command names across `telegram.commands.COMMANDS`/
+Every one of the 49 command names across `platform_layer.telegram.commands.COMMANDS`/
 `OWNER_COMMANDS`/`ADMIN_COMMANDS` has a matching `{command}_handler`
-in `telegram/handlers.py`, which `command_router.route_command()`
+in `platform_layer/telegram/handlers.py`, which `command_router.route_command()`
 resolves via `getattr(handlers, f"{command}_handler", None)`. No
 orphaned command, no missing handler.
 
-`telegram/polling.py`'s `create_dispatcher()` registers exactly one
+`platform_layer/telegram/polling.py`'s `create_dispatcher()` registers exactly one
 aiogram message handler (a catch-all `@dispatcher.message()`), which
 delegates every text/contact update to `command_router.route_message()`/
 `route_contact()` -- there is no per-command aiogram registration to
@@ -105,20 +105,20 @@ systemd unit's entry point. Not touched this phase.
 
 Both are confirmed consistent and ready (TASK 7); this phase's new
 code (TASK 2/4/5/6) works unmodified under either, since neither
-config does anything `telegram/polling.py` doesn't already assume
+config does anything `platform_layer/telegram/polling.py` doesn't already assume
 (plain env vars, `python -m telegram.polling` as the process).
 
 ## 6. Reuse decisions for this phase's new work
 
 - **TASK 2 (owner startup notification)** and **TASK 6 (secret
-  validation)** extend `telegram/polling.py`'s existing `run_polling()`
+  validation)** extend `platform_layer/telegram/polling.py`'s existing `run_polling()`
   in place -- no new file, no new entry point.
 - **TASK 4/5 (runtime status model + heartbeat)**: no existing module
   tracks "is the aiogram Bot/Dispatcher connection itself alive" --
   `core_layer.health_monitor.system_monitor.SystemMonitor` (Core Owner Monitoring
   Alpha, previous phase) tracks trading-pipeline uptime/last_scan/
   last_error via `AdminService`/provider registry, a different
-  concern. A new, small `telegram/runtime_monitor.py` is added
+  concern. A new, small `platform_layer/telegram/runtime_monitor.py` is added
   (inside the already-existing `telegram/` package -- no new
   top-level package), and it reuses
   `core_layer.health_monitor.system_monitor.record_error()` as its cross-module error
@@ -130,15 +130,15 @@ config does anything `telegram/polling.py` doesn't already assume
   live from an in-process singleton, mirroring
   `core_layer.health_monitor.system_monitor.SystemMonitor`'s own `DEFAULT_MONITOR`
   module-level-singleton-in-a-long-running-process convention --
-  `telegram/polling.py` is itself the long-running process, so
+  `platform_layer/telegram/polling.py` is itself the long-running process, so
   in-memory state naturally persists exactly as long as it's
   meaningful (a fresh process restart is a legitimate "runtime reset").
 
 ## Constitution / Strict Rule compliance confirmed before implementation
 
-`grep`-audited: `telegram/polling.py`, `telegram/bot.py`,
-`telegram/handlers.py`, `telegram/commands.py`, and the new
-`telegram/runtime_monitor.py` this phase adds -- none import
+`grep`-audited: `platform_layer/telegram/polling.py`, `platform_layer/telegram/bot.py`,
+`platform_layer/telegram/handlers.py`, `platform_layer/telegram/commands.py`, and the new
+`platform_layer/telegram/runtime_monitor.py` this phase adds -- none import
 `decision`, `risk`, `execution`, or any `ai.*` module. `main.py` and
 `core/pipeline.py` (Trading Core) are not touched by this phase at
 all. No signal/strategy logic is read or written anywhere in this

@@ -35,7 +35,7 @@ provided, opening the circuit (`_open()`) publishes the existing
 `EventType.PROVIDER_FAILED` with `payload["circuit_state"] = "OPEN"`,
 and `record_success()` recovering from OPEN/HALF_OPEN publishes the
 existing `EventType.PROVIDER_RECOVERED`. No new event type is added
-here -- the Runtime Notification Layer (`telegram/owner/
+here -- the Runtime Notification Layer (`platform_layer/telegram/owner/
 runtime_notifications.py`) distinguishes a circuit-breaker-driven
 "Provider DOWN" alert from a single per-attempt `ai_service.py`
 failure by checking for that `circuit_state` payload key.

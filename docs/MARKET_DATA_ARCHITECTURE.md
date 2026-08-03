@@ -109,13 +109,13 @@ nothing from `FundamentalContextSnapshot` in this phase.
   "As implemented today" above).
 - Does not change `strategies/`, `signals/` (candidate generation),
   `decision_layer/decision_engine/decision_engine.py`, `risk_layer/risk_engine/risk_manager.py`, `ai/`,
-  `execution/`, `telegram/handlers.py`, `telegram/command_router.py`,
-  or `telegram/commands.py`.
+  `execution/`, `platform_layer/telegram/handlers.py`, `platform_layer/telegram/command_router.py`,
+  or `platform_layer/telegram/commands.py`.
 - Does not implement a real Binance/FRED connection, or a
   TradingView `MarketDataProvider`.
 - Does not register any Owner Mode command into the live bot
-  (`docs/OWNER_COMMANDS.md`/`telegram/owner/` — real functions as of
-  Phase 59.3, still not wired into `telegram/commands.py`/
+  (`docs/OWNER_COMMANDS.md`/`platform_layer/telegram/owner/` — real functions as of
+  Phase 59.3, still not wired into `platform_layer/telegram/commands.py`/
   `command_router.py`/`handlers.py`).
 
 ## Roadmap

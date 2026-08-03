@@ -13,7 +13,7 @@ resolution.
 `AIRole` (the enum) is read from `ai.access.permissions` -- an
 access-control *type*, orthogonal to the Knowledge->...->Broadcast
 content chain the Intelligence Dependency Principle governs, the same
-class every `telegram/owner/ai_commands.py` function already imports.
+class every `platform_layer/telegram/owner/ai_commands.py` function already imports.
 """
 
 from ai.access.permissions import AIRole

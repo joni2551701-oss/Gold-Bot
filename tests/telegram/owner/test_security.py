@@ -1,5 +1,5 @@
 """
-Phase 59.8, Owner Control Center -- telegram/owner/security.py tests.
+Phase 59.8, Owner Control Center -- platform_layer/telegram/owner/security.py tests.
 Real AdminRepository/AuditLogRepository (SQLite, tests/conftest.py's
 autouse fresh_database fixture) -- no mocks. TELEGRAM_OWNER_ID is "111"
 per conftest.py.
@@ -7,8 +7,8 @@ per conftest.py.
 
 from database_layer.user_repository.admin_repository import AdminRepository
 from database_layer.audit_log.audit_log_repository import AuditLogRepository
-from telegram.owner.owner_roles import OwnerRole
-from telegram.owner.security import SecurityCheckResult, log_owner_action, require_role
+from platform_layer.telegram.owner.owner_roles import OwnerRole
+from platform_layer.telegram.owner.security import SecurityCheckResult, log_owner_action, require_role
 
 
 def test_owner_meets_any_minimum_role():

@@ -90,7 +90,7 @@ a future AI provider could use `SignalExplanation` directly.
 - Does not compute a new confidence value — `SignalCandidate.confidence`
   is relayed (`* 100`), never recomputed or blended with anything.
 - Is not consumed by `ai/`, `decision/`, `risk/`, or
-  `telegram/signal_formatter.py` in this phase — it travels only as
+  `platform_layer/telegram/signal_formatter.py` in this phase — it travels only as
   far as `TradingPipeline.run()`'s result dict (`"explanations"`).
 - Does not call an AI model — no GPT/Gemini integration.
 

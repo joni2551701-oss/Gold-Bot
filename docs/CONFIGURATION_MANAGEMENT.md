@@ -55,7 +55,7 @@ and any feature-flag-shaped code, to reuse rather than invent:
 | `core/secrets.py`'s `Secrets` class | `core/secrets.py` | Confirms the existing rule (`docs/SECURITY.md`) that credentials are read exclusively through `core/secrets.py` — `configuration/` never reads `TELEGRAM_BOT_TOKEN`/`TWELVE_DATA_API_KEY`/etc.; `Environment`/`ApplicationSettings` only ever touch `Config.APP_ENV`/`Config.TIMEZONE`, neither a credential. |
 
 No existing feature-flag system, `Environment`-equivalent enum, or
-settings-model pattern was found anywhere (`telegram/handlers.py`'s
+settings-model pattern was found anywhere (`platform_layer/telegram/handlers.py`'s
 `is_enabled()` hit during the search is `NotificationService`'s
 per-user notification toggle — a database-driven, unrelated concern,
 not an app-wide feature flag).

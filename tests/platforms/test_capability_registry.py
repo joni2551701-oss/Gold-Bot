@@ -2,9 +2,9 @@
 
 import pytest
 
-from platforms.capability_model import PlatformCapability, SupportStatus
-from platforms.platform_model import PlatformName
-from platforms.capability_registry import (
+from platform_layer.platform_service.capability_model import PlatformCapability, SupportStatus
+from platform_layer.platform_service.platform_model import PlatformName
+from platform_layer.platform_service.capability_registry import (
     ModuleCapabilityRegistry,
     DuplicateModuleCapabilityError,
 )

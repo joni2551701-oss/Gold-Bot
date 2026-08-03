@@ -9,9 +9,9 @@ phase needs to fake around.
 
 import asyncio
 
-from telegram.handlers import language_handler, language_status
-from telegram.user_service import UserService
-from telegram.registration_service import RegistrationStep
+from platform_layer.telegram.handlers import language_handler, language_status
+from platform_layer.telegram.user_service import UserService
+from platform_layer.telegram.registration_service import RegistrationStep
 from database_layer.user_repository.user_repository import UserRepository
 
 
@@ -99,7 +99,7 @@ def test_language_handler_lowercase_argument_is_normalized():
 # ---------------------------------------------------------------------------
 # V2 Phase 3.1 -- /language's text-command path (language_handler) must
 # advance the Registration Wizard past LANGUAGE exactly like tapping the
-# inline picker button already does (telegram/callback_router.py's
+# inline picker button already does (platform_layer/telegram/callback_router.py's
 # _handle_language()), so a user who types the command instead of tapping
 # is not left stuck being re-shown the Language step by every /start.
 # ---------------------------------------------------------------------------

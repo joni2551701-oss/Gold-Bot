@@ -60,7 +60,7 @@ stay the template for Senior/Seniorita/any future subpackage.
 It doesn't, and shouldn't, connect directly to `ai/` at all — this is
 already a hard, correctly-enforced rule (`AI_DEPENDENCY_GRAPH.md`
 confirms zero `telegram` imports anywhere in `ai/`). Platform reaches
-AI capability only through `telegram/owner/ai_commands.py` (outside
+AI capability only through `platform_layer/telegram/owner/ai_commands.py` (outside
 this audit's scope) calling into `ai.runtime.ai_service.AIService`,
 never the reverse.
 

@@ -29,7 +29,7 @@ the real refs), not a restatement of §1–§8's existing prose.
 Since **2026-07-12**, commit `ad1affe` ("Update config.py") — the exact
 last common ancestor of `main` and the production branch, confirmed via
 `git merge-base`. From that point, every commit building the real
-TradingPipeline (`core.pipeline.TradingPipeline`, `telegram/polling.py`,
+TradingPipeline (`core.pipeline.TradingPipeline`, `platform_layer/telegram/polling.py`,
 the 22-file Telegram Owner Panel, the full monitoring/database/
 configuration layers) landed exclusively on
 `claude/code-analysis-optimization-pwfo3q`. `main` received exactly 5
@@ -48,7 +48,7 @@ not a stopgap and not an error. `docs/PHASE_P1_AUDIT.md` (Production
 Deployment Pipeline Foundation) records it directly: that phase's own
 brief literally named `main` as the trigger branch, but its TASK 0
 audit found deploying literal `main` "would ship the stale skeleton to
-the VPS" (`main` lacks `core/pipeline.py`, `telegram/polling.py`, and
+the VPS" (`main` lacks `core/pipeline.py`, `platform_layer/telegram/polling.py`, and
 the entire TradingPipeline architecture) — so it adopted the production
 branch instead, matching what `trading_bot.yml` already did, and
 explicitly flagged the choice in writing for Director visibility rather
@@ -138,7 +138,7 @@ inferred:
    likely the literal, file-level source of the "dirty" state, layered
    on top of the much larger structural divergence
    `docs/PHASE_BRANCH_SYNC_AUDIT.md` already documented (133+ commits
-   of drift, `telegram/polling.py` and `telegram/owner/` not existing on
+   of drift, `platform_layer/telegram/polling.py` and `platform_layer/telegram/owner/` not existing on
    `main` at all).
 
 **In one sentence**: PR #2 is not stuck on a missing review — it is

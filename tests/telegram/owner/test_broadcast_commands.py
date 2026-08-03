@@ -1,6 +1,6 @@
 """Phase 63.0 TASK 7 — Owner Broadcast Commands. Foundation only -- not registered in OWNER_COMMANDS, not wired into command_router/handlers, every function reports NOT IMPLEMENTED."""
 
-from telegram.owner.broadcast_commands import (
+from platform_layer.telegram.owner.broadcast_commands import (
     BroadcastCommandResult,
     broadcast_disable,
     broadcast_enable,
@@ -35,12 +35,12 @@ def test_broadcast_disable_is_not_implemented():
 
 
 def test_broadcast_commands_are_not_registered_in_owner_commands():
-    from telegram.commands import OWNER_COMMANDS
+    from platform_layer.telegram.commands import OWNER_COMMANDS
     for command in ("broadcast_status", "broadcast_provider", "broadcast_enable", "broadcast_disable"):
         assert command not in OWNER_COMMANDS
 
 
 def test_broadcast_commands_have_no_dispatch_handler():
-    from telegram import handlers
+    from platform_layer.telegram import handlers
     for command in ("broadcast_status", "broadcast_provider", "broadcast_enable", "broadcast_disable"):
         assert getattr(handlers, f"{command}_handler", None) is None

@@ -11,9 +11,9 @@ only; no import was changed to produce this map.
 ## 1. The layer chain (never skipped)
 
 ```
-telegram/command_router.py
-      -> telegram/commands.py, telegram/permissions.py, telegram/handlers.py
-telegram/handlers.py  (or telegram/owner/<domain>_commands.py)
+platform_layer/telegram/command_router.py
+      -> platform_layer/telegram/commands.py, platform_layer/telegram/permissions.py, platform_layer/telegram/handlers.py
+platform_layer/telegram/handlers.py  (or platform_layer/telegram/owner/<domain>_commands.py)
       -> telegram/*_service.py                      ONLY
 telegram/*_service.py
       -> database/*_repository.py                   ONLY
@@ -21,15 +21,15 @@ database/*_repository.py
       -> database/*_models.py, database_layer/database_manager/database.py  ONLY (SQL, no business logic)
 ```
 
-- `telegram/handlers.py` **never** imports `database.*` or
+- `platform_layer/telegram/handlers.py` **never** imports `database.*` or
   `core.pipeline` directly — stated in the file's own module
   docstring and enforced by the codebase's layering discipline
   (`docs/telegram/TELEGRAM_ARCHITECTURE.md`).
 - `database/*_repository.py` **never** imports `telegram/` — a
   repository knows nothing about Telegram, permissions, or commands
   (`CLAUDE.md`).
-- `telegram/owner/*.py` follows the identical Handler → Service →
-  Repository shape, gated additionally by `telegram/owner/owner_roles.py`
+- `platform_layer/telegram/owner/*.py` follows the identical Handler → Service →
+  Repository shape, gated additionally by `platform_layer/telegram/owner/owner_roles.py`
   (`docs/owner/OWNER_PANEL.md`).
 
 ## 2. What the Platform Layer must never import
@@ -55,13 +55,13 @@ Signal/Context Engine without a dedicated Director task.
 
 ## 3. The one typed-parameter exception
 
-`telegram/signal_formatter.py` imports `signal_layer.signal_builder.models.SignalCandidate`,
+`platform_layer/telegram/signal_formatter.py` imports `signal_layer.signal_builder.models.SignalCandidate`,
 `ai.ai_analyzer.AIAnalysisResult`, and `decision_layer.decision_engine.models.TradeDecision`
 — for its own dataclass field type hints only. It calls no method on
 Trading Core, it only reads already-computed values off objects those
 layers already produced and handed it. This is the pre-existing,
 documented boundary (`telegram/README.md`: "this layer only ever sees
-their already-computed output via `telegram/signal_formatter.py`'s
+their already-computed output via `platform_layer/telegram/signal_formatter.py`'s
 typed parameters") — not a live dependency to extend, and not
 authorization to add a second such import elsewhere without a
 dedicated review.
@@ -70,8 +70,8 @@ dedicated review.
 
 A Telegram handler may call `ai/runtime/ai_service.py`'s
 `AIService.ask()` to get an explanation of already-decided pipeline
-output — used today by `telegram/owner/ai_commands.py` and
-`telegram/owner/runtime_commands.py`. This is a Service-layer call
+output — used today by `platform_layer/telegram/owner/ai_commands.py` and
+`platform_layer/telegram/owner/runtime_commands.py`. This is a Service-layer call
 like any other: the AI's response is content to display, never a
 decision that changes what the handler does next
 (`docs/telegram/TELEGRAM_ARCHITECTURE.md`, `docs/constitution/CONSTITUTION.md`
@@ -79,7 +79,7 @@ Article 1). `runtime_commands.py` additionally depends on `ai/runtime/`'s
 `RuntimeManager`/`self_check` for the same reason
 (`docs/architecture/MODULE_DEPENDENCIES.md`).
 
-No other file in `telegram/` or `telegram/owner/` imports `ai/` today.
+No other file in `telegram/` or `platform_layer/telegram/owner/` imports `ai/` today.
 
 ## 5. The reverse direction: `ai/` reading Platform concepts (one-directional, not a Platform dependency)
 
@@ -87,7 +87,7 @@ No other file in `telegram/` or `telegram/owner/` imports `ai/` today.
 values (`"FREE"`/`"PREMIUM"`/`"VIP"`) to an `AIRole` enum, for the AI
 foundation's own unwired access-control layer. This is `ai/` depending
 on a concept the Platform Layer defines (the plan string values
-`telegram/subscription_service.py`'s `SIGNAL_ACCESS_PLANS`/
+`platform_layer/telegram/subscription_service.py`'s `SIGNAL_ACCESS_PLANS`/
 `DEFAULT_PLAN` establish) — **never the reverse**: no file under
 `telegram/` or `database/` imports anything from `ai/access/`. Recorded
 here so a future change to either side checks both directions before
@@ -98,12 +98,12 @@ in the codebase.
 ## 6. Process boundary: pipeline vs. Platform Layer
 
 `main.py` (the scheduled `TradingPipeline` run) and
-`telegram/polling.py` (the long-running Platform Layer) are separate
+`platform_layer/telegram/polling.py` (the long-running Platform Layer) are separate
 OS processes, never invoked from one another, sharing no in-memory
 state — only the SQLite file connects them
 (`docs/ARCHITECTURE.md` System Overview). The pipeline's only
 Telegram-layer touchpoint is outbound: `core/pipeline.py` →
-`telegram/notifier.py` → `telegram/bot.py`, using a separate `Bot`
+`platform_layer/telegram/notifier.py` → `platform_layer/telegram/bot.py`, using a separate `Bot`
 instance from `polling.py`'s inbound listener. This outbound path
 does **not** call into `NotificationService`, `SignalAccessService`,
 or any other Platform service — a deliberate scope boundary, not a
@@ -114,13 +114,13 @@ missing integration to add as Platform work (see
 
 | Module | Depends on |
 |---|---|
-| `telegram/handlers.py` | `telegram/*_service.py` only |
-| `telegram/command_router.py` | `telegram/commands.py`, `telegram/permissions.py`, `telegram/handlers.py`, `telegram/reply_keyboard_manager.py`, `telegram/keyboards.py` |
-| `telegram/callback_router.py` | `telegram/handlers.py` (language + settings-value paths only) |
-| `telegram/reply_keyboard_manager.py`, `telegram/keyboards.py` | `translation/ui_catalog.py` (`t()`) |
+| `platform_layer/telegram/handlers.py` | `telegram/*_service.py` only |
+| `platform_layer/telegram/command_router.py` | `platform_layer/telegram/commands.py`, `platform_layer/telegram/permissions.py`, `platform_layer/telegram/handlers.py`, `platform_layer/telegram/reply_keyboard_manager.py`, `platform_layer/telegram/keyboards.py` |
+| `platform_layer/telegram/callback_router.py` | `platform_layer/telegram/handlers.py` (language + settings-value paths only) |
+| `platform_layer/telegram/reply_keyboard_manager.py`, `platform_layer/telegram/keyboards.py` | `media_layer/translation/ui_catalog.py` (`t()`) |
 | `telegram/*_service.py` (admin/feedback/notification/signal/subscription/user) | the corresponding `database/*_repository.py` only |
-| `telegram/owner/*.py` (24 files) | the corresponding service/repository for their domain; `runtime_commands.py` additionally → `ai/runtime/` (see §4) |
-| `telegram/menu_commands.py` | `database_layer.user_repository.admin_repository.AdminRepository`, `database_layer.user_repository.user_repository.UserRepository` (read-only tier/language lookups), `telegram/commands.py` |
+| `platform_layer/telegram/owner/*.py` (24 files) | the corresponding service/repository for their domain; `runtime_commands.py` additionally → `ai/runtime/` (see §4) |
+| `platform_layer/telegram/menu_commands.py` | `database_layer.user_repository.admin_repository.AdminRepository`, `database_layer.user_repository.user_repository.UserRepository` (read-only tier/language lookups), `platform_layer/telegram/commands.py` |
 | `database/*_repository.py` (platform tables) | `database/*_models.py`, `database_layer/database_manager/database.py` only |
 | `translation/*` | standard library only — no dependency on `telegram/`, `database/`, or any Trading Core package |
 
@@ -133,7 +133,7 @@ for the Platform Layer:
   circular or upward import.
 - `pyflakes` and the full `pytest` suite (`tests/telegram/`, 465 tests
   across 13 files as of `docs/PHASE6_FREEZE.md` Stage 8, plus
-  `tests/telegram/owner/`, 27 files) run before every commit per
+  `tests/platform_layer/telegram/owner/`, 27 files) run before every commit per
   `CLAUDE.md`'s Commit Protocol.
 
 A change that would require violating one of the boundaries above is

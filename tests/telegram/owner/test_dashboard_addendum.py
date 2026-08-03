@@ -1,6 +1,6 @@
 """Phase 61.5 Addendum (per Director review) — get_owner_summary()/get_doctor_report() direct unit tests. Not registered into command_router.py by these tests -- see tests/telegram/test_ai_command_permission_matrix.py for the live-wired path."""
 
-from telegram.owner.dashboard import get_doctor_report, get_owner_summary
+from platform_layer.telegram.owner.dashboard import get_doctor_report, get_owner_summary
 
 
 def test_owner_summary_never_raises_and_reports_expected_fields():

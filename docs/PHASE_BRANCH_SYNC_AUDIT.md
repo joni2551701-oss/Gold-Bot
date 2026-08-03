@@ -45,8 +45,8 @@ of a compatible base — `main` is a structurally different snapshot:
 | Area | `main` | `claude` (this branch) |
 |---|---|---|
 | `main.py` | Imports `DecisionEngine`/`RiskManager`/`ExecutionEngine` directly; own docstring calls Data/Context/Signal/AI layers "TODO" | Imports `core.pipeline.TradingPipeline` (the current, real orchestrator) |
-| `telegram/polling.py` | **Does not exist** | The Telegram Runtime Activation Alpha's own entry point |
-| `telegram/owner/` | **Does not exist** | 22 files (Owner Telegram Panel) |
+| `platform_layer/telegram/polling.py` | **Does not exist** | The Telegram Runtime Activation Alpha's own entry point |
+| `platform_layer/telegram/owner/` | **Does not exist** | 22 files (Owner Telegram Panel) |
 | `monitoring/` | 3 files (`__init__.py`, `performance.py`, `signal_monitor.py`) | 8+ files (`models.py`, `system_monitor.py`, `market_monitor.py`, `decision_logger.py`, `error_monitor.py`, extended `signal_monitor.py`, ...) |
 | `configuration/`, `database/` | Early/partial | Full feature-registry, runtime-feature, monitoring-repository layers |
 
@@ -84,7 +84,7 @@ entry point is `python -m telegram.polling`, consistent across
 `deploy/systemd/goldbot-polling.service`, `docker-compose.yml`,
 `Dockerfile`'s own comment, and `docs/DEPLOYMENT.md`. **Not**
 `main.py`, **not** a GitHub Actions workflow (no workflow runs
-`telegram.polling` — `trading_bot.yml` only runs `main.py` on a
+`platform_layer.telegram.polling` — `trading_bot.yml` only runs `main.py` on a
 schedule; `ci.yml` only runs tests), **not** currently deployed to any
 VPS/container (no VPS exists yet, per every prior phase's own
 documented scope).
@@ -94,10 +94,10 @@ documented scope).
 `main.py` (on `claude/code-analysis-optimization-pwfo3q`, the branch
 that matters): `grep -n "telegram" main.py` shows exactly one match —
 a log-message string ("N telegram message(s)") — and zero import of
-`telegram.polling`. `main.py` never starts the inbound bot listener
+`platform_layer.telegram.polling`. `main.py` never starts the inbound bot listener
 and never imports it; the only Telegram touchpoint is outbound
-delivery via `telegram.notifier.Notifier` → `telegram.bot.TelegramBot`
-(a separate `Bot` instance from `telegram.polling`'s, confirmed in
+delivery via `platform_layer.telegram.notifier.Notifier` → `platform_layer.telegram.bot.TelegramBot`
+(a separate `Bot` instance from `platform_layer.telegram.polling`'s, confirmed in
 that module's own docstring). No mixing between the one-shot pipeline
 and the long-running listener — matches
 `docs/ARCHITECTURE.md`'s System Overview exactly. Already documented;
@@ -119,7 +119,7 @@ Confirmed working end-to-end on `claude/code-analysis-optimization-pwfo3q`.
 ## TASK 6 — Owner Startup Notification
 
 Already built and tested in the prior Telegram Runtime Activation
-Alpha phase (commit `a323d18`): `telegram/polling.py`'s
+Alpha phase (commit `a323d18`): `platform_layer/telegram/polling.py`'s
 `_notify_owner_startup()` sends the "🟢 GoldBot Online" message to
 `TELEGRAM_OWNER_ID` once polling starts, format documented in
 `docs/TELEGRAM_RUNTIME.md`. No change needed this phase — re-verified

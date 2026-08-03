@@ -13,7 +13,7 @@ direct test before this phase.
 
 import asyncio
 
-from telegram.command_router import route_command, PERMISSION_DENIED_TEXT
+from platform_layer.telegram.command_router import route_command, PERMISSION_DENIED_TEXT
 
 OWNER_ID = "111"  # matches conftest's TELEGRAM_OWNER_ID
 ADMIN_ID = "9302"
@@ -111,7 +111,7 @@ def test_command_allowlist_blocks_attribute_injection_attempts():
     A command name that isn't a real registered command must resolve to
     UNKNOWN_COMMAND_TEXT, never reach getattr with attacker-controlled input.
     """
-    from telegram.command_router import UNKNOWN_COMMAND_TEXT
+    from platform_layer.telegram.command_router import UNKNOWN_COMMAND_TEXT
 
     for malicious in ("/__class__", "/__init__", "/os.system", "/../etc/passwd", "/eval"):
         result = _run(route_command(malicious, telegram_id=USER_ID))
@@ -125,7 +125,7 @@ def test_owner_status_is_config_only_never_a_database_row():
     only ADMIN.
     """
     from database_layer.user_repository.admin_repository import AdminRepository
-    from telegram.permissions import is_owner
+    from platform_layer.telegram.permissions import is_owner
 
     AdminRepository().add_admin(USER_ID)
     assert is_owner(USER_ID) is False

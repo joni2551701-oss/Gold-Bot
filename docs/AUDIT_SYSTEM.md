@@ -55,7 +55,7 @@ maps to `log_action(actor="owner", action="ENABLE_PROVIDER",
 target="BITGET", result="SUCCESS")`.
 
 **Nothing calls `log_action()` automatically yet.** No owner command
-in `telegram/owner/` is wired to log its own actions — that wiring
+in `platform_layer/telegram/owner/` is wired to log its own actions — that wiring
 (making every real owner action actually write an entry) is future
 work, the same "foundation, not full wiring" posture every module in
 this phase follows.
@@ -67,7 +67,7 @@ core_layer/system_state/system_state.py (TASK 1)        -- system-wide mode voca
 database_layer/audit_log/audit_log_repository.py (TASK 2) -- who did what, persisted
         |
         v
-telegram/owner/owner_roles.py (TASK 3)     -- who is allowed to act
+platform_layer/telegram/owner/owner_roles.py (TASK 3)     -- who is allowed to act
         |
         v
 configuration/feature_registry.py (TASK 4) -- what can be toggled

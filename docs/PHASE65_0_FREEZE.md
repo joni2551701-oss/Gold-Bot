@@ -25,7 +25,7 @@ top-level package, `voice/`, with the brief's literal one-file-per-item
 `profiles/`/`providers/` subfolder layout consolidated into single
 files (`profiles.py`/`providers.py`) per Rule 8 — no existing static
 catalog module in this codebase (`persona_registry.py`,
-`media_registry.py`, `broadcast/provider_manager.py`) uses a
+`media_registry.py`, `media_layer/telegram_broadcast/provider_manager.py`) uses a
 one-file-per-item shape. No Director Decision pause was required — no
 Constitution Article conflict.
 
@@ -44,7 +44,7 @@ Constitution Article conflict.
 - `voice/registry.py` — `VoiceProfileRegistry`, a real runtime-mutable
   registry (`register()`/`get()`/`exists()`/`list_all()`/`default()`),
   pre-seeded from `profiles.py`, modeled on
-  `broadcast/trigger_manager.py`'s `BroadcastTriggerManager`.
+  `media_layer/telegram_broadcast/trigger_manager.py`'s `BroadcastTriggerManager`.
 - `voice/manager.py` — `VoiceManager`; delegates profile storage to
   the injected `VoiceProfileRegistry` (no duplicate storage), owns its
   own provider ENABLED/DISABLED intent tracking (every provider starts
@@ -53,7 +53,7 @@ Constitution Article conflict.
 - `voice/adapter.py` — `content_result_to_voice_request(result,
   manager, profile_name, provider_type, settings=None)`, a type-only
   read of an upstream `ai.content.content_schema.ContentResult`,
-  mirroring `media/media_adapter.py`'s
+  mirroring `media_layer/content_manager/media_adapter.py`'s
   `content_result_to_media_asset()` shape exactly. Returns `None` for
   a rejected/empty-body `ContentResult` or an unknown profile/provider.
 - `voice/runtime.py` — `VoiceRuntime`, a thin façade over

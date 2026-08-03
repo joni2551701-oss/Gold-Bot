@@ -10,16 +10,16 @@ decided; it never approves, rejects, sizes, or alters a signal. See
 ## Input
 `signal_layer.signal_builder.models.SignalCandidate`, `ai.ai_analyzer.AIAnalysisResult`,
 `decision_layer.decision_engine.models.TradeDecision`, `risk_layer.risk_engine.risk_manager.RiskResult`
-(`telegram.signal_formatter.SignalFormatter.format_signal(signal, ai_analysis, decision, risk_result)`)
+(`platform_layer.telegram.signal_formatter.SignalFormatter.format_signal(signal, ai_analysis, decision, risk_result)`)
 — the four already-computed pipeline outputs, read defensively
 (`getattr` with a safe `"N/A"` default, never raising on a missing/
-malformed field). `telegram.notifier.Notifier.send_message()`/
+malformed field). `platform_layer.telegram.notifier.Notifier.send_message()`/
 `send_messages()` take the already-formatted message string(s).
 
 ## Output
 `str` — a complete, human-readable message (`format_signal()`); the
 brief's "Message" is this plain string, not a formal `Message`
-dataclass. `telegram.notifier.NotifierResult`/a `bool` list from
+dataclass. `platform_layer.telegram.notifier.NotifierResult`/a `bool` list from
 `send_messages()` reports delivery success per message.
 
 ## Allowed Dependencies
@@ -36,8 +36,8 @@ input, exactly the same way `signal_formatter.py`'s four parameters
 work today. It never calls `DecisionEngine.evaluate()` or
 `RiskManager.evaluate()` itself.
 ❌ Direct database access from handlers —
-`telegram/handlers.py` never imports `database/*` directly; only
-`telegram/*_service.py` does (stated in `telegram/handlers.py`'s own
+`platform_layer/telegram/handlers.py` never imports `database/*` directly; only
+`telegram/*_service.py` does (stated in `platform_layer/telegram/handlers.py`'s own
 module docstring, enforced today). See `CLAUDE.md`'s Architecture
 Rules for the same boundary.
 ❌ `ai/`, `execution/`, `context/` — Telegram never re-analyzes a

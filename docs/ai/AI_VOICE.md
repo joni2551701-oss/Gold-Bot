@@ -55,7 +55,7 @@ dataclasses: `VoiceProvider` (capability descriptor —
 additive per Article 9: a real provider adapter's own reference info,
 e.g. `content_type`/`byte_length`/`provider`, never raw audio bytes,
 the same "reference only, never the payload itself" posture
-`media/models.py`'s `MediaAsset` already established). Every field is
+`media_layer/content_manager/models.py`'s `MediaAsset` already established). Every field is
 a primitive, an enum defined in the same file, or another dataclass in
 the same file — no `ContentResult`, `MediaAsset`, `BroadcastAsset`,
 `Persona`, `DecisionResult`, `RiskResult`, or MT5/trading object is a
@@ -67,8 +67,8 @@ valid field type.
 runtime-mutable registry (`register()`/`get()`/`exists()`/
 `list_all()`/`default()`), pre-seeded from `voice/profiles.py`'s
 static catalog — the same "class wrapping a dict, genuine `register()`"
-shape `broadcast/trigger_manager.py`'s `BroadcastTriggerManager`
-established, as opposed to `media/media_registry.py`'s deliberately
+shape `media_layer/telegram_broadcast/trigger_manager.py`'s `BroadcastTriggerManager`
+established, as opposed to `media_layer/content_manager/media_registry.py`'s deliberately
 fixed catalog.
 
 ## Profiles
@@ -108,7 +108,7 @@ rather than re-implementing it, and owns its own provider
 ENABLED/DISABLED intent tracking (`register_provider()`/
 `get_provider()`/`set_provider_status()`/`is_provider_enabled()`/
 `list_providers()`) — every provider starts `DISABLED`, mirroring
-`media/media_manager.py` and `broadcast/provider_manager.py` exactly.
+`media_layer/content_manager/media_manager.py` and `media_layer/telegram_broadcast/provider_manager.py` exactly.
 `validate(request)` is deterministic: `True` only when the profile
 exists, the provider is registered and enabled, and `text` is
 non-empty. `prepare(request)` returns `validate()`'s own result.
@@ -324,7 +324,7 @@ for the profile/language, and this package's own `generate_audio()`/
 itself required zero code change. Gated by
 `assistant.access.is_personal_ai_enabled_for()` (Owner-only).
 
-## Relationship to `media/media_types.py`'s `MediaType.VOICE`
+## Relationship to `media_layer/content_manager/media_types.py`'s `MediaType.VOICE`
 
 `MediaType.VOICE` is a single existing enum member flagging "this
 media asset is voice-shaped" — it stays untouched. This package's

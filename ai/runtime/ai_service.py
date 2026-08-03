@@ -305,7 +305,7 @@ class AIService:
         against the limit(s); a breach transitions the runtime to
         `RuntimeState.DEGRADED` (never FAILED -- a cost breach means
         "slow down," not "stop entirely") with a reason string prefixed
-        `"cost protection: "` so `telegram/owner/runtime_notifications.py`'s
+        `"cost protection: "` so `platform_layer/telegram/owner/runtime_notifications.py`'s
         `RuntimeNotifier` can distinguish this cause from any other
         `DEGRADED` transition without a new EventType (Rule 5).
         A runtime already DEGRADED/FAILED/SHUTDOWN is left alone --
@@ -316,7 +316,7 @@ class AIService:
         Honest limitation: every `response_log.record()` call in this
         class today logs `tokens=0, cost=0.0` (no real provider reports
         usage back via `ProviderResult.metadata` yet -- the same gap
-        `telegram/owner/ai_commands.py`'s `ai_cost_handler()` already
+        `platform_layer/telegram/owner/ai_commands.py`'s `ai_cost_handler()` already
         documents with its own honest "$0.00"). This check is real,
         wired, and provably correct against injected data with nonzero
         cost/tokens (see `tests/ai/runtime/test_ai_service_integration.py`);

@@ -5,7 +5,7 @@ GitHub Actions.** After the Director chose `main`, the deploy was
 verified feasible without any forbidden change: `workflow_dispatch` on
 the `main` ref (the `branches:` filter only gates the automatic `push`
 trigger, not manual dispatch), and `main` was re-verified to contain all
-production entrypoints (`telegram/polling.py`, `core/pipeline.py`,
+production entrypoints (`platform_layer/telegram/polling.py`, `core/pipeline.py`,
 `main.py`, deploy scripts) — the earlier "main is stale" note is
 outdated. Run **#39** (`30318793728`) finished with **both jobs
 `success`**: `validate` (pyflakes/compileall/pytest) and `deploy`

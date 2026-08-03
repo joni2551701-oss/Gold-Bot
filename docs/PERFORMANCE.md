@@ -56,8 +56,8 @@ Persist) totals under 1 millisecond. Importing `aiogram` alone costs
 ~2.5 seconds — confirmed stable across 3 repeated measurements. Every
 scheduled run (`trading_bot.yml`, every 5 minutes) pays this cost
 before any real work happens, because `core/pipeline.py` imports
-`telegram.notifier` unconditionally at module load time, which
-imports `telegram.bot`, which imports `aiogram`.
+`platform_layer.telegram.notifier` unconditionally at module load time, which
+imports `platform_layer.telegram.bot`, which imports `aiogram`.
 
 **This is not a fixable "wasted work" bottleneck — it's necessary
 work that happens to be slow.** Production's real `main.py` always
@@ -117,8 +117,8 @@ sections 3–5 below.
 - **`SELECT *` re-audited**: `signal_repository.py`'s 5 `SELECT *`
   calls were deliberately left un-narrowed in Phase 50 pending a fuller
   consumer audit. That audit is now done: grepping every reader of a
-  signals-table row dict (`telegram/signal_formatter.py`,
-  `core_layer/health_monitor/performance.py`, `telegram/admin_service.py`, and every
+  signals-table row dict (`platform_layer/telegram/signal_formatter.py`,
+  `core_layer/health_monitor/performance.py`, `platform_layer/telegram/admin_service.py`, and every
   test) found 16 of the table's 25 columns actually read somewhere.
   **Still not narrowed** — three reasons: (1) the expected saving is
   microseconds on a table that stays small (this app persists a
@@ -158,7 +158,7 @@ sections 3–5 below.
   spins a fresh runner per scheduled job) — no possibility of
   cross-run accumulation by architecture; `GoldBot`/`TradingPipeline`
   go out of scope and are reclaimed at process exit.
-- `telegram/polling.py`'s long-running loop creates one `Bot` and one
+- `platform_layer/telegram/polling.py`'s long-running loop creates one `Bot` and one
   `Dispatcher` for the process lifetime; each incoming message
   constructs small, stateless service objects
   (`UserService()`/`AdminService()`/etc.) that are garbage-collected

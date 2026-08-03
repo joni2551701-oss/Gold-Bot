@@ -31,7 +31,7 @@ def _seed_signal(signal_id="sig-1", confidence=0.8):
 
 
 def test_signal_service_get_latest_signal():
-    from telegram.signal_service import SignalService
+    from platform_layer.telegram.signal_service import SignalService
 
     _seed_signal()
     result = SignalService().get_latest_signal()
@@ -40,7 +40,7 @@ def test_signal_service_get_latest_signal():
 
 
 def test_signal_service_get_latest_signal_empty_database():
-    from telegram.signal_service import SignalService
+    from platform_layer.telegram.signal_service import SignalService
 
     result = SignalService().get_latest_signal()
     assert result.success is False
@@ -48,7 +48,7 @@ def test_signal_service_get_latest_signal_empty_database():
 
 
 def test_signal_service_history_returns_newest_first():
-    from telegram.signal_service import SignalService
+    from platform_layer.telegram.signal_service import SignalService
 
     repo = _seed_signal("sig-1")
     repo.create_signal({
@@ -66,8 +66,8 @@ def test_signal_service_history_returns_newest_first():
 
 
 def test_signal_formatter_renders_row_with_all_phase39_fields():
-    from telegram.signal_formatter import SignalFormatter
-    from telegram.signal_service import SignalService
+    from platform_layer.telegram.signal_formatter import SignalFormatter
+    from platform_layer.telegram.signal_service import SignalService
 
     _seed_signal()
     row = SignalService().get_latest_signal().signal
@@ -81,8 +81,8 @@ def test_signal_formatter_renders_row_with_all_phase39_fields():
 
 def test_signal_access_free_plan_denied_premium_allowed():
     """Save signal exists, but a FREE user is denied delivery via SignalAccessService."""
-    from telegram.signal_access_service import SignalAccessService
-    from telegram.subscription_service import SubscriptionService
+    from platform_layer.telegram.signal_access_service import SignalAccessService
+    from platform_layer.telegram.subscription_service import SubscriptionService
 
     _seed_signal()
     access = SignalAccessService()

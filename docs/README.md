@@ -240,7 +240,7 @@ Each major package carries its own `README.md`, unindexed here since
 they live with their code, not under `docs/`: `data/README.md`,
 `context/README.md`, `signals/README.md`, `decision/README.md`,
 `risk/README.md`, `execution/README.md`, `database/README.md`,
-`telegram/README.md`, `telegram/owner/README.md`, `ai/README.md`.
+`telegram/README.md`, `platform_layer/telegram/owner/README.md`, `ai/README.md`.
 
 ---
 

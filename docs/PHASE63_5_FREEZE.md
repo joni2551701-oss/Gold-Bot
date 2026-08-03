@@ -71,7 +71,7 @@ Decision pause was required — no Constitution Article conflict.
 
 - No second Conversation class/Manager — forbidden by this brief's own
   Director Notes item 3; `ConversationEngine` extended in place.
-- No wiring into `telegram/command_router.py` or `ai/explanation/` —
+- No wiring into `platform_layer/telegram/command_router.py` or `ai/explanation/` —
   foundation only. `conversation_context_to_explanation_fields()` is
   built and tested standalone; a future caller (not `ai/conversation/`)
   would import both packages and bridge them.

@@ -62,7 +62,7 @@ learning.pattern_detector.detect_patterns()             -- TASK 4
                  AIAnalyzerInterface contract every ai/ module already
                  respects)
 
-telegram.owner.learning_commands                        -- TASK 8
+platform_layer.telegram.owner.learning_commands                        -- TASK 8
       (/learning_status, /patterns, /failures, /best_conditions --
        thin wrappers over the above, not live-wired)
 ```
@@ -159,15 +159,15 @@ left to a future AI consumer, per the brief's own "AI: Faqat
 tushuntirish, xulosa, tavsiya" boundary, itself still bound by
 `AIAnalyzerInterface`'s advisory-only contract.
 
-## TASK 8: `telegram/owner/learning_commands.py`
+## TASK 8: `platform_layer/telegram/owner/learning_commands.py`
 
 `get_learning_status()`, `get_patterns_report()`,
 `get_failures_report()`, `get_best_conditions_report()` — the future
 `/learning_status`, `/patterns`, `/failures`, `/best_conditions`
 commands. Thin wrappers only, same "compute from supplied data, don't
 fetch" posture as every prior phase's owner-command module. Not
-registered into `telegram/commands.py`, not called from
-`telegram/command_router.py` or `telegram/handlers.py`.
+registered into `platform_layer/telegram/commands.py`, not called from
+`platform_layer/telegram/command_router.py` or `platform_layer/telegram/handlers.py`.
 
 ## Safety rules (restated)
 
@@ -178,8 +178,8 @@ registered into `telegram/commands.py`, not called from
   threshold, or a risk-sizing value — every function here is a pure,
   read-only observer over already-computed data.
 - No module in this phase is called from `core/pipeline.py`,
-  `telegram/handlers.py`, `telegram/command_router.py`, or
-  `telegram/commands.py`.
+  `platform_layer/telegram/handlers.py`, `platform_layer/telegram/command_router.py`, or
+  `platform_layer/telegram/commands.py`.
 - `LearningRepository` is append-only by construction — no
   `update()`/`delete()` method exists, so a `LearningRecord`, once
   persisted, cannot be silently altered or removed.

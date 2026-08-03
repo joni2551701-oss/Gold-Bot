@@ -99,7 +99,7 @@ code. No provider is ever hardcoded per-call — always resolved through
   `ConversationEngine.ask()` call. Per Phase 65.1's own pipeline
   diagram, `voice/` is the terminal narrating stage: `... → Content →
   Media → Broadcast → Voice`.
-- `media/media_types.py`'s `MediaType.VOICE` — an adjacent-but-different
+- `media_layer/content_manager/media_types.py`'s `MediaType.VOICE` — an adjacent-but-different
   vocabulary member flagging a media asset as voice-shaped; this
   package models *who speaks, via which backend, with what settings*
   instead.

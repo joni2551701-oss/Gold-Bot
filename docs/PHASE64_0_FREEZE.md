@@ -44,8 +44,8 @@ conflict.
   - `ExplanationBuilder.build(ExplanationInput)` (fields via
     `reasoning_adapters.reasoning_result_to_explanation_fields()`)
   - `ContentEngine.create(...)` (never `.generate()`)
-  - `media.media_pipeline.prepare_media_from_content(...)`
-  - `broadcast.broadcast_adapter.broadcast_asset_from_content_and_media(...)`
+  - `media_layer.content_manager.media_pipeline.prepare_media_from_content(...)`
+  - `media_layer.telegram_broadcast.broadcast_adapter.broadcast_asset_from_content_and_media(...)`
     + `BroadcastManager.prepare_broadcast(...)`
   Zero new business logic added to any of the eight layers themselves.
 - `docs/ai/AI_INTELLIGENCE_PIPELINE.md` — new. `docs/ai/AI_ARCHITECTURE.md`,
@@ -73,7 +73,7 @@ conflict.
   paths reachable from this pipeline) are never invoked;
   `test_intelligence_runtime.py`'s own structural test enforces this
   permanently.
-- No wiring into `telegram/command_router.py`, `core/pipeline.py`, or
+- No wiring into `platform_layer/telegram/command_router.py`, `core/pipeline.py`, or
   any Owner command — foundation only, callable standalone.
 - No new top-level `ai/intelligence/` package — Rule/TASK 1 explicitly
   named this "shoshilmang" (don't rush into it); one file was
@@ -111,8 +111,8 @@ every layer" section). It imports: `knowledge.knowledge_manager`,
 `ai.memory.memory_runtime`/`models`, `ai.reasoning.reasoning_runtime`/
 `models`/`reasoning_adapters`, `ai.conversation.conversation_engine`,
 `ai.explanation.explanation_builder`/`explanation_input`,
-`ai.content.content_adapter`/`content_types`, `media.media_manager`/
-`media_pipeline`/`media_types`, `broadcast.broadcast_manager`/
+`ai.content.content_adapter`/`content_types`, `media_layer.content_manager.media_manager`/
+`media_pipeline`/`media_types`, `media_layer.telegram_broadcast.broadcast_manager`/
 `broadcast_adapter`. It never imports `decision/`/`risk/`/
 `execution/`/`strategies/`/`signals/`/`database/`/`telegram/` — the
 permanent AST regression test in
@@ -149,7 +149,7 @@ strategies/ signals/` returns no output.
 No further phase is named by the Director as of this freeze. Two
 follow-on directions are visible but neither is started: (1) wiring
 `IntelligenceRuntime` into a real caller (an Owner command, or
-`telegram/command_router.py`'s future conversational path) so its
+`platform_layer/telegram/command_router.py`'s future conversational path) so its
 output becomes user-visible, and (2) the still-open Phase 63.8 note
 about how `ai/content/broadcast_output.py`'s pre-existing
 `prepare_broadcast()`/`BroadcastReadyContent` (a direct Content→Broadcast

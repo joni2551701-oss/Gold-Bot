@@ -33,9 +33,9 @@ brief:
 - Recovery Scenarios
 - Integration Validation
 
-**Permitted**: everything above, against `platforms/navigation_core.py`/
-`platforms/platform_adapter.py`/`platforms/navigation_events.py`/
-`platforms/menu_registry.py` as they exist today.
+**Permitted**: everything above, against `platform_layer/platform_service/navigation_core.py`/
+`platform_layer/platform_service/platform_adapter.py`/`platform_layer/platform_service/navigation_events.py`/
+`platform_layer/platform_service/menu_registry.py` as they exist today.
 
 **Forbidden**: redesigning the Navigation architecture, changing any
 existing public contract (`NavigationResult`, `NavigationEvent`,

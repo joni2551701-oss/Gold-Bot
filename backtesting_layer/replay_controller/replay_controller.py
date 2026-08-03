@@ -7,7 +7,7 @@ stop()/restart()/step()/get_status(), each keyed by a `session_id`.
 One process-local `ReplayController` owns a `{session_id: (ReplaySession,
 ReplayEngine)}` map, the same "in-memory holder" convention as
 `configuration.runtime_state.RuntimeStateCache`. This is the layer
-`telegram/owner/replay_commands.py` (TASK 8) wraps -- no new session/
+`platform_layer/telegram/owner/replay_commands.py` (TASK 8) wraps -- no new session/
 engine logic belongs there, only formatting.
 """
 

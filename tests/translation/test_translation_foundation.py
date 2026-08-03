@@ -1,8 +1,8 @@
 """Phase 63.0 TASK 6 — Translation Foundation. No Google/DeepL/Gemini/OpenAI call anywhere -- translate() always cleanly rejects."""
 
-from translation.language_registry import build_language_registry, is_supported
-from translation.models import Language, TranslationRequest
-from translation.translation_manager import TranslationManager
+from media_layer.translation.language_registry import build_language_registry, is_supported
+from media_layer.translation.models import Language, TranslationRequest
+from media_layer.translation.translation_manager import TranslationManager
 
 
 def test_language_registry_has_all_three_director_named_languages():

@@ -8,7 +8,7 @@ cannot catch a `getattr(handlers, f"{command}_handler")` name mismatch
 
 import asyncio
 
-from telegram.command_router import route_command, PERMISSION_DENIED_TEXT
+from platform_layer.telegram.command_router import route_command, PERMISSION_DENIED_TEXT
 
 OWNER_ID = "111"  # matches conftest's TELEGRAM_OWNER_ID
 USER_ID = "333"

@@ -54,7 +54,7 @@ of the 13 Articles.
   require writing platform code today" and does not relax Article 11's
   Reuse Audit or Article 8's ordering — confirmed consistent with how
   TASK-002 (Navigation) has actually been run (four platforms remain
-  `NOT_STARTED` in `platforms/platform_registry.py`, no code written for
+  `NOT_STARTED` in `platform_layer/platform_service/platform_registry.py`, no code written for
   them).
 
 ## 2. Laws Review
@@ -357,8 +357,8 @@ factually:
 
 | Surface | Coverage today |
 |---|---|
-| Telegram Bot | Full — `LIVE` in `platforms/platform_registry.py`, the only platform with real code. |
-| Telegram Mini App | Named explicitly in Article 13, ADR-001, and `platforms/platform_model.py`'s `PlatformName` enum; registered `NOT_STARTED`, honestly, no code. |
+| Telegram Bot | Full — `LIVE` in `platform_layer/platform_service/platform_registry.py`, the only platform with real code. |
+| Telegram Mini App | Named explicitly in Article 13, ADR-001, and `platform_layer/platform_service/platform_model.py`'s `PlatformName` enum; registered `NOT_STARTED`, honestly, no code. |
 | Android | Same as Telegram Mini App. |
 | iOS | Same as Telegram Mini App. |
 | Desktop | Same as Telegram Mini App. |

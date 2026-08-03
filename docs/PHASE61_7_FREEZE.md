@@ -15,7 +15,7 @@ regressions against the pre-phase baseline).
   orchestration shape, `ai/runtime/event_bus.py`'s `EventType` set,
   `ai/providers/circuit_breaker.py`'s integration points, `ai/runtime/
   runtime_manager.py`'s transition-publish branches, `ai/runtime/
-  self_check.py`, or `telegram/owner/runtime_commands.py`'s
+  self_check.py`, or `platform_layer/telegram/owner/runtime_commands.py`'s
   `runtime_full_status()`/`runtime_check()` before the next
   formally-numbered Worker Brief.
 - Every module this phase wired stays exactly as it is: `RuntimeManager`,
@@ -49,7 +49,7 @@ regressions against the pre-phase baseline).
 
 - **TASK 1** — `docs/PHASE61_7_INTEGRATION_AUDIT.md`: full reuse audit
   across `ai/runtime/`, `ai/router/`, `ai/providers/`, `ai/audit/`,
-  `ai/cache/`, `ai/session/`, `telegram/owner/`.
+  `ai/cache/`, `ai/session/`, `platform_layer/telegram/owner/`.
 - **TASK 2** — `RuntimeManager` integration: `ask()`'s first gate is
   `is_healthy()`.
 - **TASK 3** — `ProviderCircuitBreaker` integration: gate + record
@@ -82,7 +82,7 @@ regressions against the pre-phase baseline).
   named profiles proven actually used, event publication, notification
   integration) + `tests/ai/runtime/test_runtime_state_matrix.py` (77
   tests: the full state matrix) + `tests/ai/runtime/test_self_check.py`
-  (8 tests) + `tests/telegram/owner/test_runtime_commands.py` extensions
+  (8 tests) + `tests/platform_layer/telegram/owner/test_runtime_commands.py` extensions
   (8 new tests for `/runtime_status`/`/runtime_check`). Total: 2166
   tests passing (target: 2100+).
 - **TASK 10** — This document, `docs/PHASE61_7_RUNTIME_INTEGRATION.md`,

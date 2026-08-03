@@ -1,13 +1,13 @@
-"""Phase 63.8 TASK 6 — broadcast/broadcast_adapter.py: Content/Media (upstream, type-only) integration, optional Persona reference."""
+"""Phase 63.8 TASK 6 — media_layer/telegram_broadcast/broadcast_adapter.py: Content/Media (upstream, type-only) integration, optional Persona reference."""
 
 from ai.content.content_schema import ContentResult
 from ai.content_types import ContentType
 from ai.persona.persona_registry import SENIOR_TRADING_AI
-from broadcast.broadcast_adapter import broadcast_asset_from_content_and_media
-from broadcast.broadcast_manager import BroadcastManager
-from broadcast.models import BroadcastStatus
-from media.media_types import MediaType
-from media.models import MediaAsset, MediaAssetStatus
+from media_layer.telegram_broadcast.broadcast_adapter import broadcast_asset_from_content_and_media
+from media_layer.telegram_broadcast.broadcast_manager import BroadcastManager
+from media_layer.telegram_broadcast.models import BroadcastStatus
+from media_layer.content_manager.media_types import MediaType
+from media_layer.content_manager.models import MediaAsset, MediaAssetStatus
 
 
 def _accepted_result(**overrides):
@@ -90,7 +90,7 @@ def test_broadcast_adapter_module_never_imports_decision_risk_execution():
     import ast
     import pathlib
 
-    adapter_file = pathlib.Path(__file__).resolve().parents[2] / "broadcast" / "broadcast_adapter.py"
+    adapter_file = pathlib.Path(__file__).resolve().parents[2] / "media_layer" / "telegram_broadcast" / "broadcast_adapter.py"
     tree = ast.parse(adapter_file.read_text(), filename=str(adapter_file))
     forbidden_prefixes = ("decision", "risk", "execution", "strategies", "signals", "database", "telegram")
     for node in ast.walk(tree):

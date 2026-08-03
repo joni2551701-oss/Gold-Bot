@@ -5,7 +5,7 @@ RuntimeProfile/EventBus/RuntimeNotifier together -- not each piece in
 isolation (already covered by tests/ai/runtime/test_runtime_lifecycle.py,
 tests/ai/providers/test_provider_circuit_breaker.py,
 tests/ai/runtime/test_runtime_profiles.py,
-tests/telegram/owner/test_runtime_notifications.py). No real network
+tests/platform_layer/telegram/owner/test_runtime_notifications.py). No real network
 call anywhere -- every provider is faked.
 """
 
@@ -24,7 +24,7 @@ from ai.runtime.runtime_request import RuntimeRequest
 from ai.runtime.runtime_state import RuntimeState
 from ai.context.context_builder import build_ai_context
 from ai.interfaces import MarketContext
-from telegram.owner.runtime_notifications import RuntimeNotifier
+from platform_layer.telegram.owner.runtime_notifications import RuntimeNotifier
 
 
 class _FakeProvider:

@@ -72,7 +72,7 @@ def test_env_example_documents_exactly_the_secrets_core_secrets_reads():
 
 
 def test_missing_telegram_bot_token_raises_with_name_in_message(monkeypatch):
-    """The exact failure telegram/polling.py's run_polling() catches -- message names the variable."""
+    """The exact failure platform_layer/telegram/polling.py's run_polling() catches -- message names the variable."""
     monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
     try:
         Secrets().TELEGRAM_BOT_TOKEN

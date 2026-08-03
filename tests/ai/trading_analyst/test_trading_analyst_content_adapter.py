@@ -1,9 +1,9 @@
 from ai.content.content_adapter import ContentEngine
 from ai.trading_analyst.content_adapter import prepare_content, trading_analysis_to_content_body
 from ai.trading_analyst.models import TradingAnalysis, TradingRiskLevel
-from broadcast.broadcast_manager import BroadcastManager
-from broadcast.models import BroadcastStatus
-from media.media_manager import MediaManager
+from media_layer.telegram_broadcast.broadcast_manager import BroadcastManager
+from media_layer.telegram_broadcast.models import BroadcastStatus
+from media_layer.content_manager.media_manager import MediaManager
 
 
 def _analysis(**overrides):

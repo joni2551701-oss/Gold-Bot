@@ -14,14 +14,14 @@ steps — rather than duplicating the inventory.
 ```
 Command                (a Telegram message from the Owner)
    ↓
-Permission Check       telegram/owner/owner_roles.py — require_role()
+Permission Check       platform_layer/telegram/owner/owner_roles.py — require_role()
    ↓
-Audit Log               telegram/owner/security.py — log_owner_action()
+Audit Log               platform_layer/telegram/owner/security.py — log_owner_action()
    ↓
-Execution                 the command's own telegram/owner/<domain>_commands.py
+Execution                 the command's own platform_layer/telegram/owner/<domain>_commands.py
                            handler → the domain's Manager/Service/Repository
    ↓
-Notification               telegram/owner/runtime_notifications.py (for
+Notification               platform_layer/telegram/owner/runtime_notifications.py (for
                            runtime/cost-protection events) or the command's
                            own direct reply — not every command produces a
                            separate notification
@@ -44,10 +44,10 @@ compliant; a missing surface is not):
 
 | Critical module | Owner surface |
 |---|---|
-| `core_layer/emergency/` | `telegram/owner/emergency_commands.py` |
-| `ai/runtime/runtime_manager.py` | `telegram/owner/runtime_commands.py` |
-| `configuration/runtime_feature_manager.py` | `telegram/owner/control_commands.py` |
-| `broadcast/`, `media/`, `translation/` | `telegram/owner/broadcast_commands.py` (foundation-only, Phase 63.0 — every command returns `NOT IMPLEMENTED` honestly) |
+| `core_layer/emergency/` | `platform_layer/telegram/owner/emergency_commands.py` |
+| `ai/runtime/runtime_manager.py` | `platform_layer/telegram/owner/runtime_commands.py` |
+| `configuration/runtime_feature_manager.py` | `platform_layer/telegram/owner/control_commands.py` |
+| `broadcast/`, `media/`, `translation/` | `platform_layer/telegram/owner/broadcast_commands.py` (foundation-only, Phase 63.0 — every command returns `NOT IMPLEMENTED` honestly) |
 
 ## Related
 

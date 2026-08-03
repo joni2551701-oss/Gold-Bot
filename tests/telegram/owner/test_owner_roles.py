@@ -1,11 +1,11 @@
 """
-Phase 59.6, TASK 3 -- telegram/owner/owner_roles.py tests. Real
+Phase 59.6, TASK 3 -- platform_layer/telegram/owner/owner_roles.py tests. Real
 AdminRepository (SQLite, tests/conftest.py's autouse fresh_database
 fixture) -- no mocks. TELEGRAM_OWNER_ID is set to "111" by conftest.py.
 """
 
 from database_layer.user_repository.admin_repository import AdminRepository
-from telegram.owner.owner_roles import OwnerRole, resolve_owner_role
+from platform_layer.telegram.owner.owner_roles import OwnerRole, resolve_owner_role
 
 
 def test_resolve_owner_role_owner_id_is_owner():

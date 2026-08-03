@@ -1,9 +1,9 @@
 """
-Phase 59.3, TASK 5 -- telegram/owner/feature_commands.py tests.
+Phase 59.3, TASK 5 -- platform_layer/telegram/owner/feature_commands.py tests.
 """
 
-from telegram.owner.feature_commands import list_features
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.feature_commands import list_features
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 
 
 def test_list_features_succeeds():

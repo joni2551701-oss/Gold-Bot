@@ -6,10 +6,10 @@ Resolves the real `AIRole` for a user from already-resolved identity
 facts -- never imports `telegram/` or `database/` itself. `ai/`
 deliberately holds no runtime dependency on either layer (the same
 boundary `ai/context/context_adapter.py`'s docstring establishes for
-`context/`); the caller -- a future `telegram/owner/ai_commands.py`
+`context/`); the caller -- a future `platform_layer/telegram/owner/ai_commands.py`
 integration or a Conversation Engine caller -- already legitimately
-has `telegram.permissions.is_owner()`/`is_admin()` and
-`telegram.subscription_service.SubscriptionService.get_plan()`
+has `platform_layer.telegram.permissions.is_owner()`/`is_admin()` and
+`platform_layer.telegram.subscription_service.SubscriptionService.get_plan()`
 available and passes their results in here. `docs/PHASE61_4_PRODUCT_CONTROL_AUDIT.md`'s
 own `telegram/` finding names this as the missing resolver, not a
 request for a fourth role enum.

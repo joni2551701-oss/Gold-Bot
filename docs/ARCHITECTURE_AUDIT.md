@@ -434,7 +434,7 @@ foundation for a future versioned-migration script, unchanged.
 - **No automated signal-outcome tracking.** `SignalRepository.update_signal_result()`
   exists and is idempotent/well-tested (92% coverage on
   `signal_record.py`), but its only caller in the entire codebase is
-  `telegram/result_handler.py` — a manual, user-reported Telegram
+  `platform_layer/telegram/result_handler.py` — a manual, user-reported Telegram
   command. Nothing in `execution/`, `monitoring/`, or anywhere else
   checks live price against a stored `entry`/`stop_loss`/`take_profit`
   to determine WIN/LOSS/BE automatically. "Result" as a database field
@@ -455,7 +455,7 @@ handlers, services, presentation.
 **Responsibilities**: `polling.py` is the long-running inbound
 listener; `command_router.py` → `handlers.py` → `*_service.py` →
 `database/*_repository.py` is the enforced call chain
-(`telegram/handlers.py` never imports `database/*`/`core/pipeline.py`
+(`platform_layer/telegram/handlers.py` never imports `database/*`/`core/pipeline.py`
 directly, re-confirmed by grep this phase); `signal_formatter.py`/
 `notifier.py` are the pipeline's outbound path.
 
@@ -479,10 +479,10 @@ imported, but only from `telegram/*_service.py` files, never
 **Future expansion points**: none beyond what `telegram/README.md`
 states.
 
-**Problems found**: `telegram/handlers.py` is 53% covered — the
+**Problems found**: `platform_layer/telegram/handlers.py` is 53% covered — the
 lowest of any file with an external caller in the whole product layer
-(345 statements, 163 uncovered) — and `telegram/polling.py` (0%,
-expected — a long-polling loop) and `telegram/result_handler.py` (0%,
+(345 statements, 163 uncovered) — and `platform_layer/telegram/polling.py` (0%,
+expected — a long-polling loop) and `platform_layer/telegram/result_handler.py` (0%,
 **not obviously expected** — it's a pure function processing a
 Telegram command's result-reporting logic, not a blocking loop, and
 its only caller path (the manual result-reporting command) has no

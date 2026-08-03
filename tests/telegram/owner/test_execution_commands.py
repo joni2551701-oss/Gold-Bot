@@ -1,9 +1,9 @@
 """
-Phase 60.3, TASK 7 -- telegram/owner/execution_commands.py tests.
+Phase 60.3, TASK 7 -- platform_layer/telegram/owner/execution_commands.py tests.
 """
 
-from telegram.owner.execution_commands import execution_status, set_simulation_mode, slippage_status
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.execution_commands import execution_status, set_simulation_mode, slippage_status
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 
 
 def test_execution_status_reports_defaults():

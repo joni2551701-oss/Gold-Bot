@@ -44,7 +44,7 @@ existed anywhere in this codebase for strategies (confirmed by
 auditing `strategies/` in full before writing any code — the only
 pre-existing "registry"-flavored code in the whole codebase turned out
 to be unrelated docstring mentions in `ai/prompts/prompt_manager.py`
-and `telegram/command_router.py`, no actual metadata/registry
+and `platform_layer/telegram/command_router.py`, no actual metadata/registry
 pattern). `strategy_layer/strategy_manager/strategy_manager.py`'s `StrategyManager` is the
 only thing that has ever run a strategy, and stays that way.
 
@@ -131,7 +131,7 @@ three: no versioning history exists yet.
 `supported_assets=["XAUUSD"]` and `supported_timeframes=["M15"]` use
 the real symbol/interval constants this codebase runs today (see
 `main.py`'s `TradingPipeline(symbol="XAUUSD", interval="M15", ...)`
-and `telegram/signal_service.py`'s `DEFAULT_SYMBOL`) — not the
+and `platform_layer/telegram/signal_service.py`'s `DEFAULT_SYMBOL`) — not the
 Director brief's illustrative `"GOLD"` label, since `"XAUUSD"` is the
 value that actually appears everywhere else in this codebase.
 `supported_styles=["INTRADAY"]` is descriptive metadata, matching the

@@ -2,15 +2,15 @@
 
 import pytest
 
-from platforms.menu_registry import (
+from platform_layer.platform_service.menu_registry import (
     MenuDefinition,
     MenuRegistry,
     DuplicateMenuIdError,
     DEFAULT_MENUS,
     build_default_menu_registry,
 )
-from platforms.navigation_model import is_valid_screen_id
-from platforms.platform_model import PlatformName
+from platform_layer.platform_service.navigation_model import is_valid_screen_id
+from platform_layer.platform_service.platform_model import PlatformName
 
 
 def _definition(menu_id="settings", platforms=None):
@@ -113,7 +113,7 @@ def test_build_default_menu_registry_returns_independent_instances():
 
 
 def test_admin_management_reopens_admin_panel():
-    """Matches telegram/reply_keyboard_manager.py's Director Review correction 1 -- Admin Management is not a direct action."""
+    """Matches platform_layer/telegram/reply_keyboard_manager.py's Director Review correction 1 -- Admin Management is not a direct action."""
     registry = build_default_menu_registry()
     admin_management = registry.get("admin.management")
     assert admin_management.target_bindings[PlatformName.TELEGRAM_BOT] == "/admin"

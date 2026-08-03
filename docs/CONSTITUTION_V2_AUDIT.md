@@ -42,7 +42,7 @@ surfaces:
    Wizard) and never mentions Phase 4, 5, 5.1, 6.0–6.3, or Phase 6
    Freeze at all — an entire platform layer's history is undocumented
    in the one file whose job is to record version history.
-   `docs/owner/OWNER_PANEL.md` undercounts `telegram/owner/` by 8
+   `docs/owner/OWNER_PANEL.md` undercounts `platform_layer/telegram/owner/` by 8
    files. `ai/README.md` self-contradicts and is frozen at Phase
    61.7. `docs/README.md`, the master doc index, is missing 96 of 264
    files under `docs/` (36%) — everything from Phase 63 onward.
@@ -205,7 +205,7 @@ state that predates roughly five phases of shipped work.
 
 ### 2.3 Stale: `docs/owner/OWNER_PANEL.md`
 
-States "19 files" under `telegram/owner/`. Actual count (per the
+States "19 files" under `platform_layer/telegram/owner/`. Actual count (per the
 Database/Infra inventory) is 27 — the document predates Phase B.0's
 additions (e.g. `monitoring_commands.py`).
 
@@ -213,7 +213,7 @@ additions (e.g. `monitoring_commands.py`).
 
 Phase 6.3's retirement of the inline Navigation Controller
 (`telegram/navigation.py`, deleted outright) in favor of
-`telegram/reply_keyboard_manager.py` already establishes Reply
+`platform_layer/telegram/reply_keyboard_manager.py` already establishes Reply
 Keyboard as the system's sole navigation mechanism in practice. No
 inline navigation menus remain; inline keyboards are used only for
 pickers (settings toggles, etc.), consistent with what the Director's
@@ -309,7 +309,7 @@ language exactly; no gap found here.
 `docs/DATABASE.md` (top-level) documents the schema, and Article 4
 already states the Handler→Service→Repository→Database rule, which
 the Trading Core and Database/Infra inventories both confirm is
-enforced today (no direct `telegram/handlers.py` → `database/` calls
+enforced today (no direct `platform_layer/telegram/handlers.py` → `database/` calls
 found).
 
 ### 4.2 No migration or rollback tooling exists
@@ -435,14 +435,14 @@ state diagram, every Main↔submenu transition, translation coverage
 (111 keys after Phase 6 Freeze's Stage 9 cleanup, EN/UZ/RU complete,
 zero missing/duplicate/unused), and the frozen target layout. This
 review found no discrepancy between that document and the live code
-in `translation/ui_catalog.py` or `telegram/reply_keyboard_manager.py`.
+in `media_layer/translation/ui_catalog.py` or `platform_layer/telegram/reply_keyboard_manager.py`.
 
 ### 6.2 Button naming / emoji rules — implicit, not written down
 
 The current Reply Menu consistently uses a
 `{emoji}{Label}` / `{emoji}{Label}(Coming Soon)` pattern across every
 menu tier, but no document states this as a rule — it is a pattern a
-Worker would have to infer by reading `translation/ui_catalog.py`
+Worker would have to infer by reading `media_layer/translation/ui_catalog.py`
 directly. This is a small, concrete gap a UI Constitution section
 could close cheaply.
 

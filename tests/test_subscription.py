@@ -4,7 +4,7 @@ Phase 47 — Subscription Layer tests: FREE/PREMIUM/VIP create/read/access.
 
 
 def test_get_plan_auto_creates_free_subscription():
-    from telegram.subscription_service import SubscriptionService
+    from platform_layer.telegram.subscription_service import SubscriptionService
 
     result = SubscriptionService().get_plan("200")
     assert result.success is True
@@ -37,7 +37,7 @@ def test_update_plan_free_to_premium_to_vip():
 
 
 def test_has_signal_access_free_denied():
-    from telegram.subscription_service import SubscriptionService
+    from platform_layer.telegram.subscription_service import SubscriptionService
 
     service = SubscriptionService()
     service.get_plan("203")  # creates FREE subscription
@@ -45,7 +45,7 @@ def test_has_signal_access_free_denied():
 
 
 def test_has_signal_access_premium_and_vip_allowed():
-    from telegram.subscription_service import SubscriptionService
+    from platform_layer.telegram.subscription_service import SubscriptionService
     from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     service = SubscriptionService()
@@ -60,7 +60,7 @@ def test_has_signal_access_premium_and_vip_allowed():
 
 
 def test_has_signal_access_unknown_plan_fails_safe_deny():
-    from telegram.subscription_service import SubscriptionService
+    from platform_layer.telegram.subscription_service import SubscriptionService
     from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     service = SubscriptionService()
@@ -72,7 +72,7 @@ def test_has_signal_access_unknown_plan_fails_safe_deny():
 
 def test_upgrade_request_never_changes_plan():
     """Phase 42/44 foundation: /upgrade must not actually change the plan (no payment gateway)."""
-    from telegram.subscription_service import SubscriptionService
+    from platform_layer.telegram.subscription_service import SubscriptionService
 
     service = SubscriptionService()
     service.get_plan("206")

@@ -11,12 +11,12 @@ before any design decision is made.
 
 Two cooperating maps, both in the Telegram product layer:
 
-- **Main tier** — `telegram/keyboards.py`'s `NAVIGATION_MAP`: six
+- **Main tier** — `platform_layer/telegram/keyboards.py`'s `NAVIGATION_MAP`: six
   USER-tier destinations (Home/Profile/Signals/Subscription/Settings/
   Help), ADMIN adds "Admin", OWNER adds "Owner" — a fixed superset per
-  tier, built from `_REPLY_LABEL_KEYS` (command → `translation/ui_catalog.py`
+  tier, built from `_REPLY_LABEL_KEYS` (command → `media_layer/translation/ui_catalog.py`
   key).
-- **Submenu tier** — `telegram/reply_keyboard_manager.py`'s
+- **Submenu tier** — `platform_layer/telegram/reply_keyboard_manager.py`'s
   `_SECTION_BY_COMMAND`/`_SECTION_LABEL_KEYS`: five submenus (Settings/
   Admin/Owner/Profile/Signals), each a fixed list of action buttons
   plus one trailing "◀️ Ortga" (Back) row that unconditionally returns
@@ -53,17 +53,17 @@ tests), navigation-relevant slices of `tests/telegram/test_polling.py`/
 `test_phone_registration.py`/`test_registration_service.py` (per
 `docs/PHASE6_FREEZE.md` Stage 8) — whatever TASK-002B proposes must
 not require any of these to change unless the Director separately
-authorizes touching `telegram/reply_keyboard_manager.py` or
-`telegram/keyboards.py`.
+authorizes touching `platform_layer/telegram/reply_keyboard_manager.py` or
+`platform_layer/telegram/keyboards.py`.
 
 ## 2. What TASK-001 already built (foundation, unwired)
 
-`platforms/navigation_model.py`'s `NavigationNode` (id, label_key,
+`platform_layer/platform_service/navigation_model.py`'s `NavigationNode` (id, label_key,
 permission, platforms, children) — a static, platform-agnostic tree
 *description*. It is not a state machine, has no label-resolution
 logic, no per-user "current position" concept, and is not populated
 with GoldBot's real menu tree yet (`docs/PLATFORM_FOUNDATION.md`'s own
-"Known Limitations" already says so). `platforms/menu_registry.py`'s
+"Known Limitations" already says so). `platform_layer/platform_service/menu_registry.py`'s
 `MenuDefinition`/`MenuRegistry` is the adjacent, also-unpopulated
 registry for the same real tree.
 
@@ -98,7 +98,7 @@ changes where state lives and who can read/write it — a real
 architectural choice, not a detail.
 
 **d. Permission resolution.** `NavigationNode.permission` is a plain
-string matching `telegram/permissions.py`'s `PermissionLevel` values
+string matching `platform_layer/telegram/permissions.py`'s `PermissionLevel` values
 "by convention," not by import (confirmed in the model's own
 docstring — `platforms/` has zero dependency on `telegram/`). Today,
 tier resolution happens once, inside the Telegram process
@@ -115,13 +115,13 @@ treats it as a client-specific pre-check that runs *before* consulting
 Navigation is undecided.
 
 **f. Localization already generalizes cleanly.** `label_key` already
-follows the `translation/ui_catalog.py` convention — no gap here, both
+follows the `media_layer/translation/ui_catalog.py` convention — no gap here, both
 existing Telegram maps and the new foundation model agree on this
 point.
 
 ## 4. A named risk: designing for platforms that don't exist yet
 
-Only Telegram Bot is `LIVE` (`platforms/platform_registry.py`,
+Only Telegram Bot is `LIVE` (`platform_layer/platform_service/platform_registry.py`,
 TASK-001); Telegram Mini App, Android, iOS, and Desktop are all
 `NOT_STARTED` — zero code, zero UI framework chosen, zero constraints
 known. A "universal" architecture designed against four platforms with
@@ -150,8 +150,8 @@ none of which have a chosen tech stack yet?
 
 ## Constraints TASK-002B must not violate
 
-- No change to `telegram/reply_keyboard_manager.py`'s or
-  `telegram/keyboards.py`'s live behavior without a separate, explicit
+- No change to `platform_layer/telegram/reply_keyboard_manager.py`'s or
+  `platform_layer/telegram/keyboards.py`'s live behavior without a separate, explicit
   Director decision — the Phase 6 Freeze stands.
 - No Reply Menu layout change (Director's UI Stability Principle).
 - Stays foundation-only unless the Director explicitly authorizes live
@@ -168,6 +168,6 @@ none of which have a chosen tech stack yet?
   system in full.
 - `docs/PHASE6_FREEZE.md` — the freeze this analysis treats as a hard
   constraint.
-- `docs/PLATFORM_FOUNDATION.md` — `platforms/navigation_model.py`'s
+- `docs/PLATFORM_FOUNDATION.md` — `platform_layer/platform_service/navigation_model.py`'s
   own known limitations, restated here in more detail.
 - `communication/task_queue/TASK-002A.md` — this task's own record.

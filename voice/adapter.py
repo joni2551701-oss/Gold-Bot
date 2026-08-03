@@ -6,7 +6,7 @@ Broadcast, Conversation).
 Four pure functions, each reading one upstream package's own
 already-public fields into a `VoiceRequest` via `VoiceManager` --
 never touching any upstream engine's internal state. Mirrors
-`media/media_adapter.py`'s `content_result_to_media_asset()` shape
+`media_layer/content_manager/media_adapter.py`'s `content_result_to_media_asset()` shape
 exactly, applied to three more upstream types this phase.
 
 Per the Intelligence Dependency Principle (Director Policy,
@@ -22,15 +22,15 @@ dependency still flows one direction only.
 
 `ContentResult` has no unique id field (Phase 61.5, LOCKed) -- its own
 `content_type` string is the closest stable reference it exposes, same
-choice `media/media_adapter.py` already made for `MediaAsset.content_id`.
+choice `media_layer/content_manager/media_adapter.py` already made for `MediaAsset.content_id`.
 """
 
 from typing import Optional
 
 from ai.content.content_schema import ContentResult
 from ai.session.conversation_state import ConversationTurn
-from broadcast.models import BroadcastAsset, BroadcastStatus
-from media.models import MediaAsset, MediaAssetStatus
+from media_layer.telegram_broadcast.models import BroadcastAsset, BroadcastStatus
+from media_layer.content_manager.models import MediaAsset, MediaAssetStatus
 from voice.manager import VoiceManager
 from voice.models import VoiceProviderType, VoiceRequest, VoiceSettings
 

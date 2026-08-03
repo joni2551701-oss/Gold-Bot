@@ -40,7 +40,7 @@ Owned by `database_layer/user_repository/admin_repository.py`.
 
 OWNER is **not** stored here — it is derived purely from the
 `TELEGRAM_OWNER_ID` environment variable at read time
-(`telegram/permissions.py`).
+(`platform_layer/telegram/permissions.py`).
 
 ## `signals`
 

@@ -113,7 +113,7 @@ def test_gold_profile_exists_and_uses_real_codebase_values():
     """
     GOLD_ASSET.symbol must match the exact string this codebase
     already runs (main.py's TradingPipeline(symbol="XAUUSD"),
-    telegram/signal_service.py's DEFAULT_SYMBOL) -- not a placeholder.
+    platform_layer/telegram/signal_service.py's DEFAULT_SYMBOL) -- not a placeholder.
     """
     assert GOLD_ASSET.symbol == "XAUUSD"
     assert GOLD_ASSET.name == "Gold"

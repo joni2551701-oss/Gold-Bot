@@ -107,7 +107,7 @@ Platform / Telegram / UI FORBIDDEN.
 | Core → Data Layer (ALLOWED) | ✅ present, correct | `context/*` and `core/pipeline.py` import `data/` |
 | Core → Platform | ✅ none | zero imports |
 | Core → UI | ✅ none | zero imports |
-| **Core → Telegram (FORBIDDEN)** | ⚠ **PRESENT** | `core/pipeline.py` imports `telegram.signal_formatter.SignalFormatter` + `telegram.notifier.Notifier` (the pipeline's delivery-boundary wiring); `monitoring/` imports `telegram.admin_service.AdminService` in 7 files (system/decision/risk/error/signal/performance/resource monitors) |
+| **Core → Telegram (FORBIDDEN)** | ⚠ **PRESENT** | `core/pipeline.py` imports `platform_layer.telegram.signal_formatter.SignalFormatter` + `platform_layer.telegram.notifier.Notifier` (the pipeline's delivery-boundary wiring); `monitoring/` imports `platform_layer.telegram.admin_service.AdminService` in 7 files (system/decision/risk/error/signal/performance/resource monitors) |
 | **Core → Database (persistence)** | ⚠ **PRESENT** | `core/pipeline.py` (SignalRepository/SignalRecord), `core_layer/emergency/emergency_manager.py`, and `monitoring/*` write/read the DB |
 | Core → AI (type-only) | ⚠ present, documented | `decision_layer/decision_engine/models.py` imports `ai.ai_analyzer.AIAnalysisResult` — a TYPE only (Constitution Article 1/3; `IMPORT_RULES.md`); the Decision Engine reads the AI's result value, never calls the AI layer |
 

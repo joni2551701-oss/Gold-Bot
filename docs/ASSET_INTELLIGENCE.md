@@ -57,7 +57,7 @@ asset/market-type/instrument constant, to reuse rather than invent:
 | Found | Location | Reused as |
 |---|---|---|
 | `symbol="XAUUSD"` | `main.py`'s `TradingPipeline(...)` | `GOLD_ASSET.symbol` |
-| `DEFAULT_SYMBOL = "XAUUSD"` | `telegram/signal_service.py` | confirms `"XAUUSD"` is the canonical value across the codebase |
+| `DEFAULT_SYMBOL = "XAUUSD"` | `platform_layer/telegram/signal_service.py` | confirms `"XAUUSD"` is the canonical value across the codebase |
 | `_SUPPORTED_ASSETS = ["XAUUSD"]` | `strategies/lifecycle/strategy_registry.py` (Phase A11, module-private) | confirms the same value again; not imported (private, and `assets/` deliberately has no dependency on `strategies/`) |
 | `_format_symbol()`'s 6-char split (`"XAUUSD"` → `"XAU/USD"`) | `data_layer/providers/twelve_data_client.py` | confirms `XAU`/`USD` is the correct base/quote split for this ticker |
 
@@ -65,7 +65,7 @@ No existing asset/market-type registry, `AssetType`-equivalent enum,
 or per-asset metadata model was found anywhere — `execution/` and
 `risk/` have zero symbol/asset/currency references at all;
 `telegram/`'s only related string is a display literal
-(`"🟡 GOLD SIGNAL"` in `telegram/signal_formatter.py`), not a market-
+(`"🟡 GOLD SIGNAL"` in `platform_layer/telegram/signal_formatter.py`), not a market-
 type constant.
 
 ## Model

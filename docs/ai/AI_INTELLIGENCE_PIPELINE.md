@@ -68,7 +68,7 @@ never another layer's own dataclass object (Rule 4).
   and `ContentEngine.generate()` (the two real `AIService.ask()`-calling
   paths in this pipeline) are never called. `test_intelligence_runtime.py`'s
   own structural test enforces this.
-- Not wired into `telegram/command_router.py`, `core/pipeline.py`, or
+- Not wired into `platform_layer/telegram/command_router.py`, `core/pipeline.py`, or
   any Owner command — foundation only, callable standalone.
 - Not the same thing as `ai/runtime/ai_service.py`'s `AIService`/
   `RuntimeManager` — that Runtime survives *one provider call* (retry,

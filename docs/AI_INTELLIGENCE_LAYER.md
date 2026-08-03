@@ -200,8 +200,8 @@ chain entirely): zero imports of `decision/`/`risk/`/`execution/`/
 `ai/conversation/`, `ai/explanation/`, `ai/memory/memory_runtime.py`,
 `ai/audit/trace.py`, and `knowledge/` are not called from
 `core/pipeline.py`, any live Telegram handler, or
-`telegram/command_router.py` — foundation only, same posture as every
-prior Phase 61.x module. `telegram/command_router.py`'s
+`platform_layer/telegram/command_router.py` — foundation only, same posture as every
+prior Phase 61.x module. `platform_layer/telegram/command_router.py`'s
 `_parse_command()` still requires a leading `/`; no free-text/
 conversational handling exists anywhere in `telegram/` (confirmed by
 TASK 1's own audit).

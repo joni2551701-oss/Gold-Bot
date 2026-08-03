@@ -7,7 +7,7 @@ and how it is governed (health policy). The manifest (amendment 6) makes
 Service Discovery and future Platform integration declarative.
 
 Foundation Reuse Audit (Constitution Art. 11): no existing model describes
-a registrable Core service. `platforms/platform_model.py` /
+a registrable Core service. `platform_layer/platform_service/platform_model.py` /
 `capability_model.py` describe *platforms* (Telegram/Web/Mobile) and their
 UI capabilities -- the client side -- not a Core service contract. So a new
 model is created.

@@ -2,9 +2,9 @@
 AI Layer — AI Access Roles (Phase 61.0: AI Infrastructure Foundation,
 TASK 6).
 
-`AIRole` is named distinctly from `telegram/owner/owner_roles.py`'s
+`AIRole` is named distinctly from `platform_layer/telegram/owner/owner_roles.py`'s
 `OwnerRole` (OWNER/SUPER_ADMIN/ADMIN/VIEWER, an admin-console
-hierarchy) and `telegram/permissions.py`'s `PermissionLevel`
+hierarchy) and `platform_layer/telegram/permissions.py`'s `PermissionLevel`
 (OWNER/ADMIN/USER, the live Telegram command gate) --
 `docs/PHASE61_AI_FOUNDATION_AUDIT.md` TASK 1 found neither already
 carries VIP/PREMIUM/FREE (subscription tiers), so this is a genuinely

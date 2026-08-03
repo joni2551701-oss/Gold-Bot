@@ -145,7 +145,7 @@ consumed through each module's own pre-existing optional parameter.
 Unchanged, orthogonal to this phase (same finding as Phase 61.6's own
 audit).
 
-## `telegram/owner/`
+## `platform_layer/telegram/owner/`
 
 - **`runtime_notifications.RuntimeNotifier`** — exists, subscribes to
   `PROVIDER_FAILED` (circuit-driven)/`PROVIDER_RECOVERED`/
@@ -171,7 +171,7 @@ audit).
 - **`ai/runtime/self_check.py`** — genuinely new (TASK 8): nothing in
   this codebase today runs a single "is everything actually
   reachable" sweep across Provider/Runtime/Validation/Cache/Audit/
-  EventBus/CircuitBreaker. `telegram/owner/dashboard.py`'s
+  EventBus/CircuitBreaker. `platform_layer/telegram/owner/dashboard.py`'s
   `get_doctor_report()` (Phase 61.5 Addendum) is the closest
   precedent (nine independently-wrapped subsystem checks) but is a
   whole-bot check (Database/Telegram/Market Data/...), not AI-runtime-
@@ -184,7 +184,7 @@ audit).
 
 Every change this phase touches is inside `ai/runtime/`,
 `ai/providers/circuit_breaker.py` (already Phase 61.6's own file,
-extended in place — no new file), and `telegram/owner/`. No new
+extended in place — no new file), and `platform_layer/telegram/owner/`. No new
 top-level package. `core/pipeline.py`/`decision/`/`execution/`/
 `risk/`/`strategies/`/`signals/`: zero diff, confirmed at TASK 10.
 `AIRouter.route()`'s own routing logic: zero diff — every integration

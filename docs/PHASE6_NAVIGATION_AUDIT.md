@@ -18,8 +18,8 @@ were not touched — confirmed at the end of this document (Section
 
 GoldBot's Telegram navigation today is three independently-shipped
 layers that already agree on one thing: every one of them ultimately
-calls `telegram.command_router.route_command()`, which calls one of
-`telegram/handlers.py`'s `*_handler()` functions, which returns a
+calls `platform_layer.telegram.command_router.route_command()`, which calls one of
+`platform_layer/telegram/handlers.py`'s `*_handler()` functions, which returns a
 plain string. Nothing in `handlers.py` ever touches a `Message` object
 directly — confirmed by a repo-wide search (zero
 `.answer(`/`.edit_text(`/`.edit_reply_markup(` calls in that file).
@@ -30,11 +30,11 @@ either.
 
 The three shipped layers:
 
-- **Phase 4 — Native Telegram Menu** (`telegram/menu_commands.py`):
+- **Phase 4 — Native Telegram Menu** (`platform_layer/telegram/menu_commands.py`):
   registers `Bot.set_my_commands()` once at startup. A tap just sends
   the command as ordinary text — no special handling needed anywhere
   else.
-- **Phase 5 — Persistent Reply Keyboard** (`telegram/keyboards.py`):
+- **Phase 5 — Persistent Reply Keyboard** (`platform_layer/telegram/keyboards.py`):
   shown once registration reaches `COMPLETE`; tier-aware
   (USER/ADMIN/OWNER), owned end-to-end by `command_router.py`.
 - **Phase 5.1 — Navigation Mapping**: reply-keyboard buttons show
@@ -68,16 +68,16 @@ Every navigation entry point found, with its file and shape:
 
 | Entry point | File | Shape |
 |---|---|---|
-| Native Telegram Menu (`☰`) | `telegram/menu_commands.py` | `Bot.set_my_commands()`, USER/ADMIN/OWNER scopes, registered once at startup (`telegram/polling.py::run_polling()`) |
-| Persistent Reply Keyboard | `telegram/keyboards.py` (`reply_keyboard`/`admin_reply_keyboard`/`owner_reply_keyboard`) | `ReplyKeyboardMarkup`, tier-aware, localized labels (Phase 5.1) |
-| Navigation Mapping | `telegram/keyboards.py` (`NAVIGATION_MAP`/`resolve_navigation_command()`) | Stateless dict, label → `/command`, consulted by `command_router.route_command()` |
-| Inline Keyboards | `telegram/keyboards.py` (`language_keyboard`, `risk_keyboard`, `strategy_keyboard`, `timeframe_keyboard`, `settings_keyboard`, `notifications_keyboard`, `admin_panel_keyboard`) | `InlineKeyboardMarkup`, `callback_data` strings |
-| `/start` | `telegram/handlers.py::start_handler` + `command_router._start_keyboard()` | Registration Wizard entry point; keyboard depends on `registration_step` |
-| `callback_query` | `telegram/callback_router.py::route_callback()` | Single entry point for every inline-keyboard tap; only `lang_*` implemented today |
-| `RouterResult.keyboard` | `telegram/command_router.py` (`RouterResult` dataclass) | The one place any keyboard object (inline, reply, or `ReplyKeyboardRemove`) is attached to a text reply |
-| `ReplyKeyboardRemove` | `telegram/command_router.py::_start_keyboard()` | BANNED-user path only (Phase 5 Decision 3) |
-| `message.answer()` | `telegram/polling.py::_on_message`, `telegram/callback_router.py::_handle_language` (fallback + phone prompt) | Sends a brand-new message |
-| `message.edit_text()` | `telegram/callback_router.py::_handle_language` only | The *only* place any existing code edits a message in place |
+| Native Telegram Menu (`☰`) | `platform_layer/telegram/menu_commands.py` | `Bot.set_my_commands()`, USER/ADMIN/OWNER scopes, registered once at startup (`platform_layer/telegram/polling.py::run_polling()`) |
+| Persistent Reply Keyboard | `platform_layer/telegram/keyboards.py` (`reply_keyboard`/`admin_reply_keyboard`/`owner_reply_keyboard`) | `ReplyKeyboardMarkup`, tier-aware, localized labels (Phase 5.1) |
+| Navigation Mapping | `platform_layer/telegram/keyboards.py` (`NAVIGATION_MAP`/`resolve_navigation_command()`) | Stateless dict, label → `/command`, consulted by `command_router.route_command()` |
+| Inline Keyboards | `platform_layer/telegram/keyboards.py` (`language_keyboard`, `risk_keyboard`, `strategy_keyboard`, `timeframe_keyboard`, `settings_keyboard`, `notifications_keyboard`, `admin_panel_keyboard`) | `InlineKeyboardMarkup`, `callback_data` strings |
+| `/start` | `platform_layer/telegram/handlers.py::start_handler` + `command_router._start_keyboard()` | Registration Wizard entry point; keyboard depends on `registration_step` |
+| `callback_query` | `platform_layer/telegram/callback_router.py::route_callback()` | Single entry point for every inline-keyboard tap; only `lang_*` implemented today |
+| `RouterResult.keyboard` | `platform_layer/telegram/command_router.py` (`RouterResult` dataclass) | The one place any keyboard object (inline, reply, or `ReplyKeyboardRemove`) is attached to a text reply |
+| `ReplyKeyboardRemove` | `platform_layer/telegram/command_router.py::_start_keyboard()` | BANNED-user path only (Phase 5 Decision 3) |
+| `message.answer()` | `platform_layer/telegram/polling.py::_on_message`, `platform_layer/telegram/callback_router.py::_handle_language` (fallback + phone prompt) | Sends a brand-new message |
+| `message.edit_text()` | `platform_layer/telegram/callback_router.py::_handle_language` only | The *only* place any existing code edits a message in place |
 | `message.edit_reply_markup()` | **Not used anywhere in the codebase** | Confirmed absent by repo-wide search — a real gap (see Task 5) |
 
 ---
@@ -119,7 +119,7 @@ Every navigation entry point found, with its file and shape:
 ## Task 4 — Reply Keyboard Audit
 
 - **`reply_keyboard()` / `admin_reply_keyboard()` / `owner_reply_keyboard()`**
-  (`telegram/keyboards.py`): appear the moment `registration_step ==
+  (`platform_layer/telegram/keyboards.py`): appear the moment `registration_step ==
   COMPLETE` — either on a subsequent `/start` (`_start_keyboard()`) or
   immediately on the phone-share message that completes registration
   (`route_contact()`). Owned exclusively by `command_router.py`
@@ -155,7 +155,7 @@ Every navigation entry point found, with its file and shape:
 ## Task 5 — Message Lifecycle Audit
 
 - **Every** `RouterResult` (from `route_command()`, `route_message()`,
-  or `route_contact()`) is delivered via `telegram/polling.py`'s
+  or `route_contact()`) is delivered via `platform_layer/telegram/polling.py`'s
   `_on_message`, which unconditionally calls
   `message.answer(result.text, reply_markup=result.keyboard)` — a
   **brand-new message**, every single time, regardless of command.
@@ -164,7 +164,7 @@ Every navigation entry point found, with its file and shape:
   picker's own prompt message via `callback.message.edit_text()`,
   falling back to a new message if the edit fails (e.g. the message is
   too old to edit).
-- No handler in `telegram/handlers.py` ever touches a `Message` object
+- No handler in `platform_layer/telegram/handlers.py` ever touches a `Message` object
   — confirmed by repo-wide search (zero `.answer(`/`.edit_text(`/
   `.edit_reply_markup(` occurrences in that file, only a docstring
   mention of `ReplyKeyboardRemove` as a concept). This is precisely
@@ -232,7 +232,7 @@ gap is real and is the largest net-new surface area Phase 6 could add
   2. A small Response Delivery layer that decides send-vs-edit per
      call site — today hardcoded (`polling.py` always sends,
      `callback_router` always edits-then-falls-back).
-  Neither touches a single function in `telegram/handlers.py`.
+  Neither touches a single function in `platform_layer/telegram/handlers.py`.
 
 ---
 
@@ -272,7 +272,7 @@ Reply Keyboard / Native Menu / Inline Keyboard tap
     |
     v
 Navigation Resolver
-    (existing: resolve_navigation_command() in telegram/keyboards.py,
+    (existing: resolve_navigation_command() in platform_layer/telegram/keyboards.py,
      consulted by command_router.route_command() -- Phase 5.1)
     (proposed extension: same resolver pattern consulted from
      callback_router.route_callback() for callback_data)
@@ -311,7 +311,7 @@ Phase 4/5/5.1.
 | Navigation Resolver (Reply Keyboard/Menu) | Yes (`resolve_navigation_command`) | Yes, as-is | No | No | No |
 | Navigation Resolver (Inline callback_data) | Partially (`callback_router._RECOGNIZED_PREFIXES`) | Yes, extend the same pattern | Small extension | No | No |
 | `command_router.route_command()` | Yes | Yes, as-is | No | No | No |
-| `telegram/handlers.py::*_handler()` | Yes | Yes, as-is | No | No | No |
+| `platform_layer/telegram/handlers.py::*_handler()` | Yes | Yes, as-is | No | No | No |
 | `callback_router.route_callback()` | Yes | Yes, extend (fill stubbed prefixes) | No | No | No |
 | Response Delivery Layer (send vs. edit) | **No** | N/A | **Yes — new, thin wrapper** | No | No |
 | Back/Cancel/Home navigation | **No** | N/A | New, small | No | No |
@@ -334,9 +334,9 @@ but small and contingent on the Director's Open-Question answers.
 | Settings | **Medium-High** | This is where the real new behavior (wiring dead `settings_*` callbacks) lands; it's also the exact gap already flagged in the Phase 4 Freeze and roadmapped as Phase 5.x — Settings Callback Completion. Phase 6 should coordinate with, not duplicate, that roadmap item |
 | Subscriptions | **Low** | `subscription_handler` has no keyboard today; unaffected by any proposed component |
 | Signal Layer | **Low** | `signal_handler`/`history_handler` have no keyboard; Trading Core's own signal delivery (`notifier.py`, `signal_formatter.py`) is a separate, forbidden-scope system, untouched |
-| Localization | **Low** | `translation.ui_catalog.t()` and its `menu.*`/`keyboard.*` key families already cover every reused label; at most new keys (e.g. `menu.back`) get added, following the exact `menu.admin`/`menu.owner` precedent from Phase 5.1 |
+| Localization | **Low** | `media_layer.translation.ui_catalog.t()` and its `menu.*`/`keyboard.*` key families already cover every reused label; at most new keys (e.g. `menu.back`) get added, following the exact `menu.admin`/`menu.owner` precedent from Phase 5.1 |
 | Permission Layer | **Low** | `get_permission_level()`/`_required_level()` are read-only lookups every proposed component calls through unchanged |
-| Trading Core | **None** | Zero references to `core/`, `decision/`, `execution/`, `risk/`, `signals/`, `strategies/`, `context/`, `ai/`, or database business logic found anywhere in this audit's inspection of `telegram/keyboards.py`, `command_router.py`, or `callback_router.py` |
+| Trading Core | **None** | Zero references to `core/`, `decision/`, `execution/`, `risk/`, `signals/`, `strategies/`, `context/`, `ai/`, or database business logic found anywhere in this audit's inspection of `platform_layer/telegram/keyboards.py`, `command_router.py`, or `callback_router.py` |
 
 ---
 
@@ -488,7 +488,7 @@ Phase 6.1/6.2 have one unambiguous source of truth to build against.
 
 2. **Handler architecture**: No handler is rewritten. Only
    `command_router.py`, `callback_router.py`, and a new Navigation
-   Layer are extended. `telegram/handlers.py` remains the single
+   Layer are extended. `platform_layer/telegram/handlers.py` remains the single
    source of business logic. Matches this audit's Task 7/10 findings
    exactly — confirmed, not amended.
 

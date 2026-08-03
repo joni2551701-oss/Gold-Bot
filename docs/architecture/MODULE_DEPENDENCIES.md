@@ -10,9 +10,9 @@ dependency structure, not an aspirational one.
 ```
         Telegram
            |
-     Command Layer          (telegram/command_router.py, commands.py, permissions.py)
+     Command Layer          (platform_layer/telegram/command_router.py, commands.py, permissions.py)
            |
-     Service Layer           (telegram/*_service.py, telegram/owner/*.py)
+     Service Layer           (telegram/*_service.py, platform_layer/telegram/owner/*.py)
            |
       AI / Product Layer      (ai/session, ai/conversation, ai/prompts)
            |
@@ -46,10 +46,10 @@ above; it depends on nothing in this diagram.
 
 | Module | Depends on |
 |---|---|
-| `telegram/handlers.py` | `telegram/*_service.py` only — never `database.*` or `core.pipeline` directly |
-| `telegram/command_router.py` | `telegram/commands.py`, `telegram/permissions.py`, `telegram/handlers.py` |
+| `platform_layer/telegram/handlers.py` | `telegram/*_service.py` only — never `database.*` or `core.pipeline` directly |
+| `platform_layer/telegram/command_router.py` | `platform_layer/telegram/commands.py`, `platform_layer/telegram/permissions.py`, `platform_layer/telegram/handlers.py` |
 | `telegram/*_service.py` (admin/feedback/notification/signal/subscription/user) | `database/*_repository.py` |
-| `telegram/owner/*.py` (19 files: ai/backtest/control/dashboard/dataset/emergency/execution/feature/fundamental/learning/performance/provider/replay/report/runtime/security/status/system/validation) | corresponding service/repository layer for their domain; `runtime_commands.py` additionally depends on `ai/runtime/` (`AIService`, `RuntimeManager`, `self_check`) |
+| `platform_layer/telegram/owner/*.py` (19 files: ai/backtest/control/dashboard/dataset/emergency/execution/feature/fundamental/learning/performance/provider/replay/report/runtime/security/status/system/validation) | corresponding service/repository layer for their domain; `runtime_commands.py` additionally depends on `ai/runtime/` (`AIService`, `RuntimeManager`, `self_check`) |
 
 ### Database layer
 
@@ -103,7 +103,7 @@ points that re-export them.
 **top-level** package (`knowledge/`, a sibling of `ai/`, not
 `ai/knowledge/`), and there is no dedicated `ai/security/` folder —
 AI-relevant safety logic lives in `ai/validation/safety.py`, and
-Telegram-side security lives in `telegram/owner/security.py`. This
+Telegram-side security lives in `platform_layer/telegram/owner/security.py`. This
 document records the real structure rather than the assumed one, per
 Constitution Article 7 (Reuse Principle — audit before asserting).
 `media/` is the same shape — a separate **top-level** package, a

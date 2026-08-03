@@ -41,14 +41,14 @@ foundation:
 - `database_layer/audit_log/monitoring_models.py` + `database_layer/audit_log/monitoring_repository.py`
   — two new append-only tables (`monitoring_error_events`,
   `monitoring_decision_pipeline`).
-- `telegram/owner/monitoring_commands.py` — `get_status_report()`,
+- `platform_layer/telegram/owner/monitoring_commands.py` — `get_status_report()`,
   `get_health_report()` (reuses `system_commands.get_system_health()`),
   `get_market_report()`, `get_signals_report()`, `get_errors_report()`,
   `get_pipeline_report()`, `get_daily_report()`.
-- `telegram/handlers.py` + `telegram/commands.py` — **seven commands
+- `platform_layer/telegram/handlers.py` + `platform_layer/telegram/commands.py` — **seven commands
   already registered in `OWNER_COMMANDS` and live-wired**: `owner_status`,
   `health`, `market`, `signals`, `errors`, `pipeline`, `report`.
-- `tests/monitoring/` + `tests/telegram/owner/test_owner_commands.py` —
+- `tests/monitoring/` + `tests/platform_layer/telegram/owner/test_owner_commands.py` —
   126 tests at close (182 pass today in `tests/monitoring/` alone,
   including later additions from the Owner Snapshot Reporter work).
 - `docs/PHASE_CORE_MONITORING_AUDIT.md`, `docs/PHASE_CORE_MONITORING_FREEZE.md`,
@@ -63,14 +63,14 @@ built end-to-end, already in production wiring.
 
 | Brief's TASK 9 command | Already exists? | Existing owner |
 |---|---|---|
-| `/health` | **Yes** | `telegram/owner/monitoring_commands.py::get_health_report()`, live |
-| `/status` | **Partially** — `/status` (general, "Bot status") already exists as a *non-owner* command (`telegram/commands.py:37`); the owner-scoped equivalent is `/owner_status` | Collision: this brief's `/status` would need `owner_status`'s slot, not a bare `/status` |
+| `/health` | **Yes** | `platform_layer/telegram/owner/monitoring_commands.py::get_health_report()`, live |
+| `/status` | **Partially** — `/status` (general, "Bot status") already exists as a *non-owner* command (`platform_layer/telegram/commands.py:37`); the owner-scoped equivalent is `/owner_status` | Collision: this brief's `/status` would need `owner_status`'s slot, not a bare `/status` |
 | `/errors` | **Yes** | `get_errors_report()`, live |
 | `/performance` | **No** | Genuine gap — `core_layer/health_monitor/performance.py`'s `PerformanceTracker` is a *different* concern (computed win-rate/strategy breakdown from closed trades), not a raw counter collector |
 | `/market` | **Yes** | `get_market_report()`, live |
 | `/signals` | **Yes** | `get_signals_report()`, live |
 | `/decision` | **Served by `/pipeline`** | `get_pipeline_report()` already shows the decision pipeline trace under a different command name |
-| `/runtime` | **Yes, but a different concern** | `telegram/owner/runtime_commands.py`'s `/runtime` (Phase 61.6/61.7) reports **AI Runtime lifecycle** (provider circuit breaker/health) — not system process uptime. Reusing this name for Phase B.0's own "runtime" (process uptime) would collide in meaning, not just in name. |
+| `/runtime` | **Yes, but a different concern** | `platform_layer/telegram/owner/runtime_commands.py`'s `/runtime` (Phase 61.6/61.7) reports **AI Runtime lifecycle** (provider circuit breaker/health) — not system process uptime. Reusing this name for Phase B.0's own "runtime" (process uptime) would collide in meaning, not just in name. |
 
 ## Genuine gaps — what does not exist yet
 
@@ -112,8 +112,8 @@ Cross-referencing this brief's TASK 2–8 against the existing
    **Genuine gap.**
 6. **`OWNER_IDS` (Rule 4)** — confirmed via grep: no `OWNER_IDS` exists
    anywhere. The only owner-identity source is the existing, singular
-   `Secrets.TELEGRAM_OWNER_ID`, which the live `telegram.permissions`/
-   `telegram.command_router` gate already enforces on every
+   `Secrets.TELEGRAM_OWNER_ID`, which the live `platform_layer.telegram.permissions`/
+   `platform_layer.telegram.command_router` gate already enforces on every
    `OWNER_COMMANDS` entry (confirmed by the prior phase's own audit).
    Introducing a second, parallel `OWNER_IDS` (plural) mechanism would
    create two competing owner-identity sources for the same bot — the
@@ -164,7 +164,7 @@ name collisions (`/health`, `/market`, `/signals`, `/errors`,
 `/status`, `/runtime`).
 
 **Recommendation carried into this phase's implementation:** extend
-the existing `monitoring/` package and `telegram/owner/monitoring_commands.py`
+the existing `monitoring/` package and `platform_layer/telegram/owner/monitoring_commands.py`
 in place with only the six genuine gaps identified above (system
 resource metrics, OK/WARNING/CRITICAL classification, a pure
 performance counter collector, per-stage pipeline timing, the

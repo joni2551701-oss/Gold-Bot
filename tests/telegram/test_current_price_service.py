@@ -1,5 +1,5 @@
 """
-Tests for telegram/current_price_service.py + price_handler + wiring
+Tests for platform_layer/telegram/current_price_service.py + price_handler + wiring
 (TASK-CORE-004 Phase 1). Read-only, informational; no signal/risk/AI path.
 """
 
@@ -7,10 +7,10 @@ import asyncio
 from datetime import datetime, timezone
 
 from data_layer.live_data.current_price_provider import CurrentPrice
-from telegram.current_price_service import CurrentPriceService, DEFAULT_ASSET
-from telegram import commands as tg_commands
-from telegram import reply_keyboard_manager as rkm
-from translation.ui_catalog import t
+from platform_layer.telegram.current_price_service import CurrentPriceService, DEFAULT_ASSET
+from platform_layer.telegram import commands as tg_commands
+from platform_layer.telegram import reply_keyboard_manager as rkm
+from media_layer.translation.ui_catalog import t
 
 BASE = datetime(2026, 1, 1, 14, 52, 8, tzinfo=timezone.utc)
 
@@ -79,7 +79,7 @@ def test_output_contains_no_secret_like_fields():
 # ---------------- handler ----------------
 
 def test_price_handler_returns_string_never_raises():
-    from telegram.handlers import price_handler
+    from platform_layer.telegram.handlers import price_handler
     # No stored price in a fresh test env -> empty-state string; must not raise.
     out = asyncio.run(price_handler("999999"))
     assert isinstance(out, str) and out

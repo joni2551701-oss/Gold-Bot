@@ -155,4 +155,4 @@ before/after graph.
 | pytest | **4609 passed** |
 | python main.py smoke | OK, baseline log shape |
 | Trading Core diff (`core/decision/risk/execution/strategies/signals/context/data/lifecycle/database`) | **zero** |
-| Files changed | 46 (all under `ai/`, `broadcast/`, `telegram/owner/`, `tests/`) |
+| Files changed | 46 (all under `ai/`, `broadcast/`, `platform_layer/telegram/owner/`, `tests/`) |

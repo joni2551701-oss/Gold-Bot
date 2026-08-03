@@ -91,16 +91,16 @@ oversight.
 
 ### `telegram/`
 
-`telegram/owner/*.py` (18 modules) are uniformly "real function, not
+`platform_layer/telegram/owner/*.py` (18 modules) are uniformly "real function, not
 live-wired": every one composes already-tested logic and returns a
 `ProviderCommandResult`, and none is imported by
-`telegram/command_router.py`, `telegram/handlers.py`, or
-`telegram/commands.py` (confirmed by the same posture disclosed in
+`platform_layer/telegram/command_router.py`, `platform_layer/telegram/handlers.py`, or
+`platform_layer/telegram/commands.py` (confirmed by the same posture disclosed in
 each module's own docstring, e.g. `emergency_commands.py`: "NOT
-registered into telegram/commands.py, NOT called from
-telegram/command_router.py or telegram/handlers.py").
+registered into platform_layer/telegram/commands.py, NOT called from
+platform_layer/telegram/command_router.py or platform_layer/telegram/handlers.py").
 
-`telegram/owner/dashboard.py`'s `get_dashboard()` today composes
+`platform_layer/telegram/owner/dashboard.py`'s `get_dashboard()` today composes
 exactly three sections: `status_commands.get_system_status()`,
 `control_commands.get_feature_states()`,
 `provider_commands.list_providers()`. It does not yet surface
@@ -111,12 +111,12 @@ metrics.
 `sections.append(...)` calls that compose
 `emergency_commands.get_emergency_status()`,
 `replay_commands.*`, `learning_commands.*`, `performance_commands.*`
-(TASK 6) stays entirely inside `telegram/owner/`, the same pattern
+(TASK 6) stays entirely inside `platform_layer/telegram/owner/`, the same pattern
 already used for its three existing sections. No `handlers.py`/
 `command_router.py` touch needed or proposed.
 
 **Unsafe Points**: registering any of this into
-`telegram/command_router.py`/`telegram/handlers.py` — out of scope,
+`platform_layer/telegram/command_router.py`/`platform_layer/telegram/handlers.py` — out of scope,
 not requested by TASK 6 ("Telegram handlerga ulanmaydi").
 
 ---
@@ -126,7 +126,7 @@ not requested by TASK 6 ("Telegram handlerga ulanmaydi").
 Fully built (Phase 59.7): `status()`/`get_feature_state()` are
 read-only cache reads; `enable()`/`disable()`/`toggle()` are the only
 mutating methods. **Zero callers outside its own tests,
-`telegram/owner/control_commands.py`/`feature_commands.py`, and
+`platform_layer/telegram/owner/control_commands.py`/`feature_commands.py`, and
 `configuration/runtime_api.py`** — confirmed by grep for
 `RuntimeFeatureManager()`. `core/pipeline.py` and `main.py` never
 construct one.
@@ -151,7 +151,7 @@ Questions" below.
 
 Fully built (Phase 59.9): `get_status()` is read-only.
 **Zero callers outside its own tests and
-`telegram/owner/emergency_commands.py`** — confirmed by grep for
+`platform_layer/telegram/owner/emergency_commands.py`** — confirmed by grep for
 `EmergencyManager()`. Not read by `core/pipeline.py`, `decision/`,
 `risk/`, or `execution/` today (confirmed by its own docstring).
 
@@ -254,9 +254,9 @@ assumed.
 | `core/pipeline.py` | `main.py` (`GoldBot.run()`) | Yes — stage-boundary guard only |
 | `decision/`, `risk/` | `core/pipeline.py`, `backtesting_layer/backtest_engine/backtest_engine.py` | No — out of scope, none proposed |
 | `execution_layer/execution_engine/execution_engine.py` | none | No — stays inert, separate approval required |
-| `telegram/owner/*.py` | tests only (not wired to handlers) | Yes — `dashboard.py` composition only |
-| `RuntimeFeatureManager` | tests, `telegram/owner/*`, `runtime_api.py` | Yes, but needs a feature-name mapping decision |
-| `EmergencyManager` | tests, `telegram/owner/emergency_commands.py` | Yes, but needs a 5-state mapping decision |
+| `platform_layer/telegram/owner/*.py` | tests only (not wired to handlers) | Yes — `dashboard.py` composition only |
+| `RuntimeFeatureManager` | tests, `platform_layer/telegram/owner/*`, `runtime_api.py` | Yes, but needs a feature-name mapping decision |
+| `EmergencyManager` | tests, `platform_layer/telegram/owner/emergency_commands.py` | Yes, but needs a 5-state mapping decision |
 | `LearningRepository.record()` | `trade_event_bridge.bridge_closed_trade()` only | Yes, but only inside `BacktestEngine` — no live producer exists |
 | `IDataFeed` (`ReplayDataFeed`) | `BacktestEngine` | Already correct |
 | `IDataFeed` (`LiveDataFeed`) | its own test only | Needs a `core/pipeline.py` call-site swap, or a scope decision |

@@ -12,8 +12,8 @@ import dataclasses
 
 import pytest
 
-from platforms.platform_model import PlatformDefinition, PlatformName, PlatformStatus
-from platforms.platform_registry import (
+from platform_layer.platform_service.platform_model import PlatformDefinition, PlatformName, PlatformStatus
+from platform_layer.platform_service.platform_registry import (
     PlatformRegistry,
     DuplicatePlatformError,
     DEFAULT_PLATFORMS,

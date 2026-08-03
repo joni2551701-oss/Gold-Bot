@@ -1,10 +1,10 @@
-"""V2 Phase 4 (Persistent Menu, Stage 1) -- telegram/menu_commands.py."""
+"""V2 Phase 4 (Persistent Menu, Stage 1) -- platform_layer/telegram/menu_commands.py."""
 
 import asyncio
 
 from aiogram.types import BotCommandScopeChat, BotCommandScopeDefault
 
-from telegram.menu_commands import (
+from platform_layer.telegram.menu_commands import (
     _admin_menu,
     _owner_menu,
     _user_menu,

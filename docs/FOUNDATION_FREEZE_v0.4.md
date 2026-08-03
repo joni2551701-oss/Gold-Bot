@@ -36,7 +36,7 @@ TASK 2 dependency audit re-verified this).
 | Phase 59 (Real Market Validation Foundation) | `VALIDATION_MODE`, `MarketDataSnapshot`, `lifecycle/` (`PaperTrade`), `analytics/` (`SignalPerformance`, strategy report), failure-analysis journal. |
 | Phase 59.1 | Provider abstraction foundation (`data_layer/providers/`), TwelveData + MT5 stub. |
 | Phase 59.2 | TradingView research, Binance/FRED provider stubs, `ProviderRegistry`, provider health monitoring. |
-| Phase 59.3 | Provider normalization, raw market storage, `telegram/owner/` foundation, `context_layer/fundamental/fundamental_context.py`. |
+| Phase 59.3 | Provider normalization, raw market storage, `platform_layer/telegram/owner/` foundation, `context_layer/fundamental/fundamental_context.py`. |
 | Phase 59.4 | Paper Trade Monitor wired, strategy/context performance reports, Owner Report foundation. |
 | Phase 59.5 | Historical data collector, sync state, dataset/gap reports, provider comparison. |
 | Phase 59.6 | `core_layer/system_state/system_state.py`, audit log, owner roles, Feature Registry, dependency validator, config snapshots. |
@@ -70,7 +70,7 @@ its own phase, per CLAUDE.md's Trading Safety rules.
 - **v0.7 Cloud** — cloud-hosted deployment and scaling.
 - **v0.8 Mini App** — Telegram Mini App interface.
 - **v0.9 Multi-Broker** — Bitget, BingX, MEXC (optional) providers;
-  Admin Panel live commands (today's 18 `telegram/owner/*.py` modules
+  Admin Panel live commands (today's 18 `platform_layer/telegram/owner/*.py` modules
   registered into `command_router.py`).
 - **v1.0 Senior AI Trading Ecosystem** — AI Avatar Layer, Voice
   Interface, Hologram Display Layer. A new Presentation Layer only;

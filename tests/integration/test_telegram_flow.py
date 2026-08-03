@@ -11,7 +11,7 @@ tests/test_admin.py and tests/test_feedback.py -- not duplicated here.)
 
 import asyncio
 
-from telegram.command_router import route_command, PERMISSION_DENIED_TEXT
+from platform_layer.telegram.command_router import route_command, PERMISSION_DENIED_TEXT
 
 USER_ID = "8101"
 ADMIN_ID = "8102"
@@ -100,7 +100,7 @@ def test_broadcast_command_denied_for_plain_user():
 
 
 def test_unknown_command_returns_safe_text():
-    from telegram.command_router import UNKNOWN_COMMAND_TEXT
+    from platform_layer.telegram.command_router import UNKNOWN_COMMAND_TEXT
 
     result = _run(route_command("/this_is_not_a_real_command", telegram_id=USER_ID))
     assert result.text == UNKNOWN_COMMAND_TEXT

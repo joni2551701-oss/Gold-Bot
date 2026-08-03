@@ -1,7 +1,7 @@
 """
 Telegram Layer -- callback_query router tests (V1 Language Callback
 Fix; UX behavior extended in V1.1 Language UX Polish).
-telegram/callback_router.py translates a callback_data string into the
+platform_layer/telegram/callback_router.py translates a callback_data string into the
 same handlers.*_handler() call (or, for language, handlers.
 language_status()) its equivalent text command already uses -- these
 tests verify that translation, the always-call-answer() contract, the
@@ -12,10 +12,10 @@ callback_data never raises and never fabricates behavior.
 
 import asyncio
 
-from telegram.callback_router import route_callback
-from telegram.handlers import LanguageUpdateResult
+from platform_layer.telegram.callback_router import route_callback
+from platform_layer.telegram.handlers import LanguageUpdateResult
 from database_layer.user_repository.user_repository import UserRepository
-from telegram.registration_service import RegistrationStep
+from platform_layer.telegram.registration_service import RegistrationStep
 
 
 class FakeUser:
@@ -58,7 +58,7 @@ class FakeCallback:
 
 
 def _patch_language_status(monkeypatch, fake):
-    import telegram.callback_router as router_module
+    import platform_layer.telegram.callback_router as router_module
 
     monkeypatch.setattr(router_module.handlers, "language_status", fake)
 
@@ -277,7 +277,7 @@ def test_lang_uz_after_registration_complete_does_not_reopen_the_wizard():
 
 
 def _patch_status(monkeypatch, name, fake):
-    import telegram.callback_router as router_module
+    import platform_layer.telegram.callback_router as router_module
 
     monkeypatch.setattr(router_module.handlers, name, fake)
 

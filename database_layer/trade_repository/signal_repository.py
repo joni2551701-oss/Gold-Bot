@@ -120,7 +120,7 @@ class SignalRepository:
             return [dict(row) for row in cursor.fetchall()]
 
     def count_signals_today(self) -> int:
-        """Signals created today (UTC) -- same date('now') convention as UserRepository.count_users_created_today(). Used by telegram/owner/dashboard.py's /owner summary (Phase 61.5)."""
+        """Signals created today (UTC) -- same date('now') convention as UserRepository.count_users_created_today(). Used by platform_layer/telegram/owner/dashboard.py's /owner summary (Phase 61.5)."""
         with self.db as conn:
             cursor = conn.execute("SELECT COUNT(*) as count FROM signals WHERE date(created_at) = date('now')")
             row = cursor.fetchone()

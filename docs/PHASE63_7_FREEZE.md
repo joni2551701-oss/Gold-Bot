@@ -26,26 +26,26 @@ required — no Constitution Article conflict.
 
 ## Built this phase
 
-- `media/media_manager.py`'s `MediaManager` extended with
+- `media_layer/content_manager/media_manager.py`'s `MediaManager` extended with
   `create_asset()`, `validate_asset()`, `prepare_asset()`,
   `get_asset()` — every one deterministic, zero render/upload/publish/
   external-API call. `list_types()`/`descriptor_of()`/`is_enabled()`/
   `set_enabled()` are byte-for-byte unchanged.
-- `media/media_registry.py` extended (Article 9 — LOCKed since Phase
+- `media_layer/content_manager/media_registry.py` extended (Article 9 — LOCKed since Phase
   63.0, additive-only) with `get(media_type)`/`exists(media_type)`.
   `register()` was deliberately not added — the catalog is fixed by
   design, per this module's own LOCKed "no processing logic" posture;
   see `docs/PHASE63_7_AUDIT.md`'s naming resolution. `build_media_registry()`
   unchanged.
-- `media/models.py` — `MediaAssetStatus` (`PENDING`/`READY`/
+- `media_layer/content_manager/models.py` — `MediaAssetStatus` (`PENDING`/`READY`/
   `REJECTED`) and `MediaAsset` (`id`, `content_id`, `media_type`,
   `status`, `title`, `description`, `metadata`, `created_at`).
   `MediaType` (`media_types.py`) was reused as-is — the one genuine
   gap this phase's audit found.
-- `media/media_adapter.py` — `content_result_to_media_asset()` (type-only
+- `media_layer/content_manager/media_adapter.py` — `content_result_to_media_asset()` (type-only
   read of an upstream `ai.content.content_schema.ContentResult`'s own
   already-public fields, never `ContentEngine`'s internal state).
-- `media/media_pipeline.py` — `prepare_media_from_content()`, composing
+- `media_layer/content_manager/media_pipeline.py` — `prepare_media_from_content()`, composing
   the adapter with `MediaManager.prepare_asset()` into the one-call
   flow the brief names (`ContentResult → MediaPreparation → MediaAsset`).
 - `docs/ai/AI_MEDIA.md` — new. `docs/ai/AI_ARCHITECTURE.md`,
@@ -74,7 +74,7 @@ required — no Constitution Article conflict.
 - No real TTS/voice synthesis, image generation, video processing, or
   streaming — TASK 7 explicitly forbade all of it this phase; every
   `MediaType` other than `TEXT` still starts `DISABLED`.
-- No wiring into `telegram/command_router.py`, `translation/`, or
+- No wiring into `platform_layer/telegram/command_router.py`, `translation/`, or
   `broadcast/` — foundation only. `content_result_to_media_asset()`/
   `prepare_media_from_content()` are built and tested standalone.
 - No new `Capability` member and no `ai/router/routing_rules.py`
@@ -123,7 +123,7 @@ required — no Constitution Article conflict.
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
-| Modules | `media/models.py`, `media_adapter.py`, `media_pipeline.py` (3) | `media/media_manager.py`, `media/media_registry.py` (2) | `media/media_types.py` (1, untouched) |
+| Modules | `media_layer/content_manager/models.py`, `media_adapter.py`, `media_pipeline.py` (3) | `media_layer/content_manager/media_manager.py`, `media_layer/content_manager/media_registry.py` (2) | `media_layer/content_manager/media_types.py` (1, untouched) |
 | Managers | — | `MediaManager` (+4 methods) | — |
 | Models | `MediaAsset`, `MediaAssetStatus` (2) | — | `MediaType` (reused as-is, all 5 members already matched the brief) |
 | Contracts | — | — | — (Media had no per-asset contract before this phase — `MediaAsset` is new, not reused) |
@@ -151,7 +151,7 @@ Broadcast Intelligence** is next. `broadcast/` already has a real
 Foundation (Phase 63.0 TASK 4: `provider_manager.py`) — its own TASK 0
 Foundation Reuse Audit should check it first, the same pattern every
 Phase 63.x sub-phase so far has followed, and should also resolve how
-this phase's new `media/media_pipeline.py`'s `MediaAsset` output and
+this phase's new `media_layer/content_manager/media_pipeline.py`'s `MediaAsset` output and
 `ai/content/broadcast_output.py`'s pre-existing, LOCKed
 `prepare_broadcast()`/`BroadcastReadyContent` (a direct Content→Broadcast
 shortcut that predates Media's foundation) both feed into Broadcast —

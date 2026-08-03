@@ -96,13 +96,13 @@ a new persistence layer.
 ## `telegram/`
 
 **Confirmed: no free-text/conversational handling exists anywhere.**
-`telegram/command_router.py`'s `_parse_command()` requires a leading
+`platform_layer/telegram/command_router.py`'s `_parse_command()` requires a leading
 `/`; anything else resolves to a fixed "unknown command" response.
-Every handler in `telegram/handlers.py` and all 18
-`telegram/owner/*.py` modules are fixed-command handlers. This
+Every handler in `platform_layer/telegram/handlers.py` and all 18
+`platform_layer/telegram/owner/*.py` modules are fixed-command handlers. This
 confirms TASK 5's Conversation Engine is genuinely new logic (no
 existing chat flow to extend) — and, per this phase's own scope, it
-is **not wired into `telegram/command_router.py`** this phase, same
+is **not wired into `platform_layer/telegram/command_router.py`** this phase, same
 "foundation, not yet live-wired" posture as every prior phase's new
 module.
 

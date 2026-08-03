@@ -2038,7 +2038,7 @@ Unda birorta ham `.py` fayl yo'q — u faqat governance/ADR markdown hujjatlari.
 New_Map 5 ta repository hujjatlashtirardi, real kodda esa 16 tasi bor edi. Director Decision (Variant 2): repository'lar domen bo'yicha guruhlanadi, alohida modul qilinmaydi. Yangi ACR: **Repository Aggregation Rule (RAR-001)**. Guruhlash real kod mas'uliyatiga qarab bajarildi va 5 ta Repository modulining README/ModuleMap/Contracts hujjatlariga kiritildi: UserRepository (user, subscription, feedback, admin) · TradeRepository (signal, risk_decision, risk_state, emergency) · MarketRepository (market_snapshot, raw_candle, sync_state) · JournalRepository (learning, config_snapshot, runtime_feature) · AuditLog (audit_log, monitoring). Jami 16 storage → 5 modul.
 
 **KG-003 — AuditLog hali hech qayerdan chaqirilmaydi.**
-`AuditLogRepository.log_action()` real mavjud, lekin `telegram/owner/` ichidagi birorta buyruq uni chaqirmaydi. Yozish qismi tayyor, ulash qismi implementatsiya bosqichida bajariladi.
+`AuditLogRepository.log_action()` real mavjud, lekin `platform_layer/telegram/owner/` ichidagi birorta buyruq uni chaqirmaydi. Yozish qismi tayyor, ulash qismi implementatsiya bosqichida bajariladi.
 
 ## Refactoring TODO (implementatsiya bosqichi uchun — WDR-001 #3, #11)
 
@@ -2046,9 +2046,9 @@ New_Map 5 ta repository hujjatlashtirardi, real kodda esa 16 tasi bor edi. Direc
 |---|---|---|---|
 | RT-001 | Maxfiy qiymat o'qish yo'llarini birlashtirish | `config.py` `Settings` secret bloklari | `core/secrets.py` → `02_Core_Layer/Secrets` |
 | RT-002 | `MaskedSecret`ni Secrets moduli tarkibiga rasman kiritish | `config.py:135` | `Secrets/MaskedSecret` |
-| RT-003 | Owner buyruqlarini AuditLog'ga ulash | `telegram/owner/*` | `AuditLogRepository.log_action()` |
+| RT-003 | Owner buyruqlarini AuditLog'ga ulash | `platform_layer/telegram/owner/*` | `AuditLogRepository.log_action()` |
 | RT-004 | Voice provider adapterlarini Canonical nom bilan bog'lash | `voice/provider_adapters/*` | `07_AI_Layer/VoiceAI/VoiceProvider` |
-| RT-005 | Backtesting uchun gateway joriy etish | `telegram/owner/backtest_commands.py` → `BacktestEngine` (bevosita) | `BacktestService` orqali |
+| RT-005 | Backtesting uchun gateway joriy etish | `platform_layer/telegram/owner/backtest_commands.py` → `BacktestEngine` (bevosita) | `BacktestService` orqali |
 | RT-006 | Secret Rotation va Database Credentials qo'llab-quvvatlashini qo'shish | — | `Secrets/SecretRotation` |
 
 ## Phase 3 Statistics

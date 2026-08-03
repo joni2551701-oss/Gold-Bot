@@ -1,9 +1,9 @@
 """
-Phase 59.3, TASK 5 -- telegram/owner/system_commands.py tests.
+Phase 59.3, TASK 5 -- platform_layer/telegram/owner/system_commands.py tests.
 """
 
-from telegram.owner.provider_commands import ProviderCommandResult
-from telegram.owner.system_commands import count_online_providers, get_system_health
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.system_commands import count_online_providers, get_system_health
 
 
 def test_get_system_health_succeeds_and_never_raises():

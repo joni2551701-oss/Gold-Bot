@@ -9,8 +9,8 @@ would need. `register_profile()`/`get_profile()` delegate to the
 injected `VoiceProfileRegistry` rather than re-implementing profile
 storage (CLAUDE.md's "No duplicate logic" restriction --
 `docs/PHASE65_0_AUDIT.md`'s own three-tier resolution). Provider
-status tracking mirrors `media/media_manager.py`'s `MediaManager` and
-`broadcast/provider_manager.py`'s `BroadcastProviderManager` exactly:
+status tracking mirrors `media_layer/content_manager/media_manager.py`'s `MediaManager` and
+`media_layer/telegram_broadcast/provider_manager.py`'s `BroadcastProviderManager` exactly:
 every provider starts `DISABLED`. No network call, no SDK, no audio
 library import anywhere in this class (Rule 3, unchanged).
 

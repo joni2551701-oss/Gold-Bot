@@ -15,7 +15,7 @@ LOCKed. Confirmed LOCKed as of this policy's writing:
 - Phase 63.0 — Senior Trading AI Foundation
   (`ai/persona/`, `ai/content/content_types.py`'s `ContentType`,
   `ai/explanation/explanation_output.py`, `broadcast/`, `media/`,
-  `translation/`, `telegram/owner/broadcast_commands.py`,
+  `translation/`, `platform_layer/telegram/owner/broadcast_commands.py`,
   `ai/capabilities/capability.py`'s four Phase 63.0 members).
 
 ## The Foundation Reuse Audit (Article 11 checklist)

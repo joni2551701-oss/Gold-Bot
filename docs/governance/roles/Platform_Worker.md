@@ -189,7 +189,7 @@ technical-debt entry; it may never *decide* one.
 - **Future First (Article 13)** — every Platform Architecture
   deliverable states each component's compatibility with all five
   target platforms (Telegram Bot, Telegram Mini App, Android, iOS,
-  Desktop) using the existing `platforms/capability_model.py` contract.
+  Desktop) using the existing `platform_layer/platform_service/capability_model.py` contract.
 - **Zero unrelated diff** — a Platform task produces no change to the
   Trading Core layers, `.github/workflows/`, or governance documents
   unless the brief names that change explicitly.

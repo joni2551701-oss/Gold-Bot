@@ -71,7 +71,7 @@ independently-wrapped checks (Provider/Runtime/Validation/Cache/
 Audit/EventBus/CircuitBreaker), each `PASS`/`WARNING`/`FAILED`, never
 raises.
 
-`telegram/owner/runtime_commands.py` — two new functions:
+`platform_layer/telegram/owner/runtime_commands.py` — two new functions:
 `runtime_full_status()` (`/runtime_status`, one combined panel over
 state/profile/providers/circuit/validation/cache/failover/events) and
 `runtime_check()` (`/runtime_check`, formats a `RuntimeSelfCheckReport`).

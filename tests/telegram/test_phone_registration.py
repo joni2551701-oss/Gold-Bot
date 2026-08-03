@@ -3,8 +3,8 @@
 import asyncio
 from types import SimpleNamespace
 
-from telegram.command_router import route_command, route_contact
-from telegram.user_service import UserService
+from platform_layer.telegram.command_router import route_command, route_contact
+from platform_layer.telegram.user_service import UserService
 from core_layer.secrets.phone_hash import hash_phone_number
 
 
@@ -194,7 +194,7 @@ def test_route_contact_accepts_the_senders_own_contact():
 
 def test_start_keyboard_is_the_phone_share_keyboard_once_at_the_phone_step():
     """V2 Phase 3: after the Language step is done, /start's keyboard becomes Phone Share."""
-    from telegram.registration_service import RegistrationService
+    from platform_layer.telegram.registration_service import RegistrationService
 
     _run(route_command("/start", telegram_id="615"))
     RegistrationService().advance_past_language("615")
@@ -208,7 +208,7 @@ def test_start_keyboard_is_the_phone_share_keyboard_once_at_the_phone_step():
 def test_start_keyboard_is_the_persistent_reply_keyboard_once_registration_is_complete():
     """V2 Phase 5.1: COMPLETE replaces "no keyboard" with the USER-tier persistent Reply Keyboard, localized (UZ default) labels."""
     from aiogram.types import ReplyKeyboardMarkup
-    from telegram.registration_service import RegistrationService
+    from platform_layer.telegram.registration_service import RegistrationService
 
     _run(route_command("/start", telegram_id="616"))
     RegistrationService().complete("616")
@@ -240,13 +240,13 @@ def test_start_keyboard_is_the_persistent_reply_keyboard_once_registration_is_co
 def test_start_keyboard_is_persistent_for_owner_stuck_at_phone_step(monkeypatch):
     from aiogram.types import ReplyKeyboardMarkup
     from database_layer.user_repository.user_repository import UserRepository
-    from telegram.permissions import PermissionLevel
+    from platform_layer.telegram.permissions import PermissionLevel
 
     _run(route_command("/start", telegram_id="624"))
     UserRepository().set_registration_step("624", "PHONE")  # simulates the Phase 3 backfill
 
     monkeypatch.setattr(
-        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
+        "platform_layer.telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
     )
 
     result = _run(route_command("/start", telegram_id="624"))
@@ -260,13 +260,13 @@ def test_start_keyboard_is_persistent_for_owner_stuck_at_phone_step(monkeypatch)
 def test_start_keyboard_is_persistent_for_admin_stuck_at_phone_step(monkeypatch):
     from aiogram.types import ReplyKeyboardMarkup
     from database_layer.user_repository.user_repository import UserRepository
-    from telegram.permissions import PermissionLevel
+    from platform_layer.telegram.permissions import PermissionLevel
 
     _run(route_command("/start", telegram_id="625"))
     UserRepository().set_registration_step("625", "PHONE")
 
     monkeypatch.setattr(
-        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.ADMIN,
+        "platform_layer.telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.ADMIN,
     )
 
     result = _run(route_command("/start", telegram_id="625"))
@@ -293,7 +293,7 @@ def test_start_keyboard_still_offers_phone_share_for_a_regular_user_stuck_at_pho
 def test_start_keyboard_is_reply_keyboard_remove_for_a_banned_user():
     """V2 Phase 5 Decision 3: a BANNED /start gets ReplyKeyboardRemove(), not None."""
     from aiogram.types import ReplyKeyboardRemove
-    from telegram.user_service import UserService as _US
+    from platform_layer.telegram.user_service import UserService as _US
 
     _run(route_command("/start", telegram_id="617"))
     _US().ban_user("617")
@@ -312,7 +312,7 @@ def test_start_keyboard_is_reply_keyboard_remove_for_a_banned_user():
 
 def test_start_keyboard_is_the_admin_reply_keyboard_for_a_completed_admin(monkeypatch):
     from database_layer.user_repository.admin_repository import AdminRepository
-    from telegram.registration_service import RegistrationService
+    from platform_layer.telegram.registration_service import RegistrationService
 
     monkeypatch.delenv("TELEGRAM_OWNER_ID", raising=False)
     _run(route_command("/start", telegram_id="620"))
@@ -328,7 +328,7 @@ def test_start_keyboard_is_the_admin_reply_keyboard_for_a_completed_admin(monkey
 
 
 def test_start_keyboard_is_the_owner_reply_keyboard_for_a_completed_owner(monkeypatch):
-    from telegram.registration_service import RegistrationService
+    from platform_layer.telegram.registration_service import RegistrationService
 
     monkeypatch.setenv("TELEGRAM_OWNER_ID", "621")
     _run(route_command("/start", telegram_id="621"))
@@ -344,11 +344,11 @@ def test_start_keyboard_is_the_owner_reply_keyboard_for_a_completed_owner(monkey
 
 def test_start_keyboard_reply_labels_follow_the_users_language():
     """V2 Phase 5.1: labels localize to whatever language the user has selected, not just the UZ default."""
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
 
     _run(route_command("/start", telegram_id="622"))
     UserService().change_language("622", "EN")
-    from telegram.registration_service import RegistrationService
+    from platform_layer.telegram.registration_service import RegistrationService
     RegistrationService().complete("622")
 
     result = _run(route_command("/start", telegram_id="622"))

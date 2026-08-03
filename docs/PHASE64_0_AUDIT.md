@@ -48,8 +48,8 @@ confirmed by re-reading each manager's own source this phase:
 | Conversation | `ai/conversation/conversation_engine.py`'s `ConversationEngine` | `start_session()`, `append()` (never `ask()`) | — |
 | Explanation | `ai/explanation/explanation_builder.py`'s `ExplanationBuilder` | `build(ExplanationInput) -> ExplanationOutput` (template-based, no `AIService` call) | — |
 | Content | `ai/content/content_adapter.py`'s `ContentEngine` | `create(...)` (never `generate()`) | — |
-| Media | `media/media_manager.py`'s `MediaManager` | `create_asset()`/`prepare_asset()` (never `.render()` — doesn't exist) | `media/media_pipeline.py`'s `prepare_media_from_content()` (Phase 63.7) |
-| Broadcast | `broadcast/broadcast_manager.py`'s `BroadcastManager` | `create_broadcast()`/`prepare_broadcast()` (never send/publish/deliver — don't exist) | `broadcast/broadcast_adapter.py`'s `broadcast_asset_from_content_and_media()` (Phase 63.8) |
+| Media | `media_layer/content_manager/media_manager.py`'s `MediaManager` | `create_asset()`/`prepare_asset()` (never `.render()` — doesn't exist) | `media_layer/content_manager/media_pipeline.py`'s `prepare_media_from_content()` (Phase 63.7) |
+| Broadcast | `media_layer/telegram_broadcast/broadcast_manager.py`'s `BroadcastManager` | `create_broadcast()`/`prepare_broadcast()` (never send/publish/deliver — don't exist) | `media_layer/telegram_broadcast/broadcast_adapter.py`'s `broadcast_asset_from_content_and_media()` (Phase 63.8) |
 
 **Decision (Rule 3/TASK 1): the orchestrator composes these eight
 existing entry points and their existing cross-layer adapters — it
@@ -97,8 +97,8 @@ completely untouched.
 `ai.memory.memory_runtime`/`models`, `ai.reasoning.reasoning_runtime`/
 `models`/`reasoning_adapters`, `ai.conversation.conversation_engine`,
 `ai.explanation.explanation_builder`/`explanation_input`,
-`ai.content.content_adapter`/`content_types`, `media.media_manager`/
-`media_pipeline`/`media_types`, `broadcast.broadcast_manager`/
+`ai.content.content_adapter`/`content_types`, `media_layer.content_manager.media_manager`/
+`media_pipeline`/`media_types`, `media_layer.telegram_broadcast.broadcast_manager`/
 `broadcast_adapter`. It never imports `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/`, `database/`, or `telegram/`
 (TASK 5's isolation test enforces this permanently) — the same zero

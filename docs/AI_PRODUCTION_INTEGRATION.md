@@ -4,8 +4,8 @@ The sixth v0.4 AI Core phase, and the first to do real live-wiring.
 Where 61.0-61.4 built the AI Core and its product-control layer, all
 strictly foundation ("real, tested, documented, never registered into
 a live handler"), 61.5 registers real commands into
-`telegram/commands.py`/`telegram/handlers.py` and wires a real user
-registration flow through `telegram/polling.py`. Full reuse audit:
+`platform_layer/telegram/commands.py`/`platform_layer/telegram/handlers.py` and wires a real user
+registration flow through `platform_layer/telegram/polling.py`. Full reuse audit:
 `docs/PHASE61_5_PRODUCTION_INTEGRATION_AUDIT.md` (TASK 0/1).
 
 ## TASK 1 — Real Provider Expansion
@@ -43,19 +43,19 @@ almashtirmaydi" constraint.
 
 ## TASK 3 — Telegram Owner AI Dashboard Integration (live wiring)
 
-`telegram/commands.py`'s `OWNER_COMMANDS` gained five entries:
+`platform_layer/telegram/commands.py`'s `OWNER_COMMANDS` gained five entries:
 `ai_status`, `ai_provider`, `ai_cost`, `ai_usage`, `ai_health`.
-`telegram/handlers.py` gained the matching five `{command}_handler`
-functions, each calling the corresponding `telegram/owner/
+`platform_layer/telegram/handlers.py` gained the matching five `{command}_handler`
+functions, each calling the corresponding `platform_layer/telegram/owner/
 ai_commands.py` function (built Phase 61.4 TASK 3) — the first live
 callers those functions have ever had. No change to
-`telegram/command_router.py` itself: dispatch is registry-driven
+`platform_layer/telegram/command_router.py` itself: dispatch is registry-driven
 (`getattr(handlers, f"{command}_handler")`), confirmed by TASK 0's own
-audit. `telegram/owner/ai_commands.py` gained a sixth function,
+audit. `platform_layer/telegram/owner/ai_commands.py` gained a sixth function,
 `ai_health()`, formatting `provider_score.score_providers()`'s
 ranking. Every handler relies on `ai_commands.py`'s own
 `Optional[...] = None` defaults to construct its `ai/` objects — no
-new `ai/` import in `telegram/handlers.py` itself beyond the six
+new `ai/` import in `platform_layer/telegram/handlers.py` itself beyond the six
 `ai_commands` functions. `ai_cost`/`ai_usage` are called with an empty
 `provider_stats`/`user_usage` dict — no live `ai/audit/` data source
 exists yet (no live `AIService` call happens anywhere in this phase
@@ -67,21 +67,21 @@ fabricating history.
 Real `/start` → Phone Share Button → Phone Hash → `UserRecord` →
 Trial Check → FREE account flow:
 
-- `telegram/keyboards.py` gained `phone_share_keyboard()` — the first
+- `platform_layer/telegram/keyboards.py` gained `phone_share_keyboard()` — the first
   `ReplyKeyboardMarkup` in this codebase (every prior keyboard is
   `InlineKeyboardMarkup`, which cannot request a contact).
-  `telegram/command_router.py`'s `_KEYBOARD_BY_COMMAND["start"]` now
+  `platform_layer/telegram/command_router.py`'s `_KEYBOARD_BY_COMMAND["start"]` now
   points at it (repurposed from `language_keyboard` — language
   selection is unaffected, still fully available via its own
   `/language` mapping).
-- `telegram/polling.py`'s dispatcher gained one conditional: a message
+- `platform_layer/telegram/polling.py`'s dispatcher gained one conditional: a message
   with `.contact` populated routes to the new
-  `telegram.command_router.route_contact()` instead of
+  `platform_layer.telegram.command_router.route_contact()` instead of
   `route_message()` (a contact-share message has `.text is None`, so
   `route_message()` would have silently resolved it to "Unknown
   command").
-- `telegram/handlers.py` gained `contact_handler()`, calling the new
-  `telegram.user_service.UserService.register_phone()`.
+- `platform_layer/telegram/handlers.py` gained `contact_handler()`, calling the new
+  `platform_layer.telegram.user_service.UserService.register_phone()`.
 - `register_phone()`: hashes the phone number immediately via
   `core_layer.secrets.phone_hash.hash_phone_number()` (the raw string never outlives
   the method call), checks reuse via `ai.access.identity_checker.
@@ -95,7 +95,7 @@ Trial Check → FREE account flow:
   stateless extraction of `TrialManager.status_of()`'s own math, so
   this database-persisted caller doesn't duplicate it).
 - **`role` is not a new column.** It is already fully derivable from
-  `telegram.permissions.is_owner()`/`is_admin()` (config-driven) and
+  `platform_layer.telegram.permissions.is_owner()`/`is_admin()` (config-driven) and
   `SubscriptionRecord.plan` (already persisted) — exactly what
   `ai.access.permission_service.resolve_ai_role()` (Phase 61.4 TASK 2)
   already takes. A fourth persisted role would duplicate existing
@@ -183,7 +183,7 @@ closing. All five are addressed here:
    `broadcast` commands) since they are read-only information, not
    mutations — `doctor` stays OWNER-only (exposes internal subsystem
    reachability).
-4. **`/owner`** (new) — `telegram/owner/dashboard.py`'s
+4. **`/owner`** (new) — `platform_layer/telegram/owner/dashboard.py`'s
    `get_owner_summary()`: a compact panel (System/AI/Provider/Users/
    Premium/Signals Today/Win Rate/Cost Today/Emergency), composing
    `AdminService`, the new `ai_runtime_online()`/`current_provider_for()`
@@ -224,9 +224,9 @@ AST-based import sweep (`ast.walk()` over every `.py` file under
 `decision/`, `risk/`, `execution/`, `database/`, `telegram/` — it
 never produces or influences a trading signal.
 
-`telegram/user_service.py` and `telegram/owner/ai_commands.py`
+`platform_layer/telegram/user_service.py` and `platform_layer/telegram/owner/ai_commands.py`
 (outside `ai/`, this phase's live-wiring surface) both import `ai/`
-directly — the same relationship every `telegram/owner/*.py` module
+directly — the same relationship every `platform_layer/telegram/owner/*.py` module
 has always had to its own domain (consuming `ai/`'s already-computed
 output, never the reverse).
 

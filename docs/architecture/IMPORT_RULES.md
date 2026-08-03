@@ -9,9 +9,9 @@ forbidden below. There is no third category.
 
 | From | To | Example |
 |---|---|---|
-| `telegram/handlers.py` | `telegram/*_service.py` | `telegram/handlers.py` → `telegram/signal_service.py` |
-| `telegram/*_service.py` | `database/*_repository.py` | `telegram/user_service.py` → `database_layer/user_repository/user_repository.py` |
-| `telegram/owner/*.py` | corresponding service/repository | `telegram/owner/runtime_commands.py` → `ai/runtime/ai_service.py` |
+| `platform_layer/telegram/handlers.py` | `telegram/*_service.py` | `platform_layer/telegram/handlers.py` → `platform_layer/telegram/signal_service.py` |
+| `telegram/*_service.py` | `database/*_repository.py` | `platform_layer/telegram/user_service.py` → `database_layer/user_repository/user_repository.py` |
+| `platform_layer/telegram/owner/*.py` | corresponding service/repository | `platform_layer/telegram/owner/runtime_commands.py` → `ai/runtime/ai_service.py` |
 | `ai/*` | `ai/*` | `ai/runtime/ai_service.py` → `ai/router/router.py` |
 | `ai/*` | `core/*` | any `ai/` module → `core/secrets.py` |
 | `ai/ai_analyzer.py`, `ai/ai_prompt.py`, `ai/confidence_model.py`, `ai/journal/trade_journal.py`, `ai/explanation/explanation_engine.py`, `ai/context/context_snapshot.py`, `ai/context/context_builder.py` | `signals/*` or `context/*` — **type definitions only** (`SignalCandidate`, `SignalSchema`, `MarketContext`) | `ai/context/context_snapshot.py` → `signal_layer.signal_builder.schema.SignalCandidate` (type import, no decision/risk call) |
@@ -32,8 +32,8 @@ forbidden below. There is no third category.
 | `risk/*` | `ai/*` | Risk Manager operates entirely on the Decision Engine's own output; it imports nothing from `ai/` today and has no sanctioned reason to |
 | `strategies/*` | `telegram/*` | upward dependency, forbidden by Article 2 |
 | `signals/*` | `telegram/*` | upward dependency, forbidden by Article 2 |
-| `telegram/handlers.py` | `database/*` (directly) | must go through a `telegram/*_service.py` — Constitution Article 4 |
-| `telegram/handlers.py` | `core.pipeline` (directly) | must go through a service — already stated in `telegram/handlers.py`'s own module docstring |
+| `platform_layer/telegram/handlers.py` | `database/*` (directly) | must go through a `telegram/*_service.py` — Constitution Article 4 |
+| `platform_layer/telegram/handlers.py` | `core.pipeline` (directly) | must go through a service — already stated in `platform_layer/telegram/handlers.py`'s own module docstring |
 | `database/*_repository.py` | anything above it (`telegram/`, `ai/`, `decision/`) | repositories own SQL only, never a caller's business logic |
 | any module | `core/*` importing back up | `core/` depends on nothing else in the diagram — a `core/` → any-other-layer import is always forbidden |
 

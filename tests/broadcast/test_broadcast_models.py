@@ -1,7 +1,7 @@
-"""Phase 63.8 TASK 1 — broadcast/models.py: BroadcastStatus/BroadcastAsset/BroadcastTriggerType, and ai.content_types.ContentType.LIVE_ANALYSIS."""
+"""Phase 63.8 TASK 1 — media_layer/telegram_broadcast/models.py: BroadcastStatus/BroadcastAsset/BroadcastTriggerType, and ai.content_types.ContentType.LIVE_ANALYSIS."""
 
 from ai.content_types import ContentType
-from broadcast.models import (
+from media_layer.telegram_broadcast.models import (
     BroadcastAsset,
     BroadcastStatus,
     BroadcastTrigger,

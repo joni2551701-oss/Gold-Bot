@@ -20,18 +20,18 @@ functions, unused translation keys, and duplicate/superseded logic.
 
 ## Findings
 
-### F1 — `telegram/keyboards.py`: `settings_keyboard()` and `admin_panel_keyboard()` are unreachable from routing — CONFIRMED INTENTIONAL, no action
+### F1 — `platform_layer/telegram/keyboards.py`: `settings_keyboard()` and `admin_panel_keyboard()` are unreachable from routing — CONFIRMED INTENTIONAL, no action
 
-Neither function is imported by `telegram/command_router.py`,
-`telegram/callback_router.py`, or `telegram/handlers.py`. Both are
+Neither function is imported by `platform_layer/telegram/command_router.py`,
+`platform_layer/telegram/callback_router.py`, or `platform_layer/telegram/handlers.py`. Both are
 superseded: `settings_keyboard()` (Phase 40's inline Settings hint) by
-`telegram.reply_keyboard_manager.settings_keyboard()` (Phase 6.3's
+`platform_layer.telegram.reply_keyboard_manager.settings_keyboard()` (Phase 6.3's
 Settings submenu Reply Keyboard); `admin_panel_keyboard()` (a
 Phase 1.5 placeholder, never wired to a real Admin Panel UI) by
-`telegram.reply_keyboard_manager.admin_submenu_keyboard()`.
+`platform_layer.telegram.reply_keyboard_manager.admin_submenu_keyboard()`.
 
 This audit confirms the leftover is **already documented as
-deliberate** in `telegram/keyboards.py`'s own module docstring (Phase
+deliberate** in `platform_layer/telegram/keyboards.py`'s own module docstring (Phase
 6.2): *"settings_keyboard() (the old inline Settings hint) is
 superseded by telegram.reply_keyboard_manager's Settings Reply
 Keyboard section (V2 Phase 6.3) -- it stays in place, unreferenced by
@@ -41,11 +41,11 @@ dedicated test coverage in `tests/telegram/test_keyboards.py`
 recorded Director-era decision is not a Freeze-stage cleanup action —
 **no change made.**
 
-### F2 — `translation/ui_catalog.py`: `nav.back` / `nav.home` are genuinely orphaned — cleaned up (Stage 9)
+### F2 — `media_layer/translation/ui_catalog.py`: `nav.back` / `nav.home` are genuinely orphaned — cleaned up (Stage 9)
 
 `grep -rlE` across every `.py` file for `nav.back`/`nav.home` (as a
 quoted string literal, either quote style) found **zero** references
-outside `translation/ui_catalog.py` itself. Their own inline comment
+outside `media_layer/translation/ui_catalog.py` itself. Their own inline comment
 attributes them to *"V2 Phase 6.1 -- Navigation Controller ... See
 telegram/navigation.py"* — that module was deleted outright when V2
 Phase 6.3 (Director Approved: Dynamic Reply Keyboard Navigation)
@@ -66,7 +66,7 @@ to.
 
 ### F3 — Two `resolve_navigation_command()` functions, two `settings_keyboard()` names — CONFIRMED cooperating layers, not duplication
 
-`telegram/keyboards.py` and `telegram/reply_keyboard_manager.py` each
+`platform_layer/telegram/keyboards.py` and `platform_layer/telegram/reply_keyboard_manager.py` each
 define a `resolve_navigation_command()`. These are **not** duplicate
 logic: `keyboards.resolve_navigation_command()` resolves Main-tier
 labels (Home/Profile/Signals/Subscription/Settings/Help/Admin/Owner —
@@ -89,19 +89,19 @@ action.**
 
 ### F4 — Command ↔ Handler wiring: 1:1, no orphans
 
-Cross-referenced every command name across `telegram/commands.py`'s
+Cross-referenced every command name across `platform_layer/telegram/commands.py`'s
 `COMMANDS`/`OWNER_COMMANDS`/`ADMIN_COMMANDS` (50 distinct commands)
-against every `async def *_handler(...)` in `telegram/handlers.py` (51
+against every `async def *_handler(...)` in `platform_layer/telegram/handlers.py` (51
 functions). Every command has a matching handler. The one handler with
 no command entry, `contact_handler`, is expected — it is not a
-`/command`, it is `telegram.command_router.route_contact()`'s target
+`/command`, it is `platform_layer.telegram.command_router.route_contact()`'s target
 for a `Message.contact` payload (phone-share button), documented as
 such in its own docstring. **No orphan handlers, no missing
 handlers.**
 
 ### F5 — Translation catalog: no duplicate keys, no missing-language entries
 
-AST-parsed `translation/ui_catalog.py`'s `_CATALOG` dict (113 keys):
+AST-parsed `media_layer/translation/ui_catalog.py`'s `_CATALOG` dict (113 keys):
 zero duplicate dict keys (a duplicate would have silently shadowed the
 first at Python parse time — none exist), zero keys missing any of
 EN/UZ/RU. Full detail in Stage 4's Translation Coverage Report below.
@@ -123,7 +123,7 @@ dataclass style, not dead code. **False positive, no action.**
 
 ### F7 — Duplicate test function names: none
 
-Every test file in `tests/telegram/` and `tests/telegram/owner/` was
+Every test file in `tests/telegram/` and `tests/platform_layer/telegram/owner/` was
 AST-parsed for `test_*` function names; no file defines the same test
 name twice (a real duplicate would silently shadow the first,
 reducing coverage without any visible symptom). **Clean.**

@@ -13,7 +13,7 @@ correction.
 ## Two surfaces on the same `MediaManager`
 
 ```
-media/media_manager.py
+media_layer/content_manager/media_manager.py
   list_types()      Phase 63.0 -- unchanged
   descriptor_of()    Phase 63.0 -- unchanged
   is_enabled()        Phase 63.0 -- unchanged
@@ -43,7 +43,7 @@ before Media — this phase does not touch it either way.)
 
 ## Model
 
-`media/models.py` (Phase 63.7): `MediaAssetStatus`
+`media_layer/content_manager/models.py` (Phase 63.7): `MediaAssetStatus`
 (`PENDING`/`READY`/`REJECTED`) and `MediaAsset` (`id`, `content_id`,
 `media_type`, `status`, `title`, `description`, `metadata`,
 `created_at`). `MediaType` (`media_types.py`, Phase 63.0:
@@ -55,7 +55,7 @@ or `Position` anywhere.
 
 ## Registry
 
-`media/media_registry.py`'s `build_media_registry()`/`MediaDescriptor`
+`media_layer/content_manager/media_registry.py`'s `build_media_registry()`/`MediaDescriptor`
 (Phase 63.0) is a fixed, five-entry static catalog — unchanged.
 Phase 63.7 added `get(media_type)`/`exists(media_type)` (Article 9 —
 additive-only); `register()` was deliberately not added since the
@@ -64,11 +64,11 @@ resolution).
 
 ## Content integration (TASK 4/5 — real, type-only)
 
-`media/media_adapter.py`'s `content_result_to_media_asset(result, manager)`
+`media_layer/content_manager/media_adapter.py`'s `content_result_to_media_asset(result, manager)`
 reads an upstream `ContentResult`'s own already-public fields (`title`,
 `body`, `content_type`, `metadata`) into a new `MediaAsset` via
 `MediaManager.create_asset()` — never touches `ContentEngine`'s
-internal state. `media/media_pipeline.py`'s
+internal state. `media_layer/content_manager/media_pipeline.py`'s
 `prepare_media_from_content(result, manager)` composes that adapter
 with `MediaManager.prepare_asset()` into the one-call flow the brief
 names: `ExplanationOutput → ContentResult → MediaPreparation →
@@ -98,7 +98,7 @@ new capability, no router logic change (Phase 63.7 TASK 6/7).
 - Not Broadcast or Translation — `media/` never imports `broadcast/`
   or `translation/` (both downstream/parallel in the Intelligence
   Dependency Principle).
-- Not wired into `telegram/command_router.py`, `translation/`, or
+- Not wired into `platform_layer/telegram/command_router.py`, `translation/`, or
   `broadcast/` this phase — foundation only.
 
 ## Related

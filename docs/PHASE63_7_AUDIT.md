@@ -8,9 +8,9 @@ phase's own rule.
 ## Honest correction: `ai/media/` does not exist — the real package is top-level `media/`
 
 The brief's TASK 0–7 name every new/extended file under `ai/media/`
-(`ai/media/models.py`, `ai/media/media_registry.py`,
-`ai/media/media_manager.py`, `ai/media/media_adapter.py`,
-`ai/media/media_pipeline.py`). A direct `ls ai/` confirms no `media/`
+(`ai/media_layer/content_manager/models.py`, `ai/media_layer/content_manager/media_registry.py`,
+`ai/media_layer/content_manager/media_manager.py`, `ai/media_layer/content_manager/media_adapter.py`,
+`ai/media_layer/content_manager/media_pipeline.py`). A direct `ls ai/` confirms no `media/`
 subpackage exists under `ai/` — the real Media Foundation was already
 built as a **top-level package**, a sibling of `ai/`, in Phase 63.0
 TASK 5:
@@ -41,11 +41,11 @@ same concern — precisely what Article 11 forbids.
 | Component | Brief's assumed location | Real state | Decision |
 |---|---|---|---|
 | Foundation | `ai/media/` | ✅ Exists — top-level `media/` (Phase 63.0 TASK 5) | Extend `media/`, do not create `ai/media/` |
-| Manager | `ai/media/media_manager.py` | ✅ Exists — `media/media_manager.py`'s `MediaManager` (Owner ENABLED/DISABLED intent per `MediaType`, TEXT starts enabled) | Extend `MediaManager` in place with `create_asset`/`validate_asset`/`prepare_asset`/`get_asset` (TASK 3) |
+| Manager | `ai/media_layer/content_manager/media_manager.py` | ✅ Exists — `media_layer/content_manager/media_manager.py`'s `MediaManager` (Owner ENABLED/DISABLED intent per `MediaType`, TEXT starts enabled) | Extend `MediaManager` in place with `create_asset`/`validate_asset`/`prepare_asset`/`get_asset` (TASK 3) |
 | Contract | — | ➖ None yet at the per-asset level (only per-type, via `MediaDescriptor`) | Genuine gap — no contract to duplicate |
-| Model | `ai/media/models.py` | ✅ Partial — `MediaType` enum (`media_types.py`) already has all five values the brief names (`TEXT`/`VOICE`/`IMAGE`/`VIDEO`/`LIVE`, exact match). ❌ `MediaAsset` (a per-instance object) does not exist | Reuse `MediaType` as-is; add `MediaAsset`/`MediaAssetStatus` as the one genuine new file, `media/models.py` (TASK 1) |
+| Model | `ai/media_layer/content_manager/models.py` | ✅ Partial — `MediaType` enum (`media_types.py`) already has all five values the brief names (`TEXT`/`VOICE`/`IMAGE`/`VIDEO`/`LIVE`, exact match). ❌ `MediaAsset` (a per-instance object) does not exist | Reuse `MediaType` as-is; add `MediaAsset`/`MediaAssetStatus` as the one genuine new file, `media_layer/content_manager/models.py` (TASK 1) |
 | Capability | `ai/capabilities/capability.py` | ✅ Exists — `Capability.AI_MEDIA` (Phase 63.0 TASK 8), already present in `ai/router/routing_rules.py`'s `_CAPABILITY_PROVIDER_PREFERENCE` (`openai`, `gemini`) with no runtime dispatch mapping yet — same foundation-only posture every other `AI_*` capability has | Reuse as-is (TASK 6) — no new capability |
-| Registry | `ai/media/media_registry.py` | ✅ Exists — `media/media_registry.py`'s `build_media_registry()` + `MediaDescriptor`, a static, fixed five-entry catalog (Phase 63.0's own explicit design: "no processing logic of any kind") | Extend `media_registry.py` with `get()`/`exists()` (TASK 2); see naming resolution below for `register()`/`list()` |
+| Registry | `ai/media_layer/content_manager/media_registry.py` | ✅ Exists — `media_layer/content_manager/media_registry.py`'s `build_media_registry()` + `MediaDescriptor`, a static, fixed five-entry catalog (Phase 63.0's own explicit design: "no processing logic of any kind") | Extend `media_registry.py` with `get()`/`exists()` (TASK 2); see naming resolution below for `register()`/`list()` |
 
 ## TASK 2's `register()`/`get()`/`list()`/`exists()` naming resolution
 

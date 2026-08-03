@@ -69,7 +69,7 @@ class ChartContext:
     payload -- `image_hash` is a plain string reference only (e.g. a
     SHA-256 hex digest a future phase would compute upstream of this
     package), matching `MediaAsset`'s own "never store the asset,
-    reference it" convention (`media/models.py`).
+    reference it" convention (`media_layer/content_manager/models.py`).
 
     source: e.g. "telegram" / "tradingview" / "mt5" / "pdf" -- plain
         string, caller-supplied.

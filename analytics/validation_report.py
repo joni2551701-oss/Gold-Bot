@@ -18,7 +18,7 @@ A standardization/aggregation layer, like every other analytics/
 module before it: computes nothing new except two small, disclosed
 "best of" picks (best_session/best_market_phase, each the same
 highest-win_rate-then-more-signals tie-break
-telegram/owner/report_commands.py's pick_best_strategy() already
+platform_layer/telegram/owner/report_commands.py's pick_best_strategy() already
 established for strategies) -- it reuses build_strategy_report()
 (same package) for the per-strategy breakdown rather than
 reimplementing it.
@@ -65,7 +65,7 @@ def _best_by_win_rate(performances: Sequence[SignalPerformance], dimension: str)
     `"market_phase"`), computing win_rate via
     analytics.strategy_report.compute_win_rate() (reused, not
     reimplemented) -- the same tie-break rule
-    telegram/owner/report_commands.py's pick_best_strategy() already
+    platform_layer/telegram/owner/report_commands.py's pick_best_strategy() already
     established (highest win_rate, ties broken by more total records).
     Never raises: no eligible records returns None.
     """
@@ -124,7 +124,7 @@ def format_validation_report(report: ValidationReport) -> str:
     """
     Text-format rendering matching this task's own worked example
     exactly -- a pure formatting function, no computation. Used by
-    telegram/owner/validation_commands.py (same phase, TASK 8).
+    platform_layer/telegram/owner/validation_commands.py (same phase, TASK 8).
     """
     lines = [
         "GoldBot Validation Report",

@@ -12,7 +12,7 @@ a separate instance/namespace -- see
 of `configuration/`'s Infrastructure-only registry.
 
 Not wired into `core/pipeline.py`, any Telegram handler, or
-`telegram/command_router.py` -- foundation only, constructed and
+`platform_layer/telegram/command_router.py` -- foundation only, constructed and
 called directly (e.g. from a test, or a future owner command).
 """
 

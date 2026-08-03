@@ -65,26 +65,26 @@ itself, no new parameter threading a score into it.
 
 ## TASK 3 — Telegram Owner AI Dashboard Integration
 
-Confirmed via `telegram/command_router.py`: dispatch is
+Confirmed via `platform_layer/telegram/command_router.py`: dispatch is
 `getattr(handlers_module, f"{command}_handler")`, driven entirely by
-membership in `telegram/commands.py`'s `COMMANDS`/`OWNER_COMMANDS`/
+membership in `platform_layer/telegram/commands.py`'s `COMMANDS`/`OWNER_COMMANDS`/
 `ADMIN_COMMANDS` dicts. **No change needed to `command_router.py`
 itself.** This task is exactly two additive edits:
 
-1. `telegram/commands.py`'s `OWNER_COMMANDS` dict gains five new
+1. `platform_layer/telegram/commands.py`'s `OWNER_COMMANDS` dict gains five new
    entries: `ai_status`, `ai_provider`, `ai_cost`, `ai_usage`, and a
    new `ai_health` (the brief's fifth command — not yet built in
-   `telegram/owner/ai_commands.py`; TASK 3 adds it there, following
+   `platform_layer/telegram/owner/ai_commands.py`; TASK 3 adds it there, following
    the same `AICommandResult`-returning shape as the other five).
-2. `telegram/handlers.py` gains five `{command}_handler` functions,
+2. `platform_layer/telegram/handlers.py` gains five `{command}_handler` functions,
    each: (a) resolve `is_owner` via the existing
-   `telegram.permissions.is_owner()` check (same guard every other
-   `telegram/owner/*.py`-backed handler already uses), (b) construct
+   `platform_layer.telegram.permissions.is_owner()` check (same guard every other
+   `platform_layer/telegram/owner/*.py`-backed handler already uses), (b) construct
    the real `ai/` objects (`ProviderManager`, `ProviderHealthTracker`,
    `CapabilityManager`, `UsageLimiter`, `provider_stats`/
    `user_usage` dicts) the same way other owner-command handlers
    construct their own service objects, (c) call the corresponding
-   `telegram/owner/ai_commands.py` function, (d) send
+   `platform_layer/telegram/owner/ai_commands.py` function, (d) send
    `result.message` back to the chat. This is the first phase where
    these `ai/` objects are constructed from a live handler rather than
    only from a test.
@@ -116,7 +116,7 @@ TASK 2) already takes. Adding a fourth `role` column would duplicate
 state that already exists and could drift from it — CLAUDE.md's "No
 duplicate logic".
 
-**(b) Contact-message routing.** `telegram/polling.py`'s single
+**(b) Contact-message routing.** `platform_layer/telegram/polling.py`'s single
 catch-all `@dispatcher.message()` handler forwards every message to
 `route_message()`, which only reads `message.text` (a contact-share
 message has `message.contact` populated, `message.text is None` —
@@ -126,7 +126,7 @@ adds a new, narrow code path: a `route_contact()` function (mirrors
 `message.contact.phone_number`, call the registration flow), and one
 new conditional in `polling.py`'s dispatcher — `if message.contact is
 not None: route_contact(...); return` before the existing text-command
-path. `telegram/keyboards.py` gains one new `ReplyKeyboardMarkup` +
+path. `platform_layer/telegram/keyboards.py` gains one new `ReplyKeyboardMarkup` +
 `KeyboardButton(request_contact=True)` keyboard (`phone_share_keyboard()`)
 — the first use of `ReplyKeyboardMarkup` in this codebase; every
 existing keyboard in that file is `InlineKeyboardMarkup`, a
@@ -171,9 +171,9 @@ package must not import any of those four either, and must not import
 
 ## Summary of what changes vs. every prior 61.x phase
 
-This is the first phase where `telegram/commands.py`,
-`telegram/handlers.py`, `telegram/polling.py`, and
-`telegram/keyboards.py` (all outside `ai/`, but the live wiring
+This is the first phase where `platform_layer/telegram/commands.py`,
+`platform_layer/telegram/handlers.py`, `platform_layer/telegram/polling.py`, and
+`platform_layer/telegram/keyboards.py` (all outside `ai/`, but the live wiring
 surface) are edited with real behavior, not left foundation-only. The
 Director's own explicit caveat — "har bir live wiring oldin reuse
 audit va isolation check bilan qilinadi" — is satisfied by this

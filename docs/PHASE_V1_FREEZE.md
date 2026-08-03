@@ -88,9 +88,9 @@ safety rule is actually broken. No FAIL was found anywhere.
    Compose has never been build-tested end-to-end — both self-disclosed
    in the repo's own docs; the primary deployment path (systemd on a
    VPS) does not have this gap.
-10. **`telegram/result_handler.py`** imports `database_layer.trade_repository.signal_repository`
+10. **`platform_layer/telegram/result_handler.py`** imports `database_layer.trade_repository.signal_repository`
     directly despite its `*_handler.py` name (it is not wired into
-    `telegram/handlers.py`, so it does not violate the actual
+    `platform_layer/telegram/handlers.py`, so it does not violate the actual
     handlers-never-touch-repositories rule, but the name is misleading).
 
 ## Remaining Risks

@@ -46,14 +46,14 @@ same reasoning that keeps `execution/` separate from `decision/`.
   returns a cleanly rejected result this phase — never echoes or
   fabricates a translation.
 
-### `telegram/owner/broadcast_commands.py` — Owner commands (TASK 7)
+### `platform_layer/telegram/owner/broadcast_commands.py` — Owner commands (TASK 7)
 
 `/broadcast_status`, `/broadcast_provider`, `/broadcast_enable`,
 `/broadcast_disable` — every one returns `NOT IMPLEMENTED`. Not
-registered in `telegram/commands.py`'s `OWNER_COMMANDS`, not dispatched
-by `telegram/command_router.py`/`telegram/handlers.py` (Rule 7 — same
+registered in `platform_layer/telegram/commands.py`'s `OWNER_COMMANDS`, not dispatched
+by `platform_layer/telegram/command_router.py`/`platform_layer/telegram/handlers.py` (Rule 7 — same
 "foundation, backend not wired" posture
-`telegram/owner/provider_commands.py` originally used).
+`platform_layer/telegram/owner/provider_commands.py` originally used).
 
 ## Capability vocabulary (TASK 8)
 

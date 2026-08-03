@@ -50,12 +50,12 @@ from ai.reasoning.reasoning_adapters import (
 )
 from ai.reasoning.reasoning_runtime import ReasoningRuntime
 from ai.reasoning.models import ReasoningMode, ReasoningResult, ReasoningType
-from broadcast.broadcast_adapter import broadcast_asset_from_content_and_media
-from broadcast.broadcast_manager import BroadcastManager
+from media_layer.telegram_broadcast.broadcast_adapter import broadcast_asset_from_content_and_media
+from media_layer.telegram_broadcast.broadcast_manager import BroadcastManager
 from knowledge.knowledge_manager import KnowledgeManager
-from media.media_manager import MediaManager
-from media.media_pipeline import prepare_media_from_content
-from media.media_types import MediaType
+from media_layer.content_manager.media_manager import MediaManager
+from media_layer.content_manager.media_pipeline import prepare_media_from_content
+from media_layer.content_manager.media_types import MediaType
 
 
 class PipelineStage(Enum):

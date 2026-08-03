@@ -1,7 +1,7 @@
 """
-Phase 60.5, TASK 8 -- telegram/owner/fundamental_commands.py tests.
+Phase 60.5, TASK 8 -- platform_layer/telegram/owner/fundamental_commands.py tests.
 No mocks: real FundamentalContextSnapshot/FundamentalScoreResult
-construction, same convention as every other telegram/owner/ test.
+construction, same convention as every other platform_layer/telegram/owner/ test.
 """
 
 from context_layer.fundamental.fundamental_context import compute_fundamental_context, merge_fundamental_score
@@ -9,8 +9,8 @@ from context_layer.fundamental.fundamental_scoring import compute_fundamental_sc
 from data_layer.providers.fundamental_base import FundamentalDataPoint
 from datetime import datetime, timezone
 
-from telegram.owner.fundamental_commands import get_fed_status, get_fundamental_score_report, get_macro_status
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.fundamental_commands import get_fed_status, get_fundamental_score_report, get_macro_status
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 
 
 def test_get_macro_status_returns_a_report():

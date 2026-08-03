@@ -149,7 +149,7 @@ Personal AI Assistant, and does not route through `AccessControl` —
 `FeatureFlags.enable_personal_ai` both true) instead. `AIRole` itself
 (the enum, not `AccessControl`) is read from `ai.access.permissions` —
 an access-control *type*, orthogonal to the Knowledge→...→Broadcast
-content chain, the same class every `telegram/owner/ai_commands.py`
+content chain, the same class every `platform_layer/telegram/owner/ai_commands.py`
 function already imports without violating any pipeline direction.
 
 `configuration/feature_flags.py`'s `FeatureFlags` dataclass is

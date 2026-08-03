@@ -11,14 +11,14 @@ A module that governs safety, availability, or user-facing spend is
 protection), `configuration/runtime_feature_manager.py` (feature
 toggles), and — foundation-only today — `broadcast/`, `media/`,
 `translation/`. Each has (or, for foundation-only modules, will have
-when wired) a `telegram/owner/*_commands.py` surface.
+when wired) a `platform_layer/telegram/owner/*_commands.py` surface.
 
 ## The command chain (Article 4 applied to Owner commands)
 
 ```
-Telegram Owner command → telegram/owner/security.py
+Telegram Owner command → platform_layer/telegram/owner/security.py
     (require_role + log_owner_action)
-  → telegram/owner/*_commands.py
+  → platform_layer/telegram/owner/*_commands.py
   → the module's own Manager
 ```
 
@@ -29,7 +29,7 @@ of `security.py`'s role-check/audit pair.
 
 ## Foundation-only is an honest state, not a bug
 
-`telegram/owner/broadcast_commands.py`'s four commands (Phase 63.0)
+`platform_layer/telegram/owner/broadcast_commands.py`'s four commands (Phase 63.0)
 all return a clear "not implemented" rather than a fabricated result.
 This is compliant with this policy: the surface exists (so the Owner
 knows the command is planned and where it will live), and it does not

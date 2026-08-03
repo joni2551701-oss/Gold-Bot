@@ -20,8 +20,8 @@ from ai.ai_analyzer import AIAnalyzer, AIAnalysisResult
 from decision_layer.decision_engine.decision_engine import DecisionEngine
 from decision_layer.decision_engine.models import TradeDecision, DecisionAction
 from risk_layer.risk_engine.risk_manager import RiskManager, RiskResult
-from telegram.signal_formatter import SignalFormatter
-from telegram.notifier import Notifier
+from platform_layer.telegram.signal_formatter import SignalFormatter
+from platform_layer.telegram.notifier import Notifier
 from database_layer.trade_repository.signal_repository import SignalRepository
 from database_layer.trade_repository.signal_record import SignalRecord, create_signal_record
 from core_layer.pipeline.pipeline_guard import PipelineGuard

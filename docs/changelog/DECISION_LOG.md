@@ -178,7 +178,7 @@ Migration Task — never a silent side effect of another task. That task
 must state a Backward Compatibility plan and a Rollback plan before
 its Implementation step.
 
-**Reason**: Formalizes the restraint `platforms/navigation_model.py`'s
+**Reason**: Formalizes the restraint `platform_layer/platform_service/navigation_model.py`'s
 `is_valid_screen_id()` already exercised at TASK-002C (not enforcing
 the new convention retroactively) as a standing rule, not a one-off
 judgment call.
@@ -250,7 +250,7 @@ must fail closed. An unknown, invalid, missing, or malformed
 permission value, on either side of the comparison, never grants
 access; it always evaluates to DENY.
 
-**Reason**: `has_sufficient_permission()` (`platforms/navigation_core.py`,
+**Reason**: `has_sufficient_permission()` (`platform_layer/platform_service/navigation_core.py`,
 Frozen) fails closed for an unrecognized *user* tier but not for an
 unrecognized *required* tier (ranked at -1, satisfied by any real user
 tier ≥0) — a permission system's safe default must be symmetric.

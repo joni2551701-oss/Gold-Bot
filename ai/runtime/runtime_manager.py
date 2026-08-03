@@ -14,7 +14,7 @@ Defaults to `RuntimeState.READY` on construction -- same "works out of
 the box" convention `ai.providers.provider_manager.ProviderManager`/
 `ai.providers.provider_health.ProviderHealthTracker` already use, so a
 fresh `RuntimeManager()` (e.g. inside an Owner `/runtime` command,
-which always constructs fresh -- see `telegram/owner/dashboard.py`)
+which always constructs fresh -- see `platform_layer/telegram/owner/dashboard.py`)
 reports a sensible default rather than a permanently-stuck
 `INITIALIZING`. A caller that wants to model an explicit startup
 sequence constructs with `initial_state=RuntimeState.INITIALIZING`

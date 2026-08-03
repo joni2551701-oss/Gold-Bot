@@ -13,7 +13,7 @@ decision) and `docs/PHASE63_8_AUDIT.md` (this phase's confirmation).
 ## Two surfaces on the same `BroadcastManager`
 
 ```
-broadcast/broadcast_manager.py
+media_layer/telegram_broadcast/broadcast_manager.py
   would_broadcast()     Phase 63.0 -- unchanged
   prepare()              Phase 63.0 -- unchanged (BroadcastRequest, never sent)
   create_broadcast()   Phase 63.8 -- deterministic, no external call
@@ -42,7 +42,7 @@ approved delivery phase would be the first caller.
 
 ## Model
 
-`broadcast/models.py` (Phase 63.8): `BroadcastStatus`
+`media_layer/telegram_broadcast/models.py` (Phase 63.8): `BroadcastStatus`
 (`DRAFT`/`READY`/`PUBLISHED`/`FAILED`/`ARCHIVED`) and `BroadcastAsset`
 (`id`, `content_id`, `media_id`, `broadcast_type`, `status`,
 `persona_name`, `metadata`, `created_at`) are the two genuine gaps this
@@ -65,7 +65,7 @@ optional field, `trigger_type: BroadcastTriggerType` (defaulting to
 
 ## Content/Media integration (TASK 6 — real, type-only)
 
-`broadcast/broadcast_adapter.py`'s
+`media_layer/telegram_broadcast/broadcast_adapter.py`'s
 `broadcast_asset_from_content_and_media(content, media, manager)`
 reads an upstream `ContentResult`'s and `MediaAsset`'s own
 already-public fields into a `BroadcastAsset` via
@@ -100,7 +100,7 @@ per the brief's own instruction.
 - Not a trading decision — `broadcast/` is never imported by `core/`,
   `decision/`, `risk/`, `execution/`, `strategies/`, or `signals/`,
   and never imports any of them either (Constitution Article 3 / Rule 1).
-- Not wired into `telegram/owner/broadcast_commands.py` this phase —
+- Not wired into `platform_layer/telegram/owner/broadcast_commands.py` this phase —
   those commands still report `NOT IMPLEMENTED` (Phase 63.0 TASK 7).
 - Not a second "BroadcastReady" contract — `broadcast_adapter.py`'s
   output *is* `BroadcastAsset`; `ai.content.broadcast_output.BroadcastReadyContent`/

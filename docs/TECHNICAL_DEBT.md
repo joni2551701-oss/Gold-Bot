@@ -15,7 +15,7 @@ it; adding an entry is documentation only and implies no code change.
   `python -m monitoring.run_snapshot`.
 - **Why it's broken**: `docs/PHASE_OWNER_SNAPSHOT_REMOVAL.md` (V2
   Phase 2, production branch) deleted `monitoring/run_snapshot.py` and
-  16 related files once `telegram/polling.py`'s own live heartbeat
+  16 related files once `platform_layer/telegram/polling.py`'s own live heartbeat
   replaced the need for a GitHub-Actions substitute. Confirmed absent
   from the production branch's current `monitoring/` (14 files, none
   named `run_snapshot.py`). Every scheduled run of this workflow since
@@ -43,7 +43,7 @@ it; adding an entry is documentation only and implies no code change.
 
 ## Security Backlog: `has_sufficient_permission()` fails open for an unrecognized required tier
 
-- **Where**: `platforms/navigation_core.py` (Frozen since TASK-002D),
+- **Where**: `platform_layer/platform_service/navigation_core.py` (Frozen since TASK-002D),
   `has_sufficient_permission(user_tier, required_tier)`.
 - **What**: `_TIER_RANK.get(required_tier, -1)` ranks any unrecognized
   `required_tier` value at `-1`. Since every real user tier

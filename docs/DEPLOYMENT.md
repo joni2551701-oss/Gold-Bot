@@ -6,7 +6,7 @@ authoritative production branch and is deployed to the VPS through
 `workflow_dispatch` on the `main` ref (GitHub Actions run #39,
 `30318793728`, deployed commit `61bbcb5`, both `validate` and `deploy`
 jobs green). `main` now contains the full production surface —
-`telegram/polling.py`, `core/pipeline.py`, `main.py`, and the
+`platform_layer/telegram/polling.py`, `core/pipeline.py`, `main.py`, and the
 `scripts/deploy/` release scripts — so the earlier "`main` is a stale
 pre-`TradingPipeline` snapshot" note is **obsolete** and has been
 removed; verified present on `main` at that commit.
@@ -31,7 +31,7 @@ GoldBot is two independent processes sharing one SQLite database file
 pipeline (`main.py`) runs on GitHub Actions
 (`.github/workflows/trading_bot.yml`, scheduled every 5 minutes) and
 needs no separate VPS. The Telegram product layer
-(`telegram/polling.py`) is a long-running process and does need a
+(`platform_layer/telegram/polling.py`) is a long-running process and does need a
 host that stays up — a VPS, a small always-on container, or similar.
 This guide covers both. For process supervision, crash recovery, and
 a monitoring foundation specific to unattended VPS hosting, see
@@ -102,7 +102,7 @@ architecturally independent.
   independently (no state carried between runs beyond the database).
 - **Telegram product layer**: restart the process (`systemctl restart
   goldbot-polling`, or your process manager's equivalent). It's safe
-  to restart at any time — `telegram/polling.py` holds no unsaved
+  to restart at any time — `platform_layer/telegram/polling.py` holds no unsaved
   in-memory state that a restart would lose; every command's effect
   is already persisted to the database by the time a response is
   sent.
@@ -137,7 +137,7 @@ Audit (Owner Monitoring track). If `TELEGRAM_BOT_TOKEN`/
 `TELEGRAM_CHAT_ID`/`TELEGRAM_OWNER_ID`/`TWELVE_DATA_API_KEY`/
 `GEMINI_API_KEY` are all correctly set as GitHub Secrets, `/start`
 can still appear to get no reply — because **GitHub Actions never
-runs `telegram/polling.py`**. `.github/workflows/trading_bot.yml`
+runs `platform_layer/telegram/polling.py`**. `.github/workflows/trading_bot.yml`
 only runs the one-shot `python main.py` (outbound signal broadcast)
 on a cron schedule; there is no GitHub Actions job for the
 long-running inbound listener that `/start` (and every other command)
@@ -153,7 +153,7 @@ secrets are necessary but not sufficient; the polling process must
 also be deployed and running. Check `journalctl -u goldbot-polling`
 (or the equivalent container logs) for one of two explicit startup
 log lines: `Startup aborted: Missing TELEGRAM_BOT_TOKEN` (token unset
-or unreadable) or `Telegram polling started.` (`telegram/polling.py`'s
+or unreadable) or `Telegram polling started.` (`platform_layer/telegram/polling.py`'s
 existing success log, confirming the listener actually started). Once
 started, the configured `TELEGRAM_OWNER_ID` also receives a one-time
 "GoldBot Online" message (Telegram Runtime Activation Alpha, TASK 2)

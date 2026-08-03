@@ -12,7 +12,7 @@ class UserRecord:
 
     strategy/notifications_enabled (Phase 40) and status/last_activity
     (Phase 45 -- user lifecycle state, deliberately separate from
-    subscription plan/status: see telegram/subscription_service.py)
+    subscription plan/status: see platform_layer/telegram/subscription_service.py)
     default so existing positional/keyword construction of this
     dataclass keeps working. An old row with no status column yet
     reads back as "NEW" (the schema default applied by the Phase 45

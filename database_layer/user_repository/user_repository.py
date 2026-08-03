@@ -265,10 +265,10 @@ class UserRepository:
         """
         Records the ISO-8601 timestamp this user's free trial started
         (Phase 61.5 TASK 4) -- same one-shot-set convention as
-        `set_phone_hash()`. A caller (telegram/user_service.py) is
+        `set_phone_hash()`. A caller (platform_layer/telegram/user_service.py) is
         responsible for only calling this once per user (a second call
         would silently reset the trial window, which is
-        `telegram/user_service.py`'s job to prevent, not this
+        `platform_layer/telegram/user_service.py`'s job to prevent, not this
         repository's).
         """
         return self.update_user(telegram_id, trial_started_at=started_at_iso)

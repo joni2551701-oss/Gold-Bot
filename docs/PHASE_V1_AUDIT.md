@@ -77,7 +77,7 @@ pair loops back on itself, so no `ImportError` occurs:
 
 - **`monitoring` ↔ `telegram`**: `core_layer/health_monitor/system_monitor.py`,
   `run_snapshot.py`, `snapshot_collector.py` import `telegram.*`;
-  reverse, `telegram/owner/monitoring_commands.py` and others import
+  reverse, `platform_layer/telegram/owner/monitoring_commands.py` and others import
   `monitoring.*`.
 - **`analytics` ↔ `learning`**: `analytics/learning_report.py` imports
   `learning.*`; reverse, `learning/pattern_detector.py` imports
@@ -139,14 +139,14 @@ re-run and confirmed during this audit. `decision_layer/decision_engine/decision
 only `ai/` import is `TYPE_CHECKING`-guarded; `decision_layer/decision_engine/models.py`'s
 `AIAnalysisResult` import is the one documented value-only exception.
 
-### `telegram/handlers.py`-never-touches-repository-directly rule — PASS, confirmed
+### `platform_layer/telegram/handlers.py`-never-touches-repository-directly rule — PASS, confirmed
 
-`telegram/handlers.py` imports only `telegram.*_service`,
-`telegram.owner.*`, `telegram.permissions`, `core_layer.logger.logger` — no
+`platform_layer/telegram/handlers.py` imports only `telegram.*_service`,
+`platform_layer.telegram.owner.*`, `platform_layer.telegram.permissions`, `core_layer.logger.logger` — no
 `database.*`, no `core.pipeline`, matching its own module docstring.
-One naming caveat: `telegram/result_handler.py` imports
+One naming caveat: `platform_layer/telegram/result_handler.py` imports
 `database_layer.trade_repository.signal_repository.SignalRepository` directly and is *not*
-wired into `telegram/handlers.py` — it is a standalone bridge module
+wired into `platform_layer/telegram/handlers.py` — it is a standalone bridge module
 functioning as a service despite its `*_handler.py` name. Not a rule
 violation (it isn't `handlers.py`), but the filename is misleading
 against the "handlers never touch repositories" convention. Recommend
@@ -255,8 +255,8 @@ documented design, since nothing here is a real position yet).
 **Semi-automatic confirmation**: `core/pipeline.py` terminates at
 Telegram delivery (`Notifier`), never at an execution call. The one
 Telegram-adjacent execution reference
-(`telegram/owner/execution_commands.py`) is explicitly not wired into
-`telegram/command_router.py`/`handlers.py` and only reports config
+(`platform_layer/telegram/owner/execution_commands.py`) is explicitly not wired into
+`platform_layer/telegram/command_router.py`/`handlers.py` and only reports config
 status ("Live execution: INERT"), never triggers `.simulate()`.
 
 **Verdict: PASS.** Naming is honest throughout (no function claims to
@@ -311,14 +311,14 @@ counters and a post-hoc decision trace log, neither of which feeds
 back into signal generation or execution.
 
 **Permission enforcement** is centralized in one router chokepoint:
-`telegram/command_router.py`'s `route_command()` derives the required
+`platform_layer/telegram/command_router.py`'s `route_command()` derives the required
 tier from the `OWNER_COMMANDS`/`ADMIN_COMMANDS` registries and denies
 *before* resolving the handler — individual owner handlers do not
 duplicate the check, by design. All 25 dispatch-reachable owner
 commands route through this single mechanism; no gap was found among
 them.
 
-**Live-wiring note**: of 22 modules in `telegram/owner/`, only 4
+**Live-wiring note**: of 22 modules in `platform_layer/telegram/owner/`, only 4
 (`ai_commands.py`, `dashboard.py`, `monitoring_commands.py`,
 `runtime_commands.py`) are actually dispatch-reachable from Telegram
 today. The remaining 18 are real, unit-tested, self-documented

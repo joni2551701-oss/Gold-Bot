@@ -1,9 +1,9 @@
 """Phase 63.7 TASK 2/3 — media_registry.get()/exists() and MediaManager's create_asset/validate_asset/prepare_asset/get_asset, all additive to the existing list_types()/descriptor_of()/is_enabled()/set_enabled()."""
 
-from media.media_manager import MediaManager
-from media.media_registry import exists, get
-from media.media_types import MediaType
-from media.models import MediaAssetStatus
+from media_layer.content_manager.media_manager import MediaManager
+from media_layer.content_manager.media_registry import exists, get
+from media_layer.content_manager.media_types import MediaType
+from media_layer.content_manager.models import MediaAssetStatus
 
 
 def test_registry_get_returns_the_real_descriptor():

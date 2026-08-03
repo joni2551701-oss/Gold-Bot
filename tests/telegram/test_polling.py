@@ -4,7 +4,7 @@ GoldBot Core Telegram Runtime Activation Alpha (startup secret
 validation, owner-only startup notification, heartbeat loop, and
 run_polling()'s wiring into telegram.runtime_monitor).
 
-telegram/polling.py is the real /start entry point (run as
+platform_layer/telegram/polling.py is the real /start entry point (run as
 `python -m telegram.polling`, a long-running process -- see
 docs/DEPLOYMENT.md). Covers the missing-token startup-abort path,
 create_dispatcher()'s wiring, and the Runtime Activation additions --
@@ -18,8 +18,8 @@ import asyncio
 import logging
 from types import SimpleNamespace
 
-from telegram import runtime_monitor
-from telegram.polling import (
+from platform_layer.telegram import runtime_monitor
+from platform_layer.telegram.polling import (
     HEARTBEAT_INTERVAL_SECONDS,
     _build_startup_message,
     _heartbeat_loop,
@@ -61,7 +61,7 @@ def test_create_dispatcher_returns_dispatcher_with_message_handler():
 
 def test_on_message_routes_text_to_route_message(monkeypatch):
     """A text message (no .contact) is routed via command_router.route_message()."""
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     dispatcher = create_dispatcher()
     handler = dispatcher.message.handlers[0].callback
@@ -91,7 +91,7 @@ def test_on_message_routes_text_to_route_message(monkeypatch):
 
 def test_on_message_routes_contact_to_route_contact(monkeypatch):
     """A contact-share message (.contact populated) is routed via command_router.route_contact()."""
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     dispatcher = create_dispatcher()
     handler = dispatcher.message.handlers[0].callback
@@ -126,7 +126,7 @@ def test_on_callback_query_routes_to_callback_router(monkeypatch):
     """A callback_query (inline keyboard button tap) is forwarded to
     callback_router.route_callback() -- polling.py never branches on
     callback.data itself (V1 Language Callback Fix)."""
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     dispatcher = create_dispatcher()
     handler = dispatcher.callback_query.handlers[0].callback
@@ -147,7 +147,7 @@ def test_on_callback_query_routes_to_callback_router(monkeypatch):
 
 
 def test_on_callback_query_never_raises_on_routing_failure(monkeypatch):
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     dispatcher = create_dispatcher()
     handler = dispatcher.callback_query.handlers[0].callback
@@ -170,7 +170,7 @@ def test_on_callback_query_never_raises_on_routing_failure(monkeypatch):
 
 
 def test_on_message_never_raises_on_routing_failure(monkeypatch):
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     dispatcher = create_dispatcher()
     handler = dispatcher.message.handlers[0].callback
@@ -202,7 +202,7 @@ def test_on_message_never_raises_on_routing_failure(monkeypatch):
 
 
 def test_deliver_sends_a_new_message():
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     class FakeMessage:
         from_user = SimpleNamespace(id=950)
@@ -222,7 +222,7 @@ def test_deliver_sends_a_new_message():
 
 
 def test_deliver_sends_followup_as_a_second_message():
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     class FakeMessage:
         from_user = SimpleNamespace(id=954)
@@ -252,7 +252,7 @@ def test_deliver_still_sends_followup_when_the_primary_send_fails():
     """V2 Phase 6.1.1: a transient failure on the primary (e.g. the
     ReplyKeyboardRemove() message) must not skip the followup -- skipping
     it would leave the chat with no Reply Keyboard at all."""
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     class FakeMessage:
         from_user = SimpleNamespace(id=955)
@@ -500,7 +500,7 @@ def test_heartbeat_loop_records_heartbeat_on_runtime_monitor(monkeypatch):
 
 
 def test_heartbeat_loop_survives_health_check_failure(monkeypatch):
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     def failing_health():
         raise RuntimeError("provider registry unreachable")
@@ -551,7 +551,7 @@ class _FakeDispatcherStopsImmediately:
 
 
 def test_run_polling_records_connected_on_successful_startup(monkeypatch):
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     monkeypatch.setattr(polling_module, "Bot", _FakeBot)
     monkeypatch.setattr(polling_module, "create_dispatcher", lambda: _FakeDispatcherStopsImmediately())
@@ -567,7 +567,7 @@ def test_run_polling_records_connected_on_successful_startup(monkeypatch):
 
 
 def test_run_polling_sends_owner_startup_notification(monkeypatch):
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     monkeypatch.setenv("TELEGRAM_OWNER_ID", "111")
     monkeypatch.setattr(polling_module, "Bot", _FakeBot)
@@ -592,7 +592,7 @@ def test_run_polling_sends_owner_startup_notification(monkeypatch):
 
 def test_run_polling_registers_menus_before_owner_notification(monkeypatch):
     """V2 Phase 4: register_all_menus() runs once, before dispatcher.start_polling()."""
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     monkeypatch.setenv("TELEGRAM_OWNER_ID", "111")
     monkeypatch.setattr(polling_module, "Bot", _FakeBot)
@@ -615,7 +615,7 @@ def test_run_polling_registers_menus_before_owner_notification(monkeypatch):
 
 
 def test_run_polling_closes_bot_session_on_exit(monkeypatch):
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     monkeypatch.setattr(polling_module, "Bot", _FakeBot)
     captured_bot = {}
@@ -636,7 +636,7 @@ def test_run_polling_closes_bot_session_on_exit(monkeypatch):
 
 
 def test_run_polling_cancels_heartbeat_task_on_exit(monkeypatch):
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     monkeypatch.setattr(polling_module, "Bot", _FakeBot)
     monkeypatch.setattr(polling_module, "create_dispatcher", lambda: _FakeDispatcherStopsImmediately())
@@ -663,7 +663,7 @@ def test_run_polling_cancels_heartbeat_task_on_exit(monkeypatch):
 
 def test_run_polling_still_starts_when_owner_notification_fails(monkeypatch):
     """A broken owner-notification path must never prevent the listener from starting."""
-    import telegram.polling as polling_module
+    import platform_layer.telegram.polling as polling_module
 
     monkeypatch.setenv("TELEGRAM_OWNER_ID", "111")
 

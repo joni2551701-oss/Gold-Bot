@@ -1,6 +1,6 @@
 """
 GoldBot Core Telegram Runtime Activation Alpha, TASK 4/8 --
-telegram/runtime_monitor.py tests. Constructs its own
+platform_layer/telegram/runtime_monitor.py tests. Constructs its own
 TelegramRuntimeMonitor() instance for isolation everywhere except the
 module-level free-function tests, which intentionally exercise the
 shared DEFAULT_RUNTIME_MONITOR singleton (matching
@@ -10,7 +10,7 @@ core_layer/health_monitor/system_monitor.py's own test convention).
 from dataclasses import fields
 
 import core_layer.health_monitor.system_monitor as system_monitor_module
-from telegram.runtime_monitor import (
+from platform_layer.telegram.runtime_monitor import (
     DEFAULT_RUNTIME_MONITOR,
     TelegramRuntimeMonitor,
     TelegramRuntimeStatus,
@@ -98,7 +98,7 @@ def test_record_error_relays_into_monitoring_system_monitor():
 
 
 def test_record_error_never_raises_when_relay_fails(monkeypatch):
-    import telegram.runtime_monitor as runtime_monitor_module
+    import platform_layer.telegram.runtime_monitor as runtime_monitor_module
 
     def failing_relay(message):
         raise RuntimeError("relay unreachable")

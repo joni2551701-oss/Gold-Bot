@@ -8,7 +8,7 @@ from ai.runtime.runtime_manager import RuntimeManager
 from ai.runtime.runtime_profiles import PRODUCTION_PROFILE
 from ai.runtime.runtime_state import RuntimeState
 from ai.runtime.self_check import CheckStatus, RuntimeSelfCheckReport, SelfCheckResult
-from telegram.owner.runtime_commands import (
+from platform_layer.telegram.owner.runtime_commands import (
     runtime_check,
     runtime_events,
     runtime_full_status,

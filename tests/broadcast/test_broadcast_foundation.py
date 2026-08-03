@@ -4,10 +4,10 @@ from datetime import datetime, timezone
 
 from ai.content.broadcast_output import BroadcastReadyContent
 from ai.content_types import ContentType
-from broadcast.broadcast_manager import BroadcastManager
-from broadcast.models import BroadcastProviderStatus, BroadcastProviderType, BroadcastTrigger
-from broadcast.provider_manager import BroadcastProviderManager, build_broadcast_provider_registry
-from broadcast.trigger_manager import BroadcastTriggerManager
+from media_layer.telegram_broadcast.broadcast_manager import BroadcastManager
+from media_layer.telegram_broadcast.models import BroadcastProviderStatus, BroadcastProviderType, BroadcastTrigger
+from media_layer.telegram_broadcast.provider_manager import BroadcastProviderManager, build_broadcast_provider_registry
+from media_layer.telegram_broadcast.trigger_manager import BroadcastTriggerManager
 
 
 def test_provider_registry_has_all_eight_director_named_types():

@@ -37,7 +37,7 @@ Two independent OS processes share one SQLite database:
    trading hours) — one run per invocation: fetch data, analyze it,
    and (if a signal clears every gate) send one Telegram notification
    and persist the result.
-2. **Telegram product layer** (`telegram/polling.py`, long-lived) —
+2. **Telegram product layer** (`platform_layer/telegram/polling.py`, long-lived) —
    user registration, settings, subscriptions, admin panel, feedback.
    Reads/writes the same database, entirely independent of when the
    pipeline last ran.
@@ -83,7 +83,7 @@ The exact, implementation-accurate `core/pipeline.py` stage order
 | v0.6 Portfolio | Multi-position/portfolio-level risk and performance tracking. |
 | v0.7 Cloud | Cloud-hosted deployment and scaling. |
 | v0.8 Mini App | Telegram Mini App interface. |
-| v0.9 Multi-Broker | Additional providers beyond MT5 — Bitget, BingX, MEXC (optional) — plus an Admin Panel with live Telegram commands (today's `telegram/owner/*.py` modules registered into `command_router.py`). |
+| v0.9 Multi-Broker | Additional providers beyond MT5 — Bitget, BingX, MEXC (optional) — plus an Admin Panel with live Telegram commands (today's `platform_layer/telegram/owner/*.py` modules registered into `command_router.py`). |
 | v1.0 Senior AI Trading Ecosystem | AI Avatar Layer, Voice Interface, Hologram Display Layer — a new Presentation Layer only; GoldBot Core stays unchanged underneath (see `docs/FOUNDATION_FREEZE_v0.4.md`'s Foundation Principles for why this is architecturally safe to plan for now). |
 
 Every v0.3.5-v0.4 Foundation phase followed the same rule: foundation

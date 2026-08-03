@@ -21,7 +21,7 @@ from strategy_layer.strategy_manager.lifecycle.strategy_model import StrategyDef
 from strategy_layer.strategy_manager.lifecycle.strategy_status import StrategyStatus
 
 # The real symbol/interval this codebase runs today (main.py,
-# telegram/signal_service.py's DEFAULT_SYMBOL) -- not a placeholder.
+# platform_layer/telegram/signal_service.py's DEFAULT_SYMBOL) -- not a placeholder.
 _SUPPORTED_ASSETS = ["XAUUSD"]
 _SUPPORTED_TIMEFRAMES = ["M15"]
 _SUPPORTED_STYLES = ["INTRADAY"]

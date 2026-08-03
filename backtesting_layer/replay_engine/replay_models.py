@@ -99,7 +99,7 @@ class ReplayResult:
 def format_replay_report(result: ReplayResult) -> str:
     """
     TASK 7 -- the future `/replay_status` command's payload (see
-    telegram/owner/replay_commands.py). Never raises: every field on
+    platform_layer/telegram/owner/replay_commands.py). Never raises: every field on
     ReplayResult is either always-present or already None-safe via its
     own property.
     """

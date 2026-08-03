@@ -191,15 +191,15 @@ this class. States its own advisory-only boundary in its system prompt
 text ("Do NOT say 'BUY' or 'SELL'... the Decision Engine, not this
 prompt, turns any of this into a trade").
 
-## TASK 8: `telegram/owner/fundamental_commands.py`
+## TASK 8: `platform_layer/telegram/owner/fundamental_commands.py`
 
 `get_macro_status(fundamental)`, `get_fundamental_score_report(score)`,
 `get_fed_status(fundamental)` -- the future `/macro_status`,
 `/fundamental_score`, `/fed_status` commands. Thin wrappers only, same
 "compute from supplied data, don't fetch" posture as
 `validation_commands.py`/`performance_commands.py`. Not registered
-into `telegram/commands.py`, not called from
-`telegram/command_router.py` or `telegram/handlers.py`.
+into `platform_layer/telegram/commands.py`, not called from
+`platform_layer/telegram/command_router.py` or `platform_layer/telegram/handlers.py`.
 
 ## TASK 9: Database
 
@@ -223,10 +223,10 @@ gained one new import, `data_layer.providers.fundamental_base.FundamentalSnapsho
 (already a sibling import in that package). `ai/prompts/prompt_manager.py`
 gained one new `TYPE_CHECKING`-only import,
 `context.fundamental_context.FundamentalContextSnapshot`.
-`telegram/owner/fundamental_commands.py` imports
+`platform_layer/telegram/owner/fundamental_commands.py` imports
 `context.fundamental_context.FundamentalContextSnapshot`,
 `context.fundamental_scoring.FundamentalScoreResult`/`format_fundamental_score()`,
-and `telegram.owner.provider_commands.ProviderCommandResult`. None of
+and `platform_layer.telegram.owner.provider_commands.ProviderCommandResult`. None of
 these import `database/`, `risk/`, `decision/`, `execution/`,
 `strategies/`, or `signals/`.
 

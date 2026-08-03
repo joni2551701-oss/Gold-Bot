@@ -1,8 +1,8 @@
 """
 Monitoring Layer — Access Gate (Phase B.0 Rule 5: "Feature Flag
 enable_owner_monitoring. Owner only."). Owner identity is already
-enforced structurally by the live `telegram.permissions`/
-`telegram.command_router` gate on every `OWNER_COMMANDS` entry (per
+enforced structurally by the live `platform_layer.telegram.permissions`/
+`platform_layer.telegram.command_router` gate on every `OWNER_COMMANDS` entry (per
 `docs/PHASE_CORE_MONITORING_AUDIT.md`'s own "Security" section) --
 this function only toggles whether Phase B.0's own new surface
 (`/performance`, and the resource/health lines appended to

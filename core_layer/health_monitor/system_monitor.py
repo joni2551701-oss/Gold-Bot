@@ -5,7 +5,7 @@ Alpha, TASK 2).
 Composes two already-existing, already-tested sources rather than
 writing new health-check logic (per
 `docs/PHASE_CORE_MONITORING_AUDIT.md`):
-`telegram.admin_service.AdminService.get_system_status()` (database
+`platform_layer.telegram.admin_service.AdminService.get_system_status()` (database
 reachability) and `core_layer.health_monitor.provider_health.check_registry_health()`
 (per-provider ONLINE/DEGRADED/OFFLINE). `uptime_seconds`/`last_scan`/
 `last_error` are this module's own genuine addition -- no existing
@@ -26,7 +26,7 @@ from core_layer.logger.logger import setup_logger
 from data_layer.providers.registry import ProviderRegistry, build_default_registry
 from core_layer.health_monitor.models import SystemHealth
 from core_layer.health_monitor.provider_health import ProviderHealthStatus, check_registry_health
-from telegram.admin_service import AdminService
+from platform_layer.telegram.admin_service import AdminService
 
 logger = setup_logger("SystemMonitor")
 

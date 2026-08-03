@@ -5,7 +5,7 @@ Foundation, TASK 1).
 A finer-grained, dedicated vocabulary for the emergency layer --
 deliberately separate from core_layer.system_state.system_state.SystemState (Phase 59.6),
 same "two parallel hierarchies for two different granularities"
-precedent already established by telegram.owner.owner_roles.OwnerRole
+precedent already established by platform_layer.telegram.owner.owner_roles.OwnerRole
 vs telegram.permissions.PermissionLevel. SystemState's own docstring
 reserved PANIC/MAINTENANCE "for a future Phase 59.9" -- this phase
 does not reuse those two values because SystemState has no equivalent

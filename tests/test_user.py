@@ -6,7 +6,7 @@ import asyncio
 
 
 def test_registration_creates_user_with_new_status():
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
 
     result = UserService().register_user("100", username="alice")
     assert result.success is True
@@ -14,7 +14,7 @@ def test_registration_creates_user_with_new_status():
 
 
 def test_registration_duplicate_returns_existing_profile():
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
 
     service = UserService()
     service.register_user("101", username="bob")
@@ -26,7 +26,7 @@ def test_registration_duplicate_returns_existing_profile():
 
 
 def test_settings_change_risk_language_timeframe_strategy():
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
 
     service = UserService()
     service.register_user("102", username="carol")
@@ -44,7 +44,7 @@ def test_settings_change_risk_language_timeframe_strategy():
 
 
 def test_settings_change_notifications():
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
 
     service = UserService()
     service.register_user("103", username="dave")
@@ -55,7 +55,7 @@ def test_settings_change_notifications():
 
 
 def test_lifecycle_touch_activity_promotes_new_to_active():
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
 
     service = UserService()
     service.register_user("104", username="erin")
@@ -68,7 +68,7 @@ def test_lifecycle_touch_activity_promotes_new_to_active():
 
 
 def test_lifecycle_ban_and_activate():
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
 
     service = UserService()
     service.register_user("105", username="frank")
@@ -84,8 +84,8 @@ def test_lifecycle_ban_and_activate():
 
 def test_lifecycle_banned_user_not_silently_reactivated_by_start():
     """A BANNED user calling /start again must stay BANNED (security-relevant)."""
-    from telegram.handlers import start_handler
-    from telegram.user_service import UserService
+    from platform_layer.telegram.handlers import start_handler
+    from platform_layer.telegram.user_service import UserService
 
     service = UserService()
     service.register_user("106", username="gina")
@@ -98,8 +98,8 @@ def test_lifecycle_banned_user_not_silently_reactivated_by_start():
 
 def test_start_handler_stops_a_banned_user_with_a_localized_reply():
     """V2 Phase 3: /start -> User exists? -> BANNED? -> Stop, before touch_activity()."""
-    from telegram.handlers import start_handler
-    from telegram.user_service import UserService
+    from platform_layer.telegram.handlers import start_handler
+    from platform_layer.telegram.user_service import UserService
 
     service = UserService()
     service.register_user("107", username="banned_user")
@@ -115,8 +115,8 @@ def test_start_handler_stops_a_banned_user_with_a_localized_reply():
 
 def test_start_handler_registration_step_is_reachable_via_registration_service():
     """A brand new /start leaves the user at the LANGUAGE Wizard step."""
-    from telegram.handlers import start_handler, _registration_step
-    from telegram.registration_service import RegistrationStep
+    from platform_layer.telegram.handlers import start_handler, _registration_step
+    from platform_layer.telegram.registration_service import RegistrationStep
 
     asyncio.run(start_handler("108", username="new_wizard_user"))
 
@@ -124,8 +124,8 @@ def test_start_handler_registration_step_is_reachable_via_registration_service()
 
 
 def test_registration_step_is_none_for_a_banned_user():
-    from telegram.handlers import _registration_step
-    from telegram.user_service import UserService
+    from platform_layer.telegram.handlers import _registration_step
+    from platform_layer.telegram.user_service import UserService
 
     service = UserService()
     service.register_user("109", username="banned_for_step_check")
@@ -135,7 +135,7 @@ def test_registration_step_is_none_for_a_banned_user():
 
 
 def test_get_profile_unknown_user_returns_not_found():
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
 
     result = UserService().get_profile("does-not-exist")
     assert result.success is False

@@ -79,14 +79,14 @@ another test happened to construct a `RiskResult`.
 
 **Several real Telegram commands had no `route_command()`-level
 test.** `/settings` and `/notifications` (and
-`telegram/notification_service.py` entirely) had **zero** test
+`platform_layer/telegram/notification_service.py` entirely) had **zero** test
 coverage anywhere in the suite. `/profile`, `/history`, `/subscription`
 were only exercised indirectly (service-layer calls, not through the
-actual command router). `telegram/handlers.py` was at 24% coverage.
+actual command router). `platform_layer/telegram/handlers.py` was at 24% coverage.
 
 **Handler-level argument validation was untested.** `tests/test_user.py`
 tested `UserService.change_risk()`/`change_language()`/etc. directly,
-bypassing `telegram/handlers.py`'s own argument-allowlist validation
+bypassing `platform_layer/telegram/handlers.py`'s own argument-allowlist validation
 (e.g. `/risk 99` being rejected, `/language XX` being rejected) —
 that validation branch had zero coverage.
 
@@ -170,13 +170,13 @@ the directory the task asked for, holding only this explanation.
 - `decision_layer/decision_engine/decision_engine.py`: 0% → **100%**.
 - `signal_layer/signal_engine/signal_engine.py`: 0% → **100%**.
 - `risk_layer/risk_engine/risk_manager.py`: 44% → **82%**.
-- `telegram/handlers.py`: 24% → **48%**.
+- `platform_layer/telegram/handlers.py`: 24% → **48%**.
 
 Deliberately left low at the time (LOW priority, per Phase 52's own
 prioritization — network-dependent entry points, not pure logic):
-`telegram/polling.py` (0%, long-running process entry point),
-`telegram/result_handler.py` (0%, no caller wires it yet — dead code
-per the Phase 48 audit), `telegram/notifier.py` (56%, the untested
+`platform_layer/telegram/polling.py` (0%, long-running process entry point),
+`platform_layer/telegram/result_handler.py` (0%, no caller wires it yet — dead code
+per the Phase 48 audit), `platform_layer/telegram/notifier.py` (56%, the untested
 remainder is real Telegram API/event-loop plumbing that would need
 network mocking beyond that phase's scope).
 

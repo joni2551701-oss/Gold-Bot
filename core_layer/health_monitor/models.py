@@ -48,7 +48,7 @@ class SystemHealth:
     data_connection: a short label summarizing provider registry
         health (e.g. "2/4 ONLINE").
     database_status: relayed directly from
-        `telegram.admin_service.AdminService.get_system_status().database`.
+        `platform_layer.telegram.admin_service.AdminService.get_system_status().database`.
     """
 
     status: str

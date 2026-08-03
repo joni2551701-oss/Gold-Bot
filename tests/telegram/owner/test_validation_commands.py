@@ -1,12 +1,12 @@
 """
 Phase 59 Real Market Validation Foundation, TASK 8 --
-telegram/owner/validation_commands.py tests.
+platform_layer/telegram/owner/validation_commands.py tests.
 """
 
 from datetime import datetime, timezone
 
-from telegram.owner.provider_commands import ProviderCommandResult
-from telegram.owner.validation_commands import (
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.validation_commands import (
     get_today_signals,
     get_validation_report,
     get_validation_status,

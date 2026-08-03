@@ -26,7 +26,7 @@ literally names `main` as the trigger branch. `docs/DEPLOYMENT.md` and
 force since the Branch Sync Brief) establish that
 `claude/code-analysis-optimization-pwfo3q` — not `main` — is GoldBot's
 actual production branch; `main` is a stale, pre-`TradingPipeline`
-snapshot with no `telegram/polling.py`, never read by any existing
+snapshot with no `platform_layer/telegram/polling.py`, never read by any existing
 CI/CD job. `trading_bot.yml` and `owner_snapshot.yml` both pin the same
 branch for exactly this reason. Deploying literal `main` today would
 ship the stale skeleton to the VPS. This audit adopts
@@ -43,7 +43,7 @@ logic. Deploy only.").
 
 | File | Purpose | Reused by Phase P1? |
 |---|---|---|
-| `scripts/health_check.py` | Config loads, 3 required secrets present, database reachable (`SELECT 1`). Exit 0/1. Standalone, no side effects beyond checks. | **Yes** — extended additively (TASK 8/9) with two new checks (`main` importable, `telegram.polling` importable), reused both as the pre-activation smoke test and the post-restart health check. No duplicate script created. |
+| `scripts/health_check.py` | Config loads, 3 required secrets present, database reachable (`SELECT 1`). Exit 0/1. Standalone, no side effects beyond checks. | **Yes** — extended additively (TASK 8/9) with two new checks (`main` importable, `platform_layer.telegram.polling` importable), reused both as the pre-activation smoke test and the post-restart health check. No duplicate script created. |
 | `scripts/notify_failure.sh` | systemd `OnFailure=` alert to `TELEGRAM_OWNER_ID` via `curl`, independent of the Python app. | Reused unmodified — `deploy/systemd/goldbot.service` (TASK 6) wires the same `OnFailure=goldbot-notify-failure@%n.service` pattern the existing units already use. |
 
 No `scripts/deploy/` directory exists yet — new in this phase (TASK
@@ -66,7 +66,7 @@ at `/opt/goldbot` (Phase 58, `docs/production_setup.md`):
 
 | File | Type | Targets |
 |---|---|---|
-| `goldbot-polling.service` | `simple`, `Restart=always` | Long-running `telegram/polling.py` — `WorkingDirectory=/opt/goldbot`, `ExecStart=/opt/venv/bin/python -m telegram.polling`. |
+| `goldbot-polling.service` | `simple`, `Restart=always` | Long-running `platform_layer/telegram/polling.py` — `WorkingDirectory=/opt/goldbot`, `ExecStart=/opt/venv/bin/python -m telegram.polling`. |
 | `goldbot-pipeline.service` + `.timer` | `oneshot` + timer | `main.py` every 5 min — an *alternative* to `trading_bot.yml`, not meant to run alongside it. |
 | `goldbot-healthcheck.service` + `.timer` | `oneshot` + timer | Runs `scripts/health_check.py` every 10 min. |
 | `goldbot-notify-failure@.service` | `oneshot`, templated | `OnFailure=` target for the three units above; sends a Telegram alert naming the failed unit. |
@@ -81,7 +81,7 @@ retargeting these units' `WorkingDirectory`/`ExecStart` to
 followed `docs/production_setup.md`'s existing manual-install
 instructions. Per step 3, a new, distinctly-named unit is justified:
 `deploy/systemd/goldbot.service` (TASK 6) — same process
-(`telegram/polling.py`, the long-running production process; the
+(`platform_layer/telegram/polling.py`, the long-running production process; the
 trading pipeline continues to run via `trading_bot.yml` on GitHub
 Actions, unaffected and not duplicated here), same `Restart=always` +
 `OnFailure=` pattern as `goldbot-polling.service`, but pointed at
@@ -124,7 +124,7 @@ time — covered in `docs/deployment/PRODUCTION_DEPLOYMENT.md`.
   into the unit's process environment. `requirements.txt` itself lists
   only `aiogram`/`requests` — no `python-dotenv` dependency to justify
   adding one.
-- `telegram/polling.py` confirmed import-safe: all top-level names are
+- `platform_layer/telegram/polling.py` confirmed import-safe: all top-level names are
   `def`/`async def` behind `if __name__ == "__main__":` (line 236) —
   `import telegram.polling` never starts polling, executes no network
   call, and is safe to use as a smoke-test import check.

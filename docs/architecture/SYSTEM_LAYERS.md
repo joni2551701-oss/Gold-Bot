@@ -18,7 +18,7 @@ Layer 1   Market Intelligence  data/, context/
 Layer 2   Decision Intelligence strategies/, signals/, decision/, risk/
 Layer 3   Execution            execution/, lifecycle/
 Layer 4   AI Intelligence      ai/ (19 subpackages)
-Layer 5   Product Layer        telegram/, telegram/owner/
+Layer 5   Product Layer        telegram/, platform_layer/telegram/owner/
 Layer 6   Media Intelligence   ai/content/, broadcast/, media/, translation/, ai/persona/
 ```
 
@@ -50,7 +50,7 @@ the internal flow. Never calls Layer 2 or Layer 3 (Constitution
 Article 1/3, mechanically verified by the `ai/` import sweep in
 `docs/architecture/IMPORT_RULES.md`).
 
-**Layer 5 — Product Layer.** `telegram/` and `telegram/owner/` — the
+**Layer 5 — Product Layer.** `telegram/` and `platform_layer/telegram/owner/` — the
 delivery boundary where Layer 2's trading output and Layer 4's AI
 explanation meet a human reader, per Handler → Service → Repository
 (Constitution Article 4). See `docs/architecture/TELEGRAM_FLOW.md`.

@@ -23,14 +23,14 @@ Before writing any code, the following were re-read and confirmed:
 
 | Symbol | File | Existing shape used |
 |---|---|---|
-| `settings_handler()` | `telegram/handlers.py` | extended, not replaced — now reads `_current_profile()` instead of a static string |
-| `settings_keyboard()` | `telegram/keyboards.py` | untouched — it only opens the Settings submenu, unrelated to this phase |
-| `callback_router.py` `route_callback()`/`_handle_language()` | `telegram/callback_router.py` | the edit-in-place + always-`answer()` pattern is reused verbatim for the new `_handle_setting()` |
-| `command_router.py` `_KEYBOARD_BY_COMMAND` | `telegram/command_router.py` | extended from `{command: builder}` to `{command: (builder, current_value_accessor)}`, not replaced |
-| `notifications_keyboard()` | `telegram/keyboards.py` | existed since Phase 43 as a display-only asset; this phase wires it in, it does not recreate it |
+| `settings_handler()` | `platform_layer/telegram/handlers.py` | extended, not replaced — now reads `_current_profile()` instead of a static string |
+| `settings_keyboard()` | `platform_layer/telegram/keyboards.py` | untouched — it only opens the Settings submenu, unrelated to this phase |
+| `callback_router.py` `route_callback()`/`_handle_language()` | `platform_layer/telegram/callback_router.py` | the edit-in-place + always-`answer()` pattern is reused verbatim for the new `_handle_setting()` |
+| `command_router.py` `_KEYBOARD_BY_COMMAND` | `platform_layer/telegram/command_router.py` | extended from `{command: builder}` to `{command: (builder, current_value_accessor)}`, not replaced |
+| `notifications_keyboard()` | `platform_layer/telegram/keyboards.py` | existed since Phase 43 as a display-only asset; this phase wires it in, it does not recreate it |
 | DB user settings (`risk_percent`, `strategy`, `timeframe`, `notifications_enabled`) | `database_layer/user_repository/user_models.py` | all four fields already existed — no schema change |
-| `UserService.change_risk/change_strategy/change_timeframe`, `NotificationService.enable_notifications/disable_notifications` | `telegram/user_service.py`, `telegram/notification_service.py` | reused as-is, already called by the pre-existing `/risk`, `/strategy`, `/timeframe`, `/notifications` text commands |
-| Translation keys (`risk.*`, `strategy.*`, `timeframe.*`, `notifications.*`) | `translation/ui_catalog.py` | reused as-is; only `settings.menu` (extended with placeholders) and the new `settings.saved` key were added |
+| `UserService.change_risk/change_strategy/change_timeframe`, `NotificationService.enable_notifications/disable_notifications` | `platform_layer/telegram/user_service.py`, `platform_layer/telegram/notification_service.py` | reused as-is, already called by the pre-existing `/risk`, `/strategy`, `/timeframe`, `/notifications` text commands |
+| Translation keys (`risk.*`, `strategy.*`, `timeframe.*`, `notifications.*`) | `media_layer/translation/ui_catalog.py` | reused as-is; only `settings.menu` (extended with placeholders) and the new `settings.saved` key were added |
 
 Conclusion: every requirement was satisfied by extending an existing
 module (Module Reuse Principle step 2) — no new top-level file, class,
@@ -44,15 +44,15 @@ router dispatch) established for `/language` in V1.1 Language UX
 Polish is extended verbatim to Risk/Strategy/Timeframe/Notifications:
 
 ```
-telegram/keyboards.py          risk_keyboard()/strategy_keyboard()/
+platform_layer/telegram/keyboards.py          risk_keyboard()/strategy_keyboard()/
                                 timeframe_keyboard()/notifications_keyboard()
                                 (selected= param added, Stage 6)
         |
-telegram/command_router.py     _KEYBOARD_BY_COMMAND -- attaches the
+platform_layer/telegram/command_router.py     _KEYBOARD_BY_COMMAND -- attaches the
                                 keyboard with selected= from the
                                 caller's current DB value (Stage 5)
         |
-telegram/handlers.py           risk_status()/strategy_status()/
+platform_layer/telegram/handlers.py           risk_status()/strategy_status()/
                                 timeframe_status()/notifications_status()
                                 -- rich (text, show_keyboard) result,
                                 reusing LanguageUpdateResult as-is
@@ -61,15 +61,15 @@ telegram/handlers.py           risk_status()/strategy_status()/
    -- thin `.text` wrapper          (inline callback -- edit-in-place,
                                       Stage 6)
         |                                      |
-telegram/user_service.py /             UserService / NotificationService
-telegram/notification_service.py       (unchanged)
+platform_layer/telegram/user_service.py /             UserService / NotificationService
+platform_layer/telegram/notification_service.py       (unchanged)
         |
 database_layer/user_repository/user_repository.py    (unchanged -- no schema change)
 ```
 
 ## Callback Flow (Stage 1-4, 6)
 
-`telegram/callback_router.py` gained one dict, `_SETTING_CALLBACKS`,
+`platform_layer/telegram/callback_router.py` gained one dict, `_SETTING_CALLBACKS`,
 mapping each prefix (`risk`, `strategy`, `timeframe`, `notifications`)
 to its `handlers.*_status` name, its `keyboards.*_keyboard` builder,
 its `handlers._current_*` accessor name, and a `parse` function that
@@ -132,7 +132,7 @@ the text command path.
 
 ## Current Value Display (Stage 5)
 
-`telegram/handlers.py` gained `_current_profile()` (one best-effort
+`platform_layer/telegram/handlers.py` gained `_current_profile()` (one best-effort
 `UserService().get_profile()` call, never raises) and four thin
 accessors on top of it: `_current_risk()`, `_current_timeframe()`,
 `_current_strategy_slug()`, `_current_notifications_choice()`.
@@ -147,7 +147,7 @@ caller's current choice.
 
 ## Inline UX (Stage 6)
 
-`telegram/keyboards.py` gained a private `_radio_label(label, value,
+`platform_layer/telegram/keyboards.py` gained a private `_radio_label(label, value,
 selected)` helper: `selected=None` (every pre-existing call site)
 returns the label unchanged — byte-identical to pre-Phase-6.2 output,
 verified against every existing exact-text assertion in
@@ -174,7 +174,7 @@ sahifa` behavior was modified.
 
 ## Translation (Stage 8)
 
-`translation/ui_catalog.py` changes, EN/UZ/RU for all three:
+`media_layer/translation/ui_catalog.py` changes, EN/UZ/RU for all three:
 
 - `settings.menu` rewritten with `{language_value}`/`{risk_value}`/
   `{strategy_value}`/`{timeframe_value}`/`{notifications_value}`
@@ -230,9 +230,9 @@ plus the full pre-existing `tests/telegram/` and
 Every change in this phase is additive or a signature extension with a
 backward-compatible default (`selected=None`), confined to `telegram/`
 and `translation/`. Reverting the four touched files
-(`telegram/handlers.py`, `telegram/keyboards.py`,
-`telegram/command_router.py`, `telegram/callback_router.py`) plus
-`translation/ui_catalog.py` and the three new/updated test files
+(`platform_layer/telegram/handlers.py`, `platform_layer/telegram/keyboards.py`,
+`platform_layer/telegram/command_router.py`, `platform_layer/telegram/callback_router.py`) plus
+`media_layer/translation/ui_catalog.py` and the three new/updated test files
 returns the bot to the exact pre-Phase-6.2 "recognized but
 unimplemented" callback state — no database migration was introduced,
 so no down-migration is needed.

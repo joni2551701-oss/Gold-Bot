@@ -6,13 +6,13 @@
 Telegram Update
       |
       v
-telegram/polling.py        (aiogram Dispatcher; long-running process, separate from main.py)
+platform_layer/telegram/polling.py        (aiogram Dispatcher; long-running process, separate from main.py)
       |
       v
-telegram/command_router.py (parses command + args, resolves permission tier, attaches a hint keyboard)
+platform_layer/telegram/command_router.py (parses command + args, resolves permission tier, attaches a hint keyboard)
       |
       v
-telegram/handlers.py       (one async function per command; Handler -> Service only, never -> Database/Core)
+platform_layer/telegram/handlers.py       (one async function per command; Handler -> Service only, never -> Database/Core)
       |
       v
 Services                   (see table below)
@@ -24,7 +24,7 @@ Repositories                (SQL lives here, and only here)
 SQLite (database/goldbot.db by default; see database_schema.md)
 ```
 
-`main.py` (the scheduled `TradingPipeline` run) and `telegram/polling.py`
+`main.py` (the scheduled `TradingPipeline` run) and `platform_layer/telegram/polling.py`
 (the long-running command listener) are two separate processes. They
 share the same SQLite database file but are never invoked from one
 another.
@@ -33,13 +33,13 @@ another.
 
 | Service | File | Responsibility |
 |---|---|---|
-| `UserService` | `telegram/user_service.py` | Registration, profile read/update, lifecycle state (`NEW`/`ACTIVE`/`BANNED`), activity tracking |
-| `SubscriptionService` | `telegram/subscription_service.py` | Plan read (`FREE`/`PREMIUM`/`VIP`), lazy default-subscription creation, `has_signal_access()` |
-| `SignalAccessService` | `telegram/signal_access_service.py` | Access decision only (OWNER/ADMIN bypass + plan check) — never touches the database directly |
-| `SignalService` | `telegram/signal_service.py` | Read-only signal retrieval (`/signal`, `/history`) |
-| `NotificationService` | `telegram/notification_service.py` | Per-user notification on/off, recipient list for notification-respecting sends |
-| `FeedbackService` | `telegram/feedback_service.py` | Feedback submission, listing, status transitions |
-| `AdminService` | `telegram/admin_service.py` | Admin CRUD, statistics, system health, broadcast delivery, feedback review (delegates to `FeedbackService`) |
+| `UserService` | `platform_layer/telegram/user_service.py` | Registration, profile read/update, lifecycle state (`NEW`/`ACTIVE`/`BANNED`), activity tracking |
+| `SubscriptionService` | `platform_layer/telegram/subscription_service.py` | Plan read (`FREE`/`PREMIUM`/`VIP`), lazy default-subscription creation, `has_signal_access()` |
+| `SignalAccessService` | `platform_layer/telegram/signal_access_service.py` | Access decision only (OWNER/ADMIN bypass + plan check) — never touches the database directly |
+| `SignalService` | `platform_layer/telegram/signal_service.py` | Read-only signal retrieval (`/signal`, `/history`) |
+| `NotificationService` | `platform_layer/telegram/notification_service.py` | Per-user notification on/off, recipient list for notification-respecting sends |
+| `FeedbackService` | `platform_layer/telegram/feedback_service.py` | Feedback submission, listing, status transitions |
+| `AdminService` | `platform_layer/telegram/admin_service.py` | Admin CRUD, statistics, system health, broadcast delivery, feedback review (delegates to `FeedbackService`) |
 
 Every service follows the same contract: lazy repository construction
 (a bare `Service()` never touches disk until a method is called),
@@ -58,7 +58,7 @@ Three tiers, ranked `OWNER > ADMIN > USER`:
 - **USER** — any resolvable Telegram user ID; the default tier.
 
 A command's required tier is derived from which registry it's
-declared in (`telegram/commands.py`'s `COMMANDS` / `OWNER_COMMANDS` /
+declared in (`platform_layer/telegram/commands.py`'s `COMMANDS` / `OWNER_COMMANDS` /
 `ADMIN_COMMANDS`) — there is exactly one place a command name is
 listed as belonging to a tier; `command_router.py` never hardcodes a
 second list. A command present in both `OWNER_COMMANDS` and
@@ -102,11 +102,11 @@ not the live one (the thing worth upgrading for).
 ## Known architectural boundary
 
 The scheduled pipeline (`main.py` → `core/pipeline.py` →
-`telegram/notifier.py`) delivers to one fixed `TELEGRAM_CHAT_ID`
+`platform_layer/telegram/notifier.py`) delivers to one fixed `TELEGRAM_CHAT_ID`
 (a channel/group) per run — it does not iterate per-user and does not
 consult `NotificationService` or `SignalAccessService`. Per-user
 notification preference and access control apply only to the
 Telegram-layer commands (`/broadcast`, `/signal`, etc.), not to the
 pipeline's own outbound message. This is a deliberate scope boundary
 (the pipeline is off-limits to Telegram-layer phases), documented in
-`telegram/notification_service.py`'s module docstring.
+`platform_layer/telegram/notification_service.py`'s module docstring.

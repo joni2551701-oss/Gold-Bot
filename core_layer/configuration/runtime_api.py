@@ -9,7 +9,7 @@ here imports telegram/, and no Telegram command is registered against
 these functions in this phase. Each function constructs its own
 default RuntimeFeatureManager() when none is supplied (injectable for
 tests, same optional-dependency convention as
-telegram/owner/*_commands.py's own repository-construction pattern) --
+platform_layer/telegram/owner/*_commands.py's own repository-construction pattern) --
 this module intentionally does not depend on telegram/ at all, keeping
 the existing one-directional telegram/ -> configuration/ dependency
 (never reversed).
@@ -26,7 +26,7 @@ logger = setup_logger("RuntimeApi")
 
 @dataclass(frozen=True)
 class RuntimeApiResult:
-    """Never raises to a caller -- every function below catches its own exceptions and returns success=False with a message instead, matching telegram/owner/provider_commands.ProviderCommandResult's own "structured result, never propagate" convention (not reused directly -- this module has no telegram/ dependency)."""
+    """Never raises to a caller -- every function below catches its own exceptions and returns success=False with a message instead, matching platform_layer/telegram/owner/provider_commands.ProviderCommandResult's own "structured result, never propagate" convention (not reused directly -- this module has no telegram/ dependency)."""
     success: bool
     message: str
     data: Dict[str, Any] = field(default_factory=dict)

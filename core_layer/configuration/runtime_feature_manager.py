@@ -7,7 +7,7 @@ controller -- an owner (once a future Phase 59.8 Owner Dashboard wires
 a command to it) can enable/disable a named feature without a bot
 restart, with the change validated, persisted, audited, and
 snapshotted. This phase does not touch core/pipeline.py, any Telegram
-handler, or telegram/command_router.py -- RuntimeFeatureManager is
+handler, or platform_layer/telegram/command_router.py -- RuntimeFeatureManager is
 only ever constructed and called directly (e.g. from a test, or a
 future Owner Dashboard service function), never from the live
 pipeline or bot routing.

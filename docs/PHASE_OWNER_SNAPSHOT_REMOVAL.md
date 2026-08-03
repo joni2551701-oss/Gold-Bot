@@ -10,7 +10,7 @@ is the removal-side record). Superseded by
 
 Removed the GitHub Owner Snapshot Reporter (`*/15 * * * *` cron ->
 `python -m monitoring.run_snapshot` -> Telegram message to the Owner),
-built as a temporary substitute for `telegram.polling`'s own live
+built as a temporary substitute for `platform_layer.telegram.polling`'s own live
 heartbeat until that runtime was deployed 24/7 — it now is (see
 `docs/TELEGRAM_RUNTIME.md`), so the Alpha layer is redundant.
 
@@ -33,13 +33,13 @@ not to switch branches or edit `main` directly.
 monitoring/snapshot_models.py
 monitoring/snapshot_collector.py
 monitoring/run_snapshot.py
-telegram/owner/snapshot_formatter.py
-telegram/owner/snapshot_sender.py
+platform_layer/telegram/owner/snapshot_formatter.py
+platform_layer/telegram/owner/snapshot_sender.py
 tests/monitoring/test_snapshot_models.py
 tests/monitoring/test_snapshot_collector.py
 tests/monitoring/test_run_snapshot.py
-tests/telegram/owner/test_snapshot_formatter.py
-tests/telegram/owner/test_snapshot_sender.py
+tests/platform_layer/telegram/owner/test_snapshot_formatter.py
+tests/platform_layer/telegram/owner/test_snapshot_sender.py
 tests/workflows/test_owner_snapshot_workflow.py
 docs/OWNER_SNAPSHOT_REPORTER.md
 docs/PHASE_OWNER_SNAPSHOT_AUDIT.md
@@ -70,8 +70,8 @@ secrets: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_OWNER_ID`,
 patterns (`OWNER_SNAPSHOT_TOKEN`, `OWNER_CHAT_ID`, `OWNER_REPORT_CHAT`,
 `SNAPSHOT_*`) exist anywhere in the repository. All four actual
 secrets are shared with `trading_bot.yml` and/or core modules
-(`core/secrets.py`, `telegram/permissions.py`, `telegram/polling.py`,
-`telegram/owner/runtime_notifications.py`) — **none are
+(`core/secrets.py`, `platform_layer/telegram/permissions.py`, `platform_layer/telegram/polling.py`,
+`platform_layer/telegram/owner/runtime_notifications.py`) — **none are
 snapshot-exclusive.** No secret is deprecated or removed; none needed
 to be.
 

@@ -50,7 +50,7 @@ Worker Brief, per `CLAUDE.md`'s Trading Safety rules and this session's
 own established discipline.
 
 - **Live wiring** of any Phase 61.x module into `core/pipeline.py`,
-  `telegram/command_router.py`, or a live Telegram handler — every
+  `platform_layer/telegram/command_router.py`, or a live Telegram handler — every
   module built across 61.0-61.3 remains foundation-only.
 - **SUMMARY/EDUCATION provider methods** — `ai/runtime/ai_service.py`'s
   `_CAPABILITY_METHOD` has no mapping for these two capabilities yet;

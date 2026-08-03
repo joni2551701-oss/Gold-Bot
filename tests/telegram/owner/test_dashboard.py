@@ -1,12 +1,12 @@
 """
-Phase 59.8, Owner Control Center -- telegram/owner/dashboard.py tests.
+Phase 59.8, Owner Control Center -- platform_layer/telegram/owner/dashboard.py tests.
 Real repositories (SQLite, tests/conftest.py's autouse fresh_database
 fixture) -- no mocks.
 """
 
-from telegram.owner.control_commands import enable_feature
-from telegram.owner.dashboard import get_dashboard
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.control_commands import enable_feature
+from platform_layer.telegram.owner.dashboard import get_dashboard
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 
 
 def test_get_dashboard_returns_a_provider_command_result():

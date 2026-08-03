@@ -85,7 +85,7 @@ against the real file line by line:
    `ai/providers/runtime_errors.py` — no new event type.
 4. **TASK 7** — `/runtime_restart` and `/runtime_provider` do not
    exist. Genuinely new, added to the existing
-   `telegram/owner/runtime_commands.py` (extend in place, not a new
+   `platform_layer/telegram/owner/runtime_commands.py` (extend in place, not a new
    file — Article 7).
 5. **TASK 8** — no daily token/cost limit exists anywhere.
    `ai/access/usage_limits.py`'s `UsageLimiter` tracks per-role daily
@@ -106,7 +106,7 @@ against the real file line by line:
   wired — real provider still has no injectable per-call timeout seam;
   out of this phase's scope, unchanged).
 - No circular import risk introduced — all five real gaps above extend
-  existing `ai/runtime/`, `ai/providers/`, `telegram/owner/` files
+  existing `ai/runtime/`, `ai/providers/`, `platform_layer/telegram/owner/` files
   using imports those files (or their siblings) already have.
 
 ## Plan for this phase (scope discipline)

@@ -10,7 +10,7 @@ order.
 
 The brief's TASK 1–8 describe several packages as brand new. A direct
 `ls` audit of `ai/`, `content/`, `broadcast/`, `knowledge/`,
-`telegram/owner/` before writing anything found two areas where the
+`platform_layer/telegram/owner/` before writing anything found two areas where the
 brief's assumption does not match the real repository:
 
 ### `content/` — already exists, as `ai/content/` (Phase 61.5 TASK 5/6)
@@ -61,7 +61,7 @@ rather than re-declaring a content shape.
 - `media/` (top-level) — does not exist. TASK 5 is genuine new work.
 - `translation/` (top-level) — does not exist. TASK 6 is genuine new
   work.
-- `telegram/owner/broadcast_commands.py` — does not exist. TASK 7 is
+- `platform_layer/telegram/owner/broadcast_commands.py` — does not exist. TASK 7 is
   genuine new work.
 - `Capability.AI_CONTENT`/`AI_MEDIA`/`AI_TRANSLATION`/`AI_BROADCAST` —
   none of the four exist on the enum yet (current members: `CHAT`,
@@ -106,6 +106,6 @@ rather than re-declaring a content shape.
 
 TASK 1 (`ai/persona/`), TASK 3 (extend `ai/explanation/`), TASK 4
 (`broadcast/`), TASK 5 (`media/`), TASK 6 (`translation/`), TASK 7
-(`telegram/owner/broadcast_commands.py`), TASK 8 (4 new `Capability`
+(`platform_layer/telegram/owner/broadcast_commands.py`), TASK 8 (4 new `Capability`
 members) proceed as new work. TASK 2 extends `ai/content/content_types.py`
 in place instead of creating a duplicate top-level `content/` package.

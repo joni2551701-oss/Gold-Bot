@@ -75,7 +75,7 @@ four more.
 new, separate event type -- it is `PROVIDER_FAILED` with
 `payload["circuit_state"] == "OPEN"`, exactly as already documented in
 `ai/providers/circuit_breaker.py` and relied on by
-`telegram/owner/runtime_notifications.py`. Renaming the existing
+`platform_layer/telegram/owner/runtime_notifications.py`. Renaming the existing
 member would break already-tested, already-relied-upon code across
 three modules for a cosmetic difference -- Rule 5 (backward
 compatibility) settles this in favor of the existing name plus a
@@ -88,7 +88,7 @@ resolved the identical way -- `PROVIDER_FAILED` with
 `ai/providers/runtime_errors.py` already raises), not a fifth event
 type. A subscriber that only cares about timeouts specifically
 filters `PROVIDER_FAILED` events on this payload key, same pattern
-`telegram/owner/runtime_notifications.py` already uses for
+`platform_layer/telegram/owner/runtime_notifications.py` already uses for
 `circuit_state`.
 """
 

@@ -94,7 +94,7 @@ class VoiceResult:
     information a real provider adapter reports (e.g. `content_type`,
     `byte_length`, `provider`), never the audio itself, the same
     "never carry another package's/format's raw payload inline, only a
-    reference" posture `media/models.py`'s `MediaAsset` already
+    reference" posture `media_layer/content_manager/models.py`'s `MediaAsset` already
     established. `reason` explains PENDING/READY/REJECTED, the same
     "never fabricate" convention every other Phase 63.x-64.0
     result/asset dataclass already uses.

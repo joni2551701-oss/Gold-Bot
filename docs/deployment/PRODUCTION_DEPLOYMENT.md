@@ -130,7 +130,7 @@ section for the incident).
 **Production deploys run against `main`, via either an automatic push to
 `main` or a manual `workflow_dispatch` on the `main` ref.** `main` is the
 sole production branch; it holds the full production surface
-(`telegram/polling.py`, `core/pipeline.py`, `main.py`, `scripts/deploy/`).
+(`platform_layer/telegram/polling.py`, `core/pipeline.py`, `main.py`, `scripts/deploy/`).
 To deploy manually: GitHub → Actions → *GoldBot Production Deployment* →
 **Run workflow** → branch **`main`** (or API `workflow_dispatch` with
 `ref: main`). The first `main` deploy was verified in TASK-DEPLOY-003
@@ -175,7 +175,7 @@ file or the deploy scripts:
 Both reuse the same, single script: `scripts/health_check.py` (Phase
 58, extended this phase with two more checks — see its own updated
 docstring). Never runs `main.py`'s real pipeline or
-`telegram.polling`'s real listener — only imports the two entry-point
+`platform_layer.telegram.polling`'s real listener — only imports the two entry-point
 modules and confirms config/secrets/database are reachable. Exit 0
 healthy, exit 1 otherwise.
 

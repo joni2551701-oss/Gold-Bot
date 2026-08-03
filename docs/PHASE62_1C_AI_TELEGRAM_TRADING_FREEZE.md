@@ -43,14 +43,14 @@ document, add only the genuinely new detail):
    `docs/architecture/TELEGRAM_FLOW.md`, `docs/owner/OWNER_PANEL.md`,
    and `docs/architecture/OWNER_FLOW.md` already cover dispatch
    mechanics and the full command inventory. `COMMAND_SYSTEM.md` adds
-   the real three-tier command catalog (`telegram/commands.py`'s
+   the real three-tier command catalog (`platform_layer/telegram/commands.py`'s
    `COMMANDS`/`ADMIN_COMMANDS`/`OWNER_COMMANDS` dicts, dual-listing
    rule); `OWNER_SYSTEM.md` adds the Director's six-group framing
    mapped onto `OWNER_PANEL.md`'s real 12-section table.
 5. **`USER_SYSTEM.md` — corrected, not transcribed.** The Director's
    brief sketch (`NEW → FREE → PREMIUM → VIP → BANNED`, one linear
    chain) does not match the real code.
-   `telegram/user_service.py`'s own docstring states the lifecycle
+   `platform_layer/telegram/user_service.py`'s own docstring states the lifecycle
    status axis (NEW/ACTIVE/BANNED,
    `database_layer/user_repository/user_repository.py`) is "deliberately separate from" the
    subscription/role axis (FREE/PREMIUM/VIP, plus OWNER/ADMIN,

@@ -9,7 +9,7 @@ after this phase.
 
 | File | Currently used in production? | Purpose |
 |---|---|---|
-| `ai/ai_analyzer.py` | **Yes** — imported by `core/pipeline.py`, `decision_layer/decision_engine/decision_engine.py`, `decision_layer/decision_engine/models.py`, `telegram/signal_formatter.py`, and `tests/conftest.py` (5 importers). | `AIAnalyzer.analyze()` is the production entry point `TradingPipeline` calls. Currently a permanent-reject stub — always returns `approved=False, confidence=0.0, risk_score=1.0` with an explanatory string. Documented as intentional in the README and the Phase 48 audit ("Heuristic scoring logic will be implemented in Phase 6.0.1") — this is the single highest-impact pre-existing finding this repository's audit history has surfaced, and it is unchanged by this phase (explicitly forbidden: "signal approve/reject AI orqali" / "existing pipeline flow o'zgarishi"). |
+| `ai/ai_analyzer.py` | **Yes** — imported by `core/pipeline.py`, `decision_layer/decision_engine/decision_engine.py`, `decision_layer/decision_engine/models.py`, `platform_layer/telegram/signal_formatter.py`, and `tests/conftest.py` (5 importers). | `AIAnalyzer.analyze()` is the production entry point `TradingPipeline` calls. Currently a permanent-reject stub — always returns `approved=False, confidence=0.0, risk_score=1.0` with an explanatory string. Documented as intentional in the README and the Phase 48 audit ("Heuristic scoring logic will be implemented in Phase 6.0.1") — this is the single highest-impact pre-existing finding this repository's audit history has surfaced, and it is unchanged by this phase (explicitly forbidden: "signal approve/reject AI orqali" / "existing pipeline flow o'zgarishi"). |
 | `ai/confidence_model.py` | No external importer besides `ai/ai_prompt.py` (within `ai/` itself). | `evaluate_confidence()` — a deterministic technical scoring function reading `SignalCandidate.context_refs` (a field no strategy currently populates — the Phase 48 audit noted this makes the function a documented no-op today, always returning a 0 score, by design until a future phase wires `context_refs`). |
 | `ai/ai_prompt.py` | No external importer at all. | `build_prompt()` — a Gemini-specific prompt + JSON-schema builder, tightly coupled to `SignalCandidate`/`ContextSnapshot`/`ConfidenceResult`. Fully built, never called by `AIAnalyzer` or anything else. |
 | `ai/trade_journal.py` | No importer anywhere (confirmed by a repo-wide grep, including tests). | `TradeJournalEntry`/`create_journal_entry()` — a complete, type-safe trade-outcome record model. Never written to by anything (no `PerformanceTracker`, no repository). |
@@ -83,7 +83,7 @@ same import-site grep as Part 1's audit table above:
 - **`ai/ai_analyzer.py` → NOT moved.** Five separate production
   modules import this exact path
   (`core/pipeline.py`, `decision_layer/decision_engine/decision_engine.py`,
-  `decision_layer/decision_engine/models.py`, `telegram/signal_formatter.py`, plus
+  `decision_layer/decision_engine/models.py`, `platform_layer/telegram/signal_formatter.py`, plus
   `tests/conftest.py`). Relocating it would be precisely the "risky
   move" this phase's spec says to avoid. Instead, the compatibility
   layer runs in the *other* direction: `ai/analyzer/ai_analyzer.py`

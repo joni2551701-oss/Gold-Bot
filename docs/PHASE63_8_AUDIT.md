@@ -68,7 +68,7 @@ The brief's example provider types (`TELEGRAM`/`YOUTUBE`/`MINI_APP`/
 `BroadcastTriggerManager`/`BroadcastTrigger` (Phase 63.0) already
 model *armed/disarmed* intent per `ContentType`, but carry no
 `MANUAL`/`SCHEDULED`/`EVENT`/`MARKET` categorization — a genuine gap.
-`BroadcastTriggerType` is added as a new enum in `broadcast/models.py`,
+`BroadcastTriggerType` is added as a new enum in `media_layer/telegram_broadcast/models.py`,
 and `BroadcastTrigger` gains one new optional field,
 `trigger_type: BroadcastTriggerType = BroadcastTriggerType.MANUAL`
 (Article 9 — LOCKed since Phase 63.0, additive-only: a new optional
@@ -87,7 +87,7 @@ so this phase does not add one. Resolution: `broadcast/`'s new model
 object, the same "never carry another package's object graph"
 convention `ai/conversation/models.py`'s `ConversationContext` and
 `ai/content/models.py`'s `ContentContext` already established.
-`broadcast/broadcast_adapter.py` (TASK 6) reads an optional, upstream
+`media_layer/telegram_broadcast/broadcast_adapter.py` (TASK 6) reads an optional, upstream
 `ai.persona.persona.Persona`'s own already-public `.name` field
 type-only (never `PersonaManager`'s internal state) to populate it.
 Today only `"Senior Trading AI"` maps to a real registered `Persona`;
@@ -105,7 +105,7 @@ brief's own instruction, and would require a separate, dedicated
 a `ContentResult`, with no `MediaAsset` or persona reference. The
 brief's TASK 6 wants a combined `ContentResult + MediaAsset + Persona
 → BroadcastReady` adapter. Rather than declare a second, competing
-"BroadcastReady" dataclass, `broadcast/broadcast_adapter.py`'s new
+"BroadcastReady" dataclass, `media_layer/telegram_broadcast/broadcast_adapter.py`'s new
 function builds a `BroadcastAsset` (TASK 1's own model) directly — the
 tracked, lifecycle-aware object this phase's `BroadcastManager`
 extension already operates on. `BroadcastReadyContent`/
@@ -121,7 +121,7 @@ already flagged for its own future audit's attention.
 `ai.content.content_types`, other `broadcast.*` modules, and
 `core_layer.logger.logger` — zero dependency on `decision/`, `risk/`, `execution/`,
 `strategies/`, `signals/`, or `database/`. This phase adds one new,
-type-only import: `media.models.MediaAsset` (media sits immediately
+type-only import: `media_layer.content_manager.models.MediaAsset` (media sits immediately
 upstream of broadcast in the Official Intelligence Pipeline) and
 `ai.persona.persona.Persona` (type-only, per Rule 3's explicit "Broadcast
 o'qishi mumkin: media, content, ai" allowance). `broadcast/` continues
@@ -142,6 +142,6 @@ No Constitution Article conflict. TASK 1 (`BroadcastStatus`/
 methods), TASK 3 (`TELEGRAM`/`MINI_APP` added to the existing
 `BroadcastProviderType`), TASK 4 (`BroadcastTriggerType` +
 `BroadcastTrigger.trigger_type`), and TASK 6
-(`broadcast/broadcast_adapter.py`) are the genuine pieces of new/
+(`media_layer/telegram_broadcast/broadcast_adapter.py`) are the genuine pieces of new/
 extended work this phase does — all inside the real, existing
 `broadcast/` package. Requesting no Director Decision.

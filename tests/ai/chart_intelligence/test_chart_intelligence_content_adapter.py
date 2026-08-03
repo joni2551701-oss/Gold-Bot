@@ -1,9 +1,9 @@
 from ai.chart_intelligence.content_adapter import chart_analysis_to_content_body, prepare_content
 from ai.chart_intelligence.models import ChartAnalysis, ChartAnalysisType, ChartImageType
 from ai.content.content_adapter import ContentEngine
-from broadcast.broadcast_manager import BroadcastManager
-from broadcast.models import BroadcastStatus
-from media.media_manager import MediaManager
+from media_layer.telegram_broadcast.broadcast_manager import BroadcastManager
+from media_layer.telegram_broadcast.models import BroadcastStatus
+from media_layer.content_manager.media_manager import MediaManager
 
 
 def _analysis(**overrides):

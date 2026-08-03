@@ -1,7 +1,7 @@
-"""V2 Phase 3 -- telegram/registration_service.py's Wizard state machine."""
+"""V2 Phase 3 -- platform_layer/telegram/registration_service.py's Wizard state machine."""
 
 from database_layer.user_repository.user_repository import UserRepository
-from telegram.registration_service import RegistrationService, RegistrationStep
+from platform_layer.telegram.registration_service import RegistrationService, RegistrationStep
 
 
 def test_current_step_for_a_brand_new_user_is_language():

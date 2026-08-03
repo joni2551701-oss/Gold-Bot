@@ -82,7 +82,7 @@ API) — but as of Phase 65.2 it has a second real caller:
 an STT-transcribed message through it as the one real, LLM-backed step
 of a voice round trip. `ai/conversation/` itself required zero code
 change for this — `voice/` simply calls the same public method a
-future `telegram/command_router.py` text-chat caller would.
+future `platform_layer/telegram/command_router.py` text-chat caller would.
 
 ## Personal AI Assistant params (Phase 65.3, structural only)
 
@@ -111,7 +111,7 @@ code change to `ConversationEngine` itself was required.
 - Not a trading decision — `ai/conversation/` is never imported by
   `core/`, `decision/`, `risk/`, `execution/`, or `strategies/`, and
   never imports any of them either (Constitution Article 3).
-- Not wired into `telegram/command_router.py` or `ai/explanation/`
+- Not wired into `platform_layer/telegram/command_router.py` or `ai/explanation/`
   this phase — foundation only.
 
 ## Related

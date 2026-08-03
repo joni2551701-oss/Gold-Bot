@@ -157,8 +157,8 @@ boundaries is already true of the real code referenced.
 
 **Allowed**
 - ✅ User interaction (commands, settings, subscriptions —
-  `telegram/handlers.py` → `telegram/*_service.py`)
-- ✅ Notification (`telegram/notifier.py`, `telegram/signal_formatter.py`)
+  `platform_layer/telegram/handlers.py` → `telegram/*_service.py`)
+- ✅ Notification (`platform_layer/telegram/notifier.py`, `platform_layer/telegram/signal_formatter.py`)
 
 **Forbidden**
 - ❌ Trading logic (`telegram/` never imports `strategies/`,

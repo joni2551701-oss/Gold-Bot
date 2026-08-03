@@ -8,7 +8,7 @@ BacktestResult is the final report `backtesting_layer/backtest_engine/backtest_e
 `analytics.strategy_report.build_strategy_report()` grouping over
 them. No new performance-computation logic here: this module only
 packages already-computed `analytics/` output into one immutable
-value and formats it for `telegram/owner/backtest_commands.py`
+value and formats it for `platform_layer/telegram/owner/backtest_commands.py`
 (TASK 5) — the same "compose, don't reimplement" posture every prior
 Phase 59.x/60.x report module already established.
 """

@@ -74,7 +74,7 @@ Constitution Article conflict.
 
 - No second Content class/Manager — forbidden by the Director's own
   brief; `ContentEngine` extended in place.
-- No wiring into `telegram/command_router.py`, `translation/`,
+- No wiring into `platform_layer/telegram/command_router.py`, `translation/`,
   `media/`, or `broadcast/` — foundation only. `content_adapters.py`'s
   two functions are built and tested standalone.
 - No real AI content generation — TASK 7 explicitly forbade any GPT

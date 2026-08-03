@@ -13,7 +13,7 @@ owned by `ARCHITECTURE_MASTER.md`/`LAYER_CONTRACT.md`/
 
 **Status: one platform is real.** Telegram (`telegram/`) is fully
 built — Command Router → Permission Check → Handler → Service →
-Repository, plus an Owner-only subsystem (`telegram/owner/`). None of
+Repository, plus an Owner-only subsystem (`platform_layer/telegram/owner/`). None of
 Web, Desktop, Android, iOS, or a Mini App exist in the repository —
 no `web/`, no frontend server, no mobile app code, no Mini App/webview
 integration was found. A Public API does not exist (`core_layer/gateway/` is

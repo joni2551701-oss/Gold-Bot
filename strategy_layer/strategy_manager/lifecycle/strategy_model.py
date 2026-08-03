@@ -31,7 +31,7 @@ class StrategyDefinition:
         Metadata only -- does not control whether StrategyManager
         actually runs the strategy.
     supported_assets: e.g. ["XAUUSD"] -- the real symbol constant this
-        codebase runs today (see telegram/signal_service.py's
+        codebase runs today (see platform_layer/telegram/signal_service.py's
         DEFAULT_SYMBOL), not a placeholder.
     supported_styles: e.g. ["INTRADAY"] -- descriptive metadata, not a
         computed value.

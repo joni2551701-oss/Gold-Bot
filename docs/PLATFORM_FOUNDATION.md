@@ -101,7 +101,7 @@ checks.
 - Build a concrete Platform Adapter (Telegram first, per
   `docs/NAVIGATION_ARCHITECTURE.md` §8) that reads `MenuRegistry`/
   `DEFAULT_MENUS` through `NavigationCore`, keeping
-  `telegram/reply_keyboard_manager.py`'s own frozen behavior unchanged
+  `platform_layer/telegram/reply_keyboard_manager.py`'s own frozen behavior unchanged
   externally — a dedicated future task, not self-authorized here.
 - Implement the Navigation Event Bus's actual dispatch mechanism
   (`navigation_events.py` is interface-only today) once a real

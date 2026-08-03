@@ -11,7 +11,7 @@ bot — read this before making any change, not after.
   (see `docs/ARCHITECTURE.md` for the full diagram). A layer talks to
   the layer immediately below it, never reaches two layers down.
 - No direct database access from Telegram handlers
-  (`telegram/handlers.py`) — handlers call a service
+  (`platform_layer/telegram/handlers.py`) — handlers call a service
   (`telegram/*_service.py`), services call a repository
   (`database/*_repository.py`). This is enforced today; keep it that
   way.
@@ -148,7 +148,7 @@ list of what changed and why, not just "done."
   Reuse is the default outcome, not the exception. A new top-level
   package is the highest-cost option and should be rare — most work
   should land as a new file inside an *existing* package
-  (`telegram/owner/*.py`, `database/*_repository.py`-style), not a new
+  (`platform_layer/telegram/owner/*.py`, `database/*_repository.py`-style), not a new
   top-level folder.
 
 ## Trading Safety

@@ -1,5 +1,5 @@
 """
-Phase 59.5, TASK 7 -- telegram/owner/dataset_commands.py tests. Real
+Phase 59.5, TASK 7 -- platform_layer/telegram/owner/dataset_commands.py tests. Real
 RawCandleRepository/SyncStateRepository (SQLite, tests/conftest.py's
 autouse fresh_database fixture), no mocks.
 """
@@ -9,13 +9,13 @@ from datetime import datetime, timedelta, timezone
 from database_layer.market_repository.raw_candle_models import create_raw_candle
 from database_layer.market_repository.raw_candle_repository import RawCandleRepository
 from database_layer.market_repository.sync_state_repository import SyncStateRepository
-from telegram.owner.dataset_commands import (
+from platform_layer.telegram.owner.dataset_commands import (
     get_dataset_status,
     get_history_status,
     get_provider_compare,
     get_sync_status,
 )
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 
 
 def _candle(symbol, timeframe, ts, provider="twelvedata", close=2001.0):

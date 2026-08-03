@@ -77,8 +77,8 @@ computed by this package. **AI never receives raw market data** — no
 ## `ai/access/`
 
 `AIRole` (OWNER/ADMIN/VIP/PREMIUM/FREE) is deliberately distinct from
-`telegram/owner/owner_roles.py`'s `OwnerRole` and
-`telegram/permissions.py`'s `PermissionLevel` — see the audit doc for
+`platform_layer/telegram/owner/owner_roles.py`'s `OwnerRole` and
+`platform_layer/telegram/permissions.py`'s `PermissionLevel` — see the audit doc for
 why reusing either would conflate admin-console access with
 subscription-tier AI entitlement. `AccessControl.is_allowed(role,
 capability)` answers a *capability* permission question, never a
@@ -117,7 +117,7 @@ cost) — pure aggregation, no new data collection.
 
 Every module in this document is foundation only — none is imported by
 `core/pipeline.py`, any live Telegram handler, or
-`telegram/command_router.py`. A future integration phase connects
+`platform_layer/telegram/command_router.py`. A future integration phase connects
 these pieces to a real caller, following the same "foundation, not
 live-wired" posture every Phase 59-60 module used before its own
 integration phase.

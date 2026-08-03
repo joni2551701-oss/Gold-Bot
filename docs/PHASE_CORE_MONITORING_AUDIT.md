@@ -39,11 +39,11 @@ Three files already exist:
   `SignalHealth` (today's activity counts: buy/sell/none + average
   confidence) — not reused, not touched.
 
-## `telegram/owner/` (22 existing files)
+## `platform_layer/telegram/owner/` (22 existing files)
 
 Five files reviewed in full per TASK 0's own list:
 
-- **`telegram/owner/status_commands.py`** — real `get_system_status()`
+- **`platform_layer/telegram/owner/status_commands.py`** — real `get_system_status()`
   composing `AdminService().get_system_status()` + provider registry +
   `core_layer.system_state.system_state.SystemState` + `SignalRepository.get_latest_signal()`
   into a "GoldBot Status" text block. **Not live-wired** to any
@@ -51,14 +51,14 @@ Five files reviewed in full per TASK 0's own list:
   structured shape (no uptime/last_scan/last_error fields) — not
   reused directly; the new `SystemHealth` model composes the same
   underlying sources independently to get those additional fields.
-- **`telegram/owner/system_commands.py`** — real `get_system_health()`
+- **`platform_layer/telegram/owner/system_commands.py`** — real `get_system_health()`
   composing `AdminService().get_system_status()` +
   `check_registry_health()` into a full diagnostic block; also
   `count_online_providers()`. **Not live-wired.** **This is a direct,
   strong match for this brief's `/health` ("To'liq diagnostika")** —
   reused as-is, only wired to a live command. No new "full diagnostics"
   function is written.
-- **`telegram/owner/dashboard.py`** — `get_owner_summary()` (the real,
+- **`platform_layer/telegram/owner/dashboard.py`** — `get_owner_summary()` (the real,
   **live** `/owner` command) and `get_doctor_report()` (the real,
   **live** `/doctor` command) already surface system/AI/provider/
   signals-today/win-rate/emergency status. Reviewed to avoid
@@ -66,7 +66,7 @@ Five files reviewed in full per TASK 0's own list:
   `/signals`/`/errors`/`/pipeline`/`/report` commands are additive,
   narrower, and monitoring-specific — none of their command names
   collide with `/owner`/`/doctor`.
-- **`telegram/owner/security.py`** / **`telegram/owner/owner_roles.py`**
+- **`platform_layer/telegram/owner/security.py`** / **`platform_layer/telegram/owner/owner_roles.py`**
   — a foundation-only, four-tier `OwnerRole` (OWNER/SUPER_ADMIN/ADMIN/
   VIEWER) + `require_role()`/`log_owner_action()`, explicitly
   documented as not enforced anywhere. This is a **separate hierarchy**
@@ -74,7 +74,7 @@ Five files reviewed in full per TASK 0's own list:
   this phase; this brief's own TASK 8 says "Hozir: faqat OWNER
   ishlaydi" (only OWNER works for now), which the live gate already
   satisfies exactly.
-- **`telegram/owner/report_commands.py`** — `format_daily_stats()`/
+- **`platform_layer/telegram/owner/report_commands.py`** — `format_daily_stats()`/
   `get_validation_summary()` take pre-fetched `SignalSchema`/
   `SignalPerformance` lists as parameters; nothing in the codebase
   persists those shapes yet, so these functions cannot be called from
@@ -90,12 +90,12 @@ anywhere** — the only `access_control.py` in the repo is
 tier gating, not Telegram owner/admin command gating).
 
 The **live, already-enforced** mechanism is:
-`telegram/permissions.py`'s `PermissionLevel` (OWNER/ADMIN/USER) +
+`platform_layer/telegram/permissions.py`'s `PermissionLevel` (OWNER/ADMIN/USER) +
 `is_owner()` (sourced from `core.secrets.Secrets.TELEGRAM_OWNER_ID`,
 one env var, singular — no `OWNER_IDS` list exists anywhere) +
-`telegram/command_router.py`'s `_required_level()`, which ranks a
+`platform_layer/telegram/command_router.py`'s `_required_level()`, which ranks a
 command as OWNER-only by checking membership in
-`telegram.commands.OWNER_COMMANDS`. Every existing Owner-only command
+`platform_layer.telegram.commands.OWNER_COMMANDS`. Every existing Owner-only command
 (`/owner`, `/doctor`, `/runtime`, etc.) is gated this exact way.
 **Decision**: this brief's TASK 8 ("mavjud tizim" — existing system)
 is fully satisfied by this live mechanism. No new `access_control.py`
@@ -194,15 +194,15 @@ discipline.
 Per Constitution Article 11 step 2: two functions (`get_system_health()`,
 provider health) are reused outright; `SignalRepository` and
 `core_layer/health_monitor/signal_monitor.py` are extended in place; the live
-`telegram/permissions.py` + `command_router.py` gate is reused
+`platform_layer/telegram/permissions.py` + `command_router.py` gate is reused
 unchanged. The genuine new surface is: `core_layer/health_monitor/models.py`,
 `core_layer/health_monitor/system_monitor.py`, `core_layer/health_monitor/market_monitor.py`,
 `decision_layer/decision_logger/decision_logger.py`, `core_layer/health_monitor/error_monitor.py`,
-`telegram/owner/monitoring_commands.py` (the brief names
+`platform_layer/telegram/owner/monitoring_commands.py` (the brief names
 `telegram/owner_commands.py`; the existing, established convention is
-one file per feature inside the already-existing `telegram/owner/`
+one file per feature inside the already-existing `platform_layer/telegram/owner/`
 package — e.g. `report_commands.py`, `performance_commands.py` — so
-`telegram/owner/monitoring_commands.py` follows that convention rather
+`platform_layer/telegram/owner/monitoring_commands.py` follows that convention rather
 than creating a same-named top-level file), and
 `database_layer/audit_log/monitoring_models.py`/`database_layer/audit_log/monitoring_repository.py`.
 No new top-level package.

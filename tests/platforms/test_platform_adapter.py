@@ -2,9 +2,9 @@
 
 import pytest
 
-from platforms.menu_registry import MenuDefinition
-from platforms.platform_adapter import PlatformAdapterBase
-from platforms.platform_model import PlatformName
+from platform_layer.platform_service.menu_registry import MenuDefinition
+from platform_layer.platform_service.platform_adapter import PlatformAdapterBase
+from platform_layer.platform_service.platform_model import PlatformName
 
 
 def test_platform_adapter_base_cannot_be_instantiated_directly():

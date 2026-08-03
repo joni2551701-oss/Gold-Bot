@@ -15,9 +15,9 @@ phase's own Rule 1.
 | Runtime | — | ❌ No voice-specific runtime | Genuine new work (TASK 8) |
 | Model | — | ❌ No `VoiceProfile`/`VoiceProvider`/`VoiceRequest`/`VoiceResult`/`VoiceSettings` anywhere | Genuine new work (TASK 2) |
 | Capability | `ai/capabilities/capability.py` | ✅ `Capability.VOICE` already exists (Phase 61.0), already routed in `ai/router/routing_rules.py`'s `_CAPABILITY_PROVIDER_PREFERENCE` (`openai`, `local_llm`) | Reused as-is, no new capability, no router change |
-| Contract | — | ➖ Partial — `media/media_types.py`'s `MediaType.VOICE` (Phase 63.0) is an existing, adjacent vocabulary member ("Voice/TTS output (no synthesis this phase)", `media/media_registry.py`'s own descriptor text) | See relationship section below — not extended, not duplicated |
+| Contract | — | ➖ Partial — `media_layer/content_manager/media_types.py`'s `MediaType.VOICE` (Phase 63.0) is an existing, adjacent vocabulary member ("Voice/TTS output (no synthesis this phase)", `media_layer/content_manager/media_registry.py`'s own descriptor text) | See relationship section below — not extended, not duplicated |
 | Profile | `ai/persona/` | ➖ Partial — `ai/persona/persona.py`'s `Persona` has a free-text `tone` field (its own docstring example literally says "the intended *voice*") but no pitch/speed/language/provider fields a real Voice Profile needs | Not extended — a different, narrower contract (see Persona relationship section) |
-| Provider | `ai/providers/`, `broadcast/provider_manager.py` | ➖ Pattern reused, concept not — `ai/providers/openai_provider.py`'s `OpenAIProvider` is a real, `AIService`-calling **LLM/chat** provider; `broadcast/provider_manager.py`'s `BroadcastProviderManager` manages **delivery-channel** intent (YouTube/Telegram/etc.) | Neither is a Voice-synthesis provider abstraction — genuine gap, but the *static catalog + Owner-set status* **pattern** both already establish is reused (Rule 8) |
+| Provider | `ai/providers/`, `media_layer/telegram_broadcast/provider_manager.py` | ➖ Pattern reused, concept not — `ai/providers/openai_provider.py`'s `OpenAIProvider` is a real, `AIService`-calling **LLM/chat** provider; `media_layer/telegram_broadcast/provider_manager.py`'s `BroadcastProviderManager` manages **delivery-channel** intent (YouTube/Telegram/etc.) | Neither is a Voice-synthesis provider abstraction — genuine gap, but the *static catalog + Owner-set status* **pattern** both already establish is reused (Rule 8) |
 
 ## Why `voice/` is a genuine new top-level package (not `ai/voice/`)
 
@@ -39,7 +39,7 @@ from `ai/`'s pure-reasoning subpackages). No Constitution conflict:
 this is the same category of decision Phase 63.0's own audit already
 made twice for this exact shape of module.
 
-## Relationship to `media/media_types.py`'s `MediaType.VOICE` (not duplicated)
+## Relationship to `media_layer/content_manager/media_types.py`'s `MediaType.VOICE` (not duplicated)
 
 `MediaType.VOICE` stays exactly what it already is — "this asset is
 shaped for voice/TTS delivery," a flag at the Media layer, reused
@@ -82,9 +82,9 @@ The brief names `profiles/senior.py`/`seniorita.py`/`narrator.py` and
 `providers/openai.py`/`elevenlabs.py`/`local.py`/`custom.py` — one
 file per named item. No existing static-catalog module in this
 codebase uses that shape: `ai/persona/persona_registry.py` (one
-`Persona` per module-level constant, one file), `media/media_registry.py`
+`Persona` per module-level constant, one file), `media_layer/content_manager/media_registry.py`
 (one `MediaDescriptor` per list entry, one file), and
-`broadcast/provider_manager.py` (one `BroadcastProviderDescriptor` per
+`media_layer/telegram_broadcast/provider_manager.py` (one `BroadcastProviderDescriptor` per
 list entry, one file) are the three closest precedents, and all three
 use a single file with a `build_*_registry()` function. **Decision:
 `voice/profiles.py`** (module-level `VoiceProfile` constants —
@@ -109,7 +109,7 @@ reimplemented three times:
 - `voice/registry.py`'s `VoiceProfileRegistry` owns the actual
   profile store (register/get/exists/list_all/default) — the same
   "class wrapping a dict, pre-seeded from the static catalog" shape
-  `broadcast/trigger_manager.py`'s `BroadcastTriggerManager` already
+  `media_layer/telegram_broadcast/trigger_manager.py`'s `BroadcastTriggerManager` already
   established (the one existing Phase 63.0 class with a real,
   runtime-mutable `register()`).
 - `voice/manager.py`'s `VoiceManager` owns provider status
@@ -126,7 +126,7 @@ reimplemented three times:
 
 ## `voice/adapter.py`'s scope (TASK 7)
 
-Mirrors `media/media_adapter.py`'s `content_result_to_media_asset()`
+Mirrors `media_layer/content_manager/media_adapter.py`'s `content_result_to_media_asset()`
 shape exactly: one pure function reading an upstream `ai.content.content_schema.ContentResult`'s
 own already-public fields (never `ContentEngine`'s internal state)
 into a `VoiceRequest` via `VoiceManager`. `voice/` may read `ai/content/`

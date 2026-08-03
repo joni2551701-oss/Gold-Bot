@@ -38,7 +38,7 @@ re-checked this phase, not just copied forward.
   not just read)**: `aiogram.Bot(token=<malformed>)` raises
   `TokenValidationError("Token is invalid!")` — confirmed by direct
   construction that the raw token value is never included in that
-  exception's message. `telegram/bot.py`'s
+  exception's message. `platform_layer/telegram/bot.py`'s
   `logger.warning(f"TelegramBot init failed (token missing/invalid): {e}")`
   is therefore safe: `{e}` can only ever be "Token is invalid!" or
   "Secret 'TELEGRAM_BOT_TOKEN' not found in environment." (the

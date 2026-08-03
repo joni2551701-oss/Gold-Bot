@@ -6,19 +6,19 @@ Freeze — per the Director's own framing, a Freeze only follows if no
 blocking issue is found; an important-but-non-blocking issue becomes a
 Phase 3.x fix first.
 
-Scope reviewed: `telegram/registration_service.py`,
-`telegram/command_router.py`, `telegram/callback_router.py`,
-`telegram/handlers.py` (start_handler/_registration_step/
+Scope reviewed: `platform_layer/telegram/registration_service.py`,
+`platform_layer/telegram/command_router.py`, `platform_layer/telegram/callback_router.py`,
+`platform_layer/telegram/handlers.py` (start_handler/_registration_step/
 contact_handler), `database_layer/database_manager/models.py` (migration + backfill),
 `database_layer/user_repository/user_repository.py`, `database_layer/user_repository/user_models.py`,
-`translation/ui_catalog.py` (new keys), `telegram/keyboards.py`
+`media_layer/translation/ui_catalog.py` (new keys), `platform_layer/telegram/keyboards.py`
 (phone_share_keyboard), and the full Phase 3 test suite.
 
 ---
 
 ## 1. Architecture Review
 
-**RegistrationService** (`telegram/registration_service.py`, 93
+**RegistrationService** (`platform_layer/telegram/registration_service.py`, 93
 lines): a sibling service to `UserService`, same "own a lazy
 repository" shape (`UserRepository()` constructed on first use, not in
 `__init__`). Three methods only: `current_step()`,
@@ -131,7 +131,7 @@ Pre-existing, out-of-scope note (already flagged in the Stage 0
 audit, not changed by Phase 3): a BANNED user is only stopped at
 `/start` — other commands (`/profile`, `/signal`, etc.) still have no
 BANNED check of their own. This is documented in
-`telegram/handlers.py`'s own module docstring since before Phase 3 and
+`platform_layer/telegram/handlers.py`'s own module docstring since before Phase 3 and
 was not part of what the Director authorized fixing this phase
 (the Director's flow was specifically `/start`-scoped).
 
@@ -256,7 +256,7 @@ non-blocking edge case is noted below.
   language suites, all still passing.
 - **Translation**: 3 new catalog keys (`start.banned`,
   `contact.wrong_owner`, `registration.phone_prompt`), each with
-  UZ/RU/EN entries — verified present in `translation/ui_catalog.py`.
+  UZ/RU/EN entries — verified present in `media_layer/translation/ui_catalog.py`.
   No existing key was modified.
 - **Keyboards**: `phone_share_keyboard()` (pre-existing, Phase 61.5)
   and `language_keyboard()` (pre-existing) are both reused as-is, no

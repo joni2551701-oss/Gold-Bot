@@ -1,17 +1,17 @@
 """
-Phase 60.4, TASK 7 -- telegram/owner/performance_commands.py tests.
+Phase 60.4, TASK 7 -- platform_layer/telegram/owner/performance_commands.py tests.
 No mocks: real SignalPerformance/PerformanceMetrics/EquityPoint
-construction, same convention as every other telegram/owner/ test.
+construction, same convention as every other platform_layer/telegram/owner/ test.
 """
 
 from datetime import datetime, timezone
 
-from telegram.owner.performance_commands import (
+from platform_layer.telegram.owner.performance_commands import (
     get_backtest_performance_report,
     get_equity_curve_report,
     get_performance_report,
 )
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 from analytics.signal_performance import SignalPerformance
 
 

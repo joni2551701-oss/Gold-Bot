@@ -1,6 +1,6 @@
 """
 GoldBot Core Owner Monitoring Alpha, TASK 8 -- monitoring/ (and
-telegram/owner/monitoring_commands.py) stay isolated from Trading Core
+platform_layer/telegram/owner/monitoring_commands.py) stay isolated from Trading Core
 decision-making layers. Mirrors the AST-based isolation test pattern
 this codebase's `ai/*/test_*_isolation.py` suites already established.
 
@@ -20,7 +20,7 @@ def _monitoring_dir():
 
 
 def _owner_commands_file():
-    return pathlib.Path(__file__).resolve().parents[2] / "telegram" / "owner" / "monitoring_commands.py"
+    return pathlib.Path(__file__).resolve().parents[2] / "platform_layer" / "telegram" / "owner" / "monitoring_commands.py"
 
 
 def _imported_names(py_file: pathlib.Path):

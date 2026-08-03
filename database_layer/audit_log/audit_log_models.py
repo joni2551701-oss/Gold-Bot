@@ -6,7 +6,7 @@ Records every owner/admin action for later review -- "kim nima
 qilganini har doim bilish mumkin" (who did what, always knowable), per
 this task's own brief. This module and its repository only record and
 read entries; nothing in this codebase writes to it automatically yet
--- no owner command in telegram/owner/ calls
+-- no owner command in platform_layer/telegram/owner/ calls
 AuditLogRepository.log_action() in this phase. Wiring real owner
 actions to call it is a future, separately-approved step (Phase 59.7+
 per the Director's own roadmap).

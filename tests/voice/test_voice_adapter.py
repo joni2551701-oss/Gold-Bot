@@ -5,9 +5,9 @@ from datetime import datetime, timezone
 from ai.content.content_schema import ContentResult
 from ai.content_types import ContentType
 from ai.session.conversation_state import ConversationTurn
-from broadcast.models import BroadcastAsset, BroadcastStatus
-from media.media_types import MediaType
-from media.models import MediaAsset, MediaAssetStatus
+from media_layer.telegram_broadcast.models import BroadcastAsset, BroadcastStatus
+from media_layer.content_manager.media_types import MediaType
+from media_layer.content_manager.models import MediaAsset, MediaAssetStatus
 from voice.adapter import (
     broadcast_asset_to_voice_request,
     content_result_to_voice_request,

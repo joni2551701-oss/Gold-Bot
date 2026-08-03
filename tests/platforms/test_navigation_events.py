@@ -1,7 +1,7 @@
 """TASK-002C -- Navigation Event Bus interface tests (ADR-004). Interface only -- no dispatcher exists to test."""
 
-from platforms.navigation_events import NavigationEvent, NavigationEventType
-from platforms.platform_model import PlatformName
+from platform_layer.platform_service.navigation_events import NavigationEvent, NavigationEventType
+from platform_layer.platform_service.platform_model import PlatformName
 
 
 def test_event_type_vocabulary_matches_adr004_exactly():

@@ -1,5 +1,5 @@
 """
-Phase 60.1, TASK 8 -- telegram/owner/replay_commands.py tests. Real
+Phase 60.1, TASK 8 -- platform_layer/telegram/owner/replay_commands.py tests. Real
 SQLite (tests/conftest.py's autouse fresh_database fixture) -- no
 mocks. Each test constructs its own controller (module-level
 _default_controller is deliberately not reset between tests -- session
@@ -9,8 +9,8 @@ collision).
 
 from datetime import datetime, timezone
 
-from telegram.owner.replay_commands import replay_pause, replay_start, replay_status, replay_stop
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.replay_commands import replay_pause, replay_start, replay_status, replay_stop
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 from database_layer.market_repository.raw_candle_models import create_raw_candle
 from database_layer.market_repository.raw_candle_repository import RawCandleRepository
 

@@ -55,7 +55,7 @@ subpackage.
 - `core_layer/health_monitor/access.py` (new) — `is_owner_monitoring_enabled()`,
   gating only this phase's own new surface (not the seven pre-existing
   live commands, which stay gated by the existing
-  `telegram.permissions`/`telegram.command_router` mechanism alone).
+  `platform_layer.telegram.permissions`/`platform_layer.telegram.command_router` mechanism alone).
 - `decision_layer/decision_logger/decision_logger.py` (extended) — `log_entry()` and
   `get_recent_entries()` both now accept/relay `stage_durations_ms`
   (caller-supplied only; this module never measures a stage's
@@ -72,17 +72,17 @@ subpackage.
   `ALTER TABLE ... ADD COLUMN stage_durations_ms` migration (mirrors
   the codebase's own established `_migrate_signals_table()` pattern).
 - `configuration/feature_flags.py` (extended) — `enable_owner_monitoring: bool = False`.
-- `telegram/owner/monitoring_commands.py` (extended) — new
+- `platform_layer/telegram/owner/monitoring_commands.py` (extended) — new
   `get_performance_report()` (the `/performance` command, Owner-gated
   additionally by `enable_owner_monitoring`); `get_status_report()`
   appends an "Overall health" line and a "Resources:" line when the
   flag is on, never removing or altering its existing lines.
-- `telegram/handlers.py` + `telegram/commands.py` (extended) — new
+- `platform_layer/telegram/handlers.py` + `platform_layer/telegram/commands.py` (extended) — new
   `performance_handler()`, new `performance` entry in `OWNER_COMMANDS`.
 - `main.py` (extended) — one line, `record_process_start()`, called
   once at `GoldBot.__init__()` (never raises, defensive).
 - `tests/monitoring/` (10 new files) + one new
-  `tests/telegram/owner/` file — **152 new tests**, exceeding the
+  `tests/platform_layer/telegram/owner/` file — **152 new tests**, exceeding the
   brief's own 150-test minimum, including AST-based isolation and
   compatibility suites.
 - Documentation: `docs/PHASE_B0_AUDIT.md`, `docs/PHASE_B0_FREEZE.md`
@@ -158,8 +158,8 @@ this phase imports `context/` or `core.pipeline` directly.
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
-| Packages | — (no new top-level or sub-package) | — | `monitoring/`, `database/`, `telegram/owner/`, `configuration/` (all pre-existing) |
-| Modules | `resource_monitor.py`, `health_monitor.py`, `performance_collector.py`, `access.py` (4) | `models.py`, `decision_logger.py`, `monitoring_models.py`, `monitoring_repository.py`, `database_layer/database_manager/models.py`, `feature_flags.py`, `monitoring_commands.py`, `telegram/handlers.py`, `telegram/commands.py`, `main.py` (10) | `system_monitor.py`, `market_monitor.py`, `signal_monitor.py`, `error_monitor.py` (read/composed, not modified) |
+| Packages | — (no new top-level or sub-package) | — | `monitoring/`, `database/`, `platform_layer/telegram/owner/`, `configuration/` (all pre-existing) |
+| Modules | `resource_monitor.py`, `health_monitor.py`, `performance_collector.py`, `access.py` (4) | `models.py`, `decision_logger.py`, `monitoring_models.py`, `monitoring_repository.py`, `database_layer/database_manager/models.py`, `feature_flags.py`, `monitoring_commands.py`, `platform_layer/telegram/handlers.py`, `platform_layer/telegram/commands.py`, `main.py` (10) | `system_monitor.py`, `market_monitor.py`, `signal_monitor.py`, `error_monitor.py` (read/composed, not modified) |
 | Classes | `PerformanceCollector` (1) | `DecisionPipelineEntry`, `DecisionPipelineEntryRow`, `MonitoringRepository`, `FeatureFlags` (+1 field each) | `SystemMonitor` (composed via `DEFAULT_MONITOR.uptime_seconds()`) |
 | Models | `HealthStatus`, `ResourceSnapshot`, `PerformanceCounters`, `ProcessStartEntry` (4) | `DecisionPipelineEntry.stage_durations_ms`, `DecisionPipelineEntryRow.stage_durations_ms` | `SystemHealth`, `MarketHealth`, `SignalHealth`, `ErrorEvent` |
 | Functions | `get_resource_snapshot()`, `record_process_start()`, `classify_health()`, `is_owner_monitoring_enabled()`, `get_performance_report()`, `performance_handler()`, `record_process_start()` (in `resource_monitor.py`), `record_signal/decision/trade/reject/error/reconnect()` module functions (~13) | `log_entry()`, `get_recent_entries()`, `record_decision_entry()`, `get_recent_decision_entries()`, `init_monitoring_schema()`, `get_status_report()` | — |

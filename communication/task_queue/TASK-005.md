@@ -7,7 +7,7 @@
 
 Not yet scoped. Named in the Director's GoldBot Master Progress table
 (Phase 2 — Platform). Note: per-user notification on/off already
-exists (`telegram/notification_service.py`, `/notifications` command)
+exists (`platform_layer/telegram/notification_service.py`, `/notifications` command)
 — `docs/PHASE6_FREEZE.md`'s Stage 6 Future Module Reservation Table
 already flags "Notifications Center" as "Partially live... no
 per-category center," so this task's brief should build on that

@@ -155,8 +155,8 @@ all today, and have no sanctioned reason to.
 Handler → Service → Repository → Database
 ```
 
-`telegram/handlers.py` never imports `database.*` or `core.pipeline`
-directly — this is already stated and enforced in `telegram/handlers.py`'s
+`platform_layer/telegram/handlers.py` never imports `database.*` or `core.pipeline`
+directly — this is already stated and enforced in `platform_layer/telegram/handlers.py`'s
 own module docstring, and it generalizes here: **any** module that
 needs persisted data goes through a `database/*_repository.py` module,
 never raw SQL, never a direct `sqlite3`/ORM call from a service,
@@ -306,15 +306,15 @@ emergency state (`core_layer/emergency/`), runtime lifecycle
 (`ai/runtime/runtime_manager.py`), feature toggles
 (`configuration/runtime_feature_manager.py`), broadcast/media/
 translation intent (`broadcast/`, `media/`, `translation/`) — exposes
-its control surface through `telegram/owner/*_commands.py`, gated by
-`telegram/owner/security.py`'s `require_role()`/`log_owner_action()`
+its control surface through `platform_layer/telegram/owner/*_commands.py`, gated by
+`platform_layer/telegram/owner/security.py`'s `require_role()`/`log_owner_action()`
 (Article 4's Handler → Service → Repository chain applies here too: an
 Owner command never reaches into a repository directly).
 
 An Owner command may legitimately be foundation-only — returning a
 clear "not implemented" rather than a fabricated result — while its
 backend wiring awaits separate Director approval (the standing pattern
-`telegram/owner/broadcast_commands.py` established in Phase 63.0). What
+`platform_layer/telegram/owner/broadcast_commands.py` established in Phase 63.0). What
 is never acceptable is a critical module with **no** Owner-facing
 surface at all, or one whose real state can diverge from what the
 Owner Panel reports.
@@ -385,7 +385,7 @@ GoldBot Platform is not built around Telegram Bot with other clients
 bolted on later — Telegram Bot is one client among five, sitting below
 a Shared Platform Layer alongside Telegram Mini App, Android, iOS, and
 Desktop. An Architecture document that designs only for whichever
-platform happens to be `LIVE` today (per `platforms/platform_registry.py`)
+platform happens to be `LIVE` today (per `platform_layer/platform_service/platform_registry.py`)
 repeats the exact mistake this Article exists to prevent: a Navigation
 (or any other Platform component) built Telegram-first would require
 rewriting for every platform that comes after it.
@@ -393,12 +393,12 @@ rewriting for every platform that comes after it.
 **In force**: from Navigation (TASK-002B) onward, every Platform
 Architecture document states, for every component it defines, its
 compatibility with all five platforms — Telegram Bot, Telegram Mini
-App, Android, iOS, Desktop — using `platforms/capability_model.py`'s
+App, Android, iOS, Desktop — using `platform_layer/platform_service/capability_model.py`'s
 existing `SupportStatus` contract (`SUPPORTED`/`NOT_SUPPORTED`/`PLANNED`,
 the latter two always carrying a `reason`). A platform having zero
 code today is not a reason to omit it from the compatibility statement
 — it is a reason the `reason` field says so honestly (see
-`platforms/cross_platform_checker.py`'s existing validation rule,
+`platform_layer/platform_service/cross_platform_checker.py`'s existing validation rule,
 already built for exactly this purpose in TASK-001).
 
 **Does not require writing platform code today.** This Article governs

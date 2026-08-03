@@ -29,39 +29,39 @@ never in scope and remain English by design (Director decision).
 ### Phase 1.0/1.1 — Language Callback Fix + UX Polish
 Commits: `31493da`, `cabed8c`.
 - Wired `/language`'s inline keyboard to a real `callback_query`
-  handler (`telegram/callback_router.py`, new file) — previously the
+  handler (`platform_layer/telegram/callback_router.py`, new file) — previously the
   keyboard existed but taps did nothing.
 - `language_status()`/`LanguageUpdateResult` added to
-  `telegram/handlers.py`: shows the caller's current language with no
+  `platform_layer/telegram/handlers.py`: shows the caller's current language with no
   args, no-ops on re-selecting the current language, removes the
   picker keyboard once a change actually lands.
 
 ### Phase 1.3/1.4 — Translation Engine + Localized Handlers
 Commit: `c3f86f6`.
-- New `translation/ui_catalog.py`: a static UZ/RU/EN string catalog
+- New `media_layer/translation/ui_catalog.py`: a static UZ/RU/EN string catalog
   and `t(key, language, **kwargs)` lookup (caller's language → EN →
   any entry; never raises).
 - All 17 `COMMANDS`-registry USER-tier handlers
-  (`telegram/handlers.py`) rewired to route text through `t()` instead
+  (`platform_layer/telegram/handlers.py`) rewired to route text through `t()` instead
   of hardcoded English.
 - Director's explicit, load-bearing decision recorded here: the DB
   schema default (`users.language = 'UZ'`) was **not** changed to
   make English tests pass — the ~15 affected tests were updated to the
   new Uzbek-default product spec instead ("Testlar mahsulotni emas,
   mahsulot spetsifikatsiyasini aks ettirishi kerak").
-- OWNER/ADMIN-tier handlers (`telegram/owner/*.py`, `admin_handler`,
+- OWNER/ADMIN-tier handlers (`platform_layer/telegram/owner/*.py`, `admin_handler`,
   `broadcast_handler`, etc.) deliberately left untouched — flagged to
   the Director as a scope decision, confirmed: OWNER/ADMIN stays
   English-only, permanently, not a future phase.
 
 ### Phase 1.5 — Localized Keyboards
 Commit: `db7dffd`.
-- Every USER-tier keyboard in `telegram/keyboards.py` (language, risk,
+- Every USER-tier keyboard in `platform_layer/telegram/keyboards.py` (language, risk,
   timeframe, strategy, settings, notifications, phone_share) takes an
   optional `language` and resolves labels via `t()`; `callback_data`
   never changes with language. `admin_panel_keyboard()` explicitly
   excluded — stays English, zero-arg signature unchanged.
-- `telegram/command_router.py` and `telegram/callback_router.py`
+- `platform_layer/telegram/command_router.py` and `platform_layer/telegram/callback_router.py`
   resolve and pass the caller's stored language into the keyboard
   builders.
 
@@ -82,12 +82,12 @@ Commit: `5c1f806`.
 
 | File | Change |
 |---|---|
-| `telegram/callback_router.py` | New — callback_query dispatch for `lang_*` |
-| `telegram/command_router.py` | Keyboard language wiring |
-| `telegram/handlers.py` | All USER-tier handlers + `/language` + `contact_handler` localized |
-| `telegram/keyboards.py` | All USER-tier keyboards localized |
-| `telegram/polling.py` | Callback router wiring |
-| `translation/ui_catalog.py` | New — 77-key UZ/RU/EN catalog + `t()` |
+| `platform_layer/telegram/callback_router.py` | New — callback_query dispatch for `lang_*` |
+| `platform_layer/telegram/command_router.py` | Keyboard language wiring |
+| `platform_layer/telegram/handlers.py` | All USER-tier handlers + `/language` + `contact_handler` localized |
+| `platform_layer/telegram/keyboards.py` | All USER-tier keyboards localized |
+| `platform_layer/telegram/polling.py` | Callback router wiring |
+| `media_layer/translation/ui_catalog.py` | New — 77-key UZ/RU/EN catalog + `t()` |
 | `tests/integration/test_telegram_flow.py` | Updated for UZ-default text |
 | `tests/security/test_database_security.py` | Updated for UZ-default text |
 | `tests/security/test_input_validation.py` | Updated for UZ-default + `/language` text |
@@ -103,7 +103,7 @@ Commit: `5c1f806`.
 
 ## Translation Catalog Summary
 
-77 total keys in `translation/ui_catalog.py`, **every key has UZ, RU,
+77 total keys in `media_layer/translation/ui_catalog.py`, **every key has UZ, RU,
 and EN** — verified programmatically (`tests/translation/
 test_ui_catalog.py::test_every_catalog_entry_has_uz_ru_and_en`), zero
 missing. Breakdown: 22 `keyboard.*` (Phase 1.5), 5 `language.*` + 5
@@ -121,9 +121,9 @@ Verified empty across the **entire** Phase 1 range (`1aebd48..5c1f806`,
 every commit):
 ```
 git diff --stat 1aebd48 5c1f806 -- core/ decision/ risk/ execution/ strategies/ signals/ context/ ai/
-git diff --stat 1aebd48 5c1f806 -- telegram/owner/ telegram/admin_service.py
+git diff --stat 1aebd48 5c1f806 -- platform_layer/telegram/owner/ platform_layer/telegram/admin_service.py
 ```
-Both empty. Confirmed additionally at the `telegram/handlers.py`
+Both empty. Confirmed additionally at the `platform_layer/telegram/handlers.py`
 diff-hunk level: every hunk across the phase falls within USER-tier
 handler functions (`start_handler` → `feedback_handler`, plus
 `contact_handler`); no hunk touches `admin_handler`,
@@ -144,11 +144,11 @@ handler functions (`start_handler` → `feedback_handler`, plus
 
 | Item | Deferred to | Why |
 |---|---|---|
-| `telegram/signal_formatter.py` (`/signal`, `/history` content) | **V2.1** | Signal Product Layer — will be rebuilt alongside V2.1 Price Stream Foundation anyway; localizing now risks a second rewrite. |
-| `telegram/signal_access_service.py` (`DENIED_MESSAGE_TEMPLATE`, the FREE-plan upgrade prompt) | **V2.1** | Same Signal Product Layer boundary as above. |
-| `telegram/command_router.py`'s generic constants (`UNKNOWN_COMMAND_TEXT`, `SERVICE_UNAVAILABLE_TEXT`, `PERMISSION_DENIED_TEXT`) | **V2.2** | Belongs to a future Generic Error Catalog, done once as a system-wide UX refactor, not piecemeal per phase. |
+| `platform_layer/telegram/signal_formatter.py` (`/signal`, `/history` content) | **V2.1** | Signal Product Layer — will be rebuilt alongside V2.1 Price Stream Foundation anyway; localizing now risks a second rewrite. |
+| `platform_layer/telegram/signal_access_service.py` (`DENIED_MESSAGE_TEMPLATE`, the FREE-plan upgrade prompt) | **V2.1** | Same Signal Product Layer boundary as above. |
+| `platform_layer/telegram/command_router.py`'s generic constants (`UNKNOWN_COMMAND_TEXT`, `SERVICE_UNAVAILABLE_TEXT`, `PERMISSION_DENIED_TEXT`) | **V2.2** | Belongs to a future Generic Error Catalog, done once as a system-wide UX refactor, not piecemeal per phase. |
 
-OWNER/ADMIN-tier commands (`telegram/owner/*.py` and the operator
+OWNER/ADMIN-tier commands (`platform_layer/telegram/owner/*.py` and the operator
 console) are **not** a deferred item — they are permanently
 English-only by Director decision (internal operator tooling; a
 future Operator Localization Phase would be a distinct, separately-
@@ -157,7 +157,7 @@ authorized effort, not implied by this freeze).
 ## Freeze Declaration
 
 **Language Foundation is frozen as of commit `5c1f806`.** No further
-changes to `translation/ui_catalog.py`, the localized USER-tier
+changes to `media_layer/translation/ui_catalog.py`, the localized USER-tier
 handlers/keyboards, or the callback/command router language wiring
 without explicit Director approval.
 
@@ -168,7 +168,7 @@ without explicit Director approval.
 | Duration | Phase 1.0 → Phase 1.6 |
 | Commits | 5 (`31493da`, `cabed8c`, `c3f86f6`, `db7dffd`, `5c1f806`) |
 | Files Changed | 16 |
-| New Files | 6 (`telegram/callback_router.py`, `translation/ui_catalog.py`, `tests/telegram/test_callback_router.py`, `tests/telegram/test_keyboards.py`, `tests/telegram/test_language_handler.py`, `tests/translation/test_ui_catalog.py`) |
+| New Files | 6 (`platform_layer/telegram/callback_router.py`, `media_layer/translation/ui_catalog.py`, `tests/telegram/test_callback_router.py`, `tests/telegram/test_keyboards.py`, `tests/telegram/test_language_handler.py`, `tests/translation/test_ui_catalog.py`) |
 | Modified Files | 10 |
 | Translation Keys | 77 |
 | Languages | UZ, RU, EN |
@@ -182,12 +182,12 @@ without explicit Director approval.
 ## Lessons Learned
 
 - **Translation Engine must exist before any handler is localized** —
-  building `translation/ui_catalog.py` first (Phase 1.3) and only then
+  building `media_layer/translation/ui_catalog.py` first (Phase 1.3) and only then
   wiring handlers (Phase 1.4 onward) avoided a second pass; doing it
   handler-by-handler with inline strings would have meant redoing
   every handler once the catalog pattern was chosen.
 - **Callback architecture should precede keyboard localization** —
-  `telegram/callback_router.py` (Phase 1.0/1.1) had to exist before
+  `platform_layer/telegram/callback_router.py` (Phase 1.0/1.1) had to exist before
   Phase 1.5's keyboard `language` wiring made sense; building keyboards
   first would have meant retrofitting callback plumbing around
   already-shipped button labels.

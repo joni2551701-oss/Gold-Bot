@@ -92,11 +92,11 @@ real, unmodified Content → Media → Broadcast functions
 
 1. `ContentEngine.create(ContentType.LIVE_ANALYSIS, ...)` — reused a
    second time (no new `ContentType` member).
-2. `media.media_pipeline.prepare_media_from_content()` — with
+2. `media_layer.content_manager.media_pipeline.prepare_media_from_content()` — with
    `MediaType.IMAGE` (Phase 63.0, reused as-is) rather than `TEXT`,
    since a Chart Analysis is visually sourced even though this
    Foundation never stores the image.
-3. `broadcast.broadcast_adapter.broadcast_asset_from_content_and_media()`
+3. `media_layer.telegram_broadcast.broadcast_adapter.broadcast_asset_from_content_and_media()`
    + `BroadcastManager.prepare_broadcast()`.
 
 `chart_analysis_to_content_body()` never returns an empty string — an

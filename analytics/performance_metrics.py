@@ -159,7 +159,7 @@ def _fmt(value: Optional[float], suffix: str = "", digits: int = 2) -> str:
 def format_performance_metrics(metrics: PerformanceMetrics) -> str:
     """
     Phase 60.4 TASK 7 -- a text summary for
-    telegram/owner/performance_commands.py. Pure formatting, no
+    platform_layer/telegram/owner/performance_commands.py. Pure formatting, no
     computation. Never raises: every field on PerformanceMetrics is
     either a plain number or None.
     """

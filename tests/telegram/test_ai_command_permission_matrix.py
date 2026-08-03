@@ -2,7 +2,7 @@
 
 import asyncio
 
-from telegram.command_router import route_command, PERMISSION_DENIED_TEXT, UNKNOWN_COMMAND_TEXT
+from platform_layer.telegram.command_router import route_command, PERMISSION_DENIED_TEXT, UNKNOWN_COMMAND_TEXT
 
 OWNER_ID = "111"  # matches conftest's TELEGRAM_OWNER_ID
 ADMIN_ID = "222"

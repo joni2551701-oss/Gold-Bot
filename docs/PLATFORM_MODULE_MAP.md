@@ -29,13 +29,13 @@ only — no file listed here was modified to produce this map.
 | `feedback_service.py` | Bridges `/feedback` (user) and `/feedbacks` (admin) to `database_layer.user_repository.feedback_repository.FeedbackRepository` — submission, listing, status transitions. |
 | `admin_service.py` | Admin CRUD, statistics, system health, broadcast delivery, feedback review (delegates to `FeedbackService`). Bridges to `database_layer.user_repository.admin_repository.AdminRepository` and `database_layer.user_repository.user_repository.UserRepository`. |
 | `bot.py` | Thin `aiogram.Bot` wrapper used for **outbound** delivery from the trading pipeline — a distinct `Bot` instance from `polling.py`'s inbound one. |
-| `notifier.py` | Sends a `FormattedSignal` via `telegram/bot.py` to the one fixed `TELEGRAM_CHAT_ID` — the pipeline's only Telegram touchpoint. Does not consult `NotificationService`/`SignalAccessService` (documented boundary, see `docs/PLATFORM_ARCHITECTURE.md` §7). |
+| `notifier.py` | Sends a `FormattedSignal` via `platform_layer/telegram/bot.py` to the one fixed `TELEGRAM_CHAT_ID` — the pipeline's only Telegram touchpoint. Does not consult `NotificationService`/`SignalAccessService` (documented boundary, see `docs/PLATFORM_ARCHITECTURE.md` §7). |
 | `signal_formatter.py` | Formats a `SignalCandidate` + `AIAnalysisResult` + `TradeDecision` (Trading Core types, imported for type hints on its dataclass fields only) into a `FormattedSignal` string for Telegram display. |
 | `result_handler.py` | Reads/updates signal outcome data via `database_layer.trade_repository.signal_repository.SignalRepository`. |
 | `runtime_monitor.py` | Tracks the aiogram Bot/Dispatcher's own operational state (connected / last heartbeat / error count / uptime) — process health, not trading health. |
 | `__init__.py` | Package marker, no logic. |
 
-## `telegram/owner/` — Owner command surface (24 files)
+## `platform_layer/telegram/owner/` — Owner command surface (24 files)
 
 Grouped by section per `docs/owner/OWNER_PANEL.md`'s mapping (real
 files, not an idealized structure — several sections share a file or
@@ -57,7 +57,7 @@ have no dedicated file yet, noted as honest gaps in that document):
 | — | `__init__.py` | Package marker |
 
 **No dedicated file exists today** for: Subscription (lives in
-`telegram/subscription_service.py`, called from whichever owner file
+`platform_layer/telegram/subscription_service.py`, called from whichever owner file
 needs it), Risk (surfaced read-only through `status_commands.py`/
 `dashboard.py`, never a control surface), Backup (`config_snapshot_*`
 under `database/`, read via the relevant owner file). Recorded as
@@ -72,10 +72,10 @@ Trading Core / foundation layers, out of Platform Engineer scope.
 
 | Table | Models / Repository | Owning service |
 |---|---|---|
-| `users` | `user_models.py` / `user_repository.py` | `telegram/user_service.py`, `telegram/notification_service.py` |
-| `subscriptions` | `subscription_models.py` / `subscription_repository.py` | `telegram/subscription_service.py` |
-| `feedback` | `feedback_models.py` / `feedback_repository.py` | `telegram/feedback_service.py`, `telegram/admin_service.py` |
-| `admins` | `admin_models.py` / `admin_repository.py` | `telegram/admin_service.py`, `telegram/permissions.py` |
+| `users` | `user_models.py` / `user_repository.py` | `platform_layer/telegram/user_service.py`, `platform_layer/telegram/notification_service.py` |
+| `subscriptions` | `subscription_models.py` / `subscription_repository.py` | `platform_layer/telegram/subscription_service.py` |
+| `feedback` | `feedback_models.py` / `feedback_repository.py` | `platform_layer/telegram/feedback_service.py`, `platform_layer/telegram/admin_service.py` |
+| `admins` | `admin_models.py` / `admin_repository.py` | `platform_layer/telegram/admin_service.py`, `platform_layer/telegram/permissions.py` |
 
 Schema definitions (`init_user_schema()`, `init_subscription_schema()`,
 `init_feedback_schema()`, `init_admin_schema()`) live in

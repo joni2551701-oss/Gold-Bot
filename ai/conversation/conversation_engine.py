@@ -28,7 +28,7 @@ never works around that by constructing its own `AIContext` -- doing
 so would also require importing `context/`, which `ai/` deliberately
 never does (see `ai/context/context_adapter.py`'s docstring).
 
-Not wired into `telegram/command_router.py` this phase -- same
+Not wired into `platform_layer/telegram/command_router.py` this phase -- same
 "foundation, not yet live-wired" posture as every other Phase 61.x
 module (`docs/PHASE61_3_INTELLIGENCE_AUDIT.md`'s `telegram/` finding:
 no free-text/conversational handling exists anywhere in `telegram/`

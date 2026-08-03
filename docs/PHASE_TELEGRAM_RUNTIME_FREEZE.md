@@ -5,23 +5,23 @@ Governed by `docs/constitution/CONSTITUTION.md` Article 12
 Activation Alpha", a direct follow-on to the GitHub Secrets /
 Environment Configuration Audit — that audit found secrets were never
 the problem; this phase makes the actual, already-correct
-`telegram/polling.py` listener observable from inside Telegram itself.
+`platform_layer/telegram/polling.py` listener observable from inside Telegram itself.
 
 ## Audit Summary
 
 TASK 0's audit (`docs/PHASE_TELEGRAM_RUNTIME_AUDIT.md`) confirmed:
-`telegram/polling.py` is the single, consistent entry point across
+`platform_layer/telegram/polling.py` is the single, consistent entry point across
 every deployment surface; all 49 commands across `COMMANDS`/
 `OWNER_COMMANDS`/`ADMIN_COMMANDS` have a matching `{command}_handler`
 (verified programmatically, zero missing); `TELEGRAM_OWNER_ID` ->
-`telegram.permissions.is_owner()` -> `command_router` gating already
+`platform_layer.telegram.permissions.is_owner()` -> `command_router` gating already
 works end-to-end; `deploy/systemd/goldbot-polling.service` and
 `docker-compose.yml` were already consistent with each other and with
 the entry point. No Director Decision pause was required.
 
 ## Built this phase
 
-- `telegram/polling.py` (extended) — `_log_startup_secret_presence()`
+- `platform_layer/telegram/polling.py` (extended) — `_log_startup_secret_presence()`
   (TASK 6), `_build_startup_message()`/`_notify_owner_startup()`
   (TASK 2), `_heartbeat_loop()` + `HEARTBEAT_INTERVAL_SECONDS` (TASK
   5), all wired into `run_polling()` alongside the existing
@@ -29,7 +29,7 @@ the entry point. No Director Decision pause was required.
   refined to the brief's exact `Startup aborted: Missing
   TELEGRAM_BOT_TOKEN` shape (previously two separate lines from the
   prior audit's own fix).
-- `telegram/runtime_monitor.py` (new) — `TelegramRuntimeStatus`
+- `platform_layer/telegram/runtime_monitor.py` (new) — `TelegramRuntimeStatus`
   (`status`/`last_ping`/`errors`/`uptime_seconds`),
   `TelegramRuntimeMonitor` (`record_connected()`/`record_heartbeat()`/
   `record_error()`/`get_status()`), module-level `DEFAULT_RUNTIME_MONITOR`
@@ -66,10 +66,10 @@ the entry point. No Director Decision pause was required.
 
 ## Constitution Compliance (checks run at close)
 
-- **Isolation** — `telegram/runtime_monitor.py` imports only
+- **Isolation** — `platform_layer/telegram/runtime_monitor.py` imports only
   `core_layer.logger.logger`, `core_layer.health_monitor.system_monitor`, and stdlib.
-  `telegram/polling.py`'s new code imports only
-  `core_layer.health_monitor.system_monitor.get_health` and `telegram.runtime_monitor`
+  `platform_layer/telegram/polling.py`'s new code imports only
+  `core_layer.health_monitor.system_monitor.get_health` and `platform_layer.telegram.runtime_monitor`
   beyond what already existed. Neither imports `decision`/`risk`/
   `execution`/`ai.*`/`signals`/`strategies`.
 - **Trading pipeline zero-modification** — `git diff --stat` against
@@ -92,7 +92,7 @@ the entry point. No Director Decision pause was required.
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | — (no new top-level package) | — | `telegram/`, `monitoring/` (both pre-existing) |
-| Modules | `telegram/runtime_monitor.py` (1) | `telegram/polling.py` (1) | `core_layer/health_monitor/system_monitor.py` (composed, not modified) |
+| Modules | `platform_layer/telegram/runtime_monitor.py` (1) | `platform_layer/telegram/polling.py` (1) | `core_layer/health_monitor/system_monitor.py` (composed, not modified) |
 | Classes | `TelegramRuntimeMonitor` (1) | — | — |
 | Models | `TelegramRuntimeStatus` (1) | — | `core_layer.health_monitor.models.SystemHealth` (read via `get_health()`, not imported directly as a type) |
 | Functions | `_log_startup_secret_presence()`, `_build_startup_message()`, `_notify_owner_startup()`, `_heartbeat_loop()`, `record_connected()`, `record_heartbeat()`, `record_error()`, `get_status()` (8) | `run_polling()` (extended in place) | `core_layer.health_monitor.system_monitor.get_health()`, `core_layer.health_monitor.system_monitor.record_error()` |
@@ -116,7 +116,7 @@ Per the Director's own stated order: once this phase closes, "GoldBot
 Core Alpha Monitoring" begins its 3–5 week real-observation window —
 collecting errors, signal quality, API issues, uptime, and real market
 conditions — before V1 Freeze fixes. This phase's own
-`telegram.runtime_monitor` and the prior phase's `monitoring/`
+`platform_layer.telegram.runtime_monitor` and the prior phase's `monitoring/`
 package are both now live inputs to that window. Not decided here —
 requires its own dedicated Worker Brief per this session's Director
 Policy.

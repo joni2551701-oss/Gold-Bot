@@ -40,7 +40,7 @@ file (`database/goldbot.db`):
    hours) — one run per invocation, exits when done. Fetches market
    data, analyzes it, and (if a signal clears every gate) sends one
    Telegram notification and persists the result.
-2. **Telegram product layer** (`telegram/polling.py`, run as a
+2. **Telegram product layer** (`platform_layer/telegram/polling.py`, run as a
    long-lived process) — user registration, settings, subscriptions,
    admin panel, feedback. Reads/writes the same database, entirely
    independent of when the pipeline last ran.
@@ -382,7 +382,7 @@ only new key in `run()`'s result dict. `confidence` is
 never recomputed, since Explainability runs before
 `DecisionEngine.evaluate()` and no blended/final confidence exists
 yet to report. Not consumed by `AIAnalyzer`, `DecisionEngine`,
-`RiskManager`, or `telegram/signal_formatter.py` in this phase — see
+`RiskManager`, or `platform_layer/telegram/signal_formatter.py` in this phase — see
 `docs/EXPLAINABILITY.md`'s "How AI will use this in the future"
 section.
 
@@ -804,13 +804,13 @@ anywhere. No competing `data/cache/market_cache.py` was built;
 `ProviderHealthReport` gained `checked_at` (additive, the brief's own
 "Last Update" example), stamped by `check_provider_health()`.
 
-**TASK 5 (Owner Command Foundation)** — new `telegram/owner/` package
+**TASK 5 (Owner Command Foundation)** — new `platform_layer/telegram/owner/` package
 (`provider_commands.py`, `system_commands.py`, `feature_commands.py`)
 with real, tested functions reusing `data_layer/providers/registry.py` and
 `core_layer/health_monitor/provider_health.py` — a scope shift from Phase 59.2's own
 "contract only" instruction for the same idea. **Not** registered into
-`telegram/commands.py`'s `OWNER_COMMANDS`/`ADMIN_COMMANDS`, **not**
-called from `telegram/command_router.py`/`telegram/handlers.py` — the
+`platform_layer/telegram/commands.py`'s `OWNER_COMMANDS`/`ADMIN_COMMANDS`, **not**
+called from `platform_layer/telegram/command_router.py`/`platform_layer/telegram/handlers.py` — the
 live bot's command surface is unaffected. `enable_provider()`/
 `disable_provider()` honestly report `success=False`: no runtime
 override mechanism exists for `config.py`'s import-time-read
@@ -830,8 +830,8 @@ fabricated. Generates no signal, makes no decision.
 
 None of `data_layer/live_data/market_data.py`, `core/pipeline.py`, `strategies/`,
 `signals/` (candidate generation), `decision_layer/decision_engine/decision_engine.py`,
-`risk_layer/risk_engine/risk_manager.py`, `ai/`, `execution/`, `telegram/handlers.py`,
-`telegram/command_router.py`, or `telegram/commands.py` changed in
+`risk_layer/risk_engine/risk_manager.py`, `ai/`, `execution/`, `platform_layer/telegram/handlers.py`,
+`platform_layer/telegram/command_router.py`, or `platform_layer/telegram/commands.py` changed in
 this phase.
 
 ### Phase 59.5 — Historical Data Collection & Validation Foundation
@@ -894,7 +894,7 @@ timestamp and reports close/high/low/spread differences. Foundation
 only: never merges, corrects, or picks a "winning" provider.
 
 **TASK 7 (Owner Service Foundation)** — new
-`telegram/owner/dataset_commands.py` (`get_dataset_status()`,
+`platform_layer/telegram/owner/dataset_commands.py` (`get_dataset_status()`,
 `get_history_status()`, `get_sync_status()`, `get_provider_compare()`).
 Unlike `report_commands.py`/`validation_commands.py` (Phase 59.4/Real
 Market Validation Foundation, which take caller-supplied data since
@@ -902,7 +902,7 @@ nothing persists signal/performance history yet), these four query the
 real `RawCandleRepository`/`SyncStateRepository` directly — the same
 "query the real backing store" posture `provider_commands.py`'s
 `list_providers()` already uses. **Not** registered into
-`telegram/commands.py`/`command_router.py`/`handlers.py` — the live
+`platform_layer/telegram/commands.py`/`command_router.py`/`handlers.py` — the live
 bot's command surface is unaffected.
 
 None of `core/pipeline.py`, `decision/`, `execution/`, `risk/`,
@@ -935,12 +935,12 @@ entry; no update/delete method exists. Nothing calls it automatically
 yet — no owner command is wired to log itself.
 
 **TASK 3 (Owner Permission System)** — new
-`telegram/owner/owner_roles.py`. `OwnerRole` (`OWNER`/`SUPER_ADMIN`/
+`platform_layer/telegram/owner/owner_roles.py`. `OwnerRole` (`OWNER`/`SUPER_ADMIN`/
 `ADMIN`/`VIEWER`) + `resolve_owner_role()`, reusing the existing
 `admins.role` column (previously only a label, now classified) and
-`telegram.permissions.is_owner()`. Deliberately separate from and
-never touching `telegram.permissions.PermissionLevel` — that enum is
-live-wired into `telegram/command_router.py`'s real permission gating
+`platform_layer.telegram.permissions.is_owner()`. Deliberately separate from and
+never touching `platform_layer.telegram.permissions.PermissionLevel` — that enum is
+live-wired into `platform_layer/telegram/command_router.py`'s real permission gating
 today; `OwnerRole` is a foundation-only, not-yet-checked hierarchy for
 a future Owner Dashboard.
 
@@ -969,7 +969,7 @@ No apply/restore function exists — capture and read only.
 
 None of `core/pipeline.py`, `decision/`, `execution/`, `risk/`,
 `strategies/`, `context/`, `signals/`, any Telegram handler,
-`telegram.permissions.PermissionLevel`, `telegram/command_router.py`,
+`platform_layer.telegram.permissions.PermissionLevel`, `platform_layer/telegram/command_router.py`,
 or any pre-existing `analytics/`/`configuration/` module's behavior
 changed in this phase.
 
@@ -1021,18 +1021,18 @@ one `REJECTED` audit entry but no snapshot and no persisted change.
 
 None of `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
 `strategies/`, `signals/`, `context/`, `ai/`, any Telegram handler, or
-`telegram/command_router.py` changed in this phase, and none of them
+`platform_layer/telegram/command_router.py` changed in this phase, and none of them
 import anything from `configuration/` — a runtime toggle changes only
 what `RuntimeFeatureManager`/`runtime_api.py` themselves report.
 
 ### Phase 59.8 — Owner Control Center
 
-Consolidates `telegram/owner/`'s five prior modules (Phase 59.3-59.5's
+Consolidates `platform_layer/telegram/owner/`'s five prior modules (Phase 59.3-59.5's
 `provider_commands.py`/`system_commands.py`/`feature_commands.py`/
 `dataset_commands.py`, Phase 59.4's `report_commands.py`, Phase 59.6's
 `owner_roles.py`, Phase 59.7's `configuration/runtime_api.py`) into a
 control-center surface — still, per the Director's own roadmap,
-**not** registered into `telegram/commands.py`/`command_router.py`/
+**not** registered into `platform_layer/telegram/commands.py`/`command_router.py`/
 `handlers.py`. Full detail: `docs/OWNER_COMMANDS.md`'s "Phase 59.8
 update" section.
 
@@ -1073,8 +1073,8 @@ constants; Phase 59.7's runtime registry tracks a *separate* value
 under the same name, not a mutation of `Config` itself.
 
 None of `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
-`strategies/`, `signals/`, `context/`, `ai/`, `telegram/handlers.py`,
-`telegram/command_router.py`, or `telegram/commands.py` changed in
+`strategies/`, `signals/`, `context/`, `ai/`, `platform_layer/telegram/handlers.py`,
+`platform_layer/telegram/command_router.py`, or `platform_layer/telegram/commands.py` changed in
 this phase.
 
 ### Phase 59.9 — Emergency Safety Layer Foundation
@@ -1122,16 +1122,16 @@ posture, not `runtime_features`' upsert). `EmergencyRepository.get_current_state
 derives "current" from the most recent row; `get_history()` returns
 the full, never-lost sequence.
 
-**`telegram/owner/emergency_commands.py`** — `kill_system()`/
+**`platform_layer/telegram/owner/emergency_commands.py`** — `kill_system()`/
 `pause_system()`/`maintenance_on()`/`restore_system()`/
 `get_emergency_status()`, thin wrappers over `EmergencyManager`. Not
-registered into `telegram/commands.py`/`command_router.py`/
+registered into `platform_layer/telegram/commands.py`/`command_router.py`/
 `handlers.py`, same posture as every Owner Mode module before it.
 
 None of `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
 `execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
-`telegram/handlers.py`, `telegram/command_router.py`, or
-`telegram/commands.py` changed in this phase. No real order or signal
+`platform_layer/telegram/handlers.py`, `platform_layer/telegram/command_router.py`, or
+`platform_layer/telegram/commands.py` changed in this phase. No real order or signal
 is blocked by any module in this phase.
 
 ### Phase 60.0 — Architecture Audit (no code)
@@ -1141,7 +1141,7 @@ logic, database audit, owner audit, pipeline audit) run before any
 Phase 60.1+ code, per the Director's explicit "stop coding, audit
 first" instruction. Design/documentation only. Full detail:
 `docs/PHASE60_ARCHITECTURE_AUDIT.md`. Found and the Director resolved
-two real duplicates (`telegram/owner/validation_commands.py`'s
+two real duplicates (`platform_layer/telegram/owner/validation_commands.py`'s
 `get_validation_report()` vs `report_commands.py`'s
 `get_validation_summary()`; `status_commands.get_system_status()` vs
 `system_commands.get_system_health()`) — both decisions recorded, not
@@ -1197,9 +1197,9 @@ session-management API (`start()`/`pause()`/`resume()`/`stop()`/
 same "in-memory holder" convention as
 `configuration.runtime_state.RuntimeStateCache`.
 
-**`telegram/owner/replay_commands.py`** — `replay_start()`/
+**`platform_layer/telegram/owner/replay_commands.py`** — `replay_start()`/
 `replay_pause()`/`replay_stop()`/`replay_status()`, thin wrappers over
-`ReplayController`. Not registered into `telegram/commands.py`/
+`ReplayController`. Not registered into `platform_layer/telegram/commands.py`/
 `command_router.py`/`handlers.py`, same posture as every Owner Mode
 module before it.
 
@@ -1211,8 +1211,8 @@ historical replay window needs. `get_candles()` itself is unchanged.
 
 None of `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
 `execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
-`telegram/handlers.py`, `telegram/command_router.py`, or
-`telegram/commands.py` changed in this phase.
+`platform_layer/telegram/handlers.py`, `platform_layer/telegram/command_router.py`, or
+`platform_layer/telegram/commands.py` changed in this phase.
 
 ### Phase 60.2 — Backtesting Engine
 
@@ -1256,9 +1256,9 @@ for this phase.
 (wraps `analytics.strategy_report.build_strategy_report()`, unmodified)
 + `format_backtest_report()`.
 
-**`telegram/owner/backtest_commands.py`** — `backtest_run()`, a thin
+**`platform_layer/telegram/owner/backtest_commands.py`** — `backtest_run()`, a thin
 wrapper running a full `BacktestEngine` pass synchronously. Not
-registered into `telegram/commands.py`/`command_router.py`/
+registered into `platform_layer/telegram/commands.py`/`command_router.py`/
 `handlers.py`.
 
 **A genuine Phase 60.1 bug found and fixed during this phase's own
@@ -1274,8 +1274,8 @@ on this for the full root-cause writeup.
 
 None of `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
 `execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
-`telegram/handlers.py`, `telegram/command_router.py`, or
-`telegram/commands.py` changed in this phase.
+`platform_layer/telegram/handlers.py`, `platform_layer/telegram/command_router.py`, or
+`platform_layer/telegram/commands.py` changed in this phase.
 
 ### Phase 60.3 — Execution Simulator Foundation
 
@@ -1343,7 +1343,7 @@ benchmark_end_price)`, matching the Director's own worked example
 (`Gold +5%, Strategy +18% -> Alpha: +13%`). Does not read candles
 itself — the caller supplies both benchmark prices.
 
-**`telegram/owner/performance_commands.py`** (TASK 7) —
+**`platform_layer/telegram/owner/performance_commands.py`** (TASK 7) —
 `get_performance_report()`/`get_equity_curve_report()`/
 `get_backtest_performance_report()`, thin wrappers over the three
 modules above. Not wired into the live bot.
@@ -1353,21 +1353,21 @@ modules above. Not wired into the live bot.
 decision 1 already recorded the resolution (`get_validation_summary()`
 kept, `get_validation_report()` deprecated) as a future,
 separately-approved step, not an instruction to refactor
-`telegram/owner/` in this pass — this phase confirms the finding still
+`platform_layer/telegram/owner/` in this pass — this phase confirms the finding still
 holds and leaves both functions unchanged.
 
-**`telegram/owner/execution_commands.py`** — `execution_status()`/
+**`platform_layer/telegram/owner/execution_commands.py`** — `execution_status()`/
 `slippage_status()`/`set_simulation_mode()`, thin wrappers reporting
 already-computed config. `set_simulation_mode()` selects a named
 session preset (`DEFAULT`/`LONDON`/`NY_NEWS`) in an in-memory-only
-holder — not persisted, not wired into `telegram/commands.py`/
+holder — not persisted, not wired into `platform_layer/telegram/commands.py`/
 `command_router.py`/`handlers.py`.
 
 None of `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
 `execution_layer/execution_engine/execution_engine.py`, `execution_layer/execution_monitor/signal_lifecycle.py`,
 `strategies/`, `signals/`, `context/`, `ai/`, `trade_monitoring_layer/paper_trading/paper_trade.py`,
-`telegram/handlers.py`, `telegram/command_router.py`, or
-`telegram/commands.py` changed in this phase.
+`platform_layer/telegram/handlers.py`, `platform_layer/telegram/command_router.py`, or
+`platform_layer/telegram/commands.py` changed in this phase.
 
 ### Phase 60.5 — Fundamental Intelligence Foundation
 
@@ -1429,14 +1429,14 @@ combining technical + fundamental context into an explanation-only
 template. No LLM call, no network access, same posture as every other
 method on this class.
 
-**`telegram/owner/fundamental_commands.py`** (TASK 8) —
+**`platform_layer/telegram/owner/fundamental_commands.py`** (TASK 8) —
 `get_macro_status()`/`get_fundamental_score_report()`/`get_fed_status()`,
 thin wrappers over the modules above. Not wired into the live bot.
 
 No new database table (TASK 9's own decision, matching every prior
 foundation phase). None of `core/pipeline.py`, `decision/`, `risk/`,
-`execution/`, `strategies/`, `signals/`, `telegram/handlers.py`,
-`telegram/command_router.py`, or `telegram/commands.py` changed in
+`execution/`, `strategies/`, `signals/`, `platform_layer/telegram/handlers.py`,
+`platform_layer/telegram/command_router.py`, or `platform_layer/telegram/commands.py` changed in
 this phase.
 
 ### Phase 60.6 — Learning Loop Foundation
@@ -1498,7 +1498,7 @@ Generates no explanation/recommendation text itself — left to a
 future AI consumer, still bound by `AIAnalyzerInterface`'s
 advisory-only contract.
 
-**`telegram/owner/learning_commands.py`** (TASK 8) —
+**`platform_layer/telegram/owner/learning_commands.py`** (TASK 8) —
 `get_learning_status()`/`get_patterns_report()`/`get_failures_report()`/
 `get_best_conditions_report()`, thin wrappers over the modules above.
 Not wired into the live bot.
@@ -1507,8 +1507,8 @@ No wiring exists yet from a real closed `PaperTrade` to
 `LearningRepository.record()` — a separate, future, explicitly-
 approvable step, same "foundation, not observed yet" gap every module
 in this phase discloses. None of `core/pipeline.py`, `decision/`,
-`risk/`, `execution/`, `strategies/`, `signals/`, `telegram/handlers.py`,
-`telegram/command_router.py`, or `telegram/commands.py` changed in
+`risk/`, `execution/`, `strategies/`, `signals/`, `platform_layer/telegram/handlers.py`,
+`platform_layer/telegram/command_router.py`, or `platform_layer/telegram/commands.py` changed in
 this phase.
 
 ### Phase 60.7 — Adaptive Intelligence Layer Foundation
@@ -1575,8 +1575,8 @@ Nothing in this phase calls `bridge_closed_trade()` from
 `backtesting_layer/backtest_engine/backtest_engine.py`'s own loop — the bridge exists and is
 tested end-to-end, but wiring it into a real run is a separate, future
 step. None of `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
-`strategies/`, `signals/`, `telegram/handlers.py`,
-`telegram/command_router.py`, or `telegram/commands.py` changed in
+`strategies/`, `signals/`, `platform_layer/telegram/handlers.py`,
+`platform_layer/telegram/command_router.py`, or `platform_layer/telegram/commands.py` changed in
 this phase.
 
 ### Phase 60.8 — Safe Integration Layer
@@ -1708,7 +1708,7 @@ Emergency-state → proceed/skip/abort mapping and every downstream
 cascade are byte-for-byte unchanged from Phase 60.8.
 
 **TASK 5/6 (Runtime API / Owner Command audit)**: both
-`configuration/runtime_api.py` and `telegram/owner/control_commands.py`
+`configuration/runtime_api.py` and `platform_layer/telegram/owner/control_commands.py`
 were already fully generic and name-driven (`enable_feature(name)`,
 never `enable_execution()`) — confirmed clean, nothing to remove. No
 `/enable_execution`-style Telegram command was ever registered
@@ -1732,8 +1732,8 @@ already exists in this repository as of this phase:
 User
   |
   v
-telegram/handlers.py, telegram/command_router.py  (live product commands)
-telegram/owner/*.py  (18 modules -- real, tested, not yet registered here)
+platform_layer/telegram/handlers.py, platform_layer/telegram/command_router.py  (live product commands)
+platform_layer/telegram/owner/*.py  (18 modules -- real, tested, not yet registered here)
   |
   v
 core/pipeline.py (TradingPipeline.run())
@@ -1991,11 +1991,11 @@ core_layer/secrets/phone_hash.py                      (hash_phone_number() -- HM
 database_layer/user_repository/user_models.py                 (+phone_hash field, additive)
 database_layer/user_repository/user_repository.py             (+set_phone_hash()/get_users_by_phone_hash())
 
-telegram/owner/ai_commands.py           (new -- /ai_status /ai_provider /ai_disable /ai_enable /ai_limit /ai_cost /ai_usage)
+platform_layer/telegram/owner/ai_commands.py           (new -- /ai_status /ai_provider /ai_disable /ai_enable /ai_limit /ai_cost /ai_usage)
 ```
 
-Three role concepts (`telegram/permissions.py`'s `PermissionLevel`,
-`telegram/owner/owner_roles.py`'s `OwnerRole`,
+Three role concepts (`platform_layer/telegram/permissions.py`'s `PermissionLevel`,
+`platform_layer/telegram/owner/owner_roles.py`'s `OwnerRole`,
 `ai/access/permissions.py`'s `AIRole`) already existed by deliberate
 design — this phase adds the missing resolver between them, not a
 fourth enum. Two in-place corrections to prior-phase code:
@@ -2024,13 +2024,13 @@ ai/content/content_schema.py            (ContentRequest/ContentResult)
 ai/content/content_adapter.py           (ContentEngine -- wraps AIService.ask(), foundation only)
 ai/content/broadcast_output.py          (BroadcastReadyContent/prepare_broadcast() -- contract only)
 
-telegram/commands.py                    (+ai_status/ai_provider/ai_cost/ai_usage/ai_health in OWNER_COMMANDS)
-telegram/handlers.py                    (+5 ai_*_handler + contact_handler -- LIVE)
-telegram/owner/ai_commands.py           (+ai_health(); now called from live handlers)
-telegram/command_router.py              (+route_contact(); "start" keyboard -> phone_share_keyboard)
-telegram/polling.py                     (+contact-message dispatch conditional)
-telegram/keyboards.py                   (+phone_share_keyboard() -- first ReplyKeyboardMarkup)
-telegram/user_service.py                (+register_phone() -- LIVE registration flow)
+platform_layer/telegram/commands.py                    (+ai_status/ai_provider/ai_cost/ai_usage/ai_health in OWNER_COMMANDS)
+platform_layer/telegram/handlers.py                    (+5 ai_*_handler + contact_handler -- LIVE)
+platform_layer/telegram/owner/ai_commands.py           (+ai_health(); now called from live handlers)
+platform_layer/telegram/command_router.py              (+route_contact(); "start" keyboard -> phone_share_keyboard)
+platform_layer/telegram/polling.py                     (+contact-message dispatch conditional)
+platform_layer/telegram/keyboards.py                   (+phone_share_keyboard() -- first ReplyKeyboardMarkup)
+platform_layer/telegram/user_service.py                (+register_phone() -- LIVE registration flow)
 
 database_layer/user_repository/user_models.py                 (+trial_started_at field, additive)
 database_layer/user_repository/user_repository.py             (+set_trial_started_at())
@@ -2065,10 +2065,10 @@ ai/runtime/ai_service.py                (extended -- event publication at existi
 ai/providers/circuit_breaker.py         (new -- ProviderCircuitBreaker: CLOSED/OPEN/HALF_OPEN)
 ai/audit/provider_stats.py              (extended -- compute_requests_per_minute()/RuntimeMetrics/RuntimeMetricsCollector)
 
-telegram/owner/runtime_commands.py      (new -- /runtime /runtime_events /runtime_metrics, OWNER-only)
-telegram/owner/runtime_notifications.py (new -- RuntimeNotifier, Owner-only push alerts)
-telegram/commands.py                    (+runtime/runtime_events/runtime_metrics in OWNER_COMMANDS)
-telegram/handlers.py                    (+3 runtime_*_handler -- LIVE)
+platform_layer/telegram/owner/runtime_commands.py      (new -- /runtime /runtime_events /runtime_metrics, OWNER-only)
+platform_layer/telegram/owner/runtime_notifications.py (new -- RuntimeNotifier, Owner-only push alerts)
+platform_layer/telegram/commands.py                    (+runtime/runtime_events/runtime_metrics in OWNER_COMMANDS)
+platform_layer/telegram/handlers.py                    (+3 runtime_*_handler -- LIVE)
 ```
 
 **Rule 4 (no duplicate provider state)**: `ProviderCircuitBreaker`'s
@@ -2118,8 +2118,8 @@ ai/runtime/event_bus.py                 (extended -- +5 EventType members: Reque
                                           RetryStarted/RetryCompleted)
 ai/runtime/runtime_manager.py           (extended -- publishes RuntimeStateChanged on every transition)
 ai/runtime/self_check.py                (new -- run_self_check(): 7 PASS/WARNING/FAILED checks)
-telegram/owner/runtime_commands.py      (extended -- runtime_full_status()/runtime_check())
-telegram/commands.py / handlers.py      (+/runtime_status, +/runtime_check -- LIVE)
+platform_layer/telegram/owner/runtime_commands.py      (extended -- runtime_full_status()/runtime_check())
+platform_layer/telegram/commands.py / handlers.py      (+/runtime_status, +/runtime_check -- LIVE)
 ```
 
 **A discovered, intentional behavior change**: `record_provider_failure()`
@@ -2455,9 +2455,9 @@ import sweep):
   same direction as the pre-existing `ai/`/`signals/` dependencies.
 - `risk/` imports `decision/` and `signals/`, never `database/` or
   `telegram/`.
-- `telegram/handlers.py` never imports `database/*` or
+- `platform_layer/telegram/handlers.py` never imports `database/*` or
   `core/pipeline.py` directly — only `telegram/*_service.py` (see
-  `telegram/handlers.py`'s own module docstring, which states this
+  `platform_layer/telegram/handlers.py`'s own module docstring, which states this
   rule explicitly).
 - `database/*_repository.py` never imports `telegram/` — a repository
   knows nothing about Telegram, permissions, or commands.
@@ -2486,11 +2486,11 @@ import sweep):
   never fetched). No dependency on `signals/`, `ai/`, `decision/`,
   `risk/`, `database/`, or `telegram/`. Not imported by
   `core/pipeline.py`, `ai/`, or `decision/` in this phase.
-- `telegram/owner/` (Phase 59.3) imports `data_layer.providers.registry`,
-  `core_layer.health_monitor.provider_health`, `telegram.admin_service.AdminService`,
+- `platform_layer/telegram/owner/` (Phase 59.3) imports `data_layer.providers.registry`,
+  `core_layer.health_monitor.provider_health`, `platform_layer.telegram.admin_service.AdminService`,
   `config.Config`, and `configuration.feature_flags.DEFAULT_FLAGS` —
-  no dependency on `telegram.handlers`, `telegram.command_router`, or
-  `telegram.commands`. Not imported by any of those three, or by
+  no dependency on `platform_layer.telegram.handlers`, `platform_layer.telegram.command_router`, or
+  `platform_layer.telegram.commands`. Not imported by any of those three, or by
   `core/pipeline.py`, in this phase.
 - `data_layer/live_data/market_data_snapshot.py` (Phase 59 Preparation TASK 1) imports
   only the standard library plus `data_layer.providers.twelve_data_client.Candle`
@@ -2548,12 +2548,12 @@ import sweep):
   and, within `analytics/`, `dataset_report.py` imports
   `data_layer.data_validation.historical_validator` — no dependency on `context/`,
   `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`, or
-  `telegram/`. `telegram/owner/dataset_commands.py` (Phase 59.5)
+  `telegram/`. `platform_layer/telegram/owner/dataset_commands.py` (Phase 59.5)
   imports `analytics.dataset_report`, `data_layer.providers.provider_comparison`,
   `database_layer.market_repository.raw_candle_repository`, `database_layer.market_repository.sync_state_repository`,
   and `provider_commands.ProviderCommandResult` (same package) — not
-  imported by `telegram/handlers.py`, `telegram/command_router.py`, or
-  `telegram/commands.py`. None of the six new modules are imported by
+  imported by `platform_layer/telegram/handlers.py`, `platform_layer/telegram/command_router.py`, or
+  `platform_layer/telegram/commands.py`. None of the six new modules are imported by
   `core/pipeline.py`.
 - `core_layer/system_state/system_state.py` (Phase 59.6) imports only the standard
   library (`dataclasses`, `datetime`, `enum`) — no dependency on any
@@ -2565,18 +2565,18 @@ import sweep):
   additionally imports `configuration.feature_registry.FeatureDescriptor`
   (`TYPE_CHECKING`-only), a new, one-directional `database/` →
   `configuration/` dependency, never reversed.
-  `telegram/owner/owner_roles.py` (Phase 59.6) imports
-  `telegram.permissions.is_owner` and, lazily inside
+  `platform_layer/telegram/owner/owner_roles.py` (Phase 59.6) imports
+  `platform_layer.telegram.permissions.is_owner` and, lazily inside
   `resolve_owner_role()` (not at module import time),
   `database_layer.user_repository.admin_repository.AdminRepository` — never imports or
-  modifies `telegram.permissions.PermissionLevel` itself.
+  modifies `platform_layer.telegram.permissions.PermissionLevel` itself.
   `configuration/feature_registry.py`/`feature_dependency_validator.py`
   (Phase 59.6) import `config.Config` and
   `configuration.feature_flags.DEFAULT_FLAGS` (same package) only — no
   dependency on `database/`, `telegram/`, or any pipeline layer. None
   of these six new modules are imported by `core/pipeline.py`,
   `decision/`, `risk/`, `execution/`, `strategies/`, `context/`,
-  `signals/`, or `telegram/command_router.py`.
+  `signals/`, or `platform_layer/telegram/command_router.py`.
 - `configuration/runtime_state.py` (Phase 59.7) imports only the
   standard library. `configuration/runtime_feature_manager.py` (Phase
   59.7) imports `database_layer.journal_repository.runtime_feature_repository`,
@@ -2597,7 +2597,7 @@ import sweep):
   relationship intact. None of the four new Phase 59.7 modules are
   imported by `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
   `strategies/`, `signals/`, `context/`, `ai/`, any Telegram handler,
-  or `telegram/command_router.py`.
+  or `platform_layer/telegram/command_router.py`.
 - `core_layer/emergency/emergency_state.py`/`circuit_breaker.py`/
   `maintenance.py` (Phase 59.9) import only the standard library.
   `core_layer/emergency/emergency_manager.py` (Phase 59.9) imports
@@ -2606,14 +2606,14 @@ import sweep):
   shape `configuration/runtime_feature_manager.py` already established
   for `configuration/` → `database/` (Phase 59.7); never reversed,
   `database/` does not import `core_layer/emergency/`.
-  `telegram/owner/emergency_commands.py` (Phase 59.9) imports
+  `platform_layer/telegram/owner/emergency_commands.py` (Phase 59.9) imports
   `core_layer.emergency.emergency_manager`/`emergency_state` and
   `provider_commands.ProviderCommandResult` (same package) — not
-  imported by `telegram/handlers.py`, `telegram/command_router.py`, or
-  `telegram/commands.py`. None of the six new Phase 59.9 modules are
+  imported by `platform_layer/telegram/handlers.py`, `platform_layer/telegram/command_router.py`, or
+  `platform_layer/telegram/commands.py`. None of the six new Phase 59.9 modules are
   imported by `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
   `strategies/`, `signals/`, `context/`, `ai/`, any Telegram handler,
-  or `telegram/command_router.py`.
+  or `platform_layer/telegram/command_router.py`.
 - `core_layer/pipeline/pipeline_guard.py` (Phase 60.8) imports
   `configuration.runtime_feature_manager`,
   `core_layer.emergency.emergency_manager`/`emergency_state`, and

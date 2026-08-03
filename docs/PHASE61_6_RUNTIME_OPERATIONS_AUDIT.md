@@ -148,7 +148,7 @@ Current: `session_manager.py` (`SessionManager`), `conversation_state.py`,
 a per-conversation concern (Phase 61.0 TASK 7), runtime lifecycle is a
 process-wide concern. No overlap, no reuse opportunity, no change.
 
-## `telegram/owner/`
+## `platform_layer/telegram/owner/`
 
 Current relevant modules: `ai_commands.py` (Phase 61.4/61.5 — six
 functions, `ai_runtime_online()`/`current_provider_for()` helpers
@@ -162,8 +162,8 @@ added Phase 61.5 Addendum), `dashboard.py` (Phase 59.8/61.5 Addendum —
   injectable, never raises" convention every function in both files
   already uses. `owner_handler()`/`doctor_handler()` (Phase 61.5
   Addendum) are the direct precedent for how a new `runtime_handler()`
-  gets wired: `telegram/commands.py`'s `OWNER_COMMANDS` +
-  `telegram/handlers.py`'s `{command}_handler`, no change to
+  gets wired: `platform_layer/telegram/commands.py`'s `OWNER_COMMANDS` +
+  `platform_layer/telegram/handlers.py`'s `{command}_handler`, no change to
   `command_router.py` itself (registry-driven dispatch, reconfirmed).
 - **Create**: three new functions inside `dashboard.py` (or a new,
   narrowly-scoped `runtime_commands.py` if `dashboard.py` would grow
@@ -176,7 +176,7 @@ added Phase 61.5 Addendum), `dashboard.py` (Phase 59.8/61.5 Addendum —
 ## Isolation boundary (Rule 1, Rule 2)
 
 Every module this phase touches is inside `ai/` (runtime/router/
-providers/audit/cache) or `telegram/owner/` (a pure consumer of `ai/`
+providers/audit/cache) or `platform_layer/telegram/owner/` (a pure consumer of `ai/`
 state, same relationship every prior phase's owner commands already
 have). Confirmed via `git diff --stat` against
 `core/pipeline.py`/`decision/`/`execution/`/`risk/`/`strategies/`/

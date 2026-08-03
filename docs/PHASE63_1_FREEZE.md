@@ -55,8 +55,8 @@ approved it in full:
 | **Modules** (files) | `explanation_input.py`, `explanation_templates.py`, `explanation_builder.py`, `explanation_content_adapter.py` (4) | `explanation_output.py` (1) | `explanation_engine.py` (untouched, coexists) |
 | **Managers** | — | — | `PersonaManager` (`ai/persona/persona_manager.py`) |
 | **Models / Contracts** | `ExplanationMode`, `ExplanationInput` (2) | `ExplanationOutput` — 6 new optional fields (1) | `BroadcastReadyContent` (`ai/content/broadcast_output.py`) |
-| **Registries** | — | — | `persona_registry.build_persona_registry()`, `translation.language_registry.build_language_registry()` |
-| **Owner commands** | `/ai_explanation_status` (1) | `telegram/owner/ai_commands.py`, `telegram/handlers.py`, `telegram/commands.py` | existing `AICommandResult` contract, existing dispatch convention |
+| **Registries** | — | — | `persona_registry.build_persona_registry()`, `media_layer.translation.language_registry.build_language_registry()` |
+| **Owner commands** | `/ai_explanation_status` (1) | `platform_layer/telegram/owner/ai_commands.py`, `platform_layer/telegram/handlers.py`, `platform_layer/telegram/commands.py` | existing `AICommandResult` contract, existing dispatch convention |
 | **Tests** | `test_explanation_input.py`, `test_explanation_templates.py`, `test_explanation_builder.py`, `test_explanation_content_adapter.py`, `test_ai_explanation_status_dispatch.py` (5 new files) | `test_explanation_output.py`, `test_ai_commands.py` (2 files, new cases added) | existing `tests/ai/explanation/`, `tests/telegram/` fixtures/conventions |
 | **Docs** | `docs/PHASE63_1_AUDIT.md`, `docs/AI_KNOWLEDGE_ROADMAP.md`, `docs/PHASE63_1_FREEZE.md` (this file) | `docs/ai/AI_ARCHITECTURE.md`, `docs/roadmap/AI_EVOLUTION.md`, `docs/architecture/MODULE_DEPENDENCIES.md` | — |
 

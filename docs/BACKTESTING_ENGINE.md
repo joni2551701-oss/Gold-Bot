@@ -137,7 +137,7 @@ Strategy/Signal/Decision/Risk logic anywhere.
 
 **`backtesting_layer/replay_engine/replay_engine.py`'s `ReplayEngine.is_finished` had a
 genuine infinite-loop bug for an empty candle dataset**, found while
-testing `telegram/owner/backtest_commands.py`'s `backtest_run()`
+testing `platform_layer/telegram/owner/backtest_commands.py`'s `backtest_run()`
 against an unknown symbol (zero candles stored). Root cause: the
 property was `self.feed.is_exhausted and self.feed.cursor >= 0`. For
 zero candles, `ReplayFeed.jump()` always clamps the cursor back to
@@ -183,7 +183,7 @@ trading logic was touched by this fix; it is entirely contained to
 - `build_backtest_result(...)` — wraps `analytics.strategy_report.build_strategy_report()`.
 - `format_backtest_report(result) -> str` — the future `/backtest_report` payload text.
 
-### `telegram/owner/backtest_commands.py`
+### `platform_layer/telegram/owner/backtest_commands.py`
 - `backtest_run(symbol, timeframe, start, end, provider=None, speed=1.0) -> ProviderCommandResult` — runs a full `BacktestEngine` pass synchronously (unlike `replay_commands.py`'s session-based start/pause/stop API) and formats the result.
 
 ## What this phase does NOT do
@@ -194,7 +194,7 @@ trading logic was touched by this fix; it is entirely contained to
 - Does not replay multiple timeframes together — HTF Bias is a fixed
   neutral fallback (see above), not a real multi-timeframe replay.
 - Does not persist a `BacktestResult` to a database table.
-- Does not register `/backtest_run` into `telegram/commands.py`/
+- Does not register `/backtest_run` into `platform_layer/telegram/commands.py`/
   `command_router.py`/`handlers.py`.
 - Does not touch `core/pipeline.py`, `strategies/`, `signals/`,
   `ai/ai_analyzer.py`, `decision_layer/decision_engine/decision_engine.py`, or
@@ -208,7 +208,7 @@ docs/BACKTESTING_ENGINE.md (Phase 60.2 -- foundation, this document)
         |
         v
 backtesting_layer/data_feed/data_feed.py, backtest_engine.py, backtest_result.py,
-telegram/owner/backtest_commands.py (Phase 60.2 -- real logic, not wired)
+platform_layer/telegram/owner/backtest_commands.py (Phase 60.2 -- real logic, not wired)
         |
         v
 A future, separately-approved phase (per the Director's own reordered
@@ -218,5 +218,5 @@ roadmap -- 60.3 Execution Simulator, 60.4 Performance Validation):
   - Real multi-timeframe HTF replay (a parallel Daily/H4/H1 ReplayEngine,
     fed into BacktestEngine's htf_bias_provider seam)
   - Persisting BacktestResult for a resumable, comparable-across-runs report
-  - telegram/commands.py/command_router.py registration
+  - platform_layer/telegram/commands.py/command_router.py registration
 ```

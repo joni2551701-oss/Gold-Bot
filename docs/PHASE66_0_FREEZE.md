@@ -69,8 +69,8 @@ existing precedent.
   Broadcast functions `IntelligenceRuntime.run()` already uses:
   `ContentEngine.create(ContentType.LIVE_ANALYSIS, ...)` (reusing the
   existing `LIVE_ANALYSIS` member, Phase 63.8 — no new `ContentType`),
-  `media.media_pipeline.prepare_media_from_content()`,
-  `broadcast.broadcast_adapter.broadcast_asset_from_content_and_media()`
+  `media_layer.content_manager.media_pipeline.prepare_media_from_content()`,
+  `media_layer.telegram_broadcast.broadcast_adapter.broadcast_asset_from_content_and_media()`
   + `BroadcastManager.prepare_broadcast()`. The one file in the package
   permitted to import `ai.content/`, `media/`, `broadcast/`.
 - `configuration/feature_flags.py` — extended with
@@ -149,7 +149,7 @@ existing precedent.
   (`enable_trading_analyst`), zero changed ones.
 - **Article 11 (Foundation Reuse Law)** — TASK 0's audit confirmed
   `IntelligenceRuntime`, `ExplanationBuilder`, `ContentEngine`,
-  `media.media_pipeline`, `broadcast.broadcast_adapter`, and
+  `media_layer.content_manager.media_pipeline`, `media_layer.telegram_broadcast.broadcast_adapter`, and
   `BroadcastManager` all already existed and were extended-by-call,
   never duplicated; the one genuine gap (a Trading Analyst contract
   and runtime) was added as a new subpackage only after confirming no
@@ -180,7 +180,7 @@ imports `ai.trading_analyst` back.
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | `ai/trading_analyst/` (1, inside existing `ai/`) | — | `ai/` (top-level, unchanged itself) |
-| Modules | `models.py`, `access.py`, `analyst_runtime.py`, `content_adapter.py`, `README.md` (5) | `configuration/feature_flags.py` (1) | `ai/explanation/explanation_builder.py`, `explanation_input.py`, `ai/intelligence_runtime.py`, `ai/content/content_adapter.py`, `media/media_pipeline.py`, `broadcast/broadcast_adapter.py`, `broadcast/broadcast_manager.py` (called, not modified) |
+| Modules | `models.py`, `access.py`, `analyst_runtime.py`, `content_adapter.py`, `README.md` (5) | `configuration/feature_flags.py` (1) | `ai/explanation/explanation_builder.py`, `explanation_input.py`, `ai/intelligence_runtime.py`, `ai/content/content_adapter.py`, `media_layer/content_manager/media_pipeline.py`, `media_layer/telegram_broadcast/broadcast_adapter.py`, `media_layer/telegram_broadcast/broadcast_manager.py` (called, not modified) |
 | Classes | `TradingAnalystRuntime` (1) | — | `IntelligenceRuntime`, `ExplanationBuilder`, `ContentEngine`, `MediaManager`, `BroadcastManager` (called, not modified) |
 | Models | `TradingRiskLevel`, `TradingAnalysisInput`, `TradingAnalysis` (3) | `FeatureFlags` (+1 field) | `ExplanationInput`, `ExplanationOutput`, `ContentResult`, `MediaAsset`, `BroadcastAsset`, `PipelineRun` |
 | Functions | `is_trading_analyst_enabled_for()`, `analyze()`, `prepare_content()`, `trading_analysis_to_content_body()` (4) | — | `IntelligenceRuntime.run()`, `ExplanationBuilder.build()`, `ContentEngine.create()`, `prepare_media_from_content()`, `broadcast_asset_from_content_and_media()`, `BroadcastManager.prepare_broadcast()` |

@@ -66,7 +66,7 @@ def test_sql_injection_payload_as_username_does_not_corrupt_query():
 
 
 def test_sql_injection_payload_as_feedback_message_is_stored_literally():
-    from telegram.feedback_service import FeedbackService
+    from platform_layer.telegram.feedback_service import FeedbackService
 
     service = FeedbackService()
     for i, payload in enumerate(SQLI_PAYLOADS):
@@ -80,7 +80,7 @@ def test_sql_injection_payload_as_feedback_message_is_stored_literally():
 def test_sql_injection_payload_via_command_router_does_not_crash():
     """End-to-end: a malicious /feedback body through the real command chain."""
     import asyncio
-    from telegram.command_router import route_command
+    from platform_layer.telegram.command_router import route_command
 
     async def scenario():
         return await route_command(

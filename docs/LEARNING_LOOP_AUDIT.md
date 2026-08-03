@@ -61,7 +61,7 @@ Principle). Six directories audited: `analytics/`, `ai/` (incl.
    module already respects: explanation/summary/recommendation text
    only, never a decision, never itself calling `risk/`, `decision/`,
    or Telegram.
-6. **`telegram/owner/learning_commands.py`** follows the exact
+6. **`platform_layer/telegram/owner/learning_commands.py`** follows the exact
    established "real function, not live-wired" posture — thin
    wrappers over `analytics.learning_report`/`learning.pattern_detector`,
    same as `performance_commands.py`/`fundamental_commands.py` before

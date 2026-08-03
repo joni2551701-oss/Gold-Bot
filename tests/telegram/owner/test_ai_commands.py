@@ -1,4 +1,4 @@
-"""Phase 61.4 TASK 3 — telegram/owner/ai_commands.py tests. Not registered into command_router.py -- these call the functions directly."""
+"""Phase 61.4 TASK 3 — platform_layer/telegram/owner/ai_commands.py tests. Not registered into command_router.py -- these call the functions directly."""
 
 from ai.access.permissions import AIRole
 from ai.access.usage_limits import UsageLimiter
@@ -9,7 +9,7 @@ from ai.capabilities.capability_manager import CapabilityManager
 from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_status import HealthStatus
 from ai.providers.provider_manager import ProviderStatus
-from telegram.owner.ai_commands import (
+from platform_layer.telegram.owner.ai_commands import (
     AICommandResult,
     ai_cost,
     ai_disable,
@@ -268,7 +268,7 @@ def test_ai_health_with_no_providers_registered():
 
 def test_ai_explanation_status_reports_real_counts():
     """Phase 63.1 TASK 7 -- Templates is a fixed 3, Personas/Languages come from the real registries, never hardcoded."""
-    from telegram.owner.ai_commands import ai_explanation_status
+    from platform_layer.telegram.owner.ai_commands import ai_explanation_status
 
     result = ai_explanation_status()
 

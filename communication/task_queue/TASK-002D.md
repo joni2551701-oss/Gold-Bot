@@ -34,7 +34,7 @@ Wire the pieces TASK-002C built into an actual Navigation Core, within
 strict Director-set boundaries.
 
 **Permitted**:
-- Navigation Registry integration (consume `platforms/menu_registry.py`'s
+- Navigation Registry integration (consume `platform_layer/platform_service/menu_registry.py`'s
   `MenuRegistry`, don't duplicate it).
 - Navigation State connection (a real per-session stack, living only
   in the Platform Layer — Business Layer has zero awareness of it,
@@ -43,7 +43,7 @@ strict Director-set boundaries.
   Screen` — permission is checked *before* a screen is reached, per
   Director's Q4 answer).
 - Event Interface connection (real navigation operations produce
-  `NavigationEvent` instances from `platforms/navigation_events.py` —
+  `NavigationEvent` instances from `platform_layer/platform_service/navigation_events.py` —
   still no dispatcher/consumer, per ADR-004).
 - Platform Layer's own internal adapter integration — an abstract
   adapter *interface* living inside `platforms/`, not a concrete

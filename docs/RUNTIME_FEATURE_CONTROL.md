@@ -14,7 +14,7 @@ pipeline'ni o'zgartirmaydi. Faqat Runtime Controller quriladi."* (This
 phase does not change the pipeline yet — only the Runtime Controller
 is built.) Nothing here changes `core/pipeline.py`, `decision/`,
 `risk/`, `execution/`, `strategies/`, `signals/`, `context/`, `ai/`,
-any Telegram handler, `telegram/command_router.py`, or any existing
+any Telegram handler, `platform_layer/telegram/command_router.py`, or any existing
 Owner command module. No signal is blocked, no trade is closed, no
 order is stopped, no Telegram command is registered — that is
 explicitly Phase 59.9 (Emergency Layer)'s job, not this one's.
@@ -164,7 +164,7 @@ root: **all four names were removed from the registry**, and
 `RuntimeFeatureManager` at all — every one of its four hooks
 (`before_signal`/`before_ai`/`before_execution`/`before_database`) now
 reads exclusively from `EmergencyManager`. `RuntimeFeatureManager` is,
-once again, read only by its own tests, `telegram/owner/*.py`, and
+once again, read only by its own tests, `platform_layer/telegram/owner/*.py`, and
 `configuration/runtime_api.py` — never by `core/pipeline.py`. See
 `docs/FEATURE_REGISTRY_SEPARATION.md` for the full audit and
 `docs/PIPELINE_GUARD.md` for the current, EmergencyManager-only
@@ -175,7 +175,7 @@ pipeline-stage mapping.
 `core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard` was the first real
 caller of `RuntimeFeatureManager.status()` (read-only, never
 `.enable()`/`.disable()`/`.toggle()`) — previously zero callers
-existed outside this module's own tests and `telegram/owner/*.py`.
+existed outside this module's own tests and `platform_layer/telegram/owner/*.py`.
 Three new, real, `config.Config`-backed registry entries were added
 for it: `ENABLE_SIGNALS`, `ENABLE_AI`, `ENABLE_DATABASE` (all default
 `True`). This entire arrangement was removed in Phase 60.9 above — kept

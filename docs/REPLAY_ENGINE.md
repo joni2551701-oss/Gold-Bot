@@ -52,10 +52,10 @@ backtesting_layer/replay_controller/replay_session.py (TASK 2)
     traversal, not timing -- that's Feed's/Clock's job)
         |
         v
-telegram/owner/replay_commands.py (TASK 8)
+platform_layer/telegram/owner/replay_commands.py (TASK 8)
     replay_start()/replay_pause()/replay_stop()/replay_status() --
     thin wrappers, no new logic. Not registered into
-    telegram/commands.py/command_router.py/handlers.py.
+    platform_layer/telegram/commands.py/command_router.py/handlers.py.
 ```
 
 `backtesting_layer/replay_engine/replay_models.py` (TASK 2/7) holds the shared value types
@@ -150,7 +150,7 @@ later — same Strategy code, same candle shape, only the feed differs.
 - `ReplayController()` — one process-local `{session_id: (ReplaySession, ReplayEngine)}` map.
 - `.start(config) -> ReplaySession` / `.pause(session_id)` / `.resume(session_id)` / `.stop(session_id)` / `.restart(session_id)` / `.step(session_id) -> Optional[Candle]` / `.get_status(session_id) -> Optional[ReplayResult]` — all except `start()` return `None` for an unknown `session_id`.
 
-### `telegram/owner/replay_commands.py`
+### `platform_layer/telegram/owner/replay_commands.py`
 - `replay_start(symbol, timeframe, start, end, provider=None, speed=1.0) -> ProviderCommandResult` — message includes `session_id=<uuid>` on its first line.
 - `replay_pause(session_id)` / `replay_stop(session_id)` / `replay_status(session_id) -> ProviderCommandResult`.
 - One module-level `_default_controller` holds every session for this process's lifetime.
@@ -166,7 +166,7 @@ later — same Strategy code, same candle shape, only the feed differs.
   `ReplayEngine.step()` returns a `Candle`; what a caller does with it
   is entirely out of scope here.
 - Does not register `/replay_start`/`/replay_pause`/`/replay_stop`/
-  `/replay_status` into `telegram/commands.py`/`command_router.py`/
+  `/replay_status` into `platform_layer/telegram/commands.py`/`command_router.py`/
   `handlers.py` — same posture as every Owner Mode module.
 - Does not build a real-time, wall-clock-paced player — `speed` means
   "candles per manual `step()` call," not "candles per second." A
@@ -179,7 +179,7 @@ later — same Strategy code, same candle shape, only the feed differs.
 docs/REPLAY_ENGINE.md (Phase 60.1 -- foundation, this document)
         |
         v
-backtesting/replay_*.py, telegram/owner/replay_commands.py (Phase 60.1 -- real logic, not wired)
+backtesting/replay_*.py, platform_layer/telegram/owner/replay_commands.py (Phase 60.1 -- real logic, not wired)
         |
         v
 A future, separately-approved phase (60.2 Backtesting Engine per the
@@ -189,8 +189,8 @@ current roadmap):
   - A fill model, slippage model, spread simulation (Backtesting's
     own scope, not Replay's)
   - Persisting ReplaySession for a resumable, restart-surviving replay
-  - telegram/commands.py/command_router.py registration, using
-    telegram/owner/security.py's require_role() for the per-command
+  - platform_layer/telegram/commands.py/command_router.py registration, using
+    platform_layer/telegram/owner/security.py's require_role() for the per-command
     minimum-OwnerRole gate (same pattern as every other Owner Mode
     module's own documented roadmap)
 ```

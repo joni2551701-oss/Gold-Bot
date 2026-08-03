@@ -20,7 +20,7 @@ class AssetDefinition:
     """
     symbol: the real ticker this codebase already uses (e.g.
         "XAUUSD", matching main.py's TradingPipeline(symbol=...) and
-        telegram/signal_service.py's DEFAULT_SYMBOL) -- not a new
+        platform_layer/telegram/signal_service.py's DEFAULT_SYMBOL) -- not a new
         naming scheme.
     name: human-readable display name (e.g. "Gold").
     asset_type: AssetType (GOLD/FOREX/CRYPTO/INDEX/STOCK/UNKNOWN).

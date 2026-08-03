@@ -13,18 +13,18 @@ and approves this document.
 ```
 Telegram (text command "/start")
       |
-telegram/polling.py            forwards Message, no branching
+platform_layer/telegram/polling.py            forwards Message, no branching
       |
-telegram/command_router.py     route_message() -> route_command()
+platform_layer/telegram/command_router.py     route_message() -> route_command()
       |                        _parse_command() -> "start"
       |                        _required_level("start") -> USER
       |                        handler = handlers.start_handler
       |
-telegram/handlers.py           start_handler(telegram_id, username)
+platform_layer/telegram/handlers.py           start_handler(telegram_id, username)
       |                        -> UserService().register_user()
       |                        -> SubscriptionService().get_plan()  (best-effort)
       |
-telegram/user_service.py       UserService.register_user()
+platform_layer/telegram/user_service.py       UserService.register_user()
       |                        -> UserRepository.get_user() (dup check)
       |                        -> UserRepository.create_user()
       |
@@ -41,16 +41,16 @@ today**, not a new step to invent.
 Telegram (Message with .contact populated -- Phone Share button tap,
           OR a manually forwarded contact card)
       |
-telegram/polling.py            message.contact is not None ->
+platform_layer/telegram/polling.py            message.contact is not None ->
       |                        route_contact(message), not route_message()
       |
-telegram/command_router.py     route_contact(message)
+platform_layer/telegram/command_router.py     route_contact(message)
       |                        no permission check (USER-level by design)
       |
-telegram/handlers.py           contact_handler(telegram_id, phone_number)
+platform_layer/telegram/handlers.py           contact_handler(telegram_id, phone_number)
       |                        -> UserService().register_phone()
       |
-telegram/user_service.py       UserService.register_phone()
+platform_layer/telegram/user_service.py       UserService.register_phone()
       |                        Phone Hash -> UserRecord -> Trial Check -> FREE account
       |                        -> core_layer.secrets.phone_hash.hash_phone_number()
       |                        -> ai.access.identity_checker.is_phone_reused_by_another_account()
@@ -63,12 +63,12 @@ database_layer/user_repository/user_repository.py    set_phone_hash(), set_trial
 
 ### Files read for this section
 
-`telegram/handlers.py` (`start_handler` L207-241, `contact_handler`
-L1141-1162), `telegram/command_router.py` (full file, 207 lines),
-`telegram/user_service.py` (full file, 243 lines),
+`platform_layer/telegram/handlers.py` (`start_handler` L207-241, `contact_handler`
+L1141-1162), `platform_layer/telegram/command_router.py` (full file, 207 lines),
+`platform_layer/telegram/user_service.py` (full file, 243 lines),
 `database_layer/user_repository/user_repository.py` (schema-adjacent methods),
-`telegram/polling.py` (contact-vs-text branching, L103-125),
-`telegram/keyboards.py` (`phone_share_keyboard` L138-158).
+`platform_layer/telegram/polling.py` (contact-vs-text branching, L103-125),
+`platform_layer/telegram/keyboards.py` (`phone_share_keyboard` L138-158).
 
 ### Key existing facts that change the Wizard's scope
 
@@ -82,7 +82,7 @@ L1141-1162), `telegram/command_router.py` (full file, 207 lines),
    re-share (never resets an existing trial). This is not a stub.
 3. **Language selection already exists and is already independent of
    `/start`** — `/language` (V2 Phase 1, frozen) with its own inline
-   keyboard and callback path (`telegram/callback_router.py`). It is
+   keyboard and callback path (`platform_layer/telegram/callback_router.py`). It is
    not currently invoked *from* `start_handler`; a user's language
    defaults to `'UZ'` at row-creation time (`create_user()`'s
    `language: str = "UZ"` default) and is changed later, if ever, via
@@ -195,7 +195,7 @@ picker only if the user hasn't set one yet, in the same turn as
   Case discussion below). "Needs Phone Share" = `phone_hash IS NULL`.
   "Complete" = `phone_hash IS NOT NULL`. This needs zero new database
   objects, only wizard-orchestration logic in a new
-  `telegram/registration_service.py`-style file that reads existing
+  `platform_layer/telegram/registration_service.py`-style file that reads existing
   `UserService`/`UserRepository` methods.
 - **Option B: a minimal `registration_step` column** (`TEXT DEFAULT
   'LANGUAGE'`, values e.g. `LANGUAGE -> PHONE -> DONE`) if the
@@ -212,13 +212,13 @@ decision for the Director, recorded as an open question in Section 7.
 
 | Component | Reused as-is | Notes |
 |---|---|---|
-| `translation/ui_catalog.py` (`t()`) | Yes | `start.*` (3 keys), `contact.*` (5 keys) already exist and cover most Wizard text. New keys only needed for any genuinely new prompt text (e.g. an explicit "Registration Complete" message, if the Director wants one distinct from `start.created`). |
-| `telegram/keyboards.py::phone_share_keyboard()` | Yes | Already built, already wired to `/start`, already localized. |
-| `telegram/keyboards.py::language_keyboard()` | Yes | Already built, already localized, already has a working callback path. |
-| `telegram/callback_router.py` | Yes, as the dispatch *pattern* | `route_callback()`'s "translate callback_data to the same handler the text command already uses" principle is the template a Wizard's own callback handling (if any new callback_data is needed) should follow — not a new dispatch mechanism. |
-| `telegram/user_service.py::UserService` | Yes | `register_user()`, `register_phone()`, `get_profile()`, `touch_activity()` cover every data operation the Wizard needs. No new service method is obviously required by the 5-step diagram as scoped. |
+| `media_layer/translation/ui_catalog.py` (`t()`) | Yes | `start.*` (3 keys), `contact.*` (5 keys) already exist and cover most Wizard text. New keys only needed for any genuinely new prompt text (e.g. an explicit "Registration Complete" message, if the Director wants one distinct from `start.created`). |
+| `platform_layer/telegram/keyboards.py::phone_share_keyboard()` | Yes | Already built, already wired to `/start`, already localized. |
+| `platform_layer/telegram/keyboards.py::language_keyboard()` | Yes | Already built, already localized, already has a working callback path. |
+| `platform_layer/telegram/callback_router.py` | Yes, as the dispatch *pattern* | `route_callback()`'s "translate callback_data to the same handler the text command already uses" principle is the template a Wizard's own callback handling (if any new callback_data is needed) should follow — not a new dispatch mechanism. |
+| `platform_layer/telegram/user_service.py::UserService` | Yes | `register_user()`, `register_phone()`, `get_profile()`, `touch_activity()` cover every data operation the Wizard needs. No new service method is obviously required by the 5-step diagram as scoped. |
 | `database_layer/user_repository/user_repository.py::UserRepository` | Yes | All needed reads/writes already exist. |
-| `telegram/command_router.py`'s `_KEYBOARD_BY_COMMAND` pattern | Yes | The existing "attach a hint keyboard per command" mechanism is the natural place to extend from, not a parallel mechanism. |
+| `platform_layer/telegram/command_router.py`'s `_KEYBOARD_BY_COMMAND` pattern | Yes | The existing "attach a hint keyboard per command" mechanism is the natural place to extend from, not a parallel mechanism. |
 
 **Not yet built, and would be new (kept to the minimum Section 3
 recommends)**:
@@ -331,16 +331,16 @@ is created.
 | Registration left half-done (e.g. `/start` done, phone never shared) | Fully representable today — `phone_hash IS NULL` is exactly this state, and nothing blocks the user from operating in it indefinitely. | No gap in *data*; only in whether the Wizard should re-prompt (Section 3). |
 | Restart (`/start` again mid-way) | Same as "second /start" above — safe, idempotent. | No gap. |
 | Callback timeout (inline button tapped after the message/keyboard context is stale) | `callback_router.py`'s `_handle_language()` already handles a stale-message edit failure by falling back to `message.answer()` instead of crashing (`edit_text` failure caught, logged, falls back). The Phone Share keyboard is a `ReplyKeyboardMarkup`, which has no server-side "timeout" concept the way inline callback data can (Telegram itself doesn't expire reply-keyboard taps), so this specific risk is inline-keyboard-only and already covered by existing code. | No gap. |
-| Blocked (BANNED) user goes through `/start` again | **Explicitly documented as unenforced today**: `telegram/handlers.py`'s own module docstring states "No command blocks a BANNED user yet (`ban_user()`/`activate_user()` exist on `UserService` for a future phase's enforcement)." A BANNED user can currently still run `/start`/share a phone/etc. | **Known, pre-existing gap, not introduced by this phase** — flagged for Director awareness; likely out of scope for the Wizard itself (it's a router/permission-layer enforcement question, not a registration-flow one) unless the Director wants it folded in here. |
+| Blocked (BANNED) user goes through `/start` again | **Explicitly documented as unenforced today**: `platform_layer/telegram/handlers.py`'s own module docstring states "No command blocks a BANNED user yet (`ban_user()`/`activate_user()` exist on `UserService` for a future phase's enforcement)." A BANNED user can currently still run `/start`/share a phone/etc. | **Known, pre-existing gap, not introduced by this phase** — flagged for Director awareness; likely out of scope for the Wizard itself (it's a router/permission-layer enforcement question, not a registration-flow one) unless the Director wants it folded in here. |
 
 ## 7. File Change Plan (proposed, pending approval — nothing created yet)
 
 | File | Change | Reuse vs. new |
 |---|---|---|
-| `telegram/registration_service.py` (new) | Orchestrates "what's the next Wizard step for this user" (Option A inference, or reads the new column if Option B is chosen). Calls existing `UserService` methods only — no new repository methods anticipated. | New file, but composes only existing services (Module Reuse Principle step 2 satisfied: extending is possible via a thin orchestration layer, not a new package). |
-| `telegram/command_router.py` | `start_handler`'s post-processing gains a call into `registration_service` to decide which keyboard to attach (`phone_share_keyboard` vs. `language_keyboard` vs. neither), replacing the current unconditional `phone_share_keyboard` mapping for `"start"`. | Extends existing dispatch table, no new mechanism. |
-| `telegram/command_router.py::route_contact()` | Add the `contact.user_id == from_user.id` check (Edge Case 4 fix). | Extends existing function. |
-| `translation/ui_catalog.py` | Add `registration.complete` (and any other net-new prompt text the Director approves in Step 6) — UZ/RU/EN, same convention as every other key. | Extends existing catalog. |
+| `platform_layer/telegram/registration_service.py` (new) | Orchestrates "what's the next Wizard step for this user" (Option A inference, or reads the new column if Option B is chosen). Calls existing `UserService` methods only — no new repository methods anticipated. | New file, but composes only existing services (Module Reuse Principle step 2 satisfied: extending is possible via a thin orchestration layer, not a new package). |
+| `platform_layer/telegram/command_router.py` | `start_handler`'s post-processing gains a call into `registration_service` to decide which keyboard to attach (`phone_share_keyboard` vs. `language_keyboard` vs. neither), replacing the current unconditional `phone_share_keyboard` mapping for `"start"`. | Extends existing dispatch table, no new mechanism. |
+| `platform_layer/telegram/command_router.py::route_contact()` | Add the `contact.user_id == from_user.id` check (Edge Case 4 fix). | Extends existing function. |
+| `media_layer/translation/ui_catalog.py` | Add `registration.complete` (and any other net-new prompt text the Director approves in Step 6) — UZ/RU/EN, same convention as every other key. | Extends existing catalog. |
 | `database_layer/database_manager/models.py` | **Only if Option B is chosen**: add `registration_step TEXT DEFAULT 'LANGUAGE'` to `init_user_schema()` + a migration branch in `_migrate_users_schema()`, mirroring how `phone_hash`/`trial_started_at` were added in Phase 61.4/61.5. | Extends existing schema function; no new table. |
 | `database_layer/user_repository/user_models.py` / `user_repository.py` | **Only if Option B**: add `registration_step` to `UserRecord`, `_row_to_record()`, `_USER_SELECT_COLUMNS`. | Extends existing dataclass/repository, same pattern as `phone_hash`. |
 | `tests/telegram/test_registration_service.py` (new) | Tests for the new orchestration file. | New test file for new code, per CLAUDE.md's "add tests" rule. |
@@ -361,10 +361,10 @@ phase.
    Wizard.
 2. Director decision: Option A (inference, no schema change) vs.
    Option B (`registration_step` column) — blocks step 3.
-3. `telegram/registration_service.py` (new orchestration file).
+3. `platform_layer/telegram/registration_service.py` (new orchestration file).
 4. `command_router.py` wiring (conditional keyboard selection on
    `/start`).
-5. `translation/ui_catalog.py` new keys (Step 6 message).
+5. `media_layer/translation/ui_catalog.py` new keys (Step 6 message).
 6. Tests for all of the above.
 7. Full Commit Protocol (pyflakes/compileall/pytest/main.py smoke/
    Trading Core zero-diff) + push + CI confirm.

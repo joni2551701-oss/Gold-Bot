@@ -2,8 +2,8 @@
 
 **Not wired into the live bot.** Same posture as every Owner Mode
 phase before it (Phase 59.3-59.8): real, tested, standalone modules
-exist; nothing is registered into `telegram/commands.py`,
-`telegram/command_router.py`, or `telegram/handlers.py`; nothing in
+exist; nothing is registered into `platform_layer/telegram/commands.py`,
+`platform_layer/telegram/command_router.py`, or `platform_layer/telegram/handlers.py`; nothing in
 `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`, or
 `execution/` reads or is blocked by any module in this phase. No real
 order or signal is blocked by this phase's code.
@@ -21,7 +21,7 @@ database/
 ├── emergency_models.py      -- EmergencyStateEntry (DB row shape)
 └── emergency_repository.py  -- EmergencyRepository (append-only history)
 
-telegram/owner/
+platform_layer/telegram/owner/
 └── emergency_commands.py  -- kill_system()/pause_system()/maintenance_on()/restore_system()/get_emergency_status()
 ```
 
@@ -56,8 +56,8 @@ criteria).
 ## EmergencyState vs core_layer.system_state.system_state.SystemState
 
 Two deliberately separate vocabularies, same "two hierarchies for two
-granularities" precedent as `telegram.owner.owner_roles.OwnerRole` vs
-`telegram.permissions.PermissionLevel` (Phase 59.6/59.8).
+granularities" precedent as `platform_layer.telegram.owner.owner_roles.OwnerRole` vs
+`platform_layer.telegram.permissions.PermissionLevel` (Phase 59.6/59.8).
 `core_layer.system_state.system_state.SystemState`'s own docstring reserved
 `PANIC`/`MAINTENANCE` "for a future Phase 59.9" — this phase does not
 reuse those two values because `SystemState` has no equivalent of
@@ -109,7 +109,7 @@ docs/EMERGENCY_SYSTEM.md (Phase 59.9 -- foundation, this document)
         |
         v
 core_layer/emergency/*.py, database/emergency_*.py,
-telegram/owner/emergency_commands.py (Phase 59.9 -- real logic, not wired)
+platform_layer/telegram/owner/emergency_commands.py (Phase 59.9 -- real logic, not wired)
         |
         v
 Phase 60.8 (Safe Integration Layer) closed the first bullet below —
@@ -125,11 +125,11 @@ future, separately-approved steps:
   - execution/: an actual order-blocking check reading
     EmergencyManager.get_status() (execution/ is still intentionally
     inert today -- no MT5 order calls exist, per CLAUDE.md)
-  - telegram/commands.py / telegram/command_router.py / telegram/handlers.py:
+  - platform_layer/telegram/commands.py / platform_layer/telegram/command_router.py / platform_layer/telegram/handlers.py:
     register /panic, /pause, /maintenance, /restore, /emergency_status,
-    using telegram/owner/security.py's require_role() (Phase 59.8) for
+    using platform_layer/telegram/owner/security.py's require_role() (Phase 59.8) for
     the per-command minimum-OwnerRole gate, and
-    telegram/owner/emergency_commands.py's functions as the payload
+    platform_layer/telegram/owner/emergency_commands.py's functions as the payload
   - a decision on how EmergencyState reconciles (or doesn't) with
     core_layer.system_state.system_state.SystemState -- both exist independently today
 ```
@@ -138,7 +138,7 @@ future, separately-approved steps:
 
 `core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard` is the first real
 caller of `EmergencyManager.get_status()` (previously zero callers
-outside this module's own tests and `telegram/owner/emergency_commands.py`,
+outside this module's own tests and `platform_layer/telegram/owner/emergency_commands.py`,
 confirmed by `docs/PHASE60_8_INTEGRATION_AUDIT.md`'s TASK 1 audit).
 Read-only: `PipelineGuard` never calls `activate_pause()`/
 `activate_kill()`/`activate_maintenance()`/`restore_normal()` itself —

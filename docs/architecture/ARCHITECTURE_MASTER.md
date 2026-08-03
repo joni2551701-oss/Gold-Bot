@@ -36,12 +36,12 @@ Real modules behind each box:
 | Risk Manager        | `risk_layer/risk_engine/risk_manager.py` |
 | Execution           | `execution_layer/execution_engine/execution_engine.py` (intentionally inert — no MT5 order calls exist yet) |
 | Trade Monitor       | `trade_monitoring_layer/paper_trading/paper_trade_monitor.py` |
-| Telegram            | `telegram/handlers.py` → `telegram/*_service.py` → `database/*_repository.py` |
+| Telegram            | `platform_layer/telegram/handlers.py` → `telegram/*_service.py` → `database/*_repository.py` |
 | AI Infrastructure   | `ai/providers/`, `ai/router/`, `ai/capabilities/` |
 | AI Runtime          | `ai/runtime/` (`AIService`, `RuntimeManager`, `EventBus`) |
 | AI Intelligence     | `ai/analyzer/` / `ai/ai_analyzer.py`, `ai/context/`, `ai/explanation/` |
 | AI Product          | `ai/session/`, `ai/conversation/`, `ai/prompts/` |
-| AI Broadcast        | `broadcast/`, `media/`, `translation/`, `ai/persona/` (Phase 63.0 — foundation/contract only, no real channel/media/translation call; see `docs/AI_BROADCAST_FOUNDATION.md`), plus `telegram/owner/runtime_commands.py`/`broadcast_commands.py` for Owner-facing surfacing (not wired to a live process loop) |
+| AI Broadcast        | `broadcast/`, `media/`, `translation/`, `ai/persona/` (Phase 63.0 — foundation/contract only, no real channel/media/translation call; see `docs/AI_BROADCAST_FOUNDATION.md`), plus `platform_layer/telegram/owner/runtime_commands.py`/`broadcast_commands.py` for Owner-facing surfacing (not wired to a live process loop) |
 
 ## Per-Layer Responsibility
 
@@ -143,7 +143,7 @@ depends-on.
 - **CANNOT**: build a prompt, call `AIService` or any provider, call a
   YouTube/OBS/RTMP/Twitch/Kick client, synthesize voice/image/video,
   call a translation backend, or touch `decision/`/`risk/`/
-  `execution/`/`database/`/`telegram.handlers` directly. Every one of
+  `execution/`/`database/`/`platform_layer.telegram.handlers` directly. Every one of
   these packages is contract-first — see `docs/PHASE63_0_FREEZE.md`.
 - **Depends on**: `core/`, `ai/content/` (for `BroadcastReadyContent`/
   `ContentType`) — `broadcast/`/`media/`/`translation/` are top-level

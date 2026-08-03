@@ -26,7 +26,7 @@ core_layer/pipeline/pipeline_guard.py's PipelineGuard now reads exclusively
 from core_layer.emergency.emergency_manager.EmergencyManager for every
 pipeline-stage decision, never from this module.
 
-Relationship to telegram/owner/feature_commands.py's list_features()
+Relationship to platform_layer/telegram/owner/feature_commands.py's list_features()
 (Phase 59.3, TASK 5, unmodified by this phase): that function already
 reads the same two real sources (Config, DEFAULT_FLAGS) and renders
 them as ad-hoc text for a future /features command. This module is the

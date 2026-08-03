@@ -32,7 +32,7 @@ Monitoring (monitoring/) -- reads persisted signals, not wired to any live comma
 
 `core/pipeline.py` (`TradingPipeline`) wires Data through Persistence
 into one synchronous `run()`, invoked by `main.py` on a schedule
-(`.github/workflows/trading_bot.yml`). `telegram/polling.py` is a
+(`.github/workflows/trading_bot.yml`). `platform_layer/telegram/polling.py` is a
 separate, long-running process for the Telegram product layer — see
 `docs/telegram_layer.md` for its full shape and permission model.
 

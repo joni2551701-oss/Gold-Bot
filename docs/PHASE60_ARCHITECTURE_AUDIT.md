@@ -56,7 +56,7 @@ risk → telegram → database` chain:
   `decision_layer.decision_engine.models.TradeDecision` is inside an `if TYPE_CHECKING:`
   block — never a real runtime import.
 - **`telegram → risk/decision/ai`**: real, but confined to
-  `telegram/signal_formatter.py`, which formats the same
+  `platform_layer/telegram/signal_formatter.py`, which formats the same
   `(SignalCandidate, TradeDecision, RiskResult, AIAnalysisResult)`
   tuple for a Telegram message — the same "downstream formats
   upstream's output" pattern as `database_layer/trade_repository/signal_record.py` above.
@@ -86,11 +86,11 @@ docstrings rather than accidental orphans:
 | `def build_prompt()` | `ai/ai_prompt.py:40` | `ai/ai_analyzer.py` (the real, live AI analyzer) never imports `ai_prompt` — this is a disconnected, earlier-generation prompt builder. |
 | `def evaluate_confidence()` | `ai/confidence_model.py:23` | Same disconnection — `ai_analyzer.py` never imports `confidence_model`. Its own docstring already says it's a no-op until a future phase populates `SignalCandidate.context_refs`. |
 | `def is_doji()`, `body_ratio()`, `upper_wick()`, `lower_wick()` | `context_layer/context_engine/candle.py:23,33,36,42` | Candle-shape helper functions with zero callers anywhere (sibling functions `direction()`/`is_bullish()`/`is_bearish()`/`body_size()`/`range_size()` in the same file *are* used elsewhere and were correctly not flagged). |
-| `def is_user()` | `telegram/permissions.py:59` | `get_permission_level()` in the same file falls through to `PermissionLevel.USER` directly without calling `is_user()` — the function exists but nothing calls it. |
+| `def is_user()` | `platform_layer/telegram/permissions.py:59` | `get_permission_level()` in the same file falls through to `PermissionLevel.USER` directly without calling `is_user()` — the function exists but nothing calls it. |
 
 **No action taken** — `decision_layer/decision_engine/decision_engine.py` and `ai/` are
 both under `CLAUDE.md`'s "Trading Safety" explicit-approval
-restriction, and `context_layer/context_engine/candle.py`/`monitoring/`/`telegram/permissions.py`
+restriction, and `context_layer/context_engine/candle.py`/`monitoring/`/`platform_layer/telegram/permissions.py`
 changes should go through the same review discipline as everything
 else. This audit reports; it does not delete. A future, explicitly-approved
 cleanup task should decide per item (delete `DecisionResult`/`SignalMonitor`
@@ -126,10 +126,10 @@ Each layer adds something the one below it doesn't have (a unified
 catalog view; then runtime mutability) — none re-implements the one
 below it. No action needed.
 
-**One real duplicate found, not previously flagged**: `telegram/owner/validation_commands.py`'s
+**One real duplicate found, not previously flagged**: `platform_layer/telegram/owner/validation_commands.py`'s
 `get_validation_report(signals, performances, period_start, period_end)`
 (Phase 59 Real Market Validation Foundation) and
-`telegram/owner/report_commands.py`'s `get_validation_summary(signals,
+`platform_layer/telegram/owner/report_commands.py`'s `get_validation_summary(signals,
 performances, period_start, period_end)` (Phase 59.8) share an
 **identical call signature** and both explicitly target the same
 future command name — `get_validation_summary()`'s own docstring says
@@ -177,7 +177,7 @@ real Telegram invocation exists yet to trigger a write in production)
 
 ## 5. Owner Audit
 
-13 modules in `telegram/owner/`, mapped to the Director's 7 command
+13 modules in `platform_layer/telegram/owner/`, mapped to the Director's 7 command
 categories (`owner_roles.py`/`security.py` are cross-cutting support,
 not a category of their own):
 
@@ -202,7 +202,7 @@ not a replacement" of the plain `/system` command, but relative to
 genuinely compete for the same future `/system_status` command rather
 than answering clearly different questions.
 
-**Dashboard consolidation plan** — `telegram/owner/dashboard.py`
+**Dashboard consolidation plan** — `platform_layer/telegram/owner/dashboard.py`
 (Phase 59.8) today composes exactly 3 of these 7 categories (Status
 via `status_commands`, Control via `control_commands`, Provider via
 `provider_commands`). A future, separately-approved wiring phase
@@ -218,7 +218,7 @@ extending it to all 7 should, in order:
    established for the first 3.
 3. Gate the whole dashboard (and every individual command once live)
    with `security.py`'s `require_role()` — not called by anything yet.
-4. Only then register commands into `telegram/commands.py`, per
+4. Only then register commands into `platform_layer/telegram/commands.py`, per
    `docs/OWNER_COMMANDS.md`'s existing Roadmap section.
 
 ## 6. Pipeline Audit
@@ -292,7 +292,7 @@ The audit itself was approved as-is. Six explicit decisions were made
 on top of it — recorded here as the resolution of record; **none is
 implemented yet**, each is a target shape for a future, separately-approved
 wiring/consolidation phase, not an instruction to refactor
-`telegram/owner/` in this pass:
+`platform_layer/telegram/owner/` in this pass:
 
 1. **Validation Report duplicate (finding 1)** — `report_commands.get_validation_summary()`
    is kept; `validation_commands.get_validation_report()` is

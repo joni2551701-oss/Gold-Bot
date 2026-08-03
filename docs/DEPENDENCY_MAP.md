@@ -29,7 +29,7 @@ core/pipeline.py -> data/, context/, signals/, ai/, decision/, risk/, telegram/,
 
 `*` — see "Circular Dependency" below.
 `†` — via `database_layer/trade_repository/signal_record.py` only, not any `*_repository.py`.
-`‡` — via `telegram/signal_formatter.py` only, not `telegram/handlers.py`.
+`‡` — via `platform_layer/telegram/signal_formatter.py` only, not `platform_layer/telegram/handlers.py`.
 
 ## Edge-by-edge detail
 
@@ -100,7 +100,7 @@ otherwise a DAG.
   the field-by-field mapping stays valid beyond what
   `tests/test_database.py`/`tests/integration/test_database_flow.py`
   happen to exercise.
-- **`telegram/signal_formatter.py`** is similarly coupled to four
+- **`platform_layer/telegram/signal_formatter.py`** is similarly coupled to four
   upstream types at runtime — expected for a formatter, but means any
   of `signals/`, `ai/`, `decision/`, or `risk/`'s public dataclasses
   changing shape has exactly one ripple point to check.

@@ -63,7 +63,7 @@ assemble it piece by piece. Examples: `build_persona_registry()`,
 
 A single publish/subscribe channel (`ai/runtime/event_bus.py`'s
 `EventBus`) that decouples an event's producer (`AIService`) from its
-consumers (`telegram/owner/runtime_notifications.py`, audit logging)
+consumers (`platform_layer/telegram/owner/runtime_notifications.py`, audit logging)
 via a typed `EventType`/`RuntimeEvent` payload, rather than each
 producer calling each consumer directly.
 

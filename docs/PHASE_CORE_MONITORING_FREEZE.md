@@ -10,11 +10,11 @@ Constitution/Dependency compliance checks run at close.
 ## Audit Summary
 
 TASK 0's audit (`docs/PHASE_CORE_MONITORING_AUDIT.md`) reviewed
-`monitoring/`, `telegram/owner/` (five named files in full), `core/`,
+`monitoring/`, `platform_layer/telegram/owner/` (five named files in full), `core/`,
 `database/`, and `signals/`/`context/`. Found and reused two real,
-dormant functions outright (`telegram/owner/system_commands.py`'s
+dormant functions outright (`platform_layer/telegram/owner/system_commands.py`'s
 `get_system_health()` for `/health`; the live
-`telegram.permissions`/`telegram.command_router` gate for security);
+`platform_layer.telegram.permissions`/`platform_layer.telegram.command_router` gate for security);
 extended two existing files in place (`core_layer/health_monitor/signal_monitor.py`'s
 dead placeholder, `database_layer/trade_repository/signal_repository.py` with one new read
 method); confirmed a genuine gap for `ErrorEvent`/`DecisionPipelineEntry`
@@ -55,27 +55,27 @@ pause was required.
   `get_signals_today()` read method (all of today's signals, any
   status; mirrors the existing `count_signals_today()`/
   `get_closed_signals_today()` pattern).
-- `telegram/owner/monitoring_commands.py` (new) — `get_status_report()`,
+- `platform_layer/telegram/owner/monitoring_commands.py` (new) — `get_status_report()`,
   `get_health_report()` (reuses `system_commands.get_system_health()`),
   `get_market_report()`, `get_signals_report()`, `get_errors_report()`,
   `get_pipeline_report()`, `get_daily_report()`.
-- `telegram/handlers.py` (extended) — seven new handler functions
+- `platform_layer/telegram/handlers.py` (extended) — seven new handler functions
   (`owner_status_handler`, `health_handler`, `market_handler`,
   `signals_handler`, `errors_handler`, `pipeline_handler`,
   `report_handler`), live-wired.
-- `telegram/commands.py` (extended) — seven new `OWNER_COMMANDS`
+- `platform_layer/telegram/commands.py` (extended) — seven new `OWNER_COMMANDS`
   entries: `owner_status`, `health`, `market`, `signals`, `errors`,
   `pipeline`, `report`. None dual-listed in `ADMIN_COMMANDS` — Owner
   only, per the brief's own "Hozir: faqat OWNER ishlaydi."
 - `docs/architecture/MONITORING.md`, `docs/PHASE_CORE_MONITORING_AUDIT.md`,
   `docs/PHASE_CORE_MONITORING_FREEZE.md` (new documentation).
-- `tests/monitoring/` (7 new files) + `tests/telegram/owner/test_owner_commands.py`
+- `tests/monitoring/` (7 new files) + `tests/platform_layer/telegram/owner/test_owner_commands.py`
   — 126 new tests, exceeding the brief's own 100-test minimum.
 
 ## Not Built this phase
 
 - No new `telegram/access_control.py` — the existing, live
-  `telegram.permissions`/`telegram.command_router` gate already
+  `platform_layer.telegram.permissions`/`platform_layer.telegram.command_router` gate already
   satisfies TASK 8 exactly (see the audit's own "Security" section).
 - No `OWNER_IDS` (plural) — the existing `Secrets.TELEGRAM_OWNER_ID`
   (singular) is the only owner-identity source in this codebase; not
@@ -99,7 +99,7 @@ pause was required.
 
 - **Article 3-equivalent isolation** — AST sweep for `decision`/`risk`/
   `execution` imports across `monitoring/**/*.py` and
-  `telegram/owner/monitoring_commands.py`: zero matches
+  `platform_layer/telegram/owner/monitoring_commands.py`: zero matches
   (`tests/monitoring/test_monitoring_isolation.py`). Additional
   belt-and-suspenders check confirms `decision_layer/decision_logger/decision_logger.py`
   never imports `signals`/`context`.
@@ -115,7 +115,7 @@ pause was required.
   new, additive schema function. No existing public method/field
   signature changed anywhere.
 - **Article 11 (Foundation Reuse Law)** — TASK 0's audit confirmed
-  `telegram/owner/system_commands.py`'s `get_system_health()` and
+  `platform_layer/telegram/owner/system_commands.py`'s `get_system_health()` and
   `core_layer/health_monitor/provider_health.py`'s health-check functions both
   already existed and are reused outright; the two genuine gaps
   (`ErrorEvent`/`DecisionPipelineEntry` persistence) were added only
@@ -139,8 +139,8 @@ No file in `monitoring/` imports `ai.*` (confirmed by
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
-| Packages | — (no new top-level package) | — | `monitoring/`, `telegram/owner/`, `database/` (all pre-existing) |
-| Modules | `core_layer/health_monitor/models.py`, `system_monitor.py`, `market_monitor.py`, `decision_logger.py`, `error_monitor.py`, `database_layer/audit_log/monitoring_models.py`, `monitoring_repository.py`, `telegram/owner/monitoring_commands.py` (8) | `core_layer/health_monitor/signal_monitor.py`, `database_layer/trade_repository/signal_repository.py`, `database_layer/database_manager/models.py`, `telegram/commands.py`, `telegram/handlers.py` (5) | `telegram/owner/system_commands.py` (`get_system_health()`), `core_layer/health_monitor/provider_health.py`, `telegram/admin_service.py` (`AdminService`), `telegram.permissions`/`telegram.command_router` (all read/composed, not modified) |
+| Packages | — (no new top-level package) | — | `monitoring/`, `platform_layer/telegram/owner/`, `database/` (all pre-existing) |
+| Modules | `core_layer/health_monitor/models.py`, `system_monitor.py`, `market_monitor.py`, `decision_logger.py`, `error_monitor.py`, `database_layer/audit_log/monitoring_models.py`, `monitoring_repository.py`, `platform_layer/telegram/owner/monitoring_commands.py` (8) | `core_layer/health_monitor/signal_monitor.py`, `database_layer/trade_repository/signal_repository.py`, `database_layer/database_manager/models.py`, `platform_layer/telegram/commands.py`, `platform_layer/telegram/handlers.py` (5) | `platform_layer/telegram/owner/system_commands.py` (`get_system_health()`), `core_layer/health_monitor/provider_health.py`, `platform_layer/telegram/admin_service.py` (`AdminService`), `platform_layer.telegram.permissions`/`platform_layer.telegram.command_router` (all read/composed, not modified) |
 | Classes | `SystemMonitor`, `DecisionLogger`, `ErrorMonitor`, `MonitoringRepository` (4) | — | `AdminService`, `ProviderRegistry` (composed, not modified) |
 | Models | `SystemHealth`, `MarketHealth`, `SignalHealth`, `ErrorSeverity`, `ErrorEvent`, `DecisionPipelineEntry`, `ErrorEventEntry`, `DecisionPipelineEntryRow` (8) | — | `ProviderHealthReport`, `ProviderHealthStatus`, `SystemStatus` |
 | Functions | `get_health()`, `record_scan()`, `record_error()`, `get_market_health()`, `get_signal_health()`, `log_entry()`, `get_recent_entries()`, `capture()`, `get_recent_errors()`, `get_error_counts()`, 7 command functions, `init_monitoring_schema()`, `get_signals_today()` (~20) | — | `check_registry_health()`, `check_provider_health()`, `AdminService.get_system_status()` |
@@ -149,7 +149,7 @@ No file in `monitoring/` imports `ai.*` (confirmed by
 | Docs | `docs/PHASE_CORE_MONITORING_AUDIT.md`, `docs/PHASE_CORE_MONITORING_FREEZE.md`, `docs/architecture/MONITORING.md` (3) | — | — |
 
 Totals: **0 new top-level packages** (this phase lives entirely inside
-already-existing `monitoring/`, `database/`, `telegram/owner/`), **5
+already-existing `monitoring/`, `database/`, `platform_layer/telegram/owner/`), **5
 pre-existing files extended in place** (all additive), **4 new
 classes**, **2 new database tables**, **0 changes to any pre-existing
 public method/field signature**.

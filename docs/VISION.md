@@ -72,7 +72,7 @@ for what explicitly does not exist yet.
 ## User Platform Intelligence
 
 Owner Control Center, subscription/product surfaces
-(`telegram/`, `telegram/owner/`) — where a human, Owner or user,
+(`telegram/`, `platform_layer/telegram/owner/`) — where a human, Owner or user,
 actually touches any of the above.
 
 ## What never changes, regardless of how far this vision goes

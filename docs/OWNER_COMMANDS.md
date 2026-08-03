@@ -4,16 +4,16 @@
 documentation-only, per the Director's prior agreement ("Oldingi
 kelishuv bo'yicha: Owner uchun alohida. Hozir faqat contract."). Phase
 59.3 and 59.4 both asked for real code
-(`telegram/owner/provider_commands.py`/`system_commands.py`/
+(`platform_layer/telegram/owner/provider_commands.py`/`system_commands.py`/
 `feature_commands.py`/`report_commands.py`) — those now exist as real,
 tested, **standalone** functions (`list_providers()`,
 `get_data_status()`, `get_system_health()`, `list_features()`,
 `format_daily_stats()`, plus honestly-non-working
 `enable_provider()`/`disable_provider()` stubs — see
-`telegram/owner/README.md`), but are **not** registered into
-`telegram/commands.py`'s `OWNER_COMMANDS`/`ADMIN_COMMANDS` dicts, and
-**not** called from `telegram/command_router.py` or
-`telegram/handlers.py`. The running bot's actual command surface is
+`platform_layer/telegram/owner/README.md`), but are **not** registered into
+`platform_layer/telegram/commands.py`'s `OWNER_COMMANDS`/`ADMIN_COMMANDS` dicts, and
+**not** called from `platform_layer/telegram/command_router.py` or
+`platform_layer/telegram/handlers.py`. The running bot's actual command surface is
 unaffected. The contract below is now partially satisfied by real
 code, not yet by a live command.
 
@@ -25,9 +25,9 @@ code, not yet by a live command.
 /provider_status          → a full core_layer/health_monitor/provider_health.py report for every registered provider (status, latency, reason) -- the Telegram-facing view of check_registry_health()
 /enable_provider <name>   → sets ENABLE_<NAME>=True (owner-only)
 /disable_provider <name>  → sets ENABLE_<NAME>=False (owner-only)
-/system_health             → telegram/owner/system_commands.py's get_system_health()
-/features                  → telegram/owner/feature_commands.py's list_features()
-/stats                     → telegram/owner/report_commands.py's format_daily_stats() (Phase 59.4) -- needs a real data source (today's SignalSchema/SignalPerformance records) wired up first; nothing persists these yet, see "Contract" below
+/system_health             → platform_layer/telegram/owner/system_commands.py's get_system_health()
+/features                  → platform_layer/telegram/owner/feature_commands.py's list_features()
+/stats                     → platform_layer/telegram/owner/report_commands.py's format_daily_stats() (Phase 59.4) -- needs a real data source (today's SignalSchema/SignalPerformance records) wired up first; nothing persists these yet, see "Contract" below
 ```
 
 `/provider <name>` (Phase 59.1's original two-argument form, e.g.
@@ -42,26 +42,26 @@ between the two shapes.
 
 - **Owner-only**, every command. Must go through
   `telegram/*_service.py` → a repository, per this codebase's own
-  handler/service/repository rule (`telegram/handlers.py` never calls
+  handler/service/repository rule (`platform_layer/telegram/handlers.py` never calls
   `database/*` directly, stated in that file's own module docstring)
-  — no new exception to that rule. `telegram/owner/` (Phase 59.3) is
+  — no new exception to that rule. `platform_layer/telegram/owner/` (Phase 59.3) is
   intentionally NOT itself a `*_service.py`-registered service yet —
   it holds the real logic, but the actual handler → permission check →
   send-result wiring is still the next step. The exact owner-role
   check (which repository, which column) is not audited in this phase
   — that audit belongs to whoever wires the command, at wiring time.
-- **`/provider`/`/providers`** — `telegram/owner/provider_commands.py`'s
+- **`/provider`/`/providers`** — `platform_layer/telegram/owner/provider_commands.py`'s
   `list_providers()` already calls `data_layer/providers/registry.py`'s
   `build_default_registry()` and `ProviderRegistry.all_names()`/
   `available()` — done, just needs a handler to call it.
 - **`/provider_status`** — `provider_commands.py`'s `get_data_status()`
   already calls `core_layer/health_monitor/provider_health.py`'s
   `check_registry_health()` — done, just needs a handler.
-- **`/system_health`** — `telegram/owner/system_commands.py`'s
+- **`/system_health`** — `platform_layer/telegram/owner/system_commands.py`'s
   `get_system_health()` already combines
-  `telegram.admin_service.AdminService.get_system_status()` with
+  `platform_layer.telegram.admin_service.AdminService.get_system_status()` with
   `check_registry_health()` — done, just needs a handler.
-- **`/features`** — `telegram/owner/feature_commands.py`'s
+- **`/features`** — `platform_layer/telegram/owner/feature_commands.py`'s
   `list_features()` already reads both
   `configuration/feature_flags.py`'s `FeatureFlags` and
   `config.py`'s `ENABLE_MT5`/`ENABLE_TWELVEDATA` — done, just needs a
@@ -71,7 +71,7 @@ between the two shapes.
   `success=False` today (see next bullet) — a future implementer
   building the runtime-override mechanism below would update these two
   functions themselves, not just add a handler on top.
-- **`/stats`** (Phase 59.4) — `telegram/owner/report_commands.py`'s
+- **`/stats`** (Phase 59.4) — `platform_layer/telegram/owner/report_commands.py`'s
   `format_daily_stats(signals, performances)` already does the
   Signals/Approved/TP/SL/Expired/Cancelled/Best-Strategy formatting,
   reusing `analytics/strategy_report.py` — but needs a real *data
@@ -96,13 +96,13 @@ between the two shapes.
 
 ## What Phase 59.3/59.4 do NOT do
 
-- Does not register any command into `telegram/commands.py`'s
+- Does not register any command into `platform_layer/telegram/commands.py`'s
   `OWNER_COMMANDS`/`ADMIN_COMMANDS` dicts.
-- Does not change `telegram/handlers.py`, `telegram/polling.py`,
-  `telegram/command_router.py`, or any pre-existing
+- Does not change `platform_layer/telegram/handlers.py`, `platform_layer/telegram/polling.py`,
+  `platform_layer/telegram/command_router.py`, or any pre-existing
   `telegram/*_service.py` file.
 - Does not implement a runtime config-override mechanism —
-  `enable_provider()`/`disable_provider()` (`telegram/owner/provider_commands.py`)
+  `enable_provider()`/`disable_provider()` (`platform_layer/telegram/owner/provider_commands.py`)
   honestly report `success=False` rather than pretending to work.
 - Does not persist a day's worth of signals/performance anywhere —
   `format_daily_stats()` (Phase 59.4) takes already-computed data as
@@ -115,11 +115,11 @@ new/extended commands' worth of payload now exist, per the Director's
 own "Owner Control Center" brief:
 
 ```
-/system_status     → telegram/owner/status_commands.py's get_system_status()
-/features           → telegram/owner/control_commands.py's get_feature_states() -- NOTE: a different function from feature_commands.py's own list_features() (see below)
-/dashboard          → telegram/owner/dashboard.py's get_dashboard() -- one consolidated overview
-/validation_report  → telegram/owner/report_commands.py's get_validation_summary(signals, performances, period_start, period_end)
-/feature enable|disable <name>  → telegram/owner/control_commands.py's enable_feature()/disable_feature()
+/system_status     → platform_layer/telegram/owner/status_commands.py's get_system_status()
+/features           → platform_layer/telegram/owner/control_commands.py's get_feature_states() -- NOTE: a different function from feature_commands.py's own list_features() (see below)
+/dashboard          → platform_layer/telegram/owner/dashboard.py's get_dashboard() -- one consolidated overview
+/validation_report  → platform_layer/telegram/owner/report_commands.py's get_validation_summary(signals, performances, period_start, period_end)
+/feature enable|disable <name>  → platform_layer/telegram/owner/control_commands.py's enable_feature()/disable_feature()
 ```
 
 **`/features` now has two different real implementations in this
@@ -148,7 +148,7 @@ future implementer wiring live provider control would use
 `provider_commands.py`'s own stubs work.
 
 **Owner Control Center's own foundation-only pieces**:
-`telegram/owner/security.py`'s `require_role()` (ranks the Phase 59.6
+`platform_layer/telegram/owner/security.py`'s `require_role()` (ranks the Phase 59.6
 `OwnerRole` hierarchy against a minimum) and `log_owner_action()` (a
 convenience `AuditLogRepository.log_action()` call-through) exist but
 are not called by any command in this package yet — the actual
@@ -161,11 +161,11 @@ Still not wired into the live bot — every rule above still holds. Five
 new emergency commands' worth of payload now exist:
 
 ```
-/panic (kill)       → telegram/owner/emergency_commands.py's kill_system()
-/pause               → telegram/owner/emergency_commands.py's pause_system()
-/maintenance on      → telegram/owner/emergency_commands.py's maintenance_on()
-/restore             → telegram/owner/emergency_commands.py's restore_system()
-/emergency_status     → telegram/owner/emergency_commands.py's get_emergency_status()
+/panic (kill)       → platform_layer/telegram/owner/emergency_commands.py's kill_system()
+/pause               → platform_layer/telegram/owner/emergency_commands.py's pause_system()
+/maintenance on      → platform_layer/telegram/owner/emergency_commands.py's maintenance_on()
+/restore             → platform_layer/telegram/owner/emergency_commands.py's restore_system()
+/emergency_status     → platform_layer/telegram/owner/emergency_commands.py's get_emergency_status()
 ```
 
 Each is a thin wrapper over `core_layer.emergency.emergency_manager.EmergencyManager`
@@ -182,16 +182,16 @@ for the full state diagram, safety rules, and future wiring plan
 docs/OWNER_COMMANDS.md (Phase 59.2 -- contract)
         |
         v
-telegram/owner/*.py (Phase 59.3-59.8 -- real logic, not wired)
+platform_layer/telegram/owner/*.py (Phase 59.3-59.8 -- real logic, not wired)
         |
         v
 A future, separately-approved phase:
-  - telegram/commands.py: new command entries (including the five above)
-  - telegram/command_router.py: routing for the new commands, using
-    telegram/owner/security.py's require_role() for the per-command
+  - platform_layer/telegram/commands.py: new command entries (including the five above)
+  - platform_layer/telegram/command_router.py: routing for the new commands, using
+    platform_layer/telegram/owner/security.py's require_role() for the per-command
     minimum-OwnerRole gate
-  - telegram/handlers.py: new owner-only handler functions calling
-    telegram/owner/*.py, each logging via security.py's log_owner_action()
+  - platform_layer/telegram/handlers.py: new owner-only handler functions calling
+    platform_layer/telegram/owner/*.py, each logging via security.py's log_owner_action()
   - a decision on /features: get_feature_states() (runtime) vs
     list_features() (static) -- not both, to avoid two different
     answers to the same command

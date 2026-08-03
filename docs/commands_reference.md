@@ -1,9 +1,9 @@
 # Commands Reference (v0.2)
 
-Registered in `telegram/commands.py` (`COMMANDS` / `OWNER_COMMANDS` /
+Registered in `platform_layer/telegram/commands.py` (`COMMANDS` / `OWNER_COMMANDS` /
 `ADMIN_COMMANDS` — the single source of truth `command_router.py`
 resolves both routing and permission tier from). Implemented in
-`telegram/handlers.py`.
+`platform_layer/telegram/handlers.py`.
 
 ## User commands (open to everyone)
 
@@ -65,5 +65,5 @@ Denial always replies exactly `"Permission denied."`.
 All settings/plan/admin commands take their value as a **command
 argument** (`/risk 5`, `/addadmin 123456`), not via inline-keyboard
 `callback_query` taps. Keyboards shown alongside some replies
-(`telegram/keyboards.py`) are display hints only — no
-`callback_query` handler is registered in `telegram/polling.py`.
+(`platform_layer/telegram/keyboards.py`) are display hints only — no
+`callback_query` handler is registered in `platform_layer/telegram/polling.py`.

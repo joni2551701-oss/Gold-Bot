@@ -158,7 +158,7 @@ this phase (zero hits for `webapp`/`miniapp` across the codebase).
 (`aiogram` `Dispatcher.message()` handlers), not WebApp-based. Adding
 a Mini App would be a genuinely new `telegram/` (or sibling
 `webapp/`) surface, not an extension of the existing command-router
-pattern — `telegram/command_router.py`'s routing model (parse command
+pattern — `platform_layer/telegram/command_router.py`'s routing model (parse command
 + args → permission tier → handler) doesn't naturally extend to a
 WebApp's typical request shape (a served HTML/JS frontend + a
 different auth flow, Telegram's `initData` validation, not a chat

@@ -80,7 +80,7 @@ def max_drawdown(points: Sequence[EquityPoint]) -> float:
 def format_equity_curve_summary(points: Sequence[EquityPoint]) -> str:
     """
     Phase 60.4 TASK 7 -- a text summary for
-    telegram/owner/performance_commands.py, not the full point-by-point
+    platform_layer/telegram/owner/performance_commands.py, not the full point-by-point
     curve (a Telegram message has no chart). Pure formatting, no
     computation beyond max_drawdown() (this module, above). Never
     raises: build_equity_curve() always returns at least one point.

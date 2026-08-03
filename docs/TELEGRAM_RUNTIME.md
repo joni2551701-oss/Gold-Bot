@@ -1,7 +1,7 @@
 # GoldBot — Telegram Runtime (Activation Alpha)
 
 Governed by `docs/constitution/CONSTITUTION.md`. Documents the
-observability layer added on top of `telegram/polling.py`'s existing
+observability layer added on top of `platform_layer/telegram/polling.py`'s existing
 long-running listener in the "GoldBot Core Telegram Runtime Activation
 Alpha" phase. Full Foundation Reuse Audit:
 `docs/PHASE_TELEGRAM_RUNTIME_AUDIT.md`. Full freeze:
@@ -13,7 +13,7 @@ without SSHing in to read logs.
 
 ## Why this phase exists
 
-`telegram/polling.py` (`python -m telegram.polling`) already correctly
+`platform_layer/telegram/polling.py` (`python -m telegram.polling`) already correctly
 starts the bot, reads its token, and routes every command — the prior
 audit proved this end-to-end. What it didn't have: any signal, from
 inside Telegram itself, that the process actually started, and no way
@@ -37,10 +37,10 @@ one-shot trading pipeline — the two are never combined.
 
 | Area | Where | What |
 |---|---|---|
-| Secret validation | `telegram/polling.py`'s `_log_startup_secret_presence()` | Logs presence/absence (never the value) of `TELEGRAM_BOT_TOKEN`/`TELEGRAM_OWNER_ID`/`TWELVE_DATA_API_KEY`/`GEMINI_API_KEY` at every startup. Only `TELEGRAM_BOT_TOKEN` actually aborts startup (`Startup aborted: Missing TELEGRAM_BOT_TOKEN`) — see "Why only one secret gates startup" below. |
-| Startup notification | `telegram/polling.py`'s `_notify_owner_startup()` | Sends a one-time "🟢 GoldBot Online" message to `TELEGRAM_OWNER_ID` once polling actually starts. Silently skipped (not an error) if no owner is configured. Regular users never see this message — it is not a broadcast. |
-| Heartbeat | `telegram/polling.py`'s `_heartbeat_loop()` | Every `HEARTBEAT_INTERVAL_SECONDS` (300s / 5 minutes), logs an internal `BOT_HEARTBEAT Telegram=OK Core=<OK/DOWN> Database=<OK/DOWN>` line and records a ping on `telegram.runtime_monitor`. **Never sent to the owner as a Telegram message** — internal log/monitoring only, per the brief's own rule. |
-| Runtime status | `telegram/runtime_monitor.py` (new) | `TelegramRuntimeStatus`/`TelegramRuntimeMonitor` — tracks the Bot/Dispatcher connection's own `status`/`last_ping`/`errors`/`uptime_seconds`. In-memory only (module-level `DEFAULT_RUNTIME_MONITOR` singleton), mirrors `core_layer.health_monitor.system_monitor.SystemMonitor`'s own convention. |
+| Secret validation | `platform_layer/telegram/polling.py`'s `_log_startup_secret_presence()` | Logs presence/absence (never the value) of `TELEGRAM_BOT_TOKEN`/`TELEGRAM_OWNER_ID`/`TWELVE_DATA_API_KEY`/`GEMINI_API_KEY` at every startup. Only `TELEGRAM_BOT_TOKEN` actually aborts startup (`Startup aborted: Missing TELEGRAM_BOT_TOKEN`) — see "Why only one secret gates startup" below. |
+| Startup notification | `platform_layer/telegram/polling.py`'s `_notify_owner_startup()` | Sends a one-time "🟢 GoldBot Online" message to `TELEGRAM_OWNER_ID` once polling actually starts. Silently skipped (not an error) if no owner is configured. Regular users never see this message — it is not a broadcast. |
+| Heartbeat | `platform_layer/telegram/polling.py`'s `_heartbeat_loop()` | Every `HEARTBEAT_INTERVAL_SECONDS` (300s / 5 minutes), logs an internal `BOT_HEARTBEAT Telegram=OK Core=<OK/DOWN> Database=<OK/DOWN>` line and records a ping on `platform_layer.telegram.runtime_monitor`. **Never sent to the owner as a Telegram message** — internal log/monitoring only, per the brief's own rule. |
+| Runtime status | `platform_layer/telegram/runtime_monitor.py` (new) | `TelegramRuntimeStatus`/`TelegramRuntimeMonitor` — tracks the Bot/Dispatcher connection's own `status`/`last_ping`/`errors`/`uptime_seconds`. In-memory only (module-level `DEFAULT_RUNTIME_MONITOR` singleton), mirrors `core_layer.health_monitor.system_monitor.SystemMonitor`'s own convention. |
 
 ## Why only one secret gates startup
 
@@ -49,14 +49,14 @@ The brief asks to validate all four secrets at startup and abort with
 literally, that would mean a Telegram bot with a perfectly valid
 `TELEGRAM_BOT_TOKEN` refuses to start just because `GEMINI_API_KEY`
 (an AI-layer secret) or `TWELVE_DATA_API_KEY` (a market-data secret)
-happens to be unset — `telegram/polling.py` never reads either one
+happens to be unset — `platform_layer/telegram/polling.py` never reads either one
 directly, and an Owner who hasn't configured AI/market-data yet would
 be locked out of `/start` entirely for an unrelated reason. Instead:
 all four are validated and logged (presence/absence, never the value)
 for startup visibility, but only `TELEGRAM_BOT_TOKEN` — the one
 secret this module actually needs to construct its `Bot` — aborts
 startup. `TELEGRAM_OWNER_ID` already has its own fail-closed default
-(`""`, "nobody is OWNER") in `telegram.permissions`, so it correctly
+(`""`, "nobody is OWNER") in `platform_layer.telegram.permissions`, so it correctly
 degrades rather than blocking the listener too. See
 `docs/PHASE_TELEGRAM_RUNTIME_AUDIT.md`'s #2 for the full reasoning.
 
@@ -75,7 +75,7 @@ Time:
 Sent once, to `TELEGRAM_OWNER_ID` only, immediately before
 `dispatcher.start_polling()` blocks. A send failure (network issue,
 owner blocked the bot, etc.) is caught, logged, and relayed into
-`telegram.runtime_monitor.record_error()` — it never prevents polling
+`platform_layer.telegram.runtime_monitor.record_error()` — it never prevents polling
 from starting.
 
 ## Runtime status model
@@ -95,7 +95,7 @@ matching every comparable model in this codebase
 `core_layer.health_monitor.models.MarketHealth`) rather than introducing a
 one-off different name for the same concept.
 
-`telegram.runtime_monitor.record_error()` also relays into
+`platform_layer.telegram.runtime_monitor.record_error()` also relays into
 `core_layer.health_monitor.system_monitor.record_error()` (the same
 "relay into the shared sink" pattern
 `core_layer.health_monitor.error_monitor.ErrorMonitor.capture()` already
@@ -111,12 +111,12 @@ on shutdown. Each tick:
 
 1. Calls `core_layer.health_monitor.system_monitor.get_health()` (reused outright,
    not duplicated) to derive `Core`/`Database` status.
-2. Records a heartbeat timestamp on `telegram.runtime_monitor`.
+2. Records a heartbeat timestamp on `platform_layer.telegram.runtime_monitor`.
 3. Logs `BOT_HEARTBEAT Telegram=OK Core=<OK/DOWN> Database=<OK/DOWN>`
    at INFO level — internal only, never a Telegram message.
 
 A health-check failure inside the loop is caught, logged, and relayed
-into `telegram.runtime_monitor.record_error()` — the loop itself never
+into `platform_layer.telegram.runtime_monitor.record_error()` — the loop itself never
 dies from one bad tick.
 
 ## Owner commands (unchanged, re-verified this phase)
@@ -142,13 +142,13 @@ documents readiness only.
 
 ## Dependency rules
 
-`telegram/runtime_monitor.py` imports only `core_layer.logger.logger`,
+`platform_layer/telegram/runtime_monitor.py` imports only `core_layer.logger.logger`,
 `core_layer.health_monitor.system_monitor` (the established cross-module error sink),
 and stdlib — never `decision`/`risk`/`execution`/`ai.*`/`signals`/
-`strategies`. `telegram/polling.py`'s new code adds one import
+`strategies`. `platform_layer/telegram/polling.py`'s new code adds one import
 (`core_layer.health_monitor.system_monitor.get_health`) alongside its existing
-`telegram.runtime_monitor` import — same isolation boundary every
-other `telegram/owner/*.py` monitoring integration already respects.
+`platform_layer.telegram.runtime_monitor` import — same isolation boundary every
+other `platform_layer/telegram/owner/*.py` monitoring integration already respects.
 
 ## Related documents
 
@@ -156,6 +156,6 @@ other `telegram/owner/*.py` monitoring integration already respects.
   Reuse Audit.
 - `docs/PHASE_TELEGRAM_RUNTIME_FREEZE.md` — this phase's freeze.
 - `docs/architecture/MONITORING.md` — the wider Core Owner Monitoring
-  layer `telegram.runtime_monitor` composes with.
+  layer `platform_layer.telegram.runtime_monitor` composes with.
 - `docs/DEPLOYMENT.md` — the "Troubleshooting" section this phase's
   startup notification directly answers.

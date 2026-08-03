@@ -10,7 +10,7 @@ just dispatch shape.
 
 import asyncio
 
-from telegram.handlers import (
+from platform_layer.telegram.handlers import (
     risk_status,
     risk_handler,
     strategy_status,
@@ -21,7 +21,7 @@ from telegram.handlers import (
     notifications_handler,
     settings_handler,
 )
-from telegram.user_service import UserService
+from platform_layer.telegram.user_service import UserService
 
 
 def _run(coro):

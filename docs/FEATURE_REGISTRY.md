@@ -52,7 +52,7 @@ phase just makes it structured and extends the list.
 | `enable_replay` | Yes | `configuration.feature_flags.FeatureFlags` |
 | `ENABLE_NEWS`, `ENABLE_PAPER`, `ENABLE_BACKTEST`, `ENABLE_ANALYTICS`, `ENABLE_OWNER`, `ENABLE_DATASET_SYNC`, `ENABLE_MARKET_PHASE`, `ENABLE_BITGET`, `ENABLE_BINANCE`, `ENABLE_FRED` | No | `declared` |
 
-### Relationship to `telegram/owner/feature_commands.py`'s `list_features()`
+### Relationship to `platform_layer/telegram/owner/feature_commands.py`'s `list_features()`
 
 That function (Phase 59.3) already reads the same two real sources
 (`Config`, `DEFAULT_FLAGS`) and renders them as ad-hoc text for a
@@ -153,7 +153,7 @@ audit entry is still written, so the attempt itself is never silently
 lost) — the underlying state is left completely unchanged.
 
 See `docs/RUNTIME_FEATURE_CONTROL.md` for the full module-by-module
-contract, and `telegram/owner/README.md`/`docs/OWNER_PERMISSIONS.md`
+contract, and `platform_layer/telegram/owner/README.md`/`docs/OWNER_PERMISSIONS.md`
 for why no Telegram command calls any of this yet.
 
 ## What this phase does NOT do

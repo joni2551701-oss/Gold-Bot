@@ -129,8 +129,8 @@ conflict.
 `voice/*.py` (excluding `adapter.py`) still imports only its own
 package plus `core_layer.logger.logger`/`core.secrets`/`requests` — no trading
 layer, no `media`/`broadcast`/`ai.conversation` import anywhere except
-`voice/adapter.py`, which now also imports `media.models`,
-`broadcast.models`, and `ai.session.conversation_state` (all
+`voice/adapter.py`, which now also imports `media_layer.content_manager.models`,
+`media_layer.telegram_broadcast.models`, and `ai.session.conversation_state` (all
 type-only, read-only, mirroring the exact posture `adapter.py` already
 used for `ai.content` since Phase 65.0). This is Phase 65.0's own
 explicit deferral ("a future phase may compose them") being exercised,

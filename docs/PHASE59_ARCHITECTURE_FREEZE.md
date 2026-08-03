@@ -5,7 +5,7 @@ Safety Layer Foundation), CI run #52 (commit `94a7177`) green — before
 Phase 60 (real trading intelligence) begins. Scope: excess/redundant
 modules, duplicate logic, wrong dependencies, a consolidated wiring
 plan, and the v1.0 roadmap. Every claim below was re-verified against
-the actual source this pass (grep/import sweep re-run, `telegram/commands.py`
+the actual source this pass (grep/import sweep re-run, `platform_layer/telegram/commands.py`
 read directly), not assumed from earlier phases' own docs.
 
 This supersedes nothing — `docs/ARCHITECTURE_AUDIT.md`/`DEPENDENCY_MAP.md`/
@@ -42,13 +42,13 @@ in one place, for the freeze:
 | Pair | Difference | Reconcile before v1.0? |
 |---|---|---|
 | `core_layer.system_state.system_state.SystemState` (Phase 59.6) vs `core_layer.emergency.emergency_state.EmergencyState` (Phase 59.9) | `SystemState` is a coarse, unheld display-label enum (`RUNNING`/`VALIDATION`/`MAINTENANCE`/`PANIC`/`READ_ONLY`); `EmergencyState` is the actual runtime-controlled, persisted, audited state machine (`NORMAL`/`WARNING`/`PAUSED`/`KILLED`/`MAINTENANCE`) with a manager. `SystemState`'s own docstring reserved `PANIC`/`MAINTENANCE` "for a future Phase 59.9" but `EmergencyState` ended up a separate, finer enum instead (needed `WARNING`/`PAUSED`, which `SystemState` has no equivalent of). | **Yes** — a future wiring phase should decide whether `SystemState` becomes a thin display view derived from `EmergencyManager.get_status()`, or is retired in favor of `EmergencyState` everywhere. Two sources of truth for "is the bot OK" is the one loose end this freeze surfaces. |
-| `telegram.owner.owner_roles.OwnerRole` (Phase 59.6) vs `telegram.permissions.PermissionLevel` (pre-Phase-59, live) | `PermissionLevel` (`OWNER`/`ADMIN`/`USER`) is the real enum `telegram/command_router.py`'s `_PERMISSION_RANK` gates the live 26 commands with today. `OwnerRole` (`OWNER`/`SUPER_ADMIN`/`ADMIN`/`VIEWER`) is a finer, not-yet-wired hierarchy for the future Owner Dashboard. | No — by design, documented in `docs/OWNER_PERMISSIONS.md` since Phase 59.6. A live-wiring phase for `telegram/owner/` will make `OwnerRole` real; `PermissionLevel` keeps gating the existing 26 commands unchanged either way. |
-| `telegram.owner.feature_commands.list_features()` (Phase 59.3, static `Config`/`FeatureFlags` view) vs `telegram.owner.control_commands.get_feature_states()` (Phase 59.8, runtime `RuntimeFeatureManager` view) | Answer different questions: "what does this flag default to" vs "what has an owner actually toggled right now." | **Yes** — `docs/OWNER_COMMANDS.md` already flags this: a future `/features` wiring step must pick exactly one. Both stay until that step. |
+| `platform_layer.telegram.owner.owner_roles.OwnerRole` (Phase 59.6) vs `platform_layer.telegram.permissions.PermissionLevel` (pre-Phase-59, live) | `PermissionLevel` (`OWNER`/`ADMIN`/`USER`) is the real enum `platform_layer/telegram/command_router.py`'s `_PERMISSION_RANK` gates the live 26 commands with today. `OwnerRole` (`OWNER`/`SUPER_ADMIN`/`ADMIN`/`VIEWER`) is a finer, not-yet-wired hierarchy for the future Owner Dashboard. | No — by design, documented in `docs/OWNER_PERMISSIONS.md` since Phase 59.6. A live-wiring phase for `platform_layer/telegram/owner/` will make `OwnerRole` real; `PermissionLevel` keeps gating the existing 26 commands unchanged either way. |
+| `platform_layer.telegram.owner.feature_commands.list_features()` (Phase 59.3, static `Config`/`FeatureFlags` view) vs `platform_layer.telegram.owner.control_commands.get_feature_states()` (Phase 59.8, runtime `RuntimeFeatureManager` view) | Answer different questions: "what does this flag default to" vs "what has an owner actually toggled right now." | **Yes** — `docs/OWNER_COMMANDS.md` already flags this: a future `/features` wiring step must pick exactly one. Both stay until that step. |
 | `configuration.feature_registry.FeatureDescriptor` / `configuration.runtime_state.FeatureRuntimeState` / `database_layer.journal_repository.runtime_feature_models.RuntimeFeatureRecord` (Phase 59.6/59.7) — and the equivalent triad `core_layer.emergency.emergency_state.EmergencyStateRecord` / `database_layer.trade_repository.emergency_models.EmergencyStateEntry` (Phase 59.9) | Consistent "static declaration → in-memory runtime view → DB row" split repeated twice, once for features and once for emergency state. Same pattern both times, not a duplication of each other (`FeatureDescriptor` and `EmergencyStateRecord` describe unrelated things). | No — this is the codebase's own established modeling convention (declared in `configuration/README.md`/`database/README.md`), applied consistently. Nothing to reconcile. |
 | `core_layer.emergency.maintenance.MaintenanceMode` (Phase 59.9) vs `EmergencyState.MAINTENANCE` (same phase) | Enum value vs. detail record — same "enum value vs. detail record" split as `FeatureDescriptor` vs `FeatureRuntimeState` above. | No — intentional, same convention. |
 
 No accidental duplicate function names were found: a repo-wide scan
-of every `def` in `telegram/owner/`, `core_layer/emergency/`, and
+of every `def` in `platform_layer/telegram/owner/`, `core_layer/emergency/`, and
 `configuration/` shows zero name collisions outside the pairs above,
 all of which are deliberately, differently named
 (`list_features`/`get_feature_states`, `enable`/`enable_feature`
@@ -61,7 +61,7 @@ etc.).
   of `94a7177`.
 - No two repositories implement the same table's CRUD twice; no two
   services recompute the same metric with different formulas (every
-  win-rate figure in `telegram/owner/report_commands.py` — daily
+  win-rate figure in `platform_layer/telegram/owner/report_commands.py` — daily
   stats, validation summary — routes through the single
   `analytics.strategy_report.compute_win_rate()`).
 - The one place two *different* upsert conventions coexist
@@ -80,8 +80,8 @@ circular imports.**
 
 Confirmed directly by reading `core/pipeline.py`'s own import list and
 grepping `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
-`execution/`, `telegram/handlers.py`, `telegram/command_router.py`,
-`telegram/commands.py`, `telegram/permissions.py` for any reference to
+`execution/`, `platform_layer/telegram/handlers.py`, `platform_layer/telegram/command_router.py`,
+`platform_layer/telegram/commands.py`, `platform_layer/telegram/permissions.py` for any reference to
 a Phase 59.x foundation module (`runtime_feature`, `emergency_manager`,
 `emergency_state`, `audit_log_repository`, `config_snapshot`,
 `owner_roles`, `feature_registry`, `feature_dependency_validator`,
@@ -99,11 +99,11 @@ importing side of each):
 - `monitoring/` → `data_layer/providers/` (Phase 59.2: provider health reads the registry)
 - `configuration/` → `database/` (Phase 59.7: `RuntimeFeatureManager` persists toggles)
 - `core_layer/emergency/` → `database/` (Phase 59.9: `EmergencyManager` persists transitions)
-- `telegram/owner/` → `configuration/`, `database/`, `core_layer/emergency/`, `core_layer.system_state.system_state` (every Owner Mode module composes lower-layer pieces, never the reverse)
+- `platform_layer/telegram/owner/` → `configuration/`, `database/`, `core_layer/emergency/`, `core_layer.system_state.system_state` (every Owner Mode module composes lower-layer pieces, never the reverse)
 
 ## 4. Consolidated wiring plan
 
-Ground truth, read directly from `telegram/commands.py` this pass —
+Ground truth, read directly from `platform_layer/telegram/commands.py` this pass —
 **the live bot's actual command surface today is exactly 26 commands**:
 17 in `COMMANDS`, 5 in `OWNER_COMMANDS`, 8 in `ADMIN_COMMANDS`
 (`admin`/`system`/`broadcast` counted once each, shared between the
@@ -114,7 +114,7 @@ three dicts.
 
 | Package | What it is | What wiring it into `core/pipeline.py`/`telegram/` would require |
 |---|---|---|
-| `telegram/owner/` (all 13 modules) | Every owner-facing view/control built across Phase 59.1–59.9 | New entries in `telegram/commands.py`'s `OWNER_COMMANDS`, routing in `telegram/command_router.py` using `telegram/owner/security.py`'s `require_role()`, new handlers in `telegram/handlers.py` calling these functions |
+| `platform_layer/telegram/owner/` (all 13 modules) | Every owner-facing view/control built across Phase 59.1–59.9 | New entries in `platform_layer/telegram/commands.py`'s `OWNER_COMMANDS`, routing in `platform_layer/telegram/command_router.py` using `platform_layer/telegram/owner/security.py`'s `require_role()`, new handlers in `platform_layer/telegram/handlers.py` calling these functions |
 | `configuration/runtime_feature_manager.py` | Real, working runtime toggle (validated/persisted/audited/snapshotted) | Nothing in `core/pipeline.py` currently constructs a `RuntimeFeatureManager` or checks a feature's runtime value before running a stage |
 | `core_layer/emergency/emergency_manager.py` | Real, working kill/pause/maintenance/restore controller | Nothing in `core/pipeline.py`/`risk_layer/risk_engine/risk_manager.py`/`execution/` reads `EmergencyManager.get_status()` before running; `core_layer/emergency/circuit_breaker.py`'s `evaluate_circuit()` is never fed live loss/drawdown/api data |
 | `core_layer/system_state/system_state.py` | A pure enum + record, no holder | No singleton exists anywhere holding "the" current `SystemState` |
@@ -124,7 +124,7 @@ three dicts.
 **Live and protected (the real trading path, untouched by any Phase
 59 work):** `data/` → `context/` → `strategies/`/`signals/` → `ai/`
 → `decision_layer/decision_engine/decision_engine.py` → `risk_layer/risk_engine/risk_manager.py` →
-`telegram/notifier.py` → `database_layer/trade_repository/signal_repository.py`. Every
+`platform_layer/telegram/notifier.py` → `database_layer/trade_repository/signal_repository.py`. Every
 signal that reaches a user still passes through
 `RiskManager.evaluate()` with no shortcut, per `CLAUDE.md`'s own
 "Never bypass Risk Manager" rule — confirmed unchanged this pass.
@@ -235,7 +235,7 @@ state machine), never because reuse was merely inconvenient. A new
 top-level package (`core_layer/emergency/`, `configuration/`, `lifecycle/`,
 etc.) is the highest-cost option on this list and should be rare —
 Phase 59's own history shows most work landed as a new file inside an
-*existing* package (`telegram/owner/*.py`, `database/*_repository.py`)
+*existing* package (`platform_layer/telegram/owner/*.py`, `database/*_repository.py`)
 rather than a new package, and that ratio should hold going forward.
 This rule governs Phase 60 onward; it does not require revisiting any
 already-shipped Phase 59.x decision.

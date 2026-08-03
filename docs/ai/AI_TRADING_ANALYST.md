@@ -93,9 +93,9 @@ own CONTENT/MEDIA/BROADCAST stages:
 1. `ContentEngine.create(ContentType.LIVE_ANALYSIS, ...)` (Phase 61.5,
    unmodified) — `ContentType.LIVE_ANALYSIS` (Phase 63.8) is reused
    as-is, no new `ContentType` member.
-2. `media.media_pipeline.prepare_media_from_content()` (Phase 63.7,
+2. `media_layer.content_manager.media_pipeline.prepare_media_from_content()` (Phase 63.7,
    unmodified).
-3. `broadcast.broadcast_adapter.broadcast_asset_from_content_and_media()`
+3. `media_layer.telegram_broadcast.broadcast_adapter.broadcast_asset_from_content_and_media()`
    + `BroadcastManager.prepare_broadcast()` (Phase 63.8, unmodified).
 
 This is the one file in `ai/trading_analyst/` permitted to import

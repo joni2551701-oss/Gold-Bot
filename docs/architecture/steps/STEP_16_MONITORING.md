@@ -58,7 +58,7 @@ core_layer/health_monitor/system_monitor.py  ──►  owner snapshot / /status
   and *snapshot fields* to them — **no new monitoring module, no new package**.
 - Owner-facing surfacing reuses the existing `/status`, `/performance`, and
   the 15-minute owner-snapshot pipeline (`monitoring/run_snapshot.py` →
-  `telegram/owner/snapshot_*`).
+  `platform_layer/telegram/owner/snapshot_*`).
 
 ## 5. Boundary & safety
 - **Observer-only:** monitoring imports from the layers it watches (read),

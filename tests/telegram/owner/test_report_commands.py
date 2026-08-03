@@ -1,5 +1,5 @@
 """
-Phase 59.4, TASK 5 -- telegram/owner/report_commands.py tests.
+Phase 59.4, TASK 5 -- platform_layer/telegram/owner/report_commands.py tests.
 """
 
 from datetime import datetime, timezone
@@ -7,8 +7,8 @@ from datetime import datetime, timezone
 from analytics.signal_performance import SignalPerformance
 from analytics.strategy_report import build_strategy_report
 from signal_layer.signal_builder.schema import SignalSchema
-from telegram.owner.provider_commands import ProviderCommandResult
-from telegram.owner.report_commands import format_daily_stats, get_validation_summary, pick_best_strategy
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.report_commands import format_daily_stats, get_validation_summary, pick_best_strategy
 
 P0 = datetime(2026, 8, 1, tzinfo=timezone.utc)
 P1 = datetime(2026, 8, 8, tzinfo=timezone.utc)

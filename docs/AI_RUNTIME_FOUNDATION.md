@@ -144,7 +144,7 @@ reads `ProviderStats` back to influence selection.
 
 `ai/runtime/`, `ai/validation/`, and the real `GeminiProvider` are not
 called from `core/pipeline.py`, any live Telegram handler, or
-`telegram/command_router.py` — foundation only, same posture as every
+`platform_layer/telegram/command_router.py` — foundation only, same posture as every
 prior phase.
 
 ## Tests

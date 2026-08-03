@@ -4,7 +4,7 @@ Integration, TASK 8).
 
 Genuinely new (Module Reuse Principle steps 1/2 both "no" -- nothing in
 this codebase runs a single, AI-runtime-scoped reachability sweep
-today). Closest precedent is `telegram.owner.dashboard.get_doctor_report()`
+today). Closest precedent is `platform_layer.telegram.owner.dashboard.get_doctor_report()`
 (Phase 61.5 Addendum) -- reuses its own "each check independently
 wrapped so one failing check never hides the rest, PASS/WARNING/FAILED
 never a raised exception" posture, but narrower in scope: seven

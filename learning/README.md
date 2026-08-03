@@ -29,7 +29,7 @@ database.learning_repository.LearningRepository.record()   -- append-only
       v
 learning.pattern_detector.detect_patterns()
       |
-      +--> analytics.learning_report / ai.learning_context / telegram.owner.learning_commands
+      +--> analytics.learning_report / ai.learning_context / platform_layer.telegram.owner.learning_commands
 ```
 
 ## Responsibilities

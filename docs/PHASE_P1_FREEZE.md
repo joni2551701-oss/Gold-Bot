@@ -22,7 +22,7 @@ tooling only.
 | TASK 5 | Atomic `current` symlink | `scripts/deploy/release_manager.py switch_current()` — temp symlink + `os.replace()`, POSIX-atomic |
 | TASK 6 | systemd production service | `deploy/systemd/goldbot.service` — `Restart=always`, `User=senior` (never root), `WorkingDirectory=/opt/goldbot/current` |
 | TASK 7 | Restart only after validation | `release_deploy.sh`'s order: smoke test → activate → restart → post-restart health check |
-| TASK 8 | Health check | Extended `scripts/health_check.py` (config/secrets/database + new `main`/`telegram.polling` import checks) + `systemctl is-active` |
+| TASK 8 | Health check | Extended `scripts/health_check.py` (config/secrets/database + new `main`/`platform_layer.telegram.polling` import checks) + `systemctl is-active` |
 | TASK 9 | Smoke test | Same `scripts/health_check.py`, run against the new release *before* activation — import-only, no continuous execution |
 | TASK 10 | Rollback | `scripts/deploy/rollback.sh` — symlink switch + restart, no rebuild; also invoked automatically by `release_deploy.sh` on a failed post-restart check |
 

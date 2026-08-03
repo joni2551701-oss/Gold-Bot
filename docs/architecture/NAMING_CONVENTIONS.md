@@ -22,7 +22,7 @@ Audit be answered by `grep`/`glob` rather than guesswork.
 ## Command handler naming (mechanical, not a convention — a contract)
 
 A Telegram handler function **must** be named `<command>_handler` —
-`telegram/command_router.py` resolves a command to its handler via
+`platform_layer/telegram/command_router.py` resolves a command to its handler via
 `getattr(handlers, f"{command}_handler")`, not a lookup table. A
 mismatch is not a style violation; it is a silent dispatch failure
 (the exact bug caught once in Phase 61.7 — see
@@ -37,7 +37,7 @@ mismatch is not a style violation; it is a silent dispatch failure
   precedents; each has its own Reuse Audit on record justifying why it
   is not a subpackage of something else.
 - A subpackage under an existing top-level package
-  (`ai/persona/`, `telegram/owner/`, `database/`) is the default,
+  (`ai/persona/`, `platform_layer/telegram/owner/`, `database/`) is the default,
   lower-cost choice for anything that is conceptually part of that
   package's domain.
 

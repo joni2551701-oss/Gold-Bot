@@ -93,27 +93,27 @@ database_layer/trade_repository/signal_repository.py        SignalRepository
 database_layer/user_repository/feedback_repository.py      FeedbackRepository
 database_layer/user_repository/admin_repository.py         AdminRepository
 
-telegram/polling.py                  TelegramPolling
-telegram/command_router.py           CommandRouter
-telegram/handlers.py                 Handlers
-telegram/permissions.py              Permissions
-telegram/bot.py                      TelegramBot
-telegram/notifier.py                 Notifier
-telegram/user_service.py             UserService
-telegram/admin_service.py            AdminService
-telegram/subscription_service.py     SubscriptionService
-telegram/notification_service.py     NotificationService
-telegram/feedback_service.py         FeedbackService
-telegram/signal_service.py           SignalService
-telegram/signal_access_service.py    SignalAccessService
-telegram/result_handler.py           ResultHandler
+platform_layer/telegram/polling.py                  TelegramPolling
+platform_layer/telegram/command_router.py           CommandRouter
+platform_layer/telegram/handlers.py                 Handlers
+platform_layer/telegram/permissions.py              Permissions
+platform_layer/telegram/bot.py                      TelegramBot
+platform_layer/telegram/notifier.py                 Notifier
+platform_layer/telegram/user_service.py             UserService
+platform_layer/telegram/admin_service.py            AdminService
+platform_layer/telegram/subscription_service.py     SubscriptionService
+platform_layer/telegram/notification_service.py     NotificationService
+platform_layer/telegram/feedback_service.py         FeedbackService
+platform_layer/telegram/signal_service.py           SignalService
+platform_layer/telegram/signal_access_service.py    SignalAccessService
+platform_layer/telegram/result_handler.py           ResultHandler
 ```
 
 Modules with no logger and no `try`/`except`/`raise` at all (pure
 dataclasses, pure functions, or static text) intentionally have none:
 `signal_layer/signal_builder/models.py`, `decision_layer/decision_engine/models.py`, `risk_layer/risk_engine/risk_manager.py`,
-`strategies/*.py`, `signal_layer/signal_engine/signal_engine.py`, `telegram/keyboards.py`,
-`telegram/commands.py`, `telegram/signal_formatter.py`,
+`strategies/*.py`, `signal_layer/signal_engine/signal_engine.py`, `platform_layer/telegram/keyboards.py`,
+`platform_layer/telegram/commands.py`, `platform_layer/telegram/signal_formatter.py`,
 `context_layer/context_engine/candle.py`, `context_layer/context_engine/context_config.py`, `context_layer/fair_value_gap/fvg.py`,
 `context_layer/liquidity/liquidity.py`, `context_layer/order_block/order_block.py`, all `database/*_models.py`,
 `ai/ai_prompt.py`, `ai/confidence_model.py`, `ai/trade_journal.py`,
@@ -136,7 +136,7 @@ logger.info("Pipeline finished.")
 logger.info("GoldBot finished.")   # in a finally: block -- always runs
 ```
 
-**Recoverable failure inside a best-effort call (`telegram/handlers.py`):**
+**Recoverable failure inside a best-effort call (`platform_layer/telegram/handlers.py`):**
 ```python
 try:
     UserService().touch_activity(telegram_id)

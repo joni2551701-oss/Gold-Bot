@@ -32,7 +32,7 @@ the pre-phase baseline).
 - **TASK 6** — `translation/` (new top-level package): `Language`
   (UZ/RU/EN), static registry, `TranslationManager.translate()` —
   always cleanly rejects, never echoes or fabricates a translation.
-- **TASK 7** — `telegram/owner/broadcast_commands.py` (new file):
+- **TASK 7** — `platform_layer/telegram/owner/broadcast_commands.py` (new file):
   `/broadcast_status`, `/broadcast_provider`, `/broadcast_enable`,
   `/broadcast_disable` — every one returns `NOT IMPLEMENTED`. Not
   registered in `OWNER_COMMANDS`, no dispatch handler.
@@ -60,7 +60,7 @@ the pre-phase baseline).
   same pre-existing gap Phase 61.5 already documented (no
   `ai/runtime/ai_service.py` dispatch mapping for any `AI_*` content
   capability, including the four new ones this phase added).
-- None of the four `telegram/owner/broadcast_commands.py` functions
+- None of the four `platform_layer/telegram/owner/broadcast_commands.py` functions
   are wired to a real backend (Rule 7).
 - `broadcast/`'s `BroadcastManager.prepare()` builds a value; nothing
   in this codebase calls it from a live process loop.

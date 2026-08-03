@@ -9,14 +9,14 @@ Full reuse audit: `docs/PHASE61_4_PRODUCT_CONTROL_AUDIT.md` (TASK 1).
 
 **Still foundation, not live-wired.** Every module below is real,
 tested, and documented, but nothing is registered into
-`telegram/command_router.py`, `core/pipeline.py`, or any live handler
+`platform_layer/telegram/command_router.py`, `core/pipeline.py`, or any live handler
 — same posture every Phase 61.x module has used.
 
 ## TASK 2 — AI Access Control Integration
 
 Three role concepts already existed by deliberate design before this
-phase: `telegram/permissions.py`'s `PermissionLevel` (OWNER/ADMIN/USER,
-live), `telegram/owner/owner_roles.py`'s `OwnerRole` (admin-console
+phase: `platform_layer/telegram/permissions.py`'s `PermissionLevel` (OWNER/ADMIN/USER,
+live), `platform_layer/telegram/owner/owner_roles.py`'s `OwnerRole` (admin-console
 hierarchy, foundation only), and `ai/access/permissions.py`'s `AIRole`
 (OWNER/ADMIN/VIP/PREMIUM/FREE, never wired to real data). TASK 2 does
 **not** add a fourth enum — it adds the missing resolver:
@@ -29,8 +29,8 @@ hierarchy, foundation only), and `ai/access/permissions.py`'s `AIRole`
   role. Takes already-resolved booleans/plan string, **never imports
   `telegram/` or `database/` itself** — the caller (a future
   `telegram/`-side integration) already legitimately has
-  `telegram.permissions.is_owner()`/`is_admin()` and
-  `telegram.subscription_service.SubscriptionService.get_plan()`
+  `platform_layer.telegram.permissions.is_owner()`/`is_admin()` and
+  `platform_layer.telegram.subscription_service.SubscriptionService.get_plan()`
   available and passes their results in. Same `TYPE_CHECKING`-free,
   accept-already-resolved-facts pattern established for `ai/` ->
   `context/`/`database/` boundaries in prior phases.
@@ -50,9 +50,9 @@ hierarchy, foundation only), and `ai/access/permissions.py`'s `AIRole`
 
 ## TASK 3 — Telegram AI Owner Commands
 
-`telegram/owner/ai_commands.py` (new) — `ai_status()`, `ai_provider()`,
+`platform_layer/telegram/owner/ai_commands.py` (new) — `ai_status()`, `ai_provider()`,
 `ai_disable()`/`ai_enable()`, `ai_limit()`. Mirrors
-`telegram/owner/provider_commands.py`'s own shape exactly: standalone
+`platform_layer/telegram/owner/provider_commands.py`'s own shape exactly: standalone
 functions returning an `AICommandResult`, every `ai/` object
 injectable, this module never constructs a live `AIService` or reads
 its internal state. "Runtime: Online/Offline" is derived from whether
@@ -61,8 +61,8 @@ constant. "Health: N%" in `ai_provider()` reads
 `ai.audit.provider_stats.ProviderStats.success_rate` when call history
 exists, or reports "N/A" rather than fabricating a percentage.
 Confirmed (per TASK 1's audit): none of the 18 pre-existing
-`telegram/owner/*.py` modules are registered into
-`telegram/commands.py`'s dicts or `command_router.py`'s dispatch
+`platform_layer/telegram/owner/*.py` modules are registered into
+`platform_layer/telegram/commands.py`'s dicts or `command_router.py`'s dispatch
 either — this file follows that exact same convention.
 
 ## TASK 4 — AI User Registration Foundation
@@ -121,7 +121,7 @@ unmodified data, matching `ai/audit/provider_stats.py`'s own
 The Director's own "Today AI Cost: Gemini $12.40 / GPT $8.20 / Total
 $20.60" worked example is a per-*provider* summary, not per-user — it
 was already fully satisfiable by the existing, unmodified
-`compute_provider_stats()`; `telegram/owner/ai_commands.py` gained
+`compute_provider_stats()`; `platform_layer/telegram/owner/ai_commands.py` gained
 `ai_cost(provider_stats)` (formats that existing data into exactly
 this shape) and `ai_usage(telegram_id, user_usage)` (the new per-user
 dimension, formats `compute_user_usage()`'s output).
@@ -142,10 +142,10 @@ AST-based import sweep (`ast.walk()` over every `.py` file under
 | `signals/` | 7 (unchanged from Phase 61.3 — no new site this phase) |
 | `context/` | 6 total, only 3 runtime (all 3 pre-date this entire v0.4 AI Core arc); the other 3 remain `TYPE_CHECKING`-only, unchanged from Phase 61.3 |
 
-`telegram/owner/ai_commands.py` was checked separately (it sits
+`platform_layer/telegram/owner/ai_commands.py` was checked separately (it sits
 outside the `ai/` isolation boundary by design — a Telegram-side
 consumer of `ai/` status objects, the same relationship every other
-`telegram/owner/*.py` module has to its own domain): zero imports of
+`platform_layer/telegram/owner/*.py` module has to its own domain): zero imports of
 `decision/`/`risk/`/`execution/`/`strategies/` — this module reads
 `ai/` state, it never approves, rejects, or executes a trade.
 
@@ -153,9 +153,9 @@ consumer of `ai/` status objects, the same relationship every other
 
 `ai/access/permission_service.py`, `user_capability.py`,
 `identity_checker.py`, `trial_manager.py`,
-`telegram/owner/ai_commands.py`, and `ai/audit/usage_accounting.py`
+`platform_layer/telegram/owner/ai_commands.py`, and `ai/audit/usage_accounting.py`
 are not called from `core/pipeline.py`, any live Telegram handler, or
-`telegram/command_router.py` — foundation only.
+`platform_layer/telegram/command_router.py` — foundation only.
 
 ## Tests
 

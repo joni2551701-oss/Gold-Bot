@@ -146,7 +146,7 @@ the next `get()`. Not wired into any provider call this phase.
 
 Every module in this document is foundation only — none is imported by
 `core/pipeline.py`, any live Telegram handler, or
-`telegram/command_router.py`. `core/`, `decision/`, `risk/`,
+`platform_layer/telegram/command_router.py`. `core/`, `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/` are unchanged.
 
 ## Tests

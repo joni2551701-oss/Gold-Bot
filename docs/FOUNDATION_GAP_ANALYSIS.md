@@ -111,9 +111,9 @@ gap.
 - `database_layer/user_repository/user_models.py`'s `UserRecord.trading_style` field exists,
   is persisted (`database_layer/database_manager/models.py` line 134, `TEXT DEFAULT
   'Intraday'`), is settable via the `/strategy` Telegram command
-  ("Change trading style" per `telegram/commands.py`), and is
+  ("Change trading style" per `platform_layer/telegram/commands.py`), and is
   displayed back to the user in their profile
-  (`telegram/handlers.py` line 217).
+  (`platform_layer/telegram/handlers.py` line 217).
 - **It is never read by `core/pipeline.py`, `decision/`, `risk/`, or
   any `strategies/*.py` file** — confirmed by a full-repo grep this
   phase limited to exactly one non-display, non-storage hit (none

@@ -46,7 +46,7 @@ history, not a per-request gate the request itself passes through.
 - No further work lands on `ai/runtime/ai_service.py`'s own
   orchestration shape, `ai/providers/circuit_breaker.py`'s retry/
   backoff behavior, `ai/audit/provider_stats.py`'s cost-protection
-  functions, or `telegram/owner/runtime_commands.py`'s command set
+  functions, or `platform_layer/telegram/owner/runtime_commands.py`'s command set
   before the next formally-numbered Worker Brief.
 - `ai/router/router.py`: **zero diff**, same invariant Phase 61.7
   already established and this phase re-confirmed — every integration

@@ -18,14 +18,14 @@ It ran across four sub-phases:
 | Sub-phase | Delivered |
 |---|---|
 | 6.0 Navigation Audit | `docs/PHASE6_NAVIGATION_AUDIT.md` — architecture survey, identified the inline-callback gap and the missing Back/Home concept |
-| 6.1 → 6.1.1 → 6.3 Navigation Framework | Reply Keyboard established as GoldBot's sole navigation mechanism (`telegram/reply_keyboard_manager.py`); Phase 6.1's inline edit-in-place Navigation Controller (`telegram/navigation.py`) was built, then retired outright by Phase 6.3's Director-approved "Dynamic Reply Keyboard Navigation" decision |
+| 6.1 → 6.1.1 → 6.3 Navigation Framework | Reply Keyboard established as GoldBot's sole navigation mechanism (`platform_layer/telegram/reply_keyboard_manager.py`); Phase 6.1's inline edit-in-place Navigation Controller (`telegram/navigation.py`) was built, then retired outright by Phase 6.3's Director-approved "Dynamic Reply Keyboard Navigation" decision |
 | 6.2 Settings Callback Completion | `docs/PHASE6_2_SETTINGS_CALLBACK_COMPLETION.md` — wired the four remaining "dead" inline callbacks (`risk_*`/`strategy_*`/`timeframe_*`/`notifications_*`) to real DB updates, current-value display, and in-place picker redraw |
 | **6 Freeze** (this document) | Full audit, two-line cleanup, and this freeze record |
 
 Net result: every Settings/Profile/Signals/Admin/Owner screen the
 Reply Keyboard exposes today is fully wired end-to-end — no dead
 callback, no orphan handler, no unresolved navigation path. The one
-remaining unreachable UI surface (`telegram/keyboards.py`'s
+remaining unreachable UI surface (`platform_layer/telegram/keyboards.py`'s
 Phase-40-era inline Settings/Admin pickers) is confirmed intentionally
 retained, not a defect (see Stage 1 below).
 
@@ -53,14 +53,14 @@ missed.
 ## Stage 2 — Telegram UI Audit
 
 Every Reply Keyboard section and every lifecycle transition was traced
-through `telegram/command_router.py`, `telegram/handlers.py`,
-`telegram/reply_keyboard_manager.py`, and `telegram/polling.py`.
+through `platform_layer/telegram/command_router.py`, `platform_layer/telegram/handlers.py`,
+`platform_layer/telegram/reply_keyboard_manager.py`, and `platform_layer/telegram/polling.py`.
 
 ### Section inventory (confirmed live, all six)
 
 | Section | Keyboard builder | Commands routed to it |
 |---|---|---|
-| Main | `reply_keyboard_manager.main_keyboard()` (tier-aware: USER/ADMIN/OWNER superset via `telegram.keyboards.reply_keyboard/admin_reply_keyboard/owner_reply_keyboard`) | `/start`, and the implicit default for any command not listed in `_SECTION_BY_COMMAND` |
+| Main | `reply_keyboard_manager.main_keyboard()` (tier-aware: USER/ADMIN/OWNER superset via `platform_layer.telegram.keyboards.reply_keyboard/admin_reply_keyboard/owner_reply_keyboard`) | `/start`, and the implicit default for any command not listed in `_SECTION_BY_COMMAND` |
 | Settings | `settings_keyboard()` | `/settings`, `/language`, `/risk`, `/strategy`, `/timeframe`, `/notifications` |
 | Admin | `admin_submenu_keyboard()` | `/admin`, `/users`, `/stats`, `/system`, `/broadcast`, `/removeadmin` |
 | Owner | `owner_submenu_keyboard()` | `/owner`, `/runtime`, `/health`, `/performance`, `/errors`, `/pipeline`, `/report` |
@@ -109,7 +109,7 @@ confirmed by a repo-wide search for the symbol:
 ### Registration Wizard lifecycle
 
 `/start`'s keyboard depends on `RegistrationStep`
-(`telegram/registration_service.py`), read via
+(`platform_layer/telegram/registration_service.py`), read via
 `handlers._registration_step()`:
 
 ```
@@ -210,7 +210,7 @@ Findings:
   section has a different Back target.
 - **Two-tier resolution, confirmed non-conflicting**: Main-tier labels
   (Home/Profile/Signals/Subscription/Settings/Help/Admin/Owner) are
-  resolved by `telegram.keyboards.resolve_navigation_command()` first;
+  resolved by `platform_layer.telegram.keyboards.resolve_navigation_command()` first;
   only if that returns `None` does `command_router.route_command()`
   fall back to `reply_keyboard_manager.resolve_navigation_command()`
   for a submenu-section label. No label exists in both maps (verified
@@ -245,7 +245,7 @@ orphaned Back target.**
 
 ## Stage 4 — Translation Freeze
 
-AST-parsed `translation/ui_catalog.py`'s `_CATALOG` (post-cleanup: 111
+AST-parsed `media_layer/translation/ui_catalog.py`'s `_CATALOG` (post-cleanup: 111
 keys, was 113 before Stage 9's two-key removal):
 
 | Check | Result |
@@ -332,7 +332,7 @@ be a Reply Menu design change, out of scope for this Freeze).
 | Analytics | Owner submenu (extend) | Partially live (`/performance`, `/report` exist under Owner) | already reachable |
 | Portfolio | Main or Profile sub-flow | Foundation exists (`ai/portfolio/`) — not Telegram-wired | `/portfolio` |
 | Trade Journal | Main or Profile sub-flow | Foundation exists (`ai/trade_journal/`) — not Telegram-wired | `/journal` |
-| Trade Replay | Owner submenu (extend) | Foundation exists (`backtesting/replay_*`, `telegram/owner/replay_commands.py`) — Owner-only, not Reply-Keyboard-wired | already partially reachable (Owner tier) |
+| Trade Replay | Owner submenu (extend) | Foundation exists (`backtesting/replay_*`, `platform_layer/telegram/owner/replay_commands.py`) — Owner-only, not Reply-Keyboard-wired | already partially reachable (Owner tier) |
 | Market Scanner | Main (new button) | Not started | `/scanner` |
 | Notifications Center | Settings sub-flow (extend) | Partially live (`/notifications` on/off exists; no per-category center) | already reachable |
 | Community | Main (new button) | Not started | `/community` |
@@ -389,7 +389,7 @@ Stage 1's F2 finding was accurate before any code was touched).
 | `test_runtime_owner_dispatch.py` | 4 | Owner runtime command dispatch |
 | `test_ai_explanation_status_dispatch.py` | 1 | AI explanation status dispatch |
 
-Plus `tests/telegram/owner/` (27 files, one per `telegram/owner/*.py`
+Plus `tests/platform_layer/telegram/owner/` (27 files, one per `platform_layer/telegram/owner/*.py`
 module — Admin/Owner command surface, already exercised by prior
 phases' own Commit Protocols, unmodified and re-verified passing in
 this phase's full-suite run).
@@ -405,7 +405,7 @@ between what was audited and what is tested.
 
 Exactly one change, directly evidenced by Stage 1's F2 finding:
 removed the orphaned `nav.back`/`nav.home` translation keys (2 lines)
-from `translation/ui_catalog.py` — debris from the already-deleted
+from `media_layer/translation/ui_catalog.py` — debris from the already-deleted
 `telegram/navigation.py` module. No test referenced either key; the
 full suite (4609 tests) passes unchanged before and after.
 
@@ -419,7 +419,7 @@ Trading Core file was touched; no Reply Menu design changed.
 
 ## Remaining Known Limitations
 
-- `telegram/keyboards.py`'s `settings_keyboard()`/`admin_panel_keyboard()`
+- `platform_layer/telegram/keyboards.py`'s `settings_keyboard()`/`admin_panel_keyboard()`
   remain in the codebase, unreachable from routing, kept only for their
   own isolated test coverage (Stage 1 F1). A future phase may choose to
   remove them outright once Constitution v2.0's cleanup posture is

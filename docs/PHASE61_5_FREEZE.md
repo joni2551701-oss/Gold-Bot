@@ -12,11 +12,11 @@ tests, zero regressions).
 
 - No further work lands on `ai/providers/openai_provider.py`,
   `claude_provider.py`, `grok_provider.py`, `ai/router/provider_score.py`,
-  `telegram/owner/ai_commands.py`'s `ai_health()`, `telegram/handlers.py`'s
-  five `ai_*_handler` functions, `telegram/user_service.py`'s
-  `register_phone()`, `telegram/command_router.py`'s `route_contact()`,
-  `telegram/polling.py`'s contact-message conditional,
-  `telegram/keyboards.py`'s `phone_share_keyboard()`,
+  `platform_layer/telegram/owner/ai_commands.py`'s `ai_health()`, `platform_layer/telegram/handlers.py`'s
+  five `ai_*_handler` functions, `platform_layer/telegram/user_service.py`'s
+  `register_phone()`, `platform_layer/telegram/command_router.py`'s `route_contact()`,
+  `platform_layer/telegram/polling.py`'s contact-message conditional,
+  `platform_layer/telegram/keyboards.py`'s `phone_share_keyboard()`,
   `ai/capabilities/capability.py`'s four `AI_*` members, or `ai/content/`
   before the next formally-numbered Worker Brief.
 - Every module this phase built or live-wired stays exactly as it is.

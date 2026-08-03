@@ -60,9 +60,9 @@ during the test window:
    `analytics.validation_report.build_validation_report(signals,
    performances, period_start, period_end)` and
    `format_validation_report()` for the text report, or
-   `telegram.owner.validation_commands.get_validation_report()` for the
+   `platform_layer.telegram.owner.validation_commands.get_validation_report()` for the
    same thing wrapped in a `ProviderCommandResult`. Neither is wired
-   into the live Telegram bot — see `telegram/owner/README.md`.
+   into the live Telegram bot — see `platform_layer/telegram/owner/README.md`.
 
 ## Metrics gathered
 

@@ -5,7 +5,7 @@ is a one-page summary for the `docs/architecture/` flow-diagram family
 (`SYSTEM_LAYERS.md`, `DATA_FLOW.md`, `AI_FLOW.md`, this document,
 `OWNER_FLOW.md`). It does not re-derive the full mechanism —
 `docs/telegram/TELEGRAM_ARCHITECTURE.md` already documents that in
-detail, verified directly against `telegram/command_router.py`, and
+detail, verified directly against `platform_layer/telegram/command_router.py`, and
 remains the source of truth. Per Constitution Article 7/11, this file
 extends the flow-diagram family rather than duplicating that content.
 
@@ -14,11 +14,11 @@ extends the flow-diagram family rather than duplicating that content.
 ```
 User
    ↓
-Command Router      telegram/command_router.py
+Command Router      platform_layer/telegram/command_router.py
    ↓
-Permission           telegram/permissions.py
+Permission           platform_layer/telegram/permissions.py
    ↓
-Handler                telegram/handlers.py (or telegram/owner/<domain>_commands.py)
+Handler                platform_layer/telegram/handlers.py (or platform_layer/telegram/owner/<domain>_commands.py)
    ↓
 Service                  telegram/*_service.py
    ↓
@@ -37,13 +37,13 @@ for the exact lookup and the Phase 61.7 naming mistake it once caught.
 ```
 Owner
    ↓
-Permission Check      telegram/owner/owner_roles.py
+Permission Check      platform_layer/telegram/owner/owner_roles.py
    ↓
-Audit Log               telegram/owner/security.py (log_owner_action())
+Audit Log               platform_layer/telegram/owner/security.py (log_owner_action())
    ↓
 Execution                 the Owner command's own handler → service/manager
    ↓
-Notification               telegram/owner/runtime_notifications.py, where applicable
+Notification               platform_layer/telegram/owner/runtime_notifications.py, where applicable
 ```
 
 See `docs/architecture/OWNER_FLOW.md` for this variant in detail —

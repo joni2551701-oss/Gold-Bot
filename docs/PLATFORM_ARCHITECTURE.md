@@ -27,7 +27,7 @@ GoldBot is two independent OS processes sharing one SQLite database
    one-shot, produces signals and one outbound Telegram broadcast per
    run. **Not** part of the Platform Layer; read-only output consumer
    only (see §7 below).
-2. **Telegram product layer** (`telegram/polling.py`, long-lived) —
+2. **Telegram product layer** (`platform_layer/telegram/polling.py`, long-lived) —
    **this is the Platform Layer.** User registration, settings,
    subscriptions, navigation, admin/owner panel, feedback. Reads/writes
    the same database, entirely independent of pipeline timing.
@@ -40,15 +40,15 @@ state — only the database file connects them.
 ```
 Telegram Update
       |
-telegram/polling.py            long-lived aiogram Dispatcher, transport only
+platform_layer/telegram/polling.py            long-lived aiogram Dispatcher, transport only
       |
-telegram/command_router.py     parse command -> resolve permission tier -> pick keyboard
+platform_layer/telegram/command_router.py     parse command -> resolve permission tier -> pick keyboard
       |
-telegram/permissions.py        OWNER/ADMIN/USER classification
-telegram/owner/owner_roles.py   (Owner-command-specific gating, additional layer)
+platform_layer/telegram/permissions.py        OWNER/ADMIN/USER classification
+platform_layer/telegram/owner/owner_roles.py   (Owner-command-specific gating, additional layer)
       |
-telegram/handlers.py           one async function per command (Handler -> Service only)
-telegram/owner/<domain>_commands.py   (Owner-tier equivalent)
+platform_layer/telegram/handlers.py           one async function per command (Handler -> Service only)
+platform_layer/telegram/owner/<domain>_commands.py   (Owner-tier equivalent)
       |
 telegram/*_service.py          business logic (lazy repo construction, never raises)
       |
@@ -60,7 +60,7 @@ SQLite (database/goldbot.db)
 A parallel path exists for inline `callback_query` taps (currently
 only the `/language` picker and the four Settings value-pickers —
 see §5): `polling.py` forwards the callback unbranched to
-`telegram/callback_router.py`, which translates `callback_data` into
+`platform_layer/telegram/callback_router.py`, which translates `callback_data` into
 the exact same handler call the equivalent text command would make.
 It is not a second business-logic path, per
 `docs/telegram/TELEGRAM_ARCHITECTURE.md`.
@@ -74,7 +74,7 @@ silently unreachable. This has bitten the codebase once already
 
 ## 3. Permission model
 
-Three tiers, ranked `OWNER > ADMIN > USER` (`telegram/permissions.py`):
+Three tiers, ranked `OWNER > ADMIN > USER` (`platform_layer/telegram/permissions.py`):
 
 - **OWNER** — `TELEGRAM_OWNER_ID` env var, never hardcoded. Always
   satisfies every check.
@@ -83,12 +83,12 @@ Three tiers, ranked `OWNER > ADMIN > USER` (`telegram/permissions.py`):
 - **USER** — any resolvable Telegram user, the default.
 
 A command's tier is derived from which registry it's declared in
-(`telegram/commands.py`'s `COMMANDS`/`ADMIN_COMMANDS`/`OWNER_COMMANDS`)
+(`platform_layer/telegram/commands.py`'s `COMMANDS`/`ADMIN_COMMANDS`/`OWNER_COMMANDS`)
 — one source of truth, no second hardcoded list anywhere. Denial
 always replies exactly `"Permission denied."`.
 
-Owner-only commands under `telegram/owner/` are gated a second time by
-`telegram/owner/owner_roles.py` before their handler runs — see
+Owner-only commands under `platform_layer/telegram/owner/` are gated a second time by
+`platform_layer/telegram/owner/owner_roles.py` before their handler runs — see
 `docs/owner/OWNER_PANEL.md`.
 
 ## 4. User lifecycle vs. subscription — two independent axes
@@ -102,7 +102,7 @@ Never conflated in code or in any reply:
   fallthrough), per `docs/PHASE6_FREEZE.md` Stage 2.
 - **Subscription plan** (`subscriptions.plan`): `FREE` / `PREMIUM` /
   `VIP`. Drives `/signal` access only, via
-  `telegram/subscription_service.py` + `telegram/signal_access_service.py`.
+  `platform_layer/telegram/subscription_service.py` + `platform_layer/telegram/signal_access_service.py`.
 
 ### Subscription platform, current shape
 
@@ -116,8 +116,8 @@ Never conflated in code or in any reply:
   expiry (`expires_at` always shows `N/A` — no billing system exists).
 - `/upgrade` — records the request, static "coming soon" reply. No
   payment integration, no plan change, today.
-- No dedicated `telegram/owner/subscription_commands.py` exists yet —
-  subscription management lives in `telegram/subscription_service.py`,
+- No dedicated `platform_layer/telegram/owner/subscription_commands.py` exists yet —
+  subscription management lives in `platform_layer/telegram/subscription_service.py`,
   called from whichever owner command file needs it. `docs/owner/OWNER_PANEL.md`
   names this as an honest gap, not an oversight (v0.5 Business Layer on
   the roadmap is where a dedicated file may be justified).
@@ -137,9 +137,9 @@ Settings value picker) — never to move between screens. This retired
 an earlier inline "Navigation Controller" (`telegram/navigation.py`,
 now deleted) outright.
 
-Owned by `telegram/reply_keyboard_manager.py` (which section keyboard
+Owned by `platform_layer/telegram/reply_keyboard_manager.py` (which section keyboard
 attaches to which command's reply, and the reverse label→command map)
-plus `telegram/keyboards.py` (the tier-aware Main keyboard and the
+plus `platform_layer/telegram/keyboards.py` (the tier-aware Main keyboard and the
 inline value-pickers).
 
 **Six live sections**, each ending in a trailing "◀️ Ortga" (Back) row
@@ -176,7 +176,7 @@ trace: `docs/PHASE6_FREEZE.md` Stage 2–3.
 
 ### Persistent Menu (Telegram's native Menu Button)
 
-`telegram/menu_commands.py` (V2 Phase 4) registers three fixed tiers
+`platform_layer/telegram/menu_commands.py` (V2 Phase 4) registers three fixed tiers
 via `Bot.set_my_commands()` — USER (Home/Profile/Signals/Subscription/
 Settings/Help), ADMIN (+Admin), OWNER (+Owner). This is registration
 only; every menu entry routes through the same
@@ -193,10 +193,10 @@ Soon" placeholder until wired — see §8.
 
 ## 6. Localization / UX
 
-`translation/ui_catalog.py` — a static UZ/RU/EN string catalog (111
+`media_layer/translation/ui_catalog.py` — a static UZ/RU/EN string catalog (111
 keys as of Phase 6 Freeze), looked up via `t(key, language, **kwargs)`
 (caller's language → EN → any entry, never raises). Distinct from
-`translation.translation_manager.TranslationManager`, which is a
+`media_layer.translation.translation_manager.TranslationManager`, which is a
 deliberate no-op for dynamic/AI-generated content (no machine-translation
 call anywhere in this package).
 
@@ -213,21 +213,21 @@ call anywhere in this package).
 ## 7. Known architectural boundary: pipeline broadcast bypasses the Platform Layer
 
 The scheduled pipeline (`main.py` → `core/pipeline.py` →
-`telegram/notifier.py` → `telegram/bot.py`) delivers to one fixed
+`platform_layer/telegram/notifier.py` → `platform_layer/telegram/bot.py`) delivers to one fixed
 `TELEGRAM_CHAT_ID` per run. It does **not** iterate per-user and does
 **not** consult `NotificationService` or `SignalAccessService` — this
 is a deliberate, documented scope boundary
-(`telegram/notification_service.py`'s own module docstring), not a
+(`platform_layer/telegram/notification_service.py`'s own module docstring), not a
 gap to close as Platform work. Per-user notification preference and
 plan-based access control apply only to the Telegram-layer commands
 (`/broadcast`, `/signal`, etc.), never to the pipeline's own outbound
-message. `telegram/bot.py`'s `Bot` instance for outbound delivery is a
-separate instance from `telegram/polling.py`'s inbound listener — no
+message. `platform_layer/telegram/bot.py`'s `Bot` instance for outbound delivery is a
+separate instance from `platform_layer/telegram/polling.py`'s inbound listener — no
 shared state between the two processes' Telegram clients.
 
 ## 8. Dashboard
 
-`telegram/owner/dashboard.py` (Phase 59.8, extended 61.5 Addendum) is
+`platform_layer/telegram/owner/dashboard.py` (Phase 59.8, extended 61.5 Addendum) is
 the closest thing to a unified dashboard today — it does not invent
 new health/status/provider logic, it composes already-built pieces:
 
@@ -247,7 +247,7 @@ new health/status/provider logic, it composes already-built pieces:
 Every section degrades independently on failure — never a fabricated
 number, never an unhandled exception reaching the user. There is no
 `/dashboard` command wired to `get_dashboard()` yet in
-`telegram/command_router.py`/`telegram/commands.py` — confirm before
+`platform_layer/telegram/command_router.py`/`platform_layer/telegram/commands.py` — confirm before
 assuming it's reachable; `/owner` and `/doctor` are the two functions
 of this file that are live-wired today per the file's own docstring.
 
@@ -267,7 +267,7 @@ not a plan to implement:
 | Analytics | Partially live (`/performance`, `/report` under Owner) |
 | Portfolio | Foundation exists (`ai/portfolio/`) — no Telegram entry point |
 | Trade Journal | Foundation exists (`ai/trade_journal/`) — no Telegram entry point |
-| Trade Replay | Foundation exists (`backtesting/replay_*`, `telegram/owner/replay_commands.py`) — Owner-only, partially reachable |
+| Trade Replay | Foundation exists (`backtesting/replay_*`, `platform_layer/telegram/owner/replay_commands.py`) — Owner-only, partially reachable |
 | Market Scanner | Not started |
 | Notifications Center | Partially live (`/notifications` on/off; no per-category center) |
 | Community / Marketplace | Not started |

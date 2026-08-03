@@ -305,7 +305,7 @@ noting for v0.3, plus several dead service methods.
   perform no access check of their own — the FREE/PREMIUM/VIP signal
   gate, for example, lives only in `signal_handler()`
   (`handlers.py:420-430`), not in `SignalService` itself
-  (`telegram/signal_service.py`). No bypass exists today because no
+  (`platform_layer/telegram/signal_service.py`). No bypass exists today because no
   other entry point calls these services directly, but there is no
   defense-in-depth: a future webhook handler, callback_query handler,
   or admin script calling these services directly would silently skip

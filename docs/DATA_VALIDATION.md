@@ -111,6 +111,6 @@ foundation phase.
 
 ## Owner visibility (foundation only)
 
-`telegram/owner/dataset_commands.py`'s `get_dataset_status()` and
+`platform_layer/telegram/owner/dataset_commands.py`'s `get_dataset_status()` and
 `get_provider_compare()` surface these reports as text. Neither is
-wired into the live Telegram bot; see `telegram/owner/README.md`.
+wired into the live Telegram bot; see `platform_layer/telegram/owner/README.md`.

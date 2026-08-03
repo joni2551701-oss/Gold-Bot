@@ -16,8 +16,8 @@ the same change.
 - **Consumers updated (14):** 7 source (`ai/runtime/ai_service.py`,
   `ai/runtime/runtime_manager.py`, `ai/runtime/self_check.py`,
   `ai/audit/provider_stats.py`, `ai/providers/circuit_breaker.py`,
-  `telegram/owner/runtime_commands.py`,
-  `telegram/owner/runtime_notifications.py`) + 7 tests.
+  `platform_layer/telegram/owner/runtime_commands.py`,
+  `platform_layer/telegram/owner/runtime_notifications.py`) + 7 tests.
 - **Breaking risk:** an *external* caller doing
   `from ai.runtime.event_bus import EventBus` would need the new path.
   No such external caller exists (all consumers are in-repo and

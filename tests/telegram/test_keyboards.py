@@ -1,6 +1,6 @@
 """
 Telegram Layer -- keyboard localization tests (Phase 1.5 Localized
-Keyboards). Every USER-tier keyboard in telegram/keyboards.py takes an
+Keyboards). Every USER-tier keyboard in platform_layer/telegram/keyboards.py takes an
 optional `language` and resolves its button labels via
 translation.ui_catalog.t(); callback_data must never change with
 language. admin_panel_keyboard() is deliberately excluded -- it stays
@@ -10,7 +10,7 @@ signature and is not covered here beyond a stability check.
 
 import asyncio
 
-from telegram.keyboards import (
+from platform_layer.telegram.keyboards import (
     language_keyboard,
     risk_keyboard,
     timeframe_keyboard,
@@ -234,7 +234,7 @@ def test_navigation_map_returns_none_for_non_navigation_text():
 
 
 def test_command_router_routes_a_localized_navigation_label_like_its_command():
-    from telegram.command_router import route_command
+    from platform_layer.telegram.command_router import route_command
 
     by_label = asyncio.run(route_command("👤 Profil", telegram_id="703"))
     by_command = asyncio.run(route_command("/profile", telegram_id="703"))
@@ -243,8 +243,8 @@ def test_command_router_routes_a_localized_navigation_label_like_its_command():
 
 
 def test_command_router_attaches_a_keyboard_localized_to_the_caller():
-    from telegram.command_router import route_command
-    from telegram.user_service import UserService
+    from platform_layer.telegram.command_router import route_command
+    from platform_layer.telegram.user_service import UserService
 
     UserService().register_user("701", username="kbduz")
     UserService().change_language("701", "UZ")
@@ -259,12 +259,12 @@ def test_command_router_attaches_a_keyboard_localized_to_the_caller():
 
 
 def test_command_router_admin_keyboard_localizes_to_the_callers_language(monkeypatch):
-    from telegram.command_router import route_command
-    from telegram.user_service import UserService
-    from telegram.permissions import PermissionLevel
+    from platform_layer.telegram.command_router import route_command
+    from platform_layer.telegram.user_service import UserService
+    from platform_layer.telegram.permissions import PermissionLevel
 
     monkeypatch.setattr(
-        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
+        "platform_layer.telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
     )
     UserService().register_user("702", username="kbdadmin")
     UserService().change_language("702", "RU")
@@ -294,8 +294,8 @@ def test_command_router_admin_keyboard_localizes_to_the_callers_language(monkeyp
 
 
 def test_navigation_main_to_settings_switches_to_the_settings_reply_keyboard():
-    from telegram.command_router import route_command
-    from telegram.user_service import UserService
+    from platform_layer.telegram.command_router import route_command
+    from platform_layer.telegram.user_service import UserService
 
     UserService().register_user("710", username="navsettings")
     UserService().change_language("710", "EN")
@@ -308,9 +308,9 @@ def test_navigation_main_to_settings_switches_to_the_settings_reply_keyboard():
 
 
 def test_navigation_settings_back_returns_to_the_main_reply_keyboard():
-    from telegram.command_router import route_command
-    from telegram.user_service import UserService
-    from telegram.registration_service import RegistrationService
+    from platform_layer.telegram.command_router import route_command
+    from platform_layer.telegram.user_service import UserService
+    from platform_layer.telegram.registration_service import RegistrationService
 
     UserService().register_user("711", username="navsettingsback")
     UserService().change_language("711", "EN")
@@ -325,8 +325,8 @@ def test_navigation_settings_back_returns_to_the_main_reply_keyboard():
 
 
 def test_navigation_main_to_profile_switches_to_the_profile_reply_keyboard():
-    from telegram.command_router import route_command
-    from telegram.user_service import UserService
+    from platform_layer.telegram.command_router import route_command
+    from platform_layer.telegram.user_service import UserService
 
     UserService().register_user("712", username="navprofile")
     UserService().change_language("712", "EN")
@@ -341,9 +341,9 @@ def test_navigation_main_to_profile_switches_to_the_profile_reply_keyboard():
 
 
 def test_navigation_profile_back_returns_to_the_main_reply_keyboard():
-    from telegram.command_router import route_command
-    from telegram.user_service import UserService
-    from telegram.registration_service import RegistrationService
+    from platform_layer.telegram.command_router import route_command
+    from platform_layer.telegram.user_service import UserService
+    from platform_layer.telegram.registration_service import RegistrationService
 
     UserService().register_user("713", username="navprofileback")
     UserService().change_language("713", "EN")
@@ -358,12 +358,12 @@ def test_navigation_profile_back_returns_to_the_main_reply_keyboard():
 
 
 def test_navigation_main_to_admin_switches_to_the_admin_submenu_reply_keyboard(monkeypatch):
-    from telegram.command_router import route_command
-    from telegram.user_service import UserService
-    from telegram.permissions import PermissionLevel
+    from platform_layer.telegram.command_router import route_command
+    from platform_layer.telegram.user_service import UserService
+    from platform_layer.telegram.permissions import PermissionLevel
 
     monkeypatch.setattr(
-        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.ADMIN,
+        "platform_layer.telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.ADMIN,
     )
     UserService().register_user("714", username="navadmin")
     UserService().change_language("714", "EN")
@@ -379,12 +379,12 @@ def test_navigation_admin_management_button_reopens_the_admin_panel_not_addadmin
     """V2 Phase 6.3 Addendum (Director Review correction 1): tapping
     "👑 Admin Management" must re-open the Admin Panel (/admin), never
     directly invoke /addadmin (an action, not a menu destination)."""
-    from telegram.command_router import route_command
-    from telegram.user_service import UserService
-    from telegram.permissions import PermissionLevel
+    from platform_layer.telegram.command_router import route_command
+    from platform_layer.telegram.user_service import UserService
+    from platform_layer.telegram.permissions import PermissionLevel
 
     monkeypatch.setattr(
-        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
+        "platform_layer.telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
     )
     UserService().register_user("718", username="navadminmgmt")
     UserService().change_language("718", "EN")
@@ -399,12 +399,12 @@ def test_navigation_admin_management_button_reopens_the_admin_panel_not_addadmin
 
 
 def test_navigation_main_to_owner_switches_to_the_owner_submenu_reply_keyboard(monkeypatch):
-    from telegram.command_router import route_command
-    from telegram.user_service import UserService
-    from telegram.permissions import PermissionLevel
+    from platform_layer.telegram.command_router import route_command
+    from platform_layer.telegram.user_service import UserService
+    from platform_layer.telegram.permissions import PermissionLevel
 
     monkeypatch.setattr(
-        "telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
+        "platform_layer.telegram.command_router.get_permission_level", lambda telegram_id: PermissionLevel.OWNER,
     )
     UserService().register_user("715", username="navowner")
     UserService().change_language("715", "EN")
@@ -417,8 +417,8 @@ def test_navigation_main_to_owner_switches_to_the_owner_submenu_reply_keyboard(m
 
 
 def test_navigation_regular_user_does_not_see_the_admin_keyboard():
-    from telegram.command_router import route_command, PERMISSION_DENIED_TEXT
-    from telegram.user_service import UserService
+    from platform_layer.telegram.command_router import route_command, PERMISSION_DENIED_TEXT
+    from platform_layer.telegram.user_service import UserService
 
     UserService().register_user("716", username="navuseradmin")
 
@@ -429,8 +429,8 @@ def test_navigation_regular_user_does_not_see_the_admin_keyboard():
 
 
 def test_navigation_regular_user_does_not_see_the_owner_keyboard():
-    from telegram.command_router import route_command, PERMISSION_DENIED_TEXT
-    from telegram.user_service import UserService
+    from platform_layer.telegram.command_router import route_command, PERMISSION_DENIED_TEXT
+    from platform_layer.telegram.user_service import UserService
 
     UserService().register_user("717", username="navuserowner")
 

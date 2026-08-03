@@ -111,7 +111,7 @@ precedent exactly.
   never calls `DecisionEngine`, never writes to `decision/`/`risk/`/
   `execution/` (Rule 2).
 - No rewrite or duplicate of `ExplanationBuilder`, `ContentEngine`,
-  `media.media_pipeline`, or `broadcast.broadcast_adapter` — all
+  `media_layer.content_manager.media_pipeline`, or `media_layer.telegram_broadcast.broadcast_adapter` — all
   called via their existing public API, byte-for-byte unmodified.
 - No new `Capability` member, no reuse of
   `ai/access/access_control.py`'s `AccessControl` matrix.
@@ -144,13 +144,13 @@ precedent exactly.
   `signals/`, `context/`, `monitoring/`: no changes in any of those
   directories this phase.
 - **Article 9 (Version Compatibility)** — every pre-existing
-  `ExplanationBuilder`/`ContentEngine`/`media.media_pipeline`/
-  `broadcast.broadcast_adapter`/`FeatureFlags`/`TradingAnalysis`
+  `ExplanationBuilder`/`ContentEngine`/`media_layer.content_manager.media_pipeline`/
+  `media_layer.telegram_broadcast.broadcast_adapter`/`FeatureFlags`/`TradingAnalysis`
   public method/field signature is unchanged; `FeatureFlags` gains one
   new field (`enable_chart_intelligence`), zero changed ones.
 - **Article 11 (Foundation Reuse Law)** — TASK 0's audit confirmed
-  `ExplanationBuilder`, `ContentEngine`, `media.media_pipeline`,
-  `broadcast.broadcast_adapter`, and `TradingAnalysis` all already
+  `ExplanationBuilder`, `ContentEngine`, `media_layer.content_manager.media_pipeline`,
+  `media_layer.telegram_broadcast.broadcast_adapter`, and `TradingAnalysis` all already
   existed and were extended-by-call or read type-only, never
   duplicated; the one genuine gap (a Chart Intelligence contract and
   runtime) was added as a new subpackage only after confirming no
@@ -182,7 +182,7 @@ package imports `assistant/`, `voice/`, `knowledge/`, `ai.memory`,
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | `ai/chart_intelligence/` (1, inside existing `ai/`) | — | `ai/` (top-level, unchanged itself) |
-| Modules | `models.py`, `access.py`, `chart_runtime.py`, `trading_analyst_adapter.py`, `content_adapter.py`, `vision_provider_types.py`, `README.md` (7) | `configuration/feature_flags.py` (1) | `ai/explanation/explanation_builder.py`, `explanation_input.py`, `explanation_output.py`, `ai/trading_analyst/models.py`, `ai/content/content_adapter.py`, `media/media_pipeline.py`, `broadcast/broadcast_adapter.py`, `broadcast/broadcast_manager.py` (called/read, not modified) |
+| Modules | `models.py`, `access.py`, `chart_runtime.py`, `trading_analyst_adapter.py`, `content_adapter.py`, `vision_provider_types.py`, `README.md` (7) | `configuration/feature_flags.py` (1) | `ai/explanation/explanation_builder.py`, `explanation_input.py`, `explanation_output.py`, `ai/trading_analyst/models.py`, `ai/content/content_adapter.py`, `media_layer/content_manager/media_pipeline.py`, `media_layer/telegram_broadcast/broadcast_adapter.py`, `media_layer/telegram_broadcast/broadcast_manager.py` (called/read, not modified) |
 | Classes | `ChartRuntime` (1) | — | `ExplanationBuilder`, `ContentEngine`, `MediaManager`, `BroadcastManager`, `TradingAnalysis` (called/read, not modified) |
 | Models | `ChartImageType`, `ChartAnalysisType`, `ChartAnalysisInput`, `ChartAnalysis`, `ChartContext`, `ChartVisionProviderType` (6) | `FeatureFlags` (+1 field) | `ExplanationInput`, `ExplanationOutput`, `ContentResult`, `MediaAsset`, `BroadcastAsset` |
 | Functions | `is_chart_intelligence_enabled_for()`, `analyze()`, `explain()`, `combined_explanation()`, `prepare_content()`, `chart_analysis_to_content_body()`, `has_minimum_context()` (7) | — | `ExplanationBuilder.build()`, `ContentEngine.create()`, `prepare_media_from_content()`, `broadcast_asset_from_content_and_media()`, `BroadcastManager.prepare_broadcast()` |

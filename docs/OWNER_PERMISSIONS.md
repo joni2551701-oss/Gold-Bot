@@ -5,13 +5,13 @@ Observability Foundation, TASK 3). Companion to `docs/AUDIT_SYSTEM.md`.
 
 ## Two separate permission systems — read this before touching either
 
-**`telegram.permissions.PermissionLevel`** (`OWNER`/`ADMIN`/`USER`,
-pre-existing) is **live**: `telegram/command_router.py`'s
+**`platform_layer.telegram.permissions.PermissionLevel`** (`OWNER`/`ADMIN`/`USER`,
+pre-existing) is **live**: `platform_layer/telegram/command_router.py`'s
 `_PERMISSION_RANK` and `_required_level()` gate every real command the
 bot routes today. Do not add values to this enum casually — it is
 load-bearing production code.
 
-**`telegram.owner.owner_roles.OwnerRole`** (`OWNER`/`SUPER_ADMIN`/
+**`platform_layer.telegram.owner.owner_roles.OwnerRole`** (`OWNER`/`SUPER_ADMIN`/
 `ADMIN`/`VIEWER`, new this phase) is a **separate, not-yet-wired**
 hierarchy, built specifically for the future Owner Mode dashboard
 (Phase 59.8). It never imports or modifies `PermissionLevel`, and no
@@ -35,7 +35,7 @@ if is_owner(telegram_id):          # same telegram.permissions.is_owner()
 ```
 
 Never raises — a lookup failure fails closed to `VIEWER`, the same
-posture `telegram.permissions.is_admin()` already uses.
+posture `platform_layer.telegram.permissions.is_admin()` already uses.
 
 ### Reused, not duplicated
 

@@ -53,7 +53,7 @@ conflated, even where one person holds both:
 
 - The **Owner** is the runtime-control principal of the *running
   product*. The Owner acts through the Telegram Owner Panel
-  (`telegram/owner/*_commands.py`, gated by `telegram/owner/security.py`)
+  (`platform_layer/telegram/owner/*_commands.py`, gated by `platform_layer/telegram/owner/security.py`)
   to control safety- and control-critical modules of the live bot
   (emergency state, runtime lifecycle, feature toggles, broadcast
   intent). The Owner's authority is over the *deployed system's

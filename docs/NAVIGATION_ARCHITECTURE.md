@@ -16,7 +16,7 @@ Governed by `communication/decisions/ADR-001.md` and Constitution
 Article 13 (Future First Principle): every component below states its
 compatibility across all five target platforms — Telegram Bot,
 Telegram Mini App, Android, iOS, Desktop — using
-`platforms/capability_model.py`'s existing `SupportStatus` contract
+`platform_layer/platform_service/capability_model.py`'s existing `SupportStatus` contract
 (`SUPPORTED` / `NOT_SUPPORTED` / `PLANNED`, the latter two always with
 a reason). Built on `docs/NAVIGATION_ANALYSIS.md`'s findings; answers
 its six open questions per `communication/decisions/ADR-001.md`.
@@ -38,7 +38,7 @@ client's own Platform Adapter (§8). Everything below is a piece of it.
 
 **Responsibility**: the atomic navigable unit — a destination,
 independent of how any client renders it. Extends
-`platforms/navigation_model.py`'s existing `NavigationNode` (id,
+`platform_layer/platform_service/navigation_model.py`'s existing `NavigationNode` (id,
 label_key, permission, platforms) rather than replacing it (Article 11
 reuse): a Screen adds a `category` (which section it groups under —
 generalizing today's Settings/Admin/Owner/Profile/Signals concept) and
@@ -61,7 +61,7 @@ a Telegram message, or an Android Fragment instance.
 **Responsibility**: the full set of Screens and the valid transitions
 between them — replacing the *implicit* structure hardcoded today
 across `_SECTION_BY_COMMAND`/`_SECTION_LABEL_KEYS`
-(`telegram/reply_keyboard_manager.py`) with an *explicit* directed
+(`platform_layer/telegram/reply_keyboard_manager.py`) with an *explicit* directed
 graph: Screens are nodes, allowed transitions are edges.
 
 **Why a graph, not a tree**: `NavigationNode.children` (TASK-001)
@@ -83,7 +83,7 @@ would force a choice about which parent "owns" it.
 ## 4. Route Registry
 
 **Responsibility**: resolves Analysis open question 1 (destination
-type). Extends `platforms/menu_registry.py`'s existing `MenuRegistry`
+type). Extends `platform_layer/platform_service/menu_registry.py`'s existing `MenuRegistry`
 (Article 11 reuse) with a **target binding** per platform: for a given
 Screen id, what does each platform actually navigate *to* —
 Telegram: a `"/command"` string (today's real mechanism); Mini App: a
@@ -149,16 +149,16 @@ Screens in the Navigation Graph a given user/tier can reach.
 has, or will have, its own identity mechanism — Telegram's
 `telegram_id`, a future Android account/session), but standardize the
 *output* — a platform-agnostic tier concept mirroring
-`telegram/permissions.py`'s `PermissionLevel` (OWNER/ADMIN/USER) values
+`platform_layer/telegram/permissions.py`'s `PermissionLevel` (OWNER/ADMIN/USER) values
 by convention, the same "by convention, not by import" relationship
-`platforms/navigation_model.py`'s `permission` field already has today
+`platform_layer/platform_service/navigation_model.py`'s `permission` field already has today
 (TASK-001). The Navigation Graph itself, not each client individually,
 is what checks a Screen's required tier against the resolved value —
 centralizing the *check*, not the *resolution*.
 
 | Platform | Status | Reason |
 |---|---|---|
-| Telegram Bot | SUPPORTED | `telegram/permissions.py`'s existing `PermissionLevel`/`get_permission_level()` already resolves this; nothing to build, only to reference by convention. |
+| Telegram Bot | SUPPORTED | `platform_layer/telegram/permissions.py`'s existing `PermissionLevel`/`get_permission_level()` already resolves this; nothing to build, only to reference by convention. |
 | Telegram Mini App | PLANNED | Would need its own identity resolution (likely Telegram's own auth data, since Mini Apps run inside Telegram) — not designed here. |
 | Android | PLANNED | Needs an account/session system that doesn't exist yet. |
 | iOS | PLANNED | Same as Android. |
@@ -171,8 +171,8 @@ universal Navigation Graph + Route Registry + Back Stack state and
 executes it however that platform natively works. This is the
 component the Universal UI Abstraction rule's middle arrow
 (`Navigation Layer → Application Layer`) passes through on its way
-to a real client screen. `telegram/reply_keyboard_manager.py` and
-`telegram/keyboards.py` are, conceptually, *today's entire Platform
+to a real client screen. `platform_layer/telegram/reply_keyboard_manager.py` and
+`platform_layer/telegram/keyboards.py` are, conceptually, *today's entire Platform
 Adapter for Telegram* — already built, already tested
 (`tests/telegram/test_keyboards.py`, 38 tests) — but this Architecture
 does **not** propose modifying them; a future, separately-approved
@@ -182,7 +182,7 @@ Freeze stands).
 
 | Platform | Status | Reason |
 |---|---|---|
-| Telegram Bot | SUPPORTED | Already exists today (`telegram/reply_keyboard_manager.py`), just not yet connected to a shared graph — connecting it is explicitly out of scope for this Architecture. |
+| Telegram Bot | SUPPORTED | Already exists today (`platform_layer/telegram/reply_keyboard_manager.py`), just not yet connected to a shared graph — connecting it is explicitly out of scope for this Architecture. |
 | Telegram Mini App | NOT_SUPPORTED | No client exists; future adapter would be a JS/web router. |
 | Android | NOT_SUPPORTED | No client exists; future adapter would use Android's native navigation component. |
 | iOS | NOT_SUPPORTED | No client exists; future adapter would use `UINavigationController`. |
@@ -204,7 +204,7 @@ independently, even for the same user).
 
 | Platform | Status | Reason |
 |---|---|---|
-| Telegram Bot | SUPPORTED | Already implemented this way (`_LAST_SECTION` in `telegram/reply_keyboard_manager.py`). |
+| Telegram Bot | SUPPORTED | Already implemented this way (`_LAST_SECTION` in `platform_layer/telegram/reply_keyboard_manager.py`). |
 | Telegram Mini App | PLANNED | Would use browser/session storage; not built yet. |
 | Android | PLANNED | Would use the OS's own saved-instance-state mechanism; not built yet. |
 | iOS | PLANNED | Would use `UIViewController`'s own state restoration; not built yet. |
@@ -271,7 +271,7 @@ platform that has none.
 ## 13. Platform Capability Mapping
 
 **Responsibility**: the concrete application, to Navigation itself, of
-`platforms/capability_model.py`/`capability_registry.py`/
+`platform_layer/platform_service/capability_model.py`/`capability_registry.py`/
 `cross_platform_checker.py` — already built in TASK-001, reused here
 rather than duplicated (Article 11). Every component above (§2–§12) is,
 in effect, one `ModuleCapabilityRegistry` entry once TASK-002C
@@ -343,7 +343,7 @@ governs. Full record: `communication/decisions/ADR-001.md` through
 **Not explicitly re-answered** (carried forward, still open for
 TASK-002D): Screen Lifecycle's Telegram mismatch (§12) and whether
 Permission Layer's future platform-agnostic tier concept becomes a
-new formal contract or reuses `telegram/permissions.py`'s enum
+new formal contract or reuses `platform_layer/telegram/permissions.py`'s enum
 directly — both deferred to Navigation Implementation (TASK-002D),
 not blocking TASK-002C (Registry).
 
@@ -404,7 +404,7 @@ concern, not Navigation's.
 **Migration Risk**: Low for TASK-002C specifically (additive fields on
 existing `platforms/` dataclasses, no existing behavior changed). The
 real migration risk is deferred to a future, separately-approved task:
-if `telegram/reply_keyboard_manager.py` is ever adapted to consume this
+if `platform_layer/telegram/reply_keyboard_manager.py` is ever adapted to consume this
 Registry internally, that adaptation is the actual risk point — not
 this Architecture or Registry, which stay unwired.
 
@@ -416,7 +416,7 @@ this Architecture or Registry, which stay unwired.
 - `docs/constitution/CONSTITUTION.md` Article 13 — the Future First Principle.
 - `docs/PLATFORM_WORKFLOW.md` — the Universal UI Abstraction rule and
   Director Questions requirement.
-- `docs/PLATFORM_FOUNDATION.md` — `platforms/navigation_model.py`/
+- `docs/PLATFORM_FOUNDATION.md` — `platform_layer/platform_service/navigation_model.py`/
   `menu_registry.py`/`capability_model.py`'s existing foundation this
   architecture extends.
 - `communication/task_queue/TASK-002B.md` — this task's own record.

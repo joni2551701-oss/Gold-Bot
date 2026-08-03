@@ -6,11 +6,11 @@ Foundation, TASK 8/9).
 
 Standalone, ops-facing script. Not part of the trading pipeline or
 Telegram layer -- not imported by core/pipeline.py, main.py,
-telegram/polling.py, or any application module. Meant to be run from
+platform_layer/telegram/polling.py, or any application module. Meant to be run from
 systemd/cron on a VPS (see deploy/systemd/goldbot-healthcheck.timer
 and docs/production_setup.md) to verify the deployment is alive:
 config loads, the database is reachable, the required secrets are
-present, and the two entry-point modules (`main`/`telegram.polling`)
+present, and the two entry-point modules (`main`/`platform_layer.telegram.polling`)
 import cleanly. Never prints a secret's value, only whether it is
 present. Never executes either entry point -- only imports the
 module, so this stays a static "does it start" check, never a real
@@ -85,7 +85,7 @@ def check_main_imports():
 
 def check_telegram_imports():
     try:
-        importlib.import_module("telegram.polling")
+        importlib.import_module("platform_layer.telegram.polling")
         return True, "telegram: OK"
     except Exception as e:
         return False, f"telegram: FAILED ({e})"

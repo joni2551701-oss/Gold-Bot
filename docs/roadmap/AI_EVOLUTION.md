@@ -168,14 +168,14 @@ type-only reads) added. See `docs/PHASE63_6_FREEZE.md`.
 Built Phase 63.7: top-level `media/`'s `MediaManager` (a sibling of
 `ai/`, not `ai/media/` — see `docs/PHASE63_7_AUDIT.md`) extended with
 a deterministic `MediaAsset` surface, alongside its original Owner
-ENABLED/DISABLED intent tracking; `media/models.py` (`MediaAsset`/
+ENABLED/DISABLED intent tracking; `media_layer/content_manager/models.py` (`MediaAsset`/
 `MediaAssetStatus`), `media_adapter.py`/`media_pipeline.py` (Content
 type-only reads) added. See `docs/PHASE63_7_FREEZE.md`.
 
 Built Phase 63.8: top-level `broadcast/`'s `BroadcastManager` (a
 sibling of `ai/`, not `ai/broadcast/` — see `docs/PHASE63_8_AUDIT.md`)
 extended with a deterministic `BroadcastAsset` surface, alongside its
-original `would_broadcast()`/`prepare()`; `broadcast/models.py`
+original `would_broadcast()`/`prepare()`; `media_layer/telegram_broadcast/models.py`
 (`BroadcastStatus`/`BroadcastAsset`, plus `TELEGRAM`/`MINI_APP`
 provider types and `BroadcastTriggerType`), `broadcast_adapter.py`
 (Content/Media type-only reads, optional Persona reference) added.

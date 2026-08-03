@@ -6,7 +6,7 @@
 ## Objective
 
 Not yet scoped. Named in the Director's GoldBot Master Progress table
-(Phase 2 — Platform). Note: `telegram/owner/dashboard.py` already
+(Phase 2 — Platform). Note: `platform_layer/telegram/owner/dashboard.py` already
 exists (Owner-tier `/owner`/`/doctor` panels, per
 `docs/PLATFORM_ARCHITECTURE.md` §8) — this task's brief, when issued,
 should state whether it extends that file or addresses a different

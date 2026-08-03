@@ -1,7 +1,7 @@
 """
 Phase 52 — command argument / input validation tests.
 
-telegram/handlers.py validates every settings-change argument
+platform_layer/telegram/handlers.py validates every settings-change argument
 (/risk, /language, /timeframe, /strategy) against a fixed allowlist
 before calling the service layer -- but no test previously drove that
 validation branch through route_command(); tests/test_user.py only
@@ -13,7 +13,7 @@ checks for admin commands and feedback.
 
 import asyncio
 
-from telegram.command_router import route_command
+from platform_layer.telegram.command_router import route_command
 
 USER_ID = "8201"
 
@@ -55,7 +55,7 @@ def test_strategy_command_rejects_unknown_strategy():
 
 
 def test_addadmin_command_requires_an_argument():
-    from telegram.command_router import PERMISSION_DENIED_TEXT
+    from platform_layer.telegram.command_router import PERMISSION_DENIED_TEXT
 
     # A plain user is denied before argument validation even runs --
     # confirms permission is checked first, not argument shape.

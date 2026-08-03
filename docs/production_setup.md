@@ -82,7 +82,7 @@ New unit files, `deploy/systemd/`:
 
 | File | Type | Purpose |
 |---|---|---|
-| `goldbot-polling.service` | simple, `Restart=always` | Long-running `telegram/polling.py`. Crash → systemd restarts it after 5s. |
+| `goldbot-polling.service` | simple, `Restart=always` | Long-running `platform_layer/telegram/polling.py`. Crash → systemd restarts it after 5s. |
 | `goldbot-pipeline.service` | oneshot | Runs `main.py` once. |
 | `goldbot-pipeline.timer` | timer | Fires `goldbot-pipeline.service` every 5 minutes (mirrors `trading_bot.yml`'s cadence). Use this **or** GitHub Actions, not both against the same database, to avoid overlapping cycles. |
 | `goldbot-healthcheck.service` | oneshot | Runs `scripts/health_check.py`. |
@@ -193,13 +193,13 @@ deployment. `.env.production`'s own header explains this.
 ## 5. Telegram
 
 - **Polling, not webhook.** Confirmed by reading
-  `telegram/polling.py` this phase: `run_polling()` calls aiogram's
+  `platform_layer/telegram/polling.py` this phase: `run_polling()` calls aiogram's
   `dispatcher.start_polling(bot)`, which long-polls
   `api.telegram.org` — there is no `set_webhook()` call anywhere in
   the codebase, and no inbound HTTP listener/port to open on the VPS.
   This means no reverse proxy, TLS certificate, or firewall inbound
   rule is needed for Telegram itself.
-- **Permissions**: three tiers (`telegram/permissions.py`) — OWNER
+- **Permissions**: three tiers (`platform_layer/telegram/permissions.py`) — OWNER
   (from `TELEGRAM_OWNER_ID`, fail-closed if unset), ADMIN (from the
   `admins` database table via `AdminService`), USER (everyone else).
   Unchanged this phase; re-confirmed by reading the module.
@@ -214,7 +214,7 @@ deployment. `.env.production`'s own header explains this.
      owner's own DM `chat_id`, depending on how GoldBot is meant to be
      used).
   4. Additional admins are granted via the `admins` table at runtime
-     (an OWNER-only Telegram command, per `telegram/admin_service.py`)
+     (an OWNER-only Telegram command, per `platform_layer/telegram/admin_service.py`)
      — not via environment variables.
 
 ## 6. Monitoring foundation

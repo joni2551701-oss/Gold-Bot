@@ -91,7 +91,7 @@ lifecycle.
   Intelligence Dependency Principle); `ai/content/broadcast_output.py`'s
   `BroadcastReadyContent` is a locally-defined type, not an import of
   the top-level `broadcast/` package.
-- Not wired into `telegram/command_router.py`, `translation/`,
+- Not wired into `platform_layer/telegram/command_router.py`, `translation/`,
   `media/`, or `broadcast/` this phase — foundation only.
 
 ## Related

@@ -1,7 +1,7 @@
 """PLATFORM-001 -- Universal Navigation model foundation tests (platforms/). TASK-002C adds is_valid_screen_id()/category/content_type tests (ADR-002)."""
 
-from platforms.navigation_model import NavigationNode, is_valid_screen_id
-from platforms.platform_model import PlatformName
+from platform_layer.platform_service.navigation_model import NavigationNode, is_valid_screen_id
+from platform_layer.platform_service.platform_model import PlatformName
 
 
 def test_navigation_node_defaults():
@@ -53,7 +53,7 @@ def test_navigation_model_source_has_no_telegram_or_database_import():
     import ast
     import inspect
 
-    import platforms.navigation_model as module
+    import platform_layer.platform_service.navigation_model as module
 
     tree = ast.parse(inspect.getsource(module))
     imported_roots = set()

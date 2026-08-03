@@ -1,11 +1,11 @@
 """
-Phase 59.8, Owner Control Center -- telegram/owner/control_commands.py
+Phase 59.8, Owner Control Center -- platform_layer/telegram/owner/control_commands.py
 tests. Real RuntimeFeatureManager (backed by real SQLite repositories,
 tests/conftest.py's autouse fresh_database fixture) -- no mocks.
 """
 
-from telegram.owner.control_commands import disable_feature, enable_feature, get_feature_states
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.control_commands import disable_feature, enable_feature, get_feature_states
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 
 
 def test_get_feature_states_returns_a_provider_command_result():

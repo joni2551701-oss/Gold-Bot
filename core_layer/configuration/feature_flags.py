@@ -103,8 +103,8 @@ class FeatureFlags:
         from the prior "GoldBot Core Owner Monitoring Alpha" phase's
         own seven live commands (`/owner_status`, `/health`, `/market`,
         `/signals`, `/errors`, `/pipeline`, `/report`), which are
-        already gated by the live `telegram.permissions`/
-        `telegram.command_router` Owner-only mechanism and read no
+        already gated by the live `platform_layer.telegram.permissions`/
+        `platform_layer.telegram.command_router` Owner-only mechanism and read no
         feature flag at all -- this flag governs only the new
         `/performance` command and the resource/health lines appended
         to `/owner_status`'s own report, not the pre-existing seven.

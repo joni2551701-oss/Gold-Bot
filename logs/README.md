@@ -10,7 +10,7 @@ not a working feature yet.
 
 Today, stdout is genuinely enough: `main.py` runs as a scheduled
 GitHub Actions job (`trading_bot.yml`) whose console output is already
-captured and retained by Actions itself, and `telegram/polling.py`
+captured and retained by Actions itself, and `platform_layer/telegram/polling.py`
 runs as a long-lived process wherever its host process manager (systemd,
 a container runtime, etc.) already captures stdout. File-based logging
 becomes valuable once GoldBot moves to persistent VPS hosting where

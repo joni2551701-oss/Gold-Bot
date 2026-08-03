@@ -2,7 +2,7 @@
 
 SQLite, one file (`database/goldbot.db` by default, `config.Config.DB_PATH`).
 Shared between the two GoldBot processes (`main.py`'s scheduled
-`TradingPipeline` and the long-running `telegram/polling.py`) — see
+`TradingPipeline` and the long-running `platform_layer/telegram/polling.py`) — see
 `docs/telegram_layer.md` for how those two processes relate. For the
 full column-by-column schema, see `docs/database_schema.md`; this
 document is the relationship/architecture map plus the Phase 50
@@ -288,7 +288,7 @@ force-move) rule:
   (`database_layer/user_repository/user_repository.py`) embeds a small lifecycle business
   rule directly in the repository: it promotes a `NEW` user to
   `ACTIVE` as a side effect of recording activity, rather than that
-  decision being made in `telegram/user_service.py`. Low risk as-is
+  decision being made in `platform_layer/telegram/user_service.py`. Low risk as-is
   (well-documented, single call site, test-covered), but is business
   logic living below the service layer.
 - `SignalRepository.update_signal_result()`

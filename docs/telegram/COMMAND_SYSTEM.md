@@ -5,7 +5,7 @@ dispatch mechanism itself (Router → Permission → Handler → Service →
 Repository) already lives in `docs/telegram/TELEGRAM_ARCHITECTURE.md`
 (full detail) and `docs/architecture/TELEGRAM_FLOW.md` (summary) — this
 document does not repeat it. What it adds: the real command catalog,
-`telegram/commands.py`'s three dicts, verified directly against the
+`platform_layer/telegram/commands.py`'s three dicts, verified directly against the
 file.
 
 ## The three command tiers
@@ -27,7 +27,7 @@ OWNER_COMMANDS    (19 entries) — everything ADMIN_COMMANDS implies
 
 ## Dual-listed commands are not a bug
 
-`telegram/commands.py`'s own docstring states the rule directly: the
+`platform_layer/telegram/commands.py`'s own docstring states the rule directly: the
 five `ai_*` informational commands plus `system`/`broadcast`/`owner`
 appear in **both** `OWNER_COMMANDS` and `ADMIN_COMMANDS` because
 `command_router._required_level()` checks `ADMIN_COMMANDS` first —

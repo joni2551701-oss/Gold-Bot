@@ -89,7 +89,7 @@ call), see `docs/HISTORICAL_SYNC.md`'s `sync_historical_candles()`.
 
 ## Owner visibility (foundation only)
 
-`telegram/owner/dataset_commands.py`'s `get_dataset_status()` and
+`platform_layer/telegram/owner/dataset_commands.py`'s `get_dataset_status()` and
 `get_history_status()` report on what's actually stored — see that
 module's own docstring. Neither is wired into the live Telegram bot;
-see `telegram/owner/README.md`.
+see `platform_layer/telegram/owner/README.md`.

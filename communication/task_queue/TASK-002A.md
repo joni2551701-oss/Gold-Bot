@@ -12,7 +12,7 @@ Step 1 of the mandatory "Architecture First" workflow
 (`docs/PLATFORM_WORKFLOW.md`), applied to Navigation. Understand and
 write down: what navigation already exists (Telegram-specific), what
 "universal" needs to mean across five platforms, what constraints
-already exist (the frozen Reply Menu layout, `platforms/navigation_model.py`'s
+already exist (the frozen Reply Menu layout, `platform_layer/platform_service/navigation_model.py`'s
 existing but unwired contract), and what open questions Architecture
 (TASK-002B) will need to resolve. No architecture proposal, no code,
 no new API, no folder structure change — analysis only.

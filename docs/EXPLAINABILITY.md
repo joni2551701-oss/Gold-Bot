@@ -92,7 +92,7 @@ to report even if this module wanted to.
   is relayed, not recomputed.
 - Does not call an AI model — no GPT/Gemini integration; `ai/` is
   unmodified.
-- Does not change the Telegram message format — `telegram/signal_formatter.py`
+- Does not change the Telegram message format — `platform_layer/telegram/signal_formatter.py`
   is unmodified; enriching the actual delivered message with
   `SignalExplanation` is a future, separate step.
 - Does not persist explanations — no schema change, no new table.
@@ -153,6 +153,6 @@ plumbing needed to make it available once a real AI implementation
 exists, only a decision (out of this phase's scope) to read it.
 
 A second, more direct future use: enriching the actual Telegram
-message (`telegram/signal_formatter.py`) with the reasons list, so a
+message (`platform_layer/telegram/signal_formatter.py`) with the reasons list, so a
 trader sees *why* a signal fired, not only that it did — also not
 implemented in this phase.

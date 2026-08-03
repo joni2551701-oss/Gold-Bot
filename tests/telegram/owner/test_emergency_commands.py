@@ -1,17 +1,17 @@
 """
-Phase 59.9, TASK 7 -- telegram/owner/emergency_commands.py tests.
+Phase 59.9, TASK 7 -- platform_layer/telegram/owner/emergency_commands.py tests.
 Real repositories (SQLite, tests/conftest.py's autouse fresh_database
 fixture) -- no mocks.
 """
 
-from telegram.owner.emergency_commands import (
+from platform_layer.telegram.owner.emergency_commands import (
     get_emergency_status,
     kill_system,
     maintenance_on,
     pause_system,
     restore_system,
 )
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 
 
 def test_get_emergency_status_defaults_to_normal():

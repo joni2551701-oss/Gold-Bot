@@ -26,9 +26,9 @@ milestone.
      Decisions Policy — followed at every sub-task).
 
 2. **Code Audit**
-   - Frozen Contracts — confirm `platforms/navigation_core.py`,
-     `platforms/platform_adapter.py`, `platforms/navigation_events.py`,
-     `platforms/menu_registry.py` (and TASK-001's four foundation
+   - Frozen Contracts — confirm `platform_layer/platform_service/navigation_core.py`,
+     `platform_layer/platform_service/platform_adapter.py`, `platform_layer/platform_service/navigation_events.py`,
+     `platform_layer/platform_service/menu_registry.py` (and TASK-001's four foundation
      files) are unchanged since their respective freeze points.
    - Public Interfaces — every public class/function signature across
      `platforms/` reviewed for stability and correctness.

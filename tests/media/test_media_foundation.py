@@ -1,8 +1,8 @@
 """Phase 63.0 TASK 5 — Media Foundation. No TTS/voice/image/video processing anywhere -- Owner-set intent only."""
 
-from media.media_manager import MediaManager
-from media.media_registry import build_media_registry
-from media.media_types import MediaType
+from media_layer.content_manager.media_manager import MediaManager
+from media_layer.content_manager.media_registry import build_media_registry
+from media_layer.content_manager.media_types import MediaType
 
 
 def test_media_registry_has_all_five_director_named_types():

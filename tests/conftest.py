@@ -41,7 +41,7 @@ def fresh_database(tmp_path):
 @pytest.fixture
 def test_user():
     """A freshly registered FREE-plan user. Returns the UserRecord."""
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
 
     result = UserService().register_user("8001", username="fixture_user")
     assert result.success is True
@@ -51,8 +51,8 @@ def test_user():
 @pytest.fixture
 def premium_user():
     """A registered user with an active PREMIUM subscription."""
-    from telegram.user_service import UserService
-    from telegram.subscription_service import SubscriptionService
+    from platform_layer.telegram.user_service import UserService
+    from platform_layer.telegram.subscription_service import SubscriptionService
     from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     telegram_id = "8002"
@@ -65,8 +65,8 @@ def premium_user():
 @pytest.fixture
 def vip_user():
     """A registered user with an active VIP subscription."""
-    from telegram.user_service import UserService
-    from telegram.subscription_service import SubscriptionService
+    from platform_layer.telegram.user_service import UserService
+    from platform_layer.telegram.subscription_service import SubscriptionService
     from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     telegram_id = "8003"
@@ -79,7 +79,7 @@ def vip_user():
 @pytest.fixture
 def admin_user():
     """A registered user who is also an ADMIN (not OWNER)."""
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
     from database_layer.user_repository.admin_repository import AdminRepository
 
     telegram_id = "8004"
@@ -93,9 +93,9 @@ def owner_user():
     """
     The configured OWNER. Uses TELEGRAM_OWNER_ID ("111", set above) --
     OWNER status comes from that env var alone (core/secrets.py /
-    telegram/permissions.py), never from an 'admins' table row.
+    platform_layer/telegram/permissions.py), never from an 'admins' table row.
     """
-    from telegram.user_service import UserService
+    from platform_layer.telegram.user_service import UserService
 
     telegram_id = "111"
     UserService().register_user(telegram_id, username="fixture_owner")

@@ -42,18 +42,18 @@ Article 1).
 ## Pattern 2 — Adding a new Telegram command
 
 1. **Command file** — add the command's name to the relevant list in
-   `telegram/commands.py` (e.g. `OWNER_COMMANDS`) rather than creating
+   `platform_layer/telegram/commands.py` (e.g. `OWNER_COMMANDS`) rather than creating
    a new command registry.
-2. **Permission** — declare who may run it in `telegram/permissions.py`.
+2. **Permission** — declare who may run it in `platform_layer/telegram/permissions.py`.
 3. **Service** — implement the business logic in the appropriate
    `telegram/*_service.py` or, for Owner-only tooling, a file under
-   `telegram/owner/*.py`. If the command needs data, the service calls
+   `platform_layer/telegram/owner/*.py`. If the command needs data, the service calls
    a `database/*_repository.py` — never raw SQL in the service, never
    a handler touching the database directly (Constitution Article 4).
-4. **Handler** — add `<command>_handler()` to `telegram/handlers.py`
+4. **Handler** — add `<command>_handler()` to `platform_layer/telegram/handlers.py`
    (or the owner module it belongs to), matching the exact
    `getattr(handlers, f"{command}_handler")` dispatch convention
-   `telegram/command_router.py` already uses. A handler name that
+   `platform_layer/telegram/command_router.py` already uses. A handler name that
    doesn't match this pattern is silently never called — verify the
    name before writing tests, not after (this exact mistake was
    caught and fixed once already, in Phase 61.7).
@@ -65,7 +65,7 @@ Article 1).
 ## What never changes for either pattern
 
 - No new top-level package for a single capability or command — it
-  belongs inside an existing package (`ai/*`, `telegram/owner/*`), per
+  belongs inside an existing package (`ai/*`, `platform_layer/telegram/owner/*`), per
   Constitution Article 7's "a new top-level package is the
   highest-cost option and should be rare."
 - No AI capability or Telegram command reaches into `decision/`,

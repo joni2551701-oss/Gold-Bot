@@ -1,16 +1,16 @@
 """
-Phase 60.6, TASK 8 -- telegram/owner/learning_commands.py tests. No
+Phase 60.6, TASK 8 -- platform_layer/telegram/owner/learning_commands.py tests. No
 mocks: real LearningRecord construction, same convention as every
-other telegram/owner/ test.
+other platform_layer/telegram/owner/ test.
 """
 
-from telegram.owner.learning_commands import (
+from platform_layer.telegram.owner.learning_commands import (
     get_best_conditions_report,
     get_failures_report,
     get_learning_status,
     get_patterns_report,
 )
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 from learning.models import create_learning_record
 
 

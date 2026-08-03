@@ -7,7 +7,7 @@ strategy, risk style, language -- so a personalized response doesn't
 require re-deriving that from raw database rows on every call.
 
 Distinct from database.user_models.UserRecord (the real,
-database-backed settings record telegram/user_service.py reads and
+database-backed settings record platform_layer/telegram/user_service.py reads and
 writes): UserRecord is the source of truth for a user's actual
 settings; AIUserProfile is a lightweight, AI-facing *projection* of a
 subset of that data, plus fields (experience_level) that don't exist

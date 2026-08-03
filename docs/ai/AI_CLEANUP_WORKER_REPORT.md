@@ -60,7 +60,7 @@ discipline this task itself enforced on `TradeJournalEntry`.)*
 `git add -A` → pyflakes (clean) → compileall (pass) → pytest
 (4609 passed) → `python main.py` (OK, baseline log shape) →
 `git status` clean → `git diff --cached` reviewed. 46 files changed,
-all under `ai/`, `broadcast/`, `telegram/owner/`, `tests/`.
+all under `ai/`, `broadcast/`, `platform_layer/telegram/owner/`, `tests/`.
 
 ## Handoff to the next task
 

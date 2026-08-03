@@ -20,7 +20,7 @@ isolation):
    analyze, exactly as `ai/interfaces.py`'s `AIAnalyzerInterface`
    already requires.
 3. New code extends existing foundation (`ai/runtime/`,
-   `ai/providers/`, `ai/audit/`, `telegram/owner/`) — no new parallel
+   `ai/providers/`, `ai/audit/`, `platform_layer/telegram/owner/`) — no new parallel
    manager.
 4. No duplicate state — provider state lives only in
    `ai.providers.provider_manager.ProviderManager`/
@@ -144,7 +144,7 @@ other:
 | Subscriber | Listens for | Purpose |
 |---|---|---|
 | `RuntimeMetricsCollector` (`ai/audit/provider_stats.py`) | `CacheHit`/`CacheMiss`/`ValidationFailed`/`ProviderFailed`/`ProviderChanged` | accumulate runtime metrics |
-| `RuntimeNotifier` (`telegram/owner/runtime_notifications.py`) | `ProviderFailed` (circuit-driven only)/`ProviderRecovered`/`RuntimeFailed` | queue Owner alerts |
+| `RuntimeNotifier` (`platform_layer/telegram/owner/runtime_notifications.py`) | `ProviderFailed` (circuit-driven only)/`ProviderRecovered`/`RuntimeFailed` | queue Owner alerts |
 
 `ai_service.py` never imports `provider_stats.py` or
 `runtime_notifications.py`; neither of those imports `ai_service.py`.
@@ -154,7 +154,7 @@ wiring change — the additive event-publish calls never altered
 
 ## Owner Runtime Dashboard (TASK 6)
 
-`telegram/owner/runtime_commands.py` (new file — a genuinely distinct
+`platform_layer/telegram/owner/runtime_commands.py` (new file — a genuinely distinct
 concern from `dashboard.py`'s cross-cutting summary/diagnostic
 functions and `ai_commands.py`'s capability/provider CRUD, matching
 this codebase's established "one `*_commands.py` file per feature
@@ -167,10 +167,10 @@ area" convention):
 - `/runtime_metrics` → `runtime_metrics()` — a `RuntimeMetrics`
   snapshot.
 
-Wired via `telegram/commands.py`'s `OWNER_COMMANDS` (OWNER-only, not
+Wired via `platform_layer/telegram/commands.py`'s `OWNER_COMMANDS` (OWNER-only, not
 dual-listed with `ADMIN_COMMANDS` — unlike the AI product-facing
 commands, these expose internal runtime detail, matching `doctor`'s
-own posture) and `telegram/handlers.py`'s `{command}_handler`
+own posture) and `platform_layer/telegram/handlers.py`'s `{command}_handler`
 functions — no `command_router.py` change (registry-driven dispatch
 via `getattr(handlers, f"{command}_handler")`, reconfirmed).
 
@@ -198,12 +198,12 @@ into these functions to make them reflect real, accumulated state.
 
 ## Runtime Notification Layer (TASK 7)
 
-`telegram/owner/runtime_notifications.py` (new — a push-based concern,
+`platform_layer/telegram/owner/runtime_notifications.py` (new — a push-based concern,
 genuinely different from every pull-based `*_commands.py` module):
 `RuntimeNotifier` (an `EventBus` subscriber that queues `RuntimeAlert`s,
 drained via `drain()`), `evaluate_high_cost()`/`evaluate_cache_disabled()`
 (pure evaluator functions, no `EventBus`), `deliver_alerts()` (Owner-only
-delivery via the existing `telegram.notifier.Notifier`).
+delivery via the existing `platform_layer.telegram.notifier.Notifier`).
 
 Six alert conditions (the Director's own list), three sourcing
 strategies:
@@ -328,5 +328,5 @@ phase.
 `tests/ai/runtime/test_runtime_profiles.py`,
 `tests/ai/providers/test_provider_circuit_breaker.py`,
 `tests/ai/audit/test_runtime_metrics.py`,
-`tests/telegram/owner/test_runtime_commands.py`,
-`tests/telegram/owner/test_runtime_notifications.py`.
+`tests/platform_layer/telegram/owner/test_runtime_commands.py`,
+`tests/platform_layer/telegram/owner/test_runtime_notifications.py`.

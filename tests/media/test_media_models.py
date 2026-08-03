@@ -1,7 +1,7 @@
-"""Phase 63.7 TASK 1 — media/models.py: MediaAsset/MediaAssetStatus."""
+"""Phase 63.7 TASK 1 — media_layer/content_manager/models.py: MediaAsset/MediaAssetStatus."""
 
-from media.media_types import MediaType
-from media.models import MediaAsset, MediaAssetStatus
+from media_layer.content_manager.media_types import MediaType
+from media_layer.content_manager.models import MediaAsset, MediaAssetStatus
 
 
 def _asset(**overrides):

@@ -68,7 +68,7 @@ class Secrets:
     @property
     def TELEGRAM_OWNER_ID(self) -> str:
         """
-        Telegram user_id of the bot owner, used by telegram/permissions.py.
+        Telegram user_id of the bot owner, used by platform_layer/telegram/permissions.py.
         Defaults to "" (no owner configured) instead of raising -- the
         permission layer must fail closed (nobody is OWNER), not crash.
         """

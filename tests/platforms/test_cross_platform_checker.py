@@ -1,8 +1,8 @@
 """PLATFORM-001 -- Cross Platform Checker foundation tests (platforms/)."""
 
-from platforms.capability_model import PlatformCapability, SupportStatus
-from platforms.platform_model import PlatformName
-from platforms.cross_platform_checker import (
+from platform_layer.platform_service.capability_model import PlatformCapability, SupportStatus
+from platform_layer.platform_service.platform_model import PlatformName
+from platform_layer.platform_service.cross_platform_checker import (
     check_module_capabilities,
     format_capability_violations,
 )

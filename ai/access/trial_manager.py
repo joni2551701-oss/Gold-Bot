@@ -19,7 +19,7 @@ whether the requesting `telegram_id` has ever started a trial before
 `trial_status_from_started_at()` (Phase 61.5 TASK 4) extracts
 `status_of()`'s own started_at-vs-now calculation into a stateless
 function, per the Module Reuse Principle (extend before creating new):
-`telegram/user_service.py`'s real, *persisted* registration flow
+`platform_layer/telegram/user_service.py`'s real, *persisted* registration flow
 (`UserRecord.trial_started_at`, a real column, unlike this class's
 in-memory `_trials` dict) needs the exact same "started_at + duration
 vs now -> active/expires_at" math this class already had, so it is
@@ -55,7 +55,7 @@ def trial_status_from_started_at(
     """
     Stateless: no `telegram_id`, no dict lookup -- a caller (in-memory
     `TrialManager.status_of()` below, or a database-backed caller like
-    `telegram/user_service.py`) supplies `started_at` directly. Never
+    `platform_layer/telegram/user_service.py`) supplies `started_at` directly. Never
     raises: `started_at=None` (no trial recorded/started yet) reports
     active=False, expires_at=None, exactly matching
     `TrialManager.status_of()`'s own prior no-record behavior.

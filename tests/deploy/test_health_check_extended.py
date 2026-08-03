@@ -43,7 +43,7 @@ def test_check_main_imports_reports_failure_on_import_error(monkeypatch):
 
 def test_check_telegram_imports_reports_failure_on_import_error(monkeypatch):
     def _fake_import_module(name, *args, **kwargs):
-        if name == "telegram.polling":
+        if name == "platform_layer.telegram.polling":
             raise ImportError("simulated import failure")
         return importlib.import_module(name, *args, **kwargs)
 

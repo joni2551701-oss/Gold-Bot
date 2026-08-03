@@ -89,7 +89,7 @@ are the exact same shape applied to three more upstream types — adding
 them to the existing file is the correct extension (Module Reuse
 Principle step 2), not a new module.
 
-`broadcast.models.BroadcastAsset` carries no narration text of its own
+`media_layer.telegram_broadcast.models.BroadcastAsset` carries no narration text of its own
 (only `content_id`/`media_id` free-text references, per its own
 docstring's "never carry another package's object graph" posture) —
 `broadcast_asset_to_voice_request()` therefore takes the narration

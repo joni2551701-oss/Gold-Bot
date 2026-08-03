@@ -6,7 +6,7 @@ EN -> whatever entry exists, never raising, a missing key surfacing
 itself rather than crashing or silently disappearing.
 """
 
-from translation.ui_catalog import t
+from media_layer.translation.ui_catalog import t
 
 
 def test_t_returns_the_requested_language():
@@ -42,7 +42,7 @@ def test_t_returns_the_key_itself_for_an_unknown_key():
 
 
 def test_every_catalog_entry_has_uz_ru_and_en():
-    from translation.ui_catalog import _CATALOG
+    from media_layer.translation.ui_catalog import _CATALOG
 
     for key, entry in _CATALOG.items():
         assert "UZ" in entry, f"{key} missing UZ"

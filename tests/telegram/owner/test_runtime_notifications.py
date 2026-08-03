@@ -2,7 +2,7 @@
 
 from ai.audit.provider_stats import ProviderStats
 from ai.event_bus import EventBus, EventType, RuntimeEvent
-from telegram.owner.runtime_notifications import (
+from platform_layer.telegram.owner.runtime_notifications import (
     RuntimeNotifier,
     deliver_alerts,
     evaluate_cache_disabled,

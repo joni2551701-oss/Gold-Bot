@@ -41,12 +41,12 @@ Owner Telegram Panel
 | Area | Model | Module | Command |
 |------|-------|--------|---------|
 | System health | `core_layer.health_monitor.models.SystemHealth` | `core_layer/health_monitor/system_monitor.py` | `/owner_status` |
-| Full diagnostics | (reuses `AdminService` + provider registry) | `telegram/owner/system_commands.py` (existing, now wired) | `/health` |
+| Full diagnostics | (reuses `AdminService` + provider registry) | `platform_layer/telegram/owner/system_commands.py` (existing, now wired) | `/health` |
 | Market data | `core_layer.health_monitor.models.MarketHealth` | `core_layer/health_monitor/market_monitor.py` | `/market` |
 | Signal activity | `core_layer.health_monitor.models.SignalHealth` | `core_layer/health_monitor/signal_monitor.py` | `/signals` |
 | Errors | `core_layer.health_monitor.models.ErrorEvent` | `core_layer/health_monitor/error_monitor.py` | `/errors` |
 | Decision pipeline trace | `core_layer.health_monitor.models.DecisionPipelineEntry` (+ Phase B.0's own `stage_durations_ms`) | `decision_layer/decision_logger/decision_logger.py` | `/pipeline` |
-| Daily digest | (composes the above) | `telegram/owner/monitoring_commands.py` | `/report` |
+| Daily digest | (composes the above) | `platform_layer/telegram/owner/monitoring_commands.py` | `/report` |
 | Resource metrics (CPU/RAM/threads/restarts/heartbeat) | `core_layer.health_monitor.models.ResourceSnapshot` | `core_layer/health_monitor/resource_monitor.py` (Phase B.0) | appended to `/owner_status` |
 | Overall health classification (OK/WARNING/CRITICAL) | `core_layer.health_monitor.models.HealthStatus` | `core_layer/health_monitor/health_monitor.py` (Phase B.0) | appended to `/owner_status` |
 | Performance counters (raw tallies, never computed) | `core_layer.health_monitor.models.PerformanceCounters` | `core_layer/health_monitor/performance_collector.py` (Phase B.0) | `/performance` |
@@ -73,10 +73,10 @@ Owner Telegram Panel
 
 The brief's own worked example names the System Health command
 `/status`. `/status` is already a live, public, USER-level command
-(`telegram/handlers.py`'s `status_handler`, "GoldBot is running.",
-registered in `telegram.commands.COMMANDS`). Command names are never
+(`platform_layer/telegram/handlers.py`'s `status_handler`, "GoldBot is running.",
+registered in `platform_layer.telegram.commands.COMMANDS`). Command names are never
 renamed or reused (Article 9). The Owner-only richer version is named
-`/owner_status` instead — see `telegram/handlers.py`'s
+`/owner_status` instead — see `platform_layer/telegram/handlers.py`'s
 `owner_status_handler` docstring for the same note in code.
 
 ## Architecture
@@ -113,7 +113,7 @@ database/
                             (monitoring_error_events, monitoring_decision_pipeline,
                             monitoring_process_starts)
 
-telegram/owner/
+platform_layer/telegram/owner/
   monitoring_commands.py  get_status_report() (+ Phase B.0's own appended
                           resource/health lines when enable_owner_monitoring is
                           on)/get_health_report()/get_market_report()/
@@ -124,7 +124,7 @@ telegram/owner/
 
 `SystemHealth`/`MarketHealth`/`SignalHealth` are **computed live, on
 demand** — no new table for any of the three (matching the existing
-`AdminService.get_system_status()`/`telegram.owner.system_commands.get_system_health()`/
+`AdminService.get_system_status()`/`platform_layer.telegram.owner.system_commands.get_system_health()`/
 `core_layer.health_monitor.performance.PerformanceTracker.calculate()` precedent).
 Only `ErrorEvent` and `DecisionPipelineEntry` are persisted, because
 both need to survive a process restart (an error history, and the
@@ -150,12 +150,12 @@ pure-function only).
 
 ## Security
 
-Gated by the existing, live mechanism: `telegram.permissions.is_owner()`
-(env var `TELEGRAM_OWNER_ID`, singular) + `telegram.command_router`'s
-rank-based gate + `telegram.commands.OWNER_COMMANDS` registration —
+Gated by the existing, live mechanism: `platform_layer.telegram.permissions.is_owner()`
+(env var `TELEGRAM_OWNER_ID`, singular) + `platform_layer.telegram.command_router`'s
+rank-based gate + `platform_layer.telegram.commands.OWNER_COMMANDS` registration —
 the same mechanism every other Owner-only command (`/owner`, `/doctor`,
 `/runtime`, etc.) already uses. No new `access_control.py` was
-created; `telegram/owner/security.py`'s own `OwnerRole`/`require_role()`
+created; `platform_layer/telegram/owner/security.py`'s own `OwnerRole`/`require_role()`
 foundation (a separate, four-tier hierarchy, not enforced anywhere)
 was reviewed but is out of scope — this phase's own brief says "Hozir:
 faqat OWNER ishlaydi" (only OWNER works for now), which the live gate
@@ -173,7 +173,7 @@ already satisfies exactly.
   the same "read type-only, never import the class" pattern the AI
   Layer's own `ai/coaching/journal_adapter.py` (Phase 66.4) already
   established for a comparable boundary.
-- `telegram/owner/security.py`'s dormant `OwnerRole` (OWNER/
+- `platform_layer/telegram/owner/security.py`'s dormant `OwnerRole` (OWNER/
   SUPER_ADMIN/ADMIN/VIEWER) remains available for a future phase that
   needs finer-grained Owner-panel roles.
 

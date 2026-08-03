@@ -38,7 +38,7 @@ def test_unit_has_install_section():
 
 
 def test_unit_type_is_simple():
-    """Long-running process (telegram.polling), not oneshot."""
+    """Long-running process (platform_layer.telegram.polling), not oneshot."""
     text = _unit_text()
     assert "Type=simple" in text
 

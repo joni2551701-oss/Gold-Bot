@@ -1,13 +1,13 @@
 """
-Phase 60.2, TASK 5 -- telegram/owner/backtest_commands.py tests. Real
+Phase 60.2, TASK 5 -- platform_layer/telegram/owner/backtest_commands.py tests. Real
 repositories (SQLite, tests/conftest.py's autouse fresh_database
 fixture) -- no mocks.
 """
 
 from datetime import datetime, timedelta, timezone
 
-from telegram.owner.backtest_commands import backtest_run
-from telegram.owner.provider_commands import ProviderCommandResult
+from platform_layer.telegram.owner.backtest_commands import backtest_run
+from platform_layer.telegram.owner.provider_commands import ProviderCommandResult
 from database_layer.market_repository.raw_candle_models import create_raw_candle
 from database_layer.market_repository.raw_candle_repository import RawCandleRepository
 

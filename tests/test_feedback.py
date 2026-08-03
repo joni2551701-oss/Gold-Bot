@@ -6,7 +6,7 @@ import asyncio
 
 
 def test_send_feedback_creates_open_entry():
-    from telegram.feedback_service import FeedbackService
+    from platform_layer.telegram.feedback_service import FeedbackService
 
     result = FeedbackService().send_feedback("300", "Great signal quality")
     assert result.success is True
@@ -15,7 +15,7 @@ def test_send_feedback_creates_open_entry():
 
 
 def test_send_feedback_rejects_empty_message():
-    from telegram.feedback_service import FeedbackService
+    from platform_layer.telegram.feedback_service import FeedbackService
 
     result = FeedbackService().send_feedback("301", "   ")
     assert result.success is False
@@ -23,7 +23,7 @@ def test_send_feedback_rejects_empty_message():
 
 
 def test_resolve_feedback_transitions_status():
-    from telegram.feedback_service import FeedbackService
+    from platform_layer.telegram.feedback_service import FeedbackService
 
     service = FeedbackService()
     created = service.send_feedback("302", "Bug found in signal").feedback
@@ -38,7 +38,7 @@ def test_resolve_feedback_transitions_status():
 
 
 def test_resolve_feedback_rejects_invalid_status():
-    from telegram.feedback_service import FeedbackService
+    from platform_layer.telegram.feedback_service import FeedbackService
 
     service = FeedbackService()
     created = service.send_feedback("303", "test").feedback
@@ -48,7 +48,7 @@ def test_resolve_feedback_rejects_invalid_status():
 
 
 def test_get_feedback_list_newest_first():
-    from telegram.feedback_service import FeedbackService
+    from platform_layer.telegram.feedback_service import FeedbackService
 
     service = FeedbackService()
     service.send_feedback("304", "first")
@@ -61,7 +61,7 @@ def test_get_feedback_list_newest_first():
 
 
 def test_feedback_handler_end_to_end_via_command_router():
-    from telegram.command_router import route_command
+    from platform_layer.telegram.command_router import route_command
 
     async def scenario():
         r = await route_command("/feedback Signal juda yaxshi", telegram_id="305")
@@ -73,8 +73,8 @@ def test_feedback_handler_end_to_end_via_command_router():
 
 
 def test_admin_get_feedback_matches_service():
-    from telegram.feedback_service import FeedbackService
-    from telegram.admin_service import AdminService
+    from platform_layer.telegram.feedback_service import FeedbackService
+    from platform_layer.telegram.admin_service import AdminService
 
     FeedbackService().send_feedback("306", "admin visibility check")
 

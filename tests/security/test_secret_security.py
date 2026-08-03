@@ -54,12 +54,12 @@ def test_telegram_bot_init_failure_log_does_not_contain_the_token_value(monkeypa
     underlying Bot() construction is forced to fail -- the resulting
     log line must describe the failure, never echo the token itself.
     """
-    from telegram.bot import TelegramBot
+    from platform_layer.telegram.bot import TelegramBot
 
     fake_token = "123456789:AAFakeTokenThatMustNeverAppearInLogsXYZ"
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", fake_token)
     monkeypatch.setattr(
-        "telegram.bot.Bot",
+        "platform_layer.telegram.bot.Bot",
         lambda *a, **k: (_ for _ in ()).throw(ValueError("simulated aiogram construction failure")),
     )
 
@@ -89,13 +89,13 @@ def test_market_data_normalizer_error_log_does_not_contain_the_api_key(monkeypat
 
 def test_handler_error_responses_never_contain_a_secret_value(monkeypatch):
     """
-    telegram/handlers.py's f"...: {e}" error responses echo the
+    platform_layer/telegram/handlers.py's f"...: {e}" error responses echo the
     *exception message*, not any secret -- confirm no code path can
     smuggle a secret into an exception raised from user-facing service
     calls.
     """
     import asyncio
-    from telegram.command_router import route_command
+    from platform_layer.telegram.command_router import route_command
 
     fake_owner_id = "SUPER_SECRET_OWNER_TOKEN_abc123"
     monkeypatch.setenv("TELEGRAM_OWNER_ID", fake_owner_id)

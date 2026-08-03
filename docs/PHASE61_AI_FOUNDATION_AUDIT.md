@@ -29,7 +29,7 @@ are each justified below by the "Cannot reuse" rows that name them.
 | `ai/providers/` | Cannot reuse — new (TASK 3) | `ai/ai_analyzer.py`/`ai/ai_prompt.py` are both single-provider-shaped (heuristic stub / Gemini-specific) with no vendor-selection abstraction. `ai/interfaces.py`'s `AIAnalyzerInterface` defines the *analysis* contract shape but has no notion of multiple named providers, a registry, or selection logic. Genuinely new. |
 | `ai/router/` | Cannot reuse — new (TASK 4) | Nothing in the codebase today maps a capability to a provider; this selection logic does not exist anywhere else. |
 | `ai/context/` | Cannot reuse as a single module — new, but composes existing types | No existing module combines `MarketContext` + `SignalSchema` + `AIUserProfile` + `TradeJournalEntry` + `LearningContext` into one caller-facing `AIContext`. The new module's job is composition of the above already-existing types, not reimplementation of any of them. |
-| `ai/access/` | Cannot reuse — new (TASK 6) | See `telegram/owner/owner_roles.py` and `database_layer/database_manager/models.py` below — a role hierarchy exists, but no capability-permission matrix exists anywhere. |
+| `ai/access/` | Cannot reuse — new (TASK 6) | See `platform_layer/telegram/owner/owner_roles.py` and `database_layer/database_manager/models.py` below — a role hierarchy exists, but no capability-permission matrix exists anywhere. |
 | `ai/session/` | Cannot reuse — new (TASK 7) | See `ai/memory/context_memory.py` above. |
 | `ai/tools/` | Cannot reuse — new (TASK 8) | No tool-interface abstraction exists in the codebase; `context/`, `analytics/`, and `data/` modules are called directly by their own owners today, never through an AI-facing tool contract. |
 | `ai/audit/` | Cannot reuse — new (TASK 9) | `database_layer/audit_log/audit_log_repository.py` (see below) audits owner/runtime actions, not AI provider calls (latency/token/cost/capability has no existing home). |
@@ -55,13 +55,13 @@ are each justified below by the "Cannot reuse" rows that name them.
 | `database_layer/database_manager/models.py` (`plan` column: `'FREE'` / presumably `'PREMIUM'`/`'VIP'` string values, no dedicated enum class) | Can extend / read, not modify | TASK 6's role dimension is `OWNER`/`ADMIN`/`VIP`/`PREMIUM`/`FREE`. No `SubscriptionTier` enum exists in `database_layer/database_manager/models.py` today — subscription `plan` is a free-text column. `ai/access/permissions.py` defines its own `Role` enum for this purpose (naming it distinctly, e.g. `AIRole`, to avoid colliding with any future real enum) rather than retrofitting a typed enum onto the existing string column, which is out of this phase's scope (`database/` schema changes are not named in TASK 1-9). |
 | `database_layer/user_repository/admin_repository.py`, `database_layer/user_repository/user_repository.py`, `database_layer/user_repository/subscription_repository.py` | Already exists, not called this phase | `ai/access/` is a foundation permission-matrix module only (Role × Capability → allowed/denied), not wired to read a real user's actual role from the database this phase — same "foundation, not yet live-wired" posture as every prior Phase 59-60 module. A future integration phase connects `ai/access/` to these repositories. |
 
-## `telegram/owner/`
+## `platform_layer/telegram/owner/`
 
 | Module | Status | Reason |
 |---|---|---|
-| `telegram/owner/owner_roles.py` (`OwnerRole`: OWNER/SUPER_ADMIN/ADMIN/VIEWER) | Cannot reuse directly for TASK 6 | Named and scoped for the Owner Dashboard's admin hierarchy specifically (`resolve_owner_role()` reads `telegram.permissions.is_owner()` + the `admins` table). TASK 6's Role axis is user-subscription-shaped (`OWNER`/`ADMIN`/`VIP`/`PREMIUM`/`FREE` — a different set: VIP/PREMIUM/FREE are subscription tiers, not admin tiers, and do not exist in `OwnerRole` at all). Importing/aliasing `OwnerRole` would conflate two genuinely different hierarchies (admin-console access vs. AI-capability entitlement) — same disambiguation-by-naming precedent used throughout this codebase (e.g. `AIAnalysisResult` vs `AIResponse`). `ai/access/permissions.py` defines its own enum. |
-| No existing `telegram/owner/ai_*.py` command module | Confirmed absent | Grep across `telegram/owner/*.py` found no AI-related owner command file — TASK 2-9 have no existing owner-command surface to extend, and per the brief none is added this phase (foundation only, no live wiring). |
-| `telegram/permissions.py` (`PermissionLevel`: OWNER/ADMIN/USER, live-wired into `command_router.py`) | Cannot reuse directly | Real, live permission gate for Telegram command routing — a three-level hierarchy, not the five-level subscription-shaped Role TASK 6 needs. Same reasoning as `OwnerRole` above: a new, purpose-built enum in `ai/access/` avoids overloading a live-wired type with a foundation-only concern. |
+| `platform_layer/telegram/owner/owner_roles.py` (`OwnerRole`: OWNER/SUPER_ADMIN/ADMIN/VIEWER) | Cannot reuse directly for TASK 6 | Named and scoped for the Owner Dashboard's admin hierarchy specifically (`resolve_owner_role()` reads `platform_layer.telegram.permissions.is_owner()` + the `admins` table). TASK 6's Role axis is user-subscription-shaped (`OWNER`/`ADMIN`/`VIP`/`PREMIUM`/`FREE` — a different set: VIP/PREMIUM/FREE are subscription tiers, not admin tiers, and do not exist in `OwnerRole` at all). Importing/aliasing `OwnerRole` would conflate two genuinely different hierarchies (admin-console access vs. AI-capability entitlement) — same disambiguation-by-naming precedent used throughout this codebase (e.g. `AIAnalysisResult` vs `AIResponse`). `ai/access/permissions.py` defines its own enum. |
+| No existing `platform_layer/telegram/owner/ai_*.py` command module | Confirmed absent | Grep across `platform_layer/telegram/owner/*.py` found no AI-related owner command file — TASK 2-9 have no existing owner-command surface to extend, and per the brief none is added this phase (foundation only, no live wiring). |
+| `platform_layer/telegram/permissions.py` (`PermissionLevel`: OWNER/ADMIN/USER, live-wired into `command_router.py`) | Cannot reuse directly | Real, live permission gate for Telegram command routing — a three-level hierarchy, not the five-level subscription-shaped Role TASK 6 needs. Same reasoning as `OwnerRole` above: a new, purpose-built enum in `ai/access/` avoids overloading a live-wired type with a foundation-only concern. |
 
 ## `configuration/`
 
@@ -87,7 +87,7 @@ already provides the capability/provider/routing/session/tool/audit
 abstraction, and in every case where an adjacent module exists
 (`ai/interfaces.py`, `ai/learning_context.py`, `ai/profiles/user_profile.py`,
 `ai/journal/trade_journal.py`, `ai/memory/context_memory.py`,
-`telegram/owner/owner_roles.py`, `telegram/permissions.py`,
+`platform_layer/telegram/owner/owner_roles.py`, `platform_layer/telegram/permissions.py`,
 `configuration/feature_registry.py`), the new module composes or sits
 beside it rather than duplicating its logic. No existing module is
 modified by this phase's TASK 2-9 (`ai/interfaces.py`,

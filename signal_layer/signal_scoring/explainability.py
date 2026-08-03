@@ -18,7 +18,7 @@ Reuses existing detection output rather than re-deriving it:
   supply three additional reasons Signal Quality Score's 5 criteria
   don't cover -- read directly from ContextSnapshot, not re-detected.
 - SignalCandidate.confidence is relayed as-is (multiplied by 100 for
-  a percentage display, matching telegram/signal_formatter.py's own
+  a percentage display, matching platform_layer/telegram/signal_formatter.py's own
   convention) -- never recomputed.
 """
 

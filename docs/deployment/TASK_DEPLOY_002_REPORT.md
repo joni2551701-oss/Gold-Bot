@@ -72,7 +72,7 @@ performed from here honestly.
 
 `docs/DEPLOYMENT.md` (v0.3) states the **production branch is
 `claude/code-analysis-optimization-pwfo3q`, not `main`**, calling `main`
-"a stale, pre-`TradingPipeline` snapshot with no `telegram/polling.py`."
+"a stale, pre-`TradingPipeline` snapshot with no `platform_layer/telegram/polling.py`."
 The task instructs deploying `main`. This contradiction must be resolved
 by the Director before any deploy — deploying `main` may ship a broken
 snapshot. (Note: `main` has advanced upstream, so the v0.3 note itself
@@ -88,7 +88,7 @@ may be outdated; confirmation is a Director decision.)
    sandbox.
 2. **Or via CI/CD** — a GitHub Actions deploy workflow triggered against
    the VPS. (The trading pipeline `main.py` already runs on GitHub
-   Actions every 5 min and needs no VPS; only `telegram/polling.py`
+   Actions every 5 min and needs no VPS; only `platform_layer/telegram/polling.py`
    needs an always-on host.)
 
 No retry from this session will satisfy the SSH/`.env`/egress

@@ -36,7 +36,7 @@ list for this task:
   data plus per-platform target bindings, never platform-native types.
 - Universal Screen ID used (ADR-002's `<category>.<name>` convention).
 - Dynamic Registry used (register/get/list — the same mechanism
-  `platforms/menu_registry.py`'s `MenuRegistry` already has from
+  `platform_layer/platform_service/menu_registry.py`'s `MenuRegistry` already has from
   TASK-001, extended, not replaced).
 - Navigation Event Bus interface prepared — event vocabulary only
   (ADR-004), no dispatch/pub-sub implementation.
@@ -57,7 +57,7 @@ convention — no invented AI/Education/Marketplace screens (those
 modules don't exist; the Registry mechanism being open to them is not
 the same as pre-registering fictitious entries for them, which would
 violate this repo's "no fabricated documentation/content" convention).
-Zero change to `telegram/reply_keyboard_manager.py`'s live behavior —
+Zero change to `platform_layer/telegram/reply_keyboard_manager.py`'s live behavior —
 this remains a foundation-only mirror, per ADR-003 (a platform never
 creates a Screen, it only calls Navigation — today's Telegram code
 still creates its own Reply Keyboards directly, unchanged, until a

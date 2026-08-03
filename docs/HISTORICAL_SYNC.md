@@ -100,7 +100,7 @@ phase follows. `core/pipeline.py` never calls this function.
 
 ## Owner visibility (foundation only)
 
-`telegram/owner/dataset_commands.py`'s `get_sync_status(provider,
+`platform_layer/telegram/owner/dataset_commands.py`'s `get_sync_status(provider,
 symbol, timeframe)` reports the current watermark as text ("no sync
 state yet" or "last synced <timestamp>"). Not wired into the live
-Telegram bot; see `telegram/owner/README.md`.
+Telegram bot; see `platform_layer/telegram/owner/README.md`.

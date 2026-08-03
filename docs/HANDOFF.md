@@ -32,7 +32,7 @@ architectural reference for any future work on this branch.
    subscription behavior, navigation system, localization, dashboard,
    the pipeline/Platform process boundary, reserved future modules.
 3. `docs/PLATFORM_MODULE_MAP.md` — file-by-file responsibility for
-   every `telegram/` and `telegram/owner/` file, the platform database
+   every `telegram/` and `platform_layer/telegram/owner/` file, the platform database
    tables, and `translation/`.
 4. `docs/PLATFORM_DEPENDENCY_MAP.md` — exactly what the Platform Layer
    may and must never import, and why.
@@ -55,7 +55,7 @@ low-level references.
   redesign, per Director decision recorded in `docs/PHASE6_FREEZE.md`.
 - Subscription platform (`FREE`/`PREMIUM`/`VIP`) has no billing wired
   — `/upgrade` is a static "coming soon" reply, `expires_at` is unused.
-- No dedicated `telegram/owner/subscription_commands.py`,
+- No dedicated `platform_layer/telegram/owner/subscription_commands.py`,
   `risk_commands.py`, or `backup_commands.py` exists yet — those
   concerns live in adjacent files today; this is an honest, documented
   gap (`docs/owner/OWNER_PANEL.md`), not something to fix without a

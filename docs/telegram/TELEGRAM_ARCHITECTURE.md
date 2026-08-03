@@ -2,18 +2,18 @@
 
 Governed by `docs/constitution/CONSTITUTION.md` Article 2 and 4. This
 document is the real, current Telegram dispatch flow — verified
-directly against `telegram/command_router.py`, not assumed.
+directly against `platform_layer/telegram/command_router.py`, not assumed.
 
 ## Flow
 
 ```
 Telegram (incoming update)
       |
-   Router          telegram/command_router.py
+   Router          platform_layer/telegram/command_router.py
       |
- Permission       telegram/permissions.py (+ telegram/owner/owner_roles.py for Owner commands)
+ Permission       platform_layer/telegram/permissions.py (+ platform_layer/telegram/owner/owner_roles.py for Owner commands)
       |
-   Handler         telegram/handlers.py (or telegram/owner/<domain>_commands.py)
+   Handler         platform_layer/telegram/handlers.py (or platform_layer/telegram/owner/<domain>_commands.py)
       |
    Service         telegram/*_service.py
       |
@@ -24,7 +24,7 @@ Telegram (incoming update)
 
 ## Dispatch mechanism (real, not illustrative)
 
-`telegram/command_router.py` resolves a command to its handler
+`platform_layer/telegram/command_router.py` resolves a command to its handler
 **dynamically by name convention**, not a hand-written dispatch table:
 
 ```python
@@ -42,7 +42,7 @@ ran. Anyone adding a new command must name the handler function to
 match this convention exactly — see
 `docs/architecture/EXTENSION_GUIDE.md` Pattern 2.
 
-`_call_handler()` (`telegram/command_router.py:117`) invokes the
+`_call_handler()` (`platform_layer/telegram/command_router.py:117`) invokes the
 resolved handler with `telegram_id`, `username`, and `args`; the
 `contact_handler` path (phone-number contact sharing) is the one
 special-cased call in the router that bypasses the generic
@@ -51,22 +51,22 @@ rather than a text command.
 
 ## Layer boundaries (Constitution Article 4)
 
-- `telegram/handlers.py` never imports `database.*` or `core.pipeline`
+- `platform_layer/telegram/handlers.py` never imports `database.*` or `core.pipeline`
   directly — stated in the file's own module docstring, enforced by
   the codebase's layering discipline.
 - Handlers call services (`telegram/*_service.py`); services call
   repositories (`database/*_repository.py`); repositories own SQL
   only.
-- Owner commands (`telegram/owner/*.py`) follow the identical flow,
+- Owner commands (`platform_layer/telegram/owner/*.py`) follow the identical flow,
   gated additionally by `owner_roles.py` before the handler runs. See
   `docs/owner/OWNER_PANEL.md` for the full section-by-section map of
-  what lives under `telegram/owner/`.
+  what lives under `platform_layer/telegram/owner/`.
 
 ## Where AI enters this flow
 
 A Telegram handler may call `ai/runtime/ai_service.py`'s `AIService.ask()`
 to obtain an explanation for already-decided pipeline output (e.g.
-`telegram/owner/ai_commands.py`, `runtime_commands.py`). This is a
+`platform_layer/telegram/owner/ai_commands.py`, `runtime_commands.py`). This is a
 Service-layer call like any other — the AI's response is content to
 display, never a decision that changes what the Handler does next.
 See `docs/constitution/CONSTITUTION.md` Article 1.
@@ -82,9 +82,9 @@ for the `/language` picker's inline keyboard:
 ```
 Telegram (callback_query)
       |
-telegram/polling.py            forwards callback_query, no branching
+platform_layer/telegram/polling.py            forwards callback_query, no branching
       |
-telegram/callback_router.py    route_callback() -> translates
+platform_layer/telegram/callback_router.py    route_callback() -> translates
       |                        callback_data ("lang_uz") into the
       |                        same call the text command would make
    Handler                     telegram.handlers.language_status()
@@ -101,32 +101,32 @@ telegram/callback_router.py    route_callback() -> translates
 "honestly inert until built" convention used elsewhere in this
 codebase.
 
-**Translation Engine.** `translation/ui_catalog.py` is a static
+**Translation Engine.** `media_layer/translation/ui_catalog.py` is a static
 UZ/RU/EN string catalog (77 keys) with a single lookup function,
 `t(key, language, **kwargs)` — caller's language → EN → any entry,
 never raises. It is intentionally distinct from
-`translation.translation_manager.TranslationManager`, which stays a
+`media_layer.translation.translation_manager.TranslationManager`, which stays a
 deliberate no-op for dynamic/AI-generated content (Rule 4: no
 Google/DeepL/Gemini/OpenAI call anywhere in that package) — `t()` is
 hand-written UI strings only, looked up, not machine-translated.
 
 **What's localized (USER-tier only).** All 17 `COMMANDS`-registry
-handlers, all USER-tier keyboards (`telegram/keyboards.py`), and
+handlers, all USER-tier keyboards (`platform_layer/telegram/keyboards.py`), and
 `/language`'s own reply text (`language_status()`/`language_handler()`)
 route through `t()`. `contact_handler`'s failure path maps
 `UserService.register_phone()`'s known failure reasons to localized
 keys rather than echoing raw English.
 
 **What stays English (by design, not oversight).**
-- OWNER/ADMIN-tier commands (`telegram/owner/*.py`, `admin_handler`,
+- OWNER/ADMIN-tier commands (`platform_layer/telegram/owner/*.py`, `admin_handler`,
   `broadcast_handler`, `stats_handler`, `users_handler`,
   `userinfo_handler`, `vipinfo_handler`, `feedbacks_handler`, every
   `ai_*`/`owner_*`/`runtime_*` handler) — permanently English,
   internal operator tooling, Director decision.
-- `telegram/signal_formatter.py` and
-  `telegram/signal_access_service.py` — deferred to V2.1 (Signal
+- `platform_layer/telegram/signal_formatter.py` and
+  `platform_layer/telegram/signal_access_service.py` — deferred to V2.1 (Signal
   Product Layer, will be touched anyway during Price Stream work).
-- `telegram/command_router.py`'s generic constants
+- `platform_layer/telegram/command_router.py`'s generic constants
   (`UNKNOWN_COMMAND_TEXT`, `SERVICE_UNAVAILABLE_TEXT`,
   `PERMISSION_DENIED_TEXT`) — deferred to V2.2 (a future Generic Error
   Catalog).

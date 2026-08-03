@@ -5,8 +5,8 @@ Validation, Permission Validation, Event Validation, Recovery
 Scenarios, Integration Validation).
 
 Deeper coverage against the existing, FROZEN TASK-002D contracts
-(`platforms/navigation_core.py`, `platforms/platform_adapter.py`,
-`platforms/navigation_events.py`, `platforms/menu_registry.py`) --
+(`platform_layer/platform_service/navigation_core.py`, `platform_layer/platform_service/platform_adapter.py`,
+`platform_layer/platform_service/navigation_events.py`, `platform_layer/platform_service/menu_registry.py`) --
 this file adds test coverage only. No contract is changed, no
 Trading Core file is touched, no concrete Telegram/Android/iOS
 Platform Adapter is built. `tests/platforms/test_navigation_core.py`
@@ -16,15 +16,15 @@ additional depth, not a replacement.
 
 import pytest
 
-from platforms.menu_registry import (
+from platform_layer.platform_service.menu_registry import (
     MenuDefinition,
     MenuRegistry,
     build_default_menu_registry,
 )
-from platforms.navigation_core import NavigationCore, has_sufficient_permission
-from platforms.navigation_events import NavigationEventType
-from platforms.platform_adapter import PlatformAdapterBase
-from platforms.platform_model import PlatformName
+from platform_layer.platform_service.navigation_core import NavigationCore, has_sufficient_permission
+from platform_layer.platform_service.navigation_events import NavigationEventType
+from platform_layer.platform_service.platform_adapter import PlatformAdapterBase
+from platform_layer.platform_service.platform_model import PlatformName
 
 
 def _registry():
@@ -199,7 +199,7 @@ def test_empty_or_malformed_required_tier_is_permissive_not_restrictive():
     `DEFAULT_MENUS` entry's `permission` field is already validated
     elsewhere to be exactly USER/ADMIN/OWNER
     (`tests/platforms/test_menu_registry.py::test_default_menus_permissions_match_real_tiers`).
-    `platforms/navigation_core.py` is Frozen (TASK-002D) -- fixing this
+    `platform_layer/platform_service/navigation_core.py` is Frozen (TASK-002D) -- fixing this
     requires its own critical-bug/ADR/Migration Task authorization per
     the Freeze Checklist, not a change bundled into this validation task.
     """

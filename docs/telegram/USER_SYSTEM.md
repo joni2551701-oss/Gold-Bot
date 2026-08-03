@@ -1,14 +1,14 @@
 # GoldBot — User System
 
 Governed by `docs/constitution/CONSTITUTION.md` Article 4. Verified
-directly against `database_layer/user_repository/user_repository.py`, `telegram/user_service.py`,
+directly against `database_layer/user_repository/user_repository.py`, `platform_layer/telegram/user_service.py`,
 and `ai/access/permissions.py`.
 
 ## Correction to an earlier brief's assumption
 
 A single linear chain (`NEW → FREE → PREMIUM → VIP → BANNED`) does not
 match the real code — the codebase deliberately keeps two independent
-axes, per `telegram/user_service.py`'s own docstring ("deliberately
+axes, per `platform_layer/telegram/user_service.py`'s own docstring ("deliberately
 separate from..."):
 
 ```
@@ -30,7 +30,7 @@ checks consult both axes, not one linear scale.
 
 ## Where each axis is enforced
 
-- **Lifecycle status** — `telegram/handlers.py` checks BANNED status
+- **Lifecycle status** — `platform_layer/telegram/handlers.py` checks BANNED status
   (best-effort) before normal command handling; `UserService.ban_user()`/
   `activate_user()` are the only ways to change it.
 - **Subscription/role** — `ai/access/subscription_policy.py` maps a

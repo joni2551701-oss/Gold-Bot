@@ -8,11 +8,11 @@ decision traces back to a finding here.
 
 ## `telegram/` — three separate role concepts already exist, deliberately
 
-- `telegram/permissions.py`'s `PermissionLevel` (OWNER/ADMIN/USER) —
+- `platform_layer/telegram/permissions.py`'s `PermissionLevel` (OWNER/ADMIN/USER) —
   the one **live**, wired-into-`command_router.py` gate. `is_owner()`
   reads `Secrets().TELEGRAM_OWNER_ID`; `is_admin()` reads the
-  `admins` table via `telegram/admin_service.py`.
-- `telegram/owner/owner_roles.py`'s `OwnerRole`
+  `admins` table via `platform_layer/telegram/admin_service.py`.
+- `platform_layer/telegram/owner/owner_roles.py`'s `OwnerRole`
   (OWNER/SUPER_ADMIN/ADMIN/VIEWER) — foundation only (Phase 59.6 TASK
   3), a finer admin-console hierarchy, not wired into any command's
   gate check.
@@ -26,28 +26,28 @@ decision traces back to a finding here.
 **Finding for TASK 2 ("AI Access Control Integration")**: this is not
 a request for a fourth role enum. It is the missing resolver — a
 function/service that reads a real `telegram_id`'s `PermissionLevel`
-(via `telegram/permissions.py`, unmodified) and `SubscriptionRecord.plan`
-(via `telegram/subscription_service.py`, unmodified) and maps the pair
+(via `platform_layer/telegram/permissions.py`, unmodified) and `SubscriptionRecord.plan`
+(via `platform_layer/telegram/subscription_service.py`, unmodified) and maps the pair
 into an `AIRole`, so `ai/access/access_control.py`'s already-built
 matrix finally has real data flowing into it instead of a caller
 hand-picking a role.
 
-- `telegram/subscription_service.py` (Phase 42) — `SubscriptionService`
+- `platform_layer/telegram/subscription_service.py` (Phase 42) — `SubscriptionService`
   bridges `/plan`/`/subscription`/`/upgrade` to
   `database_layer.user_repository.subscription_repository.SubscriptionRepository`.
   `SIGNAL_ACCESS_PLANS = {"PREMIUM", "VIP"}`, `DEFAULT_PLAN = "FREE"`
   — confirms `SubscriptionRecord.plan`'s real values already match
   `AIRole.PREMIUM`/`AIRole.VIP`/`AIRole.FREE` by name. The resolver
   needs no new vocabulary here, only a mapping function.
-- `telegram/admin_service.py` (Phase 37/41/46) — `AdminService`
+- `platform_layer/telegram/admin_service.py` (Phase 37/41/46) — `AdminService`
   already has a real, async, event-loop-safe `broadcast()`. Not
   reused this phase (Broadcast is explicitly deferred to v0.5 per the
   Director's own decision) — noted only so a future phase doesn't
   duplicate it.
-- `telegram/commands.py` / `telegram/command_router.py` — `COMMANDS`/
+- `platform_layer/telegram/commands.py` / `platform_layer/telegram/command_router.py` — `COMMANDS`/
   `OWNER_COMMANDS`/`ADMIN_COMMANDS` dicts + `_required_level()` is the
-  one existing pattern any new `telegram/owner/ai_commands.py` must
-  follow. **Confirmed: none of the 18 existing `telegram/owner/*.py`
+  one existing pattern any new `platform_layer/telegram/owner/ai_commands.py` must
+  follow. **Confirmed: none of the 18 existing `platform_layer/telegram/owner/*.py`
   modules are registered into these dicts or `command_router.py`'s
   dispatch today** (`docs/FOUNDATION_FREEZE_v0.4.md`'s own roadmap
   names this live-wiring as future v0.9 work) — `ai_commands.py`
@@ -127,8 +127,8 @@ separate home for that, unchanged this phase.
 
 | TASK | New | Reused |
 |---|---|---|
-| 2 (AI Access Control Integration) | A resolver: real `telegram_id` -> `PermissionLevel` + `SubscriptionRecord.plan` -> `AIRole`. `tool_permissions.py`'s stale matrix corrected in place. | `telegram/permissions.py`, `telegram/subscription_service.py`, `ai/access/access_control.py`/`usage_limits.py` (all unmodified) |
-| 3 (Telegram AI Owner Commands) | `telegram/owner/ai_commands.py` — foundation only, not registered into `command_router.py`, same posture as every other `telegram/owner/*.py` module. | `telegram/commands.py`'s dict shape (read as a pattern, not imported into); `ai/router/router.py`'s `provider_metrics()`; `ai/access/access_control.py`/`capability_manager.py` for status |
+| 2 (AI Access Control Integration) | A resolver: real `telegram_id` -> `PermissionLevel` + `SubscriptionRecord.plan` -> `AIRole`. `tool_permissions.py`'s stale matrix corrected in place. | `platform_layer/telegram/permissions.py`, `platform_layer/telegram/subscription_service.py`, `ai/access/access_control.py`/`usage_limits.py` (all unmodified) |
+| 3 (Telegram AI Owner Commands) | `platform_layer/telegram/owner/ai_commands.py` — foundation only, not registered into `command_router.py`, same posture as every other `platform_layer/telegram/owner/*.py` module. | `platform_layer/telegram/commands.py`'s dict shape (read as a pattern, not imported into); `ai/router/router.py`'s `provider_metrics()`; `ai/access/access_control.py`/`capability_manager.py` for status |
 | 4 (AI User Registration Foundation) | `phone_hash` field + a `hash_phone_number()` helper (SHA-256, never store raw). | `database_layer/user_repository/user_models.py`'s existing `UserRecord` shape/migration convention |
 | 5 (Anti-Abuse / Trial Protection) | `ai/access/trial_manager.py` — trial-window check keyed on `(telegram_id, phone_hash)`. | TASK 4's `phone_hash`; `ai/access/usage_limits.py`'s reset/counter shape as the closest existing precedent for per-key state |
 | 6 (AI Usage Accounting) | A per-`telegram_id` aggregation function. | `ai/audit/request_log.py`/`response_log.py`/`trace.py` (all unmodified) — generalizes the existing join, no new log field |
@@ -137,6 +137,6 @@ separate home for that, unchanged this phase.
 
 Broadcast Foundation, Voice, Video, Media Layer — moved to v0.5
 Product Media Layer per the Director's explicit ruling in this
-phase's own brief. `telegram/admin_service.py`'s existing `broadcast()`
+phase's own brief. `platform_layer/telegram/admin_service.py`'s existing `broadcast()`
 is noted above only so a future phase reuses it rather than
 duplicating it.

@@ -49,7 +49,7 @@ def test_market_data_normalizer_returns_empty_list_when_api_key_missing(monkeypa
 def test_telegram_bot_handles_missing_token_gracefully(monkeypatch):
     """Construction must never raise; send_message() reports the failure per-call instead."""
     monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
-    from telegram.bot import TelegramBot
+    from platform_layer.telegram.bot import TelegramBot
     import asyncio
 
     bot = TelegramBot()
@@ -63,7 +63,7 @@ def test_telegram_bot_handles_missing_token_gracefully(monkeypatch):
 def test_owner_permission_fails_closed_when_owner_id_unset(monkeypatch):
     """No TELEGRAM_OWNER_ID configured -> nobody is OWNER, ever (fail-closed)."""
     monkeypatch.delenv("TELEGRAM_OWNER_ID", raising=False)
-    from telegram.permissions import is_owner
+    from platform_layer.telegram.permissions import is_owner
 
     assert is_owner("111") is False  # even the ID conftest normally treats as OWNER
     assert is_owner(None) is False

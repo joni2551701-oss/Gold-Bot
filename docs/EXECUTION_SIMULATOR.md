@@ -125,7 +125,7 @@ approved the trade.
 - `summarize_execution_records(records) -> ExecutionAnalyticsSummary`.
 - `format_execution_record(record) -> str`.
 
-### `telegram/owner/execution_commands.py`
+### `platform_layer/telegram/owner/execution_commands.py`
 - `execution_status() -> ProviderCommandResult` — current simulator config + selected mode.
 - `slippage_status() -> ProviderCommandResult`.
 - `set_simulation_mode(mode) -> ProviderCommandResult` — selects a named session preset (`DEFAULT`/`LONDON`/`NY_NEWS`) for a future `simulate()` call's own `session` argument; in-memory only, does not survive a restart.
@@ -145,7 +145,7 @@ approved the trade.
   requotes — spread + slippage are both single scalar offsets.
 - Does not persist `ExecutionAnalyticsRecord` to a database table.
 - Does not register `/execution_status`/`/slippage_status`/
-  `/set_simulation_mode` into `telegram/commands.py`/
+  `/set_simulation_mode` into `platform_layer/telegram/commands.py`/
   `command_router.py`/`handlers.py`.
 
 ## Future wiring plan
@@ -155,7 +155,7 @@ docs/EXECUTION_SIMULATOR.md (Phase 60.3 -- foundation, this document)
         |
         v
 execution_layer/execution_engine/simulator/*.py, analytics/execution_report.py,
-telegram/owner/execution_commands.py (Phase 60.3 -- real logic, not wired)
+platform_layer/telegram/owner/execution_commands.py (Phase 60.3 -- real logic, not wired)
         |
         v
 A future, separately-approved phase (60.4 Performance Validation per
@@ -167,5 +167,5 @@ the current roadmap):
   - Compare simulated fills against real MT5 fills once execution/
     itself is wired up (a separate, explicit approval)
   - Persist ExecutionAnalyticsRecord for a resumable, comparable-across-runs report
-  - telegram/commands.py/command_router.py registration
+  - platform_layer/telegram/commands.py/command_router.py registration
 ```

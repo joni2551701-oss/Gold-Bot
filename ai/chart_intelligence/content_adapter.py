@@ -31,13 +31,13 @@ from ai.chart_intelligence.models import ChartAnalysis
 from ai.content.content_adapter import ContentEngine
 from ai.content.content_schema import ContentResult
 from ai.content_types import ContentType
-from broadcast.broadcast_adapter import broadcast_asset_from_content_and_media
-from broadcast.broadcast_manager import BroadcastManager
-from broadcast.models import BroadcastAsset
-from media.media_manager import MediaManager
-from media.media_pipeline import prepare_media_from_content
-from media.media_types import MediaType
-from media.models import MediaAsset
+from media_layer.telegram_broadcast.broadcast_adapter import broadcast_asset_from_content_and_media
+from media_layer.telegram_broadcast.broadcast_manager import BroadcastManager
+from media_layer.telegram_broadcast.models import BroadcastAsset
+from media_layer.content_manager.media_manager import MediaManager
+from media_layer.content_manager.media_pipeline import prepare_media_from_content
+from media_layer.content_manager.media_types import MediaType
+from media_layer.content_manager.models import MediaAsset
 
 
 def chart_analysis_to_content_body(analysis: ChartAnalysis) -> str:

@@ -44,7 +44,7 @@ class ExplanationOutput:
         reasoning -- distinct from any trading signal's confidence.
     language: language code the text is written in (e.g. "en", "uz",
         "ru") -- a plain string this phase, not yet validated against
-        `translation/language_registry.py` (Phase 63.0 TASK 6, a
+        `media_layer/translation/language_registry.py` (Phase 63.0 TASK 6, a
         separate, independent package).
     content_type: which `ai.content_types.ContentType` this
         explanation is shaped for, if any.

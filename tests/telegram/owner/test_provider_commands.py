@@ -1,9 +1,9 @@
 """
-Phase 59.3, TASK 5 -- telegram/owner/provider_commands.py tests.
+Phase 59.3, TASK 5 -- platform_layer/telegram/owner/provider_commands.py tests.
 """
 
 from data_layer.providers.registry import ProviderRegistry, build_default_registry
-from telegram.owner.provider_commands import (
+from platform_layer.telegram.owner.provider_commands import (
     ProviderCommandResult,
     disable_provider,
     enable_provider,

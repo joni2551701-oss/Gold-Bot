@@ -28,12 +28,12 @@ Constitution Article conflict.
 
 ## Built this phase
 
-- `broadcast/broadcast_manager.py`'s `BroadcastManager` extended with
+- `media_layer/telegram_broadcast/broadcast_manager.py`'s `BroadcastManager` extended with
   `create_broadcast()`, `validate_broadcast()`, `prepare_broadcast()`,
   `get_broadcast()`, `list_broadcasts()` — every one deterministic,
   zero send/publish/deliver call. `would_broadcast()`/`prepare()` are
   byte-for-byte unchanged.
-- `broadcast/models.py` — `BroadcastStatus` (`DRAFT`/`READY`/
+- `media_layer/telegram_broadcast/models.py` — `BroadcastStatus` (`DRAFT`/`READY`/
   `PUBLISHED`/`FAILED`/`ARCHIVED`) and `BroadcastAsset` (`id`,
   `content_id`, `media_id`, `broadcast_type`, `status`, `persona_name`,
   `metadata`, `created_at`) — the two genuine model gaps this phase's
@@ -42,15 +42,15 @@ Constitution Article conflict.
   naming resolution); the one genuine gap in that mapping,
   `LIVE_ANALYSIS`, was added as an additive `ContentType` member
   instead (Article 9 — LOCKed since Phase 63.0/63.6).
-- `broadcast/models.py`'s `BroadcastProviderType` extended with
+- `media_layer/telegram_broadcast/models.py`'s `BroadcastProviderType` extended with
   `TELEGRAM`/`MINI_APP` (Article 9, additive) — `provider_manager.py`'s
   `build_broadcast_provider_registry()` extended to match (now eight
   descriptors, all starting `DISABLED`).
-- `broadcast/models.py`'s `BroadcastTrigger` extended with one new
+- `media_layer/telegram_broadcast/models.py`'s `BroadcastTrigger` extended with one new
   optional field, `trigger_type: BroadcastTriggerType` (defaulting to
   `MANUAL`), backed by the new `BroadcastTriggerType` enum
   (`MANUAL`/`SCHEDULED`/`EVENT`/`MARKET`).
-- `broadcast/broadcast_adapter.py` — `broadcast_asset_from_content_and_media()`
+- `media_layer/telegram_broadcast/broadcast_adapter.py` — `broadcast_asset_from_content_and_media()`
   (type-only reads of an upstream `ContentResult`/`MediaAsset`, and an
   optional `Persona`'s own already-public `.name` field — never
   `ContentEngine`/`MediaManager`/`PersonaManager`'s internal state).
@@ -93,7 +93,7 @@ Constitution Article conflict.
   server, voice provider, or video hosting call anywhere in this
   phase (Rule 4); `BroadcastManager` has no `send()`/`publish()`/
   `deliver()` method at all.
-- No wiring into `telegram/owner/broadcast_commands.py` — those
+- No wiring into `platform_layer/telegram/owner/broadcast_commands.py` — those
   commands still report `NOT IMPLEMENTED` (Phase 63.0 TASK 7),
   unchanged this phase.
 - No new `Capability` member and no `ai/router/routing_rules.py`
@@ -139,7 +139,7 @@ Constitution Article conflict.
   AST regression tests in `tests/broadcast/test_broadcast_isolation.py`
   and `test_broadcast_adapter.py`.
 - `broadcast/` imports `ai.content.content_schema.ContentResult`,
-  `ai.content.content_types.ContentType`, `media.models.MediaAsset`,
+  `ai.content.content_types.ContentType`, `media_layer.content_manager.models.MediaAsset`,
   and `ai.persona.persona.Persona` — all upstream (per Rule 3's own
   "Broadcast o'qishi mumkin: media, content, ai" allowance), all
   type-only, none of their owning Manager class touched.
@@ -148,7 +148,7 @@ Constitution Article conflict.
 
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
-| Modules | `broadcast/broadcast_adapter.py` (1) | `broadcast/broadcast_manager.py`, `broadcast/models.py`, `broadcast/provider_manager.py` (3) | `broadcast/trigger_manager.py` (1, untouched) |
+| Modules | `media_layer/telegram_broadcast/broadcast_adapter.py` (1) | `media_layer/telegram_broadcast/broadcast_manager.py`, `media_layer/telegram_broadcast/models.py`, `media_layer/telegram_broadcast/provider_manager.py` (3) | `media_layer/telegram_broadcast/trigger_manager.py` (1, untouched) |
 | Managers | — | `BroadcastManager` (+5 methods) | `BroadcastProviderManager`, `BroadcastTriggerManager` (unchanged) |
 | Models | `BroadcastStatus`, `BroadcastAsset`, `BroadcastTriggerType` (3) | `BroadcastProviderType` (+2 members: `TELEGRAM`/`MINI_APP`), `BroadcastTrigger` (+1 field: `trigger_type`), `ai.content.content_types.ContentType` (+1 member: `LIVE_ANALYSIS`) | `BroadcastProviderStatus`, `BroadcastProviderDescriptor` (unchanged) |
 | Contracts | `BroadcastAsset` (the new tracked, lifecycle-aware contract) | — | `BroadcastRequest` (existing, LOCKed, untouched — the `prepare()`/delivery-layer shape) |
@@ -178,7 +178,7 @@ directions are visible in the codebase but neither is started:
 (1) a real, separately-approved delivery layer that finally calls
 `BroadcastManager.prepare()`/the new asset surface and one of the
 provider APIs, per Rule 4's own explicit "future phase" language, and
-(2) wiring `telegram/owner/broadcast_commands.py`'s still-`NOT
+(2) wiring `platform_layer/telegram/owner/broadcast_commands.py`'s still-`NOT
 IMPLEMENTED` commands to this phase's new `create_broadcast`/
 `get_broadcast`/`list_broadcasts` surface for Owner visibility. Either
 requires its own dedicated Worker Brief; this phase builds foundation
