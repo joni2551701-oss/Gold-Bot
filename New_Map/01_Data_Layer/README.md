@@ -232,6 +232,8 @@ GoldBot Core
 
 10. Reuse First — dublikat logika yaratilmaydi.
 
+11. Event_System GoldBot'ning Canonical Event Bus hisoblanadi. Barcha Layerlar (Data Layer'ning o'zidan tashqari — Context, Strategy, Signal, AI, Decision, Risk, Execution, Trade Monitoring, Database, Platform, Media, Chart va boshqalar) bir-biriga asinxron xabar yuborish uchun Event_System orqali ishlaydi. Bu yagona rasmiy Event Bus — boshqa hech qanday Layer o'zining alohida Event Bus'ini yaratmaydi.
+
 ---
 
 # Repository Structure

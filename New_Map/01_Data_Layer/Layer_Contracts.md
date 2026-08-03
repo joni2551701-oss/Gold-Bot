@@ -430,6 +430,8 @@ Data Layer egalik qilmaydi:
 
 10. Har qanday yangi modul ushbu Contract'ga mos bo'lishi shart.
 
+11. Event_System GoldBot'ning Canonical Event Bus hisoblanadi — barcha Layerlar o'zaro asinxron aloqa uchun shu orqali ishlaydi; boshqa hech qanday Layer alohida Event Bus yaratmaydi.
+
 ---
 
 # Contract Violation

@@ -265,6 +265,8 @@ Event Bus modullarni bog'laydi.
 
 Modullar bir-birini to'g'ridan-to'g'ri chaqirmaydi.
 
+Event_System — GoldBot'ning Canonical Event Bus hisoblanadi. Bu diagramma Data Layer ichidagi Publisher/Subscriber modullarini ko'rsatadi, lekin Event Bus'ning o'zi Data Layer'dan tashqaridagi barcha 15 Layer uchun ham yagona asinxron aloqa infratuzilmasi hisoblanadi — Context, Strategy, Signal, AI, Decision, Risk, Execution, Trade Monitoring, Database, Platform, Media, Chart va boshqa Layerlar bir-biriga to'g'ridan-to'g'ri emas, Event_System orqali xabar yuboradi.
+
 ---
 
 # Layer Output

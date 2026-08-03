@@ -654,6 +654,23 @@ ownership chain.
 ```
 Sabab: Chart Layer'ning guruh darajasidagi hujjatlari (`README.md` Chart Runtime, `Layer_DataFlow.md`, `Layer_SequenceDiagram.md`, `Layer_Contracts.md`) 20 modulni bitta chiziqli zanjir sifatida tasvirlagan, bu esa Objects/Chart_Renderer/Screenshot kabi modullarning haqiqiy Input/Output Contract'lari bilan mos kelmagan (Chart Shared State Rule va Render Loop Rule'ga qarang). Director Ruling (Option 1 — Orchestrated Shared-State Architecture): bu 4 ta hujjatdagi ketma-ketlik endi faqat **Execution/Processing Order** sifatida talqin qilinadi, Input→Output ownership zanjiri sifatida emas. "Pipeline" so'zi shu ma'noda ishlatilmaydi — "Chart Execution Flow" yoki "Chart Processing Order" ishlatiladi. Chart_API Chart Layer'ning yagona Entry HAM Exit nuqtasi bo'lib qoladi (o'zgarmagan).
 ---
+## Canonical Event Bus Rule
+```text
+Event_System
+(01_Data_Layer)
+is the single
+Canonical Event Bus
+for all 16 Layers.
+
+Layers communicate
+asynchronously only
+through Event_System —
+no Layer creates
+its own separate
+Event Bus.
+```
+Sabab: Architecture Gap Review v1.0 §6 topdiki, to'liq Event Bus infratuzilmasi (EventBus, EventDispatcher, EventLifecycle, EventPublisher, EventService, EventSubscriber) mavjud, lekin u faqat `01_Data_Layer/Event_System` ichida hujjatlashtirilgan va boshqa Layerlar (Chart_API'ning "Event API"si, Trade Monitoring, Platform) unga rasman bog'lanmagan — Event Bus'ning butun tizim uchun yagona ekanligi hech qayerda aniq yozilmagan edi. Director Decision: yangi modul kerak emas — mavjud Event_System butun GoldBot uchun Canonical Event Bus deb rasman e'lon qilindi (`01_Data_Layer/README.md` Golden Rule 11, `Layer_Contracts.md` Layer Rule 11, `Layer_DataFlow.md` Event Flow bo'limida hujjatlashtirildi).
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.
