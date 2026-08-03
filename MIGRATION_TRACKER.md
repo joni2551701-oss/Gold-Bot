@@ -1,0 +1,89 @@
+# Migration Tracker — goldbot-v1
+
+Status: Phase A COMPLETE
+Boshlanish: 2026-08-03
+Asos: `New_Map/FOUNDATION_FREEZE_V1.md` (Foundation Freeze v1.0)
+Buyruq: Director Order No. 002 — Migration Strategy
+
+---
+
+# Migratsiya Qoidalari
+
+**Migration Isolation Rule (MIR-001)** — har bir migratsiya commiti bitta modul yoki bitta kichik subsystem bilan cheklanadi. Bir commitda bir nechta Layer yoki katta hajmdagi ko'chirish amalga oshirilmaydi.
+
+**Import Compatibility Rule (ICR-001)** — migratsiya davomida eski importlar vaqtincha ishlashi mumkin va compatibility wrapper yaratish mumkin, ammo Foundation Freeze arxitekturasi o'zgarmaydi.
+
+---
+
+# Fizik Joylashuv
+
+Yangi arxitektura `goldbot/` namespace paketida joylashadi. Eski top-level paketlar (`core/`, `data/`, `ai/`, `risk/` va h.k.) migratsiya davomida o'z joyida ishlab turadi va Phase E'da olib tashlanadi.
+
+Sabab: `goldbot/` yagona chegara beradi — eski va yangi kod aralashmaydi, rollback bitta papkani o'chirish bilan amalga oshadi, va 29 ta mavjud top-level paket bilan nom to'qnashuvi bo'lmaydi.
+
+Nom konversiyasi: `01_Data_Layer` → `data_layer`, `HistoricalDataService` → `historical_data_service` (CamelCase → snake_case, raqamli prefiks olib tashlanadi).
+
+---
+
+# Bosqichlar
+
+| Phase | Qamrov | Holat |
+|---|---|---|
+| A | Skeleton — papka strukturasi, `__init__.py`, README havolalari | ✅ COMPLETE |
+| B | Infrastructure — Core, Database, Event, Configuration, Secrets, Performance | ⏳ |
+| C | Trading Pipeline — Data → Context → Indicator → Strategy → Signal → AI → Decision → Risk → Execution → Trade Monitoring | ⏳ |
+| D | Platform — Telegram, API, Media, Chart | ⏳ |
+| E | Cleanup — eski kodni olib tashlash, duplicate yo'qotish, TODO yopish | ⏳ |
+
+---
+
+# Phase A Natijasi
+
+```text
+Layers ............... 17
+Module packages ...... 210
+Total packages ....... 236   (1 root + 17 layer + 218 module/group)
+Importable ........... 236/236
+Broken README links .. 0
+Business code moved .. 0   (Phase A bo'yicha ataylab)
+```
+
+| Canonical Layer | Python package | Modullar |
+|---|---|---|
+| 01_Data_Layer | `goldbot.data_layer` | 38 |
+| 02_Core_Layer | `goldbot.core_layer` | 12 |
+| 03_Context_Layer | `goldbot.context_layer` | 11 |
+| 04_Indicator_Layer | `goldbot.indicator_layer` | 9 |
+| 05_Strategy_Layer | `goldbot.strategy_layer` | 17 |
+| 06_Signal_Layer | `goldbot.signal_layer` | 7 |
+| 07_AI_Layer | `goldbot.ai_layer` | 39 |
+| 08_Decision_Layer | `goldbot.decision_layer` | 6 |
+| 09_Risk_Layer | `goldbot.risk_layer` | 8 |
+| 10_Execution_Layer | `goldbot.execution_layer` | 7 |
+| 11_Trade_Monitoring_Layer | `goldbot.trade_monitoring_layer` | 9 |
+| 12_Database_Layer | `goldbot.database_layer` | 9 |
+| 13_Platform_Layer | `goldbot.platform_layer` | 7 |
+| 14_Media_Layer | `goldbot.media_layer` | 3 |
+| 15_Future_Expansion | `goldbot.future_expansion` | 0 |
+| 16_Chart_Layer | `goldbot.chart_layer` | 20 |
+| 17_Backtesting_Layer | `goldbot.backtesting_layer` | 8 |
+
+---
+
+# Modul Migratsiya Holati
+
+Har bir modul ko'chirilganda quyidagi jadval yangilanadi. Hozircha barcha modullar `SKELETON` holatida — biznes mantiq hali eski paketlarda.
+
+Holat kodlari:
+* `SKELETON` — paket mavjud, kod yo'q (Phase A)
+* `MIGRATED` — kod ko'chirilgan, importlar tuzatilgan, testlar o'tgan
+* `REFACTORED` — ko'chirilgan kod yangi arxitektura contract'iga moslashtirilgan
+* `IMPLEMENTED` — hujjatlashtirilgan, lekin eski kodda mavjud bo'lmagan modul yozilgan
+
+Joriy holat: **210 modul — barchasi SKELETON**.
+
+---
+
+# Summary
+
+Phase A yakunlandi: `New_Map/`ning 17 Layer / 210 modul tuzilmasi `goldbot/` paketida importga yaroqli skelet sifatida aks ettirildi. Hech qanday biznes kodi ko'chirilmadi — bu Phase B'dan boshlanadi.

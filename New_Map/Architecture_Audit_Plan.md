@@ -781,6 +781,34 @@ Sabab: Architecture Gap Review v1.0'ning KG-002 topilmasi — `New_Map/12_Databa
 
 Guruhlash asoslari: `admin` — `AdminRecord(telegram_id, role)`, ya'ni hisob domeni; `emergency` — `EmergencyStateEntry(state, reason, source)`, ya'ni Trading Safety domeni; `runtime_feature` — `RuntimeFeatureRecord(feature, enabled, updated_by)`, ya'ni tizim holati (upsert), shuning uchun append-only AuditLog'ga emas, JournalRepository'ga kiritildi. Yangi storage qo'shilganda u mos domendagi mavjud Repository ichiga kiritiladi — yangi Repository moduli yaratilmaydi.
 ---
+## Migration Isolation Rule (MIR-001)
+```text
+Each migration commit
+is limited to one
+module or one small
+subsystem.
+
+No commit migrates
+several Layers or a
+large bulk move at
+once.
+```
+Sabab: Director Order No. 002 — Migration Strategy. `goldbot-v1` branchi bir vaqtning o'zida ham implementatsiya, ham migratsiya branchi hisoblanadi. Agar 1000+ import, 5400 test va yuzlab fayl birdaniga ko'chirilsa: xato qayerdan chiqqanini aniqlash qiyinlashadi, git history shovqinli bo'ladi va rollback murakkablashadi. Kichik commitlar `git diff`ni kichik saqlaydi, rollback'ni osonlashtiradi va testdagi xatoni tez topishga imkon beradi.
+---
+## Import Compatibility Rule (ICR-001)
+```text
+During migration old
+imports may keep
+working and
+compatibility wrappers
+may be created.
+
+The Foundation Freeze
+architecture itself
+does not change.
+```
+Sabab: Director Order No. 002. Migratsiya bosqichma-bosqich bo'lgani uchun, ko'chirilmagan modullar eski top-level paketlardan ishlashda davom etadi. Wrapper'lar vaqtinchalik ko'prik vazifasini bajaradi — ular Canonical Contract, Ownership yoki Runtime Pipeline'ni o'zgartirmaydi va Phase E (Cleanup) davomida olib tashlanadi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.
