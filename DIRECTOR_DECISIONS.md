@@ -45,6 +45,31 @@ module's own `WORK_LOG.md` for that module's completed work.
 Full order text recorded in `CLAUDE.md`'s "Worker Authority — Director
 Order No. 016" section.
 
+### Director Order No. 017 — GoldBot Development Standard (GDS)
+
+Establishes the single Development Standard governing how code is
+written, tested, refactored, and evolved: GDS-001 Coding Standard
+through GDS-011 Code Review Standard, plus Definition of Done (DoD),
+Development Workflow (Read → Understand → Design → Implement → Unit
+Test → Integration Test → Refactor → Documentation → Validation →
+Commit → Push → Review), Risk Assessment (Low/Medium/High/Critical,
+High/Critical requiring Director Review), Rollback Strategy (Failure →
+Rollback → Restore → Revalidate → Retest → Continue), Module Health
+Score (Architecture/Contracts/Documentation/Testing/Performance/
+Maintainability/Dependency/Security), Technical Debt Standard (housed
+in each module's ROADMAP.md), Dependency Graph Standard (housed in
+each module's CONTRACTS.md/MODULE_MAP.md), Module Status Lifecycle
+(Blueprint → In Development → Implemented → Testing → Stable →
+Deprecated), and an AI Knowledge Base / Lessons Learned standard
+(housed in each module's WORK_LOG.md, reusing ARCA's Problem → Root
+Cause → Permanent Solution → Lessons Learned structure). GDS
+operationalizes existing rules (CLAUDE.md's Commit Protocol and
+Trading Safety, GEL-001's doc set, ARCHITECTURE.md's Layer Direction)
+into a day-to-day workflow — it does not override any of them.
+
+Full order text and every GDS-NNN section live in
+`GOLDBOT_DEVELOPMENT_STANDARD.md`.
+
 ### Director Order No. 018 — RFC Standard
 
 Establishes the RFC (Request For Change) process: large changes are
@@ -127,6 +152,22 @@ not a VPS Administrator — the Worker performs the role of Deployment
 Engineer / DevOps Engineer. The future-state target pipeline is Git
 Push → Worker → CI/CD → VPS → Deploy → Health Check → Monitoring →
 Report.
+
+### Director Decision — DD-003 (Append-Only Journal Discipline)
+
+Approved. `DIRECTOR_DECISIONS.md` is an append-only log — a missing
+entry (Order No. 017's, caught and backfilled above) must never be
+deferred to "next time"; it is corrected immediately as its own
+append, never by editing or reordering existing entries.
+
+**Governance Rule — Append-Only Discipline.** No entry is ever skipped
+in any of the repository's append-only journals: `DIRECTOR_DECISIONS.md`,
+a module's `WORK_LOG.md`, a module's `CHANGELOG.md`, an RFC record
+under `rfcs/`, or an ADR record under `adrs/`. Every completed Director
+Order, RFC, ADR, or significant Sprint must update its corresponding
+journal immediately, in the same work pass — not deferred. This closes
+the "when was this decision actually made?" question permanently by
+keeping Governance History continuous.
 
 Full order text recorded in `CLAUDE.md`'s "Deployment Authority —
 Director Order No. 021" section; `docs/DEPLOYMENT.md` and
