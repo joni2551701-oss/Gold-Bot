@@ -53,6 +53,7 @@ TrailingStop
 ✗ Execution Layer
 ✗ Risk Layer
 ✗ Decision Layer
+✗ Database Layer
 ---
 # Runtime Contract
 1. Break Even Trigger qoidalarga mos bo'lishi shart.

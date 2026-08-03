@@ -53,6 +53,10 @@ RecoveryManager
 ✗ Execution Layer
 ✗ Risk Layer
 ✗ Decision Layer
+✗ Database Layer
+✗ MonitoringService
+✗ SLTPMonitor
+✗ BreakevenManager
 ---
 # Runtime Contract
 1. Partial Close Rules tekshirilishi shart.

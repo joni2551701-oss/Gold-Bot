@@ -53,6 +53,8 @@ BreakevenManager
 ✗ RecoveryManager
 ✗ Execution Layer
 ✗ Decision Layer
+✗ Risk Layer
+✗ Database Layer
 ---
 # Runtime Contract
 1. Stop Loss har bir Price Update'da tekshirilishi shart.

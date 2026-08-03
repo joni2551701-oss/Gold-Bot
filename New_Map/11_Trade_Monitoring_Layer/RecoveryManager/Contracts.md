@@ -26,7 +26,7 @@ PartialClose
 ↓
 RecoveryManager
 ↓
-Database Layer
+MonitoringService
 ```
 ---
 # Input Contract
@@ -44,11 +44,15 @@ Database Layer
 ---
 # Allowed Dependencies
 ✓ PartialClose
-✓ Database Layer
+✓ MonitoringService
 ---
 # Forbidden Dependencies
 ✗ PositionMonitor
 ✗ TradeLifecycleManager
+✗ SLTPMonitor
+✗ BreakevenManager
+✗ TrailingStop
+✗ Database Layer (to'g'ridan-to'g'ri)
 ✗ Execution Layer
 ✗ Risk Layer
 ✗ Decision Layer
@@ -58,9 +62,10 @@ Database Layer
 2. Broker Open Positions to'liq yuklanishi shart.
 3. Har bir Position uchun Recovery bajarilishi shart.
 4. Recovery Validation muvaffaqiyatli yakunlanishi shart.
-5. Recovery Report Database Layer'ga uzatilishi shart.
+5. Recovery Report MonitoringService orqali Database Layer'ga uzatilishi shart.
 6. Recovery tugamaguncha Monitoring davom ettirilmaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. RecoveryManager Layer tashqarisiga chiqmaydi — natijani MonitoringService orqali uzatadi.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Restart aniqlanadi.
@@ -68,7 +73,7 @@ Database Layer
 ✓ Trade State tiklanadi.
 ✓ Recovery Validation bajariladi.
 ✓ Recovery Report yaratiladi.
-✓ Database Layer'ga uzatiladi.
+✓ MonitoringService'ga uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary

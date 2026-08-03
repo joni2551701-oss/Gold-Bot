@@ -10,7 +10,7 @@ PartialClose
 ↓
 RecoveryManager
 ↓
-Database Layer
+MonitoringService
 ```
 ---
 # Module Architecture
@@ -46,11 +46,15 @@ Recovery Metadata yaratadi.
 ---
 # Allowed Dependencies
 ✓ PartialClose
-✓ Database Layer
+✓ MonitoringService
 ---
 # Forbidden Dependencies
 ✗ PositionMonitor
 ✗ TradeLifecycleManager
+✗ SLTPMonitor
+✗ BreakevenManager
+✗ TrailingStop
+✗ Database Layer (to'g'ridan-to'g'ri)
 ✗ Execution Layer
 ✗ Risk Layer
 ✗ Decision Layer

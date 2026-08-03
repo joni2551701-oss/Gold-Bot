@@ -54,6 +54,10 @@ Lifecycle Metadata yaratadi.
 ✗ PartialClose
 ✗ RecoveryManager
 ✗ Execution Layer
+✗ Risk Layer
+✗ Decision Layer
+✗ Database Layer
+✗ MonitoringService (to'g'ridan-to'g'ri)
 ---
 # Summary
 TradeLifecycleManager GoldBot Trade Monitoring Layer ichidagi Trade Lifecycle va State Machine boshqaruvini amalga oshiruvchi Canonical modul hisoblanadi.

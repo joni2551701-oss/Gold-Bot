@@ -54,6 +54,7 @@ Monitoring Metadata yaratadi.
 ✗ Execution Layer
 ✗ Risk Layer
 ✗ Decision Layer
+✗ Database Layer
 ---
 # Summary
 BreakevenManager GoldBot Trade Monitoring Layer ichidagi Break Even boshqaruvini amalga oshiruvchi Canonical modul hisoblanadi.

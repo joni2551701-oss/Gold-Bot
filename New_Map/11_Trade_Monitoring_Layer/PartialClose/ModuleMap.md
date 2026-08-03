@@ -54,6 +54,10 @@ Monitoring Metadata yaratadi.
 ✗ Execution Layer
 ✗ Risk Layer
 ✗ Decision Layer
+✗ Database Layer
+✗ MonitoringService
+✗ SLTPMonitor
+✗ BreakevenManager
 ---
 # Summary
 PartialClose GoldBot Trade Monitoring Layer ichidagi Partial Position Management jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

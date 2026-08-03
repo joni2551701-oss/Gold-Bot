@@ -23,7 +23,7 @@ PartialClose
 ↓
 RecoveryManager
 ↓
-Database Layer
+MonitoringService
 ```
 ---
 # Responsibilities
@@ -84,7 +84,7 @@ Validate Recovery
 ↓
 Generate Recovery Report
 ↓
-Database Layer
+MonitoringService
 ```
 ---
 # Golden Rules

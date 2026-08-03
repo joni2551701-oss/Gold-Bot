@@ -52,6 +52,10 @@ SLTPMonitor
 ✗ PartialClose
 ✗ RecoveryManager
 ✗ Execution Layer
+✗ Risk Layer
+✗ Decision Layer
+✗ Database Layer
+✗ MonitoringService (to'g'ridan-to'g'ri)
 ---
 # Runtime Contract
 1. Har bir Trade State tekshirilishi shart.

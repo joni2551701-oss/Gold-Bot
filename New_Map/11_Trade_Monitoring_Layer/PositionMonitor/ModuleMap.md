@@ -54,6 +54,10 @@ Monitoring Metadata yaratadi.
 ✗ TrailingStop
 ✗ PartialClose
 ✗ RecoveryManager
+✗ Execution Layer
+✗ Risk Layer
+✗ Decision Layer
+✗ Database Layer
 ---
 # Summary
 PositionMonitor GoldBot Trade Monitoring Layer ichidagi barcha Position Monitoring jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

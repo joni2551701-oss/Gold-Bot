@@ -54,6 +54,8 @@ Monitoring Metadata yaratadi.
 ✗ RecoveryManager
 ✗ Execution Layer
 ✗ Decision Layer
+✗ Risk Layer
+✗ Database Layer
 ---
 # Summary
 SLTPMonitor GoldBot Trade Monitoring Layer ichidagi Stop Loss va Take Profit Monitoring jarayonlarini boshqaruvchi Canonical modul hisoblanadi.

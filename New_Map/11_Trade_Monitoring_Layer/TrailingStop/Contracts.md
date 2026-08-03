@@ -49,6 +49,10 @@ PartialClose
 ---
 # Forbidden Dependencies
 ✗ RecoveryManager
+✗ MonitoringService
+✗ PositionMonitor
+✗ TradeLifecycleManager
+✗ SLTPMonitor
 ✗ Execution Layer
 ✗ Risk Layer
 ✗ Decision Layer

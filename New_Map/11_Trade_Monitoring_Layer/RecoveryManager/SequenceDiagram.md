@@ -20,7 +20,7 @@ Validate Recovery
 ↓
 Generate Recovery Report
 ↓
-Database Layer
+MonitoringService
 ```
 ---
 # Runtime Rules
@@ -49,4 +49,4 @@ PartialClose
 ↓
 RecoveryManager
 ↓
-Database Layer
+MonitoringService

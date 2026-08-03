@@ -52,6 +52,10 @@ TradeLifecycleManager
 ✗ TrailingStop
 ✗ PartialClose
 ✗ RecoveryManager
+✗ Execution Layer
+✗ Risk Layer
+✗ Decision Layer
+✗ Database Layer
 ---
 # Runtime Contract
 1. Broker Position doimo asosiy manba hisoblanadi.
