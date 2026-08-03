@@ -6,7 +6,7 @@ from assistant.conversation_adapter import (
     assistant_to_voice_session_params,
 )
 from assistant.identity_manager import IdentityManager
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_personal_ai=True)
 

@@ -40,7 +40,7 @@ that future work has a stable, tested contract to build against.
 from dataclasses import dataclass
 from typing import Dict, List, Sequence, Tuple
 
-from configuration.feature_registry import FeatureDescriptor
+from goldbot.core_layer.configuration.feature_registry import FeatureDescriptor
 
 # feature_name -> the other feature_names it requires to also be
 # enabled. A tuple of (name, required_names) pairs would work equally

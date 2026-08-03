@@ -1,6 +1,6 @@
 from ai.access.permissions import AIRole
 from ai.trading_analyst.access import is_trading_analyst_enabled_for
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 
 
 def test_owner_allowed_when_flag_on():

@@ -3,7 +3,7 @@ from ai.chart_intelligence.models import ChartAnalysis, ChartAnalysisType, Chart
 from ai.trade_journal.journal_runtime import TradeJournalRuntime
 from ai.trade_journal.trading_analyst_adapter import journal_entry_from_trading_and_chart
 from ai.trading_analyst.models import TradingAnalysis, TradingRiskLevel
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_trade_journal=True)
 DISABLED = FeatureFlags(enable_trade_journal=False)

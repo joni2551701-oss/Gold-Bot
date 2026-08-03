@@ -36,13 +36,13 @@ def test_existing_timeframe_history_is_unchanged():
 
 
 def test_configuration_layer_does_not_mutate_config_module():
-    """Importing configuration/ must not have side effects on config.Config's class attributes."""
-    import configuration.settings
-    import configuration.environment
-    import configuration.feature_flags
+    """Importing the Configuration module must not have side effects on config.Config's class attributes."""
+    from goldbot.core_layer.configuration.settings import ApplicationSettings
+    from goldbot.core_layer.configuration.environment import Environment
+    from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 
-    assert configuration.settings.ApplicationSettings is not None
-    assert configuration.environment.Environment is not None
-    assert configuration.feature_flags.FeatureFlags is not None
+    assert ApplicationSettings is not None
+    assert Environment is not None
+    assert FeatureFlags is not None
     assert Config.TIMEZONE == timezone.utc
     assert Config.TIMEFRAME_HISTORY["M15"] == 200

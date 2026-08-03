@@ -7,7 +7,7 @@ import dataclasses
 
 import pytest
 
-from configuration.feature_flags import FeatureFlags, DEFAULT_FLAGS
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags, DEFAULT_FLAGS
 
 
 def test_default_feature_flags_are_all_false():

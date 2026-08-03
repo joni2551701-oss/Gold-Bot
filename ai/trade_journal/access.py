@@ -10,7 +10,7 @@ the same `frozenset(Capability)` -- TASK 7 requires Owner-only.
 """
 
 from ai.access.permissions import AIRole
-from configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 def is_trade_journal_enabled_for(role: AIRole, flags: FeatureFlags = DEFAULT_FLAGS) -> bool:

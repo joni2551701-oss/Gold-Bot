@@ -1,6 +1,6 @@
 from ai.access.permissions import AIRole
 from ai.portfolio.access import is_portfolio_intelligence_enabled_for
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_portfolio_intelligence=True)
 DISABLED = FeatureFlags(enable_portfolio_intelligence=False)

@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from typing import Dict, Optional, Sequence, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from configuration.feature_registry import FeatureDescriptor
+    from goldbot.core_layer.configuration.feature_registry import FeatureDescriptor
 
 
 @dataclass(frozen=True)

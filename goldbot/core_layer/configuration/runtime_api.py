@@ -18,7 +18,7 @@ the existing one-directional telegram/ -> configuration/ dependency
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from configuration.runtime_feature_manager import RuntimeFeatureManager
+from goldbot.core_layer.configuration.runtime_feature_manager import RuntimeFeatureManager
 from core.logger import setup_logger
 
 logger = setup_logger("RuntimeApi")

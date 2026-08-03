@@ -809,6 +809,22 @@ does not change.
 ```
 Sabab: Director Order No. 002. Migratsiya bosqichma-bosqich bo'lgani uchun, ko'chirilmagan modullar eski top-level paketlardan ishlashda davom etadi. Wrapper'lar vaqtinchalik ko'prik vazifasini bajaradi — ular Canonical Contract, Ownership yoki Runtime Pipeline'ni o'zgartirmaydi va Phase E (Cleanup) davomida olib tashlanadi.
 ---
+## Migration Validation Rule (MVR-001)
+```text
+After every module
+migration the following
+must be performed:
+
+- import check
+- unit tests
+- old vs new namespace
+  parity check (if the
+  module is already in
+  use)
+- commit
+```
+Sabab: Director Order No. 002 (Phase B). MIR-001 migratsiyani kichik bo'laklarga ajratadi, MVR-001 esa har bir bo'lakning to'g'riligini kafolatlaydi. Worker ushbu qoidani Director'siz mustaqil qo'llaydi. Amalda bu GoldBot'ning mavjud Commit Protocol'i bilan birlashadi: `git add -A` → `pyflakes` → `compileall` → `pytest` → `python main.py` → toza `git status` → commit.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.

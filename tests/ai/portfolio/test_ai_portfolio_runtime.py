@@ -1,7 +1,7 @@
 from ai.access.permissions import AIRole
 from ai.portfolio.models import PortfolioHealth, PortfolioRiskLevel, PortfolioStatus
 from ai.portfolio.portfolio_runtime import PortfolioRuntime
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_portfolio_intelligence=True)
 DISABLED = FeatureFlags(enable_portfolio_intelligence=False)

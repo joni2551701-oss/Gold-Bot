@@ -1,7 +1,7 @@
 from ai.access.permissions import AIRole
 from ai.learning.learning_runtime import LearningRuntime
 from ai.learning.models import LearningLevel, LearningSource, LearningStatus, LearningTopic
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_learning_intelligence=True)
 DISABLED = FeatureFlags(enable_learning_intelligence=False)

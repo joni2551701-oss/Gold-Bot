@@ -33,14 +33,14 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
-from configuration.feature_dependency_validator import (
+from goldbot.core_layer.configuration.feature_dependency_validator import (
     DEPENDENCY_RULES,
     DependencyValidationResult,
     format_dependency_violations,
     validate_feature_dependencies,
 )
-from configuration.feature_registry import FeatureDescriptor, build_feature_registry
-from configuration.runtime_state import FeatureRuntimeState, RuntimeStateCache
+from goldbot.core_layer.configuration.feature_registry import FeatureDescriptor, build_feature_registry
+from goldbot.core_layer.configuration.runtime_state import FeatureRuntimeState, RuntimeStateCache
 from database.audit_log_repository import AuditLogRepository
 from database.config_snapshot_repository import ConfigSnapshotRepository
 from database.config_snapshot_models import create_config_snapshot

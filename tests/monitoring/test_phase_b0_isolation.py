@@ -73,7 +73,7 @@ def test_performance_collector_confined_to_stdlib_and_monitoring_models():
 
 def test_access_confined_to_configuration_feature_flags():
     py_file = _monitoring_dir() / "access.py"
-    allowed_prefixes = ("configuration.feature_flags",)
+    allowed_prefixes = ("goldbot.core_layer.configuration.feature_flags",)
     for name in _imported_names(py_file):
         assert name.startswith(allowed_prefixes), f"{py_file}: {name}"
 

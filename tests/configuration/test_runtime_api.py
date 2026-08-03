@@ -4,14 +4,14 @@ RuntimeFeatureManager (backed by real SQLite repositories,
 tests/conftest.py's autouse fresh_database fixture) -- no mocks.
 """
 
-from configuration.runtime_api import (
+from goldbot.core_layer.configuration.runtime_api import (
     RuntimeApiResult,
     disable_feature,
     enable_feature,
     feature_status,
     list_runtime_features,
 )
-from configuration.runtime_feature_manager import RuntimeFeatureManager
+from goldbot.core_layer.configuration.runtime_feature_manager import RuntimeFeatureManager
 
 
 def test_enable_feature_succeeds():

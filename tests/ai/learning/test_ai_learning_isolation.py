@@ -142,7 +142,7 @@ def test_memory_adapter_never_imports_ai_memory():
 def test_learning_runtime_module_has_no_persistence_import():
     """Rule 3 belt-and-suspenders: learning_runtime.py itself (the one file with a stateful store) imports nothing beyond ai.access/ai.learning/configuration/stdlib."""
     runtime_file = _learning_dir() / "learning_runtime.py"
-    allowed_prefixes = ("ai.access", "ai.learning", "configuration", "dataclasses", "datetime", "typing")
+    allowed_prefixes = ("ai.access", "ai.learning", "goldbot.core_layer.configuration", "dataclasses", "datetime", "typing")
     for name in _imported_names(runtime_file):
         assert name.startswith(allowed_prefixes), f"{runtime_file}: {name}"
 

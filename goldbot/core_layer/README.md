@@ -1,9 +1,15 @@
 # 02_Core_Layer
 
-Status: SKELETON (Phase A) — implementatsiya Phase B-E davomida qo'shiladi.
+Status: MIGRATING (Phase B) — Configuration ko'chirildi, qolgan modullar davom etmoqda.
 
 Bu papka `New_Map/` dagi Canonical Architecture'ning importga yaroqli aksi.
-Biznes mantiq hali ko'chirilmagan.
+
+## Migratsiya holati
+
+| Modul | Holat | Manba |
+|---|---|---|
+| `configuration` | ✅ MIGRATED | eski `configuration/` paketi |
+| qolganlari | SKELETON | — |
 
 ## Canonical hujjatlar
 

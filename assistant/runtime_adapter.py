@@ -41,7 +41,7 @@ from assistant.access import is_personal_ai_enabled_for
 from assistant.conversation_adapter import assistant_memory_scope_key, assistant_to_voice_session_params
 from assistant.identity import AssistantIdentity
 from assistant.models import AssistantProfile, AssistantRuntime
-from configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 from voice.models import VoiceProviderType, VoiceResult, VoiceResultStatus, VoiceSettings
 from voice.runtime import VoiceRuntime
 

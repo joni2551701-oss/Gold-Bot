@@ -1,6 +1,6 @@
 from ai.access.permissions import AIRole
 from ai.learning.access import is_learning_intelligence_enabled_for
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_learning_intelligence=True)
 DISABLED = FeatureFlags(enable_learning_intelligence=False)

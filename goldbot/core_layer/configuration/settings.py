@@ -11,7 +11,7 @@ section for why this is additive, not a rewrite.
 from dataclasses import dataclass
 
 from config import Config
-from configuration.environment import Environment, resolve_environment
+from goldbot.core_layer.configuration.environment import Environment, resolve_environment
 
 # The real symbol/timeframe this codebase already runs today
 # (main.py's TradingPipeline(symbol="XAUUSD", interval="M15", ...),

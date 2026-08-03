@@ -1,7 +1,7 @@
 from ai.access.permissions import AIRole
 from ai.trading_analyst.analyst_runtime import TradingAnalystRuntime
 from ai.trading_analyst.models import TradingAnalysisInput, TradingRiskLevel
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_trading_analyst=True)
 DISABLED = FeatureFlags(enable_trading_analyst=False)

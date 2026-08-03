@@ -31,7 +31,7 @@ from typing import Dict, Optional, Sequence
 from ai.access.permissions import AIRole
 from ai.trade_journal.access import is_trade_journal_enabled_for
 from ai.trade_journal.models import TradeJournalEntry, generate_journal_id
-from configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 class TradeJournalRuntime:

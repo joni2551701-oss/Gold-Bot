@@ -34,7 +34,7 @@ from ai.learning.models import (
     LearningTopic,
     generate_learning_id,
 )
-from configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 class LearningRuntime:

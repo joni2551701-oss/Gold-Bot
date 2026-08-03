@@ -14,7 +14,7 @@ system, only reports on them.
 """
 
 from config import Config
-from configuration.feature_flags import DEFAULT_FLAGS
+from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS
 from telegram.owner.provider_commands import ProviderCommandResult
 from core.logger import setup_logger
 

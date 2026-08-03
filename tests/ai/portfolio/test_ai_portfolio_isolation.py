@@ -184,7 +184,7 @@ def test_strategy_adapter_never_imports_strategy_runtime():
 def test_portfolio_runtime_module_has_no_persistence_import():
     """Belt-and-suspenders: portfolio_runtime.py itself (the one file with a stateful store) imports nothing beyond ai.access/ai.portfolio/configuration/stdlib."""
     runtime_file = _portfolio_dir() / "portfolio_runtime.py"
-    allowed_prefixes = ("ai.access", "ai.portfolio", "configuration", "dataclasses", "datetime", "typing")
+    allowed_prefixes = ("ai.access", "ai.portfolio", "goldbot.core_layer.configuration", "dataclasses", "datetime", "typing")
     for name in _imported_names(runtime_file):
         assert name.startswith(allowed_prefixes), f"{runtime_file}: {name}"
 

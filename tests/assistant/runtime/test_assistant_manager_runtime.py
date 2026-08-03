@@ -1,7 +1,7 @@
 from ai.access.permissions import AIRole
 from assistant.assistant_manager import AssistantManager
 from assistant.identity_manager import IdentityManager
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 
 ENABLED = FeatureFlags(enable_personal_ai=True)
 DISABLED = FeatureFlags(enable_personal_ai=False)

@@ -167,7 +167,7 @@ def test_only_journal_adapter_imports_ai_trade_journal():
 def test_coaching_runtime_module_has_no_persistence_import():
     """Belt-and-suspenders: coaching_runtime.py itself (the one file with a stateful store) imports nothing beyond ai.access/ai.coaching/configuration/stdlib."""
     runtime_file = _coaching_dir() / "coaching_runtime.py"
-    allowed_prefixes = ("ai.access", "ai.coaching", "configuration", "dataclasses", "datetime", "typing")
+    allowed_prefixes = ("ai.access", "ai.coaching", "goldbot.core_layer.configuration", "dataclasses", "datetime", "typing")
     for name in _imported_names(runtime_file):
         assert name.startswith(allowed_prefixes), f"{runtime_file}: {name}"
 

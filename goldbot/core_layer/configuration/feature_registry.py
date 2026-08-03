@@ -56,7 +56,7 @@ from dataclasses import dataclass
 from typing import List
 
 from config import Config
-from configuration.feature_flags import DEFAULT_FLAGS
+from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS
 
 # Names this task's own brief lists that have no real backing anywhere
 # in this codebase today. Always False, always "declared" -- see

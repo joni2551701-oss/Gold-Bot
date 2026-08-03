@@ -27,7 +27,7 @@ from typing import Dict, Optional, Sequence
 from ai.access.permissions import AIRole
 from ai.performance.access import is_performance_intelligence_enabled_for
 from ai.performance.models import PerformanceRecord, generate_performance_id
-from configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 class PerformanceRuntime:

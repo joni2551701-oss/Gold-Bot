@@ -18,7 +18,7 @@ from assistant.runtime_adapter import (
     run_personal_ai_turn,
     synthesize_voice,
 )
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 from voice.manager import VoiceManager
 from voice.models import VoiceProviderStatus, VoiceProviderType, VoiceResultStatus
 from voice.provider_adapters.local import LocalVoiceProvider

@@ -17,7 +17,7 @@ class every `telegram/owner/ai_commands.py` function already imports.
 """
 
 from ai.access.permissions import AIRole
-from configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 def is_personal_ai_enabled_for(role: AIRole, flags: FeatureFlags = DEFAULT_FLAGS) -> bool:

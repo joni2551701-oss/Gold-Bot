@@ -1,6 +1,6 @@
 # Migration Tracker — goldbot-v1
 
-Status: Phase A COMPLETE
+Status: Phase B IN PROGRESS
 Boshlanish: 2026-08-03
 Asos: `New_Map/FOUNDATION_FREEZE_V1.md` (Foundation Freeze v1.0)
 Buyruq: Director Order No. 002 — Migration Strategy
@@ -30,7 +30,7 @@ Nom konversiyasi: `01_Data_Layer` → `data_layer`, `HistoricalDataService` → 
 | Phase | Qamrov | Holat |
 |---|---|---|
 | A | Skeleton — papka strukturasi, `__init__.py`, README havolalari | ✅ COMPLETE |
-| B | Infrastructure — Core, Database, Event, Configuration, Secrets, Performance | ⏳ |
+| B | Infrastructure — Configuration → Secrets → Core → Event → Performance → Database | 🔄 1/6 |
 | C | Trading Pipeline — Data → Context → Indicator → Strategy → Signal → AI → Decision → Risk → Execution → Trade Monitoring | ⏳ |
 | D | Platform — Telegram, API, Media, Chart | ⏳ |
 | E | Cleanup — eski kodni olib tashlash, duplicate yo'qotish, TODO yopish | ⏳ |
@@ -80,7 +80,42 @@ Holat kodlari:
 * `REFACTORED` — ko'chirilgan kod yangi arxitektura contract'iga moslashtirilgan
 * `IMPLEMENTED` — hujjatlashtirilgan, lekin eski kodda mavjud bo'lmagan modul yozilgan
 
-Joriy holat: **210 modul — barchasi SKELETON**.
+**Migration Validation Rule (MVR-001)** — har bir modul migratsiyasidan keyin: import tekshiruvi, unit testlar, eski/yangi namespace parity (agar modul ishlatilayotgan bo'lsa), commit.
+
+## Phase B — Infrastructure
+
+Director tomonidan tasdiqlangan tartib: Configuration → Secrets → Core → Event → Performance → Database.
+
+| # | Modul | Canonical package | Holat | Izoh |
+|---|---|---|---|---|
+| 1 | Configuration | `goldbot.core_layer.configuration` | ✅ MIGRATED | 9 fayl ko'chirildi, 68 fayldagi importlar yangilandi, wrapper yaratilmadi |
+| 2 | Secrets | `goldbot.core_layer.secrets` | ⏳ | `core/secrets.py` + `config.py`ning `MaskedSecret` qismi (RT-001, RT-002) |
+| 3 | Core | `goldbot.core_layer.*` | ⏳ | |
+| 4 | Event | `goldbot.data_layer.event_system` | ⏳ | |
+| 5 | Performance | `goldbot.core_layer.performance` | ⏳ | |
+| 6 | Database | `goldbot.database_layer.*` | ⏳ | |
+
+### 1. Configuration — MIGRATED
+
+```text
+configuration/environment.py                  -> goldbot/core_layer/configuration/environment.py
+configuration/settings.py                     -> goldbot/core_layer/configuration/settings.py
+configuration/feature_flags.py                -> goldbot/core_layer/configuration/feature_flags.py
+configuration/feature_registry.py             -> goldbot/core_layer/configuration/feature_registry.py
+configuration/feature_dependency_validator.py -> goldbot/core_layer/configuration/feature_dependency_validator.py
+configuration/runtime_state.py                -> goldbot/core_layer/configuration/runtime_state.py
+configuration/runtime_api.py                  -> goldbot/core_layer/configuration/runtime_api.py
+configuration/runtime_feature_manager.py      -> goldbot/core_layer/configuration/runtime_feature_manager.py
+configuration/README.md                       -> goldbot/core_layer/configuration/README.md
+```
+
+Compatibility wrapper **yaratilmadi**: 68 fayldagi importlar to'g'ridan-to'g'ri yangilandi. ICR-001 wrapper'ga ruxsat beradi, lekin bu holatda to'g'ridan-to'g'ri yangilash Phase E'da tozalanadigan o'lik qatlam qoldirmadi va qaysi yo'l canonical ekanligida noaniqlik yaratmadi.
+
+Yon ta'sir: 8 ta arxitektura-izolyatsiya testida ruxsat etilgan import prefiksi `"configuration"` → `"goldbot.core_layer.configuration"` deb yangilandi. Testlarning kuchi kamaymadi — ular xuddi shu izolyatsiyani yangi yo'l bo'yicha tekshiradi.
+
+MVR-001 natijasi: import ✅ · pyflakes ✅ · compileall ✅ · pytest 5400/5400 ✅ · `python main.py` ✅
+
+Joriy holat: **210 moduldan 1 tasi MIGRATED, 209 tasi SKELETON**.
 
 ---
 

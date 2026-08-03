@@ -1,6 +1,6 @@
 """Phase B.0 Rule 5 -- monitoring/access.py tests."""
 
-from configuration.feature_flags import FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import FeatureFlags
 from monitoring.access import is_owner_monitoring_enabled
 
 ENABLED = FeatureFlags(enable_owner_monitoring=True)

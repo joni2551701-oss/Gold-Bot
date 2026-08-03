@@ -11,7 +11,7 @@ grants `AIRole.OWNER` and `AIRole.ADMIN` the same
 """
 
 from ai.access.permissions import AIRole
-from configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
+from goldbot.core_layer.configuration.feature_flags import DEFAULT_FLAGS, FeatureFlags
 
 
 def is_learning_intelligence_enabled_for(role: AIRole, flags: FeatureFlags = DEFAULT_FLAGS) -> bool:
