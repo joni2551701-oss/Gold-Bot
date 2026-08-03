@@ -57,7 +57,7 @@ Internal Services
 ✗ DesktopAPI
 ---
 # Runtime Contract
-1. Platform Layer'ga barcha tashqi Request'lar PlatformService orqali kirishi shart.
+1. PlatformService is the sole entry point to GoldBot Core services — Authentication'dan o'tgan barcha Request'lar PlatformService orqali GoldBot Core Service'larga yo'naltirilishi shart.
 2. Har bir Request Validation'dan o'tishi shart.
 3. Har bir Request faqat bitta maqsadli Service'ga marshrutlanishi shart.
 4. PlatformService Business Logic bajarmaydi.

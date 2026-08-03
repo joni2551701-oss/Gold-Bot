@@ -2,6 +2,8 @@
 
 Status: CANONICAL
 
+Blueprint Only. Reserved for future Education/Learning Platform. Not part of the current Media Layer runtime.
+
 ---
 
 # Purpose

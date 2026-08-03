@@ -3,7 +3,8 @@ Status: CANONICAL
 ---
 # Purpose
 PlatformService GoldBot Platform Layer ichidagi Canonical Platform Gateway moduli hisoblanadi.
-Uning asosiy vazifasi Platform Layer uchun yagona Public API va Gateway bo'lish, barcha platformalardan kelgan so'rovlarni qabul qilish, tekshirish va tegishli ichki Service'larga marshrutlashdir.
+PlatformService is the sole entry point to GoldBot Core services — Platform Layer emas (haqiqiy tashqi kirish nuqtalari Telegram/MobileAPI/WebAPI/DesktopAPI va Authentication hisoblanadi).
+Uning asosiy vazifasi Authentication'dan o'tgan so'rovlarni qabul qilish, tekshirish va tegishli GoldBot Core Service'larga marshrutlashdir.
 PlatformService Business Logic bajarmaydi.
 PlatformService Trading Decision qabul qilmaydi.
 PlatformService faqat Platform Routing va Service Coordination bilan shug'ullanadi.
@@ -85,7 +86,7 @@ Return Platform Response
 ```
 ---
 # Golden Rules
-1. Platform Layer'ga barcha tashqi kirishlar PlatformService orqali amalga oshiriladi.
+1. PlatformService is the sole entry point to GoldBot Core services (AIService, DecisionService, RiskService, ExecutionService, MonitoringService, DatabaseService) — Authentication'dan o'tgan barcha so'rovlar PlatformService orqali shu Service'larga marshrutlanadi.
 2. Har bir Request Validation'dan o'tishi shart.
 3. PlatformService Business Logic bajarmaydi.
 4. Response yagona formatda qaytariladi.
