@@ -92,6 +92,8 @@ Media_Layer/
 │
 ├── Live_Streaming/
 │
+├── Translation/
+│
 └── Content_Manager/
 
 ---
@@ -191,6 +193,14 @@ Q&A.
 Educational webinars.
 
 Community events.
+
+---
+
+## Translation
+
+GoldBot interfeysi va kontentini UZ / RU / EN tillari o'rtasida tarjima qiladi.
+
+Language Registry, Translation Contract, UI Catalog.
 
 ---
 
@@ -336,6 +346,7 @@ Media_Layer/
 ├── Weekly_Market_Review/
 ├── AI_Content_Studio/
 ├── Live_Streaming/
+├── Translation/
 └── Content_Manager/
 
 Har bir papka o'z README.md fayliga ega bo'lishi kerak.

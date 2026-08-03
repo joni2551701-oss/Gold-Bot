@@ -23,8 +23,8 @@ VoiceAI
         ├── TextToSpeech
         ├── VoiceCommands
         ├── WakeWord
-        ├── Voice Session Manager
-        └── Audio Processor
+        ├── VoiceProvider
+        └── VoiceSession
 ```
 ---
 # Internal Components
@@ -40,11 +40,11 @@ Ovozli buyruqlarni aniqlaydi.
 ## WakeWord
 AI chaqiruv so'zini aniqlaydi.
 ---
-## Voice Session Manager
-Ovozli sessiyani boshqaradi.
+## VoiceProvider
+Tashqi ovoz provayderlarini (OpenAI, ElevenLabs, Local, Custom) ro'yxatga oladi va tanlaydi. Audio oqimini qayta ishlash tashqi Provider Adapter zimmasida bo'ladi.
 ---
-## Audio Processor
-Audio oqimini qayta ishlaydi.
+## VoiceSession
+Ovozli muloqot sessiyasini ochadi, holatini saqlaydi va Voice Profile'ni qo'llaydi.
 ---
 # Allowed Dependencies
 ✓ InteractionManager

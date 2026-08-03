@@ -35,6 +35,8 @@ VoiceAI
 ├── SpeechToText
 ├── TextToSpeech
 ├── VoiceCommands
+├── VoiceProvider
+├── VoiceSession
 └── WakeWord
 ```
 ---
@@ -109,6 +111,8 @@ VoiceAI/
 ├── SpeechToText/
 ├── TextToSpeech/
 ├── VoiceCommands/
+├── VoiceProvider/
+├── VoiceSession/
 └── WakeWord/
 ```
 ---

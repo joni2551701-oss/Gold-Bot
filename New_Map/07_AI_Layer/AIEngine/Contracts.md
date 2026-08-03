@@ -17,7 +17,7 @@ AIEngine bajarmaydi.
 ✗ Personal Memory
 ✗ News Analysis
 ✗ Knowledge Search
-✗ Voice Processing
+✗ Voice Processing (VoiceAI vazifasi — AIEngine Voice'ni o'zi qayta ishlamaydi, lekin VoiceAI subsystemini AICoordinator orqali orkestratsiya qiladi)
 ✗ Vision Processing
 ✗ Decision Making
 ✗ Risk Calculation

@@ -19,7 +19,9 @@ Status: CANONICAL
 │
 ├── PartialClose
 │
-└── RecoveryManager
+├── RecoveryManager
+│
+└── PaperTrading
 ```
 ---
 # Processing Pipeline
@@ -81,6 +83,9 @@ Position'ni qisman yopadi.
 ---
 ## RecoveryManager
 Restart Recovery va State Restoration bajaradi. Layer tashqarisiga chiqmaydi — natijani MonitoringService orqali uzatadi.
+---
+## PaperTrading
+Tasdiqlangan Decision'ni real order yubormasdan simulyatsiya qiladi (Virtual Position, Virtual Balance, Paper Lifecycle, Trade Replay). Yuqoridagi chiziqli monitoring zanjirining bir bosqichi EMAS — MonitoringService orqali kiradigan va chiqadigan parallel simulyatsiya yo'li hisoblanadi. Hech qachon Broker'ga murojaat qilmaydi.
 ---
 # Summary
 Trade Monitoring Layer GoldBot arxitekturasidagi Canonical Trade Lifecycle Management Layer hisoblanadi.

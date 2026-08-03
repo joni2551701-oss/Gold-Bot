@@ -38,6 +38,7 @@ Trade Monitoring Layer
 ├── TrailingStop
 ├── PartialClose
 ├── RecoveryManager
+├── PaperTrading
 └── MonitoringService
 ```
 ---
@@ -139,6 +140,7 @@ Database Layer
 ├── TrailingStop/
 ├── PartialClose/
 ├── RecoveryManager/
+├── PaperTrading/
 ├── MonitoringService/
 ├── Layer_DataFlow.md
 ├── Layer_SequenceDiagram.md

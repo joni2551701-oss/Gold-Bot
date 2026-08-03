@@ -74,6 +74,8 @@ Core_Layer/
 │
 ├── HealthMonitor/
 │
+├── Features/
+│
 └── Shutdown/
 
 ---
@@ -133,6 +135,14 @@ Barcha Layer'lar orasidagi Runtime Flow'ni boshqaradi.
 Runtime sog'ligini kuzatadi.
 
 Performance, Health, Diagnostics.
+
+---
+
+## Features
+
+Pipeline davomida allaqachon hisoblangan natijalarni yagona standart Feature obyektiga aylantiradi.
+
+AI, Strategy, Backtesting va ML Export uchun umumiy Feature kutubxonasi. Yangi indikator hisoblamaydi.
 
 ---
 
@@ -277,6 +287,7 @@ Core_Layer/
 ├── Scheduler/
 ├── Pipeline/
 ├── HealthMonitor/
+├── Features/
 └── Shutdown/
 
 Har bir papka o'z README.md, SequenceDiagram.md, ModuleMap.md va Contracts.md fayllariga ega bo'lishi kerak.
