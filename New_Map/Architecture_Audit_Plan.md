@@ -671,6 +671,25 @@ Event Bus.
 ```
 Sabab: Architecture Gap Review v1.0 §6 topdiki, to'liq Event Bus infratuzilmasi (EventBus, EventDispatcher, EventLifecycle, EventPublisher, EventService, EventSubscriber) mavjud, lekin u faqat `01_Data_Layer/Event_System` ichida hujjatlashtirilgan va boshqa Layerlar (Chart_API'ning "Event API"si, Trade Monitoring, Platform) unga rasman bog'lanmagan — Event Bus'ning butun tizim uchun yagona ekanligi hech qayerda aniq yozilmagan edi. Director Decision: yangi modul kerak emas — mavjud Event_System butun GoldBot uchun Canonical Event Bus deb rasman e'lon qilindi (`01_Data_Layer/README.md` Golden Rule 11, `Layer_Contracts.md` Layer Rule 11, `Layer_DataFlow.md` Event Flow bo'limida hujjatlashtirildi).
 ---
+## Backtesting Isolation Rule
+```text
+Backtesting Layer
+must be fully
+isolated from the
+real trading
+infrastructure.
+
+It only simulates
+the behaviour of
+existing Layers and
+never works directly
+with a real Broker,
+Platform, or
+Trade Execution.
+```
+Sabab: Architecture Gap Review v1.0 §1/§14 topdiki, `backtesting/` paketi katta hajmdagi real implementatsiyaga ega (BacktestEngine, ReplayEngine, ReplayController, DataFeed, BacktestResult) bo'lsa-da, `New_Map/`da unga mos hech qanday Layer yoki modul mavjud emas edi. Director Decision: yangi `17_Backtesting_Layer` qo'shildi (16-raqam `16_Chart_Layer` tomonidan band). Rule quyidagilarni majburlaydi: (1) Backtesting hech qachon Live Trading qilmaydi va Broker bilan ulanmaydi; (2) Backtesting Risk Manager'ni hech qachon chetlab o'tmaydi — har bir tasdiqlangan Decision majburiy ravishda Risk Layer'dan o'tadi (CLAUDE.md "Never bypass Risk Manager" qoidasiga mos); (3) Backtesting Decision Layer'ni almashtirmaydi va hech qanday trading mantiqini qayta yozmaydi — faqat mavjud Layer'larni o'zgartirmasdan chaqiradi; (4) `Execution (Simulated)` va `Trade Monitoring (Simulated)` bosqichlari `11_Trade_Monitoring_Layer/PaperTrading` orqali bajariladi — Module Reuse Principle bo'yicha Backtesting Layer o'zining alohida simulyatsiya moduli yaratmaydi.
+Tasdiq: haqiqiy `backtesting/backtest_engine.py` importlari ushbu qoidaga allaqachon mos — u `risk.risk_manager.RiskManager`ni chaqiradi va `execution/` yoki biror Broker mijozini umuman import qilmaydi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.
