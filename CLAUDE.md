@@ -243,3 +243,30 @@ Reuse Principle rather than creating new top-level docs):
 - Each module's own `WORK_LOG.md` — that module's own completed work,
   problems, and fixes (per-module logs already exist repo-wide as of
   the GoldBot Engineering Standard v1.0 rollout).
+
+## Governance Chain
+
+Director Orders No. 018 (`RFC_STANDARD.md`), 019 (`ADR_STANDARD.md`),
+and 020 (`RELEASE_MANAGEMENT_STANDARD.md`) sit on top of the process
+already established above. The full governance chain, exactly as
+described by the Director, one line each for what it governs:
+
+1. **Architecture Standard** (`ARCHITECTURE.md`) — how the system is
+   built.
+2. **Engineering Standard** — how the project is engineered and
+   managed.
+3. **Development Standard** (`GOLDBOT_DEVELOPMENT_STANDARD.md`, GDS)
+   — how code is written.
+4. **RFC Standard** (`RFC_STANDARD.md`) — how large changes are
+   proposed.
+5. **ADR Standard** (`ADR_STANDARD.md`) — why a particular decision
+   was made, preserved as permanent record.
+6. **Release Management Standard** (`RELEASE_MANAGEMENT_STANDARD.md`)
+   — how a product is released.
+
+Each standard governs a distinct question and none replaces another:
+Architecture answers "how is the system built," Engineering answers
+"how is the project managed," Development answers "how is code
+written," RFC answers "how are large changes proposed," ADR answers
+"why was this particular decision made," and Release Management
+answers "how is a product released."

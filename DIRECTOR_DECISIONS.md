@@ -44,3 +44,63 @@ module's own `WORK_LOG.md` for that module's completed work.
 
 Full order text recorded in `CLAUDE.md`'s "Worker Authority — Director
 Order No. 016" section.
+
+### Director Order No. 018 — RFC Standard
+
+Establishes the RFC (Request For Change) process: large changes are
+proposed, analyzed, risk-assessed, and Director-approved before any
+code is written — never coded directly first. Mandates an RFC before
+any change touching a new/removed Layer, the Pipeline, Ownership, a
+Canonical Contract, Trading Logic, AI Logic, Risk Logic, Database
+Architecture, a Public API Breaking Change, Security Architecture, the
+Engineering Standard, or the Development Standard — the same boundary
+already set by Order No. 016's Director Review list, now formalized
+into a document process. The Worker may draft an RFC freely; the
+Worker must not begin implementation until the RFC's Director Decision
+reads Approved — a hard gate.
+
+Full order text, the RFC template, and the process definition live in
+`RFC_STANDARD.md`; individual RFC records live under `rfcs/`
+(`rfcs/README.md` index, `rfcs/TEMPLATE.md` template).
+
+### Director Order No. 019 — ADR Standard
+
+Establishes the ADR (Architecture Decision Record) process: the
+detailed technical record of *why* a significant architecture
+decision was made, kept as permanent history — distinct from the
+short WAR/WDR entries already in this file. Mandates an ADR for a new
+Layer, a Layer merge, an Event Bus change, a Pipeline change, Database
+Architecture, AI Architecture, Execution Flow, Security Architecture,
+Performance Architecture, a Canonical Rule, an Engineering Rule, or a
+Development Rule. An RFC is the proposal-and-approval gate; an ADR is
+the permanent record of the resulting decision — a major change often
+has both. The Worker may draft an ADR; it only becomes Approved after
+Director sign-off — draft ADRs are not binding.
+
+Full order text and the ADR template live in `ADR_STANDARD.md`;
+individual ADR records live under `adrs/` (`adrs/README.md` index,
+`adrs/TEMPLATE.md` template).
+
+### Director Order No. 020 — Release Management Standard
+
+Establishes the Release Lifecycle (Planning → Development → Internal
+Testing → QA → Alpha → Beta → Release Candidate → Production →
+Maintenance → Hotfix → End of Life) and the mandatory per-release
+fields (Version Number, Scope, Features, Breaking Changes, Migration
+Guide, Test Summary, Performance Summary, Security Review, Known
+Issues, Rollback Strategy, Release Notes), plus a Release Checklist
+(Architecture Validation, Engineering Validation, Development
+Validation, Regression Test, Performance Test, Security Review,
+Documentation Review, CHANGELOG, Director Approval) required before
+any Production release. The Worker prepares Release Candidates, runs
+tests, and writes Release Notes and Known Issues; Worker Authority
+stops at Release Candidate — Production Release requires explicit
+Director approval, full stop, no exception.
+
+Full order text, lifecycle stage criteria, and the Version Numbering
+convention (semantic versioning, MAJOR.MINOR.PATCH) live in
+`RELEASE_MANAGEMENT_STANDARD.md`.
+
+Orders No. 018, 019, and 020 together with Order No. 017 (GDS) and the
+existing Architecture/Engineering standards form the full Governance
+Chain, recorded in `CLAUDE.md`'s Worker Authority section.
