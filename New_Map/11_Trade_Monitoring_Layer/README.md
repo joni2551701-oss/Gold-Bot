@@ -81,13 +81,15 @@ Trade Monitoring Layer yaratadi.
 ```text
 OPEN
 ↓
-MONITORING
+ACTIVE
 ↓
 BREAKEVEN
 ↓
 TRAILING
 ↓
-PARTIAL_CLOSE
+PARTIAL
+↓
+CLOSING
 ↓
 CLOSED
 ```

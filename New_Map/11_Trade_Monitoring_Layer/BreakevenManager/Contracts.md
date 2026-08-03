@@ -33,7 +33,7 @@ TrailingStop
 • Trade Context
 • Position Information
 • Current Market Price
-• Break Even Rules
+• Break Even Rules (Risk Policy'dan)
 • Monitoring Context
 ---
 # Output Contract
@@ -62,7 +62,8 @@ TrailingStop
 4. Break Even Event yaratilishi shart.
 5. Break Even Report TrailingStop moduliga uzatilishi shart.
 6. BreakevenManager Position'ni yopmaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. BreakevenManager faqat Risk Policy ruxsat bergan harakatlarni bajaradi (Allow BE) va hech qachon risk'ni qayta hisoblamaydi yoki Risk Layer'ni chaqirmaydi.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Trade Context qabul qilinadi.

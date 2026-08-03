@@ -52,6 +52,7 @@ Database Layer
 # Input Contract
 Kirish tomonida (Execution Layer'dan):
 • Execution Result
+• Risk Policy
 • Monitoring Request
 • Session Metadata
 

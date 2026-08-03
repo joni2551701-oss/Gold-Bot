@@ -10,6 +10,7 @@ RiskValidator quyidagilar uchun javobgar.
 ✓ Risk Policy Validation
 ✓ Capital Protection Validation
 ✓ Risk Approval Generation
+✓ Risk Policy Generation
 ✓ Reject Reason Generation
 ✓ Validation Report Generation
 RiskValidator bajarmaydi.
@@ -39,6 +40,7 @@ RiskService
 ---
 # Output Contract
 • Risk Approval
+• Risk Policy
 • Risk Status
 • Reject Reason
 • Validation Report
@@ -61,7 +63,8 @@ RiskService
 4. REJECT holatida Reject Reason majburiy.
 5. APPROVED natijasi RiskService'ga uzatilishi shart.
 6. RiskValidator Risk qiymatlarini qayta hisoblamaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. Risk Policy (Allow BE, Allow Trailing, Allow Partial Close, Max Partial %, Trailing Rules, BreakEven Rules) Risk Approval bilan birga yaratilishi shart — Trade Monitoring Layer faqat shu Policy doirasida harakat qiladi va qayta risk hisoblamaydi.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Barcha Risk Reportlar qabul qilinadi.

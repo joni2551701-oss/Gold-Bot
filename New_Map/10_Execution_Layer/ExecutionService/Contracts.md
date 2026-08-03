@@ -47,6 +47,7 @@ Trade Monitoring Layer
 # Input Contract
 Kirish tomonida (Risk Layer'dan):
 • Risk Approval
+• Risk Policy
 • Position Package
 • Execution Request
 • Session Metadata
@@ -61,6 +62,7 @@ Kirish tomonida (ExecutionEngine'ga):
 Chiqish tomonida (Trade Monitoring Layer'ga):
 • Execution Response
 • Execution Status
+• Risk Policy
 • Standard Response
 • Service Metadata
 ---
@@ -82,10 +84,11 @@ Chiqish tomonida (Trade Monitoring Layer'ga):
 1. Execution Layer'ga barcha kirish va chiqishlar ExecutionService orqali amalga oshirilishi shart (Boundary Gateway).
 2. Har bir kirish Request Validation'dan o'tishi shart.
 3. ExecutionService Business Logic bajarmaydi — faqat Entry/Exit Boundary vazifasini bajaradi.
-4. Response standart formatda qaytarilishi shart.
-5. ExecutionMonitor Layer tashqarisiga chiqmaydi — faqat ExecutionService orqali chiqadi.
-6. Session holati boshqarilishi shart.
-7. Circular Dependency qat'iyan taqiqlanadi.
+4. Risk Policy Risk Layer'dan Trade Monitoring Layer'ga o'zgartirilmasdan uzatiladi.
+5. Response standart formatda qaytarilishi shart.
+6. ExecutionMonitor Layer tashqarisiga chiqmaydi — faqat ExecutionService orqali chiqadi.
+7. Session holati boshqarilishi shart.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Risk Layer'dan Request qabul qilinadi.

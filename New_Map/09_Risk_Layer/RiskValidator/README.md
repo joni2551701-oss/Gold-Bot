@@ -36,6 +36,7 @@ RiskValidator
 ✓ Exposure natijalarini tekshiradi
 ✓ Portfolio natijalarini tekshiradi
 ✓ Yakuniy Risk Approval yaratadi
+✓ Risk Policy yaratadi (Allow BE, Allow Trailing, Allow Partial Close, Max Partial %, Trailing Rules, BreakEven Rules)
 ---
 # Not Responsible
 RiskValidator
@@ -58,6 +59,7 @@ RiskValidator qabul qiladi.
 # Output
 RiskValidator yaratadi.
 • Risk Approval
+• Risk Policy
 • Risk Status
 • Reject Reason
 • Risk Validation Report
@@ -89,7 +91,8 @@ RiskService
 2. Har bir REJECT uchun sabab yaratilishi shart.
 3. APPROVED bo'lmasa Execution Layer ishga tushmaydi.
 4. RiskValidator Risk qiymatlarini o'zgartirmaydi.
-5. Circular Dependency qat'iyan taqiqlanadi.
+5. Risk Policy Trade ochilish vaqtida bir marta yaratiladi va Trade Monitoring Layer'ning Breakeven/Trailing Stop/Partial Close harakatlarini shu Policy chegaralaydi — Trade Monitoring qayta risk hisoblamaydi.
+6. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents
 ```text

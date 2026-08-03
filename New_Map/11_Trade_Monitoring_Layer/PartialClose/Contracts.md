@@ -33,7 +33,7 @@ RecoveryManager
 • Trade Context
 • Position Information
 • Current Position Size
-• Partial Close Rules
+• Partial Close Rules (Risk Policy'dan)
 • Monitoring Context
 ---
 # Output Contract
@@ -65,7 +65,8 @@ RecoveryManager
 4. Partial Close faqat bir marta bajarilishi kerak bo'lgan bosqichda bajariladi.
 5. Partial Close Report RecoveryManager moduliga uzatilishi shart.
 6. PartialClose Position'ni to'liq yopmaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. PartialClose faqat Risk Policy ruxsat bergan harakatlarni bajaradi (Allow Partial Close, Max Partial %) va hech qachon risk'ni qayta hisoblamaydi yoki Risk Layer'ni chaqirmaydi.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Trade Context qabul qilinadi.

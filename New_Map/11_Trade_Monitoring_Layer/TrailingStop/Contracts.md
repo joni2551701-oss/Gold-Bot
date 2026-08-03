@@ -33,7 +33,7 @@ PartialClose
 • Trade Context
 • Position Information
 • Current Market Price
-• Trailing Rules
+• Trailing Rules (Risk Policy'dan)
 • Monitoring Context
 ---
 # Output Contract
@@ -65,7 +65,8 @@ PartialClose
 4. Har bir yangilanish log qilinishi shart.
 5. Trailing Report PartialClose moduliga uzatilishi shart.
 6. TrailingStop Position'ni yopmaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. TrailingStop faqat Risk Policy ruxsat bergan harakatlarni bajaradi (Allow Trailing) va hech qachon risk'ni qayta hisoblamaydi yoki Risk Layer'ni chaqirmaydi.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Trade Context qabul qilinadi.

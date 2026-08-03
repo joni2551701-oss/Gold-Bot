@@ -3,7 +3,7 @@ Status: CANONICAL
 ---
 # Purpose
 PartialClose GoldBot Trade Monitoring Layer ichidagi Canonical Partial Position Management moduli hisoblanadi.
-Uning asosiy vazifasi Strategy va Risk qoidalariga muvofiq ochiq Position'ning ma'lum qismini yopish va qolgan qismini monitoring qilishdir.
+Uning asosiy vazifasi Trade ochilish vaqtida Risk Layer tomonidan yaratilgan Risk Policy (Partial Close Rules) doirasida ochiq Position'ning ma'lum qismini yopish va qolgan qismini monitoring qilishdir.
 PartialClose yangi Trade ochmaydi.
 PartialClose Trading Decision qabul qilmaydi.
 PartialClose faqat Partial Position Close boshqaruvi bilan shug'ullanadi.

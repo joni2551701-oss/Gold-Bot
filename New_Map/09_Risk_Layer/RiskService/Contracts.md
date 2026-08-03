@@ -56,6 +56,7 @@ Kirish tomonida (Decision Layer'dan):
 
 Chiqish tomonida (RiskValidator'dan):
 • Risk Approval
+• Risk Policy
 ---
 # Output Contract
 Kirish tomonida (RiskEngine'ga):
@@ -63,6 +64,7 @@ Kirish tomonida (RiskEngine'ga):
 
 Chiqish tomonida (Execution Layer'ga):
 • Risk Response
+• Risk Policy
 • Standard Response
 • Service Metadata
 ---
