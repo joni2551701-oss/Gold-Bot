@@ -340,3 +340,69 @@ python main.py ................. PASS
 | `ai_layer -> backtesting_layer` (7 fayl) | `learning_context.py` | ⚠ Tekshirish kerak |
 
 Bu qirralar migratsiya tomonidan **yaratilmagan** — ular pre-freeze kodda ham mavjud edi; Layer chegaralari aniq bo'lgani uchun endi ko'rinadi. Ularni tuzatish import yo'nalishini o'zgartirishni, ya'ni arxitektura refactoring'ini talab qiladi — bu Director Review masalasi (Order No. 010 §Director Review).
+
+## GEL-001 Implementation Complete — DD-001 Continuation (Layers 2-17)
+
+`risk_layer` GEL-001 ("One Module = One Package") ishi c77c792
+commitida yakunlandi. Ushbu bo'lim DD-001 bo'yicha qolgan 13 Layer
+(vazifa qamrovida sanalgan: trade_monitoring_layer, execution_layer,
+decision_layer, signal_layer, strategy_layer, context_layer,
+media_layer, backtesting_layer, database_layer, core_layer,
+platform_layer, data_layer, ai_layer) uchun avtonom davomni
+hujjatlashtiradi (Director Order No. 016, Worker Authority
+Expansion). Jami: risk_layer + ushbu 13 = 14 Layer'da GEL-001 rename
+bajarildi.
+
+### 1. Contracts.md → CONTRACTS.md / ModuleMap.md → MODULE_MAP.md
+
+Har bir Layer'da `git mv` orqali (kontent o'zgarmagan) barcha modul
+paketlarida bajarildi:
+
+| # | Layer | Modul soni | Commit |
+|---|---|---|---|
+| 1 | risk_layer | 8 | `c77c792` (oldingi) |
+| 2 | trade_monitoring_layer | 9 | `e7e5e59` |
+| 3 | execution_layer | 7 | `14fb21b` |
+| 4 | decision_layer | 6 | `3ed1903` |
+| 5 | signal_layer | 7 | `dd1727f` |
+| 6 | strategy_layer | 17 | `9295cd6` |
+| 7 | context_layer | 11 | `c0a4b6a` |
+| 8 | media_layer | 3 | `f3524a8` |
+| 9 | backtesting_layer | 8 | `47e65de` |
+| 10 | database_layer | 9 | `be5d2da` |
+| 11 | core_layer | 17 | `26d5602` |
+| 12 | platform_layer | 7 | `fb142c0` |
+| 13 | data_layer | 38 | `b0f108a` |
+| 14 | ai_layer | 39 | `0061900` |
+
+Jami: 13 yangi commit, 178 modul paketida rename (356 fayl:
+CONTRACTS.md + MODULE_MAP.md juftliklari).
+
+### 2. Loose-file GEL-001 buzilishlari — topilmadi
+
+Har bir Layer avval `.py` fayllar to'g'ridan-to'g'ri Layer/subfolder
+ichida (o'z paketiga o'ralmagan holda) yotganligi tekshirildi. Natija:
+13 Layer'ning barchasida faqat `__init__.py` Layer top-level'da
+turibdi; qolgan har bir `.py` fayl allaqachon o'z paket papkasi
+ichida (masalan `fair_value_gap/fvg.py`, `knowledge_ai/
+learning_context.py`, `execution_monitor/signal_lifecycle.py` — bular
+ko'p-fayllik canonical modullar, orphan emas). Shu sababli hech bir
+`<stem>/<stem>.py` + `__init__.py` re-export wrap kerak bo'lmadi.
+
+### 3. Validatsiya — har bir Layer commitida
+
+Har bir Layer uchun to'liq CLAUDE.md commit protokoli bajarildi:
+`git add -A` → `pyflakes` (clean) → `compileall` (pass) → `pytest
+tests/` (5400/5400 passed, har safar) → `python main.py` smoke-run
+(pipeline baseline log shakli bilan bir xil, yangi traceback yo'q) →
+`git status` clean → `git diff --cached` review → commit → push.
+
+### 4. Chetlab o'tilgan / hal qilinmagan narsalar
+
+Yo'q. Vazifa qamrovidagi barcha 14 Layer (risk_layer + ushbu 13 ta)
+uchun rename to'liq bajarildi, loose-file wrap kerak bo'lgan haqiqiy
+GEL-001 buzilishi topilmadi.
+
+### Status: GEL-001 Implementation Complete (vazifa qamrovidagi barcha 14 Layer)
+
+Director Consolidated Review uchun tayyor — DD-001 punkt 7.
