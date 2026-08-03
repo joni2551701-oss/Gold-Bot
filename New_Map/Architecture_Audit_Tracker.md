@@ -1209,13 +1209,15 @@ Phase 2 — Module Audit Progress
 
 08_Decision_Layer            CLOSED (600/600)
 
-⏳ 09_Risk_Layer
-⬜ 10_Execution_Layer
-⬜ 11_Trade_Monitoring_Layer
-⬜ 12_Database_Layer
-⬜ 13_Platform_Layer
-⬜ 14_Media_Layer
-⬜ 15_Future_Expansion
+09_Risk_Layer                CLOSED (800/800)
+10_Execution_Layer           CLOSED (700/700)
+11_Trade_Monitoring_Layer    CLOSED (800/800)
+12_Database_Layer            CLOSED (800/800)
+13_Platform_Layer            CLOSED (700/700)
+14_Media_Layer               CLOSED (Blueprint Only)
+15_Future_Expansion          CLOSED (Blueprint Only)
+
+PHASE 2 MODULE AUDIT: COMPLETE (15/15 Layers)
 ```
 
 Progress: 3 / 15 Layers Completed
@@ -1868,19 +1870,95 @@ Auto-fixed by Worker (rule-based, no Director decision needed):
 
 ---
 
-## Phase 2 Statistics (running)
+## Director Review — Batch Audit (09_Risk_Layer through 15_Future_Expansion)
 
-Groups/Layers Completed:
-13 (6 groups in 01_Data_Layer + 02_Core_Layer + 03_Context_Layer + 04_Indicator_Layer + 05_Strategy_Layer + 06_Signal_Layer + 07_AI_Layer + 08_Decision_Layer as full Layers)
+Phase:
+Phase 2 — Module Audit (final batch)
 
-Layers Completed:
-8 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer, 05_Strategy_Layer, 06_Signal_Layer, 07_AI_Layer, 08_Decision_Layer)
+Layers:
+09_Risk_Layer, 10_Execution_Layer, 11_Trade_Monitoring_Layer, 12_Database_Layer, 13_Platform_Layer, 14_Media_Layer, 15_Future_Expansion
 
-Modules Completed:
-133
+Status:
+ALL CLOSED, APPROVED — **Phase 2 Module Audit COMPLETE**
+
+Modules:
+38 / 38 built-out modules (09: 8, 10: 7, 11: 8, 12: 8, 13: 7) + 2 blueprint-stage layers (14, 15 — single README each, no Contracts/ModuleMap/SequenceDiagram yet, reviewed for internal consistency only, no module-level cross-referencing applicable)
 
 Architecture Score:
-13300 / 13300
+3800 / 3800 (built-out layers)
+
+Critical:
+7 (all resolved via one consolidated Director Ruling)
+
+Major:
+~50 (auto-fixed by Worker across the batch, rule-based, no Director decision needed)
+
+Minor:
+several (auto-fixed)
+
+Approved:
+100%
+
+### Per-Layer Summary
+
+**09_Risk_Layer** (8/8 modules, 800/800): RiskEngine's own docs showed a stale direct `Decision Layer → RiskEngine` receipt contradicting RiskService's own Output Contract ("Validated Risk Request") — same staleness class as 08_Decision_Layer, auto-fixed without escalation. Missing Forbidden Dependencies reconciled across PositionSizing/MoneyManagement/DrawdownManager/ExposureManager/PortfolioManager. RiskService and RiskValidator: clean separation, no findings.
+
+**10_Execution_Layer** (7/7 modules, 700/700): ExecutionEngine's Module Boundary disagreed with its own README/ModuleMap on next-hop; Input stale ("Risk Approval" vs. ExecutionService's actual "Validated Execution Request"); both auto-fixed. ExecutionEngine/SequenceDiagram.md and ExecutionService/SequenceDiagram.md trimmed to stop at their own boundary instead of narrating the full downstream pipeline. Missing Forbidden Dependencies reconciled across all modules. **Critical (Director-ruled):** "Execution Result" was independently claimed by three modules — resolved via new **Execution Ownership Rule**: ExecutionMonitor is the sole Canonical owner of Execution Result; BrokerGateway owns "Broker Execution Response" only; ExecutionEngine owns orchestration only (renamed its output to "Execution Plan").
+
+**11_Trade_Monitoring_Layer** (8/8 modules, 800/800): RecoveryManager's own docs showed a stale direct exit to Database Layer, contradicting the group-wide "MonitoringService is the sole Exit point" rule stated 3+ times at group level — same staleness class as 12_Database_Layer's BackupManager fix, auto-fixed. Missing Forbidden Dependencies reconciled across 6 modules. **Critical (Director-ruled):** BreakevenManager/TrailingStop/PartialClose modify live positions while forbidding Risk Layer as a dependency, with no documented Risk Manager checkpoint — resolved via new **Risk Policy Rule**: Risk Layer produces a Risk Policy once at trade-open (Allow BE/Allow Trailing/Allow Partial Close/Max Partial %/Trailing Rules/BreakEven Rules), passed through Execution Layer to Trade Monitoring Layer; Trade Monitoring executes only within Risk Policy bounds and never recalculates risk or calls Risk Manager again — CLAUDE.md's "Never bypass Risk Manager" rule is preserved. Also standardized the previously three-way-inconsistent open-position state machine to `OPEN → ACTIVE → BREAKEVEN → TRAILING → PARTIAL → CLOSING → CLOSED` across the group README, PositionMonitor, and TradeLifecycleManager.
+
+**12_Database_Layer** (8/8 modules, 800/800): BackupManager's own docs claimed a direct exit to Platform Layer, contradicting the group-wide "BackupManager never leaves the layer, only via DatabaseService" rule stated 3x at group level — clear-cut staleness, auto-fixed. DatabaseService/SequenceDiagram.md and the 4 repositories' SequenceDiagrams trimmed/corrected to stop at their own boundary instead of narrating or contradicting the downstream chain. Group-level Layer_SequenceDiagram.md/Layer_Contracts.md corrected from strict-sequential to the parallel fan-out model already used by Layer_DataFlow.md/Layer_ModuleMap.md, applying the existing Parallel Execution Rule ACR directly (no new Director decision needed — the four repositories have no data dependency on each other). Missing Forbidden Dependencies reconciled across 6 modules.
+
+**13_Platform_Layer** (7/7 modules, 700/700): Authentication's ModuleMap.md Module Position was missing a hop present in its own Contracts.md; Forbidden Dependencies missing sibling client-channel modules — both auto-fixed. Layer_DataFlow.md/Layer_SequenceDiagram.md's flat depiction of the 4 client channels corrected to explicit parallel branching, applying the existing Parallel Execution Rule ACR directly. **Critical (Director-ruled):** PlatformService's own docs claimed to be the Platform Layer's "sole external entry point," conflicting with the canonical pipeline where client channels + Authentication are the actual entry points — resolved via new **Platform Gateway Rule**: PlatformService is the sole entry point to GoldBot Core services, not to the Platform Layer itself; wording corrected in README.md and Contracts.md.
+
+**14_Media_Layer / 15_Future_Expansion**: blueprint-stage stubs (single README each), internally consistent, no module-level Contracts/ModuleMap/SequenceDiagram exist yet to cross-reference. One structural note resolved: `14_Media_Layer/Learning/README.md` — Director Ruling confirmed this is an intentionally preserved future blueprint (not an orphaned file, not part of the current Media Layer runtime); marked with a "Blueprint Only" notice per Director instruction, left in place.
+
+Three new Canonical Rules established (Architecture Decision Records), added to `Architecture_Audit_Plan.md` §9b:
+* **Execution Ownership Rule** — BrokerGateway owns Broker Execution Response; ExecutionMonitor owns Execution Result; ExecutionEngine owns execution orchestration only.
+* **Risk Policy Rule** — Risk Layer produces Risk Policy at trade-open; Trade Monitoring may execute only actions the Risk Policy allows and must never recalculate risk.
+* **Platform Gateway Rule** — PlatformService is the sole entry point to GoldBot Core services, not to the Platform Layer itself; client channels + Authentication are the Platform Layer's actual external entry points.
+
+---
+
+## PHASE 2 MODULE AUDIT — COMPLETE
+
+All 15 Layers of the GoldBot canonical architecture (`New_Map/`) have been audited under Phase 2 and are now CLOSED, APPROVED:
+
+```
+01_Data_Layer                APPROVED (3800/3800)
+02_Core_Layer                APPROVED (900/900)
+03_Context_Layer             APPROVED (1100/1100)
+04_Indicator_Layer           APPROVED (900/900)
+05_Strategy_Layer            APPROVED (1600/1600)
+06_Signal_Layer              APPROVED (700/700)
+07_AI_Layer                  APPROVED (3700/3700)
+08_Decision_Layer            APPROVED (600/600)
+09_Risk_Layer                APPROVED (800/800)
+10_Execution_Layer           APPROVED (700/700)
+11_Trade_Monitoring_Layer    APPROVED (800/800)
+12_Database_Layer            APPROVED (800/800)
+13_Platform_Layer            APPROVED (700/700)
+14_Media_Layer               APPROVED (Blueprint Only)
+15_Future_Expansion          APPROVED (Blueprint Only)
+
+Phase 2 COMPLETE
+```
+
+---
+
+## Phase 2 Statistics (FINAL)
+
+Groups/Layers Completed:
+15 / 15 (all Layers, full Phase 2 Module Audit)
+
+Layers Completed:
+15 (01_Data_Layer, 02_Core_Layer, 03_Context_Layer, 04_Indicator_Layer, 05_Strategy_Layer, 06_Signal_Layer, 07_AI_Layer, 08_Decision_Layer, 09_Risk_Layer, 10_Execution_Layer, 11_Trade_Monitoring_Layer, 12_Database_Layer, 13_Platform_Layer, 14_Media_Layer, 15_Future_Expansion)
+
+Modules Completed:
+171 (169 fully-audited modules across 13 built-out Layers + 2 blueprint-stage Layers reviewed for internal consistency)
+
+Architecture Score:
+17100 / 17100
 
 Critical Remaining:
 0
