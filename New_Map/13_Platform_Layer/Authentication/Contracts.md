@@ -56,6 +56,11 @@ DatabaseService
 ✗ RiskService
 ✗ ExecutionService
 ✗ MonitoringService
+✗ Telegram (to'g'ridan-to'g'ri)
+✗ MobileAPI (to'g'ridan-to'g'ri)
+✗ WebAPI (to'g'ridan-to'g'ri)
+✗ DesktopAPI (to'g'ridan-to'g'ri)
+✗ NotificationCenter
 ---
 # Runtime Contract
 1. Har bir foydalanuvchi Register vaqtida noyob User ID olishi shart.

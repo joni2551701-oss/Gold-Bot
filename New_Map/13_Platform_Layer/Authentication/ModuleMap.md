@@ -11,6 +11,8 @@ Platform
 Authentication
 ↓
 PlatformService
+↓
+DatabaseService
 ```
 ---
 # Module Architecture
@@ -54,6 +56,11 @@ Authentication Metadata yaratadi.
 ✗ RiskService
 ✗ ExecutionService
 ✗ MonitoringService
+✗ Telegram (to'g'ridan-to'g'ri)
+✗ MobileAPI (to'g'ridan-to'g'ri)
+✗ WebAPI (to'g'ridan-to'g'ri)
+✗ DesktopAPI (to'g'ridan-to'g'ri)
+✗ NotificationCenter
 ---
 # Summary
 Authentication GoldBot Platform Layer ichidagi Identity va Access Management jarayonlarini boshqaruvchi Canonical modul hisoblanadi.
