@@ -48,6 +48,7 @@ Repositories
 ✓ UserRepository
 ✓ MarketRepository
 ✓ JournalRepository
+✓ AuditLog
 ---
 # Forbidden Dependencies
 ✗ CacheManager

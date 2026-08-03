@@ -94,9 +94,9 @@ Platform Layer
 
 # Allowed Dependencies
 
-✓ AI Layer
+✓ AI Layer (AI Coach uchun, faqat maslahat sifatida)
 
-✓ Platform Layer
+✓ Platform Layer (foydalanuvchiga yetkazish uchun)
 
 ---
 

@@ -52,6 +52,7 @@ Repository Metadata yaratadi.
 ✗ UserRepository
 ✗ MarketRepository
 ✗ JournalRepository
+✗ AuditLog
 ✗ CacheManager
 ✗ BackupManager
 ✗ Platform Layer

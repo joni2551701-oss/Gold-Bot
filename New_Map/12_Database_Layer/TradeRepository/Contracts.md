@@ -50,6 +50,7 @@ Database Storage
 ✗ UserRepository
 ✗ MarketRepository
 ✗ JournalRepository
+✗ AuditLog
 ✗ CacheManager
 ✗ BackupManager
 ✗ Platform Layer

@@ -65,8 +65,8 @@ Strategy natijasini tekshiradi.
 SMC Execution Output yaratadi.
 ---
 # Allowed Dependencies
-✓ Market Context
-✓ Indicator Context
+✓ Context Layer
+✓ Indicator Layer
 ✓ StrategyEngine
 ✓ StrategyProfiles
 ---

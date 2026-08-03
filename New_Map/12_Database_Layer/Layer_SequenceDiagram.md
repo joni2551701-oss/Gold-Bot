@@ -14,7 +14,7 @@ DatabaseManager
         │
         ├──────────────┬──────────────┬──────────────┐
         ▼              ▼              ▼              ▼
-TradeRepository  UserRepository  MarketRepository  JournalRepository
+TradeRepository  UserRepository  MarketRepository  JournalRepository  AuditLog
         │              │              │              │
         └──────────────┴──────────────┴──────────────┘
                        │
@@ -33,7 +33,7 @@ Platform Layer
 2. DatabaseService Database Layer'ning yagona Entry va Exit nuqtasi hisoblanadi.
 3. Request Validation bajarilishi shart.
 4. Database Connection mavjud bo'lishi shart.
-5. TradeRepository, UserRepository, MarketRepository, JournalRepository bir-birining natijasiga bog'liq emas va parallel ishga tushiriladi.
+5. TradeRepository, UserRepository, MarketRepository, JournalRepository va AuditLog bir-birining natijasiga bog'liq emas va parallel ishga tushiriladi.
 6. Cache sinxronlashtirilishi shart.
 7. Backup kerak bo'lsa yaratilishi shart, lekin Layer tashqarisiga chiqmaydi.
 8. Standard Response DatabaseService orqali qaytarilishi shart.

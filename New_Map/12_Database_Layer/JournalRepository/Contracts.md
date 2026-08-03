@@ -8,7 +8,6 @@ Ushbu hujjat JournalRepository modulining rasmiy Architecture Contract hujjati h
 JournalRepository quyidagilar uchun javobgar.
 ✓ AI Journal Storage
 ✓ Decision History Storage
-✓ Audit Log Storage
 ✓ Explainability Storage
 ✓ System Event Storage
 ✓ Journal Query Processing
@@ -32,14 +31,12 @@ Database Storage
 # Input Contract
 • AI Journal Record
 • Decision Record
-• Audit Record
 • System Event
 • Query Request
 ---
 # Output Contract
 • Journal Result
 • Decision History
-• Audit History
 • Query Result
 • Repository Metadata
 ---
@@ -48,6 +45,7 @@ Database Storage
 ✓ Database Storage
 ---
 # Forbidden Dependencies
+✗ AuditLog
 ✗ TradeRepository
 ✗ UserRepository
 ✗ MarketRepository
@@ -61,20 +59,19 @@ Database Storage
 # Runtime Contract
 1. Har bir Journal Record vaqt belgisi bilan saqlanishi shart.
 2. Decision History immutable bo'lishi shart.
-3. Audit Log o'zgartirilmasligi va o'chirilmasligi shart.
-4. Explainability ma'lumotlari Decision bilan bog'lanishi shart.
-5. Query natijalari standart formatda qaytarilishi shart.
-6. JournalRepository Business Logic bajarmaydi.
+3. Explainability ma'lumotlari Decision bilan bog'lanishi shart.
+4. Query natijalari standart formatda qaytarilishi shart.
+5. JournalRepository Business Logic bajarmaydi.
+6. JournalRepository Audit Trail saqlamaydi — bu AuditLog modulining vazifasi (Trade Journal va Audit Log aralashtirilmaydi).
 7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ AI Journal saqlanadi.
 ✓ Decision History saqlanadi.
-✓ Audit Log saqlanadi.
 ✓ System Event saqlanadi.
 ✓ Journal Query bajariladi.
 ✓ Repository Metadata yaratiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-JournalRepository Contract GoldBot Database Layer ichidagi AI Journal, Decision History, Audit Log, Explainability va System Event ma'lumotlarini ishonchli saqlash, qidirish va boshqarishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.
+JournalRepository Contract GoldBot Database Layer ichidagi AI Journal, Decision History, Explainability va System Event ma'lumotlarini ishonchli saqlash, qidirish va boshqarishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.

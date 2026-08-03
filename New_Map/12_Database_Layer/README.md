@@ -35,6 +35,7 @@ Database Layer
 ├── UserRepository
 ├── MarketRepository
 ├── JournalRepository
+├── AuditLog
 ├── CacheManager
 ├── BackupManager
 └── DatabaseService
@@ -47,6 +48,7 @@ Database Layer
 ✓ User ma'lumotlarini saqlaydi
 ✓ Market Data saqlaydi
 ✓ AI Journal saqlaydi
+✓ Audit Trail saqlaydi (Login, Configuration, Permission, API Access, Critical Event)
 ✓ Cache boshqaradi
 ✓ Backup yaratadi
 ✓ Restore bajaradi
@@ -66,6 +68,7 @@ Database Layer qabul qiladi.
 • User Data
 • Market Data
 • Journal Data
+• Audit Entry
 • Cache Data
 • Backup Request
 ---
@@ -86,6 +89,8 @@ User Data
 Market Data
 ↓
 AI Journal
+↓
+Audit Trail
 ↓
 Cache
 ↓
@@ -119,7 +124,9 @@ Platform Layer
 3. Cache doimo Database bilan sinxron bo'lishi shart.
 4. Backup muntazam yaratilishi shart.
 5. Database Transaction atomik bo'lishi shart.
-6. Circular Dependency qat'iyan taqiqlanadi.
+6. Audit Trail append-only hisoblanadi — yozuv o'zgartirilmaydi va o'chirilmaydi; u Trade Journal bilan aralashtirilmaydi.
+7. Maxfiy qiymatlar (API Key, Token, Password) hech qachon ochiq ko'rinishda saqlanmaydi.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents
 ```text
@@ -130,6 +137,7 @@ Platform Layer
 ├── UserRepository/
 ├── MarketRepository/
 ├── JournalRepository/
+├── AuditLog/
 ├── CacheManager/
 ├── BackupManager/
 ├── DatabaseService/

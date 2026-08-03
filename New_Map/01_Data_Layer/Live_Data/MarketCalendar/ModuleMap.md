@@ -291,15 +291,15 @@ MarketCalendar quyidagilar bilan ishlashi mumkin.
 
 ✓ Configuration Layer
 
-✓ PriceStreamService
-
-✓ Event Bus
-
 ✓ Time Service
 
 ✓ Exchange Calendar
 
 ✓ Holiday Calendar
+
+✓ PriceStreamService
+
+✓ Event Bus
 
 ---
 
@@ -309,7 +309,7 @@ MarketCalendar quyidagilar bilan ishlashi mumkin emas.
 
 ✗ Historical Data
 
-✗ Historical Database
+✗ HistoricalDatabase
 
 ✗ HistoricalDataService
 

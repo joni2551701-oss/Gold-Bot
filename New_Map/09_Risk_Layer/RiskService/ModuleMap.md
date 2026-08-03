@@ -70,6 +70,7 @@ RiskService holatini kuzatadi.
 ✗ DrawdownManager (to'g'ridan-to'g'ri)
 ✗ ExposureManager (to'g'ridan-to'g'ri)
 ✗ PortfolioManager (to'g'ridan-to'g'ri)
+✗ Execution Layer'dan boshqa tashqi Layer
 ✗ Database Layer
 ✗ Platform Layer
 ✗ DecisionEngine

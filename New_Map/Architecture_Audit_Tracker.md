@@ -1979,3 +1979,80 @@ Minor Remaining:
 4. APPROVED.
 5. CLOSED.
 6. Keyingi Module. Group ichidagi barcha Module'lar CLOSED bo'lgach — Group CLOSED, keyingi Group.
+
+---
+
+# Phase 3 — Architecture Gap Review v1.0
+
+Phase 2 Module Audit yakunlangandan keyin o'tkazilgan yakuniy to'liqlik tekshiruvi ("Biz nimanidir unutmadikmi?"). Bu audit emas — Foundation Freeze'dan oldingi Gap Review.
+
+## Gap Review natijalari va yechimlari
+
+| # | Topilma | Director Qarori | Holat |
+|---|---|---|---|
+| 1 | `backtesting/` paketi real implementatsiyaga ega, New_Map'da yo'q | Yangi Layer qo'shilsin | ✅ `17_Backtesting_Layer` (8 modul) |
+| 2 | Config Management uchun alohida modul yo'q | Yangi Layer emas — Core ichida | ✅ `02_Core_Layer/Configuration` allaqachon mavjud edi |
+| 3 | `14_Media_Layer/Learning` 4 hujjatdan faqat 1 tasiga ega | Worker avtomatik to'ldirsin | ✅ Contracts/ModuleMap/SequenceDiagram qo'shildi |
+| 4 | `01_Data_Layer`da yagona gateway yo'q | QO'SHILMAYDI — ataylab shunday | ✅ O'zgartirilmadi (Known Design) |
+| 5 | Event_System faqat Data Layer ichida hujjatlashtirilgan | Hujjatlashtirilsin | ✅ Canonical Event Bus Rule (ACR) |
+| 6 | Secrets/API-Key boshqaruv moduli yo'q | Qo'shilsin | ✅ `02_Core_Layer/Secrets` — **lekin qarang: Gap Review Correction #1** |
+| 7 | Audit Log moduli yo'q | Qo'shilsin | ✅ `12_Database_Layer/AuditLog` — **lekin qarang: Gap Review Correction #2** |
+| 8 | `performance/` paketi hujjatlashtirilmagan | Qo'shilsin | ✅ `02_Core_Layer/Performance` — **lekin qarang: Gap Review Correction #2** |
+| 9 | 7 ta legacy paket tekshirilmagan | Majburiy review | ✅ Legacy Packages Review yakunlandi |
+
+## Gap Review Corrections (Worker tomonidan kod tekshiruvi asosida — WDR-001)
+
+Gap Review agent'i faqat `New_Map/` hujjatlarini va cheklangan grep'ni ishlatgan, shuning uchun quyidagi uchta xulosa **noto'g'ri** bo'lgan. Real kod tekshirilgandan keyin tuzatildi:
+
+**Correction #1 — "No dedicated Secrets/API-Key management module found anywhere" — NOTO'G'RI.**
+Real kodda ikkita ishlaydigan mexanizm mavjud:
+* `core/secrets.py` — `Secrets` klassi; majburiy (`get()`, yo'q bo'lsa xato) va ixtiyoriy (`get_optional()`, `None`) farqi bilan. AI provayderlar, voice adapterlar va telegram ishlatadi.
+* `config.py:135` — `MaskedSecret`; `repr`/`str` har doim `***` qaytaradi, `reveal()` bilan olinadi.
+`02_Core_Layer/Secrets` noldan yaratilmadi — mavjud yechim hujjatlashtirildi. Real kodda yo'q, hujjatda kelajak qamrovi sifatida yozilgan: **Secret Rotation** va **Database Credentials**.
+
+**Correction #2 — "No dedicated Audit Log module" va "No New_Map documentation for real `performance/` package" — qisman noto'g'ri.**
+* `database/audit_log_models.py` + `database/audit_log_repository.py` real mavjud (`AuditLogEntry`, append-only). Kodning o'z izohiga ko'ra hozircha hech qanday owner buyrug'i `log_action()`ni chaqirmaydi — yozish real, ulash esa hali bajarilmagan.
+* `performance/` real mavjud: `collector.py` (`PerformanceCollector`), `metrics.py` (`PerformanceMetric`), `timer.py` (`PerformanceTimer`).
+Ikkala modul ham noldan yaratilmadi — mavjud kod hujjatlashtirildi.
+
+**Correction #3 — `communication/` paketi review scope'idan chiqarildi.**
+Unda birorta ham `.py` fayl yo'q — u faqat governance/ADR markdown hujjatlari. Application Architecture emas.
+
+## Existing Code Verification (WDR-001 #13)
+
+| ACR | Kod holati |
+|---|---|
+| Backtesting Isolation Rule | ✅ **Verified** — `backtesting/backtest_engine.py` `risk.risk_manager.RiskManager`ni chaqiradi va `execution/` yoki biror broker mijozini umuman import qilmaydi |
+| Canonical Event Bus Rule | ✅ **Verified** — `01_Data_Layer/Event_System` yagona Event Bus infratuzilmasi |
+| Module Reuse Rule | ✅ **Verified** — `backtest_engine.py` `lifecycle/paper_trade.py`ni qayta ishlatadi, o'z simulyatsiya modulini yaratmaydi |
+
+## Known Gaps (Critical emas — implementatsiya bosqichida hal qilinadi)
+
+**KG-001 — Maxfiy qiymatlar ikki yo'ldan o'qiladi.**
+`core/secrets.py` (AI, voice, telegram) va `config.py`ning `Settings` bloklari (`providers.bitget_api_key`, `telegram.bot_token`, `ai.gemini_api_key` — market data provayderlar) — ikkalasi ham `os.environ`dan o'qiydi. Blueprint `Secrets`ni yagona Canonical ega deb belgilaydi. Critical emas (ikkala yo'l ham xavfsiz), lekin implementatsiyada birlashtirilishi kerak.
+
+**KG-002 — Database Layer real repository soni hujjatlashtirilganidan ko'p.**
+New_Map 5 ta repository hujjatlashtiradi (Trade/User/Market/Journal/AuditLog), real kodda esa 16 tasi bor: `admin, audit_log, config_snapshot, emergency, feedback, learning, market_snapshot, monitoring, raw_candle, risk_decision, risk_state, runtime_feature, signal, subscription, sync_state, user`. Bu **Database Architecture** toifasiga kiradi, shuning uchun WDR-001 bo'yicha Director Review talab qilinadi — Worker o'zi hal qilmaydi.
+
+**KG-003 — AuditLog hali hech qayerdan chaqirilmaydi.**
+`AuditLogRepository.log_action()` real mavjud, lekin `telegram/owner/` ichidagi birorta buyruq uni chaqirmaydi. Yozish qismi tayyor, ulash qismi implementatsiya bosqichida bajariladi.
+
+## Refactoring TODO (implementatsiya bosqichi uchun — WDR-001 #3, #11)
+
+| # | Nima | Qayerdan | Qayerga |
+|---|---|---|---|
+| RT-001 | Maxfiy qiymat o'qish yo'llarini birlashtirish | `config.py` `Settings` secret bloklari | `core/secrets.py` → `02_Core_Layer/Secrets` |
+| RT-002 | `MaskedSecret`ni Secrets moduli tarkibiga rasman kiritish | `config.py:135` | `Secrets/MaskedSecret` |
+| RT-003 | Owner buyruqlarini AuditLog'ga ulash | `telegram/owner/*` | `AuditLogRepository.log_action()` |
+| RT-004 | Voice provider adapterlarini Canonical nom bilan bog'lash | `voice/provider_adapters/*` | `07_AI_Layer/VoiceAI/VoiceProvider` |
+| RT-005 | Backtesting uchun gateway joriy etish | `telegram/owner/backtest_commands.py` → `BacktestEngine` (bevosita) | `BacktestService` orqali |
+| RT-006 | Secret Rotation va Database Credentials qo'llab-quvvatlashini qo'shish | — | `Secrets/SecretRotation` |
+
+## Phase 3 Statistics
+
+Layers: 17 (15 core + 16_Chart_Layer + 17_Backtesting_Layer)
+Yangi modullar (Phase 3): 17 — VoiceProvider, VoiceSession, Features, PaperTrading, Translation, Telegram_Broadcast, Secrets, Performance, AuditLog (9) + 17_Backtesting_Layer'ning 8 moduli (BacktestService, BacktestEngine, DataFeed, ReplayEngine, ReplayController, Statistics, BacktestReport, Optimization)
+To'ldirilgan hujjatlar: 14_Media_Layer/Learning (Contracts, ModuleMap, SequenceDiagram)
+Yangi ACR: 7 — Chart Shared State Rule, Render Loop Rule, Chart Runtime Rule, Canonical Event Bus Rule, Backtesting Isolation Rule, Module Reuse Rule, Worker Decision Rule (WDR-001)
+Known Gaps: 3 (KG-001 Minor, KG-002 Director Review kerak, KG-003 Minor)
+Refactoring TODO: 6

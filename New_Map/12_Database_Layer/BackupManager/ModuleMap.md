@@ -54,6 +54,7 @@ Backup Metadata yaratadi.
 ✗ UserRepository
 ✗ MarketRepository
 ✗ JournalRepository
+✗ AuditLog
 ✗ Platform Layer (to'g'ridan-to'g'ri)
 ✗ Decision Layer
 ✗ Risk Layer

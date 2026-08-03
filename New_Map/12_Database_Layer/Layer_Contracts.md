@@ -51,7 +51,7 @@ DatabaseManager
         │
         ├──────────────┬──────────────┬──────────────┐
         ▼              ▼              ▼              ▼
-TradeRepository  UserRepository  MarketRepository  JournalRepository
+TradeRepository  UserRepository  MarketRepository  JournalRepository  AuditLog
         │              │              │              │
         └──────────────┴──────────────┴──────────────┘
                        │

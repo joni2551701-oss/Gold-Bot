@@ -57,8 +57,8 @@ Strategy natijasini tekshiradi.
 AMD Execution Output yaratadi.
 ---
 # Allowed Dependencies
-✓ Market Context
-✓ Indicator Context
+✓ Context Layer
+✓ Indicator Layer
 ✓ StrategyEngine
 ✓ StrategyProfiles
 ---

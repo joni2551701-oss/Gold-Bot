@@ -64,6 +64,7 @@ DatabaseService holatini kuzatadi.
 ✗ MarketRepository (to'g'ridan-to'g'ri)
 ✗ JournalRepository (to'g'ridan-to'g'ri)
 ✗ CacheManager (to'g'ridan-to'g'ri)
+✗ Platform Layer'dan boshqa tashqi Layer
 ✗ Decision Layer
 ✗ Risk Layer
 ✗ Execution Layer

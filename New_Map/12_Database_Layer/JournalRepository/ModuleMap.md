@@ -19,7 +19,6 @@ JournalRepository
         │
         ├── AI Journal Repository
         ├── Decision Repository
-        ├── Audit Repository
         ├── Event Repository
         ├── Query Processor
         └── Metadata Generator
@@ -31,9 +30,6 @@ AI Analysis yozuvlarini boshqaradi.
 ---
 ## Decision Repository
 Decision History'ni boshqaradi.
----
-## Audit Repository
-Audit Log'larni boshqaradi.
 ---
 ## Event Repository
 System Event'larni boshqaradi.
@@ -49,6 +45,7 @@ Repository Metadata yaratadi.
 ✓ Database Storage
 ---
 # Forbidden Dependencies
+✗ AuditLog
 ✗ TradeRepository
 ✗ UserRepository
 ✗ MarketRepository

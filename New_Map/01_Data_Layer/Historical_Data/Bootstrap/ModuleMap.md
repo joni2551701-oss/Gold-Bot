@@ -204,6 +204,8 @@ Bootstrap quyidagilar bilan ishlashi mumkin:
 
 ✓ Configuration
 
+✓ HistoricalDataService
+
 ✓ Provider Factory
 
 ✓ Historical Provider
@@ -222,6 +224,10 @@ Bootstrap quyidagilar bilan ishlashi mumkin emas:
 
 ✗ Live Data
 
+✗ CurrentPriceProvider
+
+✗ CandleBuilder
+
 ✗ Context Engine
 
 ✗ Analysis Engine
@@ -238,9 +244,13 @@ Bootstrap quyidagilar bilan ishlashi mumkin emas:
 
 ✗ AI Layer
 
+✗ Platform Layer
+
 ✗ Business Layer
 
-✗ Platform Layer
+✗ Learning Layer
+
+✗ Media Layer
 
 ---
 

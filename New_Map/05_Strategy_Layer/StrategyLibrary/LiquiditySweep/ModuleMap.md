@@ -61,8 +61,8 @@ Strategy natijasini tekshiradi.
 Liquidity Sweep Result yaratadi.
 ---
 # Allowed Dependencies
-✓ Market Context
-✓ Indicator Context
+✓ Context Layer
+✓ Indicator Layer
 ✓ StrategyEngine
 ✓ StrategyProfiles
 ---

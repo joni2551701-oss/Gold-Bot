@@ -50,6 +50,7 @@ Database Metadata yaratadi.
 ✓ UserRepository
 ✓ MarketRepository
 ✓ JournalRepository
+✓ AuditLog
 ---
 # Forbidden Dependencies
 ✗ CacheManager

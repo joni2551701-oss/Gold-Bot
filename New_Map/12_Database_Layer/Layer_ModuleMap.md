@@ -16,6 +16,7 @@ Status: CANONICAL
 ├── MarketRepository
 │
 ├── JournalRepository
+├── AuditLog
 │
 ├── CacheManager
 │
@@ -34,7 +35,7 @@ DatabaseManager
         │
         ├──────────────┬──────────────┬──────────────┐
         ▼              ▼              ▼              ▼
-TradeRepository  UserRepository  MarketRepository  JournalRepository
+TradeRepository  UserRepository  MarketRepository  JournalRepository  AuditLog
         │              │              │              │
         └──────────────┴──────────────┴──────────────┘
                        │
@@ -69,6 +70,9 @@ Market Data va Context ma'lumotlarini boshqaradi.
 ---
 ## JournalRepository
 AI Journal va Audit ma'lumotlarini boshqaradi.
+---
+## AuditLog
+Audit Trail persistence (append-only). Login, Configuration, Permission, API Access va Critical Event yozuvlari.
 ---
 ## CacheManager
 Cache Infrastructure boshqaradi.

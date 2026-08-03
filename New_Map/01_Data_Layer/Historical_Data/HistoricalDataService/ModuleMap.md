@@ -252,6 +252,8 @@ HistoricalDataService quyidagilar bilan ishlashi mumkin emas.
 
 ✗ Live Data
 
+✗ Price Stream Service
+
 ✗ CurrentPriceProvider
 
 ✗ CandleBuilder

@@ -708,6 +708,54 @@ prohibited.
 ```
 Sabab: `17_Backtesting_Layer` qurilishida Director'ning Canonical Pipeline'i `Execution (Simulated)` va `Trade Monitoring (Simulated)` bosqichlarini nomlagan edi, bu esa `SimulatedExecution` va `SimulatedMonitoring` degan ikkita yangi modul yaratishga olib kelishi mumkin edi. Tekshiruv shuni ko'rsatdiki, `11_Trade_Monitoring_Layer/PaperTrading` allaqachon virtual order, virtual position, virtual lifecycle va virtual monitoring vazifalarini bajaradi — va haqiqiy `backtesting/backtest_engine.py` aynan `lifecycle/paper_trade.py` bilan `lifecycle/paper_trade_monitor.py`ni import qiladi. Director Ruling: yangi modullar yaratilmaydi, Backtesting Layer PaperTrading'ni qayta ishlatadi. Bu qoida CLAUDE.md'dagi Module Reuse Principle'ni ACR darajasiga ko'taradi va keyingi barcha Layer'larda qo'llaniladi: yangi modul yaratishdan oldin (1) bu vazifa allaqachon mavjudmi, (2) mavjud modulni contract'ini buzmasdan kengaytirish mumkinmi — degan savollarga javob berilishi shart; faqat ikkalasi ham "yo'q" bo'lgandagina yangi modul yaratiladi.
 ---
+## Worker Decision Rule (WDR-001)
+```text
+If a question is
+unambiguously resolved
+by existing Director
+decisions, ACRs, and
+the Canonical
+Architecture, the
+Worker does not ask
+the Director again.
+
+The Worker decides
+independently,
+implements it, and
+records it briefly in
+the final report.
+```
+Director Review faqat quyidagilar uchun talab qilinadi:
+* Yangi Layer
+* Yangi Public API
+* Ownership almashishi
+* Runtime Pipeline o'zgarishi
+* Security Architecture
+* Trading Safety
+* Database Architecture
+* Chart Engine Architecture
+* Foundation Freeze
+* Version Freeze
+
+Worker Director Review'siz mustaqil bajaradigan ishlar:
+1. Gap Review xulosalarini kodga qarab o'zi tuzatish (masalan "Secrets yo'q" xulosasi noto'g'ri ekanligini aniqlab, Gap Review/Tracker/hujjatni yangilash).
+2. Mavjud kodni Canonical Architecture bilan bog'lash (mapping), masalan `core/secrets.py` → `02_Core_Layer/Secrets`.
+3. Refactoring TODO yaratish (masalan `config.py` → `Secrets`ga ko'chirish).
+4. Legacy kodni Blueprint'ga moslashtirish (masalan `MaskedSecret` → `SecretRegistry`, `ProviderAdapter` → `VoiceProvider`).
+5. Hujjatni real kod asosida boyitish (kodda bor, README'da yo'q bo'lgan komponentni qo'shish).
+6. Yangi modul qo'shilganda Golden Rule'ni tabiiy ravishda kengaytirish.
+7. Layer Flow tartibini tuzatish — agar ownership o'zgarmasa (masalan `Startup → Secrets → Configuration`).
+8. Submodule yaratish (masalan `SecretRotation`, `SecretRegistry`, `SecretValidator`).
+9. Real kodni tahlil qilib duplicate/dead code/unused/inconsistent holatlarni topish va hisobot qilish.
+10. Blueprint'ni koddan oldinda yuritish — Blueprint doim oldinda, kod keyin unga moslashtiriladi.
+11. Refactoring Note yozish (implementatsiya vaqtida nima ko'chishini qayd etish).
+12. Critical bo'lmagan Canonical Gap'ni "Known Gap" deb belgilash.
+13. Mavjud kod ACR'ga allaqachon mos ekanligini tekshirib "Verified" deb belgilash.
+14. Mavjud ACR asosida "yangi modul kerak emas" degan xulosaga kelish (Module Reuse Rule).
+15. Roadmap, Tracker, Progress va Commit summary'ni yangilash.
+
+Sabab: Phase 2 Module Audit va Architecture Gap Review v1.0 davomida Worker'ning har bir aniq-ravshan qaror uchun Director'dan qayta ruxsat so'rashi jarayonni sekinlashtirdi, holbuki qarorlarning katta qismi mavjud ACR'lar va Canonical Architecture asosida bir ma'noli hal qilinardi. Director Ruling: WDR-001 bilan Director review'lar soni taxminan 80–90% ga kamayadi, arxitektura nazorati esa yuqoridagi 10 ta toifada to'liq saqlanib qoladi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.

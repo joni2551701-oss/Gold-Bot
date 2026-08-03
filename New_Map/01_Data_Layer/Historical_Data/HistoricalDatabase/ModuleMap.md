@@ -195,11 +195,13 @@ Historical Database quyidagilar bilan ishlashi mumkin.
 
 ✓ HistoricalDataService
 
-✓ Local Storage
-
-✓ Database Engine
+✓ Local Database Engine
 
 ✓ File System
+
+✓ Configuration Layer
+
+✓ Storage Engine
 
 ---
 
@@ -215,6 +217,8 @@ Historical Database quyidagilar bilan ishlashi mumkin emas.
 
 ✗ Market Memory
 
+✗ MemoryReader
+
 ✗ Event System
 
 ✗ Context Engine
@@ -222,6 +226,8 @@ Historical Database quyidagilar bilan ishlashi mumkin emas.
 ✗ Analysis Engine
 
 ✗ Strategy Engine
+
+✗ Confluence Engine
 
 ✗ Decision Engine
 
@@ -233,11 +239,15 @@ Historical Database quyidagilar bilan ishlashi mumkin emas.
 
 ✗ Platform Layer
 
+✗ User Experience Layer
+
 ✗ Business Layer
 
 ✗ Learning Layer
 
 ✗ Media Layer
+
+✗ Future Expansion Layer
 
 ---
 

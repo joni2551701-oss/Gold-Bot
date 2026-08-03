@@ -57,10 +57,10 @@ Strategy natijasini tekshiradi.
 ICT Execution Output yaratadi.
 ---
 # Allowed Dependencies
-✓ Market Context
-✓ Indicator Context
+✓ Context Layer
+✓ Indicator Layer
 ✓ StrategyEngine
-✓ Strategy Profiles
+✓ StrategyProfiles
 ---
 # Forbidden Dependencies
 ✗ Signal Layer

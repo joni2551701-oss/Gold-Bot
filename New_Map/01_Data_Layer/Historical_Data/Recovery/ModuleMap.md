@@ -203,13 +203,15 @@ Recovery quyidagilar bilan ishlashi mumkin.
 
 ✓ Event Bus
 
+✓ Configuration Layer
+
 ---
 
 # Forbidden Dependencies
 
 Recovery quyidagilar bilan ishlashi mumkin emas.
 
-✗ Live Data
+✗ Live_Data
 
 ✗ CurrentPriceProvider
 
@@ -233,11 +235,15 @@ Recovery quyidagilar bilan ishlashi mumkin emas.
 
 ✗ Platform Layer
 
+✗ User Experience Layer
+
 ✗ Business Layer
 
 ✗ Learning Layer
 
 ✗ Media Layer
+
+✗ Future Expansion Layer
 
 ---
 

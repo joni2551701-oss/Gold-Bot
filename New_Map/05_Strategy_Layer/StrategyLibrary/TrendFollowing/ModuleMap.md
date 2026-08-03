@@ -57,8 +57,8 @@ Strategy natijasini tekshiradi.
 Trend Following Result yaratadi.
 ---
 # Allowed Dependencies
-✓ Market Context
-✓ Indicator Context
+✓ Context Layer
+✓ Indicator Layer
 ✓ StrategyEngine
 ✓ StrategyProfiles
 ---

@@ -51,6 +51,7 @@ Database Storage
 ✗ TradeRepository
 ✗ UserRepository
 ✗ JournalRepository
+✗ AuditLog
 ✗ CacheManager
 ✗ BackupManager
 ✗ Platform Layer

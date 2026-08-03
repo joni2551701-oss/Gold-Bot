@@ -76,6 +76,8 @@ Core_Layer/
 │
 ├── HealthMonitor/
 │
+├── Performance/
+│
 ├── Features/
 │
 └── Shutdown/
@@ -145,6 +147,14 @@ Barcha Layer'lar orasidagi Runtime Flow'ni boshqaradi.
 Runtime sog'ligini kuzatadi.
 
 Performance, Health, Diagnostics.
+
+---
+
+## Performance
+
+Runtime davomida bajarilish vaqti, Latency, Memory, CPU, FPS va Queue Length ko'rsatkichlarini o'lchaydi va to'playdi.
+
+Faqat o'lchaydi — baholash HealthMonitor zimmasida.
 
 ---
 
@@ -304,6 +314,7 @@ Core_Layer/
 ├── Scheduler/
 ├── Pipeline/
 ├── HealthMonitor/
+├── Performance/
 ├── Features/
 └── Shutdown/
 

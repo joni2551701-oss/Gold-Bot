@@ -53,6 +53,9 @@ Configuration Manager.
 ## HealthMonitor
 Runtime Monitoring.
 ---
+## Performance
+Performance Monitoring (Metrics, Latency, Memory, CPU, FPS, Queue Length).
+---
 ## Features
 Feature Standardization (AI / Strategy / Backtesting / ML Export uchun umumiy Feature kutubxonasi).
 ---
