@@ -1,5 +1,8 @@
 # Architecture Audit Progress
 
+> **Nom o'zgarishi (Phase A.5).** Ushbu hujjatda uchraydigan `New_Map/` havolalari tarixiy yozuv hisoblanadi. Foundation Freeze v1.0'dan keyin 17 ta Layer repository root'ga chiqarildi va `New_Map/` nomi bekor qilindi — batafsil `ARCHITECTURE.md`ga qarang.
+
+
 Status: TRACKING
 
 ---
@@ -1922,7 +1925,7 @@ Three new Canonical Rules established (Architecture Decision Records), added to 
 
 ## PHASE 2 MODULE AUDIT — COMPLETE
 
-All 15 Layers of the GoldBot canonical architecture (`New_Map/`) have been audited under Phase 2 and are now CLOSED, APPROVED:
+All 15 Layers of the GoldBot canonical architecture have been audited under Phase 2 and are now CLOSED, APPROVED:
 
 ```
 01_Data_Layer                APPROVED (3800/3800)
@@ -2002,7 +2005,7 @@ Phase 2 Module Audit yakunlangandan keyin o'tkazilgan yakuniy to'liqlik tekshiru
 
 ## Gap Review Corrections (Worker tomonidan kod tekshiruvi asosida — WDR-001)
 
-Gap Review agent'i faqat `New_Map/` hujjatlarini va cheklangan grep'ni ishlatgan, shuning uchun quyidagi uchta xulosa **noto'g'ri** bo'lgan. Real kod tekshirilgandan keyin tuzatildi:
+Gap Review agent'i faqat arxitektura hujjatlarini va cheklangan grep'ni ishlatgan, shuning uchun quyidagi uchta xulosa **noto'g'ri** bo'lgan. Real kod tekshirilgandan keyin tuzatildi:
 
 **Correction #1 — "No dedicated Secrets/API-Key management module found anywhere" — NOTO'G'RI.**
 Real kodda ikkita ishlaydigan mexanizm mavjud:
@@ -2063,7 +2066,7 @@ Refactoring TODO: 6
 
 Sana: 2026-08-03
 Qaror: Director Declaration — Foundation Freeze v1.0
-To'liq hujjat: `New_Map/FOUNDATION_FREEZE_V1.md`
+To'liq hujjat: `FOUNDATION_FREEZE_V1.md`
 
 ```text
 Layers ....................... 17
@@ -2077,7 +2080,7 @@ Broken Gateway ............... 0
 Critical Findings ............ 0
 ```
 
-`New_Map/` GoldBot loyihasining yagona Canonical Architecture'i sifatida qabul qilindi.
+Repository root'idagi 17 ta Layer GoldBot loyihasining yagona Canonical Architecture'i sifatida qabul qilindi.
 
 Freeze'dan keyin taqiqlanadi: yangi Layer, yangi modul, Pipeline o'zgarishi, Ownership o'zgarishi, Public API o'zgarishi, Canonical Contracts o'zgarishi.
 Ruxsat etiladi: bug fix, typo, documentation correction, implementatsiya.

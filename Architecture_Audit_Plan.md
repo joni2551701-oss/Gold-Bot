@@ -2,7 +2,7 @@
 Status: CANONICAL
 ---
 # Purpose
-Ushbu hujjat GoldBot Canonical Architecture (`New_Map/`) uchun rasmiy Audit Metodologiyasini belgilaydi.
+Ushbu hujjat GoldBot Canonical Architecture uchun rasmiy Audit Metodologiyasini belgilaydi.
 Kod implementatsiyasi boshlanishidan oldin arxitektura to'liq tekshiruvdan o'tishi va so'ngra Architecture Freeze v1.0 orqali rasmiy spetsifikatsiya sifatida muzlatilishi shart.
 Ushbu metodologiya nafaqat v1 audit uchun, balki kelajakdagi barcha auditlar (v2, v3, yangi modul qo'shilishi) uchun ham yagona standart hisoblanadi.
 ---
@@ -206,7 +206,7 @@ Architecture Freeze
 ```
 ---
 # 9a. Architecture Lock (Audit davomida)
-Audit boshlanganidan (Layer Audit) to Final Report yakunlanguncha, `New_Map/` arxitekturasiga o'zgartirish kiritish taqiqlanadi.
+Audit boshlanganidan (Layer Audit) to Final Report yakunlanguncha, Canonical Architecture'ga o'zgartirish kiritish taqiqlanadi.
 ```text
 Architecture Freeze v1.0
 ↓
@@ -687,7 +687,7 @@ with a real Broker,
 Platform, or
 Trade Execution.
 ```
-Sabab: Architecture Gap Review v1.0 §1/§14 topdiki, `backtesting/` paketi katta hajmdagi real implementatsiyaga ega (BacktestEngine, ReplayEngine, ReplayController, DataFeed, BacktestResult) bo'lsa-da, `New_Map/`da unga mos hech qanday Layer yoki modul mavjud emas edi. Director Decision: yangi `17_Backtesting_Layer` qo'shildi (16-raqam `16_Chart_Layer` tomonidan band). Rule quyidagilarni majburlaydi: (1) Backtesting hech qachon Live Trading qilmaydi va Broker bilan ulanmaydi; (2) Backtesting Risk Manager'ni hech qachon chetlab o'tmaydi — har bir tasdiqlangan Decision majburiy ravishda Risk Layer'dan o'tadi (CLAUDE.md "Never bypass Risk Manager" qoidasiga mos); (3) Backtesting Decision Layer'ni almashtirmaydi va hech qanday trading mantiqini qayta yozmaydi — faqat mavjud Layer'larni o'zgartirmasdan chaqiradi; (4) `Execution (Simulated)` va `Trade Monitoring (Simulated)` bosqichlari `11_Trade_Monitoring_Layer/PaperTrading` orqali bajariladi — Module Reuse Principle bo'yicha Backtesting Layer o'zining alohida simulyatsiya moduli yaratmaydi.
+Sabab: Architecture Gap Review v1.0 §1/§14 topdiki, `backtesting/` paketi katta hajmdagi real implementatsiyaga ega (BacktestEngine, ReplayEngine, ReplayController, DataFeed, BacktestResult) bo'lsa-da, Canonical Architecture'da unga mos hech qanday Layer yoki modul mavjud emas edi. Director Decision: yangi `17_Backtesting_Layer` qo'shildi (16-raqam `16_Chart_Layer` tomonidan band). Rule quyidagilarni majburlaydi: (1) Backtesting hech qachon Live Trading qilmaydi va Broker bilan ulanmaydi; (2) Backtesting Risk Manager'ni hech qachon chetlab o'tmaydi — har bir tasdiqlangan Decision majburiy ravishda Risk Layer'dan o'tadi (CLAUDE.md "Never bypass Risk Manager" qoidasiga mos); (3) Backtesting Decision Layer'ni almashtirmaydi va hech qanday trading mantiqini qayta yozmaydi — faqat mavjud Layer'larni o'zgartirmasdan chaqiradi; (4) `Execution (Simulated)` va `Trade Monitoring (Simulated)` bosqichlari `11_Trade_Monitoring_Layer/PaperTrading` orqali bajariladi — Module Reuse Principle bo'yicha Backtesting Layer o'zining alohida simulyatsiya moduli yaratmaydi.
 Tasdiq: haqiqiy `backtesting/backtest_engine.py` importlari ushbu qoidaga allaqachon mos — u `risk.risk_manager.RiskManager`ni chaqiradi va `execution/` yoki biror Broker mijozini umuman import qilmaydi.
 ---
 ## Module Reuse Rule
@@ -772,7 +772,7 @@ internal responsibility
 of a single Repository
 module.
 ```
-Sabab: Architecture Gap Review v1.0'ning KG-002 topilmasi — `New_Map/12_Database_Layer` 5 ta repository hujjatlashtirgan, real kodda esa 16 ta storage implementatsiyasi mavjud (`admin, audit_log, config_snapshot, emergency, feedback, learning, market_snapshot, monitoring, raw_candle, risk_decision, risk_state, runtime_feature, signal, subscription, sync_state, user`). Director uchta variantni ko'rib chiqdi: (1) har birini alohida modul qilish — ortiqcha fragmentatsiya sababli rad etildi; (3) Freeze'dan keyinga qoldirish — Foundation Freeze'dan keyin Database arxitekturasini o'zgartirish noto'g'ri bo'lgani uchun rad etildi; (2) domen bo'yicha guruhlash — **tasdiqlandi**. Guruhlash real kod mas'uliyatiga qarab Worker tomonidan aniqlandi:
+Sabab: Architecture Gap Review v1.0'ning KG-002 topilmasi — `12_Database_Layer` 5 ta repository hujjatlashtirgan, real kodda esa 16 ta storage implementatsiyasi mavjud (`admin, audit_log, config_snapshot, emergency, feedback, learning, market_snapshot, monitoring, raw_candle, risk_decision, risk_state, runtime_feature, signal, subscription, sync_state, user`). Director uchta variantni ko'rib chiqdi: (1) har birini alohida modul qilish — ortiqcha fragmentatsiya sababli rad etildi; (3) Freeze'dan keyinga qoldirish — Foundation Freeze'dan keyin Database arxitekturasini o'zgartirish noto'g'ri bo'lgani uchun rad etildi; (2) domen bo'yicha guruhlash — **tasdiqlandi**. Guruhlash real kod mas'uliyatiga qarab Worker tomonidan aniqlandi:
 * **UserRepository** (foydalanuvchi va hisob) — `user`, `subscription`, `feedback`, `admin`
 * **TradeRepository** (savdo va risk) — `signal`, `risk_decision`, `risk_state`, `emergency`
 * **MarketRepository** (market ma'lumot) — `market_snapshot`, `raw_candle`, `sync_state`
@@ -954,7 +954,7 @@ Ushbu hujjat Architecture Freeze v1.0 tarkibiga kiradi. Shu sababli, bundan buyo
 
 Metodologiya tasdiqlangani sababli, Layer Audit (1-bosqich) boshlanishi mumkin. Audit boshlangan lahzadan Final Report yakunlanguncha 9a-bo'limdagi Architecture Lock kuchda bo'ladi.
 
-Phase 1 — Layer Audit tartibi (`New_Map/` dagi haqiqiy papka nomlari bo'yicha):
+Phase 1 — Layer Audit tartibi (repository root'idagi haqiqiy papka nomlari bo'yicha):
 ```text
 01_Data_Layer
 ↓

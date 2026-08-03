@@ -2,9 +2,11 @@
 Status: APPROVED — CANONICAL ARCHITECTURE
 Sana: 2026-08-03
 Qaror: Director Declaration — Foundation Freeze v1.0
+
+> **Nom o'zgarishi (Phase A.5).** Ushbu hujjatda uchraydigan `New_Map/` havolalari tarixiy yozuv hisoblanadi. Foundation Freeze v1.0'dan keyin 17 ta Layer repository root'ga chiqarildi va `New_Map/` nomi bekor qilindi — batafsil `ARCHITECTURE.md`ga qarang.
 ---
 # Maqsad
-Ushbu hujjat GoldBot loyihasining arxitektura bosqichi rasman yakunlanganini va `New_Map/` GoldBot'ning yagona Canonical Architecture'i sifatida qabul qilinganini qayd etadi.
+Ushbu hujjat GoldBot loyihasining arxitektura bosqichi rasman yakunlanganini va 17 ta Layer repository root'ida GoldBot'ning yagona Canonical Architecture'i sifatida qabul qilinganini qayd etadi.
 ---
 # Yakuniy Arxitektura Holati
 ```text
@@ -50,7 +52,7 @@ Quyidagilar **ruxsat etiladi**:
 Freeze'ni buzadigan har qanday o'zgarish uchun alohida Director Approval va yangi Version Freeze talab qilinadi.
 ---
 # Canonical Status
-`New_Map/` endi GoldBot loyihasining **yagona rasmiy arxitekturasi** hisoblanadi.
+Repository root'idagi 17 ta Layer endi GoldBot loyihasining **yagona rasmiy arxitekturasi** hisoblanadi.
 `main` va `claude/collaboration` branchlaridagi eski arxitektura hujjatlari faqat tarixiy ma'lumot va referens sifatida saqlanadi.
 ---
 # Arxitektura Qoidalari (ACR)
@@ -124,4 +126,4 @@ Implementation               ⏳
 ```
 ---
 # Summary
-GoldBot arxitektura bosqichi yakunlandi. 17 Layer va 210 modul to'liq hujjatlashtirildi, barcha Canonical Rule va ACR'lar belgilandi, yakuniy izchillik tekshiruvi nol kamchilik bilan o'tdi. `New_Map/` GoldBot'ning yagona rasmiy arxitekturasi sifatida muzlatildi. Loyihaning asosiy e'tibori endi ushbu kanonik arxitektura asosida sifatli implementatsiyaga qaratiladi.
+GoldBot arxitektura bosqichi yakunlandi. 17 Layer va 210 modul to'liq hujjatlashtirildi, barcha Canonical Rule va ACR'lar belgilandi, yakuniy izchillik tekshiruvi nol kamchilik bilan o'tdi. Canonical Architecture GoldBot'ning yagona rasmiy arxitekturasi sifatida muzlatildi. Loyihaning asosiy e'tibori endi ushbu kanonik arxitektura asosida sifatli implementatsiyaga qaratiladi.

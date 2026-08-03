@@ -2,7 +2,7 @@
 
 Status: Phase B IN PROGRESS
 Boshlanish: 2026-08-03
-Asos: `New_Map/FOUNDATION_FREEZE_V1.md` (Foundation Freeze v1.0)
+Asos: `FOUNDATION_FREEZE_V1.md` (Foundation Freeze v1.0)
 Buyruq: Director Order No. 002 — Migration Strategy
 
 ---
@@ -121,4 +121,4 @@ Joriy holat: **210 moduldan 1 tasi MIGRATED, 209 tasi SKELETON**.
 
 # Summary
 
-Phase A yakunlandi: `New_Map/`ning 17 Layer / 210 modul tuzilmasi `goldbot/` paketida importga yaroqli skelet sifatida aks ettirildi. Hech qanday biznes kodi ko'chirilmadi — bu Phase B'dan boshlanadi.
+Phase A yakunlandi: Canonical Architecture'ning 17 Layer / 210 modul tuzilmasi `goldbot/` paketida importga yaroqli skelet sifatida aks ettirildi. Hech qanday biznes kodi ko'chirilmadi — bu Phase B'dan boshlanadi.

@@ -2,6 +2,23 @@
 
 AI-assisted, semi-automated trading signal system for XAUUSD, built on Smart Money Concepts (SMC) market analysis.
 
+## Canonical architecture
+
+GoldBot v1's architecture is frozen and lives at the repository root as 17
+numbered Layers (`01_Data_Layer/` … `17_Backtesting_Layer/`), each documenting
+its modules via README/Contracts/ModuleMap/SequenceDiagram.
+
+- [ARCHITECTURE.md](ARCHITECTURE.md) — architecture index and repository rules
+- [FOUNDATION_FREEZE_V1.md](FOUNDATION_FREEZE_V1.md) — what the freeze permits and forbids
+- [Architecture_Audit_Plan.md](Architecture_Audit_Plan.md) — audit methodology and every Canonical Rule / ACR
+- [Architecture_Audit_Tracker.md](Architecture_Audit_Tracker.md) — audit history, Known Gaps, refactoring TODOs
+- [MIGRATION_TRACKER.md](MIGRATION_TRACKER.md) — migration of the pre-freeze code into `goldbot/`
+
+`goldbot/` mirrors those Layers as importable Python packages
+(`goldbot.risk_layer.risk_engine`, …). Migration is in progress: pre-freeze
+top-level packages (`core/`, `data/`, `ai/`, …) still hold most of the running
+code and are moved module by module.
+
 ## Production branch
 
 **`main` is the production branch** — and the repository's default

@@ -1,24 +1,31 @@
-# New_Map
+# GoldBot Canonical Architecture
 
-Status: CANONICAL REPOSITORY BLUEPRINT
+Status: CANONICAL — Foundation Freeze v1.0
+
+> **Nom o'zgarishi (Phase A.5).** Ushbu arxitektura Foundation Freeze v1.0
+> gacha `New_Map/` papkasida saqlanardi. Freeze'dan keyin u endi "yangi
+> xarita" emas — u GoldBot v1'ning yagona rasmiy arxitekturasi, shuning uchun
+> 17 ta Layer repository root'ga chiqarildi va `New_Map/` nomi bekor qilindi.
+> Eski audit hujjatlarida (`docs/*.md`) uchraydigan `New_Map/` havolalari
+> tarixiy yozuv sifatida saqlanadi — ular o'sha paytdagi holatni tasvirlaydi.
 
 ---
 
 # Purpose
 
-New_Map — GoldBot repository'ning yakuniy (Target Repository) strukturasidir.
+Ushbu hujjat GoldBot repository'ning yakuniy (Target Repository) strukturasini belgilaydi.
 
 Bu papka GoldBot loyihasining barcha kodlari, papkalari va modullarining qayerda joylashishi kerakligini belgilaydi.
 
-New_Map implementatsiya emas.
+Bu hujjat implementatsiya emas.
 
-New_Map — repository uchun yagona blueprint hisoblanadi.
+Bu — repository uchun yagona Canonical Architecture hisoblanadi.
 
 ---
 
 # Objective
 
-New_Map ning asosiy maqsadi:
+Canonical Architecture'ning asosiy maqsadi:
 
 - Repository strukturasini standartlashtirish.
 - Kodlarni o'z qatlamiga joylashtirish.
@@ -76,13 +83,13 @@ Har bir modul faqat o'z qatlamida yashashi kerak.
 
 # Canonical Rule
 
-New_Map repository uchun yagona canonical blueprint hisoblanadi.
+Ushbu Canonical Architecture repository uchun yagona manba hisoblanadi.
 
-Repository New_Map ga moslashtiriladi.
+Repository Canonical Architecture'ga moslashtiriladi.
 
-New_Map repositoryga moslashtirilmaydi.
+Canonical Architecture repositoryga moslashtirilmaydi.
 
-Agar repository va New_Map o'rtasida farq aniqlansa:
+Agar repository va Canonical Architecture o'rtasida farq aniqlansa:
 
 Repository refactor qilinadi.
 
@@ -152,7 +159,7 @@ Single Responsibility majburiy.
 
 # Documentation Rules
 
-Har bir .py fayl uchun New_Map ichida specification mavjud bo'lishi kerak.
+Har bir .py fayl uchun Canonical Architecture ichida specification mavjud bo'lishi kerak.
 
 Specification tugamasdan repository refactor qilinmaydi.
 
@@ -162,7 +169,7 @@ Specification tugamasdan repository refactor qilinmaydi.
 
 Worker quyidagi tartibda ishlaydi.
 
-1. New_Map ni o'qiydi.
+1. Canonical Architecture'ni o'qiydi.
 
 2. Repository audit qiladi.
 
@@ -170,7 +177,7 @@ Worker quyidagi tartibda ishlaydi.
 
 4. Refactor rejasini tuzadi.
 
-5. Repository'ni New_Map ga moslashtiradi.
+5. Repository'ni Canonical Architecture'ga moslashtiradi.
 
 6. Testlarni ishga tushiradi.
 
@@ -184,7 +191,7 @@ New Module
 
 ↓
 
-New_Map
+Canonical Architecture
 
 ↓
 
@@ -206,7 +213,7 @@ Testing
 
 Merge
 
-Yangi modul birinchi repositoryda emas, New_Map da yaratiladi.
+Yangi modul birinchi repositoryda emas, Canonical Architecture hujjatlarida yaratiladi.
 
 ---
 
@@ -216,7 +223,7 @@ Current Repository
 
 ↓
 
-Target Repository (New_Map)
+Target Repository (Canonical Architecture)
 
 Repository doimo Target Repository tomon rivojlanadi.
 

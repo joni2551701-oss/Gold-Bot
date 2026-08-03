@@ -306,7 +306,7 @@ Global Ecosystem
 
 8. Future Expansion mavjud Golden Architecture Rules'ni buzmaydi.
 
-9. Har bir yangi mahsulot New_Map blueprint asosida ishlab chiqiladi.
+9. Har bir yangi mahsulot Canonical Architecture blueprint asosida ishlab chiqiladi.
 
 10. Future Expansion Senior Trading AI ekotizimini global platformaga aylantirish uchun xizmat qiladi.
 
