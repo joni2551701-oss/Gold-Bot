@@ -178,6 +178,55 @@ Specific hard rules:
   `docs/AUDIT_REPORT.md` and `core/pipeline.py`'s own docstring. Read
   it before touching the notification-eligibility filter.
 
+## Deployment Authority — Director Order No. 021 (Deployment Authority — Worker as Deployment/DevOps Engineer)
+
+The Director's own framing, stated explicitly: **the Worker is not a
+VPS Administrator — the Worker performs the role of Deployment
+Engineer / DevOps Engineer.** This section is the authoritative
+boundary on what the Worker may do unilaterally for deployment; both
+`docs/DEPLOYMENT.md` and `docs/deployment/PRODUCTION_DEPLOYMENT.md`
+point here rather than duplicating it.
+
+**Phase 1 (recommended) — Semi-autonomous.** Worker may do all of:
+connect to the VPS, clone/pull the repository, create a virtual
+environment, install dependencies, verify `.env` (checking
+presence/shape, never changing values), run migrations, run tests, run
+a smoke test, create or update the systemd service, configure Nginx if
+needed, check logs, start monitoring, fix errors, and prepare a
+deployment report.
+
+Worker must **NOT**, even in Phase 1:
+- change production API keys,
+- change DNS,
+- change firewall rules, or
+- enable production trading.
+
+**Phase 2 (later, after Development is complete) — Fully autonomous,
+Production-level — not yet in effect, Development must complete
+first.** Worker additionally does: CI/CD-driven deploy, Blue/Green
+deployment, rollback, health check, auto-restart, monitoring, hotfix
+deploy, release deploy.
+
+**Always requires Director Approval, regardless of phase** (these sit
+above both Phase 1 and Phase 2 — the Worker never gets autonomous
+authority over them):
+- replacing a Production API Key,
+- replacing the server,
+- changing the VPS provider,
+- a database reset,
+- changing firewall policy,
+- replacing an SSL certificate,
+- enabling/disabling Live Trading,
+- deleting production data.
+
+**Future-state target pipeline** (recorded verbatim as the Director
+specified it; this is the eventual Phase 2 flow, not the current
+state):
+
+```
+Git Push → Worker → CI/CD → VPS → Deploy → Health Check → Monitoring → Report
+```
+
 ## Worker Authority — Director Order No. 016 (Worker Authority Expansion)
 
 From this order onward the Worker is the System Owner of each module it

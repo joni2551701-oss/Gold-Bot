@@ -104,3 +104,31 @@ convention (semantic versioning, MAJOR.MINOR.PATCH) live in
 Orders No. 018, 019, and 020 together with Order No. 017 (GDS) and the
 existing Architecture/Engineering standards form the full Governance
 Chain, recorded in `CLAUDE.md`'s Worker Authority section.
+
+### Director Order No. 021 — Deployment Authority — Worker as Deployment/DevOps Engineer
+
+Establishes the Worker's deployment authority in two phases. Phase 1
+(recommended, in effect now) is semi-autonomous: the Worker may
+connect to the VPS, clone/pull the repo, create a virtualenv, install
+dependencies, verify (never change) `.env`, run migrations, run tests
+and a smoke test, create/update the systemd service, configure Nginx
+if needed, check logs, start monitoring, fix errors, and prepare a
+deployment report — but must not change production API keys, change
+DNS, change firewall rules, or enable production trading. Phase 2
+(fully autonomous, production-level — not yet in effect, Development
+must complete first) adds CI/CD-driven deploy, Blue/Green deployment,
+rollback, health check, auto-restart, monitoring, hotfix deploy, and
+release deploy. Regardless of phase, replacing a Production API Key,
+replacing the server, changing the VPS provider, a database reset,
+changing firewall policy, replacing an SSL certificate,
+enabling/disabling Live Trading, and deleting production data always
+require Director Approval. The Director's own framing: the Worker is
+not a VPS Administrator — the Worker performs the role of Deployment
+Engineer / DevOps Engineer. The future-state target pipeline is Git
+Push → Worker → CI/CD → VPS → Deploy → Health Check → Monitoring →
+Report.
+
+Full order text recorded in `CLAUDE.md`'s "Deployment Authority —
+Director Order No. 021" section; `docs/DEPLOYMENT.md` and
+`docs/deployment/PRODUCTION_DEPLOYMENT.md` cross-reference it rather
+than duplicating it.

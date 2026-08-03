@@ -1,5 +1,12 @@
 # GoldBot Deployment Guide (v0.3)
 
+> **Worker deployment permissions boundary:** what the Worker may and
+> may not do unilaterally during deployment (Phase 1/Phase 2, and the
+> always-Director-Approval list) is defined authoritatively in
+> `CLAUDE.md`'s "Deployment Authority — Director Order No. 021"
+> section. This document covers the deployment mechanics; that section
+> is the single source of truth for Worker authority.
+
 **Production branch: `main`.** As of TASK-DEPLOY-003, `main` is the sole
 authoritative production branch and is deployed to the VPS through
 `.github/workflows/production_deploy.yml` via a manual

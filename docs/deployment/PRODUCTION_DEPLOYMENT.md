@@ -1,5 +1,12 @@
 # GoldBot — Production Deployment (Phase P1)
 
+> **Worker deployment permissions boundary:** what the Worker may and
+> may not do unilaterally during deployment (Phase 1/Phase 2, and the
+> always-Director-Approval list) is defined authoritatively in
+> `CLAUDE.md`'s "Deployment Authority — Director Order No. 021"
+> section. This document covers the deployment mechanics; that section
+> is the single source of truth for Worker authority.
+
 Worker Brief: "Production Deployment Pipeline Foundation" (Phase P1,
 Version V1.0 Production, Priority CRITICAL, Director Approved). This
 document covers the release-based, GitHub-Actions-driven deployment
