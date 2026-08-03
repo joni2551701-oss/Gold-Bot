@@ -2056,3 +2056,33 @@ To'ldirilgan hujjatlar: 14_Media_Layer/Learning (Contracts, ModuleMap, SequenceD
 Yangi ACR: 8 — Chart Shared State Rule, Render Loop Rule, Chart Runtime Rule, Canonical Event Bus Rule, Backtesting Isolation Rule, Module Reuse Rule, Worker Decision Rule (WDR-001), Repository Aggregation Rule (RAR-001)
 Known Gaps: 3 (KG-001 Minor — ochiq, KG-002 — YOPILDI (RAR-001), KG-003 Minor — ochiq)
 Refactoring TODO: 6
+
+---
+
+# Foundation Freeze v1.0 — APPROVED
+
+Sana: 2026-08-03
+Qaror: Director Declaration — Foundation Freeze v1.0
+To'liq hujjat: `New_Map/FOUNDATION_FREEZE_V1.md`
+
+```text
+Layers ....................... 17
+Modules ...................... 210
+Missing Documents ............ 0
+Dependency Conflicts ......... 0
+Allowed/Forbidden Conflict ... 0
+Broken Runtime Rules ......... 0
+Broken Ownership ............. 0
+Broken Gateway ............... 0
+Critical Findings ............ 0
+```
+
+`New_Map/` GoldBot loyihasining yagona Canonical Architecture'i sifatida qabul qilindi.
+
+Freeze'dan keyin taqiqlanadi: yangi Layer, yangi modul, Pipeline o'zgarishi, Ownership o'zgarishi, Public API o'zgarishi, Canonical Contracts o'zgarishi.
+Ruxsat etiladi: bug fix, typo, documentation correction, implementatsiya.
+
+Ochiq Known Gaps (Freeze'ni bloklamaydi): KG-001 (Minor, RT-001), KG-003 (Minor, RT-003).
+KG-002 Freeze'dan oldin RAR-001 bilan yopildi.
+
+Keyingi bosqich: `goldbot-v1` branchi va Director Order No. 001 bo'yicha implementatsiya.
