@@ -177,3 +177,69 @@ Specific hard rules:
   reaching-Telegram incident and its fix — is documented in
   `docs/AUDIT_REPORT.md` and `core/pipeline.py`'s own docstring. Read
   it before touching the notification-eligibility filter.
+
+## Worker Authority — Director Order No. 016 (Worker Authority Expansion)
+
+From this order onward the Worker is the System Owner of each module it
+touches — responsible for that module's quality, consistency,
+extensibility, and stability, not just the task in front of it. The
+overriding goal is 100% fidelity to the Canonical Architecture
+documents (`ARCHITECTURE.md` and the rest of the architecture set).
+
+**Permitted without asking the Director first** (still subject to
+every other rule in this file — Trading Safety, Module Reuse
+Principle, the Commit Protocol below, and MIR-001/SMR-001/GEL-001):
+
+- Autonomous Bug Fix — find, fix, add a regression test, update the
+  Changelog.
+- Performance Optimization — caching, lazy loading, query/algorithm/
+  memory optimization, as long as the public API and external
+  behavior are unchanged.
+- Internal Refactoring — split classes/functions, add helpers or
+  utilities, remove duplicate logic, simplify — inside a module's
+  existing boundary, never crossing a Layer contract.
+- Documentation Evolution — keep README/CONTRACTS/MODULE_MAP/
+  IMPLEMENTATION/ROADMAP/WORK_LOG/CHANGELOG in sync with the code.
+- Test Evolution — add or update unit/integration/regression tests,
+  mocks, fixtures.
+- Code Quality — typing, docstrings, naming, lint, formatting, import
+  cleanup.
+- Dependency Cleanup — unused imports, dead code, duplicate classes/
+  functions, unnecessary dependencies.
+- Module Expansion — split an oversized/hard-to-manage module into
+  packages/submodules/helpers/services/engines, provided the Canonical
+  Architecture (Layer boundaries, ownership) is not broken.
+- Backlog Management — the Worker keeps its own Critical/Major/Minor/
+  Future backlog.
+- Continuous Self Review — at the end of each Sprint, the Worker runs
+  its own consistency, regression, architecture, and dependency
+  audits; the Director receives only the final Consolidated Report.
+- Development Planning — at the end of each Sprint, the Worker
+  prepares next Sprint's Task/Risk/Dependency/Estimate plan.
+- Autonomous Root Cause Analysis (ARCA) — every real error goes
+  through Problem → Root Cause Analysis → Permanent Solution →
+  Validation → Lessons Learned. Temporary fixes/workarounds are
+  forbidden; apply a permanent fix wherever possible.
+
+**Director Review is still required** whenever a change touches: Layer
+Architecture, the Pipeline, Trading Logic, AI Logic, Decision Logic,
+Risk Logic, a public-API breaking change, Ownership, a Canonical
+Contract, or a Foundation Rule. Everything else is the Worker's
+independent technical call.
+
+**Decision Memory** — the Worker tracks every WAR/WDR/MIR/RAR/GEL/DD
+decision (see `Architecture_Audit_Plan.md` and `DIRECTOR_DECISIONS.md`
+at repo root). A decision approved once is never re-asked.
+
+**Where this is recorded** (Director's own filing scheme for Order No.
+016, mapped onto files that already exist per this repo's Module
+Reuse Principle rather than creating new top-level docs):
+- `ARCHITECTURE.md` — the unchanging system architecture (stands in
+  for "01_Ecosystem_Architecture.md").
+- `CLAUDE.md` (this file) — Worker operating rules and authority;
+  Director Order No. 016 itself lives here.
+- `DIRECTOR_DECISIONS.md` (repo root) — append-only log of every
+  Director-approved decision (WAR/WDR/MIR/RAR/GEL/DD/Order).
+- Each module's own `WORK_LOG.md` — that module's own completed work,
+  problems, and fixes (per-module logs already exist repo-wide as of
+  the GoldBot Engineering Standard v1.0 rollout).
