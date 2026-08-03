@@ -12,6 +12,7 @@ ExecutionMonitor quyidagilar uchun javobgar.
 ✓ Reject Detection
 ✓ Timeout Detection
 ✓ Retry Trigger
+✓ Execution Result Generation (yagona egasi)
 ✓ Execution Report Generation
 ExecutionMonitor bajarmaydi.
 ✗ Trading Decision
@@ -32,11 +33,12 @@ Trade Monitoring Layer
 ---
 # Input Contract
 • Broker Response
-• Execution Result
+• Broker Execution Response
 • Order Status
 • Execution Context
 ---
 # Output Contract
+• Execution Result
 • Execution Status
 • Execution Report
 • Monitoring Context
@@ -61,7 +63,8 @@ Trade Monitoring Layer
 4. TIMEOUT va FAILED holatlari log qilinishi shart.
 5. Retry Trigger faqat kerak bo'lganda yaratiladi.
 6. Execution Report Trade Monitoring Layer'ga uzatilishi shart.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. ExecutionMonitor Execution Result'ning yagona Canonical egasi hisoblanadi.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Broker Response qabul qilinadi.

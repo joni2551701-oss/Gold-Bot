@@ -35,6 +35,7 @@ ExecutionMonitor
 ✓ Reject holatini kuzatadi
 ✓ Timeout holatini kuzatadi
 ✓ Retry Trigger yaratadi
+✓ Execution Result yaratadi (yagona egasi)
 ✓ Execution Report yaratadi
 ---
 # Not Responsible
@@ -49,12 +50,13 @@ ExecutionMonitor
 # Input
 ExecutionMonitor qabul qiladi.
 • Broker Response
-• Execution Result
+• Broker Execution Response
 • Order Status
 • Execution Context
 ---
 # Output
 ExecutionMonitor yaratadi.
+• Execution Result
 • Execution Status
 • Execution Report
 • Monitoring Context

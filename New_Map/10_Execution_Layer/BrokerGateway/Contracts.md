@@ -38,7 +38,7 @@ ExecutionMonitor
 ---
 # Output Contract
 • Broker Response
-• Execution Result
+• Broker Execution Response
 • Communication Report
 • Gateway Metadata
 ---
@@ -62,7 +62,8 @@ ExecutionMonitor
 5. Connection Error va Timeout qayta ishlanishi shart.
 6. Broker Response ExecutionMonitor'ga uzatilishi shart.
 7. BrokerGateway Business Logic bajarmaydi.
-8. Circular Dependency qat'iyan taqiqlanadi.
+8. BrokerGateway faqat Broker Execution Response'ga egalik qiladi — Execution Result yaratmaydi (bu ExecutionMonitor vazifasi).
+9. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Broker ulanishi o'rnatiladi.

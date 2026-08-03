@@ -14,7 +14,7 @@ ExecutionEngine quyidagi vazifalarni bajaradi.
 • Execution Context Management
 • Order Execution Coordination
 • Execution State Management
-• Execution Result Generation
+• Execution Plan Generation
 • Execution Report Generation
 ---
 # Layer Position
@@ -32,7 +32,7 @@ ExecutionEngine
 ✓ Execution Context yaratadi
 ✓ Execution Pipeline boshqaradi
 ✓ Modullarni koordinatsiya qiladi
-✓ Execution Result yaratadi
+✓ Execution Plan yaratadi
 ✓ Execution Report yaratadi
 ---
 # Not Responsible
@@ -54,7 +54,7 @@ ExecutionEngine qabul qiladi.
 # Output
 ExecutionEngine yaratadi.
 • Execution Context
-• Execution Result
+• Execution Plan
 • Execution Report
 • Execution Metadata
 ---
@@ -79,7 +79,7 @@ ExecutionMonitor
 1. Faqat ExecutionService orqali kelgan Validated Execution Request qabul qilinadi.
 2. Execution Pipeline ketma-ket ishlaydi.
 3. Har bir modul natijasi tekshiriladi.
-4. Execution Result standart formatda yaratiladi.
+4. Execution Plan standart formatda yaratiladi. ExecutionEngine faqat orchestration bilan shug'ullanadi — Execution Result yaratmaydi (bu ExecutionMonitor vazifasi).
 5. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Related Documents

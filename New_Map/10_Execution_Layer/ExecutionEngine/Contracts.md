@@ -9,7 +9,7 @@ ExecutionEngine quyidagilar uchun javobgar.
 ✓ Execution Pipeline Management
 ✓ Execution Context Generation
 ✓ Module Coordination
-✓ Execution Result Generation
+✓ Execution Plan Generation
 ✓ Execution Report Generation
 ✓ Execution Metadata Generation
 ExecutionEngine bajarmaydi.
@@ -37,7 +37,7 @@ OrderValidator
 ---
 # Output Contract
 • Execution Context
-• Execution Result
+• Execution Plan
 • Execution Report
 • Execution Metadata
 ---
@@ -60,18 +60,19 @@ OrderValidator
 2. Execution Context yaratilishi shart.
 3. Execution Pipeline to'liq bajarilishi shart.
 4. Har bir modul natijasi tekshirilishi shart.
-5. Execution Result standart formatda yaratilishi shart.
+5. Execution Plan standart formatda yaratilishi shart.
 6. ExecutionEngine Broker bilan to'g'ridan-to'g'ri ishlamaydi.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. ExecutionEngine faqat execution orchestration'ga egalik qiladi — Execution Result yaratmaydi (bu ExecutionMonitor vazifasi).
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Request qabul qilinadi.
 ✓ Execution Context yaratiladi.
 ✓ Pipeline ishga tushadi.
-✓ Execution Result yaratiladi.
+✓ Execution Plan yaratiladi.
 ✓ Execution Report yaratiladi.
 ✓ ExecutionMonitor'ga uzatiladi.
 ✓ Architecture Boundary buzilmaydi.
 ---
 # Summary
-ExecutionEngine Contract GoldBot Execution Layer ichidagi barcha Execution jarayonlarini boshqarish, Execution Pipeline'ni koordinatsiya qilish va standart Execution Result yaratishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi.
+ExecutionEngine Contract GoldBot Execution Layer ichidagi barcha Execution jarayonlarini boshqarish va Execution Pipeline'ni koordinatsiya qilishni belgilovchi rasmiy Canonical Architecture Contract hisoblanadi. ExecutionEngine faqat orchestration egasi — Execution Result yagona Canonical egasi ExecutionMonitor hisoblanadi.

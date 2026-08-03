@@ -54,7 +54,7 @@ BrokerGateway qabul qiladi.
 # Output
 BrokerGateway yaratadi.
 • Broker Response
-• Execution Result
+• Broker Execution Response
 • Gateway Metadata
 • Communication Report
 ---

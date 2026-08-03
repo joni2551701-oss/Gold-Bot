@@ -561,6 +561,59 @@ InteractionManager
 ```
 Sabab: `07_AI_Layer/VoiceAI`ning guruh darajasidagi hujjatlari VoiceCommands'ni Internal Module sifatida ro'yxatga olgan, ammo o'z Workflow/SequenceDiagram'ida hech qachon chaqirmagan; `SpeechToText`ning o'z hujjatlari ham to'g'ridan-to'g'ri InteractionManager'ga o'tib ketgan, holbuki `VoiceCommands`ning o'z hujjatlari o'zini SpeechToText bilan InteractionManager orasida majburiy bosqich sifatida ko'rsatgan (Critical, Runtime Pipeline). Director Ruling: VoiceCommands haqiqiy pipeline stage hisoblanadi va hech qachon tashlab yuborilmaydi — canonical tartib `WakeWord → SpeechToText → VoiceCommands → InteractionManager`. SpeechToText faqat matn yaratadi; ovozli buyruqni talqin qilish (Command Interpretation) faqat VoiceCommands vazifasi. VoiceAI guruh hujjatlari va SpeechToText'ning barcha hujjatlari shu tartibga moslashtirildi.
 ---
+## Execution Ownership Rule
+```text
+BrokerGateway owns
+Broker Execution Response.
+
+ExecutionMonitor owns
+Execution Result.
+
+ExecutionEngine
+owns execution orchestration only.
+
+Violation:
+→ Critical
+```
+Sabab: `10_Execution_Layer`da uchta modul — ExecutionEngine, BrokerGateway va ExecutionMonitor — mustaqil ravishda "Execution Result" nomli obyektni o'zining Output sifatida da'vo qilgani aniqlangan (ExecutionEngine va BrokerGateway'ning Output Contract'lari, ExecutionService'ning Input Contract'i esa buni ExecutionMonitor'dan qabul qilinadi deb ko'rsatgan, holbuki ExecutionMonitor'ning o'z Output Contract'ida bu umuman yo'q edi) — uchta manba, uchta ziddiyatli da'vo (Critical, Runtime Ownership). Director Ruling: ExecutionMonitor Execution Result'ning yagona Canonical egasi hisoblanadi; BrokerGateway faqat "Broker Execution Response" yaratadi (hech qachon "Execution Result" emas); ExecutionEngine faqat execution orchestration bilan shug'ullanadi va o'z Output'ini "Execution Plan"/"Execution Context" deb ataydi. Barcha uch modulning README/Contracts hujjatlari shu modelga moslashtirildi.
+---
+## Risk Policy Rule
+```text
+Risk Layer
+produces Risk Policy.
+
+Trade Monitoring
+may execute only
+actions allowed
+by Risk Policy.
+
+Trade Monitoring
+must never
+recalculate risk.
+
+Violation:
+→ Critical
+```
+Sabab: `11_Trade_Monitoring_Layer`da BreakevenManager, TrailingStop va PartialClose ochiq Position'ning Stop Loss/hajmini bevosita o'zgartiradi, ammo barchasi Risk Layer'ni Forbidden Dependency sifatida ko'rsatgan va hech qanday Risk Manager tekshiruvi hujjatlashtirilmagan edi — bu CLAUDE.md'ning "Never bypass Risk Manager" qoidasiga zid ko'rinardi (Critical, Trading Safety). Director Ruling: Risk Layer bypass qilinmaydi, lekin Trade ochilgandan keyingi Breakeven/Trailing Stop/Partial Close harakatlari yangi risk hisoblash emas, balki Trade Management hisoblanadi — shuning uchun ular Risk Layer'ga to'g'ridan-to'g'ri dependency olmaydi. Buning o'rniga: Trade ochilish vaqtida Risk Layer "Risk Policy" (masalan, Allow BE / Allow Trailing / Allow Partial Close / Max Partial % / Trailing Rules / BreakEven Rules) ishlab chiqaradi va bu Risk Policy Execution natijasi bilan birga Trade Monitoring Layer'ga uzatiladi; Trade Monitoring shu Policy doirasida ishlaydi va hech qachon risk'ni qayta hisoblamaydi yoki yangi Risk Manager chaqirmaydi. Shu tarzda Risk Manager trade ochilishida bir marta qaror qiladi, Monitoring esa faqat o'sha qarorni bajaradi — CLAUDE.md qoidasi buzilmaydi.
+---
+## Platform Gateway Rule
+```text
+PlatformService is the
+sole entry point
+to GoldBot Core services.
+
+PlatformService is NOT
+the Platform Layer's
+external entry point.
+
+Client channels
+(Telegram/Mobile/Web/Desktop)
++ Authentication
+are the actual
+external entry points.
+```
+Sabab: `13_Platform_Layer/PlatformService`ning o'z hujjatlari (README Golden Rule 1, Contracts Runtime Contract 1) "Platform Layer'ga barcha tashqi kirishlar PlatformService orqali amalga oshiriladi" deb da'vo qilgan, holbuki guruh darajasidagi Canonical Pipeline'da haqiqiy tashqi kirish nuqtasi mijoz kanallari (Telegram/MobileAPI/WebAPI/DesktopAPI) va Authentication bo'lib, ular PlatformService'dan oldin keladi (Critical, Ownership Scope). Director Ruling: Worker to'g'ri topgan — PlatformService Platform Layer'ning emas, balki GoldBot Core xizmatlarining yagona gateway'i hisoblanadi. PlatformService'ning matni "PlatformService is the sole entry point to GoldBot Core services" deb aniqlashtirildi.
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.
