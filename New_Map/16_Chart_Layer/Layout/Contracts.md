@@ -49,7 +49,24 @@ Chart_Core
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getLayoutState()
+subscribeLayoutEvent(callback)
+configureLayout(options)
+disposeLayout()
+```
+---
+# Architecture Rules
+Layout:
+✓ Single Chart Layout bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Layout:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Layout faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

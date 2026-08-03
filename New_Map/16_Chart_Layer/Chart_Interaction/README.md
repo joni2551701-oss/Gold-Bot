@@ -59,6 +59,28 @@ Chart_Interaction yaratadi.
 • Pan State
 • Selection State
 ---
+# Workflow
+```text
+Chart_Renderer
+↓
+Chart_Interaction
+↓
+Objects
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Chart_Interaction
+├── Mouse/
+├── Keyboard/
+├── Touch/
+├── Zoom/
+├── Pan/
+├── Drag/
+├── Selection/
+└── Hotkeys/
+```
+---
 # Golden Rules
 1. Chart_Interaction faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -67,7 +89,7 @@ Chart_Interaction yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Chart_Interaction/
 ├── README.md
@@ -75,6 +97,7 @@ Chart_Interaction/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_Renderer · Successor: Objects
 ---
 # Summary
-Chart_Interaction GoldBot Chart Layer ichidagi Chart Interaction vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Chart_Interaction GoldBot Chart Layer ichidagi Chart Interaction vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

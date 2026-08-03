@@ -51,6 +51,25 @@ Plugins yaratadi.
 • Plugin Status
 • Plugin Metadata
 ---
+# Workflow
+```text
+Chart_API
+↓
+Plugins
+↓
+Chart_Core
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Plugins
+├── IndicatorPlugins/
+├── DrawingPlugins/
+├── OverlayPlugins/
+├── DataPlugins/
+└── PluginManager/
+```
+---
 # Golden Rules
 1. Plugins faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -59,7 +78,7 @@ Plugins yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Plugins/
 ├── README.md
@@ -67,6 +86,7 @@ Plugins/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_API · Successor: Chart_Core
 ---
 # Summary
-Plugins GoldBot Chart Layer ichidagi Plugins vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Plugins GoldBot Chart Layer ichidagi Plugins vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

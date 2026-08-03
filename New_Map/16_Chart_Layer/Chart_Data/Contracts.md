@@ -57,7 +57,24 @@ Chart_Renderer
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getChart_DataState()
+subscribeChart_DataEvent(callback)
+configureChart_Data(options)
+disposeChart_Data()
+```
+---
+# Architecture Rules
+Chart_Data:
+✓ Candle Data Management bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Chart_Data:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Chart_Data faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

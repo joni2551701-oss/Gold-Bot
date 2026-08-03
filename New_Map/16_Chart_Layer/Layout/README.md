@@ -49,6 +49,25 @@ Layout yaratadi.
 • Sync State
 • Layout Metadata
 ---
+# Workflow
+```text
+Chart_API
+↓
+Layout
+↓
+Chart_Core
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Layout
+├── SingleChart/
+├── SplitChart/
+├── Grid/
+├── Sync/
+└── WorkspaceManager/
+```
+---
 # Golden Rules
 1. Layout faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -57,7 +76,7 @@ Layout yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Layout/
 ├── README.md
@@ -65,6 +84,7 @@ Layout/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_API · Successor: Chart_Core
 ---
 # Summary
-Layout GoldBot Chart Layer ichidagi Layout vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Layout GoldBot Chart Layer ichidagi Layout vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

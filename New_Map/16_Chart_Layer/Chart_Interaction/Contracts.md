@@ -56,7 +56,24 @@ Objects
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getChart_InteractionState()
+subscribeChart_InteractionEvent(callback)
+configureChart_Interaction(options)
+disposeChart_Interaction()
+```
+---
+# Architecture Rules
+Chart_Interaction:
+✓ Mouse Handling bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Chart_Interaction:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Chart_Interaction faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

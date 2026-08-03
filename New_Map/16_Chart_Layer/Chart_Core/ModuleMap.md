@@ -4,6 +4,17 @@ Status: BLUEPRINT
 # Purpose
 Ushbu hujjat Chart_Core ichki arxitekturasini tavsiflaydi (Blueprint bosqichi — ichki submodullar implementatsiya bosqichida qo'shiladi).
 ---
+# Internal Architecture (Planned)
+```text
+Chart_Core
+        ├── ChartEngine
+        ├── ChartState
+        ├── Lifecycle
+        ├── Camera
+        ├── CoordinateSystem
+        └── Viewport
+```
+---
 # Module Position
 ```text
 Chart_API
@@ -13,11 +24,18 @@ Chart_Core
 Chart_Data
 ```
 ---
-# Module Architecture (Blueprint)
+# Processing Pipeline (Planned)
 ```text
+ChartEngine → ChartState → Lifecycle → Camera → CoordinateSystem → Viewport
+```
+---
+# Dependency Map
+```text
+Chart_API
+↓
 Chart_Core
-        │
-(ichki submodullar implementatsiya bosqichida aniqlanadi)
+↓
+Chart_Data
 ```
 ---
 # Allowed Dependencies
@@ -36,6 +54,17 @@ Chart_Core
 ✗ Execution Layer
 ✗ Database Layer
 ✗ Platform Layer
+---
+# Runtime Flow
+```text
+Receive Input
+↓
+Process (Chart_Core)
+↓
+Emit Output
+↓
+Chart_Data
+```
 ---
 # Summary
 Chart_Core GoldBot Chart Layer ichidagi Chart Core moduli hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, Foundation Freeze'dan keyin ichki submodullar (papkalar) haqiqiy implementatsiya bilan to'ldiriladi.

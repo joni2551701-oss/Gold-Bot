@@ -49,7 +49,24 @@ Chart_Data
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getReplayState()
+subscribeReplayEvent(callback)
+configureReplay(options)
+disposeReplay()
+```
+---
+# Architecture Rules
+Replay:
+✓ Historical Replay bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Replay:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Replay faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

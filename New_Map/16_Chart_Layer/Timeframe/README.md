@@ -47,6 +47,24 @@ Timeframe yaratadi.
 • Timeframe Context
 • Aggregated Candles
 ---
+# Workflow
+```text
+Chart_API
+↓
+Timeframe
+↓
+Chart_Data
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Timeframe
+├── TimeframeManager/
+├── Aggregation/
+├── CustomTimeframe/
+└── Synchronization/
+```
+---
 # Golden Rules
 1. Timeframe faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -55,7 +73,7 @@ Timeframe yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Timeframe/
 ├── README.md
@@ -63,6 +81,7 @@ Timeframe/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_API · Successor: Chart_Data
 ---
 # Summary
-Timeframe GoldBot Chart Layer ichidagi Timeframe vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Timeframe GoldBot Chart Layer ichidagi Timeframe vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

@@ -53,7 +53,24 @@ Indicators
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getDrawing_ToolsState()
+subscribeDrawing_ToolsEvent(callback)
+configureDrawing_Tools(options)
+disposeDrawing_Tools()
+```
+---
+# Architecture Rules
+Drawing_Tools:
+✓ Trend Line Drawing bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Drawing_Tools:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Drawing_Tools faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

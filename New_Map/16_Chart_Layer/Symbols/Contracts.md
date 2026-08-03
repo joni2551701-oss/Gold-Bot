@@ -48,7 +48,24 @@ Chart_Data
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getSymbolsState()
+subscribeSymbolsEvent(callback)
+configureSymbols(options)
+disposeSymbols()
+```
+---
+# Architecture Rules
+Symbols:
+✓ Symbol Management bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Symbols:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Symbols faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

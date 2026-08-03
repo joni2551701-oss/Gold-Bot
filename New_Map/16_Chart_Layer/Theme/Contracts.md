@@ -48,7 +48,24 @@ Chart_Renderer
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getThemeState()
+subscribeThemeEvent(callback)
+configureTheme(options)
+disposeTheme()
+```
+---
+# Architecture Rules
+Theme:
+✓ Dark Theme bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Theme:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Theme faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

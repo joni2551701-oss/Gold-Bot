@@ -48,7 +48,24 @@ Chart_Core
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getTemplatesState()
+subscribeTemplatesEvent(callback)
+configureTemplates(options)
+disposeTemplates()
+```
+---
+# Architecture Rules
+Templates:
+✓ Workspace Management bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Templates:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Templates faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

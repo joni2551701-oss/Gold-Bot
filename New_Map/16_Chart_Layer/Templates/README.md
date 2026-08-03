@@ -49,6 +49,25 @@ Templates yaratadi.
 • Workspace State
 • Preset Metadata
 ---
+# Workflow
+```text
+Chart_API
+↓
+Templates
+↓
+Chart_Core
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Templates
+├── Workspace/
+├── Layouts/
+├── IndicatorSets/
+├── DrawingSets/
+└── Presets/
+```
+---
 # Golden Rules
 1. Templates faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -57,7 +76,7 @@ Templates yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Templates/
 ├── README.md
@@ -65,6 +84,7 @@ Templates/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_API · Successor: Chart_Core
 ---
 # Summary
-Templates GoldBot Chart Layer ichidagi Templates vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Templates GoldBot Chart Layer ichidagi Templates vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

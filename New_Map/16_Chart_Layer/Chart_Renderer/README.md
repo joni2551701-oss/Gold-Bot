@@ -57,6 +57,26 @@ Chart_Renderer yaratadi.
 • Render Report
 • Render Metadata
 ---
+# Workflow
+```text
+Chart_Data
+↓
+Chart_Renderer
+↓
+Chart_Interaction
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Chart_Renderer
+├── CanvasRenderer/
+├── WebGLRenderer/
+├── LayerRenderer/
+├── OverlayRenderer/
+├── ObjectRenderer/
+└── RenderPipeline/
+```
+---
 # Golden Rules
 1. Chart_Renderer faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -65,7 +85,7 @@ Chart_Renderer yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Chart_Renderer/
 ├── README.md
@@ -73,6 +93,7 @@ Chart_Renderer/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_Data · Successor: Chart_Interaction
 ---
 # Summary
-Chart_Renderer GoldBot Chart Layer ichidagi Chart Renderer vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Chart_Renderer GoldBot Chart Layer ichidagi Chart Renderer vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

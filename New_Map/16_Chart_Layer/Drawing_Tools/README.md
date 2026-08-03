@@ -53,6 +53,33 @@ Drawing_Tools yaratadi.
 • Drawing State
 • Drawing Metadata
 ---
+# Workflow
+```text
+Objects
+↓
+Drawing_Tools
+↓
+Indicators
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Drawing_Tools
+├── TrendLine/
+├── HorizontalLine/
+├── VerticalLine/
+├── Ray/
+├── Rectangle/
+├── Circle/
+├── Path/
+├── Brush/
+├── Arrow/
+├── Text/
+├── Fibonacci/
+├── Pitchfork/
+└── Gann/
+```
+---
 # Golden Rules
 1. Drawing_Tools faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -61,7 +88,7 @@ Drawing_Tools yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Drawing_Tools/
 ├── README.md
@@ -69,6 +96,7 @@ Drawing_Tools/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Objects · Successor: Indicators
 ---
 # Summary
-Drawing_Tools GoldBot Chart Layer ichidagi Drawing Tools vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Drawing_Tools GoldBot Chart Layer ichidagi Drawing Tools vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

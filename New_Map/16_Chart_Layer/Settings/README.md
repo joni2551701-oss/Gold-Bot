@@ -50,6 +50,26 @@ Settings yaratadi.
 • Scale Configuration
 • Behaviour Configuration
 ---
+# Workflow
+```text
+Chart_API
+↓
+Settings
+↓
+Chart_Core
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Settings
+├── Grid/
+├── PriceScale/
+├── TimeScale/
+├── Behaviour/
+├── Magnet/
+└── AutoScale/
+```
+---
 # Golden Rules
 1. Settings faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -58,7 +78,7 @@ Settings yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Settings/
 ├── README.md
@@ -66,6 +86,7 @@ Settings/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_API · Successor: Chart_Core
 ---
 # Summary
-Settings GoldBot Chart Layer ichidagi Settings vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Settings GoldBot Chart Layer ichidagi Settings vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

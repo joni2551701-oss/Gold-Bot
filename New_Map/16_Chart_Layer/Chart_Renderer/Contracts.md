@@ -56,7 +56,24 @@ Chart_Interaction
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getChart_RendererState()
+subscribeChart_RendererEvent(callback)
+configureChart_Renderer(options)
+disposeChart_Renderer()
+```
+---
+# Architecture Rules
+Chart_Renderer:
+✓ Canvas Rendering bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Chart_Renderer:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Chart_Renderer faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

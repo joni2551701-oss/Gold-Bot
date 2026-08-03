@@ -202,6 +202,7 @@ Chart/
 ├── Layer_DataFlow.md
 ├── Layer_SequenceDiagram.md
 ├── Layer_Contracts.md
+├── Rendering_Guide.md
 │
 ├── 01_Chart_Core/ ... 20_Plugins/
 │   ├── README.md
@@ -209,6 +210,7 @@ Chart/
 │   ├── ModuleMap.md
 │   └── SequenceDiagram.md
 ```
+`Rendering_Guide.md` — Chart Layer'ga xos qo'shimcha hujjat: Render Order (Z-Index), Layer/Object/Overlay Priority, Performance Rules (virtualization, batching), FPS Target, Canvas/WebGL Switching va Caching Strategy'ni belgilaydi. Bu qoidalar ayniqsa Chart_Renderer, Objects, Drawing_Tools, Indicators va Analysis_Overlay bir-birini to'g'ri chizishi uchun muhim.
 Har bir modul hozircha Blueprint bosqichida — faqat 4 ta standart hujjat mavjud. Ichki submodullar (masalan TrendLine/, CanvasRenderer/, ReplayEngine/) Foundation Freeze'dan keyin, implementatsiya bosqichida real kod bilan to'ldiriladi.
 ---
 # Blueprint Status Note

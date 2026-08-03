@@ -58,6 +58,27 @@ Chart_Data yaratadi.
 • Session Data
 • Symbol Cache
 ---
+# Workflow
+```text
+Chart_Core
+↓
+Chart_Data
+↓
+Chart_Renderer
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Chart_Data
+├── CandleData/
+├── TickData/
+├── OHLCV/
+├── VolumeData/
+├── SessionData/
+├── SymbolData/
+└── DataCache/
+```
+---
 # Golden Rules
 1. Chart_Data faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -66,7 +87,7 @@ Chart_Data yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Chart_Data/
 ├── README.md
@@ -74,6 +95,7 @@ Chart_Data/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_Core · Successor: Chart_Renderer
 ---
 # Summary
-Chart_Data GoldBot Chart Layer ichidagi Chart Data vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Chart_Data GoldBot Chart Layer ichidagi Chart Data vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

@@ -57,7 +57,24 @@ Chart_Core
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getChart_APIState()
+subscribeChart_APIEvent(callback)
+configureChart_API(options)
+disposeChart_API()
+```
+---
+# Architecture Rules
+Chart_API:
+✓ Public API Exposure bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Chart_API:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Chart_API faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

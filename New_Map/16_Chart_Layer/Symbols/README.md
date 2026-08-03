@@ -50,6 +50,25 @@ Symbols yaratadi.
 • Watchlist
 • Symbol Info
 ---
+# Workflow
+```text
+Chart_API
+↓
+Symbols
+↓
+Chart_Data
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Symbols
+├── SymbolManager/
+├── Watchlist/
+├── Favorites/
+├── Search/
+└── SymbolInfo/
+```
+---
 # Golden Rules
 1. Symbols faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -58,7 +77,7 @@ Symbols yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Symbols/
 ├── README.md
@@ -66,6 +85,7 @@ Symbols/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_API · Successor: Chart_Data
 ---
 # Summary
-Symbols GoldBot Chart Layer ichidagi Symbols vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Symbols GoldBot Chart Layer ichidagi Symbols vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

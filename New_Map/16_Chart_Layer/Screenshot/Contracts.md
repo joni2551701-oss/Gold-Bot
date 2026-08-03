@@ -47,7 +47,24 @@ Chart_API
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getScreenshotState()
+subscribeScreenshotEvent(callback)
+configureScreenshot(options)
+disposeScreenshot()
+```
+---
+# Architecture Rules
+Screenshot:
+✓ PNG Export bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Screenshot:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Screenshot faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

@@ -60,6 +60,30 @@ Analysis_Overlay yaratadi.
 • Overlay State
 • Overlay Metadata
 ---
+# Workflow
+```text
+Indicators
+↓
+Analysis_Overlay
+↓
+Alerts
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Analysis_Overlay
+├── MarketStructure/
+├── BOS/
+├── CHoCH/
+├── Liquidity/
+├── OrderBlock/
+├── FVG/
+├── Wyckoff/
+├── AMD/
+├── PremiumDiscount/
+└── Sessions/
+```
+---
 # Golden Rules
 1. Analysis_Overlay faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -68,7 +92,7 @@ Analysis_Overlay yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Analysis_Overlay/
 ├── README.md
@@ -76,6 +100,7 @@ Analysis_Overlay/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Indicators · Successor: Alerts
 ---
 # Summary
-Analysis_Overlay GoldBot Chart Layer ichidagi Analysis Overlay vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Analysis_Overlay GoldBot Chart Layer ichidagi Analysis Overlay vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

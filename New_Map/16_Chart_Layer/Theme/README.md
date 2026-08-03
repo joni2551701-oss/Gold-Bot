@@ -49,6 +49,25 @@ Theme yaratadi.
 • Color Palette
 • Font Settings
 ---
+# Workflow
+```text
+Chart_API
+↓
+Theme
+↓
+Chart_Renderer
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Theme
+├── Dark/
+├── Light/
+├── Custom/
+├── Fonts/
+└── Colors/
+```
+---
 # Golden Rules
 1. Theme faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -57,7 +76,7 @@ Theme yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Theme/
 ├── README.md
@@ -65,6 +84,7 @@ Theme/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_API · Successor: Chart_Renderer
 ---
 # Summary
-Theme GoldBot Chart Layer ichidagi Theme vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Theme GoldBot Chart Layer ichidagi Theme vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

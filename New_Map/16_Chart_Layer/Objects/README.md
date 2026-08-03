@@ -53,6 +53,26 @@ Objects yaratadi.
 • Object State
 • Object Metadata
 ---
+# Workflow
+```text
+Chart_Interaction
+↓
+Objects
+↓
+Drawing_Tools
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Objects
+├── CandleObject/
+├── ShapeObject/
+├── TextObject/
+├── DrawingObject/
+├── OverlayObject/
+└── ObjectManager/
+```
+---
 # Golden Rules
 1. Objects faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -61,7 +81,7 @@ Objects yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Objects/
 ├── README.md
@@ -69,6 +89,7 @@ Objects/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_Interaction · Successor: Drawing_Tools
 ---
 # Summary
-Objects GoldBot Chart Layer ichidagi Objects vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Objects GoldBot Chart Layer ichidagi Objects vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

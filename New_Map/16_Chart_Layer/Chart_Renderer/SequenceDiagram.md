@@ -6,6 +6,17 @@ Ushbu hujjat Chart_Renderer Runtime Sequence'ni tavsiflaydi.
 Bu implementatsiya emas.
 Bu Chart_Renderer modulining Canonical Runtime Blueprint hisoblanadi.
 ---
+# Initialization
+```text
+Chart_Core Boot
+↓
+Load Chart_Renderer Configuration
+↓
+Register Chart_Renderer with Chart_Core
+↓
+Chart_Renderer Ready
+```
+---
 # Runtime Sequence
 ```text
 Chart_Data
@@ -17,21 +28,63 @@ Process Canvas Rendering
 Chart_Interaction
 ```
 ---
+# Error Sequence
+```text
+Chart_Renderer Error Detected
+↓
+Log Error
+↓
+Emit Error Event
+↓
+Fallback / Safe State
+```
+---
+# Recovery Sequence
+```text
+Safe State
+↓
+Reload Chart_Renderer Configuration
+↓
+Re-Register with Chart_Core
+↓
+Chart_Renderer Ready
+```
+---
+# Shutdown Sequence
+```text
+Shutdown Signal
+↓
+Flush Chart_Renderer State
+↓
+Unregister from Chart_Core
+↓
+Dispose
+```
+---
 # Runtime Rules
 1. Chart_Data natijasi mavjud bo'lishi shart.
 2. Chart_Renderer faqat o'z mas'uliyat doirasida ishlaydi.
 3. Output Chart_Interaction'ga uzatiladi.
-4. Circular Dependency qat'iyan taqiqlanadi.
+4. Xatolik yuz berganda Error Sequence ishga tushadi, keyin Recovery Sequence orqali tiklanadi.
+5. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# State Flow
+# State Machine
 ```text
 Idle
+↓
+Initializing
+↓
+Ready
 ↓
 Receiving
 ↓
 Processing
 ↓
 Completed
+     │
+     ├──→ Error ──→ Recovering ──→ Ready
+     │
+     └──→ Shutting Down ──→ Disposed
 ```
 ---
 # Summary

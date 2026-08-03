@@ -58,7 +58,24 @@ Chart_Data
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getChart_CoreState()
+subscribeChart_CoreEvent(callback)
+configureChart_Core(options)
+disposeChart_Core()
+```
+---
+# Architecture Rules
+Chart_Core:
+✓ Chart Lifecycle Management bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Chart_Core:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Chart_Core faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

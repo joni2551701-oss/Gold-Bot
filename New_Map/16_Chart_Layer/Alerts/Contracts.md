@@ -50,7 +50,24 @@ Screenshot
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getAlertsState()
+subscribeAlertsEvent(callback)
+configureAlerts(options)
+disposeAlerts()
+```
+---
+# Architecture Rules
+Alerts:
+✓ Price Alert Management bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Alerts:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Alerts faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

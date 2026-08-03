@@ -48,6 +48,24 @@ Screenshot yaratadi.
 • Export Status
 • Export Metadata
 ---
+# Workflow
+```text
+Alerts
+↓
+Screenshot
+↓
+Chart_API
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Screenshot
+├── PNG/
+├── JPG/
+├── PDF/
+└── ExportManager/
+```
+---
 # Golden Rules
 1. Screenshot faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -56,7 +74,7 @@ Screenshot yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Screenshot/
 ├── README.md
@@ -64,6 +82,7 @@ Screenshot/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Alerts · Successor: Chart_API
 ---
 # Summary
-Screenshot GoldBot Chart Layer ichidagi Screenshot vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Screenshot GoldBot Chart Layer ichidagi Screenshot vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

@@ -59,7 +59,24 @@ Alerts
 ✗ Database Layer
 ✗ Platform Layer
 ---
-# Runtime Contract
+# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+```text
+getAnalysis_OverlayState()
+subscribeAnalysis_OverlayEvent(callback)
+configureAnalysis_Overlay(options)
+disposeAnalysis_Overlay()
+```
+---
+# Architecture Rules
+Analysis_Overlay:
+✓ Market Structure Visualization bajaradi.
+✓ Module Boundary'ni saqlaydi.
+Analysis_Overlay:
+✗ Signal yoki Decision yaratmaydi.
+✗ BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+✗ AI ishlatmaydi.
+---
+# Runtime Rules
 1. Analysis_Overlay faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
 3. Output standart formatda yaratilishi shart.

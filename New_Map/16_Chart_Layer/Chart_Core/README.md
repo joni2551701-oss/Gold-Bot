@@ -59,6 +59,26 @@ Chart_Core yaratadi.
 • Viewport Context
 • Camera Context
 ---
+# Workflow
+```text
+Chart_API
+↓
+Chart_Core
+↓
+Chart_Data
+```
+---
+# Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
+```text
+Chart_Core
+├── ChartEngine/
+├── ChartState/
+├── Lifecycle/
+├── Camera/
+├── CoordinateSystem/
+└── Viewport/
+```
+---
 # Golden Rules
 1. Chart_Core faqat o'z mas'uliyat doirasida ishlaydi.
 2. Chart hech qachon Signal yaratmaydi.
@@ -67,7 +87,7 @@ Chart_Core yaratadi.
 5. Chart hech qachon Risk hisoblamaydi.
 6. Circular Dependency qat'iyan taqiqlanadi.
 ---
-# Related Documents
+# Related Modules
 ```text
 Chart_Core/
 ├── README.md
@@ -75,6 +95,7 @@ Chart_Core/
 ├── ModuleMap.md
 └── Contracts.md
 ```
+Predecessor: Chart_API · Successor: Chart_Data
 ---
 # Summary
-Chart_Core GoldBot Chart Layer ichidagi Chart Core vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, implementatsiya uchun ichki papkalar (submodules) keyingi bosqichda qo'shiladi.
+Chart_Core GoldBot Chart Layer ichidagi Chart Core vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.
