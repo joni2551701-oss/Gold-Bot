@@ -3,9 +3,9 @@ Monitoring Layer — Error Monitor (GoldBot Core Owner Monitoring Alpha,
 TASK 6).
 
 Genuinely new capture mechanism -- confirmed via
-`docs/PHASE_CORE_MONITORING_AUDIT.md`'s own `core/logger.py` section
+`docs/PHASE_CORE_MONITORING_AUDIT.md`'s own `core_layer/logger/logger.py` section
 that no ErrorEvent/error-capture/severity persistence exists anywhere
-in this codebase; `core.logger.setup_logger()` is a bare stdout
+in this codebase; `core_layer.logger.logger.setup_logger()` is a bare stdout
 logger only. Persisted via `database.monitoring_repository.MonitoringRepository`
 (TASK 9), so `/errors`' own "Last 24h" window survives a process
 restart.
@@ -19,7 +19,7 @@ error without every caller having to remember to update both.
 from collections import Counter
 from typing import Dict, Optional, Sequence
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from database.monitoring_repository import MonitoringRepository
 from monitoring.models import ErrorEvent, ErrorSeverity
 from monitoring.system_monitor import record_error as record_system_error

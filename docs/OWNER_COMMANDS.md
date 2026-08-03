@@ -168,7 +168,7 @@ new emergency commands' worth of payload now exist:
 /emergency_status     → telegram/owner/emergency_commands.py's get_emergency_status()
 ```
 
-Each is a thin wrapper over `core.emergency.emergency_manager.EmergencyManager`
+Each is a thin wrapper over `core_layer.emergency.emergency_manager.EmergencyManager`
 (Phase 59.9) — every call is persisted (append-only history, never
 overwritten) and audited (`KILL_ACTIVATED`/`PAUSE_ACTIVATED`/
 `MAINTENANCE_ENABLED`/`SYSTEM_RESTORED`). See `docs/EMERGENCY_SYSTEM.md`

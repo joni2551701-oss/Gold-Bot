@@ -59,7 +59,7 @@ def test_trading_pipeline_gates_are_not_present_in_the_registry():
     ENABLE_DECISION are all Trading-pipeline concerns (see
     docs/FEATURE_REGISTRY_SEPARATION.md's audit table) and must not
     appear in this registry at all -- not even declared-only.
-    core/guards/pipeline_guard.py's PipelineGuard now reads exclusively
+    core_layer/pipeline/pipeline_guard.py's PipelineGuard now reads exclusively
     from EmergencyManager for every pipeline-stage decision.
     """
     registry = build_feature_registry()

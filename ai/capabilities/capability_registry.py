@@ -10,7 +10,7 @@ TASK 1 found that registry is Infrastructure-only as of Phase 60.9 and
 reusing it for an AI-behavior concern would repeat the exact coupling
 Phase 60.9 was created to remove. This registry lives entirely inside
 `ai/` and is never read by `configuration/` or
-`core/guards/pipeline_guard.py`.
+`core_layer/pipeline/pipeline_guard.py`.
 
 In-memory only, like every other Phase 61.0 module -- no persistence,
 no database integration.

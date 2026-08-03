@@ -165,7 +165,7 @@ here rather than silently reinterpreted.
    `docs/architecture/` (headers + `ARCHITECTURE_MASTER.md` in full),
    `data/`, `context/`, `strategies/`, `signals/`, `ai/`, `decision/`,
    `risk/`, `execution/`, `telegram/`, `database/`, `monitoring/`,
-   `core/gateway/`, `assets/`, `features/`, and the wider repository
+   `core_layer/gateway/`, `assets/`, `features/`, and the wider repository
    for the Section 6–14 exists/partial/absent determination.
 2. **What was accepted:** the Constitution and `docs/architecture/*`
    set as authoritative for their own scope, unchanged; the existing

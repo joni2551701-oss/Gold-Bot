@@ -19,7 +19,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional, Tuple, List, Dict
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.twelve_data_client import Candle
 from data.memory.market_memory import MarketMemory
 from data.persistence.memory_codec import MemoryCodec, SnapshotMetadata

@@ -98,7 +98,7 @@ regressions against the pre-phase baseline).
    Events → Response sequence fully documented in `docs/AI_RUNTIME_FLOW.md`.
 3. Circuit Breaker / ProviderHealth / RuntimeState responsibility
    boundaries stated explicitly, no overlap, no shared naming
-   collision (`core/emergency/circuit_breaker.py` remains a fully
+   collision (`core_layer/emergency/circuit_breaker.py` remains a fully
    separate, trading-domain concept, unrelated to
    `ai/providers/circuit_breaker.py`).
 4. `grep -rn "os.getenv\|os.environ" ai/` → zero results. Every secret

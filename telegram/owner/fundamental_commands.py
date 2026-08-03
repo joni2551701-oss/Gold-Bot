@@ -23,7 +23,7 @@ Per this whole phase's hard boundary: none of these commands return
 from context.fundamental_context import FundamentalContextSnapshot
 from context.fundamental_scoring import FundamentalScoreResult, format_fundamental_score
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("FundamentalCommands")
 

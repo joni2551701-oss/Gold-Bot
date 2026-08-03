@@ -19,7 +19,7 @@ as every other provider.
 from typing import Dict, List, Optional
 
 from broadcast.models import BroadcastProviderDescriptor, BroadcastProviderStatus, BroadcastProviderType
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("BroadcastProviderManager")
 

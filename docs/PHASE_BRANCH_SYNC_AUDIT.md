@@ -51,7 +51,7 @@ of a compatible base — `main` is a structurally different snapshot:
 | `configuration/`, `database/` | Early/partial | Full feature-registry, runtime-feature, monitoring-repository layers |
 
 `core/` itself is not exempt from this divergence — `main`'s `core/`
-predates `core/pipeline.py`, `core/emergency/`, `core/guards/`,
+predates `core/pipeline.py`, `core_layer/emergency/`, `core/guards/`,
 `core/secrets.py`'s current shape, and more. There is no way to bring
 just the three named Telegram Runtime commits (`71f4073`, `ee0799b`,
 `a323d18`) onto `main` without first bringing over the ~130 commits

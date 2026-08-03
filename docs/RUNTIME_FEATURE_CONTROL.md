@@ -153,7 +153,7 @@ section below for why.)
 
 ## Phase 60.9: Runtime Registry Separation — RuntimeFeatureManager fully removed from the pipeline
 
-Phase 60.8 briefly made `core/guards/pipeline_guard.py`'s
+Phase 60.8 briefly made `core_layer/pipeline/pipeline_guard.py`'s
 `PipelineGuard` the first real caller of `RuntimeFeatureManager.status()`,
 gating three pipeline stages by three new registry entries
 (`ENABLE_SIGNALS`/`ENABLE_AI`/`ENABLE_DATABASE`) and leaving a fourth
@@ -172,7 +172,7 @@ pipeline-stage mapping.
 
 ## Phase 60.8: Safe Integration Layer — first real reader (superseded by Phase 60.9 above)
 
-`core/guards/pipeline_guard.py`'s `PipelineGuard` was the first real
+`core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard` was the first real
 caller of `RuntimeFeatureManager.status()` (read-only, never
 `.enable()`/`.disable()`/`.toggle()`) — previously zero callers
 existed outside this module's own tests and `telegram/owner/*.py`.

@@ -66,7 +66,7 @@ from typing import Dict, List, Optional
 
 from ai.audit.provider_stats import ProviderStats
 from ai.event_bus import EventBus, EventType, RuntimeEvent
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from core_layer.secrets import Secrets
 from telegram.notifier import Notifier
 

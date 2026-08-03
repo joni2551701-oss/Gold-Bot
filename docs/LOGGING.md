@@ -1,15 +1,15 @@
 # GoldBot Logging Standard (Phase 51)
 
 Single logging foundation for the whole project: one shared factory
-(`core/logger.py`'s `setup_logger()`), one format, one set of level
+(`core_layer/logger/logger.py`'s `setup_logger()`), one format, one set of level
 rules, applied consistently across every module. This document is the
-reference; `core/logger.py` itself was **not changed** this phase —
+reference; `core_layer/logger/logger.py` itself was **not changed** this phase —
 it already implements the shape described below correctly.
 
 ## Configuration
 
 ```python
-# core/logger.py
+# core_layer/logger/logger.py
 def setup_logger(name: str = "GoldBot"):
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)

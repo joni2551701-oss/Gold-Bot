@@ -20,7 +20,7 @@ import threading
 from datetime import datetime, timezone
 from typing import Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from database.monitoring_repository import MonitoringRepository
 from monitoring.models import ResourceSnapshot
 from monitoring.system_monitor import DEFAULT_MONITOR

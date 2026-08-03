@@ -18,7 +18,7 @@ from backtesting.backtest_engine import BacktestEngine
 from backtesting.backtest_result import format_backtest_report
 from backtesting.replay_models import ReplayConfig
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("BacktestCommands")
 

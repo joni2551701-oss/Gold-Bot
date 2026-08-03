@@ -33,7 +33,7 @@ class RuntimeLifecycleEvent:
 def create_lifecycle_event(
     from_state: Optional[RuntimeState], to_state: RuntimeState, reason: Optional[str] = None,
 ) -> RuntimeLifecycleEvent:
-    """Pure, deterministic factory -- stamps occurred_at to now, same convention as core.emergency.emergency_state.create_emergency_state_record()."""
+    """Pure, deterministic factory -- stamps occurred_at to now, same convention as core_layer.emergency.emergency_state.create_emergency_state_record()."""
     return RuntimeLifecycleEvent(
         from_state=from_state, to_state=to_state, reason=reason, occurred_at=datetime.now(timezone.utc),
     )

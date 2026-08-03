@@ -25,7 +25,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from monitoring.system_monitor import record_error as _record_core_error
 
 logger = setup_logger("TelegramRuntimeMonitor")

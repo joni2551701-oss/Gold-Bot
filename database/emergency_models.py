@@ -3,7 +3,7 @@ Database Layer — Emergency State persistence model (Phase 59.9:
 Emergency Safety Layer Foundation, TASK 2). Mirrors
 database/audit_log_models.py's own shape/naming split: the DB-row
 model gets its own name (EmergencyStateEntry), distinct from the
-domain model (core.emergency.emergency_state.EmergencyStateRecord) --
+domain model (core_layer.emergency.emergency_state.EmergencyStateRecord) --
 same "two names for two layers" precedent as
 database.runtime_feature_models.RuntimeFeatureRecord vs
 configuration.runtime_state.FeatureRuntimeState.
@@ -33,7 +33,7 @@ class EmergencyStateEntry:
         "owner", or "system" for an automatic one) -- free text, no
         fixed taxonomy, same posture as AuditLogEntry.actor.
     source: "owner" or "system", same distinction as
-        core.emergency.emergency_state.EmergencyStateRecord.source.
+        core_layer.emergency.emergency_state.EmergencyStateRecord.source.
     """
     state: str
     reason: Optional[str] = None

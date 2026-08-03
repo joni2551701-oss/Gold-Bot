@@ -2,8 +2,8 @@
 
 Built in Phase 60.8: Safe Integration Layer (the Director's "Official"
 TASK 2-5 Worker Brief); simplified in Phase 60.9: Runtime Registry
-Separation. `core/guards/pipeline_guard.py`'s `PipelineGuard` is the
-real, wired connection between `core.emergency.emergency_manager.EmergencyManager`
+Separation. `core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard` is the
+real, wired connection between `core_layer.emergency.emergency_manager.EmergencyManager`
 (Phase 59.9, zero real callers before Phase 60.8, confirmed in
 `docs/PHASE60_8_INTEGRATION_AUDIT.md`'s TASK 1 audit) and the live
 `core/pipeline.py`.
@@ -84,7 +84,7 @@ Registry Separation" below.
 
 ## Emergency mapping
 
-`core.emergency.emergency_state.EmergencyState` (five real values):
+`core_layer.emergency.emergency_state.EmergencyState` (five real values):
 
 | State | `before_signal()` | `before_ai()` | `before_execution()` | `before_database()` |
 |---|---|---|---|---|

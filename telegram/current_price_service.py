@@ -18,7 +18,7 @@ role here, replacing "repository" for market data).
 from dataclasses import dataclass
 from typing import Dict, Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.current_price_provider import CurrentPrice, CurrentPriceProvider
 from translation.ui_catalog import t
 

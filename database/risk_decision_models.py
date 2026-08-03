@@ -5,7 +5,7 @@ database/emergency_models.py's own shape/naming split: the DB-row
 model gets its own name (RiskDecisionEntry), distinct from the domain
 model (risk.risk_manager.RiskResult) -- same "two names for two
 layers" precedent as database.emergency_models.EmergencyStateEntry vs
-core.emergency.emergency_state.EmergencyStateRecord.
+core_layer.emergency.emergency_state.EmergencyStateRecord.
 
 Append-only by design (see database/risk_decision_repository.py):
 every RiskManager.evaluate() call is a new row, never an UPDATE, so

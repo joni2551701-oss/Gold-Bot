@@ -102,7 +102,7 @@ full contrast between the two.
 composing `telegram.admin_service.AdminService.get_system_status()`,
 `data.providers.registry.build_default_registry()`,
 `config.Config.MARKET_DATA_PROVIDER`/`VALIDATION_MODE`,
-`core.system_state.SystemState` (used only as a display label — no
+`core_layer.system_state.system_state.SystemState` (used only as a display label — no
 `SystemState` instance is held or mutated anywhere), and
 `database.signal_repository.SignalRepository.get_latest_signal()`. No
 new health-check logic — every sub-check is an already-existing,
@@ -147,10 +147,10 @@ uses.
 Foundation)
 `kill_system()`, `pause_system()`, `maintenance_on()`,
 `restore_system()`, `get_emergency_status()` — thin wrappers over
-`core.emergency.emergency_manager.EmergencyManager`, reformatted into
+`core_layer.emergency.emergency_manager.EmergencyManager`, reformatted into
 this package's `ProviderCommandResult` shape. No new
 state/persistence/audit logic — every transition is validated,
-persisted, and audited entirely inside `core/emergency/`. See
+persisted, and audited entirely inside `core_layer/emergency/`. See
 `docs/EMERGENCY_SYSTEM.md` for the full state diagram and safety
 rules. Not wired into the live bot, same as every module in this
 package.
@@ -233,7 +233,7 @@ and `provider_commands.ProviderCommandResult`. `owner_roles.py`
 imports `telegram.permissions.is_owner` and, lazily (inside
 `resolve_owner_role()`, not at module import time),
 `database.admin_repository.AdminRepository`. `status_commands.py`
-imports `config.Config`, `core.system_state.SystemState`,
+imports `config.Config`, `core_layer.system_state.system_state.SystemState`,
 `data.providers.registry`, `database.signal_repository.SignalRepository`,
 `telegram.admin_service.AdminService`, and
 `provider_commands.ProviderCommandResult`. `control_commands.py`
@@ -245,8 +245,8 @@ documents, never reversed. `security.py` imports
 `owner_roles.OwnerRole`/`resolve_owner_role`. `dashboard.py` imports
 only other modules within this package
 (`control_commands`/`provider_commands`/`status_commands`).
-`emergency_commands.py` imports `core.emergency.emergency_manager.EmergencyManager`,
-`core.emergency.emergency_state.EmergencyStateRecord`, and
+`emergency_commands.py` imports `core_layer.emergency.emergency_manager.EmergencyManager`,
+`core_layer.emergency.emergency_state.EmergencyStateRecord`, and
 `provider_commands.ProviderCommandResult`. `replay_commands.py`
 imports `backtesting.replay_controller.ReplayController`,
 `backtesting.replay_models.ReplayConfig`/`format_replay_report()`, and

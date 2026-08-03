@@ -17,7 +17,7 @@ from backtesting.replay_engine import ReplayEngine
 from backtesting.replay_models import ReplayConfig, ReplayResult, ReplayState
 from backtesting.replay_session import ReplaySession
 from data.twelve_data_client import Candle
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ReplayController")
 

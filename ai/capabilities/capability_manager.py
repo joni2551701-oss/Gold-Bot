@@ -20,7 +20,7 @@ from typing import Dict, List, Optional
 
 from ai.capabilities.capability import Capability
 from ai.capabilities.capability_registry import CapabilityDescriptor, build_capability_registry
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("CapabilityManager")
 

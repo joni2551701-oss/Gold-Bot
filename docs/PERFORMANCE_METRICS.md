@@ -134,7 +134,7 @@ always propagates after the metric is recorded with
 ## Phase A18 integration
 
 If the exception raised inside a `PerformanceTimer`/
-`measure_performance` block is a `core.errors.base.GoldBotError` (or
+`measure_performance` block is a `core_layer.errors.base.GoldBotError` (or
 any of its nine subclasses — Phase A18), its `.code` is captured as
 the metric's `error_code`, exactly matching this phase's own
 error-integration example:
@@ -154,7 +154,7 @@ or fabricated for a non-`GoldBotError` exception, which leaves
 
 ## Logging integration
 
-Existing logging (`core/logger.py`'s `setup_logger()`) is unchanged.
+Existing logging (`core_layer/logger/logger.py`'s `setup_logger()`) is unchanged.
 Every `PerformanceTimer`/`measure_performance` completion logs one
 line:
 

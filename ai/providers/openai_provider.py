@@ -27,7 +27,7 @@ from ai.providers.runtime_errors import (
     ProviderTimeoutError,
     ProviderUnavailableError,
 )
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from core_layer.secrets import Secrets
 
 logger = setup_logger("OpenAIProvider")

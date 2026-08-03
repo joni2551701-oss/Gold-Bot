@@ -20,19 +20,19 @@ health-check logic is written here:
     telegram.admin_service.AdminService.get_system_status()   -- database/telegram/market_data/ai reachability (Phase 41)
     data.providers.registry.build_default_registry()           -- per-provider status (Phase 59.1/59.2)
     config.Config.MARKET_DATA_PROVIDER/VALIDATION_MODE          -- the configured provider name + Phase 59 validation flag
-    core.system_state.SystemState                               -- the Phase 59.6 operating-mode vocabulary, reused for "Mode" only as a display label (no SystemState instance is held or mutated anywhere -- see that module's own docstring on why no holder exists yet)
+    core_layer.system_state.system_state.SystemState                               -- the Phase 59.6 operating-mode vocabulary, reused for "Mode" only as a display label (no SystemState instance is held or mutated anywhere -- see that module's own docstring on why no holder exists yet)
     database.signal_repository.SignalRepository.get_latest_signal() -- the most recently persisted signal's timestamp
 """
 
 from datetime import datetime, timezone
 
 from config import Config
-from core.system_state import SystemState
+from core_layer.system_state.system_state import SystemState
 from data.providers.registry import build_default_registry
 from database.signal_repository import SignalRepository
 from telegram.admin_service import AdminService
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("StatusCommands")
 

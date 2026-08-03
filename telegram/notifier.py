@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from telegram.signal_formatter import FormattedSignal
 from telegram.bot import TelegramBot
 from core_layer.secrets import Secrets
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("Notifier")
 

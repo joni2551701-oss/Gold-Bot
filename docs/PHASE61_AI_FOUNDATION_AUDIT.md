@@ -74,9 +74,9 @@ are each justified below by the "Cannot reuse" rows that name them.
 
 | Module | Status | Reason |
 |---|---|---|
-| `core/emergency/emergency_manager.py` (`EmergencyManager`) | Not applicable to TASK 2-9 | Sole Trading-control authority (Phase 60.9's "Emergency Only Controls Trading" principle). AI capabilities are not a trading-pipeline stage — `ai/capabilities/` never calls or is called by `EmergencyManager`, and TASK 2's Capability Manager governs advisory AI features only, never a pipeline gate. |
+| `core_layer/emergency/emergency_manager.py` (`EmergencyManager`) | Not applicable to TASK 2-9 | Sole Trading-control authority (Phase 60.9's "Emergency Only Controls Trading" principle). AI capabilities are not a trading-pipeline stage — `ai/capabilities/` never calls or is called by `EmergencyManager`, and TASK 2's Capability Manager governs advisory AI features only, never a pipeline gate. |
 | `core/secrets.py` (`Secrets`, incl. `GEMINI_API_KEY`) | Already exists, not read this phase | TASK 3's placeholder providers make no real API call, so no provider this phase reads `Secrets.GEMINI_API_KEY` or any other credential — a real-provider phase (Phase 61.1+) is where `ai/providers/gemini_provider.py`, etc. would read this. Confirmed present and ready for that future phase; untouched now. |
-| `core/logger.py` (`setup_logger`) | Already exists, reused directly | Every new TASK 2-9 module uses this exact existing logger factory, matching the codebase-wide convention — no new logging abstraction is created. |
+| `core_layer/logger/logger.py` (`setup_logger`) | Already exists, reused directly | Every new TASK 2-9 module uses this exact existing logger factory, matching the codebase-wide convention — no new logging abstraction is created. |
 
 ## Summary
 

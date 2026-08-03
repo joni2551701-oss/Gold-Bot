@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 
 from database.feedback_repository import FeedbackRepository
 from database.feedback_models import FeedbackRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("FeedbackService")
 

@@ -80,6 +80,16 @@ Core_Layer/
 │
 ├── Features/
 │
+├── Gateway/
+│
+├── Emergency/
+│
+├── Errors/
+│
+├── Logger/
+│
+├── SystemState/
+│
 └── Shutdown/
 
 ---
@@ -163,6 +173,36 @@ Faqat o'lchaydi — baholash HealthMonitor zimmasida.
 Pipeline davomida allaqachon hisoblangan natijalarni yagona standart Feature obyektiga aylantiradi.
 
 AI, Strategy, Backtesting va ML Export uchun umumiy Feature kutubxonasi. Yangi indikator hisoblamaydi.
+
+---
+
+## Gateway
+
+Service Registry, Router, Authentication, Authorization, Rate Limiting, Circuit Breaking, Health, Metrics va Versioning'ni yagona kirish nuqtasi ortida birlashtiradi.
+
+---
+
+## Emergency
+
+Emergency Safety: Pause / Kill / Maintenance / Resume holatlari, Circuit Breaker va holat o'tishlari tarixi.
+
+---
+
+## Errors
+
+Butun tizim uchun yagona xato ierarxiyasi va xato kodlari (`GoldBotError`).
+
+---
+
+## Logger
+
+Yagona, izchil logger konfiguratsiyasi. Maxfiy qiymatlarni hech qachon yozmaydi.
+
+---
+
+## SystemState
+
+Tizimning yuqori darajadagi ish rejimi (operating mode) lug'ati va joriy holati.
 
 ---
 
@@ -316,6 +356,11 @@ Core_Layer/
 ├── HealthMonitor/
 ├── Performance/
 ├── Features/
+├── Gateway/
+├── Emergency/
+├── Errors/
+├── Logger/
+├── SystemState/
 └── Shutdown/
 
 Har bir papka o'z README.md, SequenceDiagram.md, ModuleMap.md va Contracts.md fayllariga ega bo'lishi kerak.

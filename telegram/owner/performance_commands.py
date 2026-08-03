@@ -23,7 +23,7 @@ from analytics.equity_curve import EquityCurveConfig, build_equity_curve, format
 from analytics.performance_metrics import compute_performance_metrics, format_performance_metrics
 from analytics.signal_performance import SignalPerformance
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("PerformanceCommands")
 

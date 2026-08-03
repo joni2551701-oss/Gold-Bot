@@ -33,7 +33,7 @@ while `ai/runtime/` imported *down* into providers/audit/router.
 
 **Fix (approved strategy #1/#2):** the event bus was relocated to a
 neutral top-level module, `ai/runtime/event_bus.py` → **`ai/event_bus.py`**.
-`event_bus.py` depends only on `core.logger` + stdlib (no `ai/`
+`event_bus.py` depends only on `core_layer.logger.logger` + stdlib (no `ai/`
 dependency), so every consumer now depends on it *downward*. The three
 cycles vanish at once — the minimal cut that breaks all of them. The
 `EventBus`/`EventType`/`RuntimeEvent` public classes are byte-for-byte

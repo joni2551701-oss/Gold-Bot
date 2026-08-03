@@ -1,6 +1,6 @@
-"""Phase 61.4 TASK 4 — core/phone_hash.py: deterministic, salted phone number hashing. The raw phone number is never returned."""
+"""Phase 61.4 TASK 4 — core_layer/secrets/phone_hash.py: deterministic, salted phone number hashing. The raw phone number is never returned."""
 
-from core.phone_hash import hash_phone_number
+from core_layer.secrets.phone_hash import hash_phone_number
 
 
 def test_same_phone_always_hashes_the_same():

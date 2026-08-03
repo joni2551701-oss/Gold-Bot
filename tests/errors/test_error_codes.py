@@ -1,11 +1,11 @@
 """
 Phase A18 -- Error Classification tests: error codes
-(core/errors/codes.py).
+(core_layer/errors/codes.py).
 """
 
 import pytest
 
-from core.errors import codes
+from core_layer.errors import codes
 
 
 def test_code_pattern_matches_every_defined_code():

@@ -39,7 +39,7 @@ from typing import TYPE_CHECKING, List, Optional
 
 from data.data_quality import INTERVAL_DELTAS
 from database.raw_candle_repository import RawCandleRepository
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 if TYPE_CHECKING:
     from data.providers.base_provider import MarketCandle, MarketDataProvider

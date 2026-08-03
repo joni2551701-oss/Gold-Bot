@@ -1,6 +1,6 @@
 """Tests for the Gateway rate limiter (module 10)."""
 
-from core.gateway.rate_limiter import RateLimiter
+from core_layer.gateway.rate_limiter import RateLimiter
 
 from _gfakes import at
 

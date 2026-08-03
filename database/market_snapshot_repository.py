@@ -10,7 +10,7 @@ from datetime import datetime
 from database.database import Database
 from database.models import init_market_snapshot_schema
 from database.market_snapshot_models import MarketSnapshotRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("MarketSnapshotRepository")
 

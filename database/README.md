@@ -44,7 +44,7 @@ always INSERTs a new row, never UPDATEs (unlike `runtime_features`'
 one-row-per-name upsert); "current state" is the most recent row
 (`ORDER BY id DESC LIMIT 1`), and full history is preserved forever.
 The persisted backing store for
-`core.emergency.emergency_manager.EmergencyManager` — same
+`core_layer.emergency.emergency_manager.EmergencyManager` — same
 one-directional `core/` → `database/` dependency
 `configuration/runtime_feature_manager.py` already established for
 `configuration/` → `database/` (Phase 59.7).

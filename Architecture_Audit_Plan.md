@@ -1108,3 +1108,36 @@ Director Decision: Phase E — Cleanup davomida ular uchta toifaga ajratiladi:
 ## 12.6 Worker vakolati
 Ruxsat: ortiqcha vaqtinchalik hujjatlarni olib tashlash · duplicate fayllarni yo'qotish · README havolalarini yangilash · migratsiya trackerini yangilash.
 Taqiqlanadi: Foundation Freeze tarkibini o'zgartirish · yangi Layer qo'shish · yangi Modul qo'shish · Canonical hujjatlarni Director tasdiqisiz o'zgartirish.
+
+---
+# 13. Migration Mission (Director Order No. 006)
+
+Foundation Freeze v1.0 yakunlandi. Loyiha Architecture Design bosqichidan **Implementation Migration** bosqichiga o'tdi. Yagona maqsad: Canonical Architecture va Real Implementation bir xil bo'lishi.
+
+## 13.1 Single Source of Truth Rule
+Har bir Layer o'zining Architecture, Documentation, Contracts, Python Code va Tests uchun yagona Source of Truth hisoblanadi. Kod va hujjat hech qachon ikki xil joyda parallel yashamaydi.
+
+## 13.2 Migration Phases
+| Phase | Qamrov | Holat |
+|---|---|---|
+| A | Layer nomlarini yakuniy standartga o'tkazish | ✅ |
+| B | `goldbot/` temporary namespace'ni yo'q qilish | ✅ |
+| C | Eski paketlarni (`core/`, `data/`, `ai/` …) `git mv` orqali Layer ichiga ko'chirish, history saqlanadi | 🔄 |
+| D | Importlarni yangilash | 🔄 |
+| E | Cleanup — duplicate/dead code, bo'sh papka, buzuq import va hujjat; eski paketlar to'liq olib tashlanadi | ⏳ |
+| F | Final Audit — missing docs, broken imports/contracts, dependency/ownership/gateway/runtime/canonical violations, duplicate logic | ⏳ |
+| G | Architecture Lock — GoldBot v1 | ⏳ |
+
+## 13.3 Migration Principles (har bir commitda tekshiriladi)
+1. Bu migratsiya Canonical Architecture'ga yaqinlashtiryaptimi?
+2. Bu keyinchalik ikkinchi marta ko'chirishga majbur qilmaydimi?
+3. Bu Layer ichida hujjat va kodni birlashtiryaptimi?
+4. Bu Source of Truth'ni yaxshilayaptimi?
+
+Bittasiga javob "yo'q" bo'lsa — Worker to'xtaydi va Director Review so'raydi.
+
+## 13.4 Execution Mode — AUTONOMOUS
+Worker mavjud WAR/WDR/MIR/MVR/ICR/SMR/RAR qoidalari va Director Order'lar asosida mustaqil ishlaydi. Director faqat quyidagilarda jalb qilinadi: yangi Layer qo'shish/olib tashlash · Canonical Module qo'shish/olib tashlash · Ownership o'zgarishi · Runtime Pipeline o'zgarishi · Public API o'zgarishi · Decision/Risk Engine logikasi · Trading Logic · Security Boundary · Foundation Freeze qoidalarini o'zgartirish · Canonical Architecture o'zgarishi.
+
+## 13.5 Final Success Criteria
+✅ Repository to'liq Layer Architecture asosida ishlaydi · ✅ Har bir Layer ichida hujjat va kod birga · ✅ `goldbot/` yo'q · ✅ Eski paketlar olib tashlangan · ✅ Importlar 100% yangi strukturada · ✅ Testlar yashil · ✅ Duplicate logic yo'q · ✅ Documentation Drift yo'q · ✅ Canonical Architecture = Real Implementation

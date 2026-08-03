@@ -4,7 +4,7 @@ from typing import List
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from core_layer.secrets import Secrets
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("TwelveDataClient")
 

@@ -20,7 +20,7 @@ from typing import Dict, Optional
 from execution.simulator.simulator_engine import ExecutionSimulator
 from execution.simulator.slippage import SlippageConfig
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ExecutionCommands")
 

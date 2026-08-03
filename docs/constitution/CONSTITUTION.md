@@ -302,7 +302,7 @@ a routine Worker judgment call.
 Panel, not through a hidden default.**
 
 Every module this Constitution treats as safety- or control-critical —
-emergency state (`core/emergency/`), runtime lifecycle
+emergency state (`core_layer/emergency/`), runtime lifecycle
 (`ai/runtime/runtime_manager.py`), feature toggles
 (`configuration/runtime_feature_manager.py`), broadcast/media/
 translation intent (`broadcast/`, `media/`, `translation/`) — exposes

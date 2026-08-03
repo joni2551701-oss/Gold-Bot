@@ -133,7 +133,7 @@ Related: [Constitution Index](chapters/README.md) · [Constitution Change Log](C
 - **Superseded By:** —
 
 ## DR-011 — Gateway Placement
-- **Decision:** The Gateway is implemented at `core/gateway/` (a subpackage of the
+- **Decision:** The Gateway is implemented at `core_layer/gateway/` (a subpackage of the
   existing `core/` package), not as a new top-level package.
 - **Rationale:** Honors the reuse principle (a new file inside an existing package over
   a new top-level folder) and matches the "Core Gateway" naming.

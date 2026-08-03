@@ -149,7 +149,7 @@ subpackage.
 stdlib `typing`. `monitoring/performance_collector.py` imports only
 `monitoring.models` and stdlib `time`. `monitoring/resource_monitor.py`
 imports `monitoring.models`, `monitoring.system_monitor`,
-`database.monitoring_repository`, `core.logger`, and stdlib
+`database.monitoring_repository`, `core_layer.logger.logger`, and stdlib
 (`threading`, `datetime`, `typing`, `resource`) — never `decision/`,
 `risk/`, `execution/`, `strategies/`, `signals/`, `ai.*`. Nothing in
 this phase imports `context/` or `core.pipeline` directly.

@@ -1,5 +1,5 @@
 from datetime import datetime, timezone, timedelta
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("SessionFilter")
 

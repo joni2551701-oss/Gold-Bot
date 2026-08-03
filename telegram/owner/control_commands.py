@@ -35,7 +35,7 @@ from core_layer.configuration.runtime_api import disable_feature as _runtime_dis
 from core_layer.configuration.runtime_api import enable_feature as _runtime_enable_feature
 from core_layer.configuration.runtime_api import list_runtime_features
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ControlCommands")
 

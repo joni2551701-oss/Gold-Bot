@@ -45,7 +45,7 @@ Five files reviewed in full per TASK 0's own list:
 
 - **`telegram/owner/status_commands.py`** — real `get_system_status()`
   composing `AdminService().get_system_status()` + provider registry +
-  `core.system_state.SystemState` + `SignalRepository.get_latest_signal()`
+  `core_layer.system_state.system_state.SystemState` + `SignalRepository.get_latest_signal()`
   into a "GoldBot Status" text block. **Not live-wired** to any
   command. Close in spirit to this brief's `/status`, but a different
   structured shape (no uptime/last_scan/last_error fields) — not
@@ -105,14 +105,14 @@ already uses.
 
 ## `core/`
 
-- **`core/logger.py`** — `setup_logger()` is a bare stdlib
+- **`core_layer/logger/logger.py`** — `setup_logger()` is a bare stdlib
   `logging.Logger` (stdout only, no file handler, no persistence, no
   structured event object). Confirmed via repo-wide grep: **no
   `ErrorEvent`, no `error_monitor`, no `severity` field, no
   error-capture/persistence mechanism of any kind exists anywhere in
   this codebase.** This is a genuine gap — `monitoring/error_monitor.py`
   and its persistence are new.
-- **`core/system_state.py`** — `SystemState` enum + `SystemStateRecord`
+- **`core_layer/system_state/system_state.py`** — `SystemState` enum + `SystemStateRecord`
   (one immutable transition record). Explicitly documented as having
   **no live singleton/holder anywhere** — nothing mutates or reads a
   "current state." Not useful for uptime tracking (a running-process

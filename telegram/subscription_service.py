@@ -17,7 +17,7 @@ from dataclasses import dataclass
 
 from database.subscription_repository import SubscriptionRepository
 from database.subscription_models import SubscriptionRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("SubscriptionService")
 

@@ -44,7 +44,7 @@ compliant; a missing surface is not):
 
 | Critical module | Owner surface |
 |---|---|
-| `core/emergency/` | `telegram/owner/emergency_commands.py` |
+| `core_layer/emergency/` | `telegram/owner/emergency_commands.py` |
 | `ai/runtime/runtime_manager.py` | `telegram/owner/runtime_commands.py` |
 | `configuration/runtime_feature_manager.py` | `telegram/owner/control_commands.py` |
 | `broadcast/`, `media/`, `translation/` | `telegram/owner/broadcast_commands.py` (foundation-only, Phase 63.0 — every command returns `NOT IMPLEMENTED` honestly) |

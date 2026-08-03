@@ -34,7 +34,7 @@ isolation):
 `VALID_TRANSITIONS`, a transition-graph dict (`SHUTDOWN` is terminal —
 `frozenset()`, no outgoing transitions). `ai/runtime/runtime_manager.py`
 — `RuntimeManager`, a transition-validating state machine, same shape
-`core/emergency/emergency_manager.py`'s `EmergencyManager` already
+`core_layer/emergency/emergency_manager.py`'s `EmergencyManager` already
 established for a different domain: `transition(to_state, reason)`
 rejects (returns `None`, logs a warning) rather than silently applying
 an invalid transition. Defaults to `RuntimeState.READY` on

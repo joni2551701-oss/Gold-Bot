@@ -54,7 +54,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.events.event_bus import EventBus
 from data.events.event_model import Event, EventType
 from data.stream.price_cache import PriceCache

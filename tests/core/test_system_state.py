@@ -1,10 +1,10 @@
 """
-Phase 59.6, TASK 1 -- core/system_state.py tests.
+Phase 59.6, TASK 1 -- core_layer/system_state/system_state.py tests.
 """
 
 from datetime import datetime, timezone
 
-from core.system_state import SystemState, SystemStateRecord, create_system_state_record
+from core_layer.system_state.system_state import SystemState, SystemStateRecord, create_system_state_record
 
 
 def test_system_state_has_exactly_five_values():

@@ -13,7 +13,7 @@ from datetime import datetime
 from database.database import Database
 from database.models import init_emergency_state_schema
 from database.emergency_models import EmergencyStateEntry, create_emergency_state_entry
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("EmergencyRepository")
 
@@ -32,7 +32,7 @@ def _row_to_entry(row) -> EmergencyStateEntry:
 
 
 class EmergencyRepository:
-    """Append-only persistence for EmergencyStateEntry -- database access only, no dependency/audit logic (that's core/emergency/emergency_manager.py's job, same phase)."""
+    """Append-only persistence for EmergencyStateEntry -- database access only, no dependency/audit logic (that's core_layer/emergency/emergency_manager.py's job, same phase)."""
 
     def __init__(self):
         self.db = Database()

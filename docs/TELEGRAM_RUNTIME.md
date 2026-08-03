@@ -142,7 +142,7 @@ documents readiness only.
 
 ## Dependency rules
 
-`telegram/runtime_monitor.py` imports only `core.logger`,
+`telegram/runtime_monitor.py` imports only `core_layer.logger.logger`,
 `monitoring.system_monitor` (the established cross-module error sink),
 and stdlib — never `decision`/`risk`/`execution`/`ai.*`/`signals`/
 `strategies`. `telegram/polling.py`'s new code adds one import

@@ -20,7 +20,7 @@ from typing import Optional
 from database.audit_log_repository import AuditLogRepository
 from database.audit_log_models import AuditLogEntry
 from telegram.owner.owner_roles import OwnerRole, resolve_owner_role
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("OwnerSecurity")
 

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from database.database import Database
 from database.models import init_user_schema
 from database.user_models import UserRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("UserRepository")
 
@@ -242,7 +242,7 @@ class UserRepository:
         """
         Records an already-hashed phone number (Phase 61.4 TASK 4) --
         this repository never receives or stores a raw phone number;
-        hashing happens in core.phone_hash.hash_phone_number() before
+        hashing happens in core_layer.secrets.phone_hash.hash_phone_number() before
         this method is ever called.
         """
         return self.update_user(telegram_id, phone_hash=phone_hash)

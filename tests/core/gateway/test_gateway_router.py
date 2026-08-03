@@ -1,13 +1,13 @@
 """Tests for the Gateway router dispatch pipeline (module 10)."""
 
-from core.gateway.service_registry import ServiceRegistry
-from core.gateway.router import GatewayRouter
-from core.gateway.rate_limiter import RateLimiter
-from core.gateway.authentication import TokenAuthenticator
-from core.gateway.authorization import RoleAuthorizer
-from core.gateway.service_state import ServiceState
-from core.gateway.gateway_request import GatewayStatus
-from core.gateway.gateway_events import GatewayEventName
+from core_layer.gateway.service_registry import ServiceRegistry
+from core_layer.gateway.router import GatewayRouter
+from core_layer.gateway.rate_limiter import RateLimiter
+from core_layer.gateway.authentication import TokenAuthenticator
+from core_layer.gateway.authorization import RoleAuthorizer
+from core_layer.gateway.service_state import ServiceState
+from core_layer.gateway.gateway_request import GatewayStatus
+from core_layer.gateway.gateway_events import GatewayEventName
 
 from _gfakes import (
     FakeClock, manifest, echo_handler, boom_handler, request, principal,

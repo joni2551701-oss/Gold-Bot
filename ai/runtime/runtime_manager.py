@@ -4,7 +4,7 @@ Foundation, TASK 2).
 
 `RuntimeManager` is the one holder of `AIService`'s own operational
 state -- same "transition-validating state machine over an enum,
-in-memory history" shape `core.emergency.emergency_manager.
+in-memory history" shape `core_layer.emergency.emergency_manager.
 EmergencyManager` already established for a different domain. Every
 transition is checked against `runtime_state.VALID_TRANSITIONS`
 before it is applied; an invalid transition is rejected (returns
@@ -45,7 +45,7 @@ from typing import List, Optional
 from ai.event_bus import EventBus, EventType, RuntimeEvent
 from ai.runtime.runtime_events import RuntimeLifecycleEvent, create_lifecycle_event
 from ai.runtime.runtime_state import RuntimeState, is_valid_transition
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("RuntimeManager")
 

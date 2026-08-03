@@ -2,7 +2,7 @@
 
 import pytest
 
-from core.gateway.service_state import (
+from core_layer.gateway.service_state import (
     ServiceState, ServiceStateError, can_transition, assert_transition,
 )
 

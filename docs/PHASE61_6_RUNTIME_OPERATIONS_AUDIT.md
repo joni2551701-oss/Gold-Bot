@@ -28,7 +28,7 @@ call; nothing is published anywhere a second listener could observe.
 - **Create**: `runtime_state.py` (`RuntimeState` enum +
   `RuntimeStateRecord`), `runtime_manager.py` (`RuntimeManager`, a
   transition-validating state machine, same shape as
-  `core/emergency/emergency_manager.py`'s `EmergencyManager`),
+  `core_layer/emergency/emergency_manager.py`'s `EmergencyManager`),
   `runtime_events.py` (`RuntimeLifecycleEvent`, the record
   `RuntimeManager` appends to its own history on each transition —
   distinct from TASK 5's cross-cutting `event_bus.py`), `event_bus.py`

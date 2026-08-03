@@ -75,7 +75,7 @@ table (idempotent, `PRAGMA table_info` check first — same pattern as
 the Phase 45 `status`/`last_activity` migration). **The raw phone
 number is never stored anywhere in this codebase.**
 
-`core/phone_hash.py` (new) — `hash_phone_number(phone, salt=None)`:
+`core_layer/secrets/phone_hash.py` (new) — `hash_phone_number(phone, salt=None)`:
 deterministic, HMAC-SHA256-salted hash (not a bare `hashlib.sha256`,
 which would be practically reversible given a phone number's limited
 entropy). Reads `core.secrets.Secrets.PHONE_HASH_SALT` (new optional

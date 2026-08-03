@@ -51,7 +51,7 @@ have no dedicated file yet, noted as honest gaps in that document):
 | Decision (visibility/replay) | `replay_commands.py`, `backtest_commands.py` | Signal/decision replay, backtest triggers |
 | Broadcast | `broadcast_commands.py`, `runtime_notifications.py` | Live delivery loop for queued alerts is an open gap per `docs/PHASE61_7_FREEZE.md` |
 | Analytics | `performance_commands.py`, `report_commands.py`, `dataset_commands.py`, `feature_commands.py`, `fundamental_commands.py`, `learning_commands.py` | |
-| Emergency | `emergency_commands.py` | Backed by `core/emergency/` + `database/emergency_repository.py` |
+| Emergency | `emergency_commands.py` | Backed by `core_layer/emergency/` + `database/emergency_repository.py` |
 | Security | `security.py` | Owner-tier security surface |
 | Cross-cutting | `dashboard.py`, `validation_commands.py`, `monitoring_commands.py` | Summary/validation surfaces spanning several sections — see `docs/PLATFORM_ARCHITECTURE.md` §8 for `dashboard.py` |
 | — | `__init__.py` | Package marker |

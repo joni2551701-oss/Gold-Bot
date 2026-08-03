@@ -122,7 +122,7 @@ Constitution Article conflict.
 ## Dependency Compliance
 
 `voice/*.py` imports only `ai.content.content_schema` (type-only,
-`adapter.py` only) and `core.logger` (`manager.py` only) outside its
+`adapter.py` only) and `core_layer.logger.logger` (`manager.py` only) outside its
 own package. It never imports `media/`, `broadcast/`, `translation/`,
 `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
 `database/`, or `telegram/` — the permanent AST regression test in

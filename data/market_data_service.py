@@ -55,7 +55,7 @@ from __future__ import annotations
 
 from typing import Any, List, Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.market_data import MarketDataNormalizer, MarketSnapshot
 from data.twelve_data_client import Candle
 

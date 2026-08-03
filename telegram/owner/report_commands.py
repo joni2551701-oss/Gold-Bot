@@ -31,7 +31,7 @@ from analytics.strategy_report import StrategyPerformanceReport, build_strategy_
 from analytics.signal_performance import SignalPerformance
 from signals.schema import SignalSchema
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ReportCommands")
 

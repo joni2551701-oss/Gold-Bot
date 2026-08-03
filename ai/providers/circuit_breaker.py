@@ -49,7 +49,7 @@ from typing import Dict, Optional
 from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_status import HealthStatus
 from ai.event_bus import EventBus, EventType, RuntimeEvent
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ProviderCircuitBreaker")
 

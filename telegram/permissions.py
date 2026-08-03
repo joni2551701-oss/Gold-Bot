@@ -15,7 +15,7 @@ hardcoded.
 from enum import Enum
 
 from core_layer.secrets import Secrets
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("Permissions")
 

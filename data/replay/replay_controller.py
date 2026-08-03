@@ -17,7 +17,7 @@ import itertools
 from datetime import datetime, timedelta
 from typing import Optional, List
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.memory.market_memory import MarketMemory
 from data.memory.candle_record import CandleSource, MemoryMode
 from data.replay.replay_state import ReplayState, assert_transition

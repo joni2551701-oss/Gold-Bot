@@ -16,7 +16,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.candle_clock import CandleClock
 from data.memory.market_memory import MarketMemory
 from data.memory.candle_record import CandleSource

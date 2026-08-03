@@ -183,7 +183,7 @@ from ai.runtime.runtime_profiles import RuntimeProfile
 from ai.runtime.runtime_request import RuntimeRequest
 from ai.runtime.runtime_response import RuntimeResponse
 from ai.validation.response_validator import validate_response
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("AIService")
 

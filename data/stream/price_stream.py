@@ -30,7 +30,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Any, Dict, Protocol, runtime_checkable
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.stream.provider import PriceProvider
 from data.stream.stream_event import (
     StreamEvent, StreamState, ProviderStatus, AssetClass,

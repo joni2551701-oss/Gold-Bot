@@ -37,7 +37,7 @@ from context.fvg import FvgType
 from context.market_structure import most_recent_bias
 from context.htf_bias import HTFBias
 from signals.models import SignalType
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 if TYPE_CHECKING:
     from signals.models import SignalCandidate

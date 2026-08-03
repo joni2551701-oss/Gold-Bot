@@ -41,7 +41,7 @@ Strictly one-directional, top depends on bottom, never the reverse.
 - **Other `ai/` subpackages:** none. The subpackage-level cycle
   detector reports `ai.foundation` with zero cross-subpackage edges.
 - **Core / Platform / Media / Telegram / Database:** none — not even
-  `core.logger`. Confirmed by:
+  `core_layer.logger.logger`. Confirmed by:
   `grep -rE "^\s*(from|import)\s+" ai/foundation/*.py` shows only
   stdlib and `ai.foundation.*` imports.
 - **Third-party:** none. Pure Python stdlib

@@ -16,7 +16,7 @@ built — Command Router → Permission Check → Handler → Service →
 Repository, plus an Owner-only subsystem (`telegram/owner/`). None of
 Web, Desktop, Android, iOS, or a Mini App exist in the repository —
 no `web/`, no frontend server, no mobile app code, no Mini App/webview
-integration was found. A Public API does not exist (`core/gateway/` is
+integration was found. A Public API does not exist (`core_layer/gateway/` is
 internal-only, Section 6). Constitution Article 13 (Future First
 Principle) already requires that architecture account for all
 platforms from the start without requiring their code today — this

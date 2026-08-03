@@ -31,7 +31,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Protocol, runtime_checkable
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("CurrentPriceProvider")
 

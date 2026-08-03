@@ -135,7 +135,7 @@ purpose (requesting contact data vs. carrying callback data), so this
 is an addition, not a change to any existing keyboard function.
 
 The raw phone number never touches `UserRepository`: `route_contact()`
-computes `core.phone_hash.hash_phone_number(contact.phone_number)`
+computes `core_layer.secrets.phone_hash.hash_phone_number(contact.phone_number)`
 immediately, passes only the hash onward, and the raw string is not
 retained in any variable that outlives the function call.
 

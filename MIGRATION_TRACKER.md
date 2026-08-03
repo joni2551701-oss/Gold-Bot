@@ -44,7 +44,7 @@ Eski pre-freeze paketlar (`core/`, `data/`, `ai/`, `risk/` va h.k.) migratsiya d
 |---|---|---|
 | A | Skeleton — papka strukturasi, `__init__.py`, README havolalari | ✅ COMPLETE |
 | B | Infrastructure — Configuration → Secrets → Core → Event → Performance → Database | 🔄 2/6 |
-| C | Trading Pipeline — Data → Context → Indicator → Strategy → Signal → AI → Decision → Risk → Execution → Trade Monitoring | ⏳ |
+| C_OLD | Trading Pipeline — Data → Context → Indicator → Strategy → Signal → AI → Decision → Risk → Execution → Trade Monitoring | ⏳ |
 | D | Platform — Telegram, API, Media, Chart | ⏳ |
 | E | Cleanup — eski kodni olib tashlash, duplicate yo'qotish, TODO yopish | ⏳ |
 
@@ -149,17 +149,17 @@ MVR-001 natijasi: import ✅ · eski/yangi parity ✅ · pyflakes ✅ · compile
 | Real kod | Canonical modul | Holat |
 |---|---|---|
 | `core/pipeline.py` | `Pipeline` | ✅ MIGRATED |
-| `core/gateway/service_registry.py`, `service_manifest.py`, `service_state.py`, `service.py` | `ServiceRegistry` | ⏳ |
-| `core/gateway/health_service.py` | `HealthMonitor` | ⏳ |
-| `core/gateway/metrics_service.py` | `Performance` | ⏳ |
-| `core/gateway/gateway.py` (CoreGateway facade) | `CoreService` (?) | ❓ Director |
-| `core/emergency/` (4 fayl) | — | ❓ Director |
-| `core/errors/` (3 fayl) | — | ❓ Director |
-| `core/guards/pipeline_guard.py` | — | ❓ Director |
-| `core/gateway/` qolgan 11 fayl (auth, authz, rate_limiter, router, service_breaker, version, dependency_graph, gateway_context/events/request) | — | ❓ Director |
-| `core/logger.py` (129 importer) | — | ❓ Director |
-| `core/phone_hash.py` | — | ❓ Director |
-| `core/system_state.py` | — | ❓ Director |
+| `core_layer/gateway/service_registry.py`, `service_manifest.py`, `service_state.py`, `service.py` | `ServiceRegistry` | ⏳ |
+| `core_layer/gateway/health_service.py` | `HealthMonitor` | ⏳ |
+| `core_layer/gateway/metrics_service.py` | `Performance` | ⏳ |
+| `core_layer/gateway/gateway.py` (CoreGateway facade) | `CoreService` (?) | ❓ Director |
+| `core_layer/emergency/` (4 fayl) | — | ❓ Director |
+| `core_layer/errors/` (3 fayl) | — | ❓ Director |
+| `core_layer/pipeline/pipeline_guard.py` | — | ❓ Director |
+| `core_layer/gateway/` qolgan 11 fayl (auth, authz, rate_limiter, router, service_breaker, version, dependency_graph, gateway_context/events/request) | — | ❓ Director |
+| `core_layer/logger/logger.py` (129 importer) | — | ❓ Director |
+| `core_layer/secrets/phone_hash.py` | — | ❓ Director |
+| `core_layer/system_state/system_state.py` | — | ❓ Director |
 
 `❓ Director` bilan belgilanganlar uchun canonical modul mavjud emas. WAR-007 bo'yicha yangi modul yaratish Director Review talab qiladi — Worker o'zi modul o'ylab topmaydi.
 
@@ -173,7 +173,28 @@ core/pipeline.py -> core_layer/pipeline/pipeline.py
 
 MVR-001: import ✅ · parity ✅ · pyflakes ✅ · compileall ✅ · pytest 5400/5400 ✅ · `main.py` ✅
 
-Joriy holat: **210 moduldan 3 tasi MIGRATED, 207 tasi SKELETON**.
+### 3.2 core/ — to'liq ko'chirildi (Phase C)
+
+`core/` paketi butunlay `core_layer/` ichiga ko'chirildi va o'chirildi.
+
+| Manba | Manzil | Turi |
+|---|---|---|
+| `core/pipeline.py` | `core_layer/pipeline/pipeline.py` | mavjud canonical modul |
+| `core/guards/pipeline_guard.py` | `core_layer/pipeline/pipeline_guard.py` | mavjud modulga merge |
+| `core/phone_hash.py` | `core_layer/secrets/phone_hash.py` | mavjud modulga merge |
+| `core/gateway/` (17 fayl) | `core_layer/gateway/` | **yangi canonical modul** |
+| `core/emergency/` (4 fayl) | `core_layer/emergency/` | **yangi canonical modul** |
+| `core/errors/` (3 fayl) | `core_layer/errors/` | **yangi canonical modul** |
+| `core/logger.py` | `core_layer/logger/logger.py` | **yangi canonical modul** |
+| `core/system_state.py` | `core_layer/system_state/system_state.py` | **yangi canonical modul** |
+
+Besh yangi canonical modul Director Order No. 005 asosida qo'shildi — u aynan **Gateway, Emergency, Error Handling, Logger, System State**ni nomlab, "agar ular alohida mas'uliyatga ega bo'lsa, alohida canonical modul bo'ladi" degan edi. WAR-006 (Decision Memory) bo'yicha qayta so'ralmadi. Har biriga to'liq 4 ta canonical hujjat yozildi.
+
+`core/gateway/` SMR-001 bo'yicha **butun holicha** ko'chirildi — u ichki importlarga ega ishlaydigan paket, migratsiya vaqtida bo'linmadi.
+
+**Known Gap (Phase F uchun):** `core_layer/service_registry/`, `core_layer/health_monitor/` va `core_layer/performance/` canonical modullari hujjatga ega, lekin ularning real implementatsiyasi `core_layer/gateway/` ichida (`service_registry.py`, `health_service.py`, `metrics_service.py`). Bu bo'linish SMR-001 bo'yicha migratsiyadan keyingi refactoring bosqichiga qoldirildi.
+
+Joriy holat: **`core/` yo'q. `core_layer/` — 17 modul, hujjat va kod birga.**
 
 ---
 

@@ -12,7 +12,7 @@ from typing import Dict, List, Optional
 
 from ai.content_types import ContentType
 from broadcast.models import BroadcastTrigger
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("BroadcastTriggerManager")
 

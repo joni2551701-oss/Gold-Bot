@@ -14,7 +14,7 @@ zero regressions).
   `subscription_policy.py`, `user_capability.py`,
   `identity_checker.py`, `trial_manager.py`,
   `telegram/owner/ai_commands.py`, `ai/audit/usage_accounting.py`,
-  `core/phone_hash.py`, or the `phone_hash` schema addition before the
+  `core_layer/secrets/phone_hash.py`, or the `phone_hash` schema addition before the
   next formally-numbered Worker Brief.
 - Every module this phase built stays exactly as it is — tested,
   documented, not live-wired.
@@ -31,7 +31,7 @@ zero regressions).
   zero new `ai/` -> `decision/`/`risk/`/`execution/`/`strategies/`/
   `database/`/`telegram/` imports.
 - **The raw phone number is never stored anywhere in this codebase.**
-  Only `core.phone_hash.hash_phone_number()`'s salted output
+  Only `core_layer.secrets.phone_hash.hash_phone_number()`'s salted output
   (`UserRecord.phone_hash`) is ever persisted — verified by this
   phase's own test suite asserting the raw digits never appear in the
   hash output.
@@ -43,7 +43,7 @@ zero regressions).
 | 1 | Reuse audit (`docs/PHASE61_4_PRODUCT_CONTROL_AUDIT.md`) — every TASK 2-6 decision traces back to a specific finding there. |
 | 2 | `ai/access/permission_service.py`/`subscription_policy.py`/`user_capability.py` — the real `telegram_id -> AIRole` resolver (accepts already-resolved facts, never imports `telegram/`/`database/`); two in-place drift/bug corrections to Phase 61.0/61.1 code. |
 | 3 | `telegram/owner/ai_commands.py` — `/ai_status`, `/ai_provider`, `/ai_disable`, `/ai_enable`, `/ai_limit`, foundation only. |
-| 4 | `UserRecord.phone_hash` + `core/phone_hash.py`'s salted hashing + `UserRepository.set_phone_hash()`/`get_users_by_phone_hash()` — the raw phone number is never stored. |
+| 4 | `UserRecord.phone_hash` + `core_layer/secrets/phone_hash.py`'s salted hashing + `UserRepository.set_phone_hash()`/`get_users_by_phone_hash()` — the raw phone number is never stored. |
 | 5 | `ai/access/identity_checker.py` + `trial_manager.py` — "1 phone = 1 trial" enforcement, phone-based block always wins over telegram_id-based state. |
 | 6 | `ai/audit/usage_accounting.py`'s `compute_user_usage()` — per-user cost/token aggregation, generalizing the existing `trace.py` join; `ai_cost()`/`ai_usage()` owner commands. |
 

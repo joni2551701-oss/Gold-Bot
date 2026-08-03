@@ -29,7 +29,7 @@ import math
 from datetime import datetime, timezone
 from typing import Optional, List, Any, Dict
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.candle_clock import CandleClock, TIMEFRAME_ORDER
 from data.memory.market_memory import MarketMemory
 from data.memory.candle_record import CandleRecord, CandleSource

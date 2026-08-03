@@ -16,7 +16,7 @@ from typing import Dict, List, Optional
 
 from ai.providers.base_provider import BaseAIProvider
 from ai.providers.provider_registry import ProviderDescriptor, build_provider_registry
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ProviderManager")
 

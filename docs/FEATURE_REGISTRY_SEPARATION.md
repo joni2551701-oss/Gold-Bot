@@ -21,10 +21,10 @@ vocabulary:
   **Infrastructure Services** — providers, data sources, observation
   modes, reserved feature flags. None of these gate a live trading
   decision.
-- **`EmergencyManager`** (`core/emergency/`) governs **Trading
+- **`EmergencyManager`** (`core_layer/emergency/`) governs **Trading
   Control** — Pause, Kill, Maintenance, Resume/Normal. This was already
   true before this phase (Phase 59.9); what changes here is that
-  `PipelineGuard` (`core/guards/pipeline_guard.py`) now reads
+  `PipelineGuard` (`core_layer/pipeline/pipeline_guard.py`) now reads
   *exclusively* from `EmergencyManager` for every one of its four
   stage-gate hooks, never from `RuntimeFeatureManager`.
 
@@ -113,7 +113,7 @@ same assertions, same mechanism coverage, no test deleted or weakened.
 
 ## TASK 4: Pipeline Guard audit + simplification
 
-`core/guards/pipeline_guard.py`'s `PipelineGuard` no longer imports or
+`core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard` no longer imports or
 constructs `RuntimeFeatureManager` at all. `_check()` (the private
 method all four public hooks call) dropped its `feature_name`
 parameter entirely — every hook is now purely a function of

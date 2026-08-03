@@ -1,11 +1,11 @@
 """
-Phase 59.9, TASK 3/6 -- core/emergency/emergency_manager.py tests.
+Phase 59.9, TASK 3/6 -- core_layer/emergency/emergency_manager.py tests.
 Real repositories (SQLite, tests/conftest.py's autouse fresh_database
 fixture) -- no mocks.
 """
 
-from core.emergency.emergency_manager import EmergencyManager
-from core.emergency.emergency_state import EmergencyState
+from core_layer.emergency.emergency_manager import EmergencyManager
+from core_layer.emergency.emergency_state import EmergencyState
 from database.audit_log_repository import AuditLogRepository
 
 

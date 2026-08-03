@@ -4,7 +4,7 @@ No code was written for this document — per the Director's own TASK 1
 instruction ("Hech qanday kod yozilmaydi"), this is read-only analysis
 of `core/pipeline.py`, `decision/`, `risk/`, `execution/`, `telegram/`,
 `configuration/runtime_feature_manager.py`,
-`core/emergency/emergency_manager.py`,
+`core_layer/emergency/emergency_manager.py`,
 `database/learning_repository.py` (+ `learning/trade_event_bridge.py`),
 and `backtesting/replay_engine.py` (+ `backtesting/data_feed.py`).
 
@@ -26,7 +26,7 @@ synchronous method with 13 named stages (`market_data`, `data_quality`,
 `signal_history`, `telegram_format`, `telegram_delivery`, `database`),
 each already bounded by a `t0 = time.perf_counter()` / `self._log_stage(...)`
 pair (Phase 53). No `RuntimeFeatureManager`, `EmergencyManager`, or any
-`configuration/`/`core/emergency/` import exists in this file today —
+`configuration/`/`core_layer/emergency/` import exists in this file today —
 confirmed by grep, and by both managers' own docstrings ("nothing in
 `core/pipeline.py` ... reads this module").
 
@@ -52,7 +52,7 @@ line after, no side effect on the stage itself" shape.
 ### `decision/decision_engine.py`, `risk/risk_manager.py`
 
 Both are pure, stateless, dependency-free calculation classes (no
-`database/`, `configuration/`, `core/emergency/`, or `telegram/`
+`database/`, `configuration/`, `core_layer/emergency/`, or `telegram/`
 import in either file). `RiskManager.evaluate()` remains the single
 hard safety gate every `TradeDecision` passes through before
 Telegram/persistence eligibility.
@@ -147,7 +147,7 @@ Questions" below.
 
 ---
 
-### `core/emergency/emergency_manager.py`
+### `core_layer/emergency/emergency_manager.py`
 
 Fully built (Phase 59.9): `get_status()` is read-only.
 **Zero callers outside its own tests and

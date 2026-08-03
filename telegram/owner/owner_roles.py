@@ -18,7 +18,7 @@ from enum import Enum
 from typing import Optional, TYPE_CHECKING
 
 from telegram.permissions import is_owner
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 if TYPE_CHECKING:
     from database.admin_repository import AdminRepository

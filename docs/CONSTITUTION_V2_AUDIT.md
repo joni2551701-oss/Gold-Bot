@@ -51,7 +51,7 @@ surfaces:
    the codebase today that no architecture document currently
    describes correctly: `risk/` (three files) imports `database/`
    directly, contradicting `risk/README.md`'s own "No dependency on
-   database/" claim; `core/emergency/emergency_manager.py` imports
+   database/" claim; `core_layer/emergency/emergency_manager.py` imports
    `database.*` directly, undocumented anywhere; and `voice/` runs a
    second, independent live integration against the OpenAI REST API,
    entirely outside `ai/providers/`/`ai/runtime/ai_service.py`, in
@@ -273,10 +273,10 @@ explicitly permit Risk → Database (documenting reality), or the
 dependency should be redesigned to route through a service layer
 (a code change, out of scope for this audit). No fix is proposed here.
 
-### 3.3 Finding: `core/emergency/emergency_manager.py` imports `database/` directly (undisclosed)
+### 3.3 Finding: `core_layer/emergency/emergency_manager.py` imports `database/` directly (undisclosed)
 
 Same shape of finding as 3.2, in a different module: real,
-module-level `database.*` imports from `core/emergency/`, not
+module-level `database.*` imports from `core_layer/emergency/`, not
 documented anywhere. Flagged alongside 3.2 as the same class of issue
 — likely warranting the same Director decision (amend the Dependency
 Law to acknowledge it, or treat it as a target for future

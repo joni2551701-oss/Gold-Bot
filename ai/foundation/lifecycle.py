@@ -13,7 +13,7 @@ state model already proven in `ai/runtime/runtime_state.py`
 (`RuntimeState` + `is_valid_transition`). It is deliberately not an
 import of that module: TASK-AI-001's dependency rule confines the
 Foundation to depending only on other `ai/foundation/` modules and
-stdlib, and `ai/runtime/` transitively imports `core.logger`, which
+stdlib, and `ai/runtime/` transitively imports `core_layer.logger.logger`, which
 the Foundation->Core prohibition forbids. So the Foundation owns its
 own, dependency-free lifecycle vocabulary. No business logic here.
 """

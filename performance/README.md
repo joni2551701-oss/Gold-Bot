@@ -39,7 +39,7 @@ for metric in collector.get_metrics():
   singleton.
 - `timer.py` — `PerformanceTimer` (a context manager) and
   `measure_performance()` (its decorator form). Integrates with Phase
-  A18: a `core.errors.base.GoldBotError` raised inside is captured as
+  A18: a `core_layer.errors.base.GoldBotError` raised inside is captured as
   the metric's `error_code`.
 
 ## What this does NOT do
@@ -53,8 +53,8 @@ for metric in collector.get_metrics():
 - Is not wired into any existing module in this phase.
 
 ## Dependencies
-`core/errors/` (for the optional `GoldBotError` integration in
-`timer.py`) and `core/logger.py` (for the `PERFORMANCE` log line) —
+`core_layer/errors/` (for the optional `GoldBotError` integration in
+`timer.py`) and `core_layer/logger/logger.py` (for the `PERFORMANCE` log line) —
 both cross-cutting, same as every layer's existing access to `core/`.
 No dependency on `context/`, `strategies/`, `signals/`, `ai/`,
 `decision/`, `risk/`, `execution/`, `telegram/`, or `database/`.

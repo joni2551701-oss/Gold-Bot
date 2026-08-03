@@ -8,7 +8,7 @@ persistence, no background thread -- the same "foundation, not a
 service" posture the existing `ai.session.SessionManager` uses. This is
 reuse-by-pattern of that manager (create/get/close), extended with the
 `restore_session` operation the Foundation contract adds; it is not an
-import of `ai.session` (that package transitively pulls `core.logger`,
+import of `ai.session` (that package transitively pulls `core_layer.logger.logger`,
 which the Foundation->Core prohibition forbids).
 
 Depends only on stdlib and `ai.foundation.context`.

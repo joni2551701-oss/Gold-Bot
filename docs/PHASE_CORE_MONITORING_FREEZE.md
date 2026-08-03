@@ -126,11 +126,11 @@ pause was required.
 
 `monitoring/models.py` imports only `dataclasses`/`enum`/`typing`.
 `monitoring/decision_logger.py` imports only `database.monitoring_repository`,
-`monitoring.models`, `core.logger`, and stdlib — never `signals`/
+`monitoring.models`, `core_layer.logger.logger`, and stdlib — never `signals`/
 `context` (confirmed by
 `test_decision_logger_never_imports_signals_or_context()`).
 `database/monitoring_repository.py` imports only `database.*`,
-`core.logger`, and stdlib (confirmed by
+`core_layer.logger.logger`, and stdlib (confirmed by
 `test_monitoring_repository_module_confined_to_database_and_stdlib()`).
 No file in `monitoring/` imports `ai.*` (confirmed by
 `test_monitoring_never_imports_ai_package()`).

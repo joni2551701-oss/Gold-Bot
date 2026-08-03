@@ -35,6 +35,6 @@ def risk_manager(isolated_db):
 
 @pytest.fixture
 def emergency_manager(isolated_db):
-    from core.emergency.emergency_manager import EmergencyManager
+    from core_layer.emergency.emergency_manager import EmergencyManager
 
     return EmergencyManager()

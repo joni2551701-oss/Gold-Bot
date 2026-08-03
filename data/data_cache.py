@@ -3,7 +3,7 @@ import json
 from typing import List, Dict, Any
 from datetime import datetime, timezone, timedelta
 from data.market_data import MarketDataNormalizer, MarketSnapshot, Candle
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from config import Config
 
 logger = setup_logger("SmartDataCache")

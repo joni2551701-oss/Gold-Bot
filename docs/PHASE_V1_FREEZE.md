@@ -9,7 +9,7 @@ freeze audit. Full technical detail is in `docs/PHASE_V1_AUDIT.md`,
 Scope discipline honored throughout: **no new strategy, no new AI
 Foundation, no Trading Core logic change, no architecture rebuild.**
 This was audit/verify/detect/document only. `risk/risk_manager.py`,
-`decision/decision_engine.py`, `core/emergency/`, `execution/`,
+`decision/decision_engine.py`, `core_layer/emergency/`, `execution/`,
 `strategies/`, `signals/`, `context/`, and all nine locked `ai/`
 subpackages (`ai/trading_analyst/`, `ai/chart_intelligence/`,
 `ai/trade_journal/`, `ai/learning/`, `ai/coaching/`,
@@ -81,7 +81,7 @@ safety rule is actually broken. No FAIL was found anywhere.
    package-level dependencies exist but are undocumented; three
    layer-skip imports (`risk_manager.py`->`signals.models`,
    `database/signal_record.py`->three layers up,
-   `core/emergency/emergency_manager.py`->`database/`) are real but
+   `core_layer/emergency/emergency_manager.py`->`database/`) are real but
    undocumented exceptions, none of which route AI into Decision/Risk/
    Execution/Telegram or put business logic into a repository.
 9. **Dockerfile has no `USER` directive** (runs as root) and Docker
@@ -152,5 +152,5 @@ withhold the freeze.
 This recommendation is the Worker's technical assessment for the
 Director's decision — per RULE 1/RULE 2 and CLAUDE.md's Trading
 Safety rules, the Director retains sole authority to approve V1
-Freeze, any subsequent fix to `risk/`/`core/emergency/`, and the move
+Freeze, any subsequent fix to `risk/`/`core_layer/emergency/`, and the move
 to VPS Deployment / Closed Beta.

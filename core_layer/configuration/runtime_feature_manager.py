@@ -45,7 +45,7 @@ from database.audit_log_repository import AuditLogRepository
 from database.config_snapshot_repository import ConfigSnapshotRepository
 from database.config_snapshot_models import create_config_snapshot
 from database.runtime_feature_repository import RuntimeFeatureRepository
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("RuntimeFeatureManager")
 

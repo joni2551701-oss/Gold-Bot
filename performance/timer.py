@@ -26,8 +26,8 @@ import time
 from datetime import datetime, timezone
 from typing import Any, Callable, Dict, Optional
 
-from core.errors.base import GoldBotError
-from core.logger import setup_logger
+from core_layer.errors.base import GoldBotError
+from core_layer.logger.logger import setup_logger
 from performance.collector import PerformanceCollector
 from performance.metrics import PerformanceMetric, generate_metric_id
 
@@ -44,7 +44,7 @@ class PerformanceTimer:
     Never swallows an exception raised inside the `with` block --
     __exit__ always returns False, so the original exception still
     propagates after this timer records status="failed". If that
-    exception is a core.errors.base.GoldBotError, its `.code` is
+    exception is a core_layer.errors.base.GoldBotError, its `.code` is
     captured as the metric's error_code (Phase A18 integration) --
     isinstance-checked, never guessed for any other exception type.
     """

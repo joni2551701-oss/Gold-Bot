@@ -120,7 +120,7 @@ required — no Constitution Article conflict.
 ## Dependency Compliance (the strictest checks yet)
 
 `voice/stt/*.py`, `voice/intents/*.py`, `voice/session/*.py` import
-only their own package plus `core.logger`/`core.secrets`/`requests` —
+only their own package plus `core_layer.logger.logger`/`core.secrets`/`requests` —
 no upstream Intelligence layer at all. `voice/conversation_bridge.py`
 is the one file in the whole `voice/` package permitted to import
 `ai.conversation.conversation_engine.ConversationEngine` (real call);

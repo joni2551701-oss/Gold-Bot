@@ -56,6 +56,21 @@ Runtime Monitoring.
 ## Performance
 Performance Monitoring (Metrics, Latency, Memory, CPU, FPS, Queue Length).
 ---
+## Gateway
+Service Gateway (Registry, Router, Auth, Rate Limit, Circuit Breaker, Health, Metrics, Versioning).
+---
+## Emergency
+Emergency Safety (Pause / Kill / Maintenance / Resume, Circuit Breaker).
+---
+## Errors
+Canonical Error Taxonomy (`GoldBotError`, error codes, module exceptions).
+---
+## Logger
+Canonical Logging setup.
+---
+## SystemState
+Operating Mode vocabulary va joriy holat.
+---
 ## Features
 Feature Standardization (AI / Strategy / Backtesting / ML Export uchun umumiy Feature kutubxonasi).
 ---

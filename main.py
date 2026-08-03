@@ -1,5 +1,5 @@
 from config import Config
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from core_layer.pipeline import TradingPipeline
 from monitoring.resource_monitor import record_process_start
 

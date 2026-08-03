@@ -9,7 +9,7 @@ from context.bos import BosEvent, BosDirection
 from context.choch import ChochEvent, ChochDirection
 from context.order_block import OrderBlock, OrderBlockType
 from context.fvg import FairValueGap, FvgType
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("AMD")
 

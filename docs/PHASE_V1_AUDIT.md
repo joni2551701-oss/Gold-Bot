@@ -107,7 +107,7 @@ actual import failure results).
    type. A documentation gap in `MODULE_DEPENDENCIES.md`'s Database
    table, not a business-logic leak into a repository (it's used for
    type composition, not SQL/business logic).
-3. `core/emergency/emergency_manager.py:30-31` imports
+3. `core_layer/emergency/emergency_manager.py:30-31` imports
    `database.audit_log_repository`/`database.emergency_repository`
    directly — `IMPORT_RULES.md`'s Forbidden table states `core/` never
    imports back up. The module's own docstring self-justifies this as
@@ -142,7 +142,7 @@ only `ai/` import is `TYPE_CHECKING`-guarded; `decision/models.py`'s
 ### `telegram/handlers.py`-never-touches-repository-directly rule — PASS, confirmed
 
 `telegram/handlers.py` imports only `telegram.*_service`,
-`telegram.owner.*`, `telegram.permissions`, `core.logger` — no
+`telegram.owner.*`, `telegram.permissions`, `core_layer.logger.logger` — no
 `database.*`, no `core.pipeline`, matching its own module docstring.
 One naming caveat: `telegram/result_handler.py` imports
 `database.signal_repository.SignalRepository` directly and is *not*
@@ -413,8 +413,8 @@ default, correct secrets segregation.
 
 ## TASK 9 — Error & Logging Audit
 
-`core/errors/base.py`'s `GoldBotError` (and its 9-class hierarchy in
-`core/errors/exceptions.py`) auto-populates `code`, `message`,
+`core_layer/errors/base.py`'s `GoldBotError` (and its 9-class hierarchy in
+`core_layer/errors/exceptions.py`) auto-populates `code`, `message`,
 `module`, `timestamp` on every raise. The persisted
 `ErrorEvent`/`ErrorEventEntry` (`monitoring/models.py`,
 `database/monitoring_models.py`) carries the requested

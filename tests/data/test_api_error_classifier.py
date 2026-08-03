@@ -7,8 +7,8 @@ Phase 59.1 TASK 5 (classify_empty_response(), API_003 heuristic).
 import requests
 
 from data.api_error_classifier import classify_api_error, classify_empty_response
-from core.errors.exceptions import ExternalAPIError
-from core.errors import codes
+from core_layer.errors.exceptions import ExternalAPIError
+from core_layer.errors import codes
 
 
 def test_timeout_maps_to_api_001():

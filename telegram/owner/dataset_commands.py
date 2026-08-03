@@ -23,7 +23,7 @@ from data.provider_comparison import compare_providers
 from database.raw_candle_repository import RawCandleRepository
 from database.sync_state_repository import SyncStateRepository
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("DatasetCommands")
 

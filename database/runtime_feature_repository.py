@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from database.database import Database
 from database.models import init_runtime_feature_schema
 from database.runtime_feature_models import RuntimeFeatureRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("RuntimeFeatureRepository")
 

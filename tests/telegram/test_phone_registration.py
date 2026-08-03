@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 from telegram.command_router import route_command, route_contact
 from telegram.user_service import UserService
-from core.phone_hash import hash_phone_number
+from core_layer.secrets.phone_hash import hash_phone_number
 
 
 def _run(coro):

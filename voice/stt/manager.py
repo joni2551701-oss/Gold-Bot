@@ -14,7 +14,7 @@ single-selection `ProviderManager` shape more closely than
 
 from typing import Dict, List, Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from voice.stt.contract import STTProviderContract, STTProviderError
 from voice.stt.models import STTRequest, STTResult, STTResultStatus
 

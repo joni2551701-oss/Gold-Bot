@@ -3,9 +3,9 @@ from dataclasses import dataclass
 
 from decision.models import TradeDecision, DecisionAction
 from signals.models import SignalCandidate, SignalType
-from core.emergency.emergency_manager import EmergencyManager
-from core.emergency.emergency_state import EmergencyState
-from core.logger import setup_logger
+from core_layer.emergency.emergency_manager import EmergencyManager
+from core_layer.emergency.emergency_state import EmergencyState
+from core_layer.logger.logger import setup_logger
 from database.risk_decision_repository import RiskDecisionRepository
 from risk.account_state_tracker import AccountStateTracker
 from risk.duplicate_checker import DuplicateTradeChecker, DEFAULT_DUPLICATE_WINDOW_SECONDS
@@ -17,11 +17,11 @@ _UNKNOWN_SYMBOL = "UNKNOWN"
 # EmergencyStates that must block any new trade approval (TASK 7):
 # PAUSED/KILLED/MAINTENANCE all mean "no new approval" for Risk
 # specifically, even though KILLED/MAINTENANCE already abort/skip
-# earlier pipeline stages via core/guards/pipeline_guard.py in the
+# earlier pipeline stages via core_layer/pipeline/pipeline_guard.py in the
 # real pipeline -- this is defense in depth for any direct caller
 # (tests, backtesting) that reaches RiskManager.evaluate() without
 # going through PipelineGuard. WARNING is advisory only (per
-# core.emergency.emergency_state.EmergencyState's own docstring) and
+# core_layer.emergency.emergency_state.EmergencyState's own docstring) and
 # does not block.
 _BLOCKING_EMERGENCY_STATES = (EmergencyState.PAUSED, EmergencyState.KILLED, EmergencyState.MAINTENANCE)
 
@@ -63,7 +63,7 @@ class RiskManager:
     of them able to originate a trade or override a BUY/SELL/entry/
     TP/SL decision:
 
-    - core.emergency.emergency_manager.EmergencyManager (read-only
+    - core_layer.emergency.emergency_manager.EmergencyManager (read-only
       get_status() only) -- so Emergency PAUSED/KILLED/MAINTENANCE
       actually stops Risk from approving, not just Telegram delivery
       (see docs/PHASE_V1_0_1_RISK_AUDIT.md section 7 and
@@ -71,7 +71,7 @@ class RiskManager:
     - database.risk_decision_repository.RiskDecisionRepository
       (append-only `record()` calls only) -- every evaluate() call is
       logged (TASK 8), the same "core/ -> database/" one-directional
-      foundation-service exception core/emergency/emergency_manager.py
+      foundation-service exception core_layer/emergency/emergency_manager.py
       already established.
     - risk.account_state_tracker.AccountStateTracker /
       risk.duplicate_checker.DuplicateTradeChecker -- both dormant

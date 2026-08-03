@@ -64,7 +64,7 @@ and `FOUNDATION_DEPENDENCY_GRAPH.md` for the dependency map.
   Senior/Seniorita, no Persona Engine, no Agent System. Dummy only.
 - **Dependency rule** — Foundation imports only `ai.foundation.*` +
   stdlib. No dependency to Core/Platform/Media/Telegram/Database (not
-  even `core.logger` — hence the Foundation owns a dependency-free
+  even `core_layer.logger.logger` — hence the Foundation owns a dependency-free
   lifecycle vocabulary rather than importing `ai.runtime`'s).
 - **No files under `tests/`** — the Foundation is demonstrated via the
   runnable `self_check.py` instead (see WORKER_REPORT.md for this

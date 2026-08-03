@@ -3,7 +3,7 @@ Phase V1.0.1 (Risk Management Hardening Patch) -- TASK 7 (Emergency
 State Correction) tests: PAUSED/KILLED/MAINTENANCE must now stop Risk
 from approving a trade, not just suppress Telegram delivery (the gap
 docs/V1_RISK_AUDIT.md's item 7 found). WARNING must NOT block (it is
-advisory only, per core.emergency.emergency_state.EmergencyState's
+advisory only, per core_layer.emergency.emergency_state.EmergencyState's
 own docstring).
 """
 

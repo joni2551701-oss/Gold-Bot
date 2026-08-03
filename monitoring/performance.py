@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 
 from database.signal_repository import SignalRepository
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("PerformanceTracker")
 

@@ -23,7 +23,7 @@ of the same engine, not separate domains needing separate packages.
 ## Architecture
 
 ```
-core.emergency-style "foundation, not wired" package:
+core_layer.emergency-style "foundation, not wired" package:
 
 database/raw_candle_repository.py (Phase 59.3/59.5, +Phase 60.1's
     own additive get_candles_range() -- TASK 1 reuse finding: the

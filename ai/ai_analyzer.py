@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from context.context_orchestrator import ContextSnapshot
 from signals.models import SignalCandidate
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("AIAnalyzer")
 

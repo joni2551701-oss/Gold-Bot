@@ -1,12 +1,12 @@
 """
 Phase A18 -- Error Classification tests: hierarchy
-(core/errors/base.py, core/errors/exceptions.py).
+(core_layer/errors/base.py, core_layer/errors/exceptions.py).
 """
 
 import pytest
 
-from core.errors.base import GoldBotError
-from core.errors.exceptions import (
+from core_layer.errors.base import GoldBotError
+from core_layer.errors.exceptions import (
     ConfigurationError,
     ValidationError,
     DataError,

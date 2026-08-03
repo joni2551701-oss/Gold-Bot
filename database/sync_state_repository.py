@@ -11,7 +11,7 @@ from typing import Optional
 from database.database import Database
 from database.models import init_sync_state_schema
 from database.sync_state_models import SyncState
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("SyncStateRepository")
 

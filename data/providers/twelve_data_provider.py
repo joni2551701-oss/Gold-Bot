@@ -25,7 +25,7 @@ from typing import List, Optional, Tuple
 from data.api_error_classifier import classify_api_error, classify_empty_response
 from data.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
 from data.twelve_data_client import TwelveDataClient
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("TwelveDataProvider")
 

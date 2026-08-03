@@ -35,7 +35,7 @@ what had been operating as unwritten Director Policy across Phase
   is permitted.
 - **Article 10 — Owner Override Law.** Codifies the existing,
   previously-unwritten pattern that every critical module
-  (`core/emergency/`, `ai/runtime/`, `configuration/runtime_feature_manager.py`,
+  (`core_layer/emergency/`, `ai/runtime/`, `configuration/runtime_feature_manager.py`,
   and Phase 63.0's `broadcast/`/`media/`/`translation/`) surfaces
   through the Telegram Owner Panel, even when that surface is
   foundation-only.

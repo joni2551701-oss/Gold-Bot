@@ -12,14 +12,14 @@ failure never propagates up to a command handler.
 register_phone() (Phase 61.5: AI Production Integration Foundation,
 TASK 4) is the real Phone Share Button flow's service-layer step:
 Phone Hash -> UserRecord -> Trial Check -> FREE account. It imports
-`core.phone_hash`/`ai.access.identity_checker`/`ai.access.trial_manager`
+`core_layer.secrets.phone_hash`/`ai.access.identity_checker`/`ai.access.trial_manager`
 directly -- the same "telegram/ may consume already-built ai/ output"
 relationship `telegram/owner/ai_commands.py` already established (this
 codebase's pipeline layering is data -> ... -> ai -> decision -> ...
 -> telegram, so telegram consuming ai/'s already-computed facts is
 downstream consumption, not a reversed dependency). The raw phone
 number is never retained beyond this method's own local variable --
-only `core.phone_hash.hash_phone_number()`'s output is ever passed to
+only `core_layer.secrets.phone_hash.hash_phone_number()`'s output is ever passed to
 the repository.
 """
 
@@ -29,8 +29,8 @@ from dataclasses import dataclass
 
 from database.user_repository import UserRepository
 from database.user_models import UserRecord
-from core.logger import setup_logger
-from core.phone_hash import hash_phone_number
+from core_layer.logger.logger import setup_logger
+from core_layer.secrets.phone_hash import hash_phone_number
 from ai.access.identity_checker import is_phone_reused_by_another_account
 from ai.access.trial_manager import DEFAULT_TRIAL_DURATION, trial_status_from_started_at
 
@@ -195,7 +195,7 @@ class UserService:
         Real Phone Share Button flow (Phase 61.5 TASK 4): Phone Hash ->
         UserRecord -> Trial Check -> FREE account. `phone_number` (the
         raw Telegram-contact-shared string) is hashed immediately via
-        `core.phone_hash.hash_phone_number()` and never stored, logged,
+        `core_layer.secrets.phone_hash.hash_phone_number()` and never stored, logged,
         or returned by this method -- only the hash reaches
         `UserRepository`. Never raises: any failure is reported as
         success=False, not an exception.

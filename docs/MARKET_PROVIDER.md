@@ -211,7 +211,7 @@ deferred, separately-approved future step.
 
 ## API Error Handling (TASK 5)
 
-Extends `core/errors/codes.py`'s existing registry (Phase A18) and
+Extends `core_layer/errors/codes.py`'s existing registry (Phase A18) and
 `data/api_error_classifier.py` (AC-07):
 
 | Brief's label | Code | How it's detected |

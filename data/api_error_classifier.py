@@ -6,7 +6,7 @@ classify_api_error() turns an already-caught data-fetch exception
 (from data/twelve_data_client.py's TwelveDataClient.fetch_candles(),
 via data/market_data.py's MarketDataNormalizer.get_candles(), or via
 data/providers/twelve_data_provider.py's TwelveDataProvider) into a
-standard, structured core.errors.exceptions.ExternalAPIError (Phase
+standard, structured core_layer.errors.exceptions.ExternalAPIError (Phase
 A18) -- for richer logging only. It does NOT change control flow: the
 caller still catches, logs, and degrades to an empty candle list
 exactly as it does today; this function is never itself raised, only
@@ -28,8 +28,8 @@ classify_api_error().
 
 import requests
 
-from core.errors import codes
-from core.errors.exceptions import ExternalAPIError
+from core_layer.errors import codes
+from core_layer.errors.exceptions import ExternalAPIError
 
 
 def classify_api_error(exception: Exception, module: str = "TwelveDataClient") -> ExternalAPIError:

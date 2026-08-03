@@ -69,7 +69,7 @@ from database.admin_repository import AdminRepository
 from database.user_repository import UserRepository
 from translation.ui_catalog import t
 from core_layer.secrets import Secrets
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("MenuCommands")
 

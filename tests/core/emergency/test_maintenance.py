@@ -1,10 +1,10 @@
 """
-Phase 59.9, TASK 5 -- core/emergency/maintenance.py tests.
+Phase 59.9, TASK 5 -- core_layer/emergency/maintenance.py tests.
 """
 
 from datetime import datetime
 
-from core.emergency.maintenance import MaintenanceMode, disable_maintenance, enable_maintenance
+from core_layer.emergency.maintenance import MaintenanceMode, disable_maintenance, enable_maintenance
 
 
 def test_enable_maintenance_sets_enabled_true():

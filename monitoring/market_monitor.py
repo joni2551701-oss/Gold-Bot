@@ -18,7 +18,7 @@ already does elsewhere.
 
 from typing import Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.providers.registry import ProviderRegistry, build_default_registry
 from monitoring.models import MarketHealth
 from monitoring.provider_health import check_provider_health

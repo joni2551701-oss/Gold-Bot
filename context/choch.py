@@ -4,7 +4,7 @@ from typing import List, Sequence
 from datetime import datetime
 from data.twelve_data_client import Candle
 from context.market_structure import StructurePoint, StructureType
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ChochEngine")
 

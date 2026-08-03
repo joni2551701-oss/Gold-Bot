@@ -24,7 +24,7 @@ from context.amd import detect_amd_events, AmdEvent
 from context.wyckoff import detect_wyckoff_events, WyckoffEvent
 from context.session import detect_session_events, SessionEvent
 from context.market_regime import compute_market_regime, MarketRegimeResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 if TYPE_CHECKING:
     from context.htf_bias import HTFBiasResult

@@ -83,7 +83,7 @@ Trial Check → FREE account flow:
 - `telegram/handlers.py` gained `contact_handler()`, calling the new
   `telegram.user_service.UserService.register_phone()`.
 - `register_phone()`: hashes the phone number immediately via
-  `core.phone_hash.hash_phone_number()` (the raw string never outlives
+  `core_layer.secrets.phone_hash.hash_phone_number()` (the raw string never outlives
   the method call), checks reuse via `ai.access.identity_checker.
   is_phone_reused_by_another_account()` against
   `UserRepository.get_users_by_phone_hash()`'s result, persists the
@@ -191,7 +191,7 @@ closing. All five are addressed here:
    (`SubscriptionRepository.count_by_plan()`,
    `SignalRepository.count_signals_today()`/
    `get_closed_signals_today()`), `analytics.strategy_report.compute_win_rate()`,
-   and `core.emergency.emergency_manager.EmergencyManager`. Every
+   and `core_layer.emergency.emergency_manager.EmergencyManager`. Every
    section degrades to "N/A" independently on failure — never raises,
    never fabricates.
 5. **`/doctor`** (new) — `get_doctor_report()`: nine subsystem checks

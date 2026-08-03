@@ -27,9 +27,9 @@ is the sole entry point. Confirmed gaps, matching `docs/V1_RISK_AUDIT.md`:
   declared but never read anywhere in the file — no drawdown tracking,
   no daily-loss tracking, no duplicate-trade tracking exists (TASK 4/
   5/6 targets).
-- `RiskManager` never imports `core.emergency` — Emergency `PAUSED`
+- `RiskManager` never imports `core_layer.emergency` — Emergency `PAUSED`
   does not stop Risk from approving/persisting; only
-  `core/guards/pipeline_guard.py`'s `before_execution()` (Telegram
+  `core_layer/pipeline/pipeline_guard.py`'s `before_execution()` (Telegram
   suppression) currently reacts to `PAUSED` (TASK 7 target).
 - No decision is ever logged/persisted — no Error-ID-style trail for
   a specific risk verdict (TASK 8 target).
@@ -115,13 +115,13 @@ balance rejection never triggers for these). Confirmed: none of these
 chosen to keep them passing unmodified, which is itself this phase's
 "existing pipeline unchanged" compatibility proof.
 
-## 7. core/emergency/ (read-only dependency, not edited this phase)
+## 7. core_layer/emergency/ (read-only dependency, not edited this phase)
 
-`core.emergency.emergency_manager.EmergencyManager().get_status()`
+`core_layer.emergency.emergency_manager.EmergencyManager().get_status()`
 returns an `EmergencyStateRecord` defaulting to `NORMAL` when nothing
 has ever been recorded (confirmed empty on this sandbox's
 `database/goldbot.db`, which is gitignored/not tracked). `risk/`
-importing `core.emergency` (read-only `get_status()` calls only, never
+importing `core_layer.emergency` (read-only `get_status()` calls only, never
 constructing an `EmergencyStateRecord` or calling any
 `activate_*()`/`restore_normal()` mutator) is a new but fully
 IMPORT_RULES.md-sanctioned dependency: "any module -> `core/*`" is

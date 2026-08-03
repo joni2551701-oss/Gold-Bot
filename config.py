@@ -211,7 +211,7 @@ class Config:
     # ENABLE_DATABASE here as PipelineGuard stage gates. Phase 60.9
     # (Runtime Registry Separation) removed all four -- Trading-pipeline
     # stage gating is now EmergencyManager's job exclusively
-    # (core/guards/pipeline_guard.py never reads config.Config for any
+    # (core_layer/pipeline/pipeline_guard.py never reads config.Config for any
     # of its four hooks). See docs/FEATURE_REGISTRY_SEPARATION.md.
 
     # Base paths

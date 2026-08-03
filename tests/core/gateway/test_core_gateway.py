@@ -2,13 +2,13 @@
 
 import pytest
 
-from core.gateway.gateway import CoreGateway
-from core.gateway.service_manifest import ServiceKind
-from core.gateway.service_state import ServiceState
-from core.gateway.service_registry import ServiceNotFoundError
-from core.gateway.dependency_graph import DependencyError
-from core.gateway.gateway_request import GatewayStatus
-from core.gateway.gateway_events import GatewayEventName
+from core_layer.gateway.gateway import CoreGateway
+from core_layer.gateway.service_manifest import ServiceKind
+from core_layer.gateway.service_state import ServiceState
+from core_layer.gateway.service_registry import ServiceNotFoundError
+from core_layer.gateway.dependency_graph import DependencyError
+from core_layer.gateway.gateway_request import GatewayStatus
+from core_layer.gateway.gateway_events import GatewayEventName
 
 from _gfakes import FakeClock, manifest, echo_handler, request
 

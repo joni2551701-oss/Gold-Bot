@@ -113,7 +113,7 @@ class ErrorEvent:
     `database.monitoring_repository.MonitoringRepository` (TASK 9) --
     the one genuinely new persistence this phase adds (no existing
     error-capture mechanism anywhere in the codebase, per the audit's
-    own `core/logger.py` section).
+    own `core_layer/logger/logger.py` section).
     """
 
     timestamp: str

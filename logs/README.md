@@ -1,7 +1,7 @@
 # GoldBot Logs — Foundation
 
 This directory is the landing spot for future log **files**. As of
-Phase 51, `core/logger.py`'s `setup_logger()` writes to **stdout
+Phase 51, `core_layer/logger/logger.py`'s `setup_logger()` writes to **stdout
 only** (`logging.StreamHandler(sys.stdout)`) — there is no file
 handler anywhere in the codebase yet, and this phase does not add one.
 This README documents the planned category split for whenever
@@ -30,7 +30,7 @@ that move doesn't require inventing the category split from scratch.
 ## What This Phase Did NOT Do
 
 - No log rotation (size-based, time-based, or otherwise).
-- No file `Handler` added to `core/logger.py` — `setup_logger()` is
+- No file `Handler` added to `core_layer/logger/logger.py` — `setup_logger()` is
   unchanged and still stdout-only.
 - No per-logger routing to the files above — the table is a target
   mapping for a future phase to implement, not a claim that it's wired
@@ -41,7 +41,7 @@ that move doesn't require inventing the category split from scratch.
 
 ## Why Not Now
 
-Adding real file handlers changes `core/logger.py`'s behavior for
+Adding real file handlers changes `core_layer/logger/logger.py`'s behavior for
 every single logger in the codebase simultaneously (over 30 modules
 call `setup_logger()`) — that's exactly the kind of repo-wide behavior
 change this phase's Critical Rules explicitly want to avoid ("mavjud

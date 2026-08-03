@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from database.database import Database
 from database.models import init_feedback_schema
 from database.feedback_models import FeedbackRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("FeedbackRepository")
 

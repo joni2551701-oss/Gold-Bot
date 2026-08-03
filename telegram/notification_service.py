@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 
 from database.user_repository import UserRepository
 from database.user_models import UserRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("NotificationService")
 

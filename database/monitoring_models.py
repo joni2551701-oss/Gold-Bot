@@ -7,7 +7,7 @@ shape/naming split: the DB-row model gets its own name distinct from
 the domain model (`monitoring.models.ErrorEvent`/
 `monitoring.models.DecisionPipelineEntry`), same "two names for two
 layers" precedent as `database.emergency_models.EmergencyStateEntry`
-vs `core.emergency.emergency_state.EmergencyStateRecord`.
+vs `core_layer.emergency.emergency_state.EmergencyStateRecord`.
 
 Three tables in total -- `SystemHealth`/`MarketHealth`/`SignalHealth`
 are computed live, never persisted (see

@@ -1,6 +1,6 @@
 """Tests for the service manifest (module 10, amendments 2, 3, 6)."""
 
-from core.gateway.service_manifest import (
+from core_layer.gateway.service_manifest import (
     ServiceManifest, ServiceKind, HealthPolicy,
 )
 

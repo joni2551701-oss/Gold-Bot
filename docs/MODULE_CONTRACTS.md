@@ -111,7 +111,7 @@ platform constitution — the near-complete v0.3.5 Foundation:
   shape market context is described in across modules.
 - **A17 Module Contracts** (this document, `contracts/`) — the
   precise input/output/dependency/error contract per module.
-- **A18 Error Classification** (`core/errors/`,
+- **A18 Error Classification** (`core_layer/errors/`,
   `docs/ERROR_HANDLING.md`) — the standard exception hierarchy and
   error-code registry this document's own `contracts/error_contract.md`
   specified but deferred; implemented, not yet wired into any

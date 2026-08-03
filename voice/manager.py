@@ -27,7 +27,7 @@ never mutates the static profile itself.
 
 from typing import Dict, List, Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from voice.models import VoiceProfile, VoiceProvider, VoiceProviderStatus, VoiceProviderType, VoiceRequest
 from voice.provider_contract import VoiceProviderContract
 from voice.providers import build_voice_provider_registry

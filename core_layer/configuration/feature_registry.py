@@ -22,8 +22,8 @@ ENABLE_DATABASE) and found a fourth (ENABLE_EXECUTION) collided with
 configuration/feature_dependency_validator.py's own dependency rules;
 this phase removes all four (plus the already-declared-only
 ENABLE_RISK/ENABLE_DECISION) from this registry entirely --
-core/guards/pipeline_guard.py's PipelineGuard now reads exclusively
-from core.emergency.emergency_manager.EmergencyManager for every
+core_layer/pipeline/pipeline_guard.py's PipelineGuard now reads exclusively
+from core_layer.emergency.emergency_manager.EmergencyManager for every
 pipeline-stage decision, never from this module.
 
 Relationship to telegram/owner/feature_commands.py's list_features()

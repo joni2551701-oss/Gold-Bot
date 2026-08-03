@@ -1,14 +1,14 @@
 """
 Phase 60.8 (Safe Integration Layer, TASK 2/3/5) --
-core/guards/pipeline_guard.py tests. Simplified in Phase 60.9 (Runtime
+core_layer/pipeline/pipeline_guard.py tests. Simplified in Phase 60.9 (Runtime
 Registry Separation, TASK 4): PipelineGuard no longer reads
 RuntimeFeatureManager at all -- every hook is Emergency-only. Uses a
 lightweight stub EmergencyManager (never touches the real database) so
 every Emergency combination is deterministic and fast.
 """
 
-from core.emergency.emergency_state import EmergencyState, create_emergency_state_record
-from core.guards.pipeline_guard import GuardDecision, PipelineGuard
+from core_layer.emergency.emergency_state import EmergencyState, create_emergency_state_record
+from core_layer.pipeline.pipeline_guard import GuardDecision, PipelineGuard
 
 
 class _StubEmergencyManager:

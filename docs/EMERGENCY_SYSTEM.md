@@ -11,7 +11,7 @@ order or signal is blocked by this phase's code.
 ## Modules
 
 ```
-core/emergency/
+core_layer/emergency/
 ├── emergency_state.py     -- EmergencyState enum + EmergencyStateRecord (domain model)
 ├── emergency_manager.py   -- EmergencyManager (the runtime controller)
 ├── circuit_breaker.py     -- evaluate_circuit() (pure decision function)
@@ -53,19 +53,19 @@ recent row; `get_history()` returns the full, never-lost sequence
 (`NORMAL -> PAUSED -> NORMAL`, etc., per this phase's own acceptance
 criteria).
 
-## EmergencyState vs core.system_state.SystemState
+## EmergencyState vs core_layer.system_state.system_state.SystemState
 
 Two deliberately separate vocabularies, same "two hierarchies for two
 granularities" precedent as `telegram.owner.owner_roles.OwnerRole` vs
 `telegram.permissions.PermissionLevel` (Phase 59.6/59.8).
-`core.system_state.SystemState`'s own docstring reserved
+`core_layer.system_state.system_state.SystemState`'s own docstring reserved
 `PANIC`/`MAINTENANCE` "for a future Phase 59.9" — this phase does not
 reuse those two values because `SystemState` has no equivalent of
 `WARNING`/`PAUSED` (a circuit-breaker-driven, less-severe posture,
 distinct from a full `KILLED` stop), which `circuit_breaker.py` needs.
 Reconciling the two enums (or having one wrap the other) is a future,
 separately-approved decision — this phase does not touch
-`core/system_state.py`.
+`core_layer/system_state/system_state.py`.
 
 ## Safety rules
 
@@ -108,7 +108,7 @@ of scope here.
 docs/EMERGENCY_SYSTEM.md (Phase 59.9 -- foundation, this document)
         |
         v
-core/emergency/*.py, database/emergency_*.py,
+core_layer/emergency/*.py, database/emergency_*.py,
 telegram/owner/emergency_commands.py (Phase 59.9 -- real logic, not wired)
         |
         v
@@ -117,7 +117,7 @@ see its own section further down this document. The rest remain
 future, separately-approved steps:
   - ~~core/pipeline.py: check EmergencyManager.get_status() before a
     stage runs (e.g. skip signal generation when PAUSED/KILLED)~~ —
-    done, via `core/guards/pipeline_guard.py`'s `PipelineGuard`
+    done, via `core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard`
   - risk/risk_manager.py or a stage ahead of it: feed live
     loss/drawdown/api/execution signals into
     circuit_breaker.evaluate_circuit(), and decide what a BLOCK/WARNING
@@ -131,12 +131,12 @@ future, separately-approved steps:
     the per-command minimum-OwnerRole gate, and
     telegram/owner/emergency_commands.py's functions as the payload
   - a decision on how EmergencyState reconciles (or doesn't) with
-    core.system_state.SystemState -- both exist independently today
+    core_layer.system_state.system_state.SystemState -- both exist independently today
 ```
 
 ## Phase 60.8: Safe Integration Layer — Emergency Hook
 
-`core/guards/pipeline_guard.py`'s `PipelineGuard` is the first real
+`core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard` is the first real
 caller of `EmergencyManager.get_status()` (previously zero callers
 outside this module's own tests and `telegram/owner/emergency_commands.py`,
 confirmed by `docs/PHASE60_8_INTEGRATION_AUDIT.md`'s TASK 1 audit).

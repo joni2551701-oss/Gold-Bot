@@ -5,7 +5,7 @@ as every other module in this package -- see provider_commands.py's
 own docstring. NOT registered into telegram/commands.py, NOT called
 from telegram/command_router.py or telegram/handlers.py.
 
-A thin telegram-facing wrapper over core.emergency.emergency_manager.EmergencyManager
+A thin telegram-facing wrapper over core_layer.emergency.emergency_manager.EmergencyManager
 -- this module writes no state/persistence/audit logic of its own, it
 only reformats EmergencyStateRecord into this package's
 ProviderCommandResult shape.
@@ -13,10 +13,10 @@ ProviderCommandResult shape.
 
 from typing import Optional
 
-from core.emergency.emergency_manager import EmergencyManager
-from core.emergency.emergency_state import EmergencyStateRecord
+from core_layer.emergency.emergency_manager import EmergencyManager
+from core_layer.emergency.emergency_state import EmergencyStateRecord
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("EmergencyCommands")
 

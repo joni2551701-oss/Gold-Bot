@@ -17,7 +17,7 @@ Owner
  ├── Runtime Control      → the runtime_* half of the same "AI" section (Phase 61.6/61.7/62.2)
  ├── User Control          → OWNER_PANEL.md "Users" section (owner_roles.py)
  ├── Broadcast Control      → OWNER_PANEL.md "Broadcast" section (runtime_notifications.py's queue; live delivery loop is the still-open v0.7 gap) + telegram/owner/broadcast_commands.py (Phase 63.0, foundation-only, NOT IMPLEMENTED)
- ├── Emergency Control       → OWNER_PANEL.md "Emergency" section (emergency_commands.py, core/emergency/)
+ ├── Emergency Control       → OWNER_PANEL.md "Emergency" section (emergency_commands.py, core_layer/emergency/)
  └── Analytics               → OWNER_PANEL.md "Analytics" section (performance/report/dataset/feature/fundamental/learning commands)
 ```
 

@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from database.database import Database
 from database.models import init_risk_schema
 from database.risk_state_models import RiskAccountStateEntry
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("RiskStateRepository")
 

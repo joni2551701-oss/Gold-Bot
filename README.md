@@ -76,7 +76,7 @@ full inventory):
   Market Data → Data Quality → HTF Bias → Context → Market Phase →
   Signal → Signal Quality → Explainability → Features → AI → Decision
   → Risk → Signal History → Telegram Format → Telegram Delivery →
-  Persistence, gated at four points by `core/guards/pipeline_guard.py`'s
+  Persistence, gated at four points by `core_layer/pipeline/pipeline_guard.py`'s
   `PipelineGuard` (Emergency-controlled: Pause/Kill/Maintenance/Resume,
   Phase 60.8/60.9). One run per invocation; exits when done.
 - **Telegram product layer** (`telegram/polling.py`, run as a

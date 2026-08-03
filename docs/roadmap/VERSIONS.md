@@ -288,7 +288,7 @@ per-symbol drawdown and daily-loss tracking backed by a new
 `risk_account_state` table (`risk/account_state_tracker.py`),
 duplicate-trade detection reusing a new append-only `risk_decisions`
 log (`risk/duplicate_checker.py`), and — the most significant
-correction — Risk now consults `core.emergency.emergency_manager.EmergencyManager`
+correction — Risk now consults `core_layer.emergency.emergency_manager.EmergencyManager`
 directly, so `PAUSED`/`KILLED`/`MAINTENANCE` actually stop new trade
 approval at the Risk layer, not only Telegram delivery. Every
 `RiskManager.evaluate()` call is now logged

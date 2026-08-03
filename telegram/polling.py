@@ -94,7 +94,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.types import CallbackQuery, Message
 
 from core_layer.secrets import Secrets
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from telegram import runtime_monitor
 from telegram.callback_router import route_callback
 from telegram.command_router import route_contact, route_message

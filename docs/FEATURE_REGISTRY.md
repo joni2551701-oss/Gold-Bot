@@ -22,8 +22,8 @@ Separation): every name in this registry is a provider/data-source/
 observation-mode/reserved concern. Trading-pipeline stage gates
 (`ENABLE_SIGNALS`/`ENABLE_AI` uppercase/`ENABLE_EXECUTION`/
 `ENABLE_DATABASE`/`ENABLE_RISK`/`ENABLE_DECISION`) do not appear here
-at all — `core/guards/pipeline_guard.py`'s `PipelineGuard` reads
-exclusively from `core.emergency.emergency_manager.EmergencyManager`
+at all — `core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard` reads
+exclusively from `core_layer.emergency.emergency_manager.EmergencyManager`
 for every pipeline-stage decision. See
 `docs/FEATURE_REGISTRY_SEPARATION.md` for the full audit and
 `docs/PIPELINE_GUARD.md` for the Emergency-side mapping.
@@ -163,8 +163,8 @@ for why no Telegram command calls any of this yet.
   `decision/`, `risk/`, `execution/`, `strategies/`, `signals/`,
   `context/`, and `ai/` are all unmodified and import nothing from
   `configuration/`. **Still true as of Phase 60.9**: `core/pipeline.py`
-  imports `core.guards.pipeline_guard.PipelineGuard`, which itself
-  imports only `core.emergency.*` — no `configuration/` import exists
+  imports `core_layer.pipeline.pipeline_guard.PipelineGuard`, which itself
+  imports only `core_layer.emergency.*` — no `configuration/` import exists
   anywhere in that chain, even though `core/pipeline.py` does now read
   live Emergency state (see `docs/PIPELINE_GUARD.md`).
 - Does not register a `/feature enable`/`/feature disable` Telegram

@@ -17,7 +17,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Mapping
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.candle_clock import CandleClock, TIMEFRAME_ORDER
 from data.twelve_data_client import Candle
 from data.memory.market_memory import MarketMemory

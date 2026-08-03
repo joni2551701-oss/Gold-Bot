@@ -27,7 +27,7 @@ logging, secrets. The only package every other layer (indirectly) sits
 under.
 
 **Responsibilities**: `core/pipeline.py`'s `TradingPipeline` wires
-every layer into one `run()` cycle; `core/logger.py` gives every
+every layer into one `run()` cycle; `core_layer/logger/logger.py` gives every
 module one consistent `setup_logger(name)`; `core/secrets.py` is the
 single read path for every environment variable.
 

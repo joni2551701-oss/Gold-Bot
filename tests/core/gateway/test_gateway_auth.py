@@ -1,9 +1,9 @@
 """Tests for Gateway authentication + authorization (module 10)."""
 
-from core.gateway.authentication import (
+from core_layer.gateway.authentication import (
     AllowAllAuthenticator, TokenAuthenticator,
 )
-from core.gateway.authorization import AllowAllAuthorizer, RoleAuthorizer
+from core_layer.gateway.authorization import AllowAllAuthorizer, RoleAuthorizer
 
 from _gfakes import request, principal
 

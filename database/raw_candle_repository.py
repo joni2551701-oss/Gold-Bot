@@ -11,7 +11,7 @@ from datetime import datetime
 from database.database import Database
 from database.models import init_raw_candle_schema
 from database.raw_candle_models import RawCandle, from_market_candle
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 if TYPE_CHECKING:
     from data.providers.base_provider import MarketCandle

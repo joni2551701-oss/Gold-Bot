@@ -20,7 +20,7 @@ accumulate a real dataset for a future phase.
 
 from typing import Optional, Sequence, Tuple
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from database.monitoring_repository import MonitoringRepository
 from monitoring.models import DecisionPipelineEntry
 

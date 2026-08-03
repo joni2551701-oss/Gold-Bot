@@ -21,7 +21,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Dict, Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from voice.registry import VoiceProfileRegistry
 from voice.session.models import VoiceSession
 

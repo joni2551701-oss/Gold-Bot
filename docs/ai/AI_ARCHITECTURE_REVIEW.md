@@ -142,7 +142,7 @@ keep that separation structural").
 
 | Boundary | Dependency? | Where | Nature |
 |---|---|---|---|
-| Trading Core (`core/decision/risk/execution/strategies/signals/context/data`) | No (except `core.logger`) | `assistant_manager.py:40` | Logging utility only |
+| Trading Core (`core/decision/risk/execution/strategies/signals/context/data`) | No (except `core_layer.logger.logger`) | `assistant_manager.py:40` | Logging utility only |
 | Telegram/Platform | No | — | Zero imports; enforced by `tests/assistant/test_assistant_isolation.py` |
 | Media | No (direct) | — | Only transitive, via `ai.intelligence_runtime.IntelligenceRuntime.run()` |
 | Memory (`ai.memory`) | **Yes** | `runtime_adapter.py:38-39` | Direct import of `ai.memory.memory_runtime.MemoryRuntime` + `ai.memory.models`, confined to one file (`runtime_adapter.py`, the designated composition-root exception) |

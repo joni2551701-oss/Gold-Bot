@@ -1,10 +1,10 @@
 """
-Phase 59.9, TASK 4 -- core/emergency/circuit_breaker.py tests. Pure
+Phase 59.9, TASK 4 -- core_layer/emergency/circuit_breaker.py tests. Pure
 functions -- no database, no fresh_database dependency needed (harmless
 either way since it's autouse).
 """
 
-from core.emergency.circuit_breaker import (
+from core_layer.emergency.circuit_breaker import (
     CircuitBreakerInput,
     CircuitDecision,
     evaluate_circuit,

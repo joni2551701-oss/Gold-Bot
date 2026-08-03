@@ -6,7 +6,7 @@ The operational face of Constitution Article 10 (Owner Override Law).
 
 A module that governs safety, availability, or user-facing spend is
 "critical" for this policy's purposes:
-`core/emergency/` (kill switch, maintenance mode),
+`core_layer/emergency/` (kill switch, maintenance mode),
 `ai/runtime/runtime_manager.py` (AI Runtime lifecycle, cost
 protection), `configuration/runtime_feature_manager.py` (feature
 toggles), and — foundation-only today — `broadcast/`, `media/`,

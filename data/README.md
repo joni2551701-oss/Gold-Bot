@@ -35,7 +35,7 @@ data/   -- fetch + validate + de-duplicate
   (`session_filter.py`, `data_cache.py`).
 - API error classification — `classify_api_error()`
   (`api_error_classifier.py`, AC-07). Maps an already-caught fetch
-  exception to a structured `core.errors.exceptions.ExternalAPIError`
+  exception to a structured `core_layer.errors.exceptions.ExternalAPIError`
   (`API_001` timeout/connection, `API_002` otherwise). Never raises;
   called from `market_data.py`'s `get_candles()` `except` block for
   logging only — does not change the existing degrade-to-`[]` return.
@@ -85,7 +85,7 @@ returned to a caller.
 `"Daily"` as of Phase A2). No dependency on `context/`, `signals/`,
 `database/`, or `telegram/` — `data_quality.py` follows the same
 isolation as every other file in this package.
-`api_error_classifier.py` imports `requests` and `core.errors`
+`api_error_classifier.py` imports `requests` and `core_layer.errors`
 (cross-cutting) only — same isolation, no dependency on `context/`,
 `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`, `database/`,
 or `telegram/`.

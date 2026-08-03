@@ -14,7 +14,7 @@ bot doesn't control anything yet — it only observes.) Nothing here
 changes `strategies/`, `decision/`, `risk/`, `execution/`,
 `context/`, `signals/`, any Telegram handler, or `core/pipeline.py`.
 
-## System State (`core/system_state.py`)
+## System State (`core_layer/system_state/system_state.py`)
 
 ```python
 class SystemState(Enum):
@@ -63,7 +63,7 @@ this phase follows.
 ## Relationship to the rest of Phase 59.6
 
 ```
-core/system_state.py (TASK 1)        -- system-wide mode vocabulary
+core_layer/system_state/system_state.py (TASK 1)        -- system-wide mode vocabulary
 database/audit_log_repository.py (TASK 2) -- who did what, persisted
         |
         v

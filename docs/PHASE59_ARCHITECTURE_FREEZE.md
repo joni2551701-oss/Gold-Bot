@@ -41,14 +41,14 @@ in one place, for the freeze:
 
 | Pair | Difference | Reconcile before v1.0? |
 |---|---|---|
-| `core.system_state.SystemState` (Phase 59.6) vs `core.emergency.emergency_state.EmergencyState` (Phase 59.9) | `SystemState` is a coarse, unheld display-label enum (`RUNNING`/`VALIDATION`/`MAINTENANCE`/`PANIC`/`READ_ONLY`); `EmergencyState` is the actual runtime-controlled, persisted, audited state machine (`NORMAL`/`WARNING`/`PAUSED`/`KILLED`/`MAINTENANCE`) with a manager. `SystemState`'s own docstring reserved `PANIC`/`MAINTENANCE` "for a future Phase 59.9" but `EmergencyState` ended up a separate, finer enum instead (needed `WARNING`/`PAUSED`, which `SystemState` has no equivalent of). | **Yes** — a future wiring phase should decide whether `SystemState` becomes a thin display view derived from `EmergencyManager.get_status()`, or is retired in favor of `EmergencyState` everywhere. Two sources of truth for "is the bot OK" is the one loose end this freeze surfaces. |
+| `core_layer.system_state.system_state.SystemState` (Phase 59.6) vs `core_layer.emergency.emergency_state.EmergencyState` (Phase 59.9) | `SystemState` is a coarse, unheld display-label enum (`RUNNING`/`VALIDATION`/`MAINTENANCE`/`PANIC`/`READ_ONLY`); `EmergencyState` is the actual runtime-controlled, persisted, audited state machine (`NORMAL`/`WARNING`/`PAUSED`/`KILLED`/`MAINTENANCE`) with a manager. `SystemState`'s own docstring reserved `PANIC`/`MAINTENANCE` "for a future Phase 59.9" but `EmergencyState` ended up a separate, finer enum instead (needed `WARNING`/`PAUSED`, which `SystemState` has no equivalent of). | **Yes** — a future wiring phase should decide whether `SystemState` becomes a thin display view derived from `EmergencyManager.get_status()`, or is retired in favor of `EmergencyState` everywhere. Two sources of truth for "is the bot OK" is the one loose end this freeze surfaces. |
 | `telegram.owner.owner_roles.OwnerRole` (Phase 59.6) vs `telegram.permissions.PermissionLevel` (pre-Phase-59, live) | `PermissionLevel` (`OWNER`/`ADMIN`/`USER`) is the real enum `telegram/command_router.py`'s `_PERMISSION_RANK` gates the live 26 commands with today. `OwnerRole` (`OWNER`/`SUPER_ADMIN`/`ADMIN`/`VIEWER`) is a finer, not-yet-wired hierarchy for the future Owner Dashboard. | No — by design, documented in `docs/OWNER_PERMISSIONS.md` since Phase 59.6. A live-wiring phase for `telegram/owner/` will make `OwnerRole` real; `PermissionLevel` keeps gating the existing 26 commands unchanged either way. |
 | `telegram.owner.feature_commands.list_features()` (Phase 59.3, static `Config`/`FeatureFlags` view) vs `telegram.owner.control_commands.get_feature_states()` (Phase 59.8, runtime `RuntimeFeatureManager` view) | Answer different questions: "what does this flag default to" vs "what has an owner actually toggled right now." | **Yes** — `docs/OWNER_COMMANDS.md` already flags this: a future `/features` wiring step must pick exactly one. Both stay until that step. |
-| `configuration.feature_registry.FeatureDescriptor` / `configuration.runtime_state.FeatureRuntimeState` / `database.runtime_feature_models.RuntimeFeatureRecord` (Phase 59.6/59.7) — and the equivalent triad `core.emergency.emergency_state.EmergencyStateRecord` / `database.emergency_models.EmergencyStateEntry` (Phase 59.9) | Consistent "static declaration → in-memory runtime view → DB row" split repeated twice, once for features and once for emergency state. Same pattern both times, not a duplication of each other (`FeatureDescriptor` and `EmergencyStateRecord` describe unrelated things). | No — this is the codebase's own established modeling convention (declared in `configuration/README.md`/`database/README.md`), applied consistently. Nothing to reconcile. |
-| `core.emergency.maintenance.MaintenanceMode` (Phase 59.9) vs `EmergencyState.MAINTENANCE` (same phase) | Enum value vs. detail record — same "enum value vs. detail record" split as `FeatureDescriptor` vs `FeatureRuntimeState` above. | No — intentional, same convention. |
+| `configuration.feature_registry.FeatureDescriptor` / `configuration.runtime_state.FeatureRuntimeState` / `database.runtime_feature_models.RuntimeFeatureRecord` (Phase 59.6/59.7) — and the equivalent triad `core_layer.emergency.emergency_state.EmergencyStateRecord` / `database.emergency_models.EmergencyStateEntry` (Phase 59.9) | Consistent "static declaration → in-memory runtime view → DB row" split repeated twice, once for features and once for emergency state. Same pattern both times, not a duplication of each other (`FeatureDescriptor` and `EmergencyStateRecord` describe unrelated things). | No — this is the codebase's own established modeling convention (declared in `configuration/README.md`/`database/README.md`), applied consistently. Nothing to reconcile. |
+| `core_layer.emergency.maintenance.MaintenanceMode` (Phase 59.9) vs `EmergencyState.MAINTENANCE` (same phase) | Enum value vs. detail record — same "enum value vs. detail record" split as `FeatureDescriptor` vs `FeatureRuntimeState` above. | No — intentional, same convention. |
 
 No accidental duplicate function names were found: a repo-wide scan
-of every `def` in `telegram/owner/`, `core/emergency/`, and
+of every `def` in `telegram/owner/`, `core_layer/emergency/`, and
 `configuration/` shows zero name collisions outside the pairs above,
 all of which are deliberately, differently named
 (`list_features`/`get_feature_states`, `enable`/`enable_feature`
@@ -98,8 +98,8 @@ importing side of each):
 - `data/` → `database/` (Phase 59.5: historical collector persists what it fetches)
 - `monitoring/` → `data/providers/` (Phase 59.2: provider health reads the registry)
 - `configuration/` → `database/` (Phase 59.7: `RuntimeFeatureManager` persists toggles)
-- `core/emergency/` → `database/` (Phase 59.9: `EmergencyManager` persists transitions)
-- `telegram/owner/` → `configuration/`, `database/`, `core/emergency/`, `core.system_state` (every Owner Mode module composes lower-layer pieces, never the reverse)
+- `core_layer/emergency/` → `database/` (Phase 59.9: `EmergencyManager` persists transitions)
+- `telegram/owner/` → `configuration/`, `database/`, `core_layer/emergency/`, `core_layer.system_state.system_state` (every Owner Mode module composes lower-layer pieces, never the reverse)
 
 ## 4. Consolidated wiring plan
 
@@ -116,8 +116,8 @@ three dicts.
 |---|---|---|
 | `telegram/owner/` (all 13 modules) | Every owner-facing view/control built across Phase 59.1–59.9 | New entries in `telegram/commands.py`'s `OWNER_COMMANDS`, routing in `telegram/command_router.py` using `telegram/owner/security.py`'s `require_role()`, new handlers in `telegram/handlers.py` calling these functions |
 | `configuration/runtime_feature_manager.py` | Real, working runtime toggle (validated/persisted/audited/snapshotted) | Nothing in `core/pipeline.py` currently constructs a `RuntimeFeatureManager` or checks a feature's runtime value before running a stage |
-| `core/emergency/emergency_manager.py` | Real, working kill/pause/maintenance/restore controller | Nothing in `core/pipeline.py`/`risk/risk_manager.py`/`execution/` reads `EmergencyManager.get_status()` before running; `core/emergency/circuit_breaker.py`'s `evaluate_circuit()` is never fed live loss/drawdown/api data |
-| `core/system_state.py` | A pure enum + record, no holder | No singleton exists anywhere holding "the" current `SystemState` |
+| `core_layer/emergency/emergency_manager.py` | Real, working kill/pause/maintenance/restore controller | Nothing in `core/pipeline.py`/`risk/risk_manager.py`/`execution/` reads `EmergencyManager.get_status()` before running; `core_layer/emergency/circuit_breaker.py`'s `evaluate_circuit()` is never fed live loss/drawdown/api data |
+| `core_layer/system_state/system_state.py` | A pure enum + record, no holder | No singleton exists anywhere holding "the" current `SystemState` |
 | `database/audit_log_repository.py` | Real, append-only audit trail | Only written to by `RuntimeFeatureManager`/`EmergencyManager` today — no owner command's real invocation exists yet to trigger those writes in production |
 | `database/config_snapshot_repository.py` | Real rollback-capture mechanism | Only written to by `RuntimeFeatureManager` today; nothing reads a snapshot back to actually roll back a config yet |
 
@@ -232,7 +232,7 @@ every parallel hierarchy in section 1 above exists because a real,
 narrow difference in *meaning* justified a new name (a static default
 vs. a runtime value; a coarse display label vs. an audited, persisted
 state machine), never because reuse was merely inconvenient. A new
-top-level package (`core/emergency/`, `configuration/`, `lifecycle/`,
+top-level package (`core_layer/emergency/`, `configuration/`, `lifecycle/`,
 etc.) is the highest-cost option on this list and should be rare —
 Phase 59's own history shows most work landed as a new file inside an
 *existing* package (`telegram/owner/*.py`, `database/*_repository.py`)

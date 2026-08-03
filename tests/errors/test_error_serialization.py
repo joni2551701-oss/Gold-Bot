@@ -5,8 +5,8 @@ Phase A18 -- Error Classification tests: serialization
 
 import json
 
-from core.errors import codes
-from core.errors.exceptions import DataError, PermissionError
+from core_layer.errors import codes
+from core_layer.errors.exceptions import DataError, PermissionError
 
 
 def test_to_dict_matches_required_shape():

@@ -39,7 +39,7 @@ TASK 2 dependency audit re-verified this).
 | Phase 59.3 | Provider normalization, raw market storage, `telegram/owner/` foundation, `context/fundamental_context.py`. |
 | Phase 59.4 | Paper Trade Monitor wired, strategy/context performance reports, Owner Report foundation. |
 | Phase 59.5 | Historical data collector, sync state, dataset/gap reports, provider comparison. |
-| Phase 59.6 | `core/system_state.py`, audit log, owner roles, Feature Registry, dependency validator, config snapshots. |
+| Phase 59.6 | `core_layer/system_state/system_state.py`, audit log, owner roles, Feature Registry, dependency validator, config snapshots. |
 | Phase 59.7 | Runtime Feature Toggle Center — `RuntimeFeatureManager`, persistence, dependency dry-run, audit + snapshot integration, `runtime_api.py`. |
 | Phase 59.8 | Owner Control Center — status/control/security/dashboard commands. |
 | Phase 59.9 | Emergency Safety Layer — `EmergencyState`, `EmergencyManager`, circuit breaker, maintenance, emergency commands. |
@@ -107,8 +107,8 @@ and is the contract v0.4 AI and every phase after it must preserve.
   governs Infrastructure only (providers, data sources, observation
   modes). It has never controlled, and as of Phase 60.9 architecturally
   cannot control, a live trading-pipeline stage.
-- **Emergency Only Controls Trading** — `core/emergency/emergency_manager.py`,
-  via `core/guards/pipeline_guard.py`, is the sole mechanism that can
+- **Emergency Only Controls Trading** — `core_layer/emergency/emergency_manager.py`,
+  via `core_layer/pipeline/pipeline_guard.py`, is the sole mechanism that can
   pause, kill, or maintenance-gate the live pipeline. No other module
   has this authority.
 - **Reuse Before Rewrite** — the Module Reuse Principle (CLAUDE.md):

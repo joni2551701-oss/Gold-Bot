@@ -52,7 +52,7 @@ telegram/handlers.py           contact_handler(telegram_id, phone_number)
       |
 telegram/user_service.py       UserService.register_phone()
       |                        Phone Hash -> UserRecord -> Trial Check -> FREE account
-      |                        -> core.phone_hash.hash_phone_number()
+      |                        -> core_layer.secrets.phone_hash.hash_phone_number()
       |                        -> ai.access.identity_checker.is_phone_reused_by_another_account()
       |                        -> ai.access.trial_manager.trial_status_from_started_at()
       |
@@ -158,7 +158,7 @@ a repo-wide grep for `FSM|StateMachine|pending_registration|
 RegistrationState` — the 15 matches are all unrelated bounded
 contexts: `ai/session/conversation_state.py` (AI conversation turns),
 `ai/runtime/runtime_state.py` / `configuration/runtime_state.py`
-(AI/feature runtime lifecycle), `core/emergency/emergency_state.py`
+(AI/feature runtime lifecycle), `core_layer/emergency/emergency_state.py`
 (trading pause/kill state), `lifecycle/signal_state.py` /
 `lifecycle/trade_state.py` (paper-trade lifecycle),
 `database/sync_state_models.py` (historical data sync), `assistant/

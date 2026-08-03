@@ -119,7 +119,7 @@ already flagged for its own future audit's attention.
 
 `broadcast/*.py` today imports only `ai.content.broadcast_output`,
 `ai.content.content_types`, other `broadcast.*` modules, and
-`core.logger` — zero dependency on `decision/`, `risk/`, `execution/`,
+`core_layer.logger.logger` — zero dependency on `decision/`, `risk/`, `execution/`,
 `strategies/`, `signals/`, or `database/`. This phase adds one new,
 type-only import: `media.models.MediaAsset` (media sits immediately
 upstream of broadcast in the Official Intelligence Pipeline) and

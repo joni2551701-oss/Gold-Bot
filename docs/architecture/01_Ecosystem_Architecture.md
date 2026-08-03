@@ -457,7 +457,7 @@ Revision 1). Layer-by-layer one-line summary, top to bottom:
 | Learning Layer | An ML "learning" loop exists (`learning/`); a learner-facing Academy does not (`09_Academy_Layer.md`). |
 | Media Layer | A content-generation foundation exists (`ai/persona/`, `broadcast/`, `media/`, `translation/`, Phase 63.0, contract-only); no live channel integration (`10_Media_Layer.md`). |
 | Future Expansion | Entirely vision — Section 4. |
-| Security & Infrastructure | Partially real (`monitoring/`, `core/gateway/`); much of the list is vision — `11_Infrastructure.md`. |
+| Security & Infrastructure | Partially real (`monitoring/`, `core_layer/gateway/`); much of the list is vision — `11_Infrastructure.md`. |
 
 **Data flow between layers, one line:** raw price → validated candles →
 Market Memory → Core computes a decision → (once Application Services
@@ -581,7 +581,7 @@ proposed for these). "Missing" = genuinely not built.
 | Confluence Engine | Absorbed into each `strategies/*.py` | No change proposed — see Section 11 | N/A | N/A | N/A |
 | Application Services boundary | Mostly missing (`04_Application_Services.md`) | A real service boundary between Core and Telegram, so a future Web/Mobile client doesn't need its own copy of `telegram/signal_formatter.py`'s logic | Medium (blocks Platform Layer expansion, not urgent while Telegram is the only platform) | High once a second platform is planned | Low — additive, no existing consumer needs to change |
 | MarketMemory as the pipeline's read path | Not wired (`core/pipeline.py` uses `MarketDataService()` bare, no registry — `02_Data_Layer.md`) | Inject a shared `MarketMemoryRegistry` into the pipeline's `MarketDataService`/future `PriceStreamService` construction | Medium | Closes the "Single Source of Truth" gap (Golden Rule 1) for real | Medium — touches `core/pipeline.py` construction; needs its own Owner-approved technical task, explicit test coverage, and Trading Safety review (out of scope for this doc-only task) |
-| Public API / Gateway | `core/gateway/` is internal-only; no public server | Not proposed here — depends on Platform Layer roadmap (Section 9) | Low today | High once Web/Mobile exist | N/A until then |
+| Public API / Gateway | `core_layer/gateway/` is internal-only; no public server | Not proposed here — depends on Platform Layer roadmap (Section 9) | Low today | High once Web/Mobile exist | N/A until then |
 
 No refactor above is implemented by this task (Forbidden: no `.py`
 changes) — this table is the proposal only, per the brief's own
@@ -611,7 +611,7 @@ instruction ("Faqat ro'yxat").
   not confirmed wired.
 
 **In code, not in diagram:**
-- `core/gateway/` (Core Gateway Layer, Module 10) — an internal service
+- `core_layer/gateway/` (Core Gateway Layer, Module 10) — an internal service
   gateway the ecosystem diagram never names as its own box (the
   diagram's "GoldBot Core API" box is the closest match, but the real
   module is considerably more developed — auth, rate limiting, circuit

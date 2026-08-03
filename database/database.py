@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from config import Config
 from database.models import init_schema
 

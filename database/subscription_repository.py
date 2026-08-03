@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from database.database import Database
 from database.models import init_subscription_schema
 from database.subscription_models import SubscriptionRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("SubscriptionRepository")
 

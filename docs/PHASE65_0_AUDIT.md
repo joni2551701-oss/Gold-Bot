@@ -139,7 +139,7 @@ phase implements).
 ## Dependency Compliance
 
 `voice/*.py` imports only `ai.content.content_schema` (type-only,
-TASK 7's adapter) and `core.logger` (the same logging convention
+TASK 7's adapter) and `core_layer.logger.logger` (the same logging convention
 `MediaManager`/`BroadcastProviderManager` already use) — zero
 dependency on `decision/`, `risk/`, `execution/`, `strategies/`,
 `signals/`, `database/`, `telegram/`, `media/`, or `broadcast/`.

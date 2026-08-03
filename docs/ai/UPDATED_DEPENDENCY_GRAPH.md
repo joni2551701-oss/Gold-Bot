@@ -22,7 +22,7 @@ Both sit at the bottom of the graph — nothing in `ai/` is imported by
 them, so every consumer depends on them strictly downward:
 
 - **`ai.event_bus`** (`EventBus`, `EventType`, `RuntimeEvent`) —
-  depends only on `core.logger` + stdlib. Consumers: `ai.runtime`,
+  depends only on `core_layer.logger.logger` + stdlib. Consumers: `ai.runtime`,
   `ai.providers`, `ai.audit`, `telegram.owner`.
 - **`ai.content_types`** (`ContentType` enum) — depends only on stdlib
   `enum`. Consumers: `ai.explanation`, `ai.content`,

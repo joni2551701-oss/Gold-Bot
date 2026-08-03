@@ -77,7 +77,7 @@ with this phase.
   "was this recently approved" source, since GoldBot has no persisted
   open-position store (Phase V1.0.1 TASK 6).
 - **emergency stop** — **corrected by Phase V1.0.1 TASK 7.** Risk now
-  consults `core.emergency.emergency_manager.EmergencyManager`
+  consults `core_layer.emergency.emergency_manager.EmergencyManager`
   (read-only `get_status()` only) directly: `PAUSED`, `KILLED`, and
   `MAINTENANCE` all reject every new trade approval at the Risk layer
   itself, not only at Telegram delivery. The exact model:
@@ -86,14 +86,14 @@ with this phase.
     ↓
   No new trade approval   (RiskManager.evaluate() rejects, reason names the state)
     ↓
-  No execution             (core/guards/pipeline_guard.py's before_execution() still also skips Telegram delivery, unchanged)
+  No execution             (core_layer/pipeline/pipeline_guard.py's before_execution() still also skips Telegram delivery, unchanged)
     ↓
   Monitoring continues     (monitoring/ keeps reading — observer-only, unaffected)
     ↓
   Logs saved               (every reject, including this one, is persisted to risk_decisions, TASK 8)
   ```
   `WARNING` remains advisory-only and does not block (matches
-  `core.emergency.emergency_state.EmergencyState`'s own docstring).
+  `core_layer.emergency.emergency_state.EmergencyState`'s own docstring).
   This corrects the previous version of this page's claim that
   Emergency-state blocking was "not `risk/`'s own concern" — that was
   true for `PAUSED` specifically before this phase (only Telegram
@@ -123,7 +123,7 @@ with this phase.
   of its own; change `BUY`/`SELL`/entry/TP/SL/strategy/AI score (RULE
   2/3 of the Phase V1.0.1 brief — Risk only ever returns ALLOW/REJECT).
 - **Depends on**: `decision/` (the decision being validated),
-  `core.emergency` (read-only state check, Phase V1.0.1), and
+  `core_layer.emergency` (read-only state check, Phase V1.0.1), and
   `database/` (append-only decision logging + per-symbol account-state
   persistence, Phase V1.0.1) — the latter two are new, deliberate,
   documented exceptions to this module's earlier "no Database" posture,

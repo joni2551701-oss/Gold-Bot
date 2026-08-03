@@ -50,7 +50,7 @@ abstractions + stdlib, so future components (and, in a later task, the
 existing `ai/` managers) depend on the Foundation, not the reverse.
 This is deliberately the inverse of wiring the Manager to today's
 concrete `ProviderManager`/`SessionManager`/`RuntimeManager` — those
-would drag their own dependencies (including `core.logger`) inward and
+would drag their own dependencies (including `core_layer.logger.logger`) inward and
 couple the base to the present. The Foundation is built for what comes
 next, not retrofitted to what exists.
 
@@ -60,7 +60,7 @@ Reuse First was applied, but under this task's hard dependency rule
 ("Foundation may depend only on other Foundation modules inside `ai/`",
 "no dependency to Core") two proven `ai/` designs are reused *by
 pattern* rather than by import, because importing them would pull in
-`core.logger`:
+`core_layer.logger.logger`:
 
 - `lifecycle.py` reuses the transition-validated state-machine model of
   `ai/runtime/runtime_state.py` (`RuntimeState` + `is_valid_transition`).

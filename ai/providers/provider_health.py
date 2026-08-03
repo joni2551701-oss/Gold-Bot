@@ -16,7 +16,7 @@ from typing import Dict, Optional
 
 from ai.providers.provider_registry import build_provider_registry
 from ai.providers.provider_status import AVAILABLE_STATUSES, HealthStatus
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ProviderHealth")
 

@@ -10,7 +10,7 @@ reachability) and `monitoring.provider_health.check_registry_health()`
 (per-provider ONLINE/DEGRADED/OFFLINE). `uptime_seconds`/`last_scan`/
 `last_error` are this module's own genuine addition -- no existing
 process-uptime or scan-timestamp concept exists anywhere in the
-codebase (`core/system_state.py` has no live holder, per the audit).
+codebase (`core_layer/system_state/system_state.py` has no live holder, per the audit).
 
 Never modifies `core/pipeline.py` -- `record_scan()` is a passive
 sink a caller reports activity to; this module never infers "last
@@ -22,7 +22,7 @@ import time
 from datetime import datetime, timezone
 from typing import Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.providers.registry import ProviderRegistry, build_default_registry
 from monitoring.models import SystemHealth
 from monitoring.provider_health import ProviderHealthStatus, check_registry_health

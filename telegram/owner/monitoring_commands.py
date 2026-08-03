@@ -35,7 +35,7 @@ from monitoring.signal_monitor import get_signal_health
 from monitoring.system_monitor import get_health as get_system_health_snapshot
 from telegram.owner.provider_commands import ProviderCommandResult
 from telegram.owner.system_commands import get_system_health
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("MonitoringCommands")
 

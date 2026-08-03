@@ -2,7 +2,7 @@
 
 import pytest
 
-from core.gateway.dependency_graph import (
+from core_layer.gateway.dependency_graph import (
     DependencyError, missing_dependencies, find_cycle, validate,
     resolution_order, build_graph,
 )

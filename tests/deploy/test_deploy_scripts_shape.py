@@ -279,7 +279,7 @@ def test_simulated_deploy_ships_the_database_package_and_preserves_shared_db(tmp
     skipping exactly what production_deploy.yml's rsync excludes; (2)
     symlink the shared runtime .db file in exactly as
     release_deploy.sh does; (3) confirm `database.database` -- which
-    itself imports core.logger and config, so a database/-only copy
+    itself imports core_layer.logger.logger and config, so a database/-only copy
     would give a false signal -- still imports cleanly, and the shared
     file's contents are reached through the symlink, not overwritten.
 

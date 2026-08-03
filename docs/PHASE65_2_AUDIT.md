@@ -117,12 +117,12 @@ for the duration of the session, in memory).
 
 ## Dependency Compliance
 
-- `voice/stt/*.py`: imports only its own package, `core.logger`,
+- `voice/stt/*.py`: imports only its own package, `core_layer.logger.logger`,
   `core.secrets`, `requests` — same posture as
   `voice/provider_adapters/*.py`.
 - `voice/intents/*.py`: pure functions, no imports beyond its own
   package.
-- `voice/session/*.py`: imports its own package, `core.logger`; may
+- `voice/session/*.py`: imports its own package, `core_layer.logger.logger`; may
   reference `ai.session.conversation_state`/`voice.registry` type-only
   for validation.
 - `voice/conversation_bridge.py`: the one new file permitted to import

@@ -618,7 +618,7 @@ contract.
 
 ### Error Classification Foundation (Phase A18)
 
-`core/errors/` adds `GoldBotError` (`base.py`) — a base exception
+`core_layer/errors/` adds `GoldBotError` (`base.py`) — a base exception
 carrying `code`/`message`/`module`/`timestamp`/`details` and a
 `to_dict()` — plus nine category subclasses (`exceptions.py`:
 `ConfigurationError`, `ValidationError`, `DataError`,
@@ -628,7 +628,7 @@ error-code registry (`codes.py`: `CODE_REGISTRY`, `CODE_PATTERN`,
 e.g. `"DATA_001"`). Implements the hierarchy
 `contracts/error_contract.md` (Phase A17) specified but explicitly
 deferred as a future phase's job — this is that phase. Cross-cutting,
-like `core/logger.py`/`core/secrets.py`: every layer may import from
+like `core_layer/logger/logger.py`/`core/secrets.py`: every layer may import from
 it without creating a new architecture boundary.
 
 **A foundation, not a retrofit**: no existing raise site is migrated
@@ -646,11 +646,11 @@ integrity errors, not a replacement for that pattern.
 `PermissionError` within any module that imports it directly —
 deliberate (it is Phase A17's own contract naming and this phase's
 own brief's exact hierarchy), documented in
-`core/errors/exceptions.py`'s own docstring, and safe (no code in
+`core_layer/errors/exceptions.py`'s own docstring, and safe (no code in
 this codebase relies on catching the built-in `PermissionError`
 anywhere near an import of this one).
 
-`core/errors/codes.py` adds three code prefixes
+`core_layer/errors/codes.py` adds three code prefixes
 (`STRATEGY_001`/`DECISION_001`/`EXECUTION_001`) the brief's own error-
 code section didn't name, despite naming all nine exception classes
 in its hierarchy — filling a real gap between the hierarchy and the
@@ -692,7 +692,7 @@ distinctions are spelled out in `docs/PERFORMANCE_METRICS.md`'s own
 **Phase A18 integration** (the one explicit cross-wiring this phase's
 own brief requested): `PerformanceTimer.__exit__` does a real
 `isinstance(exc_val, GoldBotError)` check — if the exception raised
-inside a measured block is a `core.errors.base.GoldBotError`, its
+inside a measured block is a `core_layer.errors.base.GoldBotError`, its
 `.code` is captured as the metric's `error_code`; any other exception
 type leaves `error_code=None`, never guessed.
 
@@ -922,7 +922,7 @@ Emergency Layer (Phase 59.9 — the first phase where `SystemState`/
 `docs/OWNER_PERMISSIONS.md`, `docs/FEATURE_REGISTRY.md`,
 `docs/CONFIG_SNAPSHOT.md`.
 
-**TASK 1 (System State Manager)** — new `core/system_state.py`.
+**TASK 1 (System State Manager)** — new `core_layer/system_state/system_state.py`.
 `SystemState` enum (`RUNNING`/`VALIDATION`/`MAINTENANCE`/`PANIC`/
 `READ_ONLY`) + `SystemStateRecord` (one immutable transition record) +
 `create_system_state_record()`. Pure model — no mutable "current
@@ -1039,7 +1039,7 @@ update" section.
 **`status_commands.py`** — new `get_system_status()`, composing
 `AdminService.get_system_status()`, `data.providers.registry`,
 `config.Config.MARKET_DATA_PROVIDER`/`VALIDATION_MODE`,
-`core.system_state.SystemState` (display label only — no instance
+`core_layer.system_state.system_state.SystemState` (display label only — no instance
 held), and `SignalRepository.get_latest_signal()`. No new health-check
 logic — pure composition.
 
@@ -1079,7 +1079,7 @@ this phase.
 
 ### Phase 59.9 — Emergency Safety Layer Foundation
 
-New `core/emergency/` package — a finer-grained state vocabulary and
+New `core_layer/emergency/` package — a finer-grained state vocabulary and
 runtime controller for the bot's emergency posture, still, per the
 Director's own roadmap, **not** wired into `core/pipeline.py`,
 `decision/`, `risk/risk_manager.py`, `execution/`, or any Telegram
@@ -1088,10 +1088,10 @@ routing surface. Full detail: `docs/EMERGENCY_SYSTEM.md`.
 **`emergency_state.py`** — `EmergencyState` enum
 (`NORMAL`/`WARNING`/`PAUSED`/`KILLED`/`MAINTENANCE`) + immutable
 `EmergencyStateRecord`. Deliberately separate from
-`core.system_state.SystemState` (Phase 59.6) — same "two hierarchies
+`core_layer.system_state.system_state.SystemState` (Phase 59.6) — same "two hierarchies
 for two granularities" precedent as `OwnerRole` vs `PermissionLevel` —
 because `SystemState` has no `WARNING`/`PAUSED` equivalent that
-`circuit_breaker.py` needs. `core/system_state.py` is unchanged.
+`circuit_breaker.py` needs. `core_layer/system_state/system_state.py` is unchanged.
 
 **`emergency_manager.py`** — `EmergencyManager`:
 `activate_pause()`/`activate_kill()`/`activate_maintenance()`/
@@ -1588,7 +1588,7 @@ four named stage boundaries — never touching `decision/`, `risk/`,
 `strategies/`, `signals/`, `context/`, or `ai/`). Full detail:
 `docs/PIPELINE_GUARD.md`, `docs/PHASE60_8_INTEGRATION_AUDIT.md`.
 
-**`core/guards/pipeline_guard.py`'s `PipelineGuard`** (TASK 2/3) — a
+**`core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard`** (TASK 2/3) — a
 new top-level `core/guards/` package (per the Director's own explicit
 path), composing exactly `RuntimeFeatureManager.status()` and
 `EmergencyManager.get_status()` (both read-only). Four public methods
@@ -1656,7 +1656,7 @@ vocabulary — Infrastructure vs. Trading:
         +-------------+-------------+
         |                           |
   Runtime Feature Manager    Emergency Manager
-  (configuration/)           (core/emergency/)
+  (configuration/)           (core_layer/emergency/)
         |                           |
   Infrastructure              Trading Control
     ENABLE_MT5                  NORMAL
@@ -1666,7 +1666,7 @@ vocabulary — Infrastructure vs. Trading:
     ENABLE_BACKTEST             KILLED
     ENABLE_DATASET_SYNC              |
     ENABLE_ANALYTICS                 v
-    ...                    core/guards/pipeline_guard.py
+    ...                    core_layer/pipeline/pipeline_guard.py
         |                  PipelineGuard (Phase 60.8)
         v                           |
   never read by                     v
@@ -1699,7 +1699,7 @@ tests rewritten to the new names, same mechanism coverage, zero test
 deleted.
 
 **TASK 4 (Pipeline Guard simplification)**:
-`core/guards/pipeline_guard.py`'s `PipelineGuard` no longer imports or
+`core_layer/pipeline/pipeline_guard.py`'s `PipelineGuard` no longer imports or
 constructs `RuntimeFeatureManager` — every one of its four hooks
 (`before_signal`/`before_ai`/`before_execution`/`before_database`) is
 now purely a function of `EmergencyManager.get_status()`.
@@ -1738,7 +1738,7 @@ telegram/owner/*.py  (18 modules -- real, tested, not yet registered here)
   v
 core/pipeline.py (TradingPipeline.run())
   |
-  +--> core/guards/pipeline_guard.py (PipelineGuard, Emergency-gated: Phase 60.8/60.9)
+  +--> core_layer/pipeline/pipeline_guard.py (PipelineGuard, Emergency-gated: Phase 60.8/60.9)
   |
   v
 data/market_data.py, data/providers/*, data/data_quality.py        (Market Data + Data Quality)
@@ -1794,7 +1794,7 @@ Parallel, not sequential: `backtesting/backtest_engine.py` composes
 the exact same Context->Strategy->Signal->AI->Decision->Risk->Paper
 Trade->Learning chain above, off `backtesting/replay_engine.py`'s
 `IDataFeed` instead of live market data (Phase 60.1/60.2/60.8).
-`core/emergency/emergency_manager.py` sits beside `core/pipeline.py`,
+`core_layer/emergency/emergency_manager.py` sits beside `core/pipeline.py`,
 read by `PipelineGuard` only — never itself in the data-flow chain.
 
 **Version roadmap**: see `docs/SYSTEM_OVERVIEW.md`'s own "Version
@@ -1987,7 +1987,7 @@ ai/access/identity_checker.py           (is_phone_reused_by_another_account() --
 ai/access/trial_manager.py              (TrialManager -- 7-day FREE trial, "1 phone = 1 trial")
 ai/audit/usage_accounting.py            (compute_user_usage() -- generalizes trace.py's request_id join)
 
-core/phone_hash.py                      (hash_phone_number() -- HMAC-SHA256 salted; raw phone never stored)
+core_layer/secrets/phone_hash.py                      (hash_phone_number() -- HMAC-SHA256 salted; raw phone never stored)
 database/user_models.py                 (+phone_hash field, additive)
 database/user_repository.py             (+set_phone_hash()/get_users_by_phone_hash())
 
@@ -2210,7 +2210,7 @@ scope decision).
 **API Error Classification (AC-07, part of Data Quality)** —
 `data/api_error_classifier.py` adds `classify_api_error(exception,
 module)`, mapping an already-caught data-fetch exception to a
-`core.errors.exceptions.ExternalAPIError` (Phase A18) — `API_001` for
+`core_layer.errors.exceptions.ExternalAPIError` (Phase A18) — `API_001` for
 a timeout/connection failure, `API_002` for anything else (rate limit,
 malformed response, unrecognized type). Never raises; used for
 structured logging only. `data/market_data.py`'s `get_candles()`
@@ -2320,7 +2320,7 @@ signal, never knows about a strategy or a decision — data only.
 
 `config.py` gained `MARKET_DATA_PROVIDER`/`ENABLE_MT5`/
 `ENABLE_TWELVEDATA` (additive, `Config.DEBUG`'s existing `os.getenv()`
-convention). `core/errors/codes.py`'s registry gained `API_003`
+convention). `core_layer/errors/codes.py`'s registry gained `API_003`
 (invalid symbol) and `API_004` (empty response); `data/api_error_classifier.py`
 gained `classify_empty_response()` and a disclosed message-heuristic
 for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
@@ -2333,7 +2333,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 
 | Module | Responsibility |
 |---|---|
-| `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. Phase 59.9 added `emergency/` — `EmergencyState`/`EmergencyManager` (a runtime controller, persisted append-only via `database.emergency_repository`, audited via `AuditLogRepository`) and stateless `circuit_breaker.evaluate_circuit()`; still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`. |
+| `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core_layer/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. Phase 59.9 added `emergency/` — `EmergencyState`/`EmergencyManager` (a runtime controller, persisted append-only via `database.emergency_repository`, audited via `AuditLogRepository`) and stateless `circuit_breaker.evaluate_circuit()`; still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`. |
 | `backtesting/` | New in Phase 60.1 (Historical Replay Engine) — `replay_models.py`/`replay_session.py`/`replay_clock.py`/`replay_feed.py`/`replay_engine.py`/`replay_controller.py`. A service over existing Historical Data (`database.raw_candle_repository.RawCandleRepository`), not a new business domain — deliberately not a `market/` top-level package, per the Module Reuse Principle. `ReplayFeed` hands out `data.twelve_data_client.Candle`, the same type the live pipeline already uses, so a future Strategy consumer needs no shape change. Phase 60.2 (Backtesting Engine) added `data_feed.py` (`IDataFeed`/`LiveDataFeed`/`ReplayDataFeed`), `backtest_engine.py` (`BacktestEngine`, composing `strategies/`/`signals/`/`ai/`/`decision/`/`risk/`/`lifecycle/`/`analytics/` unmodified), and `backtest_result.py`. Still never *modifies* `strategies/`/`signals/`/`decision/`/`risk/`; nothing in `core/pipeline.py` constructs anything here. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. Phase 59.6 added `feature_registry.py` (`FeatureDescriptor`/`build_feature_registry()`, unifying real + declared-only flag names) and `feature_dependency_validator.py` (`validate_feature_dependencies()`) — still not runtime, gates nothing. Phase 59.7 added the first genuinely *runtime* control in this package — `runtime_state.py`/`runtime_feature_manager.py`/`runtime_api.py` (`RuntimeFeatureManager`: validated, persisted, audited, snapshotted enable/disable) — still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`, none of which import `configuration/`. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
@@ -2348,7 +2348,7 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | `execution/` | Inert scaffolding for future MT5 integration — not reachable from any runtime path today. |
 | `monitoring/` | Historical trade-outcome statistics (win rate, strategy breakdown — `performance.py`'s `PerformanceTracker`), not wired into any live command yet. Distinct from `performance/` (Phase A19) — see that row. Also `provider_health.py` (Phase 59.2) — `ProviderHealthStatus`/`check_provider_health()`, a third, distinct kind of “performance” (a provider's own live availability/latency), not wired into any live command yet either. |
 | `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `monitoring/performance.py`'s trade-outcome statistics. |
-| `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. Phase 59.6 added `audit_log`/`config_snapshots` (`audit_log_models.py`/`audit_log_repository.py`, `config_snapshot_models.py`/`config_snapshot_repository.py`) — both append-only. Phase 59.7 added `runtime_features` (`runtime_feature_models.py`/`runtime_feature_repository.py`) — one row per feature name, `configuration.runtime_feature_manager.RuntimeFeatureManager`'s persistence layer; `audit_log`/`config_snapshots` are now actually written to on every successful runtime toggle, no longer purely a manual/future-command capture. Phase 59.9 added `emergency_states` (`emergency_models.py`/`emergency_repository.py`) — append-only (like `audit_log`, unlike `runtime_features`' upsert), `core.emergency.emergency_manager.EmergencyManager`'s persistence layer; every transition is also written to `audit_log`. |
+| `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. Phase 59.6 added `audit_log`/`config_snapshots` (`audit_log_models.py`/`audit_log_repository.py`, `config_snapshot_models.py`/`config_snapshot_repository.py`) — both append-only. Phase 59.7 added `runtime_features` (`runtime_feature_models.py`/`runtime_feature_repository.py`) — one row per feature name, `configuration.runtime_feature_manager.RuntimeFeatureManager`'s persistence layer; `audit_log`/`config_snapshots` are now actually written to on every successful runtime toggle, no longer purely a manual/future-command capture. Phase 59.9 added `emergency_states` (`emergency_models.py`/`emergency_repository.py`) — append-only (like `audit_log`, unlike `runtime_features`' upsert), `core_layer.emergency.emergency_manager.EmergencyManager`'s persistence layer; every transition is also written to `audit_log`. |
 | `telegram/` | The Telegram product layer: routing, permissions, handlers, services. `owner/` (Phase 59.3-59.5) — real, tested owner-command service functions (`provider_commands.py`/`system_commands.py`/`feature_commands.py`/`report_commands.py`/`validation_commands.py`/`dataset_commands.py`), not registered into `commands.py`/`command_router.py`/`handlers.py` — the live bot's command surface is unaffected. |
 | `lifecycle/` | Phase 59 Preparation foundation — `PaperTrade`/`TradeState` (simulated, broker-free trade state machine) and `SignalLifecycleState` (a signal's own progress through the analysis pipeline). In-memory only: no database persistence, no pipeline wiring. Not the same as `strategies/lifecycle/` (per-strategy metadata) or `execution/signal_lifecycle.py` (a pre-existing, inert, Telegram-delivery state machine). |
 | `analytics/` | Phase 59 Preparation foundation — `SignalPerformance`/`StrategyPerformanceReport`, **trading** performance (win/loss/R-multiple by strategy). Not wired into `core/pipeline.py`; not the same concept as `performance/` (Phase A19, system timing) or a replacement for `monitoring/performance.py`'s pre-existing, database-driven `PerformanceTracker`. |
@@ -2362,14 +2362,14 @@ implemented and enforced today (verified by the Phase 48 audit's
 circular-import check and re-verified every phase since via the CI
 import sweep):
 
-- `core/errors/` (Phase A18) imports only the standard library
+- `core_layer/errors/` (Phase A18) imports only the standard library
   (`datetime`, `typing`, `re`) — no dependency on `strategies/`,
   `signals/`, `ai/`, `decision/`, `risk/`, `telegram/`, or
-  `database/`. Every layer may import from `core/errors/` (same
-  cross-cutting status as `core/logger.py`/`core/secrets.py`), but
+  `database/`. Every layer may import from `core_layer/errors/` (same
+  cross-cutting status as `core_layer/logger/logger.py`/`core/secrets.py`), but
   none does yet in this phase — see `docs/ERROR_HANDLING.md`.
-- `performance/` (Phase A19) imports `core/errors/` (for the optional
-  `GoldBotError` integration in `timer.py`) and `core/logger.py` (for
+- `performance/` (Phase A19) imports `core_layer/errors/` (for the optional
+  `GoldBotError` integration in `timer.py`) and `core_layer/logger/logger.py` (for
   the `PERFORMANCE` log line) — both cross-cutting. No dependency on
   `context/`, `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`,
   `execution/`, `telegram/`, `database/`, `assets/`, or
@@ -2414,7 +2414,7 @@ import sweep):
   `database/`, or `telegram/`. Called by `core/pipeline.py` as a new
   stage immediately after `context`.
 - `data/api_error_classifier.py` (AC-07) imports `requests` and
-  `core.errors` (cross-cutting) only — no dependency on `context/`,
+  `core_layer.errors` (cross-cutting) only — no dependency on `context/`,
   `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`, `database/`,
   or `telegram/`. Called by `data/market_data.py`'s `get_candles()`
   inside its existing `except` block, for logging only.
@@ -2555,7 +2555,7 @@ import sweep):
   imported by `telegram/handlers.py`, `telegram/command_router.py`, or
   `telegram/commands.py`. None of the six new modules are imported by
   `core/pipeline.py`.
-- `core/system_state.py` (Phase 59.6) imports only the standard
+- `core_layer/system_state/system_state.py` (Phase 59.6) imports only the standard
   library (`dataclasses`, `datetime`, `enum`) — no dependency on any
   other package, not imported by `core/pipeline.py`.
   `database/audit_log_models.py`/`audit_log_repository.py` and
@@ -2598,31 +2598,31 @@ import sweep):
   imported by `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
   `strategies/`, `signals/`, `context/`, `ai/`, any Telegram handler,
   or `telegram/command_router.py`.
-- `core/emergency/emergency_state.py`/`circuit_breaker.py`/
+- `core_layer/emergency/emergency_state.py`/`circuit_breaker.py`/
   `maintenance.py` (Phase 59.9) import only the standard library.
-  `core/emergency/emergency_manager.py` (Phase 59.9) imports
+  `core_layer/emergency/emergency_manager.py` (Phase 59.9) imports
   `database.emergency_repository`, `database.audit_log_repository` —
   a new, one-directional `core/` → `database/` dependency, the same
   shape `configuration/runtime_feature_manager.py` already established
   for `configuration/` → `database/` (Phase 59.7); never reversed,
-  `database/` does not import `core/emergency/`.
+  `database/` does not import `core_layer/emergency/`.
   `telegram/owner/emergency_commands.py` (Phase 59.9) imports
-  `core.emergency.emergency_manager`/`emergency_state` and
+  `core_layer.emergency.emergency_manager`/`emergency_state` and
   `provider_commands.ProviderCommandResult` (same package) — not
   imported by `telegram/handlers.py`, `telegram/command_router.py`, or
   `telegram/commands.py`. None of the six new Phase 59.9 modules are
   imported by `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
   `strategies/`, `signals/`, `context/`, `ai/`, any Telegram handler,
   or `telegram/command_router.py`.
-- `core/guards/pipeline_guard.py` (Phase 60.8) imports
+- `core_layer/pipeline/pipeline_guard.py` (Phase 60.8) imports
   `configuration.runtime_feature_manager`,
-  `core.emergency.emergency_manager`/`emergency_state`, and
-  `core.logger` — no `decision/`, `risk/`, `strategies/`, `signals/`,
+  `core_layer.emergency.emergency_manager`/`emergency_state`, and
+  `core_layer.logger.logger` — no `decision/`, `risk/`, `strategies/`, `signals/`,
   `context/`, `ai/`, or `execution/` import. `core/pipeline.py` (Phase
-  60.8) is the first and only importer of `core.guards.pipeline_guard`
+  60.8) is the first and only importer of `core_layer.pipeline.pipeline_guard`
   — the first phase in this codebase where `core/pipeline.py` itself
   gained a new import beyond its original Phase A1-A19 set. Never
-  reversed: nothing in `configuration/` or `core/emergency/` imports
+  reversed: nothing in `configuration/` or `core_layer/emergency/` imports
   `core/pipeline.py` or `core/guards/`.
   `backtesting/backtest_engine.py` (Phase 60.8) gained
   `learning.trade_event_bridge`, `lifecycle.trade_state`, and

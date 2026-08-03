@@ -29,7 +29,7 @@ from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_manager import ProviderManager
 from ai.router.provider_score import score_providers
 from ai.router.routing_rules import get_candidate_providers
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from translation.language_registry import build_language_registry
 
 logger = setup_logger("AICommands")

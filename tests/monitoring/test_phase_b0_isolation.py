@@ -52,7 +52,7 @@ def test_phase_b0_files_never_import_context_or_core_pipeline():
 
 def test_resource_monitor_confined_to_stdlib_core_logger_database_and_monitoring():
     py_file = _monitoring_dir() / "resource_monitor.py"
-    allowed_prefixes = ("threading", "datetime", "typing", "core.logger", "database.monitoring_repository", "monitoring.models", "monitoring.system_monitor", "resource")
+    allowed_prefixes = ("threading", "datetime", "typing", "core_layer.logger.logger", "database.monitoring_repository", "monitoring.models", "monitoring.system_monitor", "resource")
     for name in _imported_names(py_file):
         assert name.startswith(allowed_prefixes), f"{py_file}: {name}"
 

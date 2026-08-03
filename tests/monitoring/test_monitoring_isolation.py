@@ -80,8 +80,8 @@ def test_monitoring_never_imports_strategies_or_signals_directly_in_models_or_ru
 
 
 def test_monitoring_repository_module_confined_to_database_and_stdlib():
-    """database/monitoring_repository.py imports only database/, core.logger, and stdlib -- no Trading Core, no monitoring/ (repository stays below monitoring/, never imports back up)."""
+    """database/monitoring_repository.py imports only database/, core_layer.logger.logger, and stdlib -- no Trading Core, no monitoring/ (repository stays below monitoring/, never imports back up)."""
     repo_file = pathlib.Path(__file__).resolve().parents[2] / "database" / "monitoring_repository.py"
-    allowed_prefixes = ("database", "core.logger", "datetime", "typing")
+    allowed_prefixes = ("database", "core_layer.logger.logger", "datetime", "typing")
     for name in _imported_names(repo_file):
         assert name.startswith(allowed_prefixes), f"{repo_file}: {name}"

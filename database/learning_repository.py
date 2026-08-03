@@ -14,7 +14,7 @@ from datetime import datetime
 from database.database import Database
 from database.models import init_learning_schema
 from database.learning_models import LearningRecordRow, create_learning_record_row
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("LearningRepository")
 

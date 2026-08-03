@@ -29,7 +29,7 @@ from context.market_structure import (
     classify_structure,
     most_recent_bias,
 )
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("HTFBiasEngine")
 

@@ -2,7 +2,7 @@
 
 from datetime import timedelta
 
-from core.gateway.service_breaker import ServiceCircuitBreaker, BreakerState
+from core_layer.gateway.service_breaker import ServiceCircuitBreaker, BreakerState
 
 from _gfakes import at
 

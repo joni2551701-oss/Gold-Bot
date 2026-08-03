@@ -2,11 +2,11 @@
 
 import pytest
 
-from core.gateway.service_registry import (
+from core_layer.gateway.service_registry import (
     ServiceRegistry, DuplicateServiceError, ServiceNotFoundError,
 )
-from core.gateway.service_manifest import ServiceKind
-from core.gateway.dependency_graph import DependencyError
+from core_layer.gateway.service_manifest import ServiceKind
+from core_layer.gateway.dependency_graph import DependencyError
 
 from _gfakes import manifest, echo_handler
 

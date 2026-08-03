@@ -122,7 +122,7 @@ Decision pause was required — no Constitution Article conflict.
 
 ## Dependency Compliance (one layer earlier than ever applied)
 
-`assistant/*.py` imports only its own package, `core.logger`,
+`assistant/*.py` imports only its own package, `core_layer.logger.logger`,
 `configuration.feature_flags`, and `ai.access.permissions.AIRole` (the
 one permitted `ai.*` import — an access-control type, orthogonal to
 the content chain). Nothing in `assistant/` imports `voice/`,

@@ -11,7 +11,7 @@ from datetime import datetime
 from database.database import Database
 from database.models import init_config_snapshot_schema
 from database.config_snapshot_models import ConfigSnapshotRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ConfigSnapshotRepository")
 

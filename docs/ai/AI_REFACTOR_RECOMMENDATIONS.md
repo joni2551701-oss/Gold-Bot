@@ -131,7 +131,7 @@ These map directly to `AI_GAP_ANALYSIS.md`'s High/Medium items.
    actively-extended of the two. Update its ~6 known consumers
    (`database/audit_log_models.py`, `learning/regime_memory.py`,
    `learning/pattern_detector.py`, `learning/models.py`,
-   `core/system_state.py`, `ai/context/`).
+   `core_layer/system_state/system_state.py`, `ai/context/`).
 
 3. **Delete the 4 confirmed-dead files**: `ai/trade_journal.py`
    (permanently unreachable shim), `ai/analyzer/ai_analyzer.py`,

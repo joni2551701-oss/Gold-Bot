@@ -60,7 +60,7 @@ neither required (nor received) any edit outside `ai/`:
    Dummy proves it. Actually importing the existing
    `ProviderManager`/`SessionManager`/`RuntimeManager`/etc. as
    registered components was **deliberately not done**, because those
-   modules transitively import `core.logger`, and the Director's
+   modules transitively import `core_layer.logger.logger`, and the Director's
    dependency rule forbids any Foundation→Core dependency. Doing that
    wiring will require either (a) a task scope that permits a
    Foundation→existing-`ai/` dependency, or (b) thin `AIComponent`

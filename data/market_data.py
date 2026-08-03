@@ -4,7 +4,7 @@ from datetime import timedelta
 from config import Config
 from data.twelve_data_client import TwelveDataClient, Candle
 from data.api_error_classifier import classify_api_error
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("MarketDataNormalizer")
 

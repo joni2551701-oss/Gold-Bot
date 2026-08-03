@@ -1,12 +1,12 @@
 """Tests for Gateway health, metrics, version and context (module 10)."""
 
-from core.gateway.health_service import HealthService, GatewayHealth
-from core.gateway.metrics_service import GatewayMetrics
-from core.gateway.version_service import (
+from core_layer.gateway.health_service import HealthService, GatewayHealth
+from core_layer.gateway.metrics_service import GatewayMetrics
+from core_layer.gateway.version_service import (
     VersionService, CORE_VERSION, GATEWAY_API_VERSION,
 )
-from core.gateway.gateway_context import new_context
-from core.gateway.gateway_request import GatewayResponse, GatewayStatus
+from core_layer.gateway.gateway_context import new_context
+from core_layer.gateway.gateway_request import GatewayResponse, GatewayStatus
 
 from _gfakes import at, principal
 

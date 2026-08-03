@@ -90,7 +90,7 @@ from, not this one).
 ## Dependency Compliance (Intelligence Dependency Principle)
 
 `media/*.py` today imports nothing outside `media/` and `core/`
-(`core.logger`) — zero dependency on `ai/`, `decision/`, `risk/`,
+(`core_layer.logger.logger`) — zero dependency on `ai/`, `decision/`, `risk/`,
 `execution/`, `strategies/`, `signals/`, `broadcast/`, or
 `translation/`. TASK 4 will add one new, type-only import:
 `ai.content.content_schema.ContentResult` — allowed, since `ai/content/`

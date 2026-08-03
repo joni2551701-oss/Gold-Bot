@@ -23,7 +23,7 @@ already-existing service calls only:
     database.subscription_repository.SubscriptionRepository.count_by_plan()  (new, Phase 61.5 Addendum)
     database.signal_repository.SignalRepository.count_signals_today()/get_closed_signals_today()  (new, Phase 61.5 Addendum)
     analytics.strategy_report.compute_win_rate()                           (Phase 59.4)
-    core.emergency.emergency_manager.EmergencyManager.get_status()         (Phase 59.9)
+    core_layer.emergency.emergency_manager.EmergencyManager.get_status()         (Phase 59.9)
 
 get_doctor_report() (`/doctor`) is a self-diagnostic: nine subsystem
 reachability checks, each independently wrapped so one failing check
@@ -37,9 +37,9 @@ than a fabricated ✓/✗.
 from ai.cache.response_cache import ResponseCache
 from ai.capabilities.capability import Capability
 from analytics.strategy_report import compute_win_rate
-from core.emergency.emergency_manager import EmergencyManager
-from core.emergency.emergency_state import EmergencyState
-from core.logger import setup_logger
+from core_layer.emergency.emergency_manager import EmergencyManager
+from core_layer.emergency.emergency_state import EmergencyState
+from core_layer.logger.logger import setup_logger
 from database.audit_log_repository import AuditLogRepository
 from database.learning_repository import LearningRepository
 from database.signal_repository import SignalRepository

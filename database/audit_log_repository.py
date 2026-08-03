@@ -13,7 +13,7 @@ from datetime import datetime
 from database.database import Database
 from database.models import init_audit_log_schema
 from database.audit_log_models import AuditLogEntry, create_audit_log_entry
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("AuditLogRepository")
 

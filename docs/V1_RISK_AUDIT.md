@@ -2,7 +2,7 @@
 
 Part of the Phase V1.0 GoldBot V1 Final Audit Foundation (Worker Brief,
 Director Approved). Scope: `risk/risk_manager.py` (`RiskManager.evaluate()`,
-a locked public signature) and `core/emergency/` (emergency stop / kill
+a locked public signature) and `core_layer/emergency/` (emergency stop / kill
 switch). Read-only audit — per RULE 1 (Trading Core Protection), no
 change was made to `risk/` in this phase; findings below are reported
 for the Director's review, and any fix requires a separate, explicit
@@ -58,7 +58,7 @@ section already discloses this: *"`RiskConfig`'s
 `max_daily_loss`/`max_drawdown`/`max_open_trades` fields exist but are
 not yet enforced across multiple `RiskManager.evaluate()` calls (no
 cross-cycle state is tracked today) — a named, not-yet-implemented
-future step."* `core/emergency/circuit_breaker.py`'s
+future step."* `core_layer/emergency/circuit_breaker.py`'s
 `evaluate_circuit()` is the one place drawdown logic actually exists,
 but it is explicitly documented as never called from
 `core/pipeline.py`/`risk/`/`decision/`/`execution/` in this phase — it
@@ -88,7 +88,7 @@ Audit in `docs/PHASE_V1_AUDIT.md`).
 
 ## 7. Emergency stop — CONCERN (real gap vs. documented behavior)
 
-`core/emergency/emergency_manager.py` and `core/guards/pipeline_guard.py`
+`core_layer/emergency/emergency_manager.py` and `core_layer/pipeline/pipeline_guard.py`
 are real and wired: `core/pipeline.py:226` constructs `PipelineGuard()`,
 consulted at `before_signal()`, `before_ai()`,
 `before_execution()`/Telegram delivery, and `before_database()`.
@@ -98,7 +98,7 @@ consulted at `before_signal()`, `before_ai()`,
 Switch... can halt the pipeline before `risk/` is ever reached."*
 
 **However**: `RiskManager.evaluate()` itself never imports or consults
-emergency state (no `core.emergency` import anywhere in the file), and
+emergency state (no `core_layer.emergency` import anywhere in the file), and
 `core/pipeline.py` has no guard hook around the decision/risk stages —
 only signal, AI, execution/Telegram, and database are gated. Under
 `EmergencyState.PAUSED`, `before_execution()` skips only Telegram
@@ -159,7 +159,7 @@ independently re-verified in the Trading Pipeline Audit
 observability gaps, not user-facing safety failures.
 
 Per CLAUDE.md's Trading Safety rules, `risk/risk_manager.py` and
-`core/emergency/` are locked; no fix is applied in this phase. These
+`core_layer/emergency/` are locked; no fix is applied in this phase. These
 findings are carried into `docs/PHASE_V1_FREEZE.md`'s Known Issues /
 Remaining Risks section for the Director's explicit decision on
 whether/how to address them in a future, separately-approved phase.

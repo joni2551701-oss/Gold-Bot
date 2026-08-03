@@ -66,7 +66,7 @@ class EventType(Enum):
     SNAPSHOT_CLEANUP = "SNAPSHOT.CLEANUP"
     SNAPSHOT_CORRUPTED = "SNAPSHOT.CORRUPTED"
     # GATEWAY.*  (module 10) -- canonical bus vocabulary for a future
-    # data-layer bridge that forwards core.gateway.GatewayEvent onto the bus.
+    # data-layer bridge that forwards core_layer.gateway.GatewayEvent onto the bus.
     GATEWAY_REQUEST_RECEIVED = "GATEWAY.REQUEST_RECEIVED"
     GATEWAY_AUTHENTICATED = "GATEWAY.AUTHENTICATED"
     GATEWAY_REJECTED = "GATEWAY.REJECTED"

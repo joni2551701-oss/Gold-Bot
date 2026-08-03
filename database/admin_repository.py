@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from database.database import Database
 from database.models import init_admin_schema
 from database.admin_models import AdminRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("AdminRepository")
 

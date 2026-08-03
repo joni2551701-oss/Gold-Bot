@@ -20,7 +20,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import List, Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.twelve_data_client import TwelveDataClient
 from data.memory.candle_record import CandleSource
 from data.stream.provider import PriceProvider

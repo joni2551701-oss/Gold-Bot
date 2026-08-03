@@ -97,7 +97,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("EventBus")
 
@@ -138,7 +138,7 @@ class EventBus:
     subscriber must never break the publisher or any other subscriber.
     `history()` keeps every published event in-memory for inspection/
     testing (e.g. `/runtime_events`), same convention
-    `core.emergency.emergency_manager.EmergencyManager`'s own
+    `core_layer.emergency.emergency_manager.EmergencyManager`'s own
     transition history already uses.
     """
 

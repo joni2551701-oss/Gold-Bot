@@ -13,7 +13,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict, Optional
 
 from ai.session.conversation_state import ConversationState
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("AISessionManager")
 

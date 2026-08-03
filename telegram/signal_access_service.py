@@ -22,7 +22,7 @@ from typing import Optional
 
 from telegram.subscription_service import SubscriptionService
 from telegram.permissions import is_admin
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("SignalAccessService")
 

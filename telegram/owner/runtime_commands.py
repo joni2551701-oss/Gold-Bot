@@ -45,7 +45,7 @@ from ai.runtime.runtime_manager import RuntimeManager
 from ai.runtime.runtime_profiles import RuntimeProfile
 from ai.runtime.runtime_state import RuntimeState
 from ai.runtime.self_check import CheckStatus, RuntimeSelfCheckReport, run_self_check
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from telegram.owner.owner_roles import OwnerRole
 from telegram.owner.security import log_owner_action, require_role
 

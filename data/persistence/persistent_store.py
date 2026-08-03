@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, List
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.memory.market_memory import MarketMemory
 from data.memory.candle_record import CandleSource
 from data.candle_clock import CandleClock

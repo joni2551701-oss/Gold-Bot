@@ -17,7 +17,7 @@ closing note): the interface exists, real wiring is a future,
 separately-approved phase's work.
 """
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("BroadcastCommands")
 

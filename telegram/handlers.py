@@ -200,7 +200,7 @@ from telegram.owner.runtime_commands import (
     runtime_restart,
     runtime_status,
 )
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("Handlers")
 

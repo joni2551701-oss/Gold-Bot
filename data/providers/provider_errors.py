@@ -9,7 +9,7 @@ Binance, MT5) produced it.
 MODULE REUSE NOTE (CLAUDE.md Module Reuse Principle, steps 1-3):
 1. Does a raisable provider-error hierarchy already exist for THIS
    (market-data) layer? No. data/api_error_classifier.py exists, but
-   it CONSTRUCTS a core.errors.exceptions.ExternalAPIError for logging
+   it CONSTRUCTS a core_layer.errors.exceptions.ExternalAPIError for logging
    only -- it is never itself raised and does not give providers a
    raise-able contract (see its own docstring: "this function is never
    itself raised, only constructed and logged").

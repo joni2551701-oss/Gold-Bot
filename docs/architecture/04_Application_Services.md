@@ -25,5 +25,5 @@ and every product surface. Real findings:
 | Replay Service | Real as foundation — `data/replay/` (module 8), plus `telegram/owner/replay_commands.py`. Not wired into the live pipeline. |
 | Analytics Service | Real as an internal reporting package — `analytics/` (benchmark, equity curve, execution/gap/performance/signal/strategy reports). Internal, not a customer-facing service. |
 | Portfolio Service | Partial — `ai/portfolio/` exists but is scoped inside the AI layer (feeds AI reasoning), not a standalone user-facing service. |
-| API / WebSocket Gateway | `core/gateway/` (Module 10) exists as an internal Core Gateway — single entry point into Core services (auth, rate limiting, circuit breaking, dependency graph). It is **not** a public-facing API/WebSocket server; no such server exists in the repository. |
+| API / WebSocket Gateway | `core_layer/gateway/` (Module 10) exists as an internal Core Gateway — single entry point into Core services (auth, rate limiting, circuit breaking, dependency graph). It is **not** a public-facing API/WebSocket server; no such server exists in the repository. |
 

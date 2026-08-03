@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 from database.database import Database
 from database.models import init_risk_schema
 from database.risk_decision_models import RiskDecisionEntry, create_risk_decision_entry
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("RiskDecisionRepository")
 

@@ -20,7 +20,7 @@ from typing import Optional
 
 from data.providers.registry import ProviderRegistry, build_default_registry
 from monitoring.provider_health import ProviderHealthStatus, check_registry_health
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ProviderCommands")
 

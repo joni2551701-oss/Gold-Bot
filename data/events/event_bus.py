@@ -25,7 +25,7 @@ import threading
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Union
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.events.event_model import (
     Event, EventType, EventPriority, validate_event, EventValidationError,
 )

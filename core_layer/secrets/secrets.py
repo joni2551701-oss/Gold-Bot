@@ -76,5 +76,5 @@ class Secrets:
 
     @property
     def PHONE_HASH_SALT(self) -> Optional[str]:
-        """Phase 61.4 TASK 4 -- optional pepper for core.phone_hash.hash_phone_number(); None means the built-in default pepper is used (see that module's own docstring for why a deployment should set this in production)."""
+        """Phase 61.4 TASK 4 -- optional pepper for core_layer.secrets.phone_hash.hash_phone_number(); None means the built-in default pepper is used (see that module's own docstring for why a deployment should set this in production)."""
         return self.get_optional("PHONE_HASH_SALT")

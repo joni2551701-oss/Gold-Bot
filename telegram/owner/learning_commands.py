@@ -24,7 +24,7 @@ from analytics.learning_report import build_learning_report, format_learning_rep
 from learning.models import LearningRecord
 from learning.pattern_detector import detect_patterns, filter_high_failure_patterns, filter_high_success_patterns, format_pattern_insight
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("LearningCommands")
 

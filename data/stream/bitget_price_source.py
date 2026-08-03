@@ -26,7 +26,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import List, Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.memory.candle_record import CandleSource
 from data.providers.bitget_provider import BitgetProvider
 from data.stream.provider import PriceProvider

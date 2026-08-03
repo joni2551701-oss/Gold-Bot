@@ -67,7 +67,7 @@ the entry point. No Director Decision pause was required.
 ## Constitution Compliance (checks run at close)
 
 - **Isolation** — `telegram/runtime_monitor.py` imports only
-  `core.logger`, `monitoring.system_monitor`, and stdlib.
+  `core_layer.logger.logger`, `monitoring.system_monitor`, and stdlib.
   `telegram/polling.py`'s new code imports only
   `monitoring.system_monitor.get_health` and `telegram.runtime_monitor`
   beyond what already existed. Neither imports `decision`/`risk`/

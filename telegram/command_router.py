@@ -46,7 +46,7 @@ from telegram import reply_keyboard_manager
 from telegram.permissions import PermissionLevel, get_permission_level
 from telegram.registration_service import RegistrationStep
 from translation.ui_catalog import t
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("CommandRouter")
 

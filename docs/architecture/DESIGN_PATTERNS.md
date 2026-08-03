@@ -15,7 +15,7 @@ fake-able. Examples: `RuntimeManager` (`ai/runtime/`), `PersonaManager`
 (`ai/persona/`), `BroadcastManager`/`BroadcastProviderManager`/
 `BroadcastTriggerManager` (`broadcast/`), `MediaManager` (`media/`),
 `TranslationManager` (`translation/`), `EmergencyManager`
-(`core/emergency/`).
+(`core_layer/emergency/`).
 
 ## Registry Pattern
 

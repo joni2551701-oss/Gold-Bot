@@ -72,7 +72,7 @@ as idealized.
 | Most subpackages | `dataclasses` (stdlib) | ubiquitous |
 | ai.ai_analyzer.py | context, core, signals | ai/ai_analyzer.py:1-4 |
 | ai.ai_prompt.py, ai.confidence_model.py | context, signals | ai/ai_prompt.py:2-3, ai/confidence_model.py:3-4 |
-| ai.capabilities, ai.prompts, ai.providers, ai.runtime, ai.session | core (`core.logger`) | e.g. ai/providers/openai_provider.py:30 |
+| ai.capabilities, ai.prompts, ai.providers, ai.runtime, ai.session | core (`core_layer.logger.logger`) | e.g. ai/providers/openai_provider.py:30 |
 | ai.chart_intelligence | broadcast, configuration, media | ai/chart_intelligence/content_adapter.py:34,37 |
 | ai.coaching, ai.learning, ai.portfolio, ai.research, ai.strategy, ai.trade_journal | configuration | e.g. ai/coaching/access.py:10 |
 | ai.context | context (top-level), signals | ai/context/context_adapter.py:35, ai/context/context_snapshot.py:37 |

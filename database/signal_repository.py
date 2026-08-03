@@ -3,7 +3,7 @@ from typing import List, Optional, Dict
 from datetime import datetime, timezone
 from database.database import Database
 from database.signal_record import SignalRecord
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("SignalRepository")
 

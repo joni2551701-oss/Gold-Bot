@@ -7,7 +7,7 @@ distinct from `ai.providers.provider_status.HealthStatus` (one
 provider's observed health) and `ai.providers.provider_manager.
 ProviderStatus` (one provider's owner-set intent). This enum describes
 the AI runtime as a whole, the same "process-wide state, not a single
-component's state" role `core.emergency.emergency_state.EmergencyState`
+component's state" role `core_layer.emergency.emergency_state.EmergencyState`
 plays for the emergency layer.
 
 Foundation only: nothing in `core/pipeline.py`, `decision/`, `risk/`,
@@ -63,7 +63,7 @@ def is_valid_transition(from_state: RuntimeState, to_state: RuntimeState) -> boo
 
 @dataclass(frozen=True)
 class RuntimeStateRecord:
-    """An immutable snapshot of the runtime's current state -- not a mutable holder (runtime_manager.py's RuntimeManager is the holder), same convention as core.emergency.emergency_state.EmergencyStateRecord."""
+    """An immutable snapshot of the runtime's current state -- not a mutable holder (runtime_manager.py's RuntimeManager is the holder), same convention as core_layer.emergency.emergency_state.EmergencyStateRecord."""
     state: RuntimeState
     reason: Optional[str] = None
     changed_at: Optional[datetime] = None

@@ -20,7 +20,7 @@ class UserRecord:
 
     phone_hash (Phase 61.4 TASK 4): a deterministic, salted hash of
     the user's Telegram-contact-shared phone number
-    (core.phone_hash.hash_phone_number()) -- the raw phone number is
+    (core_layer.secrets.phone_hash.hash_phone_number()) -- the raw phone number is
     never stored anywhere in this codebase. None for a user who has
     not shared their contact yet (every user before this phase, and
     any user who declines to). Used by ai/access/identity_checker.py

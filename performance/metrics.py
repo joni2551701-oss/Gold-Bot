@@ -72,7 +72,7 @@ class PerformanceMetric:
     metadata: optional extra structured context -- defaults to an
         empty dict, never None.
     error_code: optional, e.g. "STRATEGY_001" -- set when `status`
-        is "failed" and the failure was a core.errors.base.GoldBotError
+        is "failed" and the failure was a core_layer.errors.base.GoldBotError
         (see performance/timer.py's PerformanceTimer for the one
         place this gets populated automatically). None otherwise --
         never fabricated.

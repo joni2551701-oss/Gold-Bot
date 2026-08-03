@@ -111,12 +111,12 @@ later; nothing needs to be "recovered."
 
 **Log persistence**: `StandardOutput=journal` /
 `StandardError=journal` route every process's stdout/stderr (the only
-output `core/logger.py` produces today — see `logs/README.md`) into
+output `core_layer/logger/logger.py` produces today — see `logs/README.md`) into
 `journald`, which persists across reboots as long as
 `/var/log/journal/` exists (`sudo mkdir -p /var/log/journal &&
 sudo systemctl restart systemd-journald` if it doesn't already, on a
 fresh VPS). This satisfies "log persistence" without any change to
-`core/logger.py` — exactly the path `logs/README.md` already
+`core_layer/logger/logger.py` — exactly the path `logs/README.md` already
 anticipated ("wherever its host process manager already captures
 stdout"). View logs with:
 ```bash

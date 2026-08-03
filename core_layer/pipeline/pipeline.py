@@ -24,8 +24,8 @@ from telegram.signal_formatter import SignalFormatter
 from telegram.notifier import Notifier
 from database.signal_repository import SignalRepository
 from database.signal_record import SignalRecord, create_signal_record
-from core.guards.pipeline_guard import PipelineGuard
-from core.logger import setup_logger
+from core_layer.pipeline.pipeline_guard import PipelineGuard
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("TradingPipeline")
 

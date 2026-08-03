@@ -21,7 +21,7 @@ from analytics.validation_report import build_validation_report, format_validati
 from config import Config
 from signals.schema import SignalSchema
 from telegram.owner.provider_commands import ProviderCommandResult
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ValidationCommands")
 

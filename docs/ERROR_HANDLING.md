@@ -76,11 +76,11 @@ GoldBotError
  └── ExecutionError
 ```
 
-`core/errors/base.py`'s `GoldBotError` carries the standard payload
+`core_layer/errors/base.py`'s `GoldBotError` carries the standard payload
 every subclass inherits: `code`, `message`, `module`, `timestamp`
 (set automatically, UTC, at construction), `details` (optional,
 defaults to `{}`). None of the nine subclasses
-(`core/errors/exceptions.py`) overrides `__init__` or adds a field —
+(`core_layer/errors/exceptions.py`) overrides `__init__` or adds a field —
 each exists purely so `except DataError` is more precise than
 `except GoldBotError`, which is in turn more precise than
 `except Exception`.
@@ -90,7 +90,7 @@ each exists purely so `except DataError` is more precise than
 This phase's own brief lists error codes for only six of the nine
 categories (Configuration, Data, API, Database, Validation,
 Permission) despite naming all nine exception classes in the
-hierarchy. `core/errors/codes.py` adds the three missing prefixes
+hierarchy. `core_layer/errors/codes.py` adds the three missing prefixes
 (`STRATEGY_001`, `DECISION_001`, `EXECUTION_001`) so every exception
 class has at least one valid code to raise with — documented here
 rather than left as a silent gap between the hierarchy and the code
@@ -99,8 +99,8 @@ registry.
 ## Usage
 
 ```python
-from core.errors.exceptions import DataError
-from core.errors import codes
+from core_layer.errors.exceptions import DataError
+from core_layer.errors import codes
 
 raise DataError(
     code=codes.DATA_001,
@@ -139,7 +139,7 @@ Phase A foundation module has followed (`SignalSchema`,
 
 ## Logging integration
 
-Existing logging (`core/logger.py`'s `setup_logger()`) is unchanged —
+Existing logging (`core_layer/logger/logger.py`'s `setup_logger()`) is unchanged —
 this phase adds no new logging infrastructure, only a rule for how an
 error should be logged once caught:
 
@@ -196,7 +196,7 @@ here since it governs whether this hierarchy applies at all:
   `decision/`, `risk/`, `telegram/`, or the database schema.
 - Does not add monitoring, alerting, or automatic recovery — both are
   drawn in the error flow diagram above as named future stages.
-- Does not change `core/logger.py` — existing logging infrastructure
+- Does not change `core_layer/logger/logger.py` — existing logging infrastructure
   is untouched; only a *rule* for how to call it with an error is
   added.
 

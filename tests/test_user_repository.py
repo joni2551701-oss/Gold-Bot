@@ -5,7 +5,7 @@ fixture), no mocks. The raw phone number is never written by this
 repository -- only an already-computed hash.
 """
 
-from core.phone_hash import hash_phone_number
+from core_layer.secrets.phone_hash import hash_phone_number
 from database.user_repository import UserRepository
 
 

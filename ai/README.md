@@ -212,7 +212,7 @@ see `docs/AI_PRODUCT_CONTROL_LAYER.md` and
 - `audit/usage_accounting.py` — `compute_user_usage()`, a per-user
   cost/token aggregation generalizing `audit/trace.py`'s existing
   join.
-- `core/phone_hash.py` (outside `ai/`) — salted phone-number hashing;
+- `core_layer/secrets/phone_hash.py` (outside `ai/`) — salted phone-number hashing;
   the raw phone number is never stored.
 - `telegram/owner/ai_commands.py` (outside `ai/`) — `/ai_status`,
   `/ai_provider`, `/ai_disable`, `/ai_enable`, `/ai_limit`,
@@ -281,7 +281,7 @@ the existing AI Core observable, self-aware, and resilient:
 - `runtime/runtime_state.py`/`runtime_manager.py`/`runtime_events.py`
   (new) — `RuntimeManager`, a transition-validating lifecycle state
   machine (`INITIALIZING`/`READY`/`BUSY`/`DEGRADED`/`FAILED`/
-  `SHUTDOWN`), same shape as `core/emergency/emergency_manager.py`'s
+  `SHUTDOWN`), same shape as `core_layer/emergency/emergency_manager.py`'s
   `EmergencyManager`.
 - `providers/circuit_breaker.py` (new) — `ProviderCircuitBreaker`
   (`CLOSED`/`OPEN`/`HALF_OPEN`). Writes every transition into the

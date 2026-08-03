@@ -31,7 +31,7 @@ from ai.providers.provider_health import ProviderHealthTracker
 from ai.providers.provider_manager import ProviderManager
 from ai.event_bus import EventBus
 from ai.runtime.runtime_manager import RuntimeManager
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("RuntimeSelfCheck")
 

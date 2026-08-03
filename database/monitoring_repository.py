@@ -22,7 +22,7 @@ from database.monitoring_models import (
     create_error_event_entry,
     create_process_start_entry,
 )
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("MonitoringRepository")
 

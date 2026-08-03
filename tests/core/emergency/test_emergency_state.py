@@ -1,10 +1,10 @@
 """
-Phase 59.9, TASK 1 -- core/emergency/emergency_state.py tests.
+Phase 59.9, TASK 1 -- core_layer/emergency/emergency_state.py tests.
 """
 
 from datetime import datetime
 
-from core.emergency.emergency_state import (
+from core_layer.emergency.emergency_state import (
     EmergencyState,
     create_emergency_state_record,
 )

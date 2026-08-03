@@ -29,7 +29,7 @@ from uuid import uuid4
 from media.media_registry import MediaDescriptor, build_media_registry
 from media.media_types import MediaType
 from media.models import MediaAsset, MediaAssetStatus
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("MediaManager")
 

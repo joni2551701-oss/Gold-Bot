@@ -41,7 +41,7 @@ from telegram.keyboards import (
 )
 from telegram.registration_service import RegistrationService
 from translation.ui_catalog import t
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("CallbackRouter")
 

@@ -9,8 +9,8 @@ import pytest
 
 from performance.collector import PerformanceCollector
 from performance.timer import PerformanceTimer, measure_performance
-from core.errors.exceptions import StrategyError, DataError
-from core.errors import codes
+from core_layer.errors.exceptions import StrategyError, DataError
+from core_layer.errors import codes
 
 
 def test_timer_measures_a_positive_duration():

@@ -1,7 +1,7 @@
 from typing import Optional
 from dataclasses import dataclass
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from database.signal_repository import SignalRepository
 from monitoring.models import SignalHealth
 

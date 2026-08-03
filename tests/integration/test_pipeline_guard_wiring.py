@@ -15,14 +15,14 @@ docs/FEATURE_REGISTRY_SEPARATION.md). The AI-stage neutral-substitution
 mechanism (core/pipeline.py's _neutral_ai_result()) is still real,
 tested code -- exercised below via a duck-typed stub guard, since no
 real EmergencyState combination triggers before_ai() skipping alone
-(see core/guards/pipeline_guard.py's own "Design notes" for why).
+(see core_layer/pipeline/pipeline_guard.py's own "Design notes" for why).
 """
 
 from dataclasses import dataclass
 
 from core_layer.pipeline import TradingPipeline
-from core.emergency.emergency_state import EmergencyState, create_emergency_state_record
-from core.guards.pipeline_guard import GuardDecision, PipelineGuard
+from core_layer.emergency.emergency_state import EmergencyState, create_emergency_state_record
+from core_layer.pipeline.pipeline_guard import GuardDecision, PipelineGuard
 from data.market_data import MarketSnapshot
 from decision.models import DecisionAction
 

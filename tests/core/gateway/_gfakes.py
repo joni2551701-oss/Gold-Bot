@@ -2,10 +2,10 @@
 
 from datetime import datetime, timezone, timedelta
 
-from core.gateway.service_manifest import (
+from core_layer.gateway.service_manifest import (
     ServiceManifest, ServiceKind, HealthPolicy,
 )
-from core.gateway.gateway_request import GatewayRequest, Principal
+from core_layer.gateway.gateway_request import GatewayRequest, Principal
 
 
 def at(i, seconds=1):

@@ -2,7 +2,7 @@ from typing import Optional
 from dataclasses import dataclass
 from aiogram import Bot
 from core_layer.secrets import Secrets
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("TelegramBot")
 

@@ -19,7 +19,7 @@ import hashlib
 from datetime import datetime
 from typing import Optional
 
-from core.logger import setup_logger
+from core_layer.logger.logger import setup_logger
 from data.persistence.memory_codec import MemoryCodec
 from data.persistence.persistent_store import StorageBackend
 from data.persistence.integrity import check_series

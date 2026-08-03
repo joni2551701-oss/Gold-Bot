@@ -127,7 +127,7 @@ conflict.
 ## Dependency Compliance (extended this phase, documented not a violation)
 
 `voice/*.py` (excluding `adapter.py`) still imports only its own
-package plus `core.logger`/`core.secrets`/`requests` — no trading
+package plus `core_layer.logger.logger`/`core.secrets`/`requests` — no trading
 layer, no `media`/`broadcast`/`ai.conversation` import anywhere except
 `voice/adapter.py`, which now also imports `media.models`,
 `broadcast.models`, and `ai.session.conversation_state` (all
