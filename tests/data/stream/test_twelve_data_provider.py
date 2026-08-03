@@ -1,5 +1,5 @@
 """
-Unit tests for data/stream/twelve_data_provider.py (v1.1 Phase 1, module 4).
+Unit tests for data_layer/live_data/twelve_data_provider.py (v1.1 Phase 1, module 4).
 
 Exercises the adapter's conversion logic via an injected fake client (no
 network / no API key): capabilities, connect/disconnect status, latest
@@ -8,10 +8,10 @@ candle -> StreamEvent, and de-duplication.
 
 from datetime import datetime, timezone, timedelta
 
-from data.twelve_data_client import Candle
-from data.stream.twelve_data_provider import TwelveDataProvider
-from data.stream.stream_event import ProviderStatus
-from data.memory.candle_record import CandleSource
+from data_layer.providers.twelve_data_client import Candle
+from data_layer.live_data.twelve_data_provider import TwelveDataProvider
+from data_layer.live_data.stream_event import ProviderStatus
+from data_layer.market_memory.candle_record import CandleSource
 
 
 class _FakeClient:

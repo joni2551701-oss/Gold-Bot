@@ -2,9 +2,9 @@
 
 from datetime import datetime, timezone
 
-from data.bootstrap.bootstrap_state import BootstrapState, BootstrapStrategy
-from data.bootstrap.bootstrap_progress import BootstrapProgress
-from data.bootstrap.bootstrap_metrics import BootstrapMetrics
+from data_layer.historical_data.bootstrap_state import BootstrapState, BootstrapStrategy
+from data_layer.historical_data.bootstrap_progress import BootstrapProgress
+from data_layer.historical_data.bootstrap_metrics import BootstrapMetrics
 
 
 def test_states_cover_lifecycle_incl_cancelled():

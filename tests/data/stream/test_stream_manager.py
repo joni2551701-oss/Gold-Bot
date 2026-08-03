@@ -1,5 +1,5 @@
 """
-Unit tests for data/stream/stream_manager.py (v1.1 Phase 1, module 4).
+Unit tests for data_layer/live_data/stream_manager.py (v1.1 Phase 1, module 4).
 
 Covers multi-asset supervision (DD-030): add/get/assets, tick_all,
 shutdown_all, duplicate protection.
@@ -7,9 +7,9 @@ shutdown_all, duplicate protection.
 
 import pytest
 
-from data.stream.stream_manager import StreamManager
-from data.stream.price_stream import PriceStream, AlwaysOpenCalendar
-from data.stream.stream_event import StreamState, AssetClass
+from data_layer.live_data.stream_manager import StreamManager
+from data_layer.live_data.price_stream import PriceStream, AlwaysOpenCalendar
+from data_layer.live_data.stream_event import StreamState, AssetClass
 from _fakes import FakeProvider, RecordingSink, ts
 
 

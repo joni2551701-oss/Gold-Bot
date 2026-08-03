@@ -8,10 +8,10 @@ exercises the "captured from a real TwelveDataProvider output" path.
 
 from datetime import datetime, timezone
 
-from data.data_quality import assess_data_quality
-from data.market_data_snapshot import capture_market_data_snapshot
-from data.providers.twelve_data_provider import TwelveDataProvider
-from data.twelve_data_client import Candle
+from data_layer.data_validation.data_quality import assess_data_quality
+from data_layer.live_data.market_data_snapshot import capture_market_data_snapshot
+from data_layer.providers.twelve_data_provider import TwelveDataProvider
+from data_layer.providers.twelve_data_client import Candle
 
 
 def _candle(price=2000.0, ts=None):
@@ -26,7 +26,7 @@ def test_snapshot_captured_from_provider_output_records_provider_name(monkeypatc
     monkeypatch.setattr(provider.client, "fetch_candles", lambda *a, **k: [_candle()])
 
     market_candles = provider.get_candles("XAUUSD", "M15", 10)
-    # capture_market_data_snapshot() takes data.twelve_data_client.Candle,
+    # capture_market_data_snapshot() takes data_layer.providers.twelve_data_client.Candle,
     # not MarketCandle -- the two are deliberately distinct types (see
     # base_provider.py's own naming note). A real wiring step would
     # adapt one to the other; here we confirm the provider's own

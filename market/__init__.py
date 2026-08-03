@@ -10,7 +10,7 @@ upper-layer (Application Services) read-only projection — NOT a Data
 Layer member and NOT GoldBot Core. Its LEGACY status is removed: the
 Owner-approved Option 3A / L1 migration is complete. `market/` now
 depends on exactly two canonical inputs and nothing else:
-  - `data.memory.MemoryReader` (Data Layer market data — current price /
+  - `data_layer.market_memory.MemoryReader` (Data Layer market data — current price /
     candles), and
   - `context.snapshot.ContextSnapshotSchema` (GoldBot Core context —
     structure/regime/session/liquidity, read as-is, never recomputed).
@@ -18,13 +18,13 @@ depends on exactly two canonical inputs and nothing else:
 The coupling to the now-DEPRECATED `stream/` has been **completely
 removed** (zero `stream` imports): current price reads via
 `MemoryReader`; the weekend clock uses
-`data.stream.market_calendar.is_weekend`. Dependency direction is
+`data_layer.live_data.market_calendar.is_weekend`. Dependency direction is
 strictly downward (Application Services → Data Layer, → Core); nothing
 in `data/` or `context/` imports `market/`.
 
 The projection snapshot class is `MarketStateSnapshot` (a
 backward-compatible `MarketSnapshot` alias remains); the single
-canonical `MarketSnapshot` class is `data.market_data.MarketSnapshot`.
+canonical `MarketSnapshot` class is `data_layer.live_data.market_data.MarketSnapshot`.
 ═══════════════════════════════════════════════════════════════════════
 
 Architectural clarification (Owner): **MarketProjection is NOT part of
@@ -52,7 +52,7 @@ Consequences of the ruling:
 
 Note: the projection snapshot class formerly named `MarketSnapshot`
 here is now `MarketStateSnapshot` (TASK-ARCH-100 Step 8) so the single
-canonical `MarketSnapshot` is `data.market_data.MarketSnapshot`; a
+canonical `MarketSnapshot` is `data_layer.live_data.market_data.MarketSnapshot`; a
 backward-compatible `MarketSnapshot` alias is retained.
 ═══════════════════════════════════════════════════════════════════════
 
@@ -65,7 +65,7 @@ current price and aggregates them into one MarketData / MarketSnapshot /
 MarketState view for future chart/, ai/, platform/, telegram/, and
 monitoring/ consumers.
 
-    config.py -> data/providers/ (FROZEN) -> stream/ -> [context/ computes]
+    config.py -> data_layer/providers/ (FROZEN) -> stream/ -> [context/ computes]
                                                      \-> market/ (this facade) -> consumers
 
 No signal/decision/risk/execution/UI/chart logic. No .env read, no

@@ -41,19 +41,19 @@ this task's own audit:
 
 | Module | Role | Wired into live pipeline? |
 |---|---|---|
-| `data/market_data.py` (`MarketDataNormalizer`) | Fetch/validate/dedupe TwelveData candles | **Yes** — the pipeline's real data source |
-| `data/data_quality.py` | Scores fetched candles, observational only | **Yes** |
-| `data/market_data_service.py` (`MarketDataService`, TASK-DATA-001/004) | Facade unifying candles/snapshot/history; optional MarketMemory hydrate | **Yes**, but pipeline constructs it bare (no memory registry) — memory-write path dormant |
-| `data/stream/price_stream_service.py` (`PriceStreamService`, TASK-DATA-001/004) | Unified live-tick API + optional MarketMemory write via `CandleBuilder` | **No** — not imported by `core/` at all; foundation only |
-| `data/memory/` (`MarketMemory`, MA-001; `MemoryReader`, MA-002) | The Single Source of Truth for candle data | Exists, Director-accepted, **not yet the pipeline's read path** |
-| `data/candle_builder.py` | Single writer aggregating ticks into `MarketMemory` OHLC | Foundation only — no production driver ticks it |
-| `data/events/event_bus.py` | Central pub/sub (`PRICE.UPDATED`, `MARKET.*`, `STREAM.*`, ...) | Foundation only — never constructed in `core/pipeline.py` |
-| `data/providers/` | Per-vendor `MarketDataProvider` adapters (TwelveData real; MT5/Binance/Bitget/FRED stubs) | TwelveData used indirectly by historical collection, not by the live cycle |
-| `data/persistence/`, `data/snapshots/`, `data/replay/`, `data/bootstrap/` | Durable storage, snapshot lifecycle, replay, historical bootstrap | All foundation only |
-| `data/current_price_provider.py` | Phase-1/3 current-price read facade (now backed by `PriceStreamService`) | Used outside the pipeline (Telegram-facing), not by `core/pipeline.py` |
+| `data_layer/live_data/market_data.py` (`MarketDataNormalizer`) | Fetch/validate/dedupe TwelveData candles | **Yes** — the pipeline's real data source |
+| `data_layer/data_validation/data_quality.py` | Scores fetched candles, observational only | **Yes** |
+| `data_layer/live_data/market_data_service.py` (`MarketDataService`, TASK-DATA-001/004) | Facade unifying candles/snapshot/history; optional MarketMemory hydrate | **Yes**, but pipeline constructs it bare (no memory registry) — memory-write path dormant |
+| `data_layer/live_data/price_stream_service.py` (`PriceStreamService`, TASK-DATA-001/004) | Unified live-tick API + optional MarketMemory write via `CandleBuilder` | **No** — not imported by `core/` at all; foundation only |
+| `data_layer/market_memory/` (`MarketMemory`, MA-001; `MemoryReader`, MA-002) | The Single Source of Truth for candle data | Exists, Director-accepted, **not yet the pipeline's read path** |
+| `data_layer/live_data/candle_builder.py` | Single writer aggregating ticks into `MarketMemory` OHLC | Foundation only — no production driver ticks it |
+| `data_layer/event_system/event_bus.py` | Central pub/sub (`PRICE.UPDATED`, `MARKET.*`, `STREAM.*`, ...) | Foundation only — never constructed in `core/pipeline.py` |
+| `data_layer/providers/` | Per-vendor `MarketDataProvider` adapters (TwelveData real; MT5/Binance/Bitget/FRED stubs) | TwelveData used indirectly by historical collection, not by the live cycle |
+| `data_layer/market_memory/persistence/`, `data_layer/snapshots/`, `backtesting_layer/replay_engine/`, `data_layer/historical_data/` | Durable storage, snapshot lifecycle, replay, historical bootstrap | All foundation only |
+| `data_layer/live_data/current_price_provider.py` | Phase-1/3 current-price read facade (now backed by `PriceStreamService`) | Used outside the pipeline (Telegram-facing), not by `core/pipeline.py` |
 
-**Who writes, who reads (Golden Rule 6):** Providers (`data/providers/`,
-`data/twelve_data_client.py`) are the only writers of raw external
+**Who writes, who reads (Golden Rule 6):** Providers (`data_layer/providers/`,
+`data_layer/providers/twelve_data_client.py`) are the only writers of raw external
 data; every layer above only reads (`MarketDataNormalizer`,
 `MarketMemory`, `MemoryReader`) — verified true today, no counter-
 example found in this audit.

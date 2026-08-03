@@ -8,7 +8,7 @@ real, data-backed statistics from that classification: average range
 does NOT generate a signal and is NOT a strategy -- see
 docs/SESSION_INTELLIGENCE.md for the full contract.
 
-Distinct from data/session_filter.py's is_trading_time(): that
+Distinct from data_layer/live_data/session_filter.py's is_trading_time(): that
 function answers "is it trading time right now" (wall-clock,
 Tashkent-time, binary) for gating when the pipeline should run at
 all. This module answers "which session was THIS candle in" (any
@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Dict, List, Sequence
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 from context.liquidity import LiquiditySweepEvent
 
 
@@ -70,7 +70,7 @@ def classify_session(timestamp: datetime) -> Session:
     """
     Classifies a single timestamp by UTC hour. Naive (no tzinfo)
     datetimes are assumed already UTC, matching every other module in
-    this codebase (data.twelve_data_client.Candle.timestamp is always
+    this codebase (data_layer.providers.twelve_data_client.Candle.timestamp is always
     UTC per its own docstring) -- never raises.
     """
     hour = timestamp.astimezone(timezone.utc).hour if timestamp.tzinfo else timestamp.hour

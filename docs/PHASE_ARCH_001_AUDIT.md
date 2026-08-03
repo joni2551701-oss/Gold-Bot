@@ -49,7 +49,7 @@ No **hard** layer-crossing import violations.
 ## 3. Architecture Map (target flow — input / output / allowed / forbidden)
 
 ```
-config.py → data/providers/ → stream/ → market/ → context/ → strategies/
+config.py → data_layer/providers/ → stream/ → market/ → context/ → strategies/
 → signals/ → decision/ → risk/ → execution/ → database/ → telegram/ → ai/
 → platform/ → monitoring/
 ```
@@ -57,10 +57,10 @@ config.py → data/providers/ → stream/ → market/ → context/ → strategie
 | Layer | Input | Output | Allowed | Forbidden |
 |---|---|---|---|---|
 | `config.py` | env / `.env` (via `core/secrets`) | config values | read config, feature flags | business logic, secret logging |
-| `data/providers/` | external API | raw candles / `MarketCandle` | API adapter, normalization | structure math, strategy logic |
+| `data_layer/providers/` | external API | raw candles / `MarketCandle` | API adapter, normalization | structure math, strategy logic |
 | `stream/` | provider events | `StreamEvent`, price | real-time event flow | detectors, decisions |
 | `market/` | stream + context results | `MarketSnapshot/State/Data` (views) | **read-only façade** projections | structure math, detectors, strategy logic |
-| `context/` | candles (`data.twelve_data_client.Candle`) | `ContextSnapshot` | HH/HL/LH/LL, BOS/CHoCH, liquidity, OB, FVG, trend/bias, session, volatility, regime | signals, setups, decisions |
+| `context/` | candles (`data_layer.providers.twelve_data_client.Candle`) | `ContextSnapshot` | HH/HL/LH/LL, BOS/CHoCH, liquidity, OB, FVG, trend/bias, session, volatility, regime | signals, setups, decisions |
 | `strategies/` | `ContextSnapshot` | `SignalCandidate` (live) / `StrategyResult` (setup) | setup evaluation by **reading** context | structure math, context duplication, entering signal engine |
 | `signals/` | strategy output | user-facing signal structure | assembly / formatting / quality-grade of existing context | analysis, structure recompute, setup detection |
 | `decision/` | signal + AI input | APPROVE/REJECT/NO_TRADE | confidence blending, thresholds | risk sizing, execution |

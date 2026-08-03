@@ -45,7 +45,7 @@ def test_engine_produces_the_same_candle_type_live_data_uses():
     engine.clock.play()
     candle = engine.step()
 
-    from data.twelve_data_client import Candle
+    from data_layer.providers.twelve_data_client import Candle
     assert isinstance(candle, Candle)
 
 

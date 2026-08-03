@@ -1,12 +1,12 @@
 """
 Pre-Phase 59 Architecture Readiness Review, AC-07 -- API error
-classification tests (data/api_error_classifier.py). Extended by
+classification tests (data_layer/providers/api_error_classifier.py). Extended by
 Phase 59.1 TASK 5 (classify_empty_response(), API_003 heuristic).
 """
 
 import requests
 
-from data.api_error_classifier import classify_api_error, classify_empty_response
+from data_layer.providers.api_error_classifier import classify_api_error, classify_empty_response
 from core_layer.errors.exceptions import ExternalAPIError
 from core_layer.errors import codes
 

@@ -4,7 +4,7 @@ Phase 59.4, TASK 2 -- lifecycle/paper_trade_monitor.py tests.
 
 from datetime import datetime, timezone
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 from lifecycle.paper_trade import create_paper_trade, open_paper_trade
 from lifecycle.paper_trade_monitor import check_paper_trade_against_candles
 from lifecycle.trade_state import TradeState

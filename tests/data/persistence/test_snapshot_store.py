@@ -1,7 +1,7 @@
-"""Unit tests for data/persistence/snapshot_store.py (DD-067/068/070)."""
+"""Unit tests for data_layer/market_memory/persistence/snapshot_store.py (DD-067/068/070)."""
 
-from data.persistence.persistent_store import InMemoryStorageBackend
-from data.persistence.snapshot_store import SnapshotStore
+from data_layer.market_memory.persistence.persistent_store import InMemoryStorageBackend
+from data_layer.market_memory.persistence.snapshot_store import SnapshotStore
 from _pfakes import memory_with, ts
 
 

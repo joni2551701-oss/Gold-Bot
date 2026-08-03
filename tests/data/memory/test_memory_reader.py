@@ -1,5 +1,5 @@
 """
-Unit tests for data/memory/memory_reader.py (MarketMemory Core, module 2).
+Unit tests for data_layer/market_memory/memory_reader.py (MarketMemory Core, module 2).
 
 Covers the DD-031 read facade over a MarketMemoryRegistry: discovery,
 candle reads (copy-on-read), revision/mode/health, read-only guarantee,
@@ -10,9 +10,9 @@ from datetime import datetime, timezone, timedelta
 
 import pytest
 
-from data.memory.market_memory_registry import MarketMemoryRegistry
-from data.memory.memory_reader import MemoryReader
-from data.memory.candle_record import MemoryMode, CandleStatus
+from data_layer.market_memory.market_memory_registry import MarketMemoryRegistry
+from data_layer.market_memory.memory_reader import MemoryReader
+from data_layer.market_memory.candle_record import MemoryMode, CandleStatus
 
 
 def _ts(i):

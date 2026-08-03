@@ -24,10 +24,10 @@ this into a trade -- and this phase does not wire that connection.
 ## Where this sits
 
 ```
-FRED (data/providers/fred_provider.py)         -- still an honest, inert stub
+FRED (data_layer/providers/fred_provider.py)         -- still an honest, inert stub
       |  collect_snapshot() (TASK 3, this phase)
       v
-FundamentalSnapshot (data/providers/fundamental_base.py)   -- unchanged, provider-layer bundle
+FundamentalSnapshot (data_layer/providers/fundamental_base.py)   -- unchanged, provider-layer bundle
       |
       v  (caller-classified per-indicator biases, not computed here -- see TASK 5)
 context.fundamental_scoring.compute_fundamental_score()    -- TASK 5, this phase
@@ -52,9 +52,9 @@ ai.prompts.prompt_manager.PromptManager.get_fundamental_analysis_prompt()  -- TA
 
 Read `context/fundamental_context.py` (Phase 59.3, TASK 6 --
 `FundamentalContextSnapshot`/`compute_fundamental_context()`, already
-a real Context-layer adapter), `data/providers/fundamental_base.py`
+a real Context-layer adapter), `data_layer/providers/fundamental_base.py`
 (Phase 59.2, TASK 4 -- `FundamentalDataPoint`/`FundamentalSnapshot`/
-`FundamentalDataProvider`), and `data/providers/fred_provider.py`
+`FundamentalDataProvider`), and `data_layer/providers/fred_provider.py`
 (Phase 59.2, TASK 4 -- `FredProvider`, an honest, inert stub: every
 fetch method raises `NotImplementedError`). No Gemini fundamental
 engine, no news module, and no economic-calendar provider exist
@@ -102,7 +102,7 @@ An extension of the existing `FredProvider` class (Module Reuse
 Principle: extend, not a new collector module), not a new file. Calls
 `get_interest_rate()`/`get_inflation_data()`/`get_macro_indicator(SERIES_DOLLAR_INDEX)`
 and bundles whichever succeed into one
-`data.providers.fundamental_base.FundamentalSnapshot`, keyed by
+`data_layer.providers.fundamental_base.FundamentalSnapshot`, keyed by
 logical name (`"interest_rate"`/`"inflation"`/`"dollar_index"`),
 catching each `NotImplementedError` individually. Today every call
 still raises (`FredProvider` remains a foundation-only stub -- no real
@@ -215,11 +215,11 @@ precedent).
 and `context.context_orchestrator.ContextSnapshot` (both
 `TYPE_CHECKING`-only, same-layer sibling imports, no cycle --
 `context_orchestrator.py` does not import `fundamental_context.py`)
-plus `data.providers.fundamental_base.FundamentalDataPoint`
+plus `data_layer.providers.fundamental_base.FundamentalDataPoint`
 (`TYPE_CHECKING`-only, unchanged from Phase 59.3).
 `context/fundamental_scoring.py` and `context/economic_events.py`
-import nothing beyond stdlib. `data/providers/fred_provider.py`
-gained one new import, `data.providers.fundamental_base.FundamentalSnapshot`
+import nothing beyond stdlib. `data_layer/providers/fred_provider.py`
+gained one new import, `data_layer.providers.fundamental_base.FundamentalSnapshot`
 (already a sibling import in that package). `ai/prompts/prompt_manager.py`
 gained one new `TYPE_CHECKING`-only import,
 `context.fundamental_context.FundamentalContextSnapshot`.

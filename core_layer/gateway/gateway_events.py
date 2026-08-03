@@ -3,10 +3,10 @@ Gateway events (v1.1 Phase 1, module 10).
 
 The Gateway announces what it does through a sink of small, self-describing
 GatewayEvent values. The sink is injected (default: none), so the Gateway
-never imports the Event Bus (`data/events`) directly -- that would invert
+never imports the Event Bus (`data_layer/event_system`) directly -- that would invert
 the dependency, since `core/` is imported by `data/`, not the reverse. A
 future data-layer bridge maps these onto the bus's canonical `GATEWAY.*`
-`EventType`s (already reserved in `data/events/event_model.py`), exactly as
+`EventType`s (already reserved in `data_layer/event_system/event_model.py`), exactly as
 network transport is deferred: the Gateway stays infrastructure-independent.
 
 Imports only the stdlib.

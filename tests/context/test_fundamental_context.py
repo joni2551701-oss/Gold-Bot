@@ -15,7 +15,7 @@ from context.fundamental_context import (
 )
 from context.fundamental_scoring import compute_fundamental_score
 from context.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
-from data.providers.fundamental_base import FundamentalDataPoint
+from data_layer.providers.fundamental_base import FundamentalDataPoint
 
 
 def _empty_context(**overrides) -> ContextSnapshot:

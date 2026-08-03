@@ -28,7 +28,7 @@ def test_secrets_get_returns_default_when_missing_and_default_given(monkeypatch)
 def test_twelve_data_client_handles_missing_api_key_gracefully(monkeypatch):
     """Construction must never raise; fetch_candles() reports the failure per-call instead."""
     monkeypatch.delenv("TWELVE_DATA_API_KEY", raising=False)
-    from data.twelve_data_client import TwelveDataClient
+    from data_layer.providers.twelve_data_client import TwelveDataClient
 
     client = TwelveDataClient()
     assert client.api_key is None
@@ -40,7 +40,7 @@ def test_twelve_data_client_handles_missing_api_key_gracefully(monkeypatch):
 def test_market_data_normalizer_returns_empty_list_when_api_key_missing(monkeypatch):
     """The layer TradingPipeline actually calls must degrade to [] candles, never raise."""
     monkeypatch.delenv("TWELVE_DATA_API_KEY", raising=False)
-    from data.market_data import MarketDataNormalizer
+    from data_layer.live_data.market_data import MarketDataNormalizer
 
     candles = MarketDataNormalizer().get_candles("XAUUSD", "M15", 200)
     assert candles == []

@@ -16,7 +16,7 @@ inside `core_layer/gateway/` (internal-only, Section 6) and `core/secrets.py`.
 Monitoring is real and substantial (`monitoring/` — system, market,
 error, resource, provider-health, risk, signal, performance monitors).
 Logging exists throughout (`core_layer/logger/logger.py`, used everywhere). Storage
-is `database/` (SQLite, Constitution Article 4) plus `data/persistence/`
+is `database/` (SQLite, Constitution Article 4) plus `data_layer/market_memory/persistence/`
 (foundation only). Scheduler is the GitHub Actions workflow
 (`trading_bot.yml`) that runs the pipeline every 5 minutes — not an
 in-process scheduler. Queue System, dedicated Cache (beyond

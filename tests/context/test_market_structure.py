@@ -8,7 +8,7 @@ and most_recent_bias (trend/bias). Also covers empty and invalid input.
 
 from datetime import datetime, timedelta, timezone
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 from context.market_structure import (
     SwingPoint,

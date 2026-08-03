@@ -7,11 +7,11 @@ into real MarketMemory, single-writer, with candles readable via
 MemoryReader.
 """
 
-from data.stream.price_stream import PriceStream, AlwaysOpenCalendar
-from data.stream.stream_event import StreamState, AssetClass
-from data.candle_builder import CandleBuilder
-from data.memory.market_memory_registry import MarketMemoryRegistry
-from data.memory.memory_reader import MemoryReader
+from data_layer.live_data.price_stream import PriceStream, AlwaysOpenCalendar
+from data_layer.live_data.stream_event import StreamState, AssetClass
+from data_layer.live_data.candle_builder import CandleBuilder
+from data_layer.market_memory.market_memory_registry import MarketMemoryRegistry
+from data_layer.market_memory.memory_reader import MemoryReader
 from _fakes import FakeProvider, event, ts
 
 

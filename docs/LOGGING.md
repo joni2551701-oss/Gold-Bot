@@ -64,10 +64,10 @@ generic/unclear names):
 main.py                              GoldBot
 core/pipeline.py                     TradingPipeline
 
-data/twelve_data_client.py           TwelveDataClient
-data/market_data.py                  MarketDataNormalizer
-data/data_cache.py                   SmartDataCache
-data/session_filter.py               SessionFilter
+data_layer/providers/twelve_data_client.py           TwelveDataClient
+data_layer/live_data/market_data.py                  MarketDataNormalizer
+data_layer/market_memory/data_cache.py                   SmartDataCache
+data_layer/live_data/session_filter.py               SessionFilter
 
 context/context_orchestrator.py      ContextEngine
 context/market_structure.py          MarketStructureEngine

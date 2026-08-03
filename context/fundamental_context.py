@@ -12,7 +12,7 @@ Architecture this closes, per this task's own brief:
      v
     AI Analyzer
 
-FRED exists (data/providers/fred_provider.py, Phase 59.2) but was
+FRED exists (data_layer/providers/fred_provider.py, Phase 59.2) but was
 never connected to Context. This module is that connection point --
 a pure, read-only adapter, same posture as context/market_phase.py's
 own compute_market_phase(): computes a classification from
@@ -29,7 +29,7 @@ context/snapshot.py already established. A future, real FredProvider
 implementation is the one that would supply real values here; this
 module does not change when that happens.
 
-NAMING NOTE -- read before using this module: data.providers.fundamental_base.FundamentalSnapshot
+NAMING NOTE -- read before using this module: data_layer.providers.fundamental_base.FundamentalSnapshot
 (Phase 59.2) already exists -- a generic Dict[str, FundamentalDataPoint]
 bundle, keyed by logical name, at the provider layer. This module's
 own FundamentalContextSnapshot is a DIFFERENT, Context-layer-shaped
@@ -63,7 +63,7 @@ from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from data.providers.fundamental_base import FundamentalDataPoint
+    from data_layer.providers.fundamental_base import FundamentalDataPoint
     from context.fundamental_scoring import FundamentalScoreResult
     from context.context_orchestrator import ContextSnapshot
 
@@ -74,7 +74,7 @@ class FundamentalContextSnapshot:
     Identity: snapshot_id (generate_fundamental_snapshot_id()), created_at.
     fed_rate/inflation: the raw value off an already-supplied
         FundamentalDataPoint (FEDFUNDS/CPIAUCSL, see
-        data/providers/fred_provider.py) -- relayed directly, never
+        data_layer/providers/fred_provider.py) -- relayed directly, never
         recomputed. None if that indicator wasn't supplied.
     dollar_strength/risk_level: always None in this phase -- an
         honest hook, same "never fabricate" convention as

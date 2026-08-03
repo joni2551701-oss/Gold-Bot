@@ -35,7 +35,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Sequence, TYPE_CHECKING
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 from context.market_structure import StructurePoint, most_recent_bias
 from context.wyckoff import WyckoffEvent, WyckoffPhase
 from context.session import classify_session, compute_session_volatility

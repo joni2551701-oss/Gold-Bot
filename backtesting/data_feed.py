@@ -13,7 +13,7 @@ already only depend on `context.context_orchestrator.ContextSnapshot`,
 never on a candle source directly -- they were already source-agnostic
 before this phase. The actual seam requiring an abstraction is one
 level up: `core/pipeline.py`'s live `market_data` stage calls
-`data.market_data.MarketDataNormalizer.get_candles(symbol, interval,
+`data_layer.live_data.market_data.MarketDataNormalizer.get_candles(symbol, interval,
 outputsize)`, while `backtesting/replay_feed.ReplayFeed.window(size)`
 (Phase 60.1) is the replayed equivalent. `IDataFeed` unifies exactly
 these two into one interface, so `backtesting/backtest_engine.py`
@@ -24,8 +24,8 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from backtesting.replay_feed import ReplayFeed
-from data.market_data import MarketDataNormalizer
-from data.twelve_data_client import Candle
+from data_layer.live_data.market_data import MarketDataNormalizer
+from data_layer.providers.twelve_data_client import Candle
 
 
 class IDataFeed(ABC):

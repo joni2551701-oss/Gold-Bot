@@ -74,7 +74,7 @@ history, not a per-request gate the request itself passes through.
   every real provider attempt, writing only into the shared
   `ProviderHealthTracker`).
 - **TASK 5** — Retry Policy: exponential backoff (`2 ** attempt`
-  seconds, the same formula `data/twelve_data_client.py` already
+  seconds, the same formula `data_layer/providers/twelve_data_client.py` already
   uses) before a same-request retry attempt, via an injectable
   `sleep_fn` so tests never block.
 - **TASK 6** — Runtime Event Completion: `PROVIDER_FAILED`'s payload

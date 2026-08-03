@@ -186,9 +186,9 @@ class Config:
 
     # Market Data Provider selection (Phase 59.1: Market Data Provider
     # Abstraction). "twelvedata" is the only implemented provider
-    # today -- data/providers/get_provider() reads this to pick which
+    # today -- data_layer/providers/get_provider() reads this to pick which
     # MarketDataProvider to construct. "mt5" is a reserved future
-    # value (data/providers/mt5_provider.py is an intentional stub,
+    # value (data_layer/providers/mt5_provider.py is an intentional stub,
     # see docs/MARKET_PROVIDER.md) -- setting MARKET_DATA_PROVIDER=mt5
     # without ENABLE_MT5=True is rejected by get_provider(), not
     # silently accepted.

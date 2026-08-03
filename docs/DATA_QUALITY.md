@@ -24,11 +24,11 @@ execution-timeframe fetch.
 TwelveData API
       |
       v
-Market Data (data/market_data.py's get_candles(),
+Market Data (data_layer/live_data/market_data.py's get_candles(),
               already fetches + silently cleans, unchanged)
       |
       v
-Data Quality (data/data_quality.py, Phase A8 -- NEW)
+Data Quality (data_layer/data_validation/data_quality.py, Phase A8 -- NEW)
       |         assess_data_quality(candles, interval)
       |         -> DataQualityResult, purely observational
       v
@@ -41,10 +41,10 @@ Context Engine (unchanged -- receives the same candles
 Quality runs on the pipeline's already-fetched candle list, not
 instead of or before `get_candles()`'s own fetch/clean step. This is
 a deliberate scope boundary, not an oversight: no new data provider,
-and `data/market_data.py`'s existing fetch/validate/clean behavior is
+and `data_layer/live_data/market_data.py`'s existing fetch/validate/clean behavior is
 completely unchanged by this phase.
 
-## Relationship to `data/market_data.py`
+## Relationship to `data_layer/live_data/market_data.py`
 
 `MarketDataNormalizer._validate_and_clean()` already silently filters
 out invalid-price, bad-OHLC, and duplicate-timestamp candles before
@@ -58,7 +58,7 @@ modify `market_data.py` at all. This mirrors the exact reasoning
 `docs/WYCKOFF.md`'s "Relationship to AMD" section already established
 for a strategy-feeding file: independently-implemented, smaller-blast-
 radius logic in a new module, over reusing/modifying an already-tested,
-production-critical file. `data/data_quality.py` therefore
+production-critical file. `data_layer/data_validation/data_quality.py` therefore
 independently implements its own OHLC/duplicate/gap checks — a small,
 deliberate, documented duplication of *intent*, not of code (see that
 module's own docstring for the same explanation).

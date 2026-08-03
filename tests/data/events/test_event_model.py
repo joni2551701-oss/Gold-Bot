@@ -1,10 +1,10 @@
-"""Unit tests for data/events/event_model.py (module 7)."""
+"""Unit tests for data_layer/event_system/event_model.py (module 7)."""
 
 from datetime import datetime
 
 import pytest
 
-from data.events.event_model import (
+from data_layer.event_system.event_model import (
     Event, EventType, EVENT_SCHEMA_VERSION,
     validate_event, EventValidationError,
 )

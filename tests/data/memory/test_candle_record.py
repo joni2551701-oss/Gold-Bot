@@ -1,17 +1,17 @@
 """
-Unit tests for data/memory/candle_record.py (MarketMemory Core, module 1).
+Unit tests for data_layer/market_memory/candle_record.py (MarketMemory Core, module 1).
 
 Covers the DD-027 extended candle model: identity, forming updates,
 close immutability, copy-on-read isolation, and reuse interop with the
-existing frozen data.twelve_data_client.Candle.
+existing frozen data_layer.providers.twelve_data_client.Candle.
 """
 
 from datetime import datetime, timezone
 
 import pytest
 
-from data.twelve_data_client import Candle
-from data.memory.candle_record import (
+from data_layer.providers.twelve_data_client import Candle
+from data_layer.market_memory.candle_record import (
     CandleRecord,
     CandleStatus,
     CandleSource,

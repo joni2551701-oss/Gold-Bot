@@ -9,7 +9,7 @@ Composes, rather than reimplements, three already-built pieces:
 
 ReplayEngine is the only piece that touches the database -- it loads
 the configured window once at construction (`RawCandle` rows,
-converted to `data.twelve_data_client.Candle` so `ReplayFeed` hands out
+converted to `data_layer.providers.twelve_data_client.Candle` so `ReplayFeed` hands out
 the exact type live data already uses) and then drives `ReplayClock`
 and `ReplayFeed` together on each `step()`. It never calls
 `strategies/`, `signals/`, `decision/`, or `risk/` -- this phase
@@ -23,7 +23,7 @@ from typing import Optional
 from backtesting.replay_clock import ReplayClock
 from backtesting.replay_feed import ReplayFeed
 from backtesting.replay_models import ReplayConfig
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 from database.raw_candle_repository import RawCandleRepository
 from database.raw_candle_models import RawCandle
 

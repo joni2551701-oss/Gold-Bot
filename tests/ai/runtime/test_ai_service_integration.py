@@ -304,7 +304,7 @@ def test_failover_publishes_retry_started_and_retry_completed():
 
 
 def test_retry_waits_via_the_injectable_sleep_fn_with_exponential_backoff():
-    """Phase 62.2 TASK 5: 2 ** attempt formula, same one data/twelve_data_client.py already uses -- reused, not reinvented."""
+    """Phase 62.2 TASK 5: 2 ** attempt formula, same one data_layer/providers/twelve_data_client.py already uses -- reused, not reinvented."""
     def _fail(prompt):
         raise ProviderTimeoutError("gemini", "timed out")
 

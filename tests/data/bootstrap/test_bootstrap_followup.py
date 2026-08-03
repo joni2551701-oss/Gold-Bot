@@ -3,10 +3,10 @@ Tests for the Module 5 follow-up: bootstrap completion barrier (DD-063)
 and lifecycle event hooks (DD-066).
 """
 
-from data.memory.market_memory import MarketMemory
-from data.bootstrap.historical_bootstrap import HistoricalBootstrap
-from data.bootstrap.bootstrap_state import BootstrapState, BootstrapStrategy
-from data.bootstrap.bootstrap_events import BootstrapEventHook
+from data_layer.market_memory.market_memory import MarketMemory
+from data_layer.historical_data.historical_bootstrap import HistoricalBootstrap
+from data_layer.historical_data.bootstrap_state import BootstrapState, BootstrapStrategy
+from data_layer.historical_data.bootstrap_events import BootstrapEventHook
 from _bfakes import FakeHistoricalProvider, candle, ts
 
 

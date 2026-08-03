@@ -74,7 +74,7 @@ See `docs/AUDIT_SYSTEM.md`/`docs/CONFIG_SNAPSHOT.md`.
 
 `sync_state` (Phase 59.5: Historical Data Collection & Validation
 Foundation, TASK 2) is one row per `(provider, symbol, timeframe)`,
-tracking `data/historical_data_collector.py`'s
+tracking `data_layer/historical_data/historical_data_collector.py`'s
 `sync_historical_candles()` own incremental watermark
 (`last_timestamp`) so a repeated sync call resumes forward instead of
 re-fetching a large window. Fully isolated, no SQL foreign key to
@@ -86,13 +86,13 @@ same idiom as `SubscriptionRepository._update()`/`create_subscription()`).
 `raw_candles`/`market_snapshots` (Phase 59.3, TASK 2: Raw Market
 Storage Foundation) are the first tables added by any Phase A/AC/
 Phase-59 module — every prior raw-market-data foundation
-(`data/market_data_snapshot.py`) deliberately stayed in-memory-only.
+(`data_layer/live_data/market_data_snapshot.py`) deliberately stayed in-memory-only.
 Both are fully isolated new tables (no relation to `signals` or any
 other existing table); see `docs/DATABASE.md`'s own entries for the
 full schema. `database/raw_candle_models.py`'s `from_market_candle()`
 (Phase 59 Real Market Validation Foundation, TASK 3) and
 `RawCandleRepository.save_market_candles()` are the bridge from the
-provider layer's own `MarketCandle` (`data/providers/`, Phase 59.1/
+provider layer's own `MarketCandle` (`data_layer/providers/`, Phase 59.1/
 59.2 — e.g. `TwelveDataProvider.get_candles()`'s real output) into a
 persisted `raw_candles` row — the first time those two pieces were
 connected. MT5 stays unconnected (`MT5Provider` remains an inert

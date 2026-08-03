@@ -10,7 +10,7 @@ layers are declared **FROZEN** as of the STEP-08 / TASK-CORE-008 commit.
 | Layer | Public contract (frozen) | Prior freeze basis |
 |---|---|---|
 | `config.py` | config values / feature flags read via `core/secrets` | — |
-| `data/providers/` | provider adapters → raw candles / `FundamentalSnapshot`; `base_provider` ABC | Phase 59.1–59.2 |
+| `data_layer/providers/` | provider adapters → raw candles / `FundamentalSnapshot`; `base_provider` ABC | Phase 59.1–59.2 |
 | `stream/` | `StreamEvent`, current price, `StreamState` (data-flow only) | — |
 | `market/` | `MarketStructureView.from_context()` + `*State` façade DTOs (read-only projection) | TASK-CORE-005 |
 | `context/` | `ContextSnapshot` (structure/liquidity/OB/FVG/trend/bias/session/volatility/regime) | TASK-CORE-006 |

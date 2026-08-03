@@ -96,7 +96,7 @@ remains one-directional, never reversed (re-confirmed by reading the
 importing side of each):
 
 - `data/` → `database/` (Phase 59.5: historical collector persists what it fetches)
-- `monitoring/` → `data/providers/` (Phase 59.2: provider health reads the registry)
+- `monitoring/` → `data_layer/providers/` (Phase 59.2: provider health reads the registry)
 - `configuration/` → `database/` (Phase 59.7: `RuntimeFeatureManager` persists toggles)
 - `core_layer/emergency/` → `database/` (Phase 59.9: `EmergencyManager` persists transitions)
 - `telegram/owner/` → `configuration/`, `database/`, `core_layer/emergency/`, `core_layer.system_state.system_state` (every Owner Mode module composes lower-layer pieces, never the reverse)
@@ -175,7 +175,7 @@ Largest remaining blocks, still foundation-only or entirely missing:
 
 1. **Backtesting Engine** — history replay, tick/candle simulation,
    fill model, slippage model, spread simulation. Nothing in this
-   codebase does this yet; Phase 59.5's `data/historical_data_collector.py`/
+   codebase does this yet; Phase 59.5's `data_layer/historical_data/historical_data_collector.py`/
    `RawCandleRepository` is the dataset this phase would consume.
 2. **Fundamental Intelligence** — economic calendar, manual weekly
    plan, news result processing, FRED integration (Phase 59.2's

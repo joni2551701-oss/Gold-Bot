@@ -4,13 +4,13 @@ import copy
 
 import pytest
 
-from data.snapshots.catalog import SnapshotCatalog
-from data.snapshots.lifecycle import SnapshotLifecycle, SnapshotNotFoundError
-from data.snapshots.snapshot_io import (
+from data_layer.snapshots.catalog import SnapshotCatalog
+from data_layer.snapshots.lifecycle import SnapshotLifecycle, SnapshotNotFoundError
+from data_layer.snapshots.snapshot_io import (
     SnapshotIO, SnapshotIncompatibleError, SnapshotImportError,
     ENVELOPE_FORMAT_VERSION,
 )
-from data.snapshots.snapshot_state import SnapshotState, VerifyState
+from data_layer.snapshots.snapshot_state import SnapshotState, VerifyState
 
 from _sfakes import ts, memory_with, new_backend
 

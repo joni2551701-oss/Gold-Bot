@@ -51,7 +51,7 @@ and any feature-flag-shaped code, to reuse rather than invent:
 | `Config.TIMEZONE = timezone.utc` | `config.py` | `ApplicationSettings.timezone` is `str(Config.TIMEZONE)` (`"UTC"`), never a separately hardcoded literal. |
 | `symbol="XAUUSD", interval="M15"` | `main.py`'s `TradingPipeline(...)` | `ApplicationSettings.symbol`/`.default_timeframe` — `config.py` has no `SYMBOL`/`DEFAULT_TIMEFRAME` constant of its own, so these are the same literals `main.py` (and Phase A11/A12's `strategies/lifecycle/`/`assets/`) already use. |
 | `APP_ENV=development`, `DEBUG=False` in `.env.example`/`.env.production` | root | Confirms `.env.example`'s own comment: "Not currently read by any code path beyond `config.py` itself" — `configuration/` is the first consumer of `Config.APP_ENV` beyond `config.py`'s own definition. |
-| `Config.DB_PATH` used across `database/database.py`, `data/data_cache.py`, `scripts/health_check.py`, and most of `tests/` | multiple | Left untouched — `configuration/` never reads or writes `Config.DB_PATH`. |
+| `Config.DB_PATH` used across `database/database.py`, `data_layer/market_memory/data_cache.py`, `scripts/health_check.py`, and most of `tests/` | multiple | Left untouched — `configuration/` never reads or writes `Config.DB_PATH`. |
 | `core/secrets.py`'s `Secrets` class | `core/secrets.py` | Confirms the existing rule (`docs/SECURITY.md`) that credentials are read exclusively through `core/secrets.py` — `configuration/` never reads `TELEGRAM_BOT_TOKEN`/`TWELVE_DATA_API_KEY`/etc.; `Environment`/`ApplicationSettings` only ever touch `Config.APP_ENV`/`Config.TIMEZONE`, neither a credential. |
 
 No existing feature-flag system, `Environment`-equivalent enum, or

@@ -24,7 +24,7 @@ from context.snapshot import (
     generate_snapshot_id,
     from_context_snapshot,
 )
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 BASE = datetime(2026, 1, 1, tzinfo=timezone.utc)
 

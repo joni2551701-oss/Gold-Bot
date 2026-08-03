@@ -5,7 +5,7 @@ Phase 60.1, TASK 4 -- backtesting/replay_feed.py tests.
 from datetime import datetime, timezone
 
 from backtesting.replay_feed import ReplayFeed
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 
 def _candles(n=5):

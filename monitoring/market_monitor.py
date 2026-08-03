@@ -4,11 +4,11 @@ Alpha, TASK 3).
 
 Reuses `monitoring.provider_health.check_provider_health()` for
 latency/data-source-status -- no new provider health logic (per
-`docs/PHASE_CORE_MONITORING_AUDIT.md`). `data/providers/`'s own
+`docs/PHASE_CORE_MONITORING_AUDIT.md`). `data_layer/providers/`'s own
 `ProviderStatus` has no price or "last candle received" concept, so
 `last_price`/`last_update` are optional, caller-supplied values only
 -- this module never fabricates them (see the audit's own
-"data/providers/" section).
+"data_layer/providers/" section).
 
 Data source logic itself is never changed (this brief's own header):
 this module only reads `provider.get_market_status()` via
@@ -19,7 +19,7 @@ already does elsewhere.
 from typing import Optional
 
 from core_layer.logger.logger import setup_logger
-from data.providers.registry import ProviderRegistry, build_default_registry
+from data_layer.providers.registry import ProviderRegistry, build_default_registry
 from monitoring.models import MarketHealth
 from monitoring.provider_health import check_provider_health
 

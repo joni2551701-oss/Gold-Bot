@@ -16,8 +16,8 @@ pipeline stage as part of every pipeline.run() call in that file).
 from datetime import datetime, timedelta, timezone
 
 from context.htf_bias import compute_htf_bias, HTFBias, SUPPORTED_HTF_TIMEFRAMES
-from data.market_data import MarketSnapshot
-from data.twelve_data_client import Candle
+from data_layer.live_data.market_data import MarketSnapshot
+from data_layer.providers.twelve_data_client import Candle
 
 
 def _trending_candles(direction: str, count: int = 30):

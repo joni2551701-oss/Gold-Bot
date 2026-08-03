@@ -90,7 +90,7 @@ change.
 ### Volume hook
 
 `volume` is always `None`. This codebase has no volume data source at
-all — `data/twelve_data_client.py`'s `Candle` is OHLC-only, confirmed
+all — `data_layer/providers/twelve_data_client.py`'s `Candle` is OHLC-only, confirmed
 repeatedly since Phase A1's architecture audit. `volume` is an
 honest, named hook, never a fabricated number. Wiring in a real
 volume source is a future, separately-approved phase; only

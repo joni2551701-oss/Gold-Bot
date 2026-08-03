@@ -1,5 +1,5 @@
 """
-Unit tests for data/candle_builder.py (v1.1 Phase 1, module 3).
+Unit tests for data_layer/live_data/candle_builder.py (v1.1 Phase 1, module 3).
 
 Covers OHLC aggregation, boundary close/open, DD-045 timeframe ordering,
 DD-044 clock independence, DD-042 monotonic + replay-identical sequence,
@@ -11,9 +11,9 @@ import threading
 
 import pytest
 
-from data.candle_builder import CandleBuilder, CandleEventHook
-from data.memory.market_memory import MarketMemory
-from data.memory.candle_record import CandleStatus, CandleSource
+from data_layer.live_data.candle_builder import CandleBuilder, CandleEventHook
+from data_layer.market_memory.market_memory import MarketMemory
+from data_layer.market_memory.candle_record import CandleStatus, CandleSource
 
 
 def _dt(minute, second=0):
@@ -164,8 +164,8 @@ def test_sequence_monotonic_non_decreasing():
 
 
 def test_single_writer_with_concurrent_readers():
-    from data.memory.memory_reader import MemoryReader
-    from data.memory.market_memory_registry import MarketMemoryRegistry
+    from data_layer.market_memory.memory_reader import MemoryReader
+    from data_layer.market_memory.market_memory_registry import MarketMemoryRegistry
 
     reg = MarketMemoryRegistry()
     mem = reg.register("XAUUSD", {"M1": 2000})

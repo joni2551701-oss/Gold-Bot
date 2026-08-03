@@ -1,11 +1,11 @@
-"""Unit tests for data/stream/price_stream_service.py (TASK-DATA-001;
+"""Unit tests for data_layer/live_data/price_stream_service.py (TASK-DATA-001;
 TASK-DATA-004 MarketMemory single-writer wiring)."""
 
-from data.events.event_bus import EventBus
-from data.events.event_model import EventType
-from data.memory import MarketMemoryRegistry
-from data.stream.price_stream_service import PriceStreamService
-from data.stream.stream_event import AssetClass
+from data_layer.event_system.event_bus import EventBus
+from data_layer.event_system.event_model import EventType
+from data_layer.market_memory import MarketMemoryRegistry
+from data_layer.live_data.price_stream_service import PriceStreamService
+from data_layer.live_data.stream_event import AssetClass
 
 from _fakes import FakeProvider, event, ts
 
@@ -160,9 +160,9 @@ def test_default_no_registry_constructs_no_memory():
 def test_shared_registry_is_single_source_of_truth_for_both_services():
     """MarketDataService (hydrate) and PriceStreamService (tick) writing
     into ONE shared registry land in the same MarketMemory."""
-    from data.market_data_service import MarketDataService
-    from data.market_data import MarketSnapshot
-    from data.twelve_data_client import Candle
+    from data_layer.live_data.market_data_service import MarketDataService
+    from data_layer.live_data.market_data import MarketSnapshot
+    from data_layer.providers.twelve_data_client import Candle
     from datetime import datetime, timezone
 
     registry = MarketMemoryRegistry()

@@ -1,5 +1,5 @@
 """
-Unit tests for data/candle_clock.py (Candle Builder companion, module 3).
+Unit tests for data_layer/live_data/candle_clock.py (Candle Builder companion, module 3).
 
 Covers window alignment for all six timeframes, next-boundary, is_boundary,
 same_window, UTC enforcement, and clock independence (pure functions).
@@ -9,7 +9,7 @@ from datetime import datetime, timezone, timedelta
 
 import pytest
 
-from data.candle_clock import CandleClock, TIMEFRAME_MINUTES, TIMEFRAME_ORDER
+from data_layer.live_data.candle_clock import CandleClock, TIMEFRAME_MINUTES, TIMEFRAME_ORDER
 
 
 def _dt(y=2026, mo=7, d=24, h=0, mi=0, s=0):

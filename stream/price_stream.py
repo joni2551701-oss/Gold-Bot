@@ -17,7 +17,7 @@ mode is recorded in state and the stream simply waits. This is the
 "weekend/pause pauses the stream without breaking the system" rule.
 
 Provider integration: `poll()` is an optional convenience that pulls
-the latest candle from a data.providers ProviderManager's active
+the latest candle from a data_layer.providers ProviderManager's active
 provider (the FROZEN provider layer) and ingests it. PriceStream never
 reaches into a provider's internals, never reads a secret, and never
 reads .env — it only calls the frozen public methods. It performs NO
@@ -113,7 +113,7 @@ class PriceStream:
     def ingest_candle(self, candle, *, source: str = "provider", manual_hold: bool = False,
                       paused: bool = False, expected_symbol: Optional[str] = None,
                       now: Optional[datetime] = None) -> IngestResult:
-        """Adapt a data.providers MarketCandle to a StreamEvent, then ingest it. `source` labels the origin."""
+        """Adapt a data_layer.providers MarketCandle to a StreamEvent, then ingest it. `source` labels the origin."""
         event = StreamEvent.from_candle(candle, source=source)
         return self.ingest_event(event, manual_hold=manual_hold, paused=paused,
                                  expected_symbol=expected_symbol, now=now)

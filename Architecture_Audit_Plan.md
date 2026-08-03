@@ -1054,6 +1054,17 @@ Worker quyidagilarni **Repository Infrastructure** deb qabul qiladi va Director 
 
 Ularni ko'chirish yoki qayta tashkil qilish alohida Director qarorini talab qiladi.
 
+## WAR-009 — Stable Package Rule
+Agar mavjud package ishlayotgan bo'lsa, ichki importlari murakkab bo'lsa va testlar yashil bo'lsa — Worker migratsiya vaqtida uni ichidan bo'lmaydi. Faqat `git mv` qiladi. Ichki refactoring faqat **Phase F** da bajariladi.
+
+## WAR-010 — Natural Layer Order
+Migratsiya Layer dependency tartibida davom etadi — bu importlar va bog'liqliklarni eng kam buzadi:
+```text
+data_layer → context_layer → indicator_layer → strategy_layer → signal_layer →
+ai_layer → decision_layer → risk_layer → execution_layer → trade_monitoring_layer →
+database_layer → platform_layer → media_layer → chart_layer → backtesting_layer
+```
+
 ## WAR-007 — Escalation Rule
 Faqat quyidagilar Director Review'ga chiqadi:
 * Yangi Layer

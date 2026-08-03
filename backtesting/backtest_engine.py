@@ -95,7 +95,7 @@ from context.context_orchestrator import build_context_snapshot
 from context.htf_bias import HTFBiasResult, compute_htf_bias
 from context.market_phase import compute_market_phase
 from context.snapshot import from_context_snapshot
-from data.market_data import MarketSnapshot
+from data_layer.live_data.market_data import MarketSnapshot
 from decision.decision_engine import DecisionEngine
 from decision.models import DecisionAction
 from lifecycle.paper_trade import create_paper_trade, open_paper_trade

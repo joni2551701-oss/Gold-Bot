@@ -3,7 +3,7 @@
 import itertools
 from datetime import datetime, timezone, timedelta
 
-from data.events.event_model import Event, EventType, EventPriority
+from data_layer.event_system.event_model import Event, EventType, EventPriority
 
 _seq = itertools.count(1)
 

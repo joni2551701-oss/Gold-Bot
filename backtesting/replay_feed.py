@@ -2,8 +2,8 @@
 Backtesting Layer — Replay Feed (Phase 60.1: Historical Replay Engine
 Foundation, TASK 4).
 
-ReplayFeed hands out `data.twelve_data_client.Candle` objects -- the
-exact type `data.market_data.MarketDataNormalizer.get_candles()`
+ReplayFeed hands out `data_layer.providers.twelve_data_client.Candle` objects -- the
+exact type `data_layer.live_data.market_data.MarketDataNormalizer.get_candles()`
 already returns to the live pipeline -- one at a time, from an
 in-memory list loaded once at construction (`replay_engine.py`, TASK 5,
 owns the load). This is the reuse-audit finding this phase's brief
@@ -20,7 +20,7 @@ core/pipeline.py, strategies/, or signals/ in this phase.
 
 from typing import List, Optional
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 
 class ReplayFeed:

@@ -1,9 +1,9 @@
-"""Unit tests for data/stream/bitget_price_source.py (TASK-DATA-001)."""
+"""Unit tests for data_layer/live_data/bitget_price_source.py (TASK-DATA-001)."""
 
 import pytest
 
-from data.stream.bitget_price_source import BitgetPriceSource
-from data.stream.stream_event import ProviderStatus
+from data_layer.live_data.bitget_price_source import BitgetPriceSource
+from data_layer.live_data.stream_event import ProviderStatus
 
 
 def test_capabilities_declare_polling_and_volume_only():

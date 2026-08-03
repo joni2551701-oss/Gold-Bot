@@ -7,7 +7,7 @@ is NOT itself a strategy -- see docs/HTF_BIAS.md for the full
 contract and context/README.md for what it does not do.
 
 Reuses existing detection logic rather than duplicating it:
-- data.market_data.MarketDataNormalizer.get_snapshot() supplies the
+- data_layer.live_data.market_data.MarketDataNormalizer.get_snapshot() supplies the
   multi-timeframe candles AND the per-timeframe data-quality flags
   ("OK"/"WARNING_GAP"/"ERROR_NO_DATA") this module reads -- no new
   fetch, validation, or gap-detection logic is added here.
@@ -21,8 +21,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Sequence, Tuple
 
-from data.market_data import MarketSnapshot
-from data.twelve_data_client import Candle
+from data_layer.live_data.market_data import MarketSnapshot
+from data_layer.providers.twelve_data_client import Candle
 from context.context_config import ContextConfig
 from context.market_structure import (
     detect_swing_points,
@@ -94,7 +94,7 @@ def compute_htf_bias(
 ) -> HTFBiasResult:
     """
     Derives an overall HTF bias from a multi-timeframe MarketSnapshot
-    (data.market_data.MarketDataNormalizer.get_snapshot()).
+    (data_layer.live_data.market_data.MarketDataNormalizer.get_snapshot()).
 
     Never raises: missing/empty candle data for a timeframe is treated
     as that timeframe being UNKNOWN, not an error -- if every

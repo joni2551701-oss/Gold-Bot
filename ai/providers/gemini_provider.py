@@ -12,7 +12,7 @@ implementations this phase, per the brief's own "Boshlanish: Gemini
 Provider" scoping.
 
 Real HTTP call via `requests` (already a dependency, same library
-`data/twelve_data_client.py` uses) directly against the Gemini REST
+`data_layer/providers/twelve_data_client.py` uses) directly against the Gemini REST
 API -- no new SDK dependency added. The API key travels only in the
 `x-goog-api-key` request header, never in the URL/query string, so it
 can never appear in a logged URL (Rule 2: never logged).
@@ -56,8 +56,8 @@ _REQUEST_TIMEOUT_SECONDS = 15
 class GeminiProvider(BaseAIProvider):
     """
     `session`/`secrets` are both injectable (same convention
-    `data/providers/twelvedata_provider.py`'s `client` parameter and
-    `data/twelve_data_client.py`'s own constructor use) so a test never
+    `data_layer/providers/twelvedata_provider.py`'s `client` parameter and
+    `data_layer/providers/twelve_data_client.py`'s own constructor use) so a test never
     performs a real network call or needs a real environment variable
     set -- see `tests/ai/providers/test_gemini_provider.py`.
     """
@@ -69,7 +69,7 @@ class GeminiProvider(BaseAIProvider):
             self._api_key = self._secrets.GEMINI_API_KEY
         except Exception:
             # Missing/invalid key: fail gracefully, same posture as
-            # data/twelve_data_client.py's own __init__ -- report
+            # data_layer/providers/twelve_data_client.py's own __init__ -- report
             # unavailability per-call (health_check()/_generate()),
             # never crash at construction time.
             self._api_key = None

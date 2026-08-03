@@ -1,5 +1,5 @@
 """
-Unit tests for data/memory/market_memory_registry.py (MarketMemory Core).
+Unit tests for data_layer/market_memory/market_memory_registry.py (MarketMemory Core).
 
 Covers DD-030 multi-asset, non-singleton behavior: register/get/
 duplicate/unknown, get_or_create, default timeframe set (all six ON per
@@ -8,14 +8,14 @@ DD-026), and the build_default_registry factory.
 
 import pytest
 
-from data.memory.market_memory_registry import (
+from data_layer.market_memory.market_memory_registry import (
     MarketMemoryRegistry,
     DuplicateAssetError,
     UnknownAssetError,
     DEFAULT_TIMEFRAME_CAPACITY,
     build_default_registry,
 )
-from data.memory.candle_record import MemoryMode
+from data_layer.market_memory.candle_record import MemoryMode
 
 
 def test_default_timeframes_are_all_six_on():

@@ -9,7 +9,7 @@ OB = last bullish candle before a BSL sweep + bearish break.
 
 from datetime import datetime, timedelta, timezone
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 from context.liquidity import LiquidityType, LiquidityZone, LiquiditySweepEvent
 from context.bos import BosEvent, BosDirection

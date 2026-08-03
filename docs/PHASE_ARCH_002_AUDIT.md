@@ -14,7 +14,7 @@ document is the finer, file-granularity companion to
 **Method:**
 - Cross-layer import scan (upstream→downstream) for every boundary layer.
 - Reverse-import scan (would an upstream layer import a downstream one?).
-- Keyword scan inside `stream/` and `data/providers/` for hidden
+- Keyword scan inside `stream/` and `data_layer/providers/` for hidden
   analysis / business logic that imports wouldn't reveal.
 
 ---
@@ -24,19 +24,19 @@ document is the finer, file-granularity companion to
 | Check | Result |
 |---|---|
 | `stream/` imports business layers? | **No** — only `dataclasses`. |
-| `data/` + `data/providers/` import analysis layers (market/context/strategies/signals/decision/risk/ai)? | **No.** |
+| `data/` + `data_layer/providers/` import analysis layers (market/context/strategies/signals/decision/risk/ai)? | **No.** |
 | `market/` imports `context`/`strategies`/`signals`? | **No** — reads a passed-in context schema via `from_context()`. |
 | `strategies/` imports `decision`/`risk`/`execution`? | **No.** |
 | `signals/` imports `decision`/`risk`/`execution`? | **No.** |
 | `context/` imports `signals`/`decision`/`risk`/`execution`? | **No** — the one grep hit (`fundamental_scoring.py:27`) is a **docstring sentence**, not a Python import. |
 | Hidden analysis in `stream/`? | **No** — every keyword hit is a boundary-declaring docstring ("computes NO signal, indicator, or decision"). |
-| Hidden analysis in `data/providers/`? | **No** — `get_macro_indicator()` / `indicators` are **raw FRED fundamental data points** (rates/CPI/DXY), not technical detection. `base_provider` docstring: "A provider NEVER generates a signal / NEVER knows about a strategy / NEVER knows about a decision." |
+| Hidden analysis in `data_layer/providers/`? | **No** — `get_macro_indicator()` / `indicators` are **raw FRED fundamental data points** (rates/CPI/DXY), not technical detection. `base_provider` docstring: "A provider NEVER generates a signal / NEVER knows about a strategy / NEVER knows about a decision." |
 
 ---
 
 ## 2. Per-file Layer Contracts (Input / Output / Allowed / Forbidden / Depends on / Must not depend on)
 
-### data/providers/
+### data_layer/providers/
 - **Input:** external API responses (Twelve Data, FRED, Binance, Bitget, MT5, Keynorq).
 - **Output:** raw candles / `FundamentalSnapshot` / `FundamentalDataPoint`.
 - **Allowed:** API calls, auth, ret/err mapping (`provider_errors.py`), raw fundamental fetch.
@@ -61,11 +61,11 @@ document is the finer, file-granularity companion to
 - **Must not depend on:** context/strategies/signals internals (reads passed-in schema by public attribute).
 
 ### context/  — **FROZEN (TASK-CORE-006)**
-- **Input:** candles (`data.twelve_data_client.Candle`).
+- **Input:** candles (`data_layer.providers.twelve_data_client.Candle`).
 - **Output:** `ContextSnapshot`.
 - **Allowed:** structure, liquidity, OB, FVG, trend/bias, session, volatility, regime.
 - **Forbidden:** signal, setup, decision, risk, execution.
-- **Depends on:** `data.twelve_data_client`, `core/`.
+- **Depends on:** `data_layer.providers.twelve_data_client`, `core/`.
 - **Must not depend on:** strategies/signals/decision/risk/execution.
 
 ### strategies/
@@ -92,10 +92,10 @@ document is the finer, file-granularity companion to
 
 | File | Verdict | Note |
 |---|---|---|
-| `data/providers/base_provider.py` | Keep as-is | ABC states "never signal/strategy/decision". |
-| `data/providers/{twelve_data,binance,bitget,mt5,keynorq}_provider.py` | OK | API adapters only. |
-| `data/providers/{fred_provider,fundamental_base}.py` | OK | raw macro data, not TA. |
-| `data/providers/{provider_manager,registry,provider_errors}.py` | OK | orchestration/errors, no analysis. |
+| `data_layer/providers/base_provider.py` | Keep as-is | ABC states "never signal/strategy/decision". |
+| `data_layer/providers/{twelve_data,binance,bitget,mt5,keynorq}_provider.py` | OK | API adapters only. |
+| `data_layer/providers/{fred_provider,fundamental_base}.py` | OK | raw macro data, not TA. |
+| `data_layer/providers/{provider_manager,registry,provider_errors}.py` | OK | orchestration/errors, no analysis. |
 | `stream/*.py` (all 8) | Keep as-is | data-flow only; docstrings enforce boundary. |
 | `market/market_structure.py` | Keep as-is | `from_context()` projection, never recomputes. |
 | `market/{liquidity,regime,session,trend,volatility}_state.py` | OK | façade DTOs. |

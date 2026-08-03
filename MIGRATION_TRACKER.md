@@ -196,6 +196,35 @@ Besh yangi canonical modul Director Order No. 005 asosida qo'shildi — u aynan 
 
 Joriy holat: **`core/` yo'q. `core_layer/` — 17 modul, hujjat va kod birga.**
 
+### 3.3 data/ — to'liq ko'chirildi (Phase C, WAR-010 tartibi bo'yicha birinchi)
+
+`data/` paketi (93 `.py`, 9 quyi paket) butunlay ko'chirildi va o'chirildi.
+
+| Manba | Manzil |
+|---|---|
+| `data/providers/` + `twelve_data_client.py`, `api_error_classifier.py`, `provider_comparison.py` | `data_layer/providers/` |
+| `data/stream/` + `candle_builder.py`, `candle_clock.py`, `current_price_provider.py`, `session_filter.py`, `market_data*.py` | `data_layer/live_data/` |
+| `data/memory/` + `data_cache.py` | `data_layer/market_memory/` |
+| `data/persistence/` | `data_layer/market_memory/persistence/` |
+| `data/bootstrap/` + `historical_data_collector.py` | `data_layer/historical_data/` |
+| `data/events/` | `data_layer/event_system/` |
+| `data/data_quality.py`, `historical_validator.py` | `data_layer/data_validation/` |
+| `data/normalization/` | `data_layer/normalization/` |
+| `data/snapshots/` | `data_layer/snapshots/` |
+| `data/replay/` | `backtesting_layer/replay_engine/` |
+
+WAR-009 bo'yicha hech bir paket ichidan bo'linmadi — har biri butun holicha ko'chirildi.
+
+**Nom to'qnashuvi va yechimi.** Yetti fayl canonical skelet papkasi bilan bir xil nomda edi (`candle_builder.py` va `candle_builder/`, `event_bus.py` va `event_bus/` va h.k.) — Python bunday holatda paketni tanlaydi, fayl esa ko'rinmay qoladi. Har bir fayl o'z canonical papkasi ichiga kiritildi va paket `__init__.py` aniq eksportlar bilan qayta yozildi (`import *` emas — pyflakes uni qabul qilmaydi).
+
+**Paket `__init__.py` mazmuni saqlandi.** `data/*/__init__.py` fayllari 37–100 qatorlik haqiqiy docstring va eksportlarga ega edi; ular canonical skelet stub'ining o'rniga ko'chirildi, canonical hujjat havolasi qo'shildi.
+
+`data/README.md` va ikkita quyi README `IMPLEMENTATION.md` sifatida saqlandi.
+
+**Known Gap (Phase E):** `data/replay/` (9 fayl) va `backtesting/replay_*.py` — ikkita alohida replay implementatsiyasi mavjud. Ikkalasi ham `backtesting_layer/replay_engine/` ichida; duplicate tekshiruvi Phase E vazifasi.
+
+328 faylda importlar yangilandi.
+
 ---
 
 # Summary

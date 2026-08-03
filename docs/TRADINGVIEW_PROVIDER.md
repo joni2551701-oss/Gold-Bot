@@ -75,7 +75,7 @@ terms. Building `GoldBot` on top of one of these would mean:
 ## Recommendation
 
 **Variant A only, and not as a `MarketDataProvider`.** TradingView
-should not be built as a `data/providers/tradingview_provider.py`
+should not be built as a `data_layer/providers/tradingview_provider.py`
 implementing `MarketDataProvider` (`get_candles()`/`get_latest_price()`)
 in this codebase — there is no ToS-compliant way to source raw OHLC
 candle history from TradingView for a commercial, automated product

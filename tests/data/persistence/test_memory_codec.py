@@ -1,8 +1,8 @@
-"""Unit tests for data/persistence/memory_codec.py (module 6)."""
+"""Unit tests for data_layer/market_memory/persistence/memory_codec.py (module 6)."""
 
 import pytest
 
-from data.persistence.memory_codec import MemoryCodec, SCHEMA_VERSION
+from data_layer.market_memory.persistence.memory_codec import MemoryCodec, SCHEMA_VERSION
 from _pfakes import memory_with, ts
 
 

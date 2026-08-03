@@ -96,7 +96,7 @@ itself). Owned by `database/raw_candle_repository.py` /
 `database/raw_candle_models.py`.
 
 ### `market_snapshots` (Phase 59.3)
-The persisted counterpart to `data.market_data_snapshot.MarketDataSnapshot`
+The persisted counterpart to `data_layer.live_data.market_data_snapshot.MarketDataSnapshot`
 (Phase 59 Preparation/59.1, which stays in-memory-only itself —
 `database/market_snapshot_models.py`'s `from_market_data_snapshot()`
 is the one bridge between the two). `market_snapshot_id UNIQUE NOT
@@ -109,7 +109,7 @@ Owned by `database/market_snapshot_repository.py` /
 One row per `(provider, symbol, timeframe)` — that three-part tuple is
 `UNIQUE`, so `SyncStateRepository.update_sync_state()` upserts in
 place rather than appending a new row per sync. Tracks
-`data/historical_data_collector.py`'s `sync_historical_candles()` own
+`data_layer/historical_data/historical_data_collector.py`'s `sync_historical_candles()` own
 incremental watermark (`last_timestamp`), letting a repeated sync call
 resume forward instead of re-fetching a large window every time.
 Independent of every other table, including `raw_candles` — no

@@ -1,5 +1,5 @@
 """
-Unit tests for data/memory/timeframe_memory.py (MarketMemory Core).
+Unit tests for data_layer/market_memory/timeframe_memory.py (MarketMemory Core).
 
 Covers ring-buffer bounding, revision versioning (DD-029), forming
 lifecycle, copy-on-read isolation, hydrate, and thread-safety under
@@ -11,9 +11,9 @@ import threading
 
 import pytest
 
-from data.twelve_data_client import Candle
-from data.memory.timeframe_memory import TimeframeMemory
-from data.memory.candle_record import CandleStatus, CandleSource
+from data_layer.providers.twelve_data_client import Candle
+from data_layer.market_memory.timeframe_memory import TimeframeMemory
+from data_layer.market_memory.candle_record import CandleStatus, CandleSource
 
 
 def _ts(i):

@@ -13,7 +13,7 @@
 ## 1. Where these steps sit in the whole pipeline
 
 ```
- config → data/providers → stream → market → context → strategies → signals(STEP-08)
+ config → data_layer/providers → stream → market → context → strategies → signals(STEP-08)
                                                                         │  CanonicalSignal
                                                                         ▼
                                                             decision (STEP-09)

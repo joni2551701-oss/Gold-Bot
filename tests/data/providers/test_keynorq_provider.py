@@ -1,13 +1,13 @@
 """
 TASK-CORE-003 -- tests for the Keynorq provider stub
-(data/providers/keynorq_provider.py).
+(data_layer/providers/keynorq_provider.py).
 """
 
 import pytest
 
 from config import build_settings
-from data.providers.base_provider import MarketDataProvider, ProviderStatus
-from data.providers.keynorq_provider import KeynorqProvider
+from data_layer.providers.base_provider import MarketDataProvider, ProviderStatus
+from data_layer.providers.keynorq_provider import KeynorqProvider
 
 
 def test_is_a_market_data_provider():

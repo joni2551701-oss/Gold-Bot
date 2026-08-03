@@ -1,11 +1,11 @@
 """
-Phase 59.3, TASK 1 -- data/normalization/candle_normalizer.py tests.
+Phase 59.3, TASK 1 -- data_layer/normalization/candle_normalizer.py tests.
 """
 
 from datetime import datetime, timezone
 
-from data.normalization.candle_normalizer import normalize_candle_list, stamp_provider
-from data.providers.base_provider import MarketCandle
+from data_layer.normalization.candle_normalizer import normalize_candle_list, stamp_provider
+from data_layer.providers.base_provider import MarketCandle
 
 
 def _candle(provider=None):

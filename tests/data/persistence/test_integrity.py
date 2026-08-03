@@ -1,6 +1,6 @@
-"""Unit tests for data/persistence/integrity.py (DD-064, module 6)."""
+"""Unit tests for data_layer/market_memory/persistence/integrity.py (DD-064, module 6)."""
 
-from data.persistence.integrity import check_series, check_integrity
+from data_layer.market_memory.persistence.integrity import check_series, check_integrity
 from _pfakes import memory_with, candle
 
 

@@ -6,7 +6,7 @@ The market projection's fast "what is the latest price?" accessor. It
 does NOT keep history and does NOT compute a signal.
 
 Canonical source (Owner ruling, Option 3A): the latest price is read
-from the Data Layer's `data.memory.MemoryReader` (MA-002) — the
+from the Data Layer's `data_layer.market_memory.MemoryReader` (MA-002) — the
 canonical read surface over `MarketMemory` — NOT from the now-DEPRECATED
 `stream/`. `market/` (the Application-Services-tier Market Projection)
 consumes Data Layer output via `MemoryReader` and Core output via
@@ -43,7 +43,7 @@ class MarketPrice:
 
     @classmethod
     def from_candle_record(cls, symbol: str, record) -> Optional["MarketPrice"]:
-        """Adapt a `data.memory` CandleRecord (the shape `MemoryReader`
+        """Adapt a `data_layer.market_memory` CandleRecord (the shape `MemoryReader`
         returns) into a MarketPrice: `close` is the latest price,
         `last_update_time`/`timestamp` its time. None-safe."""
         if record is None:
@@ -55,7 +55,7 @@ class MarketPrice:
 def read_current_price(memory_reader, symbol: str,
                        timeframe: Optional[str] = None) -> Optional[MarketPrice]:
     """
-    Read `symbol`'s latest price from a `data.memory.MemoryReader` and
+    Read `symbol`'s latest price from a `data_layer.market_memory.MemoryReader` and
     return it as a MarketPrice, or None if unknown. Reads the freshest
     `get_last_candle` (forming if present, else last closed) across the
     asset's timeframes — or just `timeframe` when given. Pure read:

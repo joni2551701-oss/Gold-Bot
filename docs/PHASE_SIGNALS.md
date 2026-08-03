@@ -100,7 +100,7 @@ schema, quality, explainability) is unchanged and still green.
 
 ## 8. Upstream freeze
 
-Per the STEP-08 directive, `config`, `data/providers`, `stream`, `market`,
+Per the STEP-08 directive, `config`, `data_layer/providers`, `stream`, `market`,
 `context`, `strategies` are now formally FROZEN — see
 `docs/STEP_08_UPSTREAM_FREEZE.md`. Changing any of them requires explicit
 Director approval.

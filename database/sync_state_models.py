@@ -4,7 +4,7 @@ Data Collection & Validation Foundation, TASK 2).
 
 Tracks, per (provider, symbol, timeframe), the timestamp of the most
 recently collected candle -- so
-data/historical_data_collector.py's sync_historical_candles() can
+data_layer/historical_data/historical_data_collector.py's sync_historical_candles() can
 resume from where it left off instead of re-fetching a large window
 every call. Independent of every other table (no SQL foreign key,
 same convention as every other table pair in this schema); no relation

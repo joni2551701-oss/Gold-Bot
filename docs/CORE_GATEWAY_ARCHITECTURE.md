@@ -30,7 +30,7 @@ Decision 1). It sits at orchestration altitude, like `core/pipeline.py`,
 but is deliberately **decoupled downward**: it imports **nothing** from
 `data/`, `strategies/`, `signals/`, `decision/`, `risk/`, `execution/`,
 `ai/`, `telegram/`, or `database/`. Where it needs infrastructure that
-lives above it (the Event Bus in `data/events`, the health source in
+lives above it (the Event Bus in `data_layer/event_system`, the health source in
 `monitoring/`), it takes that dependency by **injection**, never by import
 — keeping the dependency arrow pointing the right way.
 
@@ -86,7 +86,7 @@ Each stage emits a `GatewayEvent` to an injected sink.
 
 - **Placement** (Decision 1): `core_layer/gateway/` subpackage, not a new top-level package (Constitution Art. 11).
 - **Transport** (Decision 2): in-process handlers now; HTTP / WebSocket / gRPC / IPC / remote are later, separately-authorized bindings. The Gateway is transport-independent — a `GatewayRequest` is a plain value.
-- **Events**: the Gateway emits `GatewayEvent`s to an injected sink. The canonical `GATEWAY.*` `EventType`s are reserved in `data/events/event_model.py`; a future data-layer bridge forwards `GatewayEvent → EventType.GATEWAY_*` onto the bus. This mirrors the transport deferral and preserves the layer boundary.
+- **Events**: the Gateway emits `GatewayEvent`s to an injected sink. The canonical `GATEWAY.*` `EventType`s are reserved in `data_layer/event_system/event_model.py`; a future data-layer bridge forwards `GatewayEvent → EventType.GATEWAY_*` onto the bus. This mirrors the transport deferral and preserves the layer boundary.
 
 ## 7. Hard boundary (Trading Safety)
 
@@ -103,5 +103,5 @@ pipeline; that is out of Module 10's scope.
 | Circuit breaker | `core_layer/emergency/circuit_breaker.py` is a *trading* breaker (stateless ALLOW/BLOCK) | **New** service-reliability breaker (documented) |
 | Health grading | `monitoring/health_monitor.py` grades OK/WARNING/CRITICAL | **Reused by injection** (no upward import) |
 | Registry shape | `assets/asset_registry.py`, `platforms/platform_registry.py` | **Pattern reused**, new service instance |
-| Event vocabulary | `data/events` EventBus | `GATEWAY.*` reserved additively; bridge deferred |
+| Event vocabulary | `data_layer/event_system` EventBus | `GATEWAY.*` reserved additively; bridge deferred |
 | Platform side | `platforms/*` | Client side — Gateway is the Core side; no overlap |

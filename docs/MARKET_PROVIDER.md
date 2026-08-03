@@ -48,21 +48,21 @@ Signal
 Paper Validation
 ```
 
-`data/providers/` (this phase) implements the top of this diagram —
+`data_layer/providers/` (this phase) implements the top of this diagram —
 `MarketDataProvider` (the abstract contract), `TwelveDataProvider`
 (the real, working implementation), and `MT5Provider` (an honest
 stub). **Nothing below "Market Provider Layer" in the diagram changed
-in this phase** — `MarketData` (`data/market_data.py`), `Data Quality`
-(`data/data_quality.py`), `Context`, `Strategy`, `Signal`, and Phase
+in this phase** — `MarketData` (`data_layer/live_data/market_data.py`), `Data Quality`
+(`data_layer/data_validation/data_quality.py`), `Context`, `Strategy`, `Signal`, and Phase
 59's Paper Validation foundation (`lifecycle/paper_trade.py`) are all
-untouched, and none of them imports `data/providers/` yet. The
+untouched, and none of them imports `data_layer/providers/` yet. The
 provider layer exists in parallel, ready for a future,
 separately-approved wiring step — the same "foundation, not a
 rewrite" posture every phase since A11 has used.
 
 ## A provider's contract
 
-A provider is data-only. `data/providers/base_provider.py`'s
+A provider is data-only. `data_layer/providers/base_provider.py`'s
 `MarketDataProvider` states this as a hard rule:
 
     A provider NEVER generates a signal.
@@ -97,9 +97,9 @@ fake or synthetic volume is ever fabricated. Twelve Data's
 future MT5 provider with a real tick-volume source may populate this
 field, but nothing in this codebase does today.
 
-**Naming note**: `data/twelve_data_client.py` already defines `Candle`
+**Naming note**: `data_layer/providers/twelve_data_client.py` already defines `Candle`
 (`timestamp`/`open`/`high`/`low`/`close` only — no symbol/timeframe/
-volume), the real type the entire live pipeline (`data/market_data.py`,
+volume), the real type the entire live pipeline (`data_layer/live_data/market_data.py`,
 `context/`, `strategies/`, ...) already uses, untouched by this phase.
 `MarketCandle` is a distinct, richer shape for the new provider layer
 only; `TwelveDataProvider` adapts one `Candle` into one `MarketCandle`
@@ -108,16 +108,16 @@ itself returns.
 
 ## TwelveData Implementation
 
-`data/providers/twelve_data_provider.py`'s `TwelveDataProvider` wraps
-the existing, **completely untouched** `data.twelve_data_client.TwelveDataClient`
+`data_layer/providers/twelve_data_provider.py`'s `TwelveDataProvider` wraps
+the existing, **completely untouched** `data_layer.providers.twelve_data_client.TwelveDataClient`
 — retry/backoff (3 attempts, exponential backoff on HTTP 429), symbol
 formatting, and error raising are all reused, not reimplemented.
 
 **Audit finding**: the Director's brief refers to "`data/twelve_data.py`"
-— the real file is `data/twelve_data_client.py`. The brief also asks
+— the real file is `data_layer/providers/twelve_data_client.py`. The brief also asks
 "agar ko'chirish kerak bo'lsa" (if it needs to be moved) to move it
 into the new provider package. It was **not moved**: `TwelveDataClient`
-is imported directly by `data/market_data.py` (the live pipeline's
+is imported directly by `data_layer/live_data/market_data.py` (the live pipeline's
 data source) and referenced by type in multiple existing tests —
 moving/renaming it would be a non-additive refactor, against this
 phase's own "No unnecessary refactor" rule, for no functional gain
@@ -141,7 +141,7 @@ never a live bid/ask. Returns `None` (never raises) on any failure.
 
 ## MT5 Future Integration
 
-`data/providers/mt5_provider.py`'s `MT5Provider` is a deliberate,
+`data_layer/providers/mt5_provider.py`'s `MT5Provider` is a deliberate,
 inert stub — no `MetaTrader5` package dependency, no terminal
 connection attempt, no order/execution code (execution is
 `execution/`'s job in a future, separately-approved phase — CLAUDE.md's
@@ -159,7 +159,7 @@ A real implementation would need, at minimum: the `MetaTrader5`
 Python package, a running MT5 terminal, a connection/login step, a
 symbol-mapping layer (MT5 broker symbol names vary), and its own
 error classification (a new provider-specific case in
-`data/api_error_classifier.py`, following the same pattern TASK 5
+`data_layer/providers/api_error_classifier.py`, following the same pattern TASK 5
 below established for TwelveData). None of this exists today.
 
 ## Data Source Configuration
@@ -176,7 +176,7 @@ ENABLE_MT5 = os.getenv("ENABLE_MT5", "False") == "True"
 ENABLE_TWELVEDATA = os.getenv("ENABLE_TWELVEDATA", "True") == "True"
 ```
 
-`data/providers/get_provider(name=None)` reads `Config.MARKET_DATA_PROVIDER`
+`data_layer/providers/get_provider(name=None)` reads `Config.MARKET_DATA_PROVIDER`
 when `name` is omitted, and raises `ValueError` (never silently
 substitutes a different provider) for an unknown name, or for `"mt5"`
 without `ENABLE_MT5=True`, or for `"twelvedata"` without
@@ -185,7 +185,7 @@ without `ENABLE_MT5=True`, or for `"twelvedata"` without
 ## Raw Market Snapshot (TASK 4)
 
 Bridges to Phase 59 Preparation's own foundation
-(`data/market_data_snapshot.py`'s `MarketDataSnapshot`) rather than
+(`data_layer/live_data/market_data_snapshot.py`'s `MarketDataSnapshot`) rather than
 inventing a second, competing snapshot type. Two new, optional,
 additive fields:
 
@@ -212,7 +212,7 @@ deferred, separately-approved future step.
 ## API Error Handling (TASK 5)
 
 Extends `core_layer/errors/codes.py`'s existing registry (Phase A18) and
-`data/api_error_classifier.py` (AC-07):
+`data_layer/providers/api_error_classifier.py` (AC-07):
 
 | Brief's label | Code | How it's detected |
 |---|---|---|
@@ -240,10 +240,10 @@ document is the single source of truth for the owner-only
 Twelve Data API
       |
       v
-TwelveDataClient (data/twelve_data_client.py, untouched)
+TwelveDataClient (data_layer/providers/twelve_data_client.py, untouched)
       |
       v
-TwelveDataProvider (data/providers/twelve_data_provider.py, NEW)
+TwelveDataProvider (data_layer/providers/twelve_data_provider.py, NEW)
       |  adapts Candle -> MarketCandle (symbol/timeframe/volume=None added)
       v
    [ Not wired further in this phase ]
@@ -256,7 +256,7 @@ Twelve Data API
 TwelveDataClient
       |
       v
-MarketDataNormalizer (data/market_data.py, untouched)
+MarketDataNormalizer (data_layer/live_data/market_data.py, untouched)
       |
       v
 core/pipeline.py's existing Data -> ... -> Database flow (docs/ARCHITECTURE.md)
@@ -264,8 +264,8 @@ core/pipeline.py's existing Data -> ... -> Database flow (docs/ARCHITECTURE.md)
 
 ## What this phase does NOT do
 
-- Does not change `core/pipeline.py`, `data/market_data.py`,
-  `data/twelve_data_client.py`, `context/`, `strategies/`, `signals/`
+- Does not change `core/pipeline.py`, `data_layer/live_data/market_data.py`,
+  `data_layer/providers/twelve_data_client.py`, `context/`, `strategies/`, `signals/`
   (candidate generation), `decision/decision_engine.py`,
   `risk/risk_manager.py`, `ai/`, or `execution/`.
 - Does not open a trade, dispatch a broker order, or change any risk

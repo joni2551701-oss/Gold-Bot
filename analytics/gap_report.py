@@ -13,12 +13,12 @@ example shape:
     04:30 missing
     17:45 duplicate
 
-Distinct from data/historical_validator.py (same phase, TASK 3):
+Distinct from data_layer/data_validation/historical_validator.py (same phase, TASK 3):
 that module answers "how many gap EVENTS/duplicate timestamps exist"
 (a single ValidationReport count per issue type, for a pass/fail
 audit). This module answers "which exact timestamps" -- a per-entry
 enumeration for a human reading a report, not a count for an
-automated check. Reuses data.data_quality.INTERVAL_DELTAS (the same
+automated check. Reuses data_layer.data_validation.data_quality.INTERVAL_DELTAS (the same
 public, same-package constant historical_validator.py already reuses)
 rather than a third copy of the timeframe->step mapping.
 """
@@ -27,7 +27,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Sequence, Tuple, TYPE_CHECKING
 
-from data.data_quality import INTERVAL_DELTAS
+from data_layer.data_validation.data_quality import INTERVAL_DELTAS
 
 if TYPE_CHECKING:
     from database.raw_candle_models import RawCandle

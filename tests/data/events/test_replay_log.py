@@ -1,9 +1,9 @@
-"""Unit tests for data/events/replay_log.py (amendment 5, module 7)."""
+"""Unit tests for data_layer/event_system/replay_log.py (amendment 5, module 7)."""
 
-from data.events.replay_log import (
+from data_layer.event_system.replay_log import (
     ReplayLog, RingBufferPolicy, TimeBasedPolicy,
 )
-from data.events.event_model import EventType
+from data_layer.event_system.event_model import EventType
 from _efakes import make_event, ts
 
 

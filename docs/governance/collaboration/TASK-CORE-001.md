@@ -169,7 +169,7 @@ Confluence → Decision → Signal Engine`.
 
 **Divergences (reported, per Step 7):**
 1. **Source:** the real pipeline reads from `MarketDataNormalizer`
-   (`data/market_data.py`), NOT `MarketMemory`. MarketMemory (MA-001) is
+   (`data_layer/live_data/market_data.py`), NOT `MarketMemory`. MarketMemory (MA-001) is
    built and canonical but is **not yet the pipeline's read source**
    (known gap from the Data Layer phase — TASK-ARCH-100/101).
 2. **Order:** the task diagram places `Decision → Signal Engine` (signal

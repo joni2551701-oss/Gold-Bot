@@ -1,5 +1,5 @@
 """
-Unit tests for data/memory/market_memory.py (MarketMemory Core).
+Unit tests for data_layer/market_memory/market_memory.py (MarketMemory Core).
 
 Covers per-asset timeframe ownership, LIVE/REPLAY mode (DD-033),
 independent timeframes, and health aggregation.
@@ -7,8 +7,8 @@ independent timeframes, and health aggregation.
 
 import pytest
 
-from data.memory.market_memory import MarketMemory
-from data.memory.candle_record import MemoryMode
+from data_layer.market_memory.market_memory import MarketMemory
+from data_layer.market_memory.candle_record import MemoryMode
 
 
 def _mem():

@@ -1,15 +1,15 @@
 """
 TASK-CORE-003 -- tests for the Provider Manager
-(data/providers/provider_manager.py): primary/fallback selection,
+(data_layer/providers/provider_manager.py): primary/fallback selection,
 availability, and symbol-based routing.
 """
 
 from types import SimpleNamespace
 from typing import List, Optional, Tuple
 
-from data.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
-from data.providers.provider_manager import ProviderManager
-from data.providers.registry import ProviderRegistry, build_default_registry
+from data_layer.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
+from data_layer.providers.provider_manager import ProviderManager
+from data_layer.providers.registry import ProviderRegistry, build_default_registry
 
 
 class _FakeProvider(MarketDataProvider):

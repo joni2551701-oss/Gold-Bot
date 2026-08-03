@@ -35,7 +35,7 @@ What this module does NOT do:
 - Does not persist to the database -- no new table, no migration.
   PaperTrade exists only as an in-memory record in this phase, ready
   for a future, separately-approved persistence step (same posture as
-  data/market_data_snapshot.py, this phase's TASK 1).
+  data_layer/live_data/market_data_snapshot.py, this phase's TASK 1).
 - Does not decide APPROVE/REJECT -- create_paper_trade() requires an
   already-APPROVED SignalSchema; Decision Engine is untouched.
 """

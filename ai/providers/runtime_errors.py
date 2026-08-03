@@ -19,7 +19,7 @@ module's own use (`ai/providers/gemini_provider.py`) never does.
 
 `classify_provider_exception()` maps a raw `requests` exception into
 one of these -- the same "classify at the boundary, don't leak a raw
-SDK/library exception upward" convention `data/api_error_classifier.py`
+SDK/library exception upward" convention `data_layer/providers/api_error_classifier.py`
 already established for market-data providers.
 """
 

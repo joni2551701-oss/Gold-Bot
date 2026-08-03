@@ -34,23 +34,23 @@ Context Engine
 **As implemented today**, this diagram describes two things that are
 NOT yet connected to each other:
 
-1. **The new provider layer** (`data/providers/`, Phase 59.1 + 59.2):
+1. **The new provider layer** (`data_layer/providers/`, Phase 59.1 + 59.2):
    `Provider` → `MarketDataProvider Interface` exists and is real,
    tested code (`TwelveDataProvider`, `MT5Provider`,
    `BinanceProvider`, `FredProvider`, `ProviderRegistry`).
-2. **The live pipeline** (`data/market_data.py` → `data/data_quality.py`
-   → `data/market_data_snapshot.py` → `context/`, all pre-existing or
+2. **The live pipeline** (`data_layer/live_data/market_data.py` → `data_layer/data_validation/data_quality.py`
+   → `data_layer/live_data/market_data_snapshot.py` → `context/`, all pre-existing or
    from Phase 59 Preparation) already implements
    `MarketDataNormalizer` → `Data Quality` → `Market Snapshot` →
    `Context Engine` exactly as drawn, and runs live today via
    `core/pipeline.py`.
 
 **What's missing to make this one real, connected pipeline**: nothing
-in `data/market_data.py` constructs or calls a `MarketDataProvider`
+in `data_layer/live_data/market_data.py` constructs or calls a `MarketDataProvider`
 today — `MarketDataNormalizer` still calls
-`data.twelve_data_client.TwelveDataClient` directly, exactly as it did
+`data_layer.providers.twelve_data_client.TwelveDataClient` directly, exactly as it did
 before Phase 59.1. Wiring `MarketDataNormalizer` to go through
-`data/providers/get_provider()` (or a `ProviderRegistry`) instead of
+`data_layer/providers/get_provider()` (or a `ProviderRegistry`) instead of
 constructing `TwelveDataClient` directly is a real, meaningful next
 step — explicitly **not done in this phase**, since it touches a live,
 tested file feeding the real trading pipeline, and this phase's own
@@ -61,7 +61,7 @@ rewiring without separate, explicit approval.
 ## Provider Layer detail
 
 ```
-Provider Registry (data/providers/registry.py)
+Provider Registry (data_layer/providers/registry.py)
         |
         +-- DataProvider (base_provider.py)
         |     |  get_provider_name(), get_market_status()
@@ -104,8 +104,8 @@ nothing from `FundamentalContextSnapshot` in this phase.
 
 ## What Phase 59.2/59.3 do NOT do
 
-- Does not wire `data/market_data.py`'s `MarketDataNormalizer` to use
-  `data/providers/` — the live pipeline's data path is unchanged (see
+- Does not wire `data_layer/live_data/market_data.py`'s `MarketDataNormalizer` to use
+  `data_layer/providers/` — the live pipeline's data path is unchanged (see
   "As implemented today" above).
 - Does not change `strategies/`, `signals/` (candidate generation),
   `decision/decision_engine.py`, `risk/risk_manager.py`, `ai/`,

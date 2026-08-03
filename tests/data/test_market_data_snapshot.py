@@ -1,15 +1,15 @@
 """
-Phase 59 Preparation, TASK 1 -- data/market_data_snapshot.py tests.
+Phase 59 Preparation, TASK 1 -- data_layer/live_data/market_data_snapshot.py tests.
 """
 
 from datetime import datetime, timezone
 
-from data.market_data_snapshot import (
+from data_layer.live_data.market_data_snapshot import (
     capture_market_data_snapshot,
     compute_candles_reference,
     generate_market_snapshot_id,
 )
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 
 def _candle(ts: datetime, price: float = 2000.0) -> Candle:

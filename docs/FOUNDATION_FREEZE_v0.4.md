@@ -34,7 +34,7 @@ TASK 2 dependency audit re-verified this).
 | v0.3.5 (Phases A1-A14, second pass) | HTF Bias, Decision Engine v2, Signal Quality Score, Wyckoff, Session Intelligence, Market Regime, Data Quality, Explainability, Feature Engineering, Strategy Lifecycle, Asset Intelligence, Configuration & Feature Flags, Documentation Architecture. |
 | Pre-Phase 59 Architecture Readiness Review | Market Phase classifier, Signal↔Context historical link, API error classification — closed three real gaps found in a pre-Phase-59 audit. |
 | Phase 59 (Real Market Validation Foundation) | `VALIDATION_MODE`, `MarketDataSnapshot`, `lifecycle/` (`PaperTrade`), `analytics/` (`SignalPerformance`, strategy report), failure-analysis journal. |
-| Phase 59.1 | Provider abstraction foundation (`data/providers/`), TwelveData + MT5 stub. |
+| Phase 59.1 | Provider abstraction foundation (`data_layer/providers/`), TwelveData + MT5 stub. |
 | Phase 59.2 | TradingView research, Binance/FRED provider stubs, `ProviderRegistry`, provider health monitoring. |
 | Phase 59.3 | Provider normalization, raw market storage, `telegram/owner/` foundation, `context/fundamental_context.py`. |
 | Phase 59.4 | Paper Trade Monitor wired, strategy/context performance reports, Owner Report foundation. |

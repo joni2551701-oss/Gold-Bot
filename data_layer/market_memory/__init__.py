@@ -1,13 +1,59 @@
-"""01_Data_Layer / Market_Memory — data_layer.market_memory.
-
-Foundation Freeze v1.0 — canonical architecture skeleton.
-
-Phase A creates this package as an importable mirror of the canonical
-Layer documents at the repository root. Code is migrated module by
-module in Phases B-E under Migration Isolation Rule (MIR-001); until a
-module is migrated, its behaviour still comes from the pre-freeze
-top-level packages, which keep working during migration per Import
-Compatibility Rule (ICR-001).
-
-Canonical documentation: 01_Data_Layer/Market_Memory/README.md
 """
+data_layer.market_memory -- GoldBot v1.1 Market Data Foundation: Multi-Timeframe
+Memory Engine (MarketMemory Core, Phase 1 module 1).
+
+The in-RAM, thread-safe store of market candles that every higher layer
+reads through (Memory-First). This package holds ONLY the memory core:
+
+- candle_record.py         -- CandleRecord model + status/source/mode enums
+- timeframe_memory.py      -- per-timeframe thread-safe ring buffer + revision
+- market_memory.py         -- per-asset multi-timeframe container (LIVE/REPLAY)
+- market_memory_registry.py-- asset -> MarketMemory (no singleton, multi-asset)
+
+Deliberately NOT here yet (later Phase 1 modules, per
+docs/architecture/MARKET_DATA_FOUNDATION.md §25): the MemoryReader
+facade, CandleBuilder, PriceStream, the event bus, snapshot serialization,
+and the Central Data Manager.
+
+Reuse (Constitution Art. 11): the OHLC+timestamp core reuses the existing
+frozen `data_layer.providers.twelve_data_client.Candle` (via CandleRecord.to_candle()),
+so the rest of `data/` keeps consuming `List[Candle]` unchanged.
+
+This package never imports from telegram/, ai/, decision/, risk/,
+strategies/, signals/, context/, or database/ -- it is the bottom of the
+data layer.
+"""
+
+from data_layer.market_memory.candle_record import (
+    CandleRecord,
+    CandleStatus,
+    CandleSource,
+    MemoryMode,
+)
+from data_layer.market_memory.timeframe_memory import TimeframeMemory
+from data_layer.market_memory.market_memory import MarketMemory
+from data_layer.market_memory.memory_reader import MemoryReader
+from data_layer.market_memory.market_memory_registry import (
+    MarketMemoryRegistry,
+    DuplicateAssetError,
+    UnknownAssetError,
+    DEFAULT_TIMEFRAME_CAPACITY,
+    build_default_registry,
+)
+
+__all__ = [
+    "CandleRecord",
+    "CandleStatus",
+    "CandleSource",
+    "MemoryMode",
+    "TimeframeMemory",
+    "MarketMemory",
+    "MemoryReader",
+    "MarketMemoryRegistry",
+    "DuplicateAssetError",
+    "UnknownAssetError",
+    "DEFAULT_TIMEFRAME_CAPACITY",
+    "build_default_registry",
+]
+
+# Canonical documentation: 01_Data_Layer/Market_Memory/README.md

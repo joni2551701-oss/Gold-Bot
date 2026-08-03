@@ -89,7 +89,7 @@ run is coming from these two calls, not from GoldBot's own logic.
 **#3 — No duplicate API calls found within a single pipeline cycle.**
 `TradingPipeline.run()` calls `get_candles()` exactly once per run
 (single symbol, single interval) — there is no redundant/duplicate
-fetch to eliminate today. `data/data_cache.py`'s `SmartDataCache`
+fetch to eliminate today. `data_layer/market_memory/data_cache.py`'s `SmartDataCache`
 (built, unused — flagged in the Phase 48 audit) exists to avoid
 redundant fetches *across* separate 5-minute cron invocations, not
 *within* one — its value is real but doesn't apply to the "duplicate
@@ -241,7 +241,7 @@ line is this phase's actual measured/observed shape.)
 2. **Wire `SmartDataCache` in if `TradingPipeline` ever fetches more
    than one symbol/interval per cycle.** Today there's exactly one
    `get_candles()` call per run, so there's nothing to cache within a
-   cycle; the moment that changes, `data/data_cache.py` is
+   cycle; the moment that changes, `data_layer/market_memory/data_cache.py` is
    ready-built for it.
 3. **Revisit `get_all_users()`/`get_all_subscriptions()`/
    `get_all_admins()` pagination** if any of those tables cross

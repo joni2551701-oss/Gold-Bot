@@ -144,7 +144,7 @@ def mock_pipeline():
     `ai_results` is a same-length list[AIAnalysisResult].
     """
     from core_layer.pipeline import TradingPipeline
-    from data.market_data import MarketSnapshot
+    from data_layer.live_data.market_data import MarketSnapshot
 
     def _make(candidates, ai_results):
         pipeline = TradingPipeline(

@@ -89,7 +89,7 @@ negligible (<100ms).
 No live TwelveData API key or network egress is available in this
 sandbox, so an actual provider round-trip time could not be measured
 directly. From the Trading Pipeline Audit (`docs/PHASE_V1_AUDIT.md`,
-TASK 2): `data/twelve_data_client.py:88` sets an explicit
+TASK 2): `data_layer/providers/twelve_data_client.py:88` sets an explicit
 `timeout=10` (seconds) on every HTTP call, which also bounds the HTF
 Bias fetch path. A production cycle makes up to 4 candle-history
 requests (Daily/H4/H1/M15) plus the HTF bias fetch; each is

@@ -9,7 +9,7 @@ MarketSnapshot view by READING two already-built inputs:
     - a context.snapshot.ContextSnapshotSchema (the market structure
       context/ already computed -- via context.snapshot.from_context_snapshot;
       FROZEN, never recomputed or modified here), and
-    - the latest price from the Data Layer's data.memory.MemoryReader
+    - the latest price from the Data Layer's data_layer.market_memory.MemoryReader
       (or an explicit MarketPrice), plus any recent candles.
 
 Canonical dependencies (Owner ruling, TASK-ARCH-101 PART-03, Option
@@ -75,7 +75,7 @@ class MarketManager:
         Project a MarketData from an already-built ContextSnapshotSchema.
         symbol/timeframe default to the schema's own values. The latest
         price is taken from `current_price` if given, else read from a
-        `memory_reader` (data.memory.MemoryReader) by symbol. Every state
+        `memory_reader` (data_layer.market_memory.MemoryReader) by symbol. Every state
         field is a READ-ONLY projection. Never raises.
         """
         sym = symbol or getattr(context_schema, "symbol", None) or "UNKNOWN"

@@ -19,7 +19,7 @@ store.
 from typing import Optional
 
 from analytics.dataset_report import build_dataset_report, format_dataset_report
-from data.provider_comparison import compare_providers
+from data_layer.providers.provider_comparison import compare_providers
 from database.raw_candle_repository import RawCandleRepository
 from database.sync_state_repository import SyncStateRepository
 from telegram.owner.provider_commands import ProviderCommandResult
@@ -92,7 +92,7 @@ def get_sync_status(
 ) -> ProviderCommandResult:
     """
     The future `/sync_status` command's payload -- reports the current
-    incremental-sync watermark (data/historical_data_collector.py's
+    incremental-sync watermark (data_layer/historical_data/historical_data_collector.py's
     sync_historical_candles(), same phase, TASK 2) for
     (provider, symbol, timeframe). Never raises: no prior sync state
     reports that plainly, not an error.
@@ -119,7 +119,7 @@ def get_provider_compare(
 ) -> ProviderCommandResult:
     """
     The future `/provider_compare` command's payload --
-    data.provider_comparison.compare_providers() (same phase, TASK 6)
+    data_layer.providers.provider_comparison.compare_providers() (same phase, TASK 6)
     run against each provider's own stored candles for (symbol,
     timeframe). Foundation only: reports a summary, performs no
     auto-correction (see provider_comparison.py's own docstring).

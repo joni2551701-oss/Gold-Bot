@@ -23,7 +23,7 @@ from context.wyckoff import WyckoffEvent, WyckoffEventType, WyckoffPhase
 from context.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
 from context.htf_bias import HTFBias, HTFBiasResult
 from context.context_orchestrator import build_context_snapshot
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 TS = datetime(2024, 1, 1, tzinfo=timezone.utc)
 

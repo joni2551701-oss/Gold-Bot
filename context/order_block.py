@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Sequence
 from datetime import datetime
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 from context.candle import is_bullish, is_bearish
 from context.liquidity import LiquiditySweepEvent, LiquidityType
 from context.bos import BosEvent, BosDirection

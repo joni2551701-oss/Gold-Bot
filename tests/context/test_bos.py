@@ -8,7 +8,7 @@ LOWER_LOW pivot.
 
 from datetime import datetime, timedelta, timezone
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 from context.bos import detect_bos, BosDirection
 from context.market_structure import SwingPoint, SwingType, StructurePoint, StructureType

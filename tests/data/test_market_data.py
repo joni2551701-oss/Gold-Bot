@@ -7,7 +7,7 @@ wiring in classify_api_error() for richer logging only.
 
 import logging
 
-from data.market_data import MarketDataNormalizer
+from data_layer.live_data.market_data import MarketDataNormalizer
 
 
 def test_get_candles_still_returns_empty_list_on_fetch_failure(monkeypatch):
@@ -51,7 +51,7 @@ def test_get_candles_logs_a_structured_error_on_failure(monkeypatch, caplog):
 
 def test_get_candles_still_works_normally_when_fetch_succeeds(monkeypatch):
     """Confirms the AC-07 change only touches the except path -- the success path is completely untouched."""
-    from data.twelve_data_client import Candle
+    from data_layer.providers.twelve_data_client import Candle
     from datetime import datetime, timezone
 
     normalizer = MarketDataNormalizer()

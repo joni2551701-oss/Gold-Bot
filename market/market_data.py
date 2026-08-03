@@ -70,7 +70,7 @@ class MarketStateSnapshot:
 
     Renamed from `MarketSnapshot` (TASK-ARCH-100 Step 8, Owner decision
     3): the canonical class literally named `MarketSnapshot` is now
-    `data.market_data.MarketSnapshot` (a multi-timeframe candle
+    `data_layer.live_data.market_data.MarketSnapshot` (a multi-timeframe candle
     container -- a different shape from this market-state projection).
     A backward-compatible `MarketSnapshot = MarketStateSnapshot` alias
     is kept at the bottom of this module so existing importers of
@@ -147,6 +147,6 @@ class MarketStateSnapshot:
 # its old name so existing `from market.market_data import MarketSnapshot`
 # importers keep working. The only class literally *defined* as
 # `MarketSnapshot` in the repository is now the canonical
-# `data.market_data.MarketSnapshot`. This alias is a compatibility shim,
+# `data_layer.live_data.market_data.MarketSnapshot`. This alias is a compatibility shim,
 # not a second class definition.
 MarketSnapshot = MarketStateSnapshot

@@ -444,7 +444,7 @@ def init_market_snapshot_schema(connection: sqlite3.Connection):
     TASK 2). Independent of every other table, including raw_candles
     (no SQL foreign key -- linked only by shared symbol/timeframe/
     provider values, same convention as every other table pair in this
-    schema). The persisted counterpart to data.market_data_snapshot.MarketDataSnapshot
+    schema). The persisted counterpart to data_layer.live_data.market_data_snapshot.MarketDataSnapshot
     (Phase 59 Preparation/59.1, in-memory only) -- see
     database/market_snapshot_models.py's own module docstring.
     """

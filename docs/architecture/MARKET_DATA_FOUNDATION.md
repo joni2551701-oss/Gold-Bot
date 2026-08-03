@@ -25,13 +25,13 @@ system. The existing modules are reused as the foundation:
 
 | Requirement | Existing module | Decision |
 |---|---|---|
-| API client (retry/backoff) | `data/twelve_data_client.py` | REUSE |
-| Normalize / validate / dedup | `data/market_data.py` (`MarketDataNormalizer`) | REUSE |
-| Historical bootstrap | `data/historical_data_collector.py`, `data/historical_validator.py` | REUSE/EXTEND |
-| Cache + candle clock + API budget | `data/data_cache.py` (`SmartDataCache`) | EXTEND |
-| Data quality / missing candle | `data/data_quality.py` | REUSE |
-| Error classification | `data/api_error_classifier.py` | REUSE |
-| Session state | `data/session_filter.py` | REUSE |
+| API client (retry/backoff) | `data_layer/providers/twelve_data_client.py` | REUSE |
+| Normalize / validate / dedup | `data_layer/live_data/market_data.py` (`MarketDataNormalizer`) | REUSE |
+| Historical bootstrap | `data_layer/historical_data/historical_data_collector.py`, `data_layer/data_validation/historical_validator.py` | REUSE/EXTEND |
+| Cache + candle clock + API budget | `data_layer/market_memory/data_cache.py` (`SmartDataCache`) | EXTEND |
+| Data quality / missing candle | `data_layer/data_validation/data_quality.py` | REUSE |
+| Error classification | `data_layer/providers/api_error_classifier.py` | REUSE |
+| Session state | `data_layer/live_data/session_filter.py` | REUSE |
 | TF config | `config.TIMEFRAME_HISTORY` | EXTEND (add M1, D1) |
 
 Genuinely new (all land **inside `data/`**): the live stream, candle
@@ -313,7 +313,7 @@ server itself is a later phase.
 ## 22. Article 12 — New / Extended / Reused
 | New | Extended | Reused |
 |---|---|---|
-| `data/stream/*`, `candle_builder.py`, `candle_clock.py`, `data/memory/*` (registry, market_memory, timeframe_memory, candle_record, memory_events, memory_reader, memory_snapshot), `market_data_manager.py` | `data/data_cache.py`, `config.TIMEFRAME_HISTORY` | `twelve_data_client.py`, `market_data.py`, `historical_data_collector.py`, `historical_validator.py`, `data_quality.py`, `api_error_classifier.py`, `session_filter.py`, `monitoring/` |
+| `data_layer/live_data/*`, `candle_builder.py`, `candle_clock.py`, `data_layer/market_memory/*` (registry, market_memory, timeframe_memory, candle_record, memory_events, memory_reader, memory_snapshot), `market_data_manager.py` | `data_layer/market_memory/data_cache.py`, `config.TIMEFRAME_HISTORY` | `twelve_data_client.py`, `market_data.py`, `historical_data_collector.py`, `historical_validator.py`, `data_quality.py`, `api_error_classifier.py`, `session_filter.py`, `monitoring/` |
 
 ## 23. Acceptance-criteria mapping
 | Director criterion | Satisfied by |

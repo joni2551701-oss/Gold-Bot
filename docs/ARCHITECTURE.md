@@ -54,7 +54,7 @@ They are never invoked from one another and share no in-memory state
 Market Data (data/)
       |
       v
-Data Quality (data/data_quality.py)  -- observational only, Phase A8
+Data Quality (data_layer/data_validation/data_quality.py)  -- observational only, Phase A8
       |                                  (never filters/blocks, see
       |                                  docs/DATA_QUALITY.md)
       v
@@ -283,7 +283,7 @@ is not a third event type — it is each event's `sweep` field.
 
 Includes a volume-confirmation hook (`_volume_confirms()`) that always
 returns `None` — this codebase has no volume data source at all
-(`data/twelve_data_client.py`'s `Candle` is OHLC-only), so the hook
+(`data_layer/providers/twelve_data_client.py`'s `Candle` is OHLC-only), so the hook
 never fabricates a `True`/`False` confirmation. Not consumed by any
 `strategies/*.py` file in this phase.
 
@@ -311,7 +311,7 @@ separate future step (historical aggregation for the former; a
 already-documented extension point, for the latter — neither wired in
 this phase).
 
-Distinct from `data/session_filter.py`'s `is_trading_time()` (a
+Distinct from `data_layer/live_data/session_filter.py`'s `is_trading_time()` (a
 wall-clock, Tashkent-time, binary trading-hours gate for a different
 purpose) — not read, called, or duplicated by this module.
 
@@ -347,7 +347,7 @@ already-available input for a future real AI provider.
 
 ### Data Quality Engine (Phase A8)
 
-`data/data_quality.py`'s `assess_data_quality(candles, interval)`
+`data_layer/data_validation/data_quality.py`'s `assess_data_quality(candles, interval)`
 assesses the candle list `get_candles()` already returned — missing
 candles, duplicate timestamps, invalid OHLC, timeframe consistency —
 into a scored, structured `DataQualityResult`. Purely observational:
@@ -356,7 +356,7 @@ never filters, blocks, or alters what `context/` receives, even when
 `market_data`; `"data_quality"` is the only new key in `run()`'s
 result dict.
 
-Deliberately does not reuse or modify `data/market_data.py`'s
+Deliberately does not reuse or modify `data_layer/live_data/market_data.py`'s
 existing `_validate_and_clean()`/`_detect_missing_candles()` (private
 methods on a class that already feeds the live M15 pipeline path) —
 same reasoning as Wyckoff's relationship to `amd.py`
@@ -476,7 +476,7 @@ nothing outside itself (not even `data/`, `strategies/`, or
 documentation-only in this phase, see `docs/ASSET_INTELLIGENCE.md`).
 `GOLD_ASSET.base_currency="XAU"`/`quote_currency="USD"` deliberately
 differs from the Director brief's own illustrative
-`base_currency="USD"` example — `data/twelve_data_client.py`'s
+`base_currency="USD"` example — `data_layer/providers/twelve_data_client.py`'s
 `_format_symbol()` already splits `"XAUUSD"` into `"XAU/USD"`, so
 `"XAU"`/`"USD"` is the value already real in this codebase, not a new
 invention (the same kind of correction Phase A11 made for
@@ -712,7 +712,7 @@ exists in exactly the shape it does.
 Hardens the Phase 59.1 provider foundation before adding new
 providers — full detail: `docs/MARKET_DATA_ARCHITECTURE.md`,
 `docs/PROVIDER_CONTRACTS.md`, `docs/TRADINGVIEW_PROVIDER.md`,
-`docs/OWNER_COMMANDS.md`. `data/providers/base_provider.py`'s
+`docs/OWNER_COMMANDS.md`. `data_layer/providers/base_provider.py`'s
 `MarketDataProvider` was split from a new, more general
 `DataProvider` root (`get_provider_name()`, `get_market_status()`),
 so a non-candle provider (macro/economic data) can share the same
@@ -735,7 +735,7 @@ live connection). TradingView was researched, not coded —
 Service forbid the commercial/automated use a `MarketDataProvider`
 implementation would require, so no `tradingview_provider.py` exists.
 
-`data/providers/registry.py`'s `ProviderRegistry`
+`data_layer/providers/registry.py`'s `ProviderRegistry`
 (`register()`/`get()`/`available()`/`all_names()`) is a new, broader
 catalog — explicitly not a replacement for Phase 59.1's `get_provider()`
 (single active choice, `Config`-driven); see `registry.py`'s own
@@ -756,13 +756,13 @@ which now just points here) — five owner-only Telegram commands
 (`/provider`, `/providers`, `/provider_status`, `/enable_provider`,
 `/disable_provider`), none implemented.
 
-None of `data/market_data.py`, `core/pipeline.py`, `context/`,
+None of `data_layer/live_data/market_data.py`, `core/pipeline.py`, `context/`,
 `strategies/`, `signals/` (candidate generation),
 `decision/decision_engine.py`, `risk/risk_manager.py`, `ai/`,
 `execution/`, or any Telegram file changed in this phase — see
 `docs/MARKET_DATA_ARCHITECTURE.md`'s "As implemented today" section
 for the explicit, disclosed gap between this diagram and what
-`data/market_data.py` actually calls.
+`data_layer/live_data/market_data.py` actually calls.
 
 ### Phase 59.3 — Data Intelligence Foundation
 
@@ -776,7 +776,7 @@ detail: `docs/PROVIDER_CONTRACTS.md`, `docs/MARKET_DATA_ARCHITECTURE.md`.
 already carried the caller's canonical symbol/timeframe; the real gap
 was a missing `provider` field (added, additive;
 `TwelveDataProvider.get_candles()` now stamps it) and no centralized
-per-provider format table. New `data/normalization/` package:
+per-provider format table. New `data_layer/normalization/` package:
 `symbol_mapper.py`/`timeframe_mapper.py` (canonical ⟷ provider wire
 format, TwelveData/Binance), `candle_normalizer.py`
 (`stamp_provider()`). No new candle type.
@@ -793,7 +793,7 @@ bridges Phase 59 Preparation's own in-memory `MarketDataSnapshot` to a
 real row). Not called from `core/pipeline.py`.
 
 **TASK 3 (Market Data Cache)** — "Already implemented — verified":
-`data/data_cache.py`'s pre-existing `SmartDataCache` already provides
+`data_layer/market_memory/data_cache.py`'s pre-existing `SmartDataCache` already provides
 exactly this task's two goals (duplicate-API-call reduction,
 rate-limit protection), but had zero test coverage and is unwired
 anywhere. No competing `data/cache/market_cache.py` was built;
@@ -806,7 +806,7 @@ anywhere. No competing `data/cache/market_cache.py` was built;
 
 **TASK 5 (Owner Command Foundation)** — new `telegram/owner/` package
 (`provider_commands.py`, `system_commands.py`, `feature_commands.py`)
-with real, tested functions reusing `data/providers/registry.py` and
+with real, tested functions reusing `data_layer/providers/registry.py` and
 `monitoring/provider_health.py` — a scope shift from Phase 59.2's own
 "contract only" instruction for the same idea. **Not** registered into
 `telegram/commands.py`'s `OWNER_COMMANDS`/`ADMIN_COMMANDS`, **not**
@@ -817,7 +817,7 @@ override mechanism exists for `config.py`'s import-time-read
 `ENABLE_*` flags.
 
 **TASK 6 (Fundamental Context Contract)** — `context/fundamental_context.py`'s
-`compute_fundamental_context()` connects `data/providers/fred_provider.py`
+`compute_fundamental_context()` connects `data_layer/providers/fred_provider.py`
 (Phase 59.2, never previously read by `context/`) to a new
 `FundamentalContextSnapshot` (`fed_rate`, `inflation`,
 `dollar_strength`, `risk_level`) — deliberately not named
@@ -828,7 +828,7 @@ the module's own naming note). Pure adapter over already-supplied
 `risk_level` stay honest `None` hooks — no classification threshold is
 fabricated. Generates no signal, makes no decision.
 
-None of `data/market_data.py`, `core/pipeline.py`, `strategies/`,
+None of `data_layer/live_data/market_data.py`, `core/pipeline.py`, `strategies/`,
 `signals/` (candidate generation), `decision/decision_engine.py`,
 `risk/risk_manager.py`, `ai/`, `execution/`, `telegram/handlers.py`,
 `telegram/command_router.py`, or `telegram/commands.py` changed in
@@ -844,9 +844,9 @@ Foundation layers rather than replacing any of them. Full detail:
 `docs/DATASET_COLLECTION.md`, `docs/DATA_VALIDATION.md`,
 `docs/HISTORICAL_SYNC.md`.
 
-**TASK 1 (Historical Data Collector)** — new `data/historical_data_collector.py`.
+**TASK 1 (Historical Data Collector)** — new `data_layer/historical_data/historical_data_collector.py`.
 `collect_historical_candles(provider, symbol, timeframe, start, end)`
-fetches via an existing `data/providers/` `MarketDataProvider` and
+fetches via an existing `data_layer/providers/` `MarketDataProvider` and
 saves via `database/raw_candle_repository.py`'s
 `save_market_candles()` — no new fetch/storage logic, only composition
 of the two. Disclosed gap: neither `TwelveDataClient.fetch_candles()`
@@ -864,11 +864,11 @@ table) plus `historical_data_collector.py`'s `sync_historical_candles()`,
 which resumes from the stored `last_timestamp` instead of re-fetching
 a wide window every call.
 
-**TASK 3 (Data Integrity Validator)** — new `data/historical_validator.py`.
+**TASK 3 (Data Integrity Validator)** — new `data_layer/data_validation/historical_validator.py`.
 `validate_historical_candles()` checks a persisted
 `List[RawCandle]` for missing/duplicate/out-of-order/future-timestamp/
 timezone-naive/invalid-OHLC/provider-mismatch conditions, producing a
-`ValidationReport`. Reuses `data.data_quality.INTERVAL_DELTAS` (a
+`ValidationReport`. Reuses `data_layer.data_validation.data_quality.INTERVAL_DELTAS` (a
 public, same-package constant); independently re-implements the
 OHLC/gap checks themselves rather than depending on
 `data_quality.py`'s different-shaped, different-purpose
@@ -888,7 +888,7 @@ duplicate/missing/invalid counts (summed across groups, not
 reimplemented), and computes `coverage_pct` as an unweighted mean
 across groups — disclosed, not hidden.
 
-**TASK 6 (Multi Provider Validation)** — new `data/provider_comparison.py`.
+**TASK 6 (Multi Provider Validation)** — new `data_layer/providers/provider_comparison.py`.
 `compare_providers()` matches two providers' candle lists by
 timestamp and reports close/high/low/spread differences. Foundation
 only: never merges, corrects, or picks a "winning" provider.
@@ -1037,7 +1037,7 @@ control-center surface — still, per the Director's own roadmap,
 update" section.
 
 **`status_commands.py`** — new `get_system_status()`, composing
-`AdminService.get_system_status()`, `data.providers.registry`,
+`AdminService.get_system_status()`, `data_layer.providers.registry`,
 `config.Config.MARKET_DATA_PROVIDER`/`VALIDATION_MODE`,
 `core_layer.system_state.system_state.SystemState` (display label only — no instance
 held), and `SignalRepository.get_latest_signal()`. No new health-check
@@ -1178,8 +1178,8 @@ an off-by-one.
 
 **`replay_feed.py`** — `ReplayFeed`: cursor-based `next`/`previous`/
 `jump`/`window`/`current` access over an already-loaded candle list.
-Hands out `data.twelve_data_client.Candle` — the exact type
-`data.market_data.MarketDataNormalizer.get_candles()` already returns
+Hands out `data_layer.providers.twelve_data_client.Candle` — the exact type
+`data_layer.live_data.market_data.MarketDataNormalizer.get_candles()` already returns
 to the live pipeline, so a future Strategy consumer needs no shape
 change to accept replayed data instead of live data.
 
@@ -1399,7 +1399,7 @@ was deliberately not touched, since its own docstring states "no
 defaults by design," a stable contract every existing caller
 (`core/pipeline.py`, `backtesting/backtest_engine.py`) depends on.
 
-**`data/providers/fred_provider.py` extension (TASK 3)** —
+**`data_layer/providers/fred_provider.py` extension (TASK 3)** —
 `FredProvider.collect_snapshot()`, a new method (not a new file)
 composing the three fetch methods into one `FundamentalSnapshot`,
 catching each `NotImplementedError` individually. Still no real
@@ -1741,7 +1741,7 @@ core/pipeline.py (TradingPipeline.run())
   +--> core_layer/pipeline/pipeline_guard.py (PipelineGuard, Emergency-gated: Phase 60.8/60.9)
   |
   v
-data/market_data.py, data/providers/*, data/data_quality.py        (Market Data + Data Quality)
+data_layer/live_data/market_data.py, data_layer/providers/*, data_layer/data_validation/data_quality.py        (Market Data + Data Quality)
   |
   v
 context/context_orchestrator.py, context/htf_bias.py,
@@ -2208,16 +2208,16 @@ a future persistence step, not by persisting them today (see
 scope decision).
 
 **API Error Classification (AC-07, part of Data Quality)** —
-`data/api_error_classifier.py` adds `classify_api_error(exception,
+`data_layer/providers/api_error_classifier.py` adds `classify_api_error(exception,
 module)`, mapping an already-caught data-fetch exception to a
 `core_layer.errors.exceptions.ExternalAPIError` (Phase A18) — `API_001` for
 a timeout/connection failure, `API_002` for anything else (rate limit,
 malformed response, unrecognized type). Never raises; used for
-structured logging only. `data/market_data.py`'s `get_candles()`
+structured logging only. `data_layer/live_data/market_data.py`'s `get_candles()`
 gained exactly one additional `logger.error(...)` call inside its
 pre-existing `except Exception as e:` block — the graceful
 degrade-to-`[]` return and all control flow are unchanged, verified by
-dedicated tests. `data/twelve_data_client.py`'s retry/backoff logic and
+dedicated tests. `data_layer/providers/twelve_data_client.py`'s retry/backoff logic and
 raise behavior are untouched.
 
 Neither `strategies/`, `signals/` (candidate generation), `risk/`, nor
@@ -2245,7 +2245,7 @@ Input/Output/Dependency contract is already documented in
 new, standalone foundation packages were added; none is part of the
 pipeline sequence above:
 
-- **`data/market_data_snapshot.py`** (TASK 1) — `MarketDataSnapshot`,
+- **`data_layer/live_data/market_data_snapshot.py`** (TASK 1) — `MarketDataSnapshot`,
   a lightweight window-identity/fingerprint record (`symbol`,
   `timeframe`, `candle_count`, `first_timestamp`, `last_timestamp`,
   `candles_reference`), closing the audit finding that the `signals`
@@ -2256,7 +2256,7 @@ pipeline sequence above:
   Deliberately not a full candle store (no database migration, per
   this task's own boundary) — `candles_reference` is a content
   fingerprint for future re-fetch/verification, not a foreign key.
-  Distinct from the pre-existing `data.market_data.MarketSnapshot`
+  Distinct from the pre-existing `data_layer.live_data.market_data.MarketSnapshot`
   (live, multi-timeframe, never persisted) — see the module's own
   naming note.
 - **`lifecycle/`** (TASK 2 + TASK 4, new top-level package) —
@@ -2298,7 +2298,7 @@ today (Signal totals, per-strategy identifiers, Market Context) versus
 which need a still-unbuilt persistence/monitor step (Result, Risk) —
 see that document's own "Known gaps" section.
 
-None of `data/market_data_snapshot.py`, `lifecycle/`, or `analytics/`
+None of `data_layer/live_data/market_data_snapshot.py`, `lifecycle/`, or `analytics/`
 is imported by `core/pipeline.py`, `execution/`, or `database/` in
 this phase — each is a standalone, tested foundation, the same
 "foundation, not a rewrite" posture every Phase A/AC module has used,
@@ -2308,22 +2308,22 @@ ready for a future, separately-approved wiring/persistence step.
 
 GoldBot needs to run without an always-on MT5 terminal (no owner PC
 available today). Full detail: `docs/MARKET_PROVIDER.md`. New,
-standalone package `data/providers/` (`base_provider.py`'s
+standalone package `data_layer/providers/` (`base_provider.py`'s
 `MarketDataProvider` abstract contract + `MarketCandle`/`ProviderStatus`,
 `twelve_data_provider.py`'s `TwelveDataProvider` wrapping the existing,
-untouched `data.twelve_data_client.TwelveDataClient`,
+untouched `data_layer.providers.twelve_data_client.TwelveDataClient`,
 `mt5_provider.py`'s deliberately inert `MT5Provider` stub,
 `__init__.py`'s `get_provider()` factory) — not imported by
-`core/pipeline.py` or `data/market_data.py` in this phase; the live
+`core/pipeline.py` or `data_layer/live_data/market_data.py` in this phase; the live
 pipeline's data path is unaffected. A provider never generates a
 signal, never knows about a strategy or a decision — data only.
 
 `config.py` gained `MARKET_DATA_PROVIDER`/`ENABLE_MT5`/
 `ENABLE_TWELVEDATA` (additive, `Config.DEBUG`'s existing `os.getenv()`
 convention). `core_layer/errors/codes.py`'s registry gained `API_003`
-(invalid symbol) and `API_004` (empty response); `data/api_error_classifier.py`
+(invalid symbol) and `API_004` (empty response); `data_layer/providers/api_error_classifier.py`
 gained `classify_empty_response()` and a disclosed message-heuristic
-for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
+for `API_003`. `data_layer/live_data/market_data_snapshot.py`'s `MarketDataSnapshot`
 (Phase 59 Preparation) gained two optional, additive fields
 (`provider`, `data_quality`), both defaulting `None`. None of
 `strategies/`, `signals/` (candidate generation), `decision/decision_engine.py`,
@@ -2334,11 +2334,11 @@ for `API_003`. `data/market_data_snapshot.py`'s `MarketDataSnapshot`
 | Module | Responsibility |
 |---|---|
 | `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core_layer/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. Phase 59.9 added `emergency/` — `EmergencyState`/`EmergencyManager` (a runtime controller, persisted append-only via `database.emergency_repository`, audited via `AuditLogRepository`) and stateless `circuit_breaker.evaluate_circuit()`; still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`. |
-| `backtesting/` | New in Phase 60.1 (Historical Replay Engine) — `replay_models.py`/`replay_session.py`/`replay_clock.py`/`replay_feed.py`/`replay_engine.py`/`replay_controller.py`. A service over existing Historical Data (`database.raw_candle_repository.RawCandleRepository`), not a new business domain — deliberately not a `market/` top-level package, per the Module Reuse Principle. `ReplayFeed` hands out `data.twelve_data_client.Candle`, the same type the live pipeline already uses, so a future Strategy consumer needs no shape change. Phase 60.2 (Backtesting Engine) added `data_feed.py` (`IDataFeed`/`LiveDataFeed`/`ReplayDataFeed`), `backtest_engine.py` (`BacktestEngine`, composing `strategies/`/`signals/`/`ai/`/`decision/`/`risk/`/`lifecycle/`/`analytics/` unmodified), and `backtest_result.py`. Still never *modifies* `strategies/`/`signals/`/`decision/`/`risk/`; nothing in `core/pipeline.py` constructs anything here. |
+| `backtesting/` | New in Phase 60.1 (Historical Replay Engine) — `replay_models.py`/`replay_session.py`/`replay_clock.py`/`replay_feed.py`/`replay_engine.py`/`replay_controller.py`. A service over existing Historical Data (`database.raw_candle_repository.RawCandleRepository`), not a new business domain — deliberately not a `market/` top-level package, per the Module Reuse Principle. `ReplayFeed` hands out `data_layer.providers.twelve_data_client.Candle`, the same type the live pipeline already uses, so a future Strategy consumer needs no shape change. Phase 60.2 (Backtesting Engine) added `data_feed.py` (`IDataFeed`/`LiveDataFeed`/`ReplayDataFeed`), `backtest_engine.py` (`BacktestEngine`, composing `strategies/`/`signals/`/`ai/`/`decision/`/`risk/`/`lifecycle/`/`analytics/` unmodified), and `backtest_result.py`. Still never *modifies* `strategies/`/`signals/`/`decision/`/`risk/`; nothing in `core/pipeline.py` constructs anything here. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. Phase 59.6 added `feature_registry.py` (`FeatureDescriptor`/`build_feature_registry()`, unifying real + declared-only flag names) and `feature_dependency_validator.py` (`validate_feature_dependencies()`) — still not runtime, gates nothing. Phase 59.7 added the first genuinely *runtime* control in this package — `runtime_state.py`/`runtime_feature_manager.py`/`runtime_api.py` (`RuntimeFeatureManager`: validated, persisted, audited, snapshotted enable/disable) — still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`, none of which import `configuration/`. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07/Phase 59.1 TASK 5) — maps a caught fetch exception (or a known empty-response condition) to a structured `ExternalAPIError` for logging only, never changes control flow — Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation/59.1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store — and Market Provider Abstraction (`providers/`, Phase 59.1) — `DataProvider`/`MarketDataProvider`/`FundamentalDataProvider`, `TwelveDataProvider`/`MT5Provider`/`BinanceProvider`/`FredProvider`, `ProviderRegistry`, data-only, not wired into the live pipeline — plus Provider Normalization (`normalization/`, Phase 59.3) — `symbol_mapper.py`/`timeframe_mapper.py`/`candle_normalizer.py`, centralized per-provider format tables, no new candle type. |
-| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. `snapshot.py` (Phase A16) additionally standardizes a `ContextSnapshot` into a flat, JSON-serializable `ContextSnapshotSchema`, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) — a distinct type, not a replacement. `market_phase.py` (AC-02) adds a wired, advisory 5-state (+`UNKNOWN`) `MarketPhase` classification reusing already-detected Wyckoff/AMD/Market Regime data. `fundamental_context.py` (Phase 59.3) adds `compute_fundamental_context()` — a pure adapter connecting `data/providers/fred_provider.py` (Phase 59.2) into a new `FundamentalContextSnapshot`; not called by anything in this phase. |
+| `context/` | Pure SMC market-structure detection functions (structure, BOS/CHoCH, liquidity, OB, FVG, AMD, Wyckoff Spring/Upthrust — Phase A5, Session classification — Phase A6, and Market Regime — Phase A7, all part of `ContextSnapshot`), plus HTF Bias (`htf_bias.py`, Phase A2) — a market-context-only Daily/H4/H1 classification, not itself part of `ContextSnapshot`. `snapshot.py` (Phase A16) additionally standardizes a `ContextSnapshot` into a flat, JSON-serializable `ContextSnapshotSchema`, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) — a distinct type, not a replacement. `market_phase.py` (AC-02) adds a wired, advisory 5-state (+`UNKNOWN`) `MarketPhase` classification reusing already-detected Wyckoff/AMD/Market Regime data. `fundamental_context.py` (Phase 59.3) adds `compute_fundamental_context()` — a pure adapter connecting `data_layer/providers/fred_provider.py` (Phase 59.2) into a new `FundamentalContextSnapshot`; not called by anything in this phase. |
 | `strategies/` | Independent signal-candidate generation per SMC methodology, plus a Strategy Lifecycle metadata layer (`lifecycle/`, Phase A11) — `StrategyDefinition`/`StrategyRegistry`, storing status/version/supported-assets metadata only, never running a strategy or generating a signal. |
 | `signals/` | The `SignalCandidate` data contract, strategy aggregation, Signal Quality Score (`signal_quality.py`, Phase A4) — a per-candidate, advisory-only A+/A/B/C grade — Explainability (`explainability.py`, Phase A9) — human-readable reasons, reusing Signal Quality's criteria — and Signal Schema (`schema.py`/`adapter.py`, Phase A15) — one standard, JSON-serializable cross-module signal contract, computing nothing itself, now wired into `core/pipeline.py`'s `signal_history` stage (AC-03) with a new `decision_id` field. |
 | `features/` | Feature Engineering foundation (Phase A10) — `MarketFeatures`, one standard snapshot per candidate for a future AI/backtester/ML/Failure-Analysis consumer. A standardization layer: relays `context/` and `signals/` (Signal Quality + Explainability) results as-is, computes nothing new. |
@@ -2413,10 +2413,10 @@ import sweep):
   on `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`,
   `database/`, or `telegram/`. Called by `core/pipeline.py` as a new
   stage immediately after `context`.
-- `data/api_error_classifier.py` (AC-07) imports `requests` and
+- `data_layer/providers/api_error_classifier.py` (AC-07) imports `requests` and
   `core_layer.errors` (cross-cutting) only — no dependency on `context/`,
   `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`, `database/`,
-  or `telegram/`. Called by `data/market_data.py`'s `get_candles()`
+  or `telegram/`. Called by `data_layer/live_data/market_data.py`'s `get_candles()`
   inside its existing `except` block, for logging only.
 - `configuration/` (Phase A13) imports only the root `config.Config`
   (cross-cutting, same as every layer's pre-existing `config.py`
@@ -2463,40 +2463,40 @@ import sweep):
   knows nothing about Telegram, permissions, or commands.
 - `core/pipeline.py` is the one file allowed to import from every
   layer — it is the orchestrator, not a layer itself.
-- `data/normalization/` (Phase 59.3) imports
-  `data.providers.base_provider.MarketCandle` (`candle_normalizer.py`
+- `data_layer/normalization/` (Phase 59.3) imports
+  `data_layer.providers.base_provider.MarketCandle` (`candle_normalizer.py`
   only) — `symbol_mapper.py`/`timeframe_mapper.py` import only the
   standard library. No dependency on `context/`, `strategies/`,
   `signals/`, `ai/`, `decision/`, `risk/`, `execution/`, `database/`,
   or `telegram/`. Not imported by `core/pipeline.py` or
-  `data/market_data.py`.
+  `data_layer/live_data/market_data.py`.
 - `database/raw_candle_models.py`/`raw_candle_repository.py` and
   `database/market_snapshot_models.py`/`market_snapshot_repository.py`
   (Phase 59.3) follow the exact same dependency shape as every other
   `database/*_repository.py` — `database/database.py` and
   `database/models.py` only, plus (for `market_snapshot_models.py`'s
   `from_market_data_snapshot()`)
-  `data.market_data_snapshot.MarketDataSnapshot`, `TYPE_CHECKING`-only.
+  `data_layer.live_data.market_data_snapshot.MarketDataSnapshot`, `TYPE_CHECKING`-only.
   No dependency on `telegram/`, `ai/`, `decision/`, `risk/`,
   `context/`, or `strategies/`.
 - `context/fundamental_context.py` (Phase 59.3) imports only the
   standard library plus, `TYPE_CHECKING`-only,
-  `data.providers.fundamental_base.FundamentalDataPoint` — no runtime
-  dependency on `data/providers/` (inputs are supplied by the caller,
+  `data_layer.providers.fundamental_base.FundamentalDataPoint` — no runtime
+  dependency on `data_layer/providers/` (inputs are supplied by the caller,
   never fetched). No dependency on `signals/`, `ai/`, `decision/`,
   `risk/`, `database/`, or `telegram/`. Not imported by
   `core/pipeline.py`, `ai/`, or `decision/` in this phase.
-- `telegram/owner/` (Phase 59.3) imports `data.providers.registry`,
+- `telegram/owner/` (Phase 59.3) imports `data_layer.providers.registry`,
   `monitoring.provider_health`, `telegram.admin_service.AdminService`,
   `config.Config`, and `configuration.feature_flags.DEFAULT_FLAGS` —
   no dependency on `telegram.handlers`, `telegram.command_router`, or
   `telegram.commands`. Not imported by any of those three, or by
   `core/pipeline.py`, in this phase.
-- `data/market_data_snapshot.py` (Phase 59 Preparation TASK 1) imports
-  only the standard library plus `data.twelve_data_client.Candle`
+- `data_layer/live_data/market_data_snapshot.py` (Phase 59 Preparation TASK 1) imports
+  only the standard library plus `data_layer.providers.twelve_data_client.Candle`
   (same package) — no dependency on `context/`, `strategies/`,
   `signals/`, `ai/`, `decision/`, `risk/`, `database/`, or `telegram/`.
-  Not called by `data/market_data.py` or any other existing module in
+  Not called by `data_layer/live_data/market_data.py` or any other existing module in
   this phase.
 - `lifecycle/` (Phase 59 Preparation TASK 2 + TASK 4) imports
   `signals.schema.SignalSchema` (`TYPE_CHECKING`-only, in both
@@ -2508,21 +2508,21 @@ import sweep):
   does not make `execution/`'s own inert stubs any less inert (see
   `lifecycle/README.md`'s "Not the same as `execution/`" section). Not
   imported by `core/pipeline.py` or `execution/` in this phase.
-- `data/providers/` (Phase 59.1) imports `data.twelve_data_client.TwelveDataClient`
-  and `data.api_error_classifier` (same top-level `data/` package)
+- `data_layer/providers/` (Phase 59.1) imports `data_layer.providers.twelve_data_client.TwelveDataClient`
+  and `data_layer.providers.api_error_classifier` (same top-level `data/` package)
   plus `config.Config` (cross-cutting, in `__init__.py`'s
   `get_provider()` only) — no dependency on `context/`, `strategies/`,
   `signals/`, `ai/`, `decision/`, `risk/`, `execution/`, `database/`,
   or `telegram/`. `mt5_provider.py` imports only `base_provider.py`
   (same package) — no `MetaTrader5` package dependency. Not imported
-  by `core/pipeline.py`, `data/market_data.py`, or any other existing
+  by `core/pipeline.py`, `data_layer/live_data/market_data.py`, or any other existing
   module in this phase. Extended by Phase 59.2:
   `binance_provider.py`/`fred_provider.py`/`fundamental_base.py`/
-  `registry.py` all import only other files within `data/providers/`
+  `registry.py` all import only other files within `data_layer/providers/`
   — no new external dependency (no exchange or FRED API package).
   `monitoring/provider_health.py` (Phase 59.2) imports
-  `data.providers.base_provider`/`data.providers.registry` — a new,
-  one-directional `monitoring/` → `data/providers/` dependency, never
+  `data_layer.providers.base_provider`/`data_layer.providers.registry` — a new,
+  one-directional `monitoring/` → `data_layer/providers/` dependency, never
   reversed.
 - `analytics/` (Phase 59 Preparation TASK 3) imports
   `lifecycle.paper_trade.PaperTrade` and `signals.schema.SignalSchema`
@@ -2534,9 +2534,9 @@ import sweep):
   its input is an in-memory `List[SignalPerformance]`, not a database
   read. Not imported by `core/pipeline.py` or `monitoring/` in this
   phase.
-- `data/historical_data_collector.py`/`historical_validator.py`/
-  `provider_comparison.py` (Phase 59.5) import `data.providers.base_provider`,
-  `data.data_quality.INTERVAL_DELTAS` (same top-level `data/` package),
+- `data_layer/historical_data/historical_data_collector.py`/`historical_validator.py`/
+  `provider_comparison.py` (Phase 59.5) import `data_layer.providers.base_provider`,
+  `data_layer.data_validation.data_quality.INTERVAL_DELTAS` (same top-level `data/` package),
   `database.raw_candle_repository`/`database.sync_state_repository`
   (a new, one-directional `data/` → `database/` dependency — the first
   time anything in `data/` has depended on `database/`, since a
@@ -2544,12 +2544,12 @@ import sweep):
   and no other `data/` module gained this dependency). No dependency on
   `context/`, `strategies/`, `signals/`, `ai/`, `decision/`, `risk/`,
   `execution/`, or `telegram/`. `analytics/gap_report.py`/
-  `dataset_report.py` (Phase 59.5) import `data.data_quality.INTERVAL_DELTAS`
+  `dataset_report.py` (Phase 59.5) import `data_layer.data_validation.data_quality.INTERVAL_DELTAS`
   and, within `analytics/`, `dataset_report.py` imports
-  `data.historical_validator` — no dependency on `context/`,
+  `data_layer.data_validation.historical_validator` — no dependency on `context/`,
   `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`, or
   `telegram/`. `telegram/owner/dataset_commands.py` (Phase 59.5)
-  imports `analytics.dataset_report`, `data.provider_comparison`,
+  imports `analytics.dataset_report`, `data_layer.providers.provider_comparison`,
   `database.raw_candle_repository`, `database.sync_state_repository`,
   and `provider_commands.ProviderCommandResult` (same package) — not
   imported by `telegram/handlers.py`, `telegram/command_router.py`, or

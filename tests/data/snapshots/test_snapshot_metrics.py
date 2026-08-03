@@ -1,8 +1,8 @@
 """Tests for SnapshotMetrics (module 9)."""
 
-from data.snapshots.catalog import CatalogEntry
-from data.snapshots.metrics import SnapshotMetrics
-from data.snapshots.snapshot_state import SnapshotState, VerifyState
+from data_layer.snapshots.catalog import CatalogEntry
+from data_layer.snapshots.metrics import SnapshotMetrics
+from data_layer.snapshots.snapshot_state import SnapshotState, VerifyState
 
 from _sfakes import ts
 

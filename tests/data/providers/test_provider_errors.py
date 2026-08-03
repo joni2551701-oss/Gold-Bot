@@ -1,11 +1,11 @@
 """
 TASK-CORE-003 -- tests for the market-data provider error contract
-(data/providers/provider_errors.py).
+(data_layer/providers/provider_errors.py).
 """
 
 import pytest
 
-from data.providers.provider_errors import (
+from data_layer.providers.provider_errors import (
     ProviderAuthError,
     ProviderError,
     ProviderRateLimitError,

@@ -12,7 +12,7 @@ v2) to consume.
 
 This phase exists because `docs/ARCHITECTURE_AUDIT.md` (Phase A1)
 found the multi-timeframe fetch/quality machinery HTF Bias needs
-already existed — `data/market_data.py`'s
+already existed — `data_layer/live_data/market_data.py`'s
 `MarketDataNormalizer.get_snapshot()` — but was never called by
 `core/pipeline.py`. This phase wires that connection and adds the one
 piece that didn't exist: the actual bias classification.
@@ -55,7 +55,7 @@ this phase, unaffected by an HTF fetch failure.
 **Reuse, not duplication** (per `CLAUDE.md`'s "No duplicate logic"
 rule):
 - Multi-timeframe fetch, candle validation, gap detection, and
-  timeframe-alignment checking: `data/market_data.py`'s
+  timeframe-alignment checking: `data_layer/live_data/market_data.py`'s
   `MarketDataNormalizer.get_snapshot()` — unchanged logic, only two
   new dict entries added (`"Daily"` in `TwelveDataClient.INTERVAL_MAP`
   and `MarketDataNormalizer.expected_deltas`) so the existing gap
@@ -71,7 +71,7 @@ produce this feature.
 ## Inputs
 
 `context/htf_bias.py`'s `compute_htf_bias()` takes a
-`data.market_data.MarketSnapshot` — the same object
+`data_layer.live_data.market_data.MarketSnapshot` — the same object
 `get_snapshot(symbol, ["Daily", "H4", "H1"])` already returns, keyed
 by timeframe:
 - `snapshot.candles: Dict[str, List[Candle]]`

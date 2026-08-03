@@ -1,13 +1,13 @@
 """
-Phase 59.3, TASK 1 -- data/normalization/timeframe_mapper.py tests.
+Phase 59.3, TASK 1 -- data_layer/normalization/timeframe_mapper.py tests.
 """
 
-from data.normalization.timeframe_mapper import (
+from data_layer.normalization.timeframe_mapper import (
     from_provider_timeframe,
     is_known_timeframe,
     to_provider_timeframe,
 )
-from data.twelve_data_client import TwelveDataClient
+from data_layer.providers.twelve_data_client import TwelveDataClient
 
 
 def test_to_provider_timeframe_twelvedata_matches_the_real_client():

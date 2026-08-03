@@ -10,7 +10,7 @@ bias/score): this module answers "what economic release is this, and
 what did it say," not "what does it mean for gold" -- that
 interpretation belongs to a future caller, same "data, not judgment"
 boundary every provider-layer type in this codebase already holds
-(see data/providers/fundamental_base.py's own docstring).
+(see data_layer/providers/fundamental_base.py's own docstring).
 
 No fetch/schedule logic here -- this is a data model only, same
 "standardization layer" posture as every other context/ dataclass.

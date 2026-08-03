@@ -8,10 +8,10 @@ Companion to `docs/DATASET_COLLECTION.md` (how the archive is built).
 
 Read-only auditing. Nothing here repairs, drops, or corrects a
 candle — a validator that found an issue only reports it; fixing a gap
-means re-running `data/historical_data_collector.py`'s collection over
+means re-running `data_layer/historical_data/historical_data_collector.py`'s collection over
 that window, a separate, explicit step.
 
-## `data/historical_validator.py`
+## `data_layer/data_validation/historical_validator.py`
 
 `validate_historical_candles(candles, timeframe=None,
 expected_provider=None) -> ValidationReport` checks a
@@ -31,11 +31,11 @@ expected_provider=None) -> ValidationReport` checks a
 zero. Never raises: an empty candle list is a valid, trivial input,
 not an exception.
 
-### Relationship to `data/data_quality.py` (Phase A8)
+### Relationship to `data_layer/data_validation/data_quality.py` (Phase A8)
 
 `data_quality.py`'s `assess_data_quality()` is a different tool for a
 different job: it scores a single, already-fetched, in-memory
-`List[data.twelve_data_client.Candle]` (no symbol/timeframe/provider
+`List[data_layer.providers.twelve_data_client.Candle]` (no symbol/timeframe/provider
 of its own) for the live trading pipeline's own `market_data` stage,
 producing one 0-100 score per pipeline cycle. `historical_validator.py`
 audits a persisted, multi-symbol/multi-timeframe/multi-provider
@@ -97,7 +97,7 @@ Missing: 3
 Invalid: 0
 ```
 
-## `data/provider_comparison.py`
+## `data_layer/providers/provider_comparison.py`
 
 Cross-provider validation, foundation only: `compare_providers(
 candles_a, candles_b, tolerance=0.5) -> List[ProviderComparison]`

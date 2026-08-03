@@ -6,7 +6,7 @@ Tests for telegram/current_price_service.py + price_handler + wiring
 import asyncio
 from datetime import datetime, timezone
 
-from data.current_price_provider import CurrentPrice
+from data_layer.live_data.current_price_provider import CurrentPrice
 from telegram.current_price_service import CurrentPriceService, DEFAULT_ASSET
 from telegram import commands as tg_commands
 from telegram import reply_keyboard_manager as rkm

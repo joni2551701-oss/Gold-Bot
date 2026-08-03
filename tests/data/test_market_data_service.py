@@ -1,12 +1,12 @@
-"""Unit tests for data/market_data_service.py (TASK-DATA-001, Phase 2;
+"""Unit tests for data_layer/live_data/market_data_service.py (TASK-DATA-001, Phase 2;
 TASK-DATA-004 MarketMemory hydrate wiring)."""
 
 from datetime import datetime, timedelta, timezone
 
-from data.market_data import MarketSnapshot
-from data.market_data_service import MarketDataService
-from data.memory import MarketMemoryRegistry
-from data.twelve_data_client import Candle
+from data_layer.live_data.market_data import MarketSnapshot
+from data_layer.live_data.market_data_service import MarketDataService
+from data_layer.market_memory import MarketMemoryRegistry
+from data_layer.providers.twelve_data_client import Candle
 
 
 class FakeNormalizer:
@@ -58,7 +58,7 @@ def test_get_historical_candles_delegates_to_collector(monkeypatch):
         return "RESULT"
 
     monkeypatch.setattr(
-        "data.historical_data_collector.collect_historical_candles", fake_collect
+        "data_layer.historical_data.historical_data_collector.collect_historical_candles", fake_collect
     )
 
     service = MarketDataService()

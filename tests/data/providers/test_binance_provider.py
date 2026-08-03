@@ -1,11 +1,11 @@
 """
-Phase 59.2, TASK 3/9 -- data/providers/binance_provider.py tests.
+Phase 59.2, TASK 3/9 -- data_layer/providers/binance_provider.py tests.
 """
 
 import pytest
 
-from data.providers.base_provider import MarketDataProvider, ProviderStatus
-from data.providers.binance_provider import SUPPORTED_SYMBOLS, SUPPORTED_TIMEFRAMES, BinanceProvider
+from data_layer.providers.base_provider import MarketDataProvider, ProviderStatus
+from data_layer.providers.binance_provider import SUPPORTED_SYMBOLS, SUPPORTED_TIMEFRAMES, BinanceProvider
 
 
 def test_binance_provider_is_a_market_data_provider():

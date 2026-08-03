@@ -47,7 +47,7 @@ after `git fetch --prune`; no others, no stale remote refs).
 ### `claude/goldbot-data-layer-architecture-f8dx8j`
 - **Last commit:** `a2bae46` — "Phase 3: CurrentPriceProvider depends on PriceStreamService, not SmartDataCache"
 - **Vs. main:** ahead 4, behind 1. The 4 ahead are the Price Stream
-  Foundation work (Phase 1: `data/stream/*` incl. `PriceStreamService`/
+  Foundation work (Phase 1: `data_layer/live_data/*` incl. `PriceStreamService`/
   `PriceCache`/`PriceTick`/`BitgetPriceSource`; Phase 2:
   `MarketDataService` + `TradingPipeline` wiring; Phase 3:
   `CurrentPriceProvider` → `PriceStreamService`), all explicitly
@@ -103,7 +103,7 @@ is entirely contained in `claude/goldbot-data-layer-architecture-f8dx8j`'s
    │
    ├─ e10f7e8 Merge PR #30: GoldBot Core rebuild
    ├─ 98030f4 Add Price Stream Foundation (TASK-DATA-001): unified get_price() API
-   ├─ 68f1286 Move PriceCache and PriceStreamService into data/stream/
+   ├─ 68f1286 Move PriceCache and PriceStreamService into data_layer/live_data/
    ├─ 1600635 Phase 2: TradingPipeline depends on MarketDataService, not MarketDataNormalizer directly
    └─ a2bae46 Phase 3: CurrentPriceProvider depends on PriceStreamService, not SmartDataCache
 ```
@@ -199,12 +199,12 @@ on `claude/collaboration`, from tip `98244a4`.
 | `python main.py` | Ran successfully; log shape identical to pre-merge baseline |
 
 **Files changed by the merge:**
-`core/pipeline.py`, `data/current_price_provider.py`,
-`data/events/event_model.py`, `data/market_data_service.py` (new),
-`data/stream/bitget_price_source.py` (new),
-`data/stream/price_cache.py` (new),
-`data/stream/price_stream_service.py` (new),
-`data/stream/price_tick.py` (new), `docs/architecture/LIVE_PRICE.md`,
+`core/pipeline.py`, `data_layer/live_data/current_price_provider.py`,
+`data_layer/event_system/event_model.py`, `data_layer/live_data/market_data_service.py` (new),
+`data_layer/live_data/bitget_price_source.py` (new),
+`data_layer/live_data/price_cache.py` (new),
+`data_layer/live_data/price_stream_service.py` (new),
+`data_layer/live_data/price_tick.py` (new), `docs/architecture/LIVE_PRICE.md`,
 `docs/architecture/PRICE_STREAM.md`, plus 5 new test files.
 
 **Merge commit:** `d568bdc` — pushed to `origin/claude/collaboration`

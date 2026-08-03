@@ -3,7 +3,7 @@
 The full per-provider-type contract, following the same
 input/output/dependency/error-contract format `contracts/*.md`
 (Phase A17) established for the rest of this codebase — this document
-plays that role for `data/providers/`, kept as one file (not a
+plays that role for `data_layer/providers/`, kept as one file (not a
 `contracts/*_provider_contract.md` per provider) since the Director's
 own brief asked for a single `PROVIDER_CONTRACTS.md`.
 
@@ -38,8 +38,8 @@ own brief asked for a single `PROVIDER_CONTRACTS.md`.
 
 | | |
 |---|---|
-| Wraps | `data.twelve_data_client.TwelveDataClient` (untouched, not moved — see the module's own docstring) |
-| `get_candles()` | Delegates to `TwelveDataClient.fetch_candles()`; re-raises on failure (a thinner adapter than `data/market_data.py`'s own swallow-to-`[]` behavior) |
+| Wraps | `data_layer.providers.twelve_data_client.TwelveDataClient` (untouched, not moved — see the module's own docstring) |
+| `get_candles()` | Delegates to `TwelveDataClient.fetch_candles()`; re-raises on failure (a thinner adapter than `data_layer/live_data/market_data.py`'s own swallow-to-`[]` behavior) |
 | `get_latest_price()` | Most recent M5 candle's close — a disclosed candle-based approximation, not a live tick; never raises |
 | `get_supported_timeframes()` | `("M5","M15","H1","H4","Daily")` — `TwelveDataClient.INTERVAL_MAP`'s own live keys, not a separately maintained list |
 | `get_market_status()` | `available=True` iff an API key is configured |
@@ -92,7 +92,7 @@ shape a future real implementation would return — `snapshot_id`,
 a short logical name like `"interest_rate"`, not the source's own
 series ID) — not built/populated by anything in this phase.
 
-## `data/providers/registry.py` — `ProviderRegistry`
+## `data_layer/providers/registry.py` — `ProviderRegistry`
 
 | | |
 |---|---|
@@ -103,38 +103,38 @@ series ID) — not built/populated by anything in this phase.
 
 ## Dependency rules
 
-`data/providers/base_provider.py` and `fundamental_base.py` import
+`data_layer/providers/base_provider.py` and `fundamental_base.py` import
 only the standard library. `twelve_data_provider.py` imports
-`data.twelve_data_client`/`data.api_error_classifier` (same top-level
+`data_layer.providers.twelve_data_client`/`data_layer.providers.api_error_classifier` (same top-level
 `data/` package). `binance_provider.py`/`fred_provider.py` import only
 `base_provider.py`/`fundamental_base.py` (same package) — no external
 exchange/API package dependency of any kind. `registry.py` imports the
 four concrete provider classes (same package). `__init__.py` imports
 `config.Config` (cross-cutting) plus every module in this package.
-None of `data/providers/*.py` imports `context/`, `strategies/`,
+None of `data_layer/providers/*.py` imports `context/`, `strategies/`,
 `signals/`, `ai/`, `decision/`, `risk/`, `execution/`, `database/`, or
 `telegram/`. `monitoring/provider_health.py` imports
-`data.providers.base_provider`/`data.providers.registry` — a new,
-one-directional `monitoring/` → `data/providers/` dependency, not
-reversed (no file in `data/providers/` imports `monitoring/`).
+`data_layer.providers.base_provider`/`data_layer.providers.registry` — a new,
+one-directional `monitoring/` → `data_layer/providers/` dependency, not
+reversed (no file in `data_layer/providers/` imports `monitoring/`).
 
 ## Phase 59.3 additions
 
 ### `MarketCandle.provider` (TASK 1)
 Additive field, defaults `None`. `TwelveDataProvider.get_candles()`
 now sets it to `self.get_provider_name()` on every candle it returns.
-`data/normalization/candle_normalizer.py`'s `stamp_provider()` is the
+`data_layer/normalization/candle_normalizer.py`'s `stamp_provider()` is the
 reusable helper (`dataclasses.replace()`, since `MarketCandle` is
 frozen) for any other caller that needs to stamp an older candle.
 
-### `data/data_cache.py`'s `SmartDataCache` (TASK 3) — Already implemented, verified
+### `data_layer/market_memory/data_cache.py`'s `SmartDataCache` (TASK 3) — Already implemented, verified
 Audited against this task's own two goals: duplicate-API-call
 reduction (per-symbol/interval caching, expiring at the next candle's
 scheduled open time) and rate-limit protection (`request_count` vs.
 `DAILY_WARNING_LIMIT`). Both already real and correct. Gaps closed
 this phase: zero test coverage before (now `tests/data/test_data_cache.py`,
 12 tests) — no code change to `SmartDataCache` itself. Remains unwired
-into `core/pipeline.py`/`data/providers/` — a real future integration
+into `core/pipeline.py`/`data_layer/providers/` — a real future integration
 point, not built in this phase.
 
 ### `ProviderHealthReport.checked_at` (TASK 4)

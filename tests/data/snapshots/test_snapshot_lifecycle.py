@@ -2,11 +2,11 @@
 
 import pytest
 
-from data.snapshots.lifecycle import (
+from data_layer.snapshots.lifecycle import (
     SnapshotLifecycle, SnapshotLockedError, SnapshotNotFoundError,
 )
-from data.snapshots.catalog import SnapshotCatalog
-from data.snapshots.snapshot_state import SnapshotState, VerifyState
+from data_layer.snapshots.catalog import SnapshotCatalog
+from data_layer.snapshots.snapshot_state import SnapshotState, VerifyState
 
 from _sfakes import ts, memory_with, new_backend
 

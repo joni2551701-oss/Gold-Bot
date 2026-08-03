@@ -7,8 +7,8 @@ lifecycle. The Gateway only routes requests to a service in the READY
 state; every other state is either not-yet-serving or no-longer-serving.
 
 Foundation Reuse Audit (Constitution Art. 11): no existing module models a
-service lifecycle -- `data/snapshots/snapshot_state.py` is a *snapshot*
-lifecycle (different domain, different states), and `data/replay/
+service lifecycle -- `data_layer/snapshots/snapshot_state.py` is a *snapshot*
+lifecycle (different domain, different states), and `backtesting_layer/replay_engine/
 replay_state.py` is a *replay session* lifecycle. Neither can be extended
 without conflating unrelated domains, so a new state machine is created.
 

@@ -4,19 +4,19 @@ Stream Layer — real-time market data flow (TASK-CORE-004).
 ═══════════════════════════════════════════════════════════════════════
 DEPRECATED — Owner decision, TASK-ARCH-101 PART-03.
 
-The canonical live-stream layer is `data/stream/`. Every capability this
+The canonical live-stream layer is `data_layer/live_data/`. Every capability this
 `stream/` package provided now has a canonical equivalent, so the Owner
 has flipped `stream/` to DEPRECATED:
   - `stream/price_stream.py`/`stream_event.py`/`stream_state.py`/
-    `stream_router.py`/`stream_subscriber.py` -> `data/stream/`
-    (`PriceStream`/`StreamManager`/`PriceStreamService`) + `data/events/`
+    `stream_router.py`/`stream_subscriber.py` -> `data_layer/live_data/`
+    (`PriceStream`/`StreamManager`/`PriceStreamService`) + `data_layer/event_system/`
     `EventBus` (fan-out).
-  - `stream/current_price.py` -> `data/current_price_provider.py`.
-  - `stream/stream_validator.py` -> `data/stream/stream_validator.py`
+  - `stream/current_price.py` -> `data_layer/live_data/current_price_provider.py`.
+  - `stream/stream_validator.py` -> `data_layer/live_data/stream_validator.py`
     (TASK-ARCH-101 Part 1; OHLC-candle validation stays at its canonical
-    layer, `data/data_quality.py`).
+    layer, `data_layer/data_validation/data_quality.py`).
   - `stream/stream_mode.py` (Forex 24x5 clock) ->
-    `data/stream/market_calendar.py` `ForexMarketCalendar` +
+    `data_layer/live_data/market_calendar.py` `ForexMarketCalendar` +
     `is_weekend()`/`is_market_open()` (TASK-ARCH-101 Part 2).
 
 DEPRECATED here means: build NO new code on this package; use the
@@ -32,7 +32,7 @@ Owner-authorized DELETE phase (not performed here). Status and mapping:
 `TASK-ARCH-100.md`/`TASK-ARCH-101.md`.
 ═══════════════════════════════════════════════════════════════════════
 
-stream/ sits between the FROZEN data/providers/ layer and every
+stream/ sits between the FROZEN data_layer/providers/ layer and every
 real-time consumer (Telegram, future chart, market, context,
 monitoring, platform). It receives provider output, standardises it
 into StreamEvents, validates them, tracks current price + runtime

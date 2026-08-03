@@ -1,5 +1,5 @@
 """
-Phase A8 -- Data Quality Engine foundation tests (data/data_quality.py).
+Phase A8 -- Data Quality Engine foundation tests (data_layer/data_validation/data_quality.py).
 
 No mocking -- real Candle objects with hand-picked timestamps/OHLC
 values, same convention as tests/context/test_htf_bias.py,
@@ -9,7 +9,7 @@ tests/context/test_market_regime.py.
 
 from datetime import datetime, timedelta, timezone
 
-from data.data_quality import (
+from data_layer.data_validation.data_quality import (
     assess_data_quality,
     DataQualityResult,
     INVALID_OHLC_PENALTY,
@@ -17,7 +17,7 @@ from data.data_quality import (
     MISSING_CANDLE_PENALTY,
     TIMEFRAME_MISMATCH_PENALTY,
 )
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 BASE = datetime(2024, 1, 2, 10, 0, tzinfo=timezone.utc)  # a Tuesday
 

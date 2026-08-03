@@ -10,7 +10,7 @@ only the data-fetch layer is stubbed; core/pipeline.py itself,
 Decision, and Risk are real, unmodified production code. This file
 does not touch core/pipeline.py -- it only feeds the pipeline's own
 real SignalSchema/ContextSnapshotSchema output into the new Phase 59
-foundation modules (data/market_data_snapshot.py, lifecycle/,
+foundation modules (data_layer/live_data/market_data_snapshot.py, lifecycle/,
 analytics/), none of which the pipeline calls itself.
 """
 
@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 
 from analytics.signal_performance import compute_signal_performance
 from analytics.strategy_report import build_strategy_report
-from data.market_data_snapshot import capture_market_data_snapshot
+from data_layer.live_data.market_data_snapshot import capture_market_data_snapshot
 from lifecycle.paper_trade import (
     cancel_paper_trade,
     close_paper_trade,

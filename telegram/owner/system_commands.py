@@ -4,7 +4,7 @@ Telegram Layer — Owner System Commands (Phase 59.3, TASK 5). Same
 package) -- see that module's own docstring.
 """
 
-from data.providers.registry import build_default_registry
+from data_layer.providers.registry import build_default_registry
 from monitoring.provider_health import ProviderHealthStatus, check_registry_health
 from telegram.admin_service import AdminService
 from telegram.owner.provider_commands import ProviderCommandResult

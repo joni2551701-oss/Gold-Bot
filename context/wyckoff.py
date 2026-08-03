@@ -44,7 +44,7 @@ from enum import Enum
 from typing import List, Optional, Sequence
 from datetime import datetime
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 from context.liquidity import LiquiditySweepEvent, LiquidityType
 from context.bos import BosEvent, BosDirection
 from context.choch import ChochEvent, ChochDirection
@@ -106,7 +106,7 @@ def _volume_confirms(candles: Sequence[Candle], sweep_index: int, break_index: i
 
     Wyckoff theory conventionally looks for climactic/declining volume
     around a Spring or Upthrust to fully confirm the test. This
-    codebase has no volume data source at all -- data.twelve_data_client
+    codebase has no volume data source at all -- data_layer.providers.twelve_data_client
     .Candle is OHLC-only (confirmed in Phase A1's architecture audit;
     re-confirmed by reading the file this phase). This hook always
     returns None ("not checked"), never True or False, so a caller can

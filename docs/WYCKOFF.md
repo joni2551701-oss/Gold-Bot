@@ -121,7 +121,7 @@ For each `LiquiditySweepEvent`:
 
 Wyckoff theory conventionally looks for climactic/declining volume
 around a Spring or Upthrust to fully confirm the test. **This codebase
-has no volume data source at all** — `data/twelve_data_client.py`'s
+has no volume data source at all** — `data_layer/providers/twelve_data_client.py`'s
 `Candle` is OHLC-only (confirmed in Phase A1's architecture audit,
 re-confirmed by reading the file this phase; Twelve Data's response is
 never asked for volume). `context/wyckoff.py`'s `_volume_confirms()`

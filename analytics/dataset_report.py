@@ -17,7 +17,7 @@ own worked example shape:
     Missing
     Invalid
 
-Reuses data.historical_validator.validate_historical_candles() (same
+Reuses data_layer.data_validation.historical_validator.validate_historical_candles() (same
 phase, TASK 3) for the duplicate/missing/invalid counts -- computed
 per (symbol, timeframe) group (validate_historical_candles()'s own
 missing-candle check needs one timeframe to compare against) and
@@ -32,8 +32,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, TYPE_CHECKING
 
-from data.data_quality import INTERVAL_DELTAS
-from data.historical_validator import validate_historical_candles
+from data_layer.data_validation.data_quality import INTERVAL_DELTAS
+from data_layer.data_validation.historical_validator import validate_historical_candles
 
 if TYPE_CHECKING:
     from database.raw_candle_models import RawCandle

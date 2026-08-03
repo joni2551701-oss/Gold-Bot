@@ -2,12 +2,12 @@
 
 import pytest
 
-from data.events.event_bus import EventBus
-from data.events.event_model import EventType
-from data.snapshots.manager import SnapshotManager
-from data.snapshots.policy import SnapshotPolicy
-from data.snapshots.lifecycle import SnapshotLockedError
-from data.snapshots.snapshot_state import SnapshotState, VerifyState
+from data_layer.event_system.event_bus import EventBus
+from data_layer.event_system.event_model import EventType
+from data_layer.snapshots.manager import SnapshotManager
+from data_layer.snapshots.policy import SnapshotPolicy
+from data_layer.snapshots.lifecycle import SnapshotLockedError
+from data_layer.snapshots.snapshot_state import SnapshotState, VerifyState
 
 from _sfakes import ts, memory_with, new_backend
 

@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from core_layer.logger.logger import setup_logger
-from data.providers.registry import ProviderRegistry, build_default_registry
+from data_layer.providers.registry import ProviderRegistry, build_default_registry
 from monitoring.models import SystemHealth
 from monitoring.provider_health import ProviderHealthStatus, check_registry_health
 from telegram.admin_service import AdminService

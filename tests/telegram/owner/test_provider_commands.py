@@ -2,7 +2,7 @@
 Phase 59.3, TASK 5 -- telegram/owner/provider_commands.py tests.
 """
 
-from data.providers.registry import ProviderRegistry, build_default_registry
+from data_layer.providers.registry import ProviderRegistry, build_default_registry
 from telegram.owner.provider_commands import (
     ProviderCommandResult,
     disable_provider,

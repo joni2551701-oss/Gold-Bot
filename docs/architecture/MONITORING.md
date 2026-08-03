@@ -61,7 +61,7 @@ Owner Telegram Panel
   require modifying `core/pipeline.py`, forbidden this phase (Strict
   Rule).
 - **`MarketHealth.last_price`/`.last_update`** are `Optional`,
-  populated only when a caller supplies them — `data/providers/` has
+  populated only when a caller supplies them — `data_layer/providers/` has
   no "last candle received" or price-freshness concept anywhere today
   (confirmed by the audit). Never fabricated.
 - **`SystemHealth.last_scan`** is populated only via

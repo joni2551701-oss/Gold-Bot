@@ -3,15 +3,15 @@ market/ projection — current price via the canonical MemoryReader
 (TASK-CORE-005; canonicalized TASK-ARCH-101 PART-03).
 
 Proves read_current_price() reads the latest price from the Data
-Layer's data.memory.MemoryReader (MA-002) -- NOT the DEPRECATED
+Layer's data_layer.market_memory.MemoryReader (MA-002) -- NOT the DEPRECATED
 stream/ -- and the projection threads that price into MarketData.
 """
 
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
-from data.memory import MarketMemoryRegistry, MemoryReader
-from data.twelve_data_client import Candle
+from data_layer.market_memory import MarketMemoryRegistry, MemoryReader
+from data_layer.providers.twelve_data_client import Candle
 
 from market.current_price import MarketPrice, read_current_price
 from market.market_manager import MarketManager

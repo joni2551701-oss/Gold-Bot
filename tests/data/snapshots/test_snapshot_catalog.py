@@ -1,9 +1,9 @@
 """Tests for the snapshot catalog + manifest (module 9, amendments 1, 3)."""
 
-from data.snapshots.catalog import (
+from data_layer.snapshots.catalog import (
     SnapshotCatalog, CatalogEntry, SnapshotManifest,
 )
-from data.snapshots.snapshot_state import SnapshotState, VerifyState
+from data_layer.snapshots.snapshot_state import SnapshotState, VerifyState
 
 from _sfakes import ts, new_backend
 

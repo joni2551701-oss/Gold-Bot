@@ -1,9 +1,9 @@
 """
 Monitoring Layer — Provider Health (Phase 59.2, TASK 6).
 
-Reports each registered data/providers/ DataProvider's current health
+Reports each registered data_layer/providers/ DataProvider's current health
 by timing its own get_market_status() call -- the one method every
-DataProvider guarantees never raises (see data/providers/base_provider.py's
+DataProvider guarantees never raises (see data_layer/providers/base_provider.py's
 own docstring), so this module can call it on every registered
 provider (including a stub like MT5Provider/BinanceProvider/FredProvider)
 without a try/except.
@@ -29,8 +29,8 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import List, Optional
 
-from data.providers.base_provider import DataProvider
-from data.providers.registry import ProviderRegistry
+from data_layer.providers.base_provider import DataProvider
+from data_layer.providers.registry import ProviderRegistry
 
 # The example in this task's own brief:
 #   TwelveData: Latency 240ms, Status: ONLINE

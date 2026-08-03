@@ -2,7 +2,7 @@
 Telegram Layer — Current Price service (TASK‑CORE‑004 Phase 1).
 
 Renders the informational "Current Price" message for a user. It calls
-`data.current_price_provider.CurrentPriceProvider` (never the cache
+`data_layer.live_data.current_price_provider.CurrentPriceProvider` (never the cache
 directly — Director Decision 1) and formats a localized message.
 
 **Read‑only / informational only.** No signal generation, trade
@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from typing import Dict, Optional
 
 from core_layer.logger.logger import setup_logger
-from data.current_price_provider import CurrentPrice, CurrentPriceProvider
+from data_layer.live_data.current_price_provider import CurrentPrice, CurrentPriceProvider
 from translation.ui_catalog import t
 
 logger = setup_logger("CurrentPriceService")

@@ -1,9 +1,9 @@
 """
-Phase 59.5, TASK 1/2 -- data/historical_data_collector.py tests.
+Phase 59.5, TASK 1/2 -- data_layer/historical_data/historical_data_collector.py tests.
 Real RawCandleRepository/SyncStateRepository (SQLite, tests/conftest.py's
 autouse fresh_database fixture) -- only the provider is faked, since a
 provider is this codebase's one real external-API boundary (same
-posture tests/data/providers/test_twelvedata_provider.py already uses
+posture tests/data_layer/providers/test_twelvedata_provider.py already uses
 via monkeypatching TwelveDataClient.fetch_candles()).
 """
 
@@ -12,12 +12,12 @@ from typing import List, Tuple
 
 import pytest
 
-from data.historical_data_collector import (
+from data_layer.historical_data.historical_data_collector import (
     MAX_FETCH_LIMIT,
     collect_historical_candles,
     sync_historical_candles,
 )
-from data.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
+from data_layer.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
 from database.raw_candle_repository import RawCandleRepository
 from database.sync_state_repository import SyncStateRepository
 

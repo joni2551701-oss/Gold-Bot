@@ -2,7 +2,7 @@
 Database Layer — Market Snapshot persistence model (Phase 59.3, TASK
 2: Raw Market Storage Foundation).
 
-NAMING NOTE -- read before using this module: data.market_data_snapshot.MarketDataSnapshot
+NAMING NOTE -- read before using this module: data_layer.live_data.market_data_snapshot.MarketDataSnapshot
 (Phase 59 Preparation/59.1) already exists -- a standalone, IN-MEMORY
 identity/fingerprint record for a candle window, deliberately never
 persisted ("Database migration majburiy emas" in that phase). This
@@ -21,7 +21,7 @@ from datetime import datetime
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from data.market_data_snapshot import MarketDataSnapshot
+    from data_layer.live_data.market_data_snapshot import MarketDataSnapshot
 
 
 @dataclass(frozen=True)

@@ -5,7 +5,7 @@ market_snapshot_models.py tests.
 
 from datetime import datetime, timezone
 
-from data.market_data_snapshot import capture_market_data_snapshot
+from data_layer.live_data.market_data_snapshot import capture_market_data_snapshot
 from database.market_snapshot_models import MarketSnapshotRecord, from_market_data_snapshot
 from database.market_snapshot_repository import MarketSnapshotRepository
 

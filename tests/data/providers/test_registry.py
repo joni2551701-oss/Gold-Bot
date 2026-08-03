@@ -1,13 +1,13 @@
 """
-Phase 59.2, TASK 5/9 -- data/providers/registry.py tests.
+Phase 59.2, TASK 5/9 -- data_layer/providers/registry.py tests.
 """
 
-from data.providers.base_provider import DataProvider, ProviderStatus
-from data.providers.binance_provider import BinanceProvider
-from data.providers.fred_provider import FredProvider
-from data.providers.mt5_provider import MT5Provider
-from data.providers.registry import ProviderRegistry, build_default_registry
-from data.providers.twelve_data_provider import TwelveDataProvider
+from data_layer.providers.base_provider import DataProvider, ProviderStatus
+from data_layer.providers.binance_provider import BinanceProvider
+from data_layer.providers.fred_provider import FredProvider
+from data_layer.providers.mt5_provider import MT5Provider
+from data_layer.providers.registry import ProviderRegistry, build_default_registry
+from data_layer.providers.twelve_data_provider import TwelveDataProvider
 
 
 def test_empty_registry_has_no_providers():

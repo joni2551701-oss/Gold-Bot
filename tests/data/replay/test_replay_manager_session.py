@@ -2,11 +2,11 @@
 
 import pytest
 
-from data.replay.replay_manager import ReplayManager, ReplayCreationError
-from data.replay.replay_session import ReplaySession
-from data.replay.replay_source import SnapshotReplaySource
-from data.replay.replay_validation import validate_replay
-from data.replay.replay_state import ReplayState
+from backtesting_layer.replay_engine.replay_manager import ReplayManager, ReplayCreationError
+from backtesting_layer.replay_engine.replay_session import ReplaySession
+from backtesting_layer.replay_engine.replay_source import SnapshotReplaySource
+from backtesting_layer.replay_engine.replay_validation import validate_replay
+from backtesting_layer.replay_engine.replay_state import ReplayState
 from _rfakes import memory, snapshot_source, candle, ts
 
 

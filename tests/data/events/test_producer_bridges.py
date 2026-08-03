@@ -5,12 +5,12 @@ stay decoupled (wired only via their existing hook parameter).
 
 from datetime import datetime, timezone, timedelta
 
-from data.candle_builder import CandleBuilder
-from data.memory.market_memory import MarketMemory
-from data.bootstrap.bootstrap_state import BootstrapState
-from data.events.event_bus import EventBus
-from data.events.event_model import EventType
-from data.events.producer_bridges import CandleEventBridge, BootstrapEventBridge
+from data_layer.live_data.candle_builder import CandleBuilder
+from data_layer.market_memory.market_memory import MarketMemory
+from data_layer.historical_data.bootstrap_state import BootstrapState
+from data_layer.event_system.event_bus import EventBus
+from data_layer.event_system.event_model import EventType
+from data_layer.event_system.producer_bridges import CandleEventBridge, BootstrapEventBridge
 
 
 def _dt(minute, second=0):

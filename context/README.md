@@ -89,7 +89,7 @@ phase doesn't have; "setup quality" per session is
 - Does not add a `SESSION_ALIGNED` criterion to
   `signals/signal_quality.py` — a distinct, separate, not-yet-done
   future step.
-- Does not read, call, or duplicate `data/session_filter.py`'s
+- Does not read, call, or duplicate `data_layer/live_data/session_filter.py`'s
   `is_trading_time()` — different purpose (wall-clock trading-hours
   gate vs. per-candle session classification), different time
   convention (Tashkent vs. UTC).
@@ -123,7 +123,7 @@ which lives outside `ContextSnapshot`'s own data).
 - Does not persist regime history — no schema change, no new table.
 
 ### Why HTF Bias exists
-Phase A1's architecture audit found `data/market_data.py`'s
+Phase A1's architecture audit found `data_layer/live_data/market_data.py`'s
 `MarketDataNormalizer.get_snapshot()` — a fully-built multi-timeframe
 fetch with per-timeframe data-quality flags — already existed but was
 never called by `core/pipeline.py`. Phase A2 wires that connection and
@@ -208,7 +208,7 @@ already established. No new detection: reads only
 ## Input
 `Sequence[Candle]` (from `data/`) for the execution-timeframe
 detectors. `htf_bias.py`'s `compute_htf_bias()` takes a
-`data.market_data.MarketSnapshot` (from `get_snapshot()`) instead.
+`data_layer.live_data.market_data.MarketSnapshot` (from `get_snapshot()`) instead.
 `market_regime.py`'s `compute_market_regime()` additionally takes an
 optional `HTFBiasResult` (defaults to `None`). `snapshot.py`'s
 `from_context_snapshot()` takes an already-built `ContextSnapshot`
@@ -285,7 +285,7 @@ section — full Wyckoff phase theory boundaries (A/B/C/D/E) and any
 future consumer beyond logging remain unimplemented.
 
 ### Why Fundamental Context exists (Phase 59.3)
-`data/providers/fred_provider.py` (Phase 59.2) existed but was never
+`data_layer/providers/fred_provider.py` (Phase 59.2) existed but was never
 connected to `context/` — `fundamental_context.py` adds that
 connection point: `compute_fundamental_context(interest_rate=,
 inflation=)` builds a `FundamentalContextSnapshot` (`fed_rate`,
@@ -297,7 +297,7 @@ already-computed data" pattern `context/market_phase.py` and
 raise `NotImplementedError` today (Phase 59.2's honest stub); a future
 real implementation is the one that would supply real values here.
 Deliberately named `FundamentalContextSnapshot`, not
-`FundamentalSnapshot` — `data.providers.fundamental_base.FundamentalSnapshot`
+`FundamentalSnapshot` — `data_layer.providers.fundamental_base.FundamentalSnapshot`
 (Phase 59.2) already exists as a different, generic provider-layer
 bundle type; see `fundamental_context.py`'s own "NAMING NOTE" for the
 full comparison.

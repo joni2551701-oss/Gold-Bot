@@ -3,9 +3,9 @@ Market Layer — Candle read model (TASK-CORE-005).
 
 A plain OHLCV container the market projection hands to consumers. It
 holds NO logic (no indicator, no structure math) -- it is a view
-adapted from an upstream candle. Adapters accept a `data.memory`
+adapted from an upstream candle. Adapters accept a `data_layer.market_memory`
 CandleRecord (from `MemoryReader`, the canonical read surface) or a
-`data.providers.MarketCandle` (the FROZEN provider shape) without
+`data_layer.providers.MarketCandle` (the FROZEN provider shape) without
 importing either module's internals -- only their public attributes.
 
 This is deliberately a thin, separate view type (not a re-export) so a
@@ -41,7 +41,7 @@ class Candle:
 
     @classmethod
     def from_candle_record(cls, symbol: str, record) -> "Candle":
-        """Adapt a `data.memory` CandleRecord (from `MemoryReader`; public
+        """Adapt a `data_layer.market_memory` CandleRecord (from `MemoryReader`; public
         attributes only) into a market Candle. The record carries its own
         `timeframe`; `symbol` is supplied by the caller (CandleRecord is
         keyed per-asset by the memory, not on the record itself)."""
@@ -65,7 +65,7 @@ class Candle:
 
     @classmethod
     def from_provider_candle(cls, candle) -> "Candle":
-        """Adapt a data.providers.MarketCandle (FROZEN, public attributes only) into a market Candle."""
+        """Adapt a data_layer.providers.MarketCandle (FROZEN, public attributes only) into a market Candle."""
         return cls(
             symbol=candle.symbol, timeframe=candle.timeframe, timestamp=candle.timestamp,
             open=candle.open, high=candle.high, low=candle.low, close=candle.close,

@@ -1,5 +1,5 @@
 """
-Unit tests for data/stream/price_stream.py (v1.1 Phase 1, module 4).
+Unit tests for data_layer/live_data/price_stream.py (v1.1 Phase 1, module 4).
 
 Covers the DD-046 lifecycle, DD-047 waiting mode (+ crypto exemption),
 DD-051 provider isolation, DD-052 event ordering, DD-050 graceful
@@ -10,8 +10,8 @@ import datetime as _dt
 
 import pytest
 
-from data.stream.price_stream import PriceStream, AlwaysOpenCalendar
-from data.stream.stream_event import StreamState, AssetClass
+from data_layer.live_data.price_stream import PriceStream, AlwaysOpenCalendar
+from data_layer.live_data.stream_event import StreamState, AssetClass
 from _fakes import (
     FakeProvider, FakeCalendar, RecordingSink, event, ts,
 )
@@ -167,7 +167,7 @@ def test_capabilities_exposed():
 # ---------------- TASK-ARCH-101: optional validator integration ----------------
 
 def test_validator_drops_invalid_events():
-    from data.stream.stream_validator import StreamValidator
+    from data_layer.live_data.stream_validator import StreamValidator
     p = FakeProvider()
     sink = RecordingSink()
     s = _stream(provider=p, sink=sink, calendar=FakeCalendar(True),

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Sequence, Optional
 from datetime import datetime
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("MarketStructureEngine")

@@ -1,5 +1,5 @@
 """
-Phase 59.1, TASK 8 -- data/providers/twelve_data_provider.py tests.
+Phase 59.1, TASK 8 -- data_layer/providers/twelve_data_provider.py tests.
 Monkeypatches TwelveDataClient.fetch_candles() -- no real network call
 is ever made, same pattern tests/data/test_market_data.py already
 uses.
@@ -7,9 +7,9 @@ uses.
 
 from datetime import datetime, timezone
 
-from data.providers.base_provider import MarketCandle, ProviderStatus
-from data.providers.twelve_data_provider import SUPPORTED_SYMBOLS, TwelveDataProvider
-from data.twelve_data_client import Candle, TwelveDataClient
+from data_layer.providers.base_provider import MarketCandle, ProviderStatus
+from data_layer.providers.twelve_data_provider import SUPPORTED_SYMBOLS, TwelveDataProvider
+from data_layer.providers.twelve_data_client import Candle, TwelveDataClient
 
 
 def _candle(price=2000.0, ts=None):
@@ -53,7 +53,7 @@ def test_get_candles_empty_response_returns_empty_list_not_none(monkeypatch):
 
 
 def test_get_candles_re_raises_on_fetch_failure(monkeypatch):
-    """Unlike data/market_data.py's get_candles(), TwelveDataProvider re-raises -- a thinner adapter."""
+    """Unlike data_layer/live_data/market_data.py's get_candles(), TwelveDataProvider re-raises -- a thinner adapter."""
     import pytest
 
     provider = TwelveDataProvider()

@@ -24,7 +24,7 @@ from context.session import Session, SessionEvent
 from context.liquidity import LiquidityZone, LiquidityType
 from context.htf_bias import HTFBias, HTFBiasResult
 from signals.explainability import SignalExplanation
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 TS = datetime(2024, 1, 2, 9, 0, tzinfo=timezone.utc)  # 09:00 UTC -- LONDON per context/session.py
 

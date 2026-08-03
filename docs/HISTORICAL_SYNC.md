@@ -7,7 +7,7 @@ one-shot `collect_historical_candles()` this builds on).
 
 ## The problem
 
-`data/historical_data_collector.py`'s `collect_historical_candles()`
+`data_layer/historical_data/historical_data_collector.py`'s `collect_historical_candles()`
 (TASK 1) takes an explicit `[start, end)` window every call. Calling
 it repeatedly on a schedule with the same wide window would re-fetch
 and re-request candles the archive already has — wasteful of API
@@ -42,7 +42,7 @@ as actually persisted.
 
 ## `sync_historical_candles()`
 
-`data/historical_data_collector.py`'s incremental entry point:
+`data_layer/historical_data/historical_data_collector.py`'s incremental entry point:
 
 ```python
 sync_historical_candles(
@@ -75,9 +75,9 @@ sync_historical_candles(
 ## Running an incremental sync
 
 ```python
-from data.providers.twelve_data_provider import TwelveDataProvider
+from data_layer.providers.twelve_data_provider import TwelveDataProvider
 from database.sync_state_repository import SyncStateRepository
-from data.historical_data_collector import sync_historical_candles
+from data_layer.historical_data.historical_data_collector import sync_historical_candles
 from datetime import datetime, timedelta, timezone
 
 provider = TwelveDataProvider()

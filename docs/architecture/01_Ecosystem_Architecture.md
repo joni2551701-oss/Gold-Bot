@@ -447,7 +447,7 @@ Revision 1). Layer-by-layer one-line summary, top to bottom:
 |---|---|
 | Configuration | Environment, feature flags, secrets, version — read by everything, written by nothing above it. |
 | Provider Factory → Data Validation | Fetches and validates raw market data from external providers (TwelveData, Bitget/exchange APIs). |
-| Market Memory | The Single Source of Truth every consumer reads (`02_Data_Layer.md`; real, as `data/memory/`, MA-001). |
+| Market Memory | The Single Source of Truth every consumer reads (`02_Data_Layer.md`; real, as `data_layer/market_memory/`, MA-001). |
 | GoldBot Core | The deterministic pipeline — see `ARCHITECTURE_MASTER.md` for the authoritative version of this layer. |
 | Application Services | The service boundary between Core and every product surface (mostly not yet built — `04_Application_Services.md`). |
 | AI Layer | Advisory-only explanation/analysis; real as a single `ai/` package today, not the five-persona split the diagram shows (`05_AI_Layer.md`, and the Conflicts section). |
@@ -473,7 +473,7 @@ duplication the Owner instructed against).
 
 | Principle | Status |
 |---|---|
-| Single Source of Truth | Market Memory (`data/memory/`, MA-001) is the one in-RAM store every consumer reads through (`MemoryReader`, MA-002). Real today, for candle data; not yet the source for every layer above Core (Section 8). |
+| Single Source of Truth | Market Memory (`data_layer/market_memory/`, MA-001) is the one in-RAM store every consumer reads through (`MemoryReader`, MA-002). Real today, for candle data; not yet the source for every layer above Core (Section 8). |
 | Separation of Concerns | Each layer above does one job — see `docs/architecture/SYSTEM_LAYERS.md`'s 7-layer responsibility-cluster view for the real, current version inside the Trading Core/AI/Telegram system. |
 | Layer Isolation | = Constitution Article 2 (Dependency Law) + Article 3 (Import Rules). Not restated here. |
 | Composition over Duplication | = Constitution Article 7 (Reuse Principle). Not restated here. |

@@ -1,10 +1,10 @@
 # stream/
 
 > **DEPRECATED — Owner decision, TASK-ARCH-101 PART-03.** The canonical
-> live-stream layer is `data/stream/`; every capability here now has a
-> canonical equivalent (validator → `data/stream/stream_validator.py`,
-> Forex clock → `data/stream/market_calendar.py`, everything else →
-> `data/stream/` + `data/events/` + `data/current_price_provider.py`).
+> live-stream layer is `data_layer/live_data/`; every capability here now has a
+> canonical equivalent (validator → `data_layer/live_data/stream_validator.py`,
+> Forex clock → `data_layer/live_data/market_calendar.py`, everything else →
+> `data_layer/live_data/` + `data_layer/event_system/` + `data_layer/live_data/current_price_provider.py`).
 > Build no new code on this package. **NOT deleted, no code removed, no
 > feature lost** — its tests still pass. DELETE is a separate later
 > Owner-authorized phase, only after `market/` (its last importer) is
@@ -12,13 +12,13 @@
 
 ## Purpose
 `stream/` (TASK-CORE-004) is GoldBot's real-time market **data-flow**
-layer. It sits between the **FROZEN** `data/providers/` layer and every
+layer. It sits between the **FROZEN** `data_layer/providers/` layer and every
 real-time consumer:
 
 ```
 config.py
    ↓
-data/providers/     (FROZEN — provider adapters + ProviderManager)
+data_layer/providers/     (FROZEN — provider adapters + ProviderManager)
    ↓
 stream/             (this layer — real-time flow)
    ↓

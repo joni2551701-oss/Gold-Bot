@@ -205,14 +205,14 @@ already computes it.
 
 **Verified: three of four checks existed; API-error classification did not — built in this review.**
 
-`data/data_quality.py` (Phase A8) already checks missing candles,
+`data_layer/data_validation/data_quality.py` (Phase A8) already checks missing candles,
 duplicate timestamps, invalid OHLC, and timeframe consistency. It had
 no classification for API-layer failures (timeout, rate limit,
 connection failure) — those were caught and logged as free-text
-strings in `data/market_data.py`'s `MarketDataNormalizer.get_candles()`,
+strings in `data_layer/live_data/market_data.py`'s `MarketDataNormalizer.get_candles()`,
 with no structured code.
 
-This review adds `data/api_error_classifier.py`'s
+This review adds `data_layer/providers/api_error_classifier.py`'s
 `classify_api_error(exception) -> ExternalAPIError` — a pure,
 additive classification helper using Phase A18's error hierarchy
 (`API_001` for a timeout/connection failure, `API_002` for anything
@@ -220,7 +220,7 @@ else — rate limit, malformed response, missing key). Wired into
 `MarketDataNormalizer.get_candles()`'s existing `except` block as
 **one additional `logger.error()` call only** — the existing
 degrade-to-`[]` return value and control flow are byte-for-byte
-unchanged; `data/twelve_data_client.py`'s own retry/backoff logic is
+unchanged; `data_layer/providers/twelve_data_client.py`'s own retry/backoff logic is
 untouched. Verified explicitly:
 `tests/data/test_market_data.py::test_get_candles_still_returns_empty_list_on_fetch_failure`
 and `::test_get_candles_still_works_normally_when_fetch_succeeds`

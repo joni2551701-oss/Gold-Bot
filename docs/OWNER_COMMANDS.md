@@ -21,7 +21,7 @@ code, not yet by a live command.
 
 ```
 /provider                → shows the current MARKET_DATA_PROVIDER and every registered provider's ProviderStatus
-/providers                → lists every provider in the default registry (data/providers/registry.py's build_default_registry()), by name, with availability
+/providers                → lists every provider in the default registry (data_layer/providers/registry.py's build_default_registry()), by name, with availability
 /provider_status          → a full monitoring/provider_health.py report for every registered provider (status, latency, reason) -- the Telegram-facing view of check_registry_health()
 /enable_provider <name>   → sets ENABLE_<NAME>=True (owner-only)
 /disable_provider <name>  → sets ENABLE_<NAME>=False (owner-only)
@@ -51,7 +51,7 @@ between the two shapes.
   check (which repository, which column) is not audited in this phase
   — that audit belongs to whoever wires the command, at wiring time.
 - **`/provider`/`/providers`** — `telegram/owner/provider_commands.py`'s
-  `list_providers()` already calls `data/providers/registry.py`'s
+  `list_providers()` already calls `data_layer/providers/registry.py`'s
   `build_default_registry()` and `ProviderRegistry.all_names()`/
   `available()` — done, just needs a handler to call it.
 - **`/provider_status`** — `provider_commands.py`'s `get_data_status()`

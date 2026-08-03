@@ -176,7 +176,7 @@ free of any `signals`/`context` import, satisfying TASK 8's isolation
 list conservatively (which names only `decision`/`risk`/`execution` as
 forbidden imports, but this is a stricter, safer choice).
 
-## `data/providers/`
+## `data_layer/providers/`
 
 `ProviderRegistry`/`build_default_registry()` confirmed as the plain
 catalog `monitoring/provider_health.py` already composes. No existing

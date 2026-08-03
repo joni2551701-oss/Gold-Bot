@@ -79,7 +79,7 @@ now writes a `request_log`/`response_log` entry (`status=
 path with zero audit trail. (2) A retry attempt (`is_retry`) now waits
 `2 ** (len(attempted) - 2)` seconds via the injectable `sleep_fn`
 (defaults to `time.sleep`) before the next attempt -- the same
-exponential-backoff formula `data/twelve_data_client.py` already uses,
+exponential-backoff formula `data_layer/providers/twelve_data_client.py` already uses,
 reused rather than reinvented; tests inject a no-op `sleep_fn` so the
 suite never blocks. (3) `PROVIDER_FAILED`'s payload now carries a
 structured `error_type` (`TIMEOUT`/`RATE_LIMIT`/`INVALID_RESPONSE`/
@@ -452,7 +452,7 @@ class AIService:
             is_retry = len(attempted) > 1
             if is_retry:
                 # Phase 62.2 TASK 5: exponential backoff before a retry
-                # attempt, same 2 ** attempt formula data/twelve_data_client.py's
+                # attempt, same 2 ** attempt formula data_layer/providers/twelve_data_client.py's
                 # fetch_candles() already uses for the identical "wait
                 # before trying again" purpose (Reuse Principle: reuse the
                 # existing formula). len(attempted) - 2 is 0 for the first

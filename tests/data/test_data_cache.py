@@ -1,5 +1,5 @@
 """
-Phase 59.3, TASK 3 -- data/data_cache.py (SmartDataCache) test
+Phase 59.3, TASK 3 -- data_layer/market_memory/data_cache.py (SmartDataCache) test
 coverage.
 
 Audit finding this closes: SmartDataCache already provides exactly
@@ -24,9 +24,9 @@ data/.cache_state.json file.
 from datetime import datetime, timedelta, timezone
 
 from config import Config
-from data.data_cache import SmartDataCache
-from data.market_data import MarketSnapshot
-from data.twelve_data_client import Candle
+from data_layer.market_memory.data_cache import SmartDataCache
+from data_layer.live_data.market_data import MarketSnapshot
+from data_layer.providers.twelve_data_client import Candle
 
 
 def _cache(tmp_path, monkeypatch) -> SmartDataCache:

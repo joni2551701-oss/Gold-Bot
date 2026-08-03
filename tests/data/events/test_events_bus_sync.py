@@ -1,13 +1,13 @@
-"""Unit tests for data/events/event_bus.py sync dispatch (module 7)."""
+"""Unit tests for data_layer/event_system/event_bus.py sync dispatch (module 7)."""
 
 import pytest
 
-from data.events.event_bus import EventBus
-from data.events.event_model import (
+from data_layer.event_system.event_bus import EventBus
+from data_layer.event_system.event_model import (
     EventType, EventPriority, EventValidationError, Event,
 )
-from data.events.event_bridge import EventBridge
-from data.events.replay_log import RingBufferPolicy
+from data_layer.event_system.event_bridge import EventBridge
+from data_layer.event_system.replay_log import RingBufferPolicy
 from _efakes import make_event, ts
 
 

@@ -135,7 +135,7 @@ def compute_r_multiple(
     three-line formula -- the same small, disclosed duplication this
     codebase already accepted for Wyckoff-vs-AMD
     (context/wyckoff.py's own "Relationship to AMD" docstring) and
-    Data Quality-vs-market_data.py (data/data_quality.py's own
+    Data Quality-vs-market_data.py (data_layer/data_validation/data_quality.py's own
     docstring).
 
     "TP" -> the planned R actually realized (using take_profit).

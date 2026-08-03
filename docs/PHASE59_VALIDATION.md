@@ -142,7 +142,7 @@ against.
 ## Relationship to the rest of Phase 59 Preparation
 
 ```
-data/market_data_snapshot.py (TASK 1)  -- raw window identity/fingerprint
+data_layer/live_data/market_data_snapshot.py (TASK 1)  -- raw window identity/fingerprint
 lifecycle/paper_trade.py (TASK 2)      -- simulated trade state machine
 lifecycle/signal_state.py (TASK 4)     -- signal's own pipeline-stage state
 analytics/signal_performance.py,       -- per-signal/per-strategy result

@@ -7,7 +7,7 @@ and the **Live Price Service** layer that delivers it. This is the
 
 ## Related — Market Data Service (candles, not ticks)
 
-`data/market_data_service.py`'s `MarketDataService` is a sibling
+`data_layer/live_data/market_data_service.py`'s `MarketDataService` is a sibling
 service, not part of this document's Price Stream/Live Price chain:
 it answers `TradingPipeline`'s need for multi-candle OHLC history
 (`get_candles()`/`get_snapshot()`/historical series), which a

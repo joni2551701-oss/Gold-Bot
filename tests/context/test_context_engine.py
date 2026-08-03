@@ -9,7 +9,7 @@ non-ascending (invalid-order) candles.
 
 from datetime import datetime, timedelta, timezone
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 from context.context_orchestrator import (
     ContextEngine,

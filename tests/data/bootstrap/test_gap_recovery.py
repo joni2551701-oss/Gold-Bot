@@ -1,8 +1,8 @@
-"""Unit tests for data/bootstrap/gap_recovery.py (module 5)."""
+"""Unit tests for data_layer/historical_data/gap_recovery.py (module 5)."""
 
-from data.memory.market_memory import MarketMemory
-from data.memory.candle_record import CandleSource
-from data.bootstrap.gap_recovery import GapRecovery
+from data_layer.market_memory.market_memory import MarketMemory
+from data_layer.market_memory.candle_record import CandleSource
+from data_layer.historical_data.gap_recovery import GapRecovery
 from _bfakes import FakeHistoricalProvider, candle, ts
 
 

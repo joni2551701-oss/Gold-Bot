@@ -1,8 +1,8 @@
 """
-Phase 59.3, TASK 1 -- data/normalization/symbol_mapper.py tests.
+Phase 59.3, TASK 1 -- data_layer/normalization/symbol_mapper.py tests.
 """
 
-from data.normalization.symbol_mapper import from_provider_symbol, is_known_symbol, to_provider_symbol
+from data_layer.normalization.symbol_mapper import from_provider_symbol, is_known_symbol, to_provider_symbol
 
 
 def test_to_provider_symbol_twelvedata():

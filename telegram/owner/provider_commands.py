@@ -18,7 +18,7 @@ rather than inventing a new pattern.
 
 from typing import Optional
 
-from data.providers.registry import ProviderRegistry, build_default_registry
+from data_layer.providers.registry import ProviderRegistry, build_default_registry
 from monitoring.provider_health import ProviderHealthStatus, check_registry_health
 from core_layer.logger.logger import setup_logger
 
@@ -29,7 +29,7 @@ logger = setup_logger("ProviderCommands")
 # here rather than requiring the owner to know the internal name
 # exactly, the same "reuse real value, tolerate the brief's shorthand"
 # pattern this session has used since Phase 59.1's own
-# "data/twelve_data.py" -> "data/twelve_data_client.py" correction.
+# "data/twelve_data.py" -> "data_layer/providers/twelve_data_client.py" correction.
 _NAME_ALIASES = {"twelve": "twelvedata"}
 
 

@@ -2,8 +2,8 @@
 
 import threading
 
-from data.events.event_bus import EventBus
-from data.events.event_model import EventType
+from data_layer.event_system.event_bus import EventBus
+from data_layer.event_system.event_model import EventType
 from _efakes import make_event
 
 

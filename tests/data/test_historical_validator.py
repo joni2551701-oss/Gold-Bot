@@ -1,10 +1,10 @@
 """
-Phase 59.5, TASK 3 -- data/historical_validator.py tests.
+Phase 59.5, TASK 3 -- data_layer/data_validation/historical_validator.py tests.
 """
 
 from datetime import datetime, timedelta, timezone
 
-from data.historical_validator import validate_historical_candles
+from data_layer.data_validation.historical_validator import validate_historical_candles
 from database.raw_candle_models import create_raw_candle
 
 

@@ -1,5 +1,5 @@
 """
-Phase 59.2, TASK 4/9 -- data/providers/fred_provider.py and
+Phase 59.2, TASK 4/9 -- data_layer/providers/fred_provider.py and
 fundamental_base.py tests.
 """
 
@@ -7,9 +7,9 @@ from datetime import datetime, timezone
 
 import pytest
 
-from data.providers.base_provider import DataProvider, ProviderStatus
-from data.providers.fred_provider import SERIES_INFLATION, SERIES_INTEREST_RATE, SUPPORTED_SERIES, FredProvider
-from data.providers.fundamental_base import FundamentalDataPoint, FundamentalDataProvider, FundamentalSnapshot
+from data_layer.providers.base_provider import DataProvider, ProviderStatus
+from data_layer.providers.fred_provider import SERIES_INFLATION, SERIES_INTEREST_RATE, SUPPORTED_SERIES, FredProvider
+from data_layer.providers.fundamental_base import FundamentalDataPoint, FundamentalDataProvider, FundamentalSnapshot
 
 
 def test_fred_provider_is_a_fundamental_data_provider():

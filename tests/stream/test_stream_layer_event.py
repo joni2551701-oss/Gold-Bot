@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 
-from data.providers.base_provider import MarketCandle
+from data_layer.providers.base_provider import MarketCandle
 from stream.stream_event import StreamEvent
 
 

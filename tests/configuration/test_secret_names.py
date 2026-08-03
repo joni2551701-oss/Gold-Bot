@@ -8,7 +8,7 @@ TELEGRAM_OWNER_ID, TWELVE_DATA_API_KEY) against what core/secrets.py
 core/secrets.py's own docstring and docs/SECURITY.md) actually reads.
 
 BITGET_API_KEY is a genuine audit finding, not an oversight: no
-provider in data/providers/ reads it, core/secrets.py has no property
+provider in data_layer/providers/ reads it, core/secrets.py has no property
 for it, and .env.example/.env.production never mention it -- only an
 ENABLE_BITGET feature-registry flag exists for a not-yet-built
 provider (configuration/feature_registry.py). This suite pins that

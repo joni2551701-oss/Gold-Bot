@@ -33,8 +33,8 @@ database/raw_candle_repository.py (Phase 59.3/59.5, +Phase 60.1's
         v
 backtesting/replay_engine.py (TASK 5)
     loads the configured window once, converts each RawCandle into
-    data.twelve_data_client.Candle -- the exact type
-    data.market_data.MarketDataNormalizer.get_candles() already
+    data_layer.providers.twelve_data_client.Candle -- the exact type
+    data_layer.live_data.market_data.MarketDataNormalizer.get_candles() already
     returns to the live pipeline today
         |
         +-- backtesting/replay_clock.py (TASK 3)   -- play/pause/resume/stop/speed/seek, a pure position state machine
@@ -102,7 +102,7 @@ phase built on top of it) must never:
 - Call any of the above from `backtesting/`.
 
 `ReplayFeed.next_candle()`/`window()` return
-`data.twelve_data_client.Candle` — the same type
+`data_layer.providers.twelve_data_client.Candle` — the same type
 `MarketDataNormalizer.get_candles()` already hands to
 `context/`/`strategies/` in the live pipeline. This is deliberate:
 whichever future phase (60.2 Backtesting, 60.3 Execution Simulator)

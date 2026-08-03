@@ -12,7 +12,7 @@ own. Same "compute from supplied data, don't fetch" posture
 validation_commands.py/performance_commands.py already established:
 the caller supplies an already-built FundamentalContextSnapshot/
 FundamentalScoreResult (nothing in this codebase fetches real FRED
-data yet -- data.providers.fred_provider.FredProvider is still a
+data yet -- data_layer.providers.fred_provider.FredProvider is still a
 foundation-only stub, see its own module docstring).
 
 Per this whole phase's hard boundary: none of these commands return

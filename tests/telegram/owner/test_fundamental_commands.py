@@ -6,7 +6,7 @@ construction, same convention as every other telegram/owner/ test.
 
 from context.fundamental_context import compute_fundamental_context, merge_fundamental_score
 from context.fundamental_scoring import compute_fundamental_score
-from data.providers.fundamental_base import FundamentalDataPoint
+from data_layer.providers.fundamental_base import FundamentalDataPoint
 from datetime import datetime, timezone
 
 from telegram.owner.fundamental_commands import get_fed_status, get_fundamental_score_report, get_macro_status

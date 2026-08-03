@@ -1,10 +1,10 @@
 """
-Phase 59.5, TASK 6 -- data/provider_comparison.py tests.
+Phase 59.5, TASK 6 -- data_layer/providers/provider_comparison.py tests.
 """
 
 from datetime import datetime, timezone
 
-from data.provider_comparison import compare_providers
+from data_layer.providers.provider_comparison import compare_providers
 from database.raw_candle_models import create_raw_candle
 
 

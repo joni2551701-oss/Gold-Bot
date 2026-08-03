@@ -13,9 +13,9 @@ import pytest
 
 from database.raw_candle_models import create_raw_candle, from_market_candle
 from database.raw_candle_repository import RawCandleRepository
-from data.providers.base_provider import MarketCandle
-from data.providers.twelve_data_provider import TwelveDataProvider
-from data.twelve_data_client import Candle
+from data_layer.providers.base_provider import MarketCandle
+from data_layer.providers.twelve_data_provider import TwelveDataProvider
+from data_layer.providers.twelve_data_client import Candle
 
 
 def _candle(symbol="XAUUSD", timeframe="M15", ts=None, provider="twelvedata"):

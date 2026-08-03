@@ -29,7 +29,7 @@ assumed. No code was changed to produce this analysis.
 The single most encouraging finding of this audit: **the hard part is
 already built, just not connected.**
 
-- `data/market_data.py`'s `MarketDataNormalizer.get_snapshot(symbol,
+- `data_layer/live_data/market_data.py`'s `MarketDataNormalizer.get_snapshot(symbol,
   intervals)` fetches and normalizes **multiple timeframes in one
   call** (`Config.TIMEFRAME_HISTORY` already defines M5/M15/H1/H4
   sizing), returning a `MarketSnapshot` with one candle list per
@@ -75,7 +75,7 @@ third input).
 - No volume data is fetched or normalized anywhere in `data/` — a real
   Wyckoff engine's phase/Spring/UTAD tests conventionally lean on
   volume confirmation, which this codebase has no source for today
-  (Twelve Data's candle payload is OHLC-only in `data/twelve_data_client.py`,
+  (Twelve Data's candle payload is OHLC-only in `data_layer/providers/twelve_data_client.py`,
   re-confirmed this phase).
 - **Reason this is HIGH priority per the roadmap**: named explicitly
   as a "multi-market framework" foundation piece — Wyckoff's phase
@@ -134,7 +134,7 @@ gap.
   every scheduled run.
 - **Encouraging detail**: `TradingPipeline.__init__` itself already
   takes `symbol`/`interval` as constructor parameters (not hardcoded
-  at the class level), and `data/twelve_data_client.py`'s `XAUUSD` →
+  at the class level), and `data_layer/providers/twelve_data_client.py`'s `XAUUSD` →
   `XAU/USD` conversion is documented as an example in its own
   docstring, not a hardcoded restriction — so the *class* is already
   symbol-parameterized; only the *entry point* (`main.py`) and the
@@ -155,7 +155,7 @@ change, out of scope for a specification-only phase to decide).
 
 ### 6. Session Intelligence — **PARTIAL**, Priority: **MEDIUM**
 
-- `data/session_filter.py`'s `is_trading_time()` is fully built:
+- `data_layer/live_data/session_filter.py`'s `is_trading_time()` is fully built:
   Tashkent-timezone-aware, Monday–Friday 08:00–23:59 window check —
   but it is **not called anywhere** (confirmed by grep this phase,
   same as `data_cache.py`) — `core/pipeline.py` runs regardless of
@@ -193,7 +193,7 @@ change, out of scope for a specification-only phase to decide).
 - No news/event calendar integration, no economic-event data source,
   no pre/post-news signal suppression exists anywhere — confirmed by
   grep this phase. `TWELVE_DATA_API_KEY` is used for candle data only
-  (`data/twelve_data_client.py`); Twelve Data does offer an economic
+  (`data_layer/providers/twelve_data_client.py`); Twelve Data does offer an economic
   calendar endpoint in principle, but nothing in this codebase calls
   it.
 - **Priority rationale**: LOW relative to HTF Bias/Wyckoff/Signal
@@ -262,7 +262,7 @@ change, out of scope for a specification-only phase to decide).
 
 Same pattern as HTF Bias: **already built, not connected.**
 
-- `data/market_data.py`'s `MarketDataNormalizer.get_snapshot()` (see
+- `data_layer/live_data/market_data.py`'s `MarketDataNormalizer.get_snapshot()` (see
   item 1) produces a `quality: Dict[str, str]` per timeframe —
   `"OK"` / `"WARNING_GAP"` (from `_detect_missing_candles()`) /
   `"ERROR_NO_DATA"` — plus a separate `_verify_timeframe_alignment()`

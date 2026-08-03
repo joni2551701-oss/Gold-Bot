@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Tuple
 
-from data.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
+from data_layer.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
 from stream.price_stream import PriceStream
 from stream.stream_event import StreamEvent
 from stream.stream_subscriber import CallbackSubscriber

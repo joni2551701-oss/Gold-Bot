@@ -16,7 +16,7 @@ from context.session import (
     compute_session_liquidity_activity,
 )
 from context.context_orchestrator import build_context_snapshot
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 from context.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
 
 

@@ -114,7 +114,7 @@ condition / Worst condition" worked example shape. See
   derivation from already-approved price levels, never a sizing
   decision.
 - Is not wired into `core/pipeline.py` — a standalone foundation, same
-  posture as `lifecycle/` and `data/market_data_snapshot.py` (this
+  posture as `lifecycle/` and `data_layer/live_data/market_data_snapshot.py` (this
   phase's other two tasks).
 
 ## Dependencies

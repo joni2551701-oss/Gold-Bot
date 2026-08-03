@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, TYPE_CHECKING
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 from context.context_config import ContextConfig
 from context.market_structure import (

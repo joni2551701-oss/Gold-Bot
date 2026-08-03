@@ -3,14 +3,14 @@
 > **CANONICAL PROJECTION — Application-Services tier (Owner ruling,
 > TASK-ARCH-101 PART-03, L1 migration EXECUTED).** `market/` is the
 > single Canonical Market Projection: an upper-layer read-only projection
-> that consumes exactly two canonical inputs — `data.memory.MemoryReader`
+> that consumes exactly two canonical inputs — `data_layer.market_memory.MemoryReader`
 > (Data Layer market data) and `context.snapshot.ContextSnapshotSchema`
 > (GoldBot Core context) — and nothing else. Its coupling to the
 > now-DEPRECATED `stream/` is completely removed (zero `stream` imports).
 > Not a Data Layer member, not Core; dependency flows strictly downward.
 > The projection snapshot is `MarketStateSnapshot` (with a `MarketSnapshot`
 > compat alias); the canonical `MarketSnapshot` class is
-> `data.market_data.MarketSnapshot`. See
+> `data_layer.live_data.market_data.MarketSnapshot`. See
 > `docs/governance/collaboration/TASK-ARCH-101.md` PART-03.
 
 ## Purpose
@@ -23,7 +23,7 @@ themselves.
 ```
 config.py
    ↓
-data/providers/     (FROZEN)
+data_layer/providers/     (FROZEN)
    ↓
 stream/             (real-time flow, current price)
    ↓
@@ -86,7 +86,7 @@ contract already exists, so no change to `context/` was required.
 - **`regime_state.py`** — `RegimeState` from context regime. Advisory
   context, **not** a strategy choice.
 - **`candle.py`** — `Candle` read model + adapters from a
-  `stream.StreamEvent` / frozen `data.providers.MarketCandle`.
+  `stream.StreamEvent` / frozen `data_layer.providers.MarketCandle`.
 - **`ticker.py`** — `Ticker` fast price/ticker read.
 - **`orderbook.py`** — `OrderBook` normalisation target (optional; no
   provider supplies depth yet).

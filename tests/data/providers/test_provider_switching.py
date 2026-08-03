@@ -1,14 +1,14 @@
 """
-Phase 59.1, TASK 8 -- data/providers/__init__.py's get_provider()
+Phase 59.1, TASK 8 -- data_layer/providers/__init__.py's get_provider()
 factory tests.
 """
 
 import pytest
 
 from config import Config
-from data.providers import get_provider
-from data.providers.mt5_provider import MT5Provider
-from data.providers.twelve_data_provider import TwelveDataProvider
+from data_layer.providers import get_provider
+from data_layer.providers.mt5_provider import MT5Provider
+from data_layer.providers.twelve_data_provider import TwelveDataProvider
 
 
 def test_get_provider_defaults_to_config_market_data_provider(monkeypatch):

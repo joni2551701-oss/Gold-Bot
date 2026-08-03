@@ -49,23 +49,23 @@ context/telegram (-2).
 
 - API connection handling: `TwelveDataClient.fetch_candles()` retries
   on HTTP 429 with exponential backoff, raises `ConnectionError` after
-  3 failed attempts (`data/twelve_data_client.py:82-128`).
+  3 failed attempts (`data_layer/providers/twelve_data_client.py:82-128`).
 - Missing API key: fails gracefully — `TwelveDataClient.__init__()`
   catches the `Secrets` lookup and sets `api_key = None`
-  (`data/twelve_data_client.py:38-45`); `MarketDataNormalizer.get_candles()`
+  (`data_layer/providers/twelve_data_client.py:38-45`); `MarketDataNormalizer.get_candles()`
   catches the resulting `ValueError` and returns `[]`
-  (`data/market_data.py:99-107`). Confirmed live via `python main.py`
+  (`data_layer/live_data/market_data.py:99-107`). Confirmed live via `python main.py`
   in this audit session — clean exit code 0, 0 candles, no crash.
 - Candle normalization: `_validate_and_clean()` filters non-positive
   prices and invalid OHLC relationships (`high < low`,
   `high < max(open, close)`, `low > min(open, close)`) and de-duplicates
-  by timestamp (`data/market_data.py:34-50`). This is the actual
+  by timestamp (`data_layer/live_data/market_data.py:34-50`). This is the actual
   production guard against malformed candles reaching `context/` — see
   Context Layer note below.
 - Timeframe consistency: `_verify_timeframe_alignment()` warns (does
   not block) when timeframes disagree by more than 4 hours
-  (`data/market_data.py:79-97`).
-- **P2 — Dead code:** `data/data_cache.py` (`SmartDataCache`) is a
+  (`data_layer/live_data/market_data.py:79-97`).
+- **P2 — Dead code:** `data_layer/market_memory/data_cache.py` (`SmartDataCache`) is a
   complete, disk-persisted caching layer built specifically to
   "minimize API calls" and track a daily rate-limit budget, but it is
   never imported anywhere outside its own file. `core/pipeline.py`
@@ -74,7 +74,7 @@ context/telegram (-2).
   window regardless of whether the M15 candle actually closed —
   functionally fine at current call volume, but the built solution for
   reducing redundant API calls is not wired in.
-- **P2 — Dead code:** `data/session_filter.py` (`is_trading_time()`,
+- **P2 — Dead code:** `data_layer/live_data/session_filter.py` (`is_trading_time()`,
   Tashkent business-hours gate) is never called by `core/pipeline.py`
   or `main.py`. The pipeline currently runs on every cron tick inside
   the GitHub Actions window (`3-18 UTC`, `trading_bot.yml:5`)
@@ -105,11 +105,11 @@ context/telegram (-2).
   (`context_orchestrator.py:77-102`) — relies entirely on the data
   layer's guarantees.
 - **Correction to initial finding:** the `Candle` dataclass itself
-  (`data/twelve_data_client.py:11-21`) has no `__post_init__`
+  (`data_layer/providers/twelve_data_client.py:11-21`) has no `__post_init__`
   validation, which looked like a P1 risk in isolation — but the
   actual production path always routes through
   `MarketDataNormalizer._validate_and_clean()` first
-  (`data/market_data.py:42`), which does reject `high<low` /
+  (`data_layer/live_data/market_data.py:42`), which does reject `high<low` /
   inverted-OHLC candles before `context/` ever sees them. Net
   severity: **P3** (the dataclass itself is unguarded, but the one
   production caller already guards it; a future direct construction
@@ -405,7 +405,7 @@ runtime pass agree: nothing in this audit's scope is broken.
   whether the product does anything at all in its primary function.
 
 **P2 — Medium:**
-- `data/data_cache.py` (`SmartDataCache`) and `data/session_filter.py`
+- `data_layer/market_memory/data_cache.py` (`SmartDataCache`) and `data_layer/live_data/session_filter.py`
   (`is_trading_time()`) are complete, unused modules — the built
   API-call-reduction and trading-hours-gating logic isn't wired in.
 - `telegram/`'s FREE/PREMIUM/VIP signal-access gate and all permission
@@ -438,10 +438,10 @@ docs/handler argument-signature mismatch.
 1. Implement real AI heuristic/model scoring in `ai/ai_analyzer.py`
    (wire up the already-built `ai/confidence_model.py` and/or
    `ai/ai_prompt.py` + Gemini), replacing the permanent-reject stub.
-2. Wire `data/data_cache.py` (`SmartDataCache`) into `core/pipeline.py`
+2. Wire `data_layer/market_memory/data_cache.py` (`SmartDataCache`) into `core/pipeline.py`
    or `main.py` to reduce redundant Twelve Data API calls across
    5-minute cron ticks.
-3. Wire `data/session_filter.py` (`is_trading_time()`) into the
+3. Wire `data_layer/live_data/session_filter.py` (`is_trading_time()`) into the
    pipeline if trading-hours gating is still desired in-process (vs.
    relying solely on the GitHub Actions cron window).
 4. Move the FREE/PREMIUM/VIP signal-access check (and other

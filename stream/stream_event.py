@@ -3,12 +3,12 @@ Stream Layer — Stream Event model (TASK-CORE-004).
 
 StreamEvent is the single, standard shape every real-time market
 update takes once it enters the stream layer. Raw provider output
-(data/providers/base_provider.py's MarketCandle) is adapted into a
+(data_layer/providers/base_provider.py's MarketCandle) is adapted into a
 StreamEvent BEFORE anything downstream (validator, state, router,
 subscribers) touches it -- a consumer never sees a raw provider
 response, only this uniform event.
 
-Relationship to data/providers/ (FROZEN): StreamEvent does NOT
+Relationship to data_layer/providers/ (FROZEN): StreamEvent does NOT
 replace MarketCandle. MarketCandle is the provider layer's output
 shape; StreamEvent is the stream layer's transport shape and adds two
 stream-only fields the provider layer has no concept of:
@@ -61,7 +61,7 @@ class StreamEvent:
     @classmethod
     def from_candle(cls, candle, source: str = "provider") -> "StreamEvent":
         """
-        Adapt one data.providers.base_provider.MarketCandle into a
+        Adapt one data_layer.providers.base_provider.MarketCandle into a
         StreamEvent. Reads only the candle's public attributes (never
         mutates it, never imports the provider package's internals), so
         the FROZEN provider contract is untouched. `source` labels how

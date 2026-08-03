@@ -1,5 +1,5 @@
 """
-Unit tests for data/bootstrap/historical_bootstrap.py (module 5).
+Unit tests for data_layer/historical_data/historical_bootstrap.py (module 5).
 
 Covers strategies (DD-058), cold start / warm restart / incremental,
 resume (DD-056), cancellation (DD-055), progress (DD-054), metrics
@@ -10,10 +10,10 @@ import datetime as _dt
 
 import pytest
 
-from data.memory.market_memory import MarketMemory
-from data.bootstrap.historical_bootstrap import HistoricalBootstrap
-from data.bootstrap.bootstrap_state import BootstrapState, BootstrapStrategy
-from data.bootstrap.historical_provider import InMemoryBootstrapCache
+from data_layer.market_memory.market_memory import MarketMemory
+from data_layer.historical_data.historical_bootstrap import HistoricalBootstrap
+from data_layer.historical_data.bootstrap_state import BootstrapState, BootstrapStrategy
+from data_layer.historical_data.historical_provider import InMemoryBootstrapCache
 from _bfakes import FakeHistoricalProvider, candle, ts
 
 

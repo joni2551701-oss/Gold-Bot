@@ -59,7 +59,7 @@ asset/market-type/instrument constant, to reuse rather than invent:
 | `symbol="XAUUSD"` | `main.py`'s `TradingPipeline(...)` | `GOLD_ASSET.symbol` |
 | `DEFAULT_SYMBOL = "XAUUSD"` | `telegram/signal_service.py` | confirms `"XAUUSD"` is the canonical value across the codebase |
 | `_SUPPORTED_ASSETS = ["XAUUSD"]` | `strategies/lifecycle/strategy_registry.py` (Phase A11, module-private) | confirms the same value again; not imported (private, and `assets/` deliberately has no dependency on `strategies/`) |
-| `_format_symbol()`'s 6-char split (`"XAUUSD"` → `"XAU/USD"`) | `data/twelve_data_client.py` | confirms `XAU`/`USD` is the correct base/quote split for this ticker |
+| `_format_symbol()`'s 6-char split (`"XAUUSD"` → `"XAU/USD"`) | `data_layer/providers/twelve_data_client.py` | confirms `XAU`/`USD` is the correct base/quote split for this ticker |
 
 No existing asset/market-type registry, `AssetType`-equivalent enum,
 or per-asset metadata model was found anywhere — `execution/` and
@@ -99,7 +99,7 @@ an explicit `None` hook — see "Future hooks" below.
 The brief's `AssetDefinition` example used
 `base_currency="USD", quote_currency="USD"` for XAUUSD. Both being
 `"USD"` does not match the real, standard ticker convention this
-codebase's own `data/twelve_data_client.py` already relies on:
+codebase's own `data_layer/providers/twelve_data_client.py` already relies on:
 `_format_symbol()` splits `"XAUUSD"` into `"XAU/USD"` — base `XAU`
 (one troy ounce of gold), quote `USD`. `GOLD_ASSET` therefore uses
 `base_currency="XAU"`, `quote_currency="USD"` — the real,

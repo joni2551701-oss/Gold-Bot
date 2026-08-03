@@ -1,11 +1,11 @@
-"""Unit tests for data/stream/market_calendar.py (TASK-ARCH-101).
+"""Unit tests for data_layer/live_data/market_calendar.py (TASK-ARCH-101).
 
 Anchor dates (UTC): 2026-07-20 Mon, -24 Fri, -25 Sat, -26 Sun, -27 Mon.
 """
 
 from datetime import datetime, timezone
 
-from data.stream.market_calendar import (
+from data_layer.live_data.market_calendar import (
     ForexMarketCalendar, is_weekend, is_market_open,
 )
 
@@ -70,8 +70,8 @@ def test_next_open_when_already_open_returns_now():
 
 def test_satisfies_marketcalendar_protocol_in_pricestream():
     # ForexMarketCalendar plugs into PriceStream's existing calendar slot.
-    from data.stream.price_stream import PriceStream
-    from data.stream.stream_event import AssetClass
+    from data_layer.live_data.price_stream import PriceStream
+    from data_layer.live_data.stream_event import AssetClass
     import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).parent))

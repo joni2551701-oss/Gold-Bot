@@ -2,9 +2,9 @@
 
 from datetime import datetime, timezone, timedelta
 
-from data.twelve_data_client import Candle
-from data.bootstrap.historical_provider import HistoricalProvider
-from data.stream.stream_event import (
+from data_layer.providers.twelve_data_client import Candle
+from data_layer.historical_data.historical_provider import HistoricalProvider
+from data_layer.live_data.stream_event import (
     ProviderHealth, ProviderStatus, ProviderCapabilities,
 )
 

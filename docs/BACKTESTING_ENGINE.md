@@ -13,7 +13,7 @@ backtest: ... else: ...` shaklida yozilmaydi."* No file in this phase
 branches on "am I backtesting or live." Instead:
 
 ```
-LIVE:   data.market_data.MarketDataNormalizer.get_candles()  -> List[Candle]
+LIVE:   data_layer.live_data.market_data.MarketDataNormalizer.get_candles()  -> List[Candle]
 REPLAY: backtesting.replay_feed.ReplayFeed.window()            -> List[Candle]
               \                                    /
                v                                  v

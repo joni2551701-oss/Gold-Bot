@@ -74,11 +74,11 @@ def test_market_data_normalizer_error_log_does_not_contain_the_api_key(monkeypat
     fake_key = "FAKE_TWELVE_DATA_KEY_MUST_NOT_LEAK_9f8e7d"
     monkeypatch.setenv("TWELVE_DATA_API_KEY", fake_key)
     monkeypatch.setattr(
-        "data.twelve_data_client.TwelveDataClient.fetch_candles",
+        "data_layer.providers.twelve_data_client.TwelveDataClient.fetch_candles",
         lambda self, *a, **k: (_ for _ in ()).throw(ConnectionError("simulated network failure")),
     )
 
-    from data.market_data import MarketDataNormalizer
+    from data_layer.live_data.market_data import MarketDataNormalizer
 
     with caplog.at_level(logging.ERROR, logger="MarketDataNormalizer"):
         candles = MarketDataNormalizer().get_candles("XAUUSD", "M15", 200)

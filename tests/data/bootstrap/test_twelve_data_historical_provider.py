@@ -1,5 +1,5 @@
 """
-Unit tests for data/bootstrap/twelve_data_historical_provider.py (module 5).
+Unit tests for data_layer/historical_data/twelve_data_historical_provider.py (module 5).
 
 Exercises the adapter via an injected fake client (no network): capability
 declaration, fetch_recent, and fetch_range filtering.
@@ -7,8 +7,8 @@ declaration, fetch_recent, and fetch_range filtering.
 
 from datetime import datetime, timezone, timedelta
 
-from data.twelve_data_client import Candle
-from data.bootstrap.twelve_data_historical_provider import (
+from data_layer.providers.twelve_data_client import Candle
+from data_layer.historical_data.twelve_data_historical_provider import (
     TwelveDataHistoricalProvider,
 )
 

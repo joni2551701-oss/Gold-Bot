@@ -8,7 +8,7 @@ when candle-1 low > candle-3 high.
 
 from datetime import datetime, timedelta, timezone
 
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 from context.fvg import detect_fvg, FvgType
 

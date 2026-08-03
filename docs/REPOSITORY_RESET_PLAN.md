@@ -16,7 +16,7 @@ branch is deleted**. This revision reflects all three.
 **Baseline:** `origin/main = 20e49a6` — the most‑advanced line (+96 over
 the old DD‑002 canonical `pwfo3q`; contains the assembled
 `docs/constitution/`, `ai/` (182 files incl. `ai/chart_intelligence/`),
-`platforms/`, `data/memory` v1.1, etc.).
+`platforms/`, `data_layer/market_memory` v1.1, etc.).
 
 **Inventory:** 48 branches carry unmerged commits (data loss if deleted);
 37 are already merged into `main` (safe to delete, zero data loss).

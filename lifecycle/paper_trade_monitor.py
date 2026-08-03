@@ -35,7 +35,7 @@ from lifecycle.paper_trade import PaperTradeTransitionResult, close_paper_trade
 from lifecycle.trade_state import TradeState
 
 if TYPE_CHECKING:
-    from data.twelve_data_client import Candle
+    from data_layer.providers.twelve_data_client import Candle
     from lifecycle.paper_trade import PaperTrade
 
 

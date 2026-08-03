@@ -1,12 +1,12 @@
 """
-Phase 59.1, TASK 8 -- data/providers/base_provider.py interface tests.
+Phase 59.1, TASK 8 -- data_layer/providers/base_provider.py interface tests.
 Extended by Phase 59.2 TASK 1/9 for the DataProvider/MarketDataProvider
 split.
 """
 
 import pytest
 
-from data.providers.base_provider import DataProvider, MarketCandle, MarketDataProvider, ProviderStatus
+from data_layer.providers.base_provider import DataProvider, MarketCandle, MarketDataProvider, ProviderStatus
 from datetime import datetime, timezone
 
 

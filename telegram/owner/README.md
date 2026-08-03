@@ -21,7 +21,7 @@ functions and sends the result.
 
 ### `provider_commands.py`
 `list_providers()`, `get_data_status()` — real, working, backed by
-`data/providers/registry.py`/`monitoring/provider_health.py`.
+`data_layer/providers/registry.py`/`monitoring/provider_health.py`.
 `enable_provider()`/`disable_provider()` — honestly **not** working
 toggles: `config.Config.ENABLE_MT5`/`ENABLE_TWELVEDATA` are read once
 at `config.py` import time from `os.getenv()`, so there is no runtime
@@ -77,7 +77,7 @@ lighter-weight candle count + oldest/newest timestamp view.
 incremental-sync watermark, via `SyncStateRepository` (same phase,
 TASK 2). `get_provider_compare(symbol, timeframe, provider_a,
 provider_b)` — a summary of
-`data.provider_comparison.compare_providers()` (same phase, TASK 6)
+`data_layer.providers.provider_comparison.compare_providers()` (same phase, TASK 6)
 run against each provider's own stored candles. Unlike
 `report_commands.py`/`validation_commands.py`, these four call the
 real `RawCandleRepository`/`SyncStateRepository` directly rather than
@@ -100,7 +100,7 @@ full contrast between the two.
 `get_system_status()` — the future `/system_status` command's payload
 (`System`/`Pipeline`/`Database`/`Provider`/`Mode`/`Last Signal`),
 composing `telegram.admin_service.AdminService.get_system_status()`,
-`data.providers.registry.build_default_registry()`,
+`data_layer.providers.registry.build_default_registry()`,
 `config.Config.MARKET_DATA_PROVIDER`/`VALIDATION_MODE`,
 `core_layer.system_state.system_state.SystemState` (used only as a display label — no
 `SystemState` instance is held or mutated anywhere), and
@@ -216,7 +216,7 @@ for this whole phase. Not wired into the live bot, same as every
 module in this package.
 
 ## Dependencies
-`provider_commands.py` imports `data.providers.registry`,
+`provider_commands.py` imports `data_layer.providers.registry`,
 `monitoring.provider_health`. `system_commands.py` additionally
 imports `telegram.admin_service.AdminService` and
 `provider_commands.ProviderCommandResult`. `feature_commands.py`
@@ -227,14 +227,14 @@ imports `analytics.strategy_report`, `analytics.signal_performance`,
 `validation_commands.py` imports `analytics.validation_report`,
 `analytics.signal_performance`, `config.Config`, `signals.schema.SignalSchema`,
 and `provider_commands.ProviderCommandResult`. `dataset_commands.py`
-imports `analytics.dataset_report`, `data.provider_comparison`,
+imports `analytics.dataset_report`, `data_layer.providers.provider_comparison`,
 `database.raw_candle_repository`, `database.sync_state_repository`,
 and `provider_commands.ProviderCommandResult`. `owner_roles.py`
 imports `telegram.permissions.is_owner` and, lazily (inside
 `resolve_owner_role()`, not at module import time),
 `database.admin_repository.AdminRepository`. `status_commands.py`
 imports `config.Config`, `core_layer.system_state.system_state.SystemState`,
-`data.providers.registry`, `database.signal_repository.SignalRepository`,
+`data_layer.providers.registry`, `database.signal_repository.SignalRepository`,
 `telegram.admin_service.AdminService`, and
 `provider_commands.ProviderCommandResult`. `control_commands.py`
 imports `configuration.runtime_api` and

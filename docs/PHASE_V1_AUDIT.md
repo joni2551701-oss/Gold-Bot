@@ -184,7 +184,7 @@ the process for that cycle. Isolation exists only at the process level
 minutes), not at the stage level.
 
 **Timeout handling**: Market Data HTTP calls have an explicit
-`timeout=10` (`data/twelve_data_client.py:88`), which also bounds the
+`timeout=10` (`data_layer/providers/twelve_data_client.py:88`), which also bounds the
 HTF Bias fetch — confirmed non-hanging. No timeout was found on the
 Telegram delivery HTTP call, and no timeout mechanism exists for a
 future real (non-stub) AI provider call in this path.
@@ -232,7 +232,7 @@ docstrings). The real logic lives in `execution/simulator/`
 built in Phase 60.3, which explicitly never calls the inert
 `ExecutionEngine` or any broker/MT5 API. A repo-wide grep for
 `MT5|MetaTrader|mt5\.|order_send|broker` found only the price-feed
-provider stub (`data/providers/mt5_provider.py`, which unconditionally
+provider stub (`data_layer/providers/mt5_provider.py`, which unconditionally
 raises `NotImplementedError` for candle/price fetches) — no order
 infrastructure.
 

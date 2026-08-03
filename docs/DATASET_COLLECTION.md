@@ -17,11 +17,11 @@ pipeline.
 
 ## What collects the data
 
-`data/historical_data_collector.py`'s `collect_historical_candles()`:
+`data_layer/historical_data/historical_data_collector.py`'s `collect_historical_candles()`:
 
 ```python
 collect_historical_candles(
-    provider,       # a data/providers/ MarketDataProvider, e.g. TwelveDataProvider()
+    provider,       # a data_layer/providers/ MarketDataProvider, e.g. TwelveDataProvider()
     symbol,         # e.g. "XAUUSD"
     timeframe,      # e.g. "M15"
     start, end,     # the window to collect
@@ -36,8 +36,8 @@ adds no new fetch or storage logic, it only composes the two.
 
 ## The one honest limitation
 
-Neither `data.twelve_data_client.TwelveDataClient.fetch_candles()` nor
-`data.providers.base_provider.MarketDataProvider.get_candles()` accepts
+Neither `data_layer.providers.twelve_data_client.TwelveDataClient.fetch_candles()` nor
+`data_layer.providers.base_provider.MarketDataProvider.get_candles()` accepts
 a real `start_date`/`end_date` range — both are "give me the most
 recent N candles" calls only. `collect_historical_candles()` does not
 add that capability to the provider layer (an additive-only foundation
@@ -73,8 +73,8 @@ externally-scheduled call, the same "foundation, not full wiring"
 posture every module in this phase follows:
 
 ```python
-from data.providers.twelve_data_provider import TwelveDataProvider
-from data.historical_data_collector import collect_historical_candles
+from data_layer.providers.twelve_data_provider import TwelveDataProvider
+from data_layer.historical_data.historical_data_collector import collect_historical_candles
 from datetime import datetime, timedelta, timezone
 
 provider = TwelveDataProvider()

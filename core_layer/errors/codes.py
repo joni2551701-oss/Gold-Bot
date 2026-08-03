@@ -36,7 +36,7 @@ DATA_002 = "DATA_002"  # invalid OHLC values
 API_001 = "API_001"  # request timeout
 API_002 = "API_002"  # rate limit exceeded
 # Added for Phase 59.1 (Market Data Provider Abstraction) TASK 5 --
-# data/api_error_classifier.py's classify_empty_response()/
+# data_layer/providers/api_error_classifier.py's classify_empty_response()/
 # classify_api_error() are the callers. The brief's own "API_TIMEOUT"/
 # "API_LIMIT" labels map onto the two pre-existing codes above
 # (already exactly "request timeout"/"rate limit exceeded") rather

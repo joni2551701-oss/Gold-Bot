@@ -1,11 +1,11 @@
 """
-Unit tests for data/persistence/persistent_store.py (DD-069 backends,
+Unit tests for data_layer/market_memory/persistence/persistent_store.py (DD-069 backends,
 DD-071 safe restore, recover).
 """
 
-from data.memory.market_memory import MarketMemory
-from data.memory.candle_record import CandleSource
-from data.persistence.persistent_store import (
+from data_layer.market_memory.market_memory import MarketMemory
+from data_layer.market_memory.candle_record import CandleSource
+from data_layer.market_memory.persistence.persistent_store import (
     InMemoryStorageBackend, FileStorageBackend, PersistentMemoryStore,
 )
 from _pfakes import memory_with, candle, ts

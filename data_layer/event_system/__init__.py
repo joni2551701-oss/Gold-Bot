@@ -1,13 +1,39 @@
-"""01_Data_Layer / Event_System — data_layer.event_system.
-
-Foundation Freeze v1.0 — canonical architecture skeleton.
-
-Phase A creates this package as an importable mirror of the canonical
-Layer documents at the repository root. Code is migrated module by
-module in Phases B-E under Migration Isolation Rule (MIR-001); until a
-module is migrated, its behaviour still comes from the pre-freeze
-top-level packages, which keep working during migration per Import
-Compatibility Rule (ICR-001).
-
-Canonical documentation: 01_Data_Layer/Event_System/README.md
 """
+data_layer.event_system -- GoldBot v1.1 Market Data Foundation: Event Bus (Phase 1
+module 7).
+
+Central publish/subscribe hub with typed, versioned, namespaced events,
+priority + wildcard subscription, sync/async dispatch, a policy-governed
+replay log, metrics, and a distributed-bridge hook. Producers connect via
+their existing hooks (CandleEventHook, BootstrapEventHook) through the
+producer bridges; consumers subscribe. The bus depends on no producer and
+no consumer.
+
+Not wired into core/pipeline.py; carries no signal/risk/decision logic
+(Trading Safety). Never imports from telegram/, ai/, decision/, risk/,
+strategies/, signals/, context/, or database/.
+"""
+
+from data_layer.event_system.event_model import (
+    Event, EventType, EventPriority, EVENT_SCHEMA_VERSION,
+    validate_event, EventValidationError,
+)
+from data_layer.event_system.event_bus import EventBus, SubscriptionHandle, WILDCARD
+from data_layer.event_system.replay_log import (
+    ReplayLog, ReplayPolicy, RingBufferPolicy, TimeBasedPolicy,
+)
+from data_layer.event_system.event_metrics import EventMetrics
+from data_layer.event_system.event_bridge import EventBridge, NullBridge
+from data_layer.event_system.producer_bridges import CandleEventBridge, BootstrapEventBridge
+
+__all__ = [
+    "Event", "EventType", "EventPriority", "EVENT_SCHEMA_VERSION",
+    "validate_event", "EventValidationError",
+    "EventBus", "SubscriptionHandle", "WILDCARD",
+    "ReplayLog", "ReplayPolicy", "RingBufferPolicy", "TimeBasedPolicy",
+    "EventMetrics",
+    "EventBridge", "NullBridge",
+    "CandleEventBridge", "BootstrapEventBridge",
+]
+
+# Canonical documentation: 01_Data_Layer/Event_System/README.md

@@ -4,7 +4,7 @@ Raw Market Storage Foundation).
 
 The first real database migration added by any Phase A/AC/Phase-59
 module in this codebase's history -- every prior raw-market-data
-foundation (data/market_data_snapshot.py, Phase 59 Preparation/59.1)
+foundation (data_layer/live_data/market_data_snapshot.py, Phase 59 Preparation/59.1)
 deliberately stayed in-memory-only ("Database migration majburiy
 emas"). This phase's own brief explicitly asks for persisted storage
 ("Saqlash... Muhim: Backtest uchun" -- storage, important for
@@ -17,9 +17,9 @@ reads the pre-existing 'signals'/'users'/'subscriptions'/'feedback'/
 
 NAMING NOTE -- read before using this module: three other "candle"
 shapes already exist in this codebase, none of which this model
-replaces or wraps: data.twelve_data_client.Candle (timestamp+OHLC
+replaces or wraps: data_layer.providers.twelve_data_client.Candle (timestamp+OHLC
 only, the real type the live pipeline uses in-memory),
-data.providers.base_provider.MarketCandle (the Phase 59.1/59.2
+data_layer.providers.base_provider.MarketCandle (the Phase 59.1/59.2
 provider-layer standard shape, symbol+timeframe+OHLC+volume+provider,
 also in-memory only), and database.signal_record.SignalRecord (an
 unrelated per-SIGNAL persistence wrapper, not a candle at all).
@@ -36,7 +36,7 @@ from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from data.providers.base_provider import MarketCandle
+    from data_layer.providers.base_provider import MarketCandle
 
 
 @dataclass(frozen=True)
@@ -91,10 +91,10 @@ def from_market_candle(candle: 'MarketCandle', provider: Optional[str] = None) -
     """
     Phase 59 Real Market Validation Foundation, TASK 3 -- the bridge
     this codebase was missing between the provider layer's own
-    standard output (data/providers/base_provider.py's MarketCandle,
+    standard output (data_layer/providers/base_provider.py's MarketCandle,
     Phase 59.1/59.2) and this table's persisted row shape. A direct
     field copy, computes nothing new -- the same "adapter, not a new
-    detector" posture data/market_data_snapshot.py's
+    detector" posture data_layer/live_data/market_data_snapshot.py's
     capture_market_data_snapshot() and database/market_snapshot_models.py's
     from_market_data_snapshot() already established.
 

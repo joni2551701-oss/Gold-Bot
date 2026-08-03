@@ -1,14 +1,14 @@
 """
-Unit tests for data/stream/stream_event.py models (v1.1 Phase 1, module 4).
+Unit tests for data_layer/live_data/stream_event.py models (v1.1 Phase 1, module 4).
 """
 
 from datetime import datetime, timezone
 
-from data.stream.stream_event import (
+from data_layer.live_data.stream_event import (
     StreamEvent, StreamState, ProviderStatus, ProviderHealth,
     ProviderCapabilities, AssetClass,
 )
-from data.memory.candle_record import CandleSource
+from data_layer.market_memory.candle_record import CandleSource
 
 
 def test_stream_states_cover_dd046():

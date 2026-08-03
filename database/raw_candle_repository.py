@@ -14,7 +14,7 @@ from database.raw_candle_models import RawCandle, from_market_candle
 from core_layer.logger.logger import setup_logger
 
 if TYPE_CHECKING:
-    from data.providers.base_provider import MarketCandle
+    from data_layer.providers.base_provider import MarketCandle
 
 logger = setup_logger("RawCandleRepository")
 
@@ -81,7 +81,7 @@ class RawCandleRepository:
     def save_market_candles(self, candles: List['MarketCandle'], provider: Optional[str] = None) -> int:
         """
         Phase 59 Real Market Validation Foundation, TASK 3 -- adapts
-        each data/providers/base_provider.MarketCandle (e.g.
+        each data_layer/providers/base_provider.MarketCandle (e.g.
         TwelveDataProvider.get_candles()'s real output) via
         database.raw_candle_models.from_market_candle() and saves it,
         closing the loop between the provider layer (Phase 59.1/59.2)
@@ -99,7 +99,7 @@ class RawCandleRepository:
     def get_candles(
         self, symbol: str, timeframe: str, provider: Optional[str] = None, limit: int = 500
     ) -> List[RawCandle]:
-        """Chronologically ascending (oldest first), most recent `limit` rows -- same ordering convention as data.twelve_data_client.TwelveDataClient.fetch_candles()."""
+        """Chronologically ascending (oldest first), most recent `limit` rows -- same ordering convention as data_layer.providers.twelve_data_client.TwelveDataClient.fetch_candles()."""
         with self.db as conn:
             if provider is not None:
                 cursor = conn.execute(

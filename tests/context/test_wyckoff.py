@@ -15,7 +15,7 @@ from context.liquidity import LiquidityZone, LiquiditySweepEvent, LiquidityType
 from context.bos import BosEvent, BosDirection
 from context.choch import ChochEvent, ChochDirection
 from context.context_orchestrator import build_context_snapshot
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 TS = datetime(2024, 1, 1, tzinfo=timezone.utc)
 

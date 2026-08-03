@@ -4,7 +4,7 @@ Learning Loop Foundation, TASK 5).
 
 `LearningRecordRow` deliberately does not reuse `learning.models.LearningRecord`
 directly -- same disambiguation-by-naming discipline this codebase has
-used repeatedly (`RawCandle` vs. `data.twelve_data_client.Candle`,
+used repeatedly (`RawCandle` vs. `data_layer.providers.twelve_data_client.Candle`,
 `FundamentalContextSnapshot` vs. `FundamentalSnapshot`,
 `ExecutionSimulationResult` vs. `ExecutionResult`): every existing
 repository in this codebase owns its own row-shaped model

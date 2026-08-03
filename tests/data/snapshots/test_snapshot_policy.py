@@ -2,8 +2,8 @@
 
 from datetime import timedelta
 
-from data.snapshots.catalog import CatalogEntry
-from data.snapshots.policy import SnapshotPolicy
+from data_layer.snapshots.catalog import CatalogEntry
+from data_layer.snapshots.policy import SnapshotPolicy
 
 from _sfakes import ts
 

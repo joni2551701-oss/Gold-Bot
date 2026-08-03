@@ -2,7 +2,7 @@
 
 import pytest
 
-from data.snapshots.snapshot_state import (
+from data_layer.snapshots.snapshot_state import (
     SnapshotState, VerifyState, SnapshotStateError,
     can_transition, assert_transition, CORE_VERSION,
 )

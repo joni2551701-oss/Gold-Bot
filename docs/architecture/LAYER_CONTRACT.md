@@ -15,7 +15,7 @@ groups the same modules by responsibility cluster.
 ## The pipeline chain
 
 ```
-config.py → data/providers/ → stream/ → market/ → context/
+config.py → data_layer/providers/ → stream/ → market/ → context/
    → strategies/ → signals/ → decision/ → risk/ → execution/
 ai/ feeds decision/ as ADVISORY input only. telegram/ is the delivery
 edge. database/ is storage. monitoring/ only observes.
@@ -31,14 +31,14 @@ edge. database/ is storage. monitoring/ only observes.
 - **Allowed:** read secrets (the ONE place `.env` is read), hold configuration, orchestrate the pipeline.
 - **Forbidden:** market analysis, signal, decision, risk, execution logic. Never log a secret value.
 
-### Layer: `data/providers/` (FROZEN)
+### Layer: `data_layer/providers/` (FROZEN)
 - **Input:** provider credentials (via `config.get_settings()`), symbol/timeframe requests.
 - **Output:** raw normalized candles / prices (`MarketCandle`), provider status; `ProviderManager` chain.
 - **Allowed:** call the real provider API, classify provider errors, pick an active provider.
 - **Forbidden:** market structure, signal, decision, risk, execution. No structure math. Contract is frozen — Critical bug / Security / real-API impl / Director-approved change only.
 
 ### Layer: `stream/`
-- **Input:** provider data (`data/providers/`), incoming ticks/candles.
+- **Input:** provider data (`data_layer/providers/`), incoming ticks/candles.
 - **Output:** `StreamEvent`s, live `CurrentPrice`, stream mode (active/weekend/paused); distributes to subscribers.
 - **Allowed:** hold the real-time flow, update current price, route events, decide weekend/wait mode.
 - **Forbidden:** compute market structure, emit a signal, make a decision, compute risk. No secret read/log.

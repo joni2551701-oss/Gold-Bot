@@ -69,8 +69,8 @@ bottom-most layer.
 
 **Public interfaces**: `MarketDataNormalizer.get_normalized_candles(symbol, interval)`.
 
-**Future expansion points**: `data/data_cache.py` (`SmartDataCache`)
-and `data/session_filter.py` (`is_trading_time()`) are built but
+**Future expansion points**: `data_layer/market_memory/data_cache.py` (`SmartDataCache`)
+and `data_layer/live_data/session_filter.py` (`is_trading_time()`) are built but
 unwired — see Documentation Audit / prior-phase findings, unchanged
 this phase.
 

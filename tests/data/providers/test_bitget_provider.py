@@ -1,13 +1,13 @@
 """
 TASK-CORE-003 -- tests for the Bitget provider stub
-(data/providers/bitget_provider.py).
+(data_layer/providers/bitget_provider.py).
 """
 
 import pytest
 
 from config import build_settings
-from data.providers.base_provider import MarketDataProvider, ProviderStatus
-from data.providers.bitget_provider import SUPPORTED_SYMBOLS, BitgetProvider
+from data_layer.providers.base_provider import MarketDataProvider, ProviderStatus
+from data_layer.providers.bitget_provider import SUPPORTED_SYMBOLS, BitgetProvider
 
 
 def test_is_a_market_data_provider():

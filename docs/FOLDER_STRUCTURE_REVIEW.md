@@ -50,7 +50,7 @@ specific assumptions actually touch.
   FVGs) are general price-action algorithms with no gold-specific
   constant found anywhere in this audit — they operate on
   `Candle` OHLC data regardless of what it represents.
-- `data/twelve_data_client.py`'s symbol-formatting is documented as an
+- `data_layer/providers/twelve_data_client.py`'s symbol-formatting is documented as an
   example (`"XAUUSD"` → `"XAU/USD"`), not a hardcoded restriction —
   Twelve Data itself serves Forex pairs through the same API shape.
 
@@ -77,7 +77,7 @@ Same structural readiness as Forex (symbol-agnostic pipeline/risk/
 context code), with one additional open question this review flags
 but does not resolve: crypto markets trade 24/7 with no session
 structure, which interacts directly with two other Foundation Gap
-Analysis items — `data/session_filter.py`'s Monday-Friday/Tashkent-
+Analysis items — `data_layer/live_data/session_filter.py`'s Monday-Friday/Tashkent-
 hours gate (Session Intelligence, PARTIAL) would need to become
 per-asset-class-aware rather than a single global gate, and
 `.github/workflows/trading_bot.yml`'s cron window

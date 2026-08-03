@@ -5,8 +5,8 @@ by Phase 59.3 TASK 4 (checked_at field).
 
 from datetime import datetime, timezone
 
-from data.providers.base_provider import DataProvider, ProviderStatus
-from data.providers.registry import build_default_registry
+from data_layer.providers.base_provider import DataProvider, ProviderStatus
+from data_layer.providers.registry import build_default_registry
 from monitoring.provider_health import (
     ProviderHealthReport,
     ProviderHealthStatus,
@@ -116,7 +116,7 @@ def test_checked_at_is_a_real_recent_utc_timestamp():
 
 
 def test_check_registry_health_never_raises_on_empty_registry():
-    from data.providers.registry import ProviderRegistry
+    from data_layer.providers.registry import ProviderRegistry
 
     empty_registry = ProviderRegistry()
     reports = check_registry_health(empty_registry)

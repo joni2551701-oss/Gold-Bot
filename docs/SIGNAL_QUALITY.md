@@ -122,7 +122,7 @@ additional inputs. Neither is included in this phase, by explicit
 Director decision when this ambiguity was raised before implementation:
 
 - **Session**: at the time of Phase A4, no session classification
-  existed anywhere in this codebase (only `data/session_filter.py`'s
+  existed anywhere in this codebase (only `data_layer/live_data/session_filter.py`'s
   binary trading-hours gate, not a session classifier). **Phase A6
   built `context/session.py`'s `classify_session()`/`Session` enum**,
   so a real session criterion is now buildable — but wiring it into
@@ -133,7 +133,7 @@ Director decision when this ambiguity was raised before implementation:
   `SESSION_ALIGNED` remains a distinct, not-yet-done future step (see
   below), now unblocked rather than blocked on missing data.
 - **Volume**: this codebase still has **no volume data source at
-  all** — `data/twelve_data_client.py`'s `Candle` dataclass is
+  all** — `data_layer/providers/twelve_data_client.py`'s `Candle` dataclass is
   OHLC-only; Twelve Data's response is never asked for volume.
   Unchanged since Phase A4.
 

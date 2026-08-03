@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 from backtesting.data_feed import LiveDataFeed, ReplayDataFeed
 from backtesting.replay_feed import ReplayFeed
-from data.twelve_data_client import Candle
+from data_layer.providers.twelve_data_client import Candle
 
 
 def test_live_data_feed_delegates_to_market_data_normalizer():

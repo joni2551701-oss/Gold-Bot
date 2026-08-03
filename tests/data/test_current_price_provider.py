@@ -1,5 +1,5 @@
 """
-Tests for data/current_price_provider.py (TASK-CORE-004 Phase 1).
+Tests for data_layer/live_data/current_price_provider.py (TASK-CORE-004 Phase 1).
 
 Covers the read-only, no-fetch reading of the production SmartDataCache
 and the CurrentPriceProvider abstraction (fail-safe, symbol normalized,
@@ -8,15 +8,15 @@ swappable backend).
 
 from datetime import datetime, timedelta, timezone
 
-from data.twelve_data_client import Candle
-from data.current_price_provider import (
+from data_layer.providers.twelve_data_client import Candle
+from data_layer.live_data.current_price_provider import (
     CurrentPrice,
     CurrentPriceProvider,
     PriceStreamLastPriceSource,
     SmartCacheLastPriceSource,
     build_default_current_price_provider,
 )
-from data.stream.price_tick import PriceTick
+from data_layer.live_data.price_tick import PriceTick
 
 BASE = datetime(2026, 1, 1, 14, 52, 8, tzinfo=timezone.utc)
 

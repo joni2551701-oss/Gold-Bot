@@ -8,10 +8,10 @@ Spring/Upthrust, session classification, and market regime. Pure,
 stateless, read-only detection — it never decides whether to trade.
 
 ## Input
-`Sequence[data.twelve_data_client.Candle]` — the execution-timeframe
+`Sequence[data_layer.providers.twelve_data_client.Candle]` — the execution-timeframe
 candle series (`context.context_orchestrator.ContextEngine.build()`/
 `build_context_snapshot()`). `context.htf_bias.compute_htf_bias()`
-takes a `data.market_data.MarketSnapshot` (from
+takes a `data_layer.live_data.market_data.MarketSnapshot` (from
 `MarketDataNormalizer.get_snapshot()`) instead — a separate,
 multi-timeframe input, not `ContextSnapshot`-shaped. Both are read-only:
 neither writes to, mutates, or re-fetches its input.

@@ -1,10 +1,10 @@
 """Tests for SnapshotCleanup (module 9)."""
 
-from data.snapshots.catalog import SnapshotCatalog
-from data.snapshots.lifecycle import SnapshotLifecycle
-from data.snapshots.policy import SnapshotPolicy
-from data.snapshots.cleanup import SnapshotCleanup
-from data.snapshots.snapshot_state import SnapshotState
+from data_layer.snapshots.catalog import SnapshotCatalog
+from data_layer.snapshots.lifecycle import SnapshotLifecycle
+from data_layer.snapshots.policy import SnapshotPolicy
+from data_layer.snapshots.cleanup import SnapshotCleanup
+from data_layer.snapshots.snapshot_state import SnapshotState
 
 from _sfakes import ts, memory_with, new_backend
 

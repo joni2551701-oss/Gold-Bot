@@ -38,7 +38,7 @@ build a `ContextSnapshot` by hand) were updated to supply it,
 preserving the dataclass's "every field required, no silent defaults"
 convention — same handling as Phase A5's `wyckoff_events` addition.
 
-**Distinct from `data/session_filter.py`.** That module's
+**Distinct from `data_layer/live_data/session_filter.py`.** That module's
 `is_trading_time()` answers a different question — "is it trading
 time right now" (wall-clock `datetime.now()`, Tashkent time, a binary
 gate for whether the pipeline should run at all) — not "which session
@@ -100,7 +100,7 @@ liquidity in this window." Same absent-if-empty convention.
 
 Both statistic functions are standalone (not `ContextSnapshot`
 fields) — their `Dict[Session, ...]` shape doesn't match the other
-per-candle event-list fields, the same reasoning `data/market_data.py`'s
+per-candle event-list fields, the same reasoning `data_layer/live_data/market_data.py`'s
 `MarketSnapshot.quality: Dict[str, str]` already established for a
 dict-shaped result living outside a list-of-events contract.
 
@@ -132,7 +132,7 @@ fabricate the third:
   `signals/signal_quality.py` — that remains a distinct, separate,
   not-yet-done future step, the same "compute now, connect later"
   posture HTF Bias had between Phase A2 and Phase A3.
-- Does not modify `data/session_filter.py` — different purpose,
+- Does not modify `data_layer/live_data/session_filter.py` — different purpose,
   different time convention, left untouched.
 - Does not change any existing `ContextSnapshot` field's name or
   meaning — only adds `session_events`.

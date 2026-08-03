@@ -1,9 +1,9 @@
-"""Unit tests for data/stream/stream_validator.py (TASK-ARCH-101)."""
+"""Unit tests for data_layer/live_data/stream_validator.py (TASK-ARCH-101)."""
 
 from datetime import datetime, timedelta, timezone
 
-from data.stream.stream_validator import StreamValidator, ValidationResult
-from data.stream.stream_event import StreamEvent
+from data_layer.live_data.stream_validator import StreamValidator, ValidationResult
+from data_layer.live_data.stream_event import StreamEvent
 
 
 def _ev(asset="XAUUSD", price=2400.0, i=0, volume=None):

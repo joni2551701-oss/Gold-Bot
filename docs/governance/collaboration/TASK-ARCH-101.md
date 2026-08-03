@@ -16,11 +16,11 @@ moves to DEPRECATED only after full migration AND Owner approval.
 
 ## Owner Decisions (all APPROVED)
 
-1. Add a **canonical StreamValidator** in `data/stream/` — migrate the
+1. Add a **canonical StreamValidator** in `data_layer/live_data/` — migrate the
    legacy `stream/StreamValidator` features, no duplicate, integrate
    with existing architecture.
 2. Add a **canonical MarketCalendar** (clearer name than `StreamMode`)
-   in `data/stream/` — Forex 24×5 sessions, weekend/open/close,
+   in `data_layer/live_data/` — Forex 24×5 sessions, weekend/open/close,
    gating when the live stream runs. Part of Data Layer → Live Data.
 3. **Keep `market/`'s projection but migrate it** onto the canonical
    `MemoryReader` (MarketMemory → MemoryReader → Market Projection →
@@ -28,9 +28,9 @@ moves to DEPRECATED only after full migration AND Owner approval.
 
 ## Part 1 — Canonical StreamValidator (DONE)
 
-New: `data/stream/stream_validator.py` — `StreamValidator` +
+New: `data_layer/live_data/stream_validator.py` — `StreamValidator` +
 `ValidationResult(valid, code, reason)`, validating the canonical
-`data.stream.stream_event.StreamEvent` (a price TICK). Checks migrated
+`data_layer.live_data.stream_event.StreamEvent` (a price TICK). Checks migrated
 from the legacy validator: `empty`, `asset` mismatch, `price`
 integrity (missing/non-finite/non-positive/negative-volume),
 `timestamp` (future beyond 5-min skew tolerance), `duplicate`,
@@ -40,13 +40,13 @@ integrity (missing/non-finite/non-positive/negative-volume),
 validator also did OHLC-candle integrity checks because the legacy
 `StreamEvent` carried OHLC. The canonical `StreamEvent` is a single
 tick (no OHLC), so OHLC validation is **not** re-implemented here — it
-already exists at its correct canonical layer (`data.market_data`'s
-`_validate_and_clean` + `data.data_quality.assess_data_quality`). Only
+already exists at its correct canonical layer (`data_layer.live_data.market_data`'s
+`_validate_and_clean` + `data_layer.data_validation.data_quality.assess_data_quality`). Only
 the tick-level checks that had no canonical home were migrated. No
 feature is lost: OHLC validation is preserved, at the candle layer;
 tick validation is now present, at the tick layer.
 
-**Integration (additive, non-breaking):** `data/stream/price_stream.py`
+**Integration (additive, non-breaking):** `data_layer/live_data/price_stream.py`
 `PriceStream` gained an optional `validator=None` constructor param.
 When supplied, `_forward_ordered` drops any event failing validation
 (new `dropped_invalid` stat), fully fail-safe (a validator exception
@@ -56,16 +56,16 @@ unchanged. `PriceStreamService.register_source(..., validator=None)`
 threads it through; the Phase-3 `CurrentPriceProvider` default path is
 untouched (it passes no validator).
 
-Tests: `tests/data/stream/test_canonical_stream_validator.py` (13) +
+Tests: `tests/data_layer/live_data/test_canonical_stream_validator.py` (13) +
 2 PriceStream integration tests.
 
 ## Part 2 — Canonical MarketCalendar (DONE)
 
-New: `data/stream/market_calendar.py` — `ForexMarketCalendar` +
+New: `data_layer/live_data/market_calendar.py` — `ForexMarketCalendar` +
 module-level `is_weekend()` / `is_market_open()` (same names/semantics
 as the legacy `stream/stream_mode.py`).
 
-**Reuse-First win:** `data/stream/price_stream.py` already defined the
+**Reuse-First win:** `data_layer/live_data/price_stream.py` already defined the
 `MarketCalendar` Protocol (`is_open(now)` / `next_open(now)`) and an
 `AlwaysOpenCalendar` (24/7 crypto). `ForexMarketCalendar` is the
 missing **concrete** Forex implementation of that **existing**
@@ -82,7 +82,7 @@ coarse clock as legacy; not a holiday calendar).
 Threaded through `PriceStreamService.register_source(..., calendar=
 None)`; default unchanged.
 
-Tests: `tests/data/stream/test_market_calendar.py` (10).
+Tests: `tests/data_layer/live_data/test_market_calendar.py` (10).
 
 ## Part 3 — Market Projection → MemoryReader (DESIGN + one question; NOT executed)
 
@@ -124,7 +124,7 @@ Worker one:**
 
 **New location** (all options): a new canonical package (proposed
 `data/projection/` or `market_view/` under the Data Layer, or a
-consumer module beside `data/memory/`). Naming/placement is part of the
+consumer module beside `data_layer/market_memory/`). Naming/placement is part of the
 same Owner decision. **Nothing in `market/` was moved or changed for
 Part 3** — it stays in place, not deleted, not deprecated, until the
 Owner rules.
@@ -174,7 +174,7 @@ executed — 3A would have imported `context/` from a Data-Layer module.)
   canonical migration scope. The **only** Data-Layer-migration-relevant
   item left about it is that it currently reads price from the LEGACY
   `stream/CurrentPrice`; re-pointing that one dependency to the
-  canonical current-price source (`data.current_price_provider`) is a
+  canonical current-price source (`data_layer.live_data.current_price_provider`) is a
   small, separate, future item — it does not require moving the
   projection anywhere.
 - The Data Layer boundary principle ("Data Layer = raw market data only;
@@ -211,9 +211,9 @@ and no projection code is written until the Owner selects a location.
 
 | Legacy feature | Canonical home (this task) | Verified |
 |---|---|---|
-| Tick validation (`ValidationResult` contract) | `data/stream/stream_validator.py` | ✅ 13 tests |
+| Tick validation (`ValidationResult` contract) | `data_layer/live_data/stream_validator.py` | ✅ 13 tests |
 | OHLC-candle validation | already canonical (`data_quality`/`_validate_and_clean`) — not duplicated | ✅ existing tests |
-| Forex 24×5 weekend/open/close clock | `data/stream/market_calendar.py` | ✅ 10 tests |
+| Forex 24×5 weekend/open/close clock | `data_layer/live_data/market_calendar.py` | ✅ 10 tests |
 | Waiting/pause on market-closed | PriceStream waiting-mode + `ForexMarketCalendar` | ✅ existing + integration tests |
 | market/ projection facade | **not yet — Part 3 pending Owner** | n/a |
 
@@ -228,7 +228,7 @@ No feature was removed. Nothing was deleted.
 - 659 modules import clean; **0 broken imports**.
 - Forbidden list respected: no Core/Decision/Risk/Strategy/AI/Platform/
   Business/Learning/Media logic touched. `.py` changes confined to
-  `data/stream/` (2 new modules + 2 additive param wirings) and
+  `data_layer/live_data/` (2 new modules + 2 additive param wirings) and
   status-only markers.
 
 ## Known Issues / Next
@@ -237,7 +237,7 @@ No feature was removed. Nothing was deleted.
    not Data Layer; no migration into `data/`). `market/` reclassified,
    out of Data Layer scope. Remaining small item: re-point `market/`'s
    price source from legacy `stream/` to canonical
-   `data.current_price_provider` — a separate future task, not blocking.
+   `data_layer.live_data.current_price_provider` — a separate future task, not blocking.
 2. `stream/` is ready for the DEPRECATED flip on Owner confirmation
    (its two canonical gaps are closed by Parts 1 & 2).
 3. Pre-existing unrelated `DeprecationWarning` (`\-` escape) in
@@ -293,7 +293,7 @@ session, volatility, regime, structure presence + current price) by
 **projecting** two already-computed, canonical inputs — it computes no
 market structure of its own (that is `context/`, FROZEN):
 
-- **Market data** (current price / latest candle) ← `data/memory/`
+- **Market data** (current price / latest candle) ← `data_layer/market_memory/`
   `MemoryReader` (MA-002), the canonical Data Layer read surface. Used
   as-is; not extended (Owner constraint).
 - **Context results** (BOS/CHoCH/OB/FVG/liquidity/regime/session) ←
@@ -305,7 +305,7 @@ Output: the existing read models (`MarketStateSnapshot` + per-aspect
 view states), unchanged in shape — only their *price input source*
 changes from the legacy `stream.CurrentPrice` to `MemoryReader`, and
 their *weekend clock* from `stream.stream_mode.is_weekend` to the
-canonical `data.stream.market_calendar.is_weekend` (already built,
+canonical `data_layer.live_data.market_calendar.is_weekend` (already built,
 TASK-ARCH-101 Part 2).
 
 This is Option 3A exactly: Projection = f(MemoryReader market data,
@@ -325,7 +325,7 @@ option; prefer reusing/relocating an existing one.
   Layer price; nothing in Data Layer or Core imports it). The only
   non-canonical thing about it is *what it reads price from*. So the
   "migration" is: swap `stream.CurrentPrice` → `MemoryReader` and
-  `stream.stream_mode.is_weekend` → `data.stream.market_calendar`. No
+  `stream.stream_mode.is_weekend` → `data_layer.live_data.market_calendar`. No
   folder move, no new package (lowest cost, Article 7-aligned). The
   package could optionally be renamed `market_view/` or
   `market_projection/` for clarity, but that is cosmetic and separable.
@@ -357,14 +357,14 @@ package, and fully satisfies Option 3A. **Owner selects L1/L2/L3.**
                  │ reads         │ reads
                  ▼ (market data) ▼ (context results)
       ┌────────────────────┐   ┌───────────────────────────┐
-      │  data/memory/      │   │ context.snapshot.         │
+      │  data_layer/market_memory/      │   │ context.snapshot.         │
       │  MemoryReader      │   │ ContextSnapshotSchema     │
       │  (DATA LAYER, MA-2)│   │ (GOLDBOT CORE public      │
       └─────────┬──────────┘   │  contract)                │
                 │              └───────────────────────────┘
                 ▼
       ┌────────────────────┐
-      │  data/memory/      │
+      │  data_layer/market_memory/      │
       │  MarketMemory(MA-1) │
       └────────────────────┘
 ```
@@ -403,11 +403,11 @@ Per-file, re-point-only, no logic rewrite:
    `stream.current_price.CurrentPrice`. Keep the `MarketPrice`
    output shape.
 2. `market/session_state.py` — import `is_weekend` from
-   `data.stream.market_calendar` instead of `stream.stream_mode`.
+   `data_layer.live_data.market_calendar` instead of `stream.stream_mode`.
 3. `market/market_manager.py` — its price input already comes via
    `current_price.py`; update the type/source references accordingly.
 4. `market/candle.py` — adapt from `MemoryReader`'s `CandleRecord` /
-   canonical `data.stream.StreamEvent` instead of `stream.StreamEvent`.
+   canonical `data_layer.live_data.StreamEvent` instead of `stream.StreamEvent`.
 5. Everything reading `ContextSnapshotSchema` — UNCHANGED (already
    canonical Core contract).
 6. Tests (`tests/market/`) — updated to the canonical price/clock
@@ -438,7 +438,7 @@ Every projection capability, and where it comes from after 3A:
 | Current price | `stream.CurrentPrice` | `MemoryReader` (latest candle/forming close) | ✅ re-point |
 | Trend state | `ContextSnapshotSchema.structure.trend` | same | ✅ unchanged |
 | Liquidity state | `ContextSnapshotSchema.liquidity` | same | ✅ unchanged |
-| Session state | context session + `stream.is_weekend` | context session + `data.stream.market_calendar.is_weekend` | ✅ re-point clock |
+| Session state | context session + `stream.is_weekend` | context session + `data_layer.live_data.market_calendar.is_weekend` | ✅ re-point clock |
 | Volatility state | `ContextSnapshotSchema.regime` | same | ✅ unchanged |
 | Regime state | `ContextSnapshotSchema.regime` | same | ✅ unchanged |
 | Structure view (BOS/CHoCH/OB/FVG) | `ContextSnapshotSchema.structure/zones` | same | ✅ unchanged |
@@ -456,10 +456,10 @@ legacy `stream/` couplings). Executed exactly as the §5 plan, minimal,
 no logic rewrite, all features preserved:
 
 1. `market/session_state.py` — `from stream.stream_mode import
-   is_weekend` → `from data.stream.market_calendar import is_weekend`
+   is_weekend` → `from data_layer.live_data.market_calendar import is_weekend`
    (the canonical clock built in Part 2; identical semantics).
 2. `market/current_price.py` — `read_current_price` now reads the
-   freshest last candle from a `data.memory.MemoryReader` (was a
+   freshest last candle from a `data_layer.market_memory.MemoryReader` (was a
    duck-typed `stream.CurrentPrice`). Added `MarketPrice.from_candle_record`.
    Fail-safe (unknown asset → None).
 3. `market/market_manager.py` — `build_market_data(..., stream_current_price=)`

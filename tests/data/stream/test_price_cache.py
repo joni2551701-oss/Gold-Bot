@@ -1,9 +1,9 @@
-"""Unit tests for data/stream/price_cache.py (TASK-DATA-001)."""
+"""Unit tests for data_layer/live_data/price_cache.py (TASK-DATA-001)."""
 
 from datetime import datetime, timezone
 
-from data.stream.price_cache import PriceCache
-from data.stream.price_tick import PriceTick
+from data_layer.live_data.price_cache import PriceCache
+from data_layer.live_data.price_tick import PriceTick
 
 
 def _tick(symbol="XAUUSD", price=2400.0, provider="twelvedata"):

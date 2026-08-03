@@ -29,7 +29,7 @@ selection logic).
 
 ## Provider Pattern
 
-A single abstract contract (`BaseAIProvider`, `data/providers/base_provider.py`)
+A single abstract contract (`BaseAIProvider`, `data_layer/providers/base_provider.py`)
 implemented by every concrete vendor/source (`gemini_provider.py`,
 `openai_provider.py`, `claude_provider.py`, `grok_provider.py`;
 `twelve_data_client.py`, the MT5 stub). Constitution Article 5: no code

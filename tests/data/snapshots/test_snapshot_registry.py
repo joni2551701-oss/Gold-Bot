@@ -1,7 +1,7 @@
 """Tests for SnapshotRegistry query views (module 9)."""
 
-from data.snapshots.catalog import SnapshotCatalog, CatalogEntry
-from data.snapshots.registry import SnapshotRegistry
+from data_layer.snapshots.catalog import SnapshotCatalog, CatalogEntry
+from data_layer.snapshots.registry import SnapshotRegistry
 
 from _sfakes import ts
 

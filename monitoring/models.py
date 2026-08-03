@@ -19,8 +19,8 @@ persistence for these three, only for `ErrorEvent`/
 Fields the underlying data source cannot honestly supply are
 `Optional` and left `None` rather than fabricated -- e.g.
 `MarketHealth.last_price`/`.last_update` (no data-freshness concept
-exists anywhere in `data/providers/` today, per the audit's own
-"data/providers/" section).
+exists anywhere in `data_layer/providers/` today, per the audit's own
+"data_layer/providers/" section).
 """
 
 from dataclasses import dataclass, field
