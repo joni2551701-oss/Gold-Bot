@@ -44,6 +44,9 @@ Runtime Scheduler.
 ## ServiceRegistry
 Service Registry.
 ---
+## Secrets
+Secret Management (barcha maxfiy ma'lumotlar uchun yagona kirish nuqtasi).
+---
 ## Configuration
 Configuration Manager.
 ---

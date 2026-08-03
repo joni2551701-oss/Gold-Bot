@@ -60,6 +60,8 @@ Core_Layer/
 │
 ├── Startup/
 │
+├── Secrets/
+│
 ├── Configuration/
 │
 ├── ServiceRegistry/
@@ -87,6 +89,14 @@ Core_Layer/
 Tizimni ishga tushirish jarayonini boshqaradi.
 
 Runtime Initialization.
+
+---
+
+## Secrets
+
+GoldBot'dagi barcha maxfiy ma'lumotlar (API Keys, Broker Credentials, Telegram Token, AI API Keys, Database Credentials, Encryption Keys) uchun yagona kirish nuqtasi.
+
+Maxfiy qiymat hech qachon log'ga yoki repr'ga tushmaydi.
 
 ---
 
@@ -213,6 +223,10 @@ Startup
 
 ↓
 
+Secrets
+
+↓
+
 Configuration
 
 ↓
@@ -266,11 +280,13 @@ Shutdown
 
 7. Configuration yagona sozlama manbai hisoblanadi.
 
-8. ServiceRegistry yagona Service Registry hisoblanadi.
+8. Secrets barcha maxfiy ma'lumotlar uchun yagona kirish nuqtasi hisoblanadi — hech bir modul Environment'dan bevosita maxfiy qiymat o'qimaydi, va maxfiy qiymat hech qachon log'ga tushmaydi.
 
-9. HealthMonitor Runtime sog'ligini uzluksiz kuzatadi.
+9. ServiceRegistry yagona Service Registry hisoblanadi.
 
-10. Circular Dependency qat'iyan taqiqlanadi.
+10. HealthMonitor Runtime sog'ligini uzluksiz kuzatadi.
+
+11. Circular Dependency qat'iyan taqiqlanadi.
 
 ---
 
@@ -280,6 +296,7 @@ Core_Layer/
 
 ├── README.md
 ├── Startup/
+├── Secrets/
 ├── Configuration/
 ├── ServiceRegistry/
 ├── CoreEngine/
