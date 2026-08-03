@@ -21,17 +21,16 @@ Chart_Renderer bajarmaydi.
 ---
 # Module Boundary
 ```text
-Chart_Data
+Shared Render State
 ↓
 Chart_Renderer
 ↓
-Chart_Interaction
+Screenshot / Alerts / Chart_API
 ```
+Chart_Renderer ketma-ket modul Output'larini emas, joriy Shared Render State'ni har frame o'qiydi (Render Loop Rule).
 ---
 # Input Contract
-• Candle Data
-• Object List
-• Overlay Data
+• Shared Render State (Chart_Data, Objects, Drawing_Tools, Indicators, Analysis_Overlay yozgan)
 • Theme
 • Viewport Context
 ---
@@ -44,6 +43,9 @@ Chart_Interaction
 ✓ Chart_Data
 ✓ Chart_Interaction
 ✓ Objects
+✓ Drawing_Tools
+✓ Indicators
+✓ Analysis_Overlay
 ✓ Theme
 ✓ Crosshair
 ---
@@ -75,7 +77,7 @@ Chart_Renderer:
 ---
 # Runtime Rules
 1. Chart_Renderer faqat o'z Module Boundary ichida ishlaydi.
-2. Har bir Input tekshirilishi shart.
+2. Chart_Renderer har frame joriy Shared Render State'ni o'qiydi — ketma-ket modul Output'larini iste'mol qilmaydi (Render Loop Rule).
 3. Output standart formatda yaratilishi shart.
 4. Chart_Renderer Signal yoki Decision yaratmaydi.
 5. Chart_Renderer BOS/CHoCH/FVG/Liquidity hisoblamaydi.

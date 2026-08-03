@@ -17,11 +17,11 @@ Chart_Renderer
 ---
 # Module Position
 ```text
-Chart_Data
+Shared Render State
 ↓
 Chart_Renderer
 ↓
-Chart_Interaction
+Screenshot / Alerts / Chart_API
 ```
 ---
 # Processing Pipeline (Planned)
@@ -31,17 +31,20 @@ CanvasRenderer → WebGLRenderer → LayerRenderer → OverlayRenderer → Objec
 ---
 # Dependency Map
 ```text
-Chart_Data
+Shared Render State
 ↓
 Chart_Renderer
 ↓
-Chart_Interaction
+Screenshot / Alerts / Chart_API
 ```
 ---
 # Allowed Dependencies
 ✓ Chart_Data
 ✓ Chart_Interaction
 ✓ Objects
+✓ Drawing_Tools
+✓ Indicators
+✓ Analysis_Overlay
 ✓ Theme
 ✓ Crosshair
 ---
@@ -56,13 +59,13 @@ Chart_Interaction
 ---
 # Runtime Flow
 ```text
-Receive Input
+Read Shared Render State (every frame)
 ↓
 Process (Chart_Renderer)
 ↓
 Emit Output
 ↓
-Chart_Interaction
+Screenshot / Alerts / Chart_API
 ```
 ---
 # Summary

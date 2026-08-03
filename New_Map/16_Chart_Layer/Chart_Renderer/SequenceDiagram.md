@@ -19,13 +19,13 @@ Chart_Renderer Ready
 ---
 # Runtime Sequence
 ```text
-Chart_Data
+Read Shared Render State (every frame)
 ↓
 Chart_Renderer
 ↓
 Process Canvas Rendering
 ↓
-Chart_Interaction
+Screenshot / Alerts / Chart_API
 ```
 ---
 # Error Sequence
@@ -62,9 +62,9 @@ Dispose
 ```
 ---
 # Runtime Rules
-1. Chart_Data natijasi mavjud bo'lishi shart.
+1. Shared Render State mavjud bo'lishi shart (bo'sh bo'lsa ham, boshlang'ich holatda).
 2. Chart_Renderer faqat o'z mas'uliyat doirasida ishlaydi.
-3. Output Chart_Interaction'ga uzatiladi.
+3. Output Screenshot/Alerts/Chart_API'ga uzatiladi.
 4. Xatolik yuz berganda Error Sequence ishga tushadi, keyin Recovery Sequence orqali tiklanadi.
 5. Circular Dependency qat'iyan taqiqlanadi.
 ---
@@ -88,8 +88,8 @@ Completed
 ```
 ---
 # Summary
-Chart_Data
+Shared Render State
 ↓
 Chart_Renderer
 ↓
-Chart_Interaction
+Screenshot / Alerts / Chart_API

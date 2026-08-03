@@ -135,27 +135,24 @@ Chart Layer
 ✗ Trade Execution
 ✗ Historical Data Fetching (Data Layer vazifasi)
 ---
-# Chart Runtime
+# Chart Execution Flow
+Chart Layer **pipeline emas — render loop** hisoblanadi (Chart Runtime Rule). Quyidagi tartib modullarning ishga tushirilish/execution order'ini bildiradi, token-passing Input→Output zanjiri emas — har bir modul Chart State/Shared Render State orqali ishlaydi (Chart Shared State Rule, batafsili: `Rendering_Guide.md`).
 ```text
-Chart_Data
+Chart_API (Entry)
 ↓
 Chart_Core
 ↓
-Chart_Renderer
+Chart_Data · Chart_Interaction · Objects   (parallel)
 ↓
-Chart_Interaction
+Shared Render State
 ↓
-Objects
+Drawing_Tools · Indicators · Analysis_Overlay   (parallel)
 ↓
-Drawing_Tools
+Chart_Renderer  (har frame Shared Render State'ni o'qiydi)
 ↓
-Indicators
+Screenshot · Alerts   (parallel, Chart_Renderer'ning joriy holatini kuzatadi)
 ↓
-Analysis_Overlay
-↓
-Alerts
-↓
-Screenshot
+Chart_API (Exit)
 ```
 ---
 # GoldBot Bilan Bog'lanish

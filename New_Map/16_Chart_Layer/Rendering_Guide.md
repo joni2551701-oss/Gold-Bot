@@ -1,9 +1,59 @@
 # Chart Rendering Guide
-Status: BLUEPRINT
+Status: BLUEPRINT — Canonical Rendering Source
 ---
 # Purpose
 Ushbu hujjat Chart Layer'ning barcha vizual modullari (Chart_Renderer, Objects, Drawing_Tools, Indicators, Analysis_Overlay, Crosshair, Theme) bir-birini to'g'ri va bashorat qilinadigan tartibda chizishi uchun rasmiy Canonical Rendering qoidalarini belgilaydi.
 Bu implementatsiya emas — bu Rendering Architecture uchun Blueprint hisoblanadi.
+Director Ruling (Chart Runtime Model, Option 1) bo'yicha ushbu hujjat Chart Layer'ning **Canonical Rendering Source** hisoblanadi — Render Loop, Frame Lifecycle, Shared Render State va Invalidation qoidalari birinchi navbatda shu yerda belgilanadi; boshqa hujjatlar (`Layer_DataFlow.md`, `Layer_SequenceDiagram.md`, modul Contracts.md'lari) shu qoidalarga mos bo'lishi shart.
+---
+# Render Loop
+Chart_Renderer pipeline emas — **render loop** modelida ishlaydi:
+```text
+loop (har frame):
+    Read Shared Render State
+    ↓
+    Determine Dirty Regions
+    ↓
+    Draw (Z-Index tartibida)
+    ↓
+    Present Frame
+```
+Chart_Renderer hech qachon "oldingi modul Output yubordimi" deb kutmaydi — u har doim joriy Shared Render State'ni o'qiydi va chizadi.
+---
+# Shared Render State
+Shared Render State — Chart_Core tomonidan boshqariladigan, barcha vizual modullar (Chart_Data, Chart_Interaction, Objects, Drawing_Tools, Indicators, Analysis_Overlay) yozadigan va Chart_Renderer o'qiydigan markaziy holat.
+```text
+Shared Render State
+├── Candle/Tick Data        (Chart_Data yozadi)
+├── Interaction Context     (Chart_Interaction yozadi)
+├── Object List             (Objects yozadi)
+├── Drawing Objects         (Drawing_Tools yozadi)
+├── Indicator Overlays      (Indicators yozadi)
+└── Analysis Overlays       (Analysis_Overlay yozadi)
+```
+Modullar bir-birining Output'ini to'g'ridan-to'g'ri iste'mol qilmaydi — faqat Shared Render State orqali muloqot qiladi (Chart Shared State Rule).
+---
+# Frame Lifecycle
+```text
+Frame Start
+↓
+Input Collection (Chart_Interaction)
+↓
+State Update (Objects, Drawing_Tools, Indicators, Analysis_Overlay → Shared Render State)
+↓
+Invalidation Check (Dirty Region)
+↓
+Render (Chart_Renderer)
+↓
+Present
+↓
+Frame End
+```
+---
+# Invalidation
+* Har qanday modul Shared Render State'ning biror qismini o'zgartirsa, tegishli hudud "Dirty" deb belgilanadi.
+* Chart_Renderer faqat Dirty deb belgilangan hududlarni qayta chizadi (qarang: Dirty Region Tracking, Performance Rules).
+* Full Invalidation faqat Resize, Theme almashtirish yoki Layout o'zgarishida yuz beradi.
 ---
 # Render Order (Z-Index)
 Chart_Renderer quyidagi qat'iy Z-Index tartibida chizadi — pastdan yuqoriga:
@@ -92,6 +142,7 @@ Crosshair va Tooltip yangilanishi throttle qilinadi (masalan 16ms — 60 FPS che
 4. FPS Target'dan pastga tushganda avtomatik ravishda soddalashtirilgan Rendering rejimiga (masalan kamroq Object, past aniqlik) o'tiladi.
 5. Rendering hech qachon hisob-kitob bajarmaydi — u faqat oldindan tayyorlangan Object/Overlay ma'lumotlarini chizadi.
 6. Bu hujjat faqat Chart_Renderer, Objects, Drawing_Tools, Indicators, Analysis_Overlay va Crosshair modullariga tegishli qoidalarni belgilaydi — boshqa modullarning o'z Contracts.md hujjatlari o'zgarmaydi.
+7. Bu hujjat Render Loop, Frame Lifecycle, Shared Render State va Invalidation uchun Canonical Source hisoblanadi — boshqa hujjatlar shu qoidalarga zid bo'lmasligi kerak.
 ---
 # Related Documents
 ```text

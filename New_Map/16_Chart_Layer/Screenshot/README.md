@@ -18,12 +18,13 @@ Screenshot quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-Alerts
+Chart_Renderer
 ↓
 Screenshot
 ↓
-Chart_API
+Chart_API (Exit)
 ```
+Screenshot Alerts'dan Input olmaydi — Chart_Renderer'dagi joriy frame'ni capture qiladi (Render Loop Rule).
 ---
 # Responsibilities
 Screenshot
@@ -50,11 +51,11 @@ Screenshot yaratadi.
 ---
 # Workflow
 ```text
-Alerts
+Chart_Renderer
 ↓
 Screenshot
 ↓
-Chart_API
+Chart_API (Exit)
 ```
 ---
 # Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
@@ -82,7 +83,7 @@ Screenshot/
 ├── ModuleMap.md
 └── Contracts.md
 ```
-Predecessor: Alerts · Successor: Chart_API
+Reads: Chart_Renderer (Rendered Frame) · Successor: Chart_API (Exit)
 ---
 # Summary
 Screenshot GoldBot Chart Layer ichidagi Screenshot vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

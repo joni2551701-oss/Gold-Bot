@@ -18,15 +18,16 @@ Screenshot bajarmaydi.
 ---
 # Module Boundary
 ```text
-Alerts
+Chart_Renderer
 ↓
 Screenshot
 ↓
-Chart_API
+Chart_API (Exit)
 ```
+Screenshot Alerts'ning Output'ini Input sifatida olmaydi — Chart_Renderer'dagi joriy Rendered Frame'ni capture qiladi (Render Loop Rule / Chart Shared State Rule).
 ---
 # Input Contract
-• Rendered Frame
+• Rendered Frame (Chart_Renderer)
 • Export Configuration
 ---
 # Output Contract
@@ -35,7 +36,7 @@ Chart_API
 • Export Metadata
 ---
 # Allowed Dependencies
-✓ Alerts
+✓ Chart_Renderer
 ✓ Chart_API
 ---
 # Forbidden Dependencies
@@ -70,7 +71,8 @@ Screenshot:
 3. Output standart formatda yaratilishi shart.
 4. Screenshot Signal yoki Decision yaratmaydi.
 5. Screenshot BOS/CHoCH/FVG/Liquidity hisoblamaydi.
-6. Circular Dependency qat'iyan taqiqlanadi.
+6. Screenshot Alerts'ga bog'liq emas — faqat Chart_Renderer'ning joriy frame'ini capture qiladi.
+7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Input qabul qilinadi.

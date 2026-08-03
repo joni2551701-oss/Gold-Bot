@@ -19,12 +19,13 @@ Alerts quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-Analysis_Overlay
+Shared Render State / Chart State
 ↓
 Alerts
 ↓
-Screenshot
+Chart_API (Exit)
 ```
+Alerts Renderer pipeline'dan Input olmaydi — Chart State va Render State'ni kuzatadi (watches), ketma-ket modul Output'ini iste'mol qilmaydi (Chart Shared State Rule).
 ---
 # Responsibilities
 Alerts
@@ -40,9 +41,8 @@ Alerts
 ✗ Notification Delivery (Platform Layer vazifasi)
 ---
 # Input
-Alerts qabul qiladi.
-• Overlay Object
-• Price Data
+Alerts qabul qiladi (kuzatadi).
+• Render State (Overlay Object, Price Data — Analysis_Overlay/Chart_Data yozgan)
 • Alert Configuration
 ---
 # Output
@@ -53,11 +53,11 @@ Alerts yaratadi.
 ---
 # Workflow
 ```text
-Analysis_Overlay
+Shared Render State / Chart State
 ↓
-Alerts
+Alerts (kuzatadi)
 ↓
-Screenshot
+Chart_API (Exit)
 ```
 ---
 # Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
@@ -86,7 +86,7 @@ Alerts/
 ├── ModuleMap.md
 └── Contracts.md
 ```
-Predecessor: Analysis_Overlay · Successor: Screenshot
+Watches: Render State / Chart State (Analysis_Overlay, Chart_Data) · Successor: Chart_API (Exit)
 ---
 # Summary
 Alerts GoldBot Chart Layer ichidagi Alerts vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

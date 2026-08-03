@@ -614,6 +614,46 @@ external entry points.
 ```
 Sabab: `13_Platform_Layer/PlatformService`ning o'z hujjatlari (README Golden Rule 1, Contracts Runtime Contract 1) "Platform Layer'ga barcha tashqi kirishlar PlatformService orqali amalga oshiriladi" deb da'vo qilgan, holbuki guruh darajasidagi Canonical Pipeline'da haqiqiy tashqi kirish nuqtasi mijoz kanallari (Telegram/MobileAPI/WebAPI/DesktopAPI) va Authentication bo'lib, ular PlatformService'dan oldin keladi (Critical, Ownership Scope). Director Ruling: Worker to'g'ri topgan — PlatformService Platform Layer'ning emas, balki GoldBot Core xizmatlarining yagona gateway'i hisoblanadi. PlatformService'ning matni "PlatformService is the sole entry point to GoldBot Core services" deb aniqlashtirildi.
 ---
+## Chart Shared State Rule
+```text
+Chart modules
+communicate through
+Chart State
+and
+Render State.
+
+Modules do not
+pass ownership
+objects through
+a strict pipeline.
+```
+Sabab: Chart Layer audit'ida Objects (Critical) Drawing_Tools/Indicators/Analysis_Overlay'ning Output'ini — bu modullar Objects'dan keyin ishlaydigan bo'lsa ham — o'zining Input'i sifatida hujjatlashtirgan; xuddi shunday Chart_Renderer "Object List"ni Input deb ko'rsatgan, holbuki Renderer Objects'dan oldin joylashgan edi. Sabab — 20-modulli Chart Layer strict linear token-passing Pipeline sifatida hujjatlashtirilgan, lekin haqiqiy vizual modullar (Objects, Drawing_Tools, Indicators, Analysis_Overlay, Chart_Renderer) markazlashgan holat orqali ishlaydi, ketma-ket Input→Output zanjiri orqali emas. Director Ruling (Option 1): Chart modullari bir-birining Output'ini to'g'ridan-to'g'ri iste'mol qilmaydi — Chart State/Render State orqali muloqot qiladi. Bu qoida faqat Chart Layer'ga tegishli; boshqa 15 Layer'ning Input→Output Contract modeli o'zgarmaydi.
+---
+## Render Loop Rule
+```text
+Chart Renderer
+renders every frame
+from the current
+Render State.
+
+Renderer does not
+consume sequential
+module outputs.
+```
+Sabab: Chart_Renderer'ning Module Boundary'si avval "Chart_Data → Chart_Renderer → Chart_Interaction" edi va Input'i "Object List"ni o'z ichiga olgan — bu Objects modulining Output'i bo'lib, Objects Renderer'dan keyin joylashgan (Critical, Runtime Pipeline Rule). Director Ruling (Option 1): Chart_Renderer pipeline'ning "bir bosqichi" emas — u har frame joriy Shared Render State'ni o'qib chizadigan Render Loop. Screenshot va Alerts ham xuddi shunday — ular ketma-ket oldingi modul Output'ini emas, Chart_Renderer/Render State/Chart State'ning joriy holatini kuzatadi (watch). Batafsil qoidalar: `16_Chart_Layer/Rendering_Guide.md` (Canonical Rendering Source).
+---
+## Chart Runtime Rule
+```text
+Layer_DataFlow
+represents
+execution order.
+
+It is not a
+token-passing
+ownership chain.
+```
+Sabab: Chart Layer'ning guruh darajasidagi hujjatlari (`README.md` Chart Runtime, `Layer_DataFlow.md`, `Layer_SequenceDiagram.md`, `Layer_Contracts.md`) 20 modulni bitta chiziqli zanjir sifatida tasvirlagan, bu esa Objects/Chart_Renderer/Screenshot kabi modullarning haqiqiy Input/Output Contract'lari bilan mos kelmagan (Chart Shared State Rule va Render Loop Rule'ga qarang). Director Ruling (Option 1 — Orchestrated Shared-State Architecture): bu 4 ta hujjatdagi ketma-ketlik endi faqat **Execution/Processing Order** sifatida talqin qilinadi, Input→Output ownership zanjiri sifatida emas. "Pipeline" so'zi shu ma'noda ishlatilmaydi — "Chart Execution Flow" yoki "Chart Processing Order" ishlatiladi. Chart_API Chart Layer'ning yagona Entry HAM Exit nuqtasi bo'lib qoladi (o'zgarmagan).
+---
 # 10. Change Management
 Architecture Freeze'dan keyin quyidagilarning har qandayi oddiy tahrir bilan emas, balki **Architecture Change Request (ACR)** orqali amalga oshiriladi.
 * Layer nomini o'zgartirish.

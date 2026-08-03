@@ -21,23 +21,30 @@ Chart_API bajarmaydi.
 ✗ Trade Execution
 ---
 # Module Boundary
+Chart_API Entry va Exit — Chart Layer'ning yagona tashqi kirish/chiqish nuqtasi (Chart Runtime Rule).
 ```text
-GoldBot Core
-↓
-Chart_API
-↓
-Chart_Core
+Entry:  GoldBot Core ↓ Chart_API ↓ Chart_Core
+Exit:   Chart_Renderer / Screenshot / Alerts ↓ Chart_API ↓ User
 ```
 ---
 # Input Contract
+Entry:
 • Market Context
 • Indicator Context
 • Signal
 • Decision
 • Trade
 • External API Request
+Exit:
+• Rendered Frame (Chart_Renderer)
+• Export File (Screenshot)
+• Alert Trigger (Alerts)
 ---
 # Output Contract
+Entry (Chart_Core'ga):
+• Chart Request
+• Chart Configuration
+Exit (Userga):
 • Chart Response
 • Chart Event
 • Plugin Context
@@ -45,6 +52,9 @@ Chart_Core
 ---
 # Allowed Dependencies
 ✓ Chart_Core
+✓ Chart_Renderer
+✓ Screenshot
+✓ Alerts
 ✓ Analysis_Overlay
 ✓ Plugins
 ---
@@ -80,7 +90,8 @@ Chart_API:
 3. Output standart formatda yaratilishi shart.
 4. Chart_API Signal yoki Decision yaratmaydi.
 5. Chart_API BOS/CHoCH/FVG/Liquidity hisoblamaydi.
-6. Circular Dependency qat'iyan taqiqlanadi.
+6. Chart_API ham Entry, ham Exit vazifasini bajaradi — Chart Layer'ga boshqa hech qanday to'g'ridan-to'g'ri tashqi kirish/chiqish nuqtasi yo'q.
+7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Input qabul qilinadi.

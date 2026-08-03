@@ -19,19 +19,17 @@ Chart_API quyidagi vazifalarni bajaradi.
 • Request Validation
 ---
 # Layer Position
+Chart_API Chart Layer'ning yagona **Entry va Exit** nuqtasi (majburiy — Chart Runtime Rule).
 ```text
-GoldBot Core
-↓
-Chart_API
-↓
-Chart_Core
+Entry:  GoldBot Core ↓ Chart_API ↓ Chart_Core
+Exit:   Chart_Renderer ↓ Screenshot / Alerts ↓ Chart_API ↓ User
 ```
 ---
 # Responsibilities
 Chart_API
-✓ Tashqi so'rovlarni qabul qiladi
-✓ GoldBot Core natijalarini (Market Context, Indicator Context, Signal, Decision, Trade) qabul qiladi
-✓ Chart_Core'ga uzatadi
+✓ (Entry) Tashqi so'rovlarni qabul qiladi
+✓ (Entry) GoldBot Core natijalarini (Market Context, Indicator Context, Signal, Decision, Trade) qabul qiladi va Chart_Core'ga uzatadi
+✓ (Exit) Chart_Renderer/Screenshot/Alerts natijalarini yig'ib, foydalanuvchiga/tashqi tizimga qaytaradi
 ✓ Event'larni tashqi tinglovchilarga yuboradi
 ✓ Plugin'lar uchun API taqdim etadi
 ---
@@ -46,15 +44,24 @@ Chart_API
 ---
 # Input
 Chart_API qabul qiladi.
+Entry tomondan:
 • Market Context
 • Indicator Context
 • Signal
 • Decision
 • Trade
 • External API Request
+Exit tomondan:
+• Rendered Frame (Chart_Renderer)
+• Export File (Screenshot)
+• Alert Trigger (Alerts)
 ---
 # Output
 Chart_API yaratadi.
+Entry tomondan (Chart_Core'ga):
+• Chart Request
+• Chart Configuration
+Exit tomondan (Userga):
 • Chart Response
 • Chart Event
 • Plugin Context
@@ -62,11 +69,8 @@ Chart_API yaratadi.
 ---
 # Workflow
 ```text
-GoldBot Core
-↓
-Chart_API
-↓
-Chart_Core
+Entry:  GoldBot Core ↓ Chart_API ↓ Chart_Core
+Exit:   Chart_Renderer / Screenshot / Alerts ↓ Chart_API ↓ User
 ```
 ---
 # Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
@@ -95,7 +99,8 @@ Chart_API/
 ├── ModuleMap.md
 └── Contracts.md
 ```
-Predecessor: GoldBot Core · Successor: Chart_Core
+Entry — Predecessor: GoldBot Core · Successor: Chart_Core
+Exit — Predecessor: Chart_Renderer / Screenshot / Alerts · Successor: User
 ---
 # Summary
 Chart_API GoldBot Chart Layer ichidagi Chart API vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

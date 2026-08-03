@@ -19,16 +19,16 @@ Alerts bajarmaydi.
 ---
 # Module Boundary
 ```text
-Analysis_Overlay
+Shared Render State / Chart State
 ↓
 Alerts
 ↓
-Screenshot
+Chart_API (Exit)
 ```
+Alerts Analysis_Overlay/Screenshot'ning ketma-ket Output'ini olmaydi — Render State/Chart State'ni kuzatadi (Chart Shared State Rule).
 ---
 # Input Contract
-• Overlay Object
-• Price Data
+• Render State (Overlay Object, Price Data)
 • Alert Configuration
 ---
 # Output Contract
@@ -38,8 +38,9 @@ Screenshot
 ---
 # Allowed Dependencies
 ✓ Analysis_Overlay
-✓ Screenshot
 ✓ Drawing_Tools
+✓ Chart_Data
+✓ Chart_API
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -73,7 +74,8 @@ Alerts:
 3. Output standart formatda yaratilishi shart.
 4. Alerts Signal yoki Decision yaratmaydi.
 5. Alerts BOS/CHoCH/FVG/Liquidity hisoblamaydi.
-6. Circular Dependency qat'iyan taqiqlanadi.
+6. Alerts Render State/Chart State'ni kuzatadi — ketma-ket modul Output'ini iste'mol qilmaydi.
+7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Input qabul qilinadi.

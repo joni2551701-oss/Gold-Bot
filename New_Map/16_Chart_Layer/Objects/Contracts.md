@@ -24,23 +24,25 @@ Chart_Interaction
 ↓
 Objects
 ↓
-Drawing_Tools
+Shared Render State
 ```
+Objects Drawing_Tools/Indicators/Analysis_Overlay'ning Output'ini Input sifatida olmaydi (Chart Shared State Rule). Ular barchasi Shared Render State orqali parallel ishlaydi.
 ---
 # Input Contract
-• Interaction Context
-• Drawing Object
-• Overlay Object
-• Indicator Overlay Data
+• Interaction Context (Chart_Interaction)
+• Chart Data (Chart_Data)
+• Chart State (Chart_Core)
 ---
 # Output Contract
 • Object List
 • Object State
 • Object Metadata
+(Shared Render State'ga yoziladi)
 ---
 # Allowed Dependencies
 ✓ Chart_Interaction
-✓ Drawing_Tools
+✓ Chart_Data
+✓ Chart_Core
 ✓ Chart_Renderer
 ---
 # Forbidden Dependencies
@@ -72,10 +74,11 @@ Objects:
 # Runtime Rules
 1. Objects faqat o'z Module Boundary ichida ishlaydi.
 2. Har bir Input tekshirilishi shart.
-3. Output standart formatda yaratilishi shart.
+3. Output standart formatda yaratilishi shart va Shared Render State'ga yoziladi.
 4. Objects Signal yoki Decision yaratmaydi.
 5. Objects BOS/CHoCH/FVG/Liquidity hisoblamaydi.
-6. Circular Dependency qat'iyan taqiqlanadi.
+6. Objects Drawing_Tools/Indicators/Analysis_Overlay'ning natijasini Input sifatida olmaydi — Chart Shared State Rule.
+7. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Input qabul qilinadi.

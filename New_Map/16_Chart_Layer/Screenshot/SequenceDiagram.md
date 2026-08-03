@@ -19,13 +19,13 @@ Screenshot Ready
 ---
 # Runtime Sequence
 ```text
-Alerts
+Chart_Renderer (current frame)
 ↓
 Screenshot
 ↓
 Process PNG Export
 ↓
-Chart_API
+Chart_API (Exit)
 ```
 ---
 # Error Sequence
@@ -62,9 +62,9 @@ Dispose
 ```
 ---
 # Runtime Rules
-1. Alerts natijasi mavjud bo'lishi shart.
+1. Chart_Renderer'da joriy Rendered Frame mavjud bo'lishi shart.
 2. Screenshot faqat o'z mas'uliyat doirasida ishlaydi.
-3. Output Chart_API'ga uzatiladi.
+3. Output Chart_API (Exit)'ga uzatiladi.
 4. Xatolik yuz berganda Error Sequence ishga tushadi, keyin Recovery Sequence orqali tiklanadi.
 5. Circular Dependency qat'iyan taqiqlanadi.
 ---
@@ -88,8 +88,8 @@ Completed
 ```
 ---
 # Summary
-Alerts
+Chart_Renderer
 ↓
 Screenshot
 ↓
-Chart_API
+Chart_API (Exit)

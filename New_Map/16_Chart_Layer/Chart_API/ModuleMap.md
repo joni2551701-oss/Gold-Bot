@@ -16,11 +16,8 @@ Chart_API
 ---
 # Module Position
 ```text
-GoldBot Core
-↓
-Chart_API
-↓
-Chart_Core
+Entry:  GoldBot Core ↓ Chart_API ↓ Chart_Core
+Exit:   Chart_Renderer / Screenshot / Alerts ↓ Chart_API ↓ User
 ```
 ---
 # Processing Pipeline (Planned)
@@ -30,15 +27,15 @@ PublicAPI → EventAPI → PluginAPI → RendererAPI → DataAPI
 ---
 # Dependency Map
 ```text
-GoldBot Core
-↓
-Chart_API
-↓
-Chart_Core
+Entry:  GoldBot Core ↓ Chart_API ↓ Chart_Core
+Exit:   Chart_Renderer / Screenshot / Alerts ↓ Chart_API ↓ User
 ```
 ---
 # Allowed Dependencies
 ✓ Chart_Core
+✓ Chart_Renderer
+✓ Screenshot
+✓ Alerts
 ✓ Analysis_Overlay
 ✓ Plugins
 ---
@@ -53,13 +50,8 @@ Chart_Core
 ---
 # Runtime Flow
 ```text
-Receive Input
-↓
-Process (Chart_API)
-↓
-Emit Output
-↓
-Chart_Core
+Entry: Receive GoldBot Core Input → Process → Emit Chart Request/Configuration → Chart_Core
+Exit:  Receive Chart_Renderer/Screenshot/Alerts Output → Process → Emit Chart Response/Event → User
 ```
 ---
 # Summary

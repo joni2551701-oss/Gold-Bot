@@ -15,11 +15,11 @@ Screenshot
 ---
 # Module Position
 ```text
-Alerts
+Chart_Renderer
 ↓
 Screenshot
 ↓
-Chart_API
+Chart_API (Exit)
 ```
 ---
 # Processing Pipeline (Planned)
@@ -29,15 +29,15 @@ PNG → JPG → PDF → ExportManager
 ---
 # Dependency Map
 ```text
-Alerts
+Chart_Renderer
 ↓
 Screenshot
 ↓
-Chart_API
+Chart_API (Exit)
 ```
 ---
 # Allowed Dependencies
-✓ Alerts
+✓ Chart_Renderer
 ✓ Chart_API
 ---
 # Forbidden Dependencies
@@ -51,13 +51,13 @@ Chart_API
 ---
 # Runtime Flow
 ```text
-Receive Input
+Capture Chart_Renderer Frame
 ↓
 Process (Screenshot)
 ↓
 Emit Output
 ↓
-Chart_API
+Chart_API (Exit)
 ```
 ---
 # Summary

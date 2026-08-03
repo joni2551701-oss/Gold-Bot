@@ -19,13 +19,13 @@ Alerts Ready
 ---
 # Runtime Sequence
 ```text
-Analysis_Overlay
+Watch Render State / Chart State
 ↓
 Alerts
 ↓
 Process Price Alert Management
 ↓
-Screenshot
+Chart_API (Exit)
 ```
 ---
 # Error Sequence
@@ -62,9 +62,9 @@ Dispose
 ```
 ---
 # Runtime Rules
-1. Analysis_Overlay natijasi mavjud bo'lishi shart.
+1. Render State/Chart State mavjud bo'lishi shart.
 2. Alerts faqat o'z mas'uliyat doirasida ishlaydi.
-3. Output Screenshot'ga uzatiladi.
+3. Output Chart_API (Exit)'ga uzatiladi.
 4. Xatolik yuz berganda Error Sequence ishga tushadi, keyin Recovery Sequence orqali tiklanadi.
 5. Circular Dependency qat'iyan taqiqlanadi.
 ---
@@ -88,8 +88,8 @@ Completed
 ```
 ---
 # Summary
-Analysis_Overlay
+Shared Render State / Chart State
 ↓
 Alerts
 ↓
-Screenshot
+Chart_API (Exit)

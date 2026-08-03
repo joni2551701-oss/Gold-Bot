@@ -25,7 +25,7 @@ Objects
 ↓
 Process Candle Object Management
 ↓
-Drawing_Tools
+Shared Render State
 ```
 ---
 # Error Sequence
@@ -64,7 +64,7 @@ Dispose
 # Runtime Rules
 1. Chart_Interaction natijasi mavjud bo'lishi shart.
 2. Objects faqat o'z mas'uliyat doirasida ishlaydi.
-3. Output Drawing_Tools'ga uzatiladi.
+3. Output Shared Render State'ga yoziladi (Drawing_Tools/Indicators/Analysis_Overlay/Chart_Renderer tomonidan o'qiladi).
 4. Xatolik yuz berganda Error Sequence ishga tushadi, keyin Recovery Sequence orqali tiklanadi.
 5. Circular Dependency qat'iyan taqiqlanadi.
 ---
@@ -92,4 +92,4 @@ Chart_Interaction
 ↓
 Objects
 ↓
-Drawing_Tools
+Shared Render State

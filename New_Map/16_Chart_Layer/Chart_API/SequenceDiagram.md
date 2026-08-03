@@ -19,13 +19,8 @@ Chart_API Ready
 ---
 # Runtime Sequence
 ```text
-GoldBot Core
-↓
-Chart_API
-↓
-Process Public API Exposure
-↓
-Chart_Core
+Entry:  GoldBot Core ↓ Chart_API ↓ Process Public API Exposure ↓ Chart_Core
+Exit:   Chart_Renderer / Screenshot / Alerts ↓ Chart_API ↓ Process Response Assembly ↓ User
 ```
 ---
 # Error Sequence
@@ -62,9 +57,9 @@ Dispose
 ```
 ---
 # Runtime Rules
-1. GoldBot Core natijasi mavjud bo'lishi shart.
+1. GoldBot Core natijasi (Entry) yoki Chart_Renderer/Screenshot/Alerts natijasi (Exit) mavjud bo'lishi shart.
 2. Chart_API faqat o'z mas'uliyat doirasida ishlaydi.
-3. Output Chart_Core'ga uzatiladi.
+3. Entry Output Chart_Core'ga, Exit Output Userga uzatiladi.
 4. Xatolik yuz berganda Error Sequence ishga tushadi, keyin Recovery Sequence orqali tiklanadi.
 5. Circular Dependency qat'iyan taqiqlanadi.
 ---
@@ -88,8 +83,5 @@ Completed
 ```
 ---
 # Summary
-GoldBot Core
-↓
-Chart_API
-↓
-Chart_Core
+Entry: GoldBot Core ↓ Chart_API ↓ Chart_Core
+Exit:  Chart_Renderer / Screenshot / Alerts ↓ Chart_API ↓ User

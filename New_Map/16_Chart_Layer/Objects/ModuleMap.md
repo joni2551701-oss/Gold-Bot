@@ -21,7 +21,7 @@ Chart_Interaction
 ↓
 Objects
 ↓
-Drawing_Tools
+Shared Render State
 ```
 ---
 # Processing Pipeline (Planned)
@@ -35,12 +35,13 @@ Chart_Interaction
 ↓
 Objects
 ↓
-Drawing_Tools
+Shared Render State
 ```
 ---
 # Allowed Dependencies
 ✓ Chart_Interaction
-✓ Drawing_Tools
+✓ Chart_Data
+✓ Chart_Core
 ✓ Chart_Renderer
 ---
 # Forbidden Dependencies
@@ -60,7 +61,7 @@ Process (Objects)
 ↓
 Emit Output
 ↓
-Drawing_Tools
+Shared Render State
 ```
 ---
 # Summary

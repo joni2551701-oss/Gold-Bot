@@ -44,7 +44,7 @@ Chart Layer yaratadi.
 • Alert Trigger
 • Exported File (PNG/JPG/PDF)
 ---
-# Layer Pipeline
+# Chart Execution Flow (Processing Order — NOT a token-passing Pipeline)
 ```text
 GoldBot Core
 ↓
@@ -52,23 +52,15 @@ Chart_API (Entry)
 ↓
 Chart_Core
 ↓
-Chart_Data
+Chart_Data · Chart_Interaction · Objects        (parallel)
 ↓
-Chart_Renderer
+Shared Render State
 ↓
-Chart_Interaction
+Drawing_Tools · Indicators · Analysis_Overlay   (parallel)
 ↓
-Objects
+Chart_Renderer   (har frame Shared Render State'ni o'qiydi)
 ↓
-Drawing_Tools
-↓
-Indicators
-↓
-Analysis_Overlay
-↓
-Alerts
-↓
-Screenshot
+Screenshot · Alerts                              (parallel)
 ↓
 Chart_API (Exit)
 ↓
@@ -76,14 +68,15 @@ User
 ```
 ---
 # Layer Rules
-1. Chart Layer'ga barcha tashqi kirish va chiqishlar Chart_API orqali amalga oshiriladi.
+1. Chart Layer'ga barcha tashqi kirish va chiqishlar Chart_API orqali amalga oshiriladi (Entry va Exit).
 2. Chart_Core barcha ichki modullarni boshqaradi.
-3. Chart_Renderer faqat chizadi — hisoblamaydi.
+3. Chart_Renderer faqat chizadi — hisoblamaydi, va ketma-ket modul Output'ini emas, joriy Shared Render State'ni o'qiydi (Render Loop Rule).
 4. Analysis_Overlay faqat vizualizatsiya qiladi — tahlil qilmaydi.
 5. Chart hech qachon Signal/BOS/CHoCH/FVG/Liquidity/Wyckoff/AMD hisoblamaydi.
 6. Chart hech qachon AI yoki Risk logikasi bilan shug'ullanmaydi.
 7. Chart hech qachon Trade Execution qilmaydi.
-8. Circular Dependency qat'iyan taqiqlanadi.
+8. Chart modullari Chart State/Render State orqali muloqot qiladi — ownership yoki strict Input→Output zanjiri emas (Chart Shared State Rule).
+9. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ GoldBot Core natijalari Chart_API orqali qabul qilinadi.

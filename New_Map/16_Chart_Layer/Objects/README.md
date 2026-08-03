@@ -24,14 +24,15 @@ Chart_Interaction
 ↓
 Objects
 ↓
-Drawing_Tools
+Shared Render State
 ```
+Objects execution order jihatidan Chart_Interaction'dan keyin keladi, lekin Drawing_Tools/Indicators/Analysis_Overlay'ning natijasini Input sifatida olmaydi — bu modullar bilan ownership yoki token-passing bog'liqligi yo'q (qarang: Chart Shared State Rule, `Layer_Contracts.md`).
 ---
 # Responsibilities
 Objects
 ✓ Barcha Chart obyektlarini (Candle, Line, Shape, Text, Overlay) yagona Object Model sifatida boshqaradi
 ✓ Object Lifecycle'ni nazorat qiladi
-✓ Chart_Renderer uchun Object List tayyorlaydi
+✓ Shared Render State'ni o'z Object Model bilan yangilaydi
 ---
 # Not Responsible
 Objects
@@ -42,13 +43,12 @@ Objects
 ---
 # Input
 Objects qabul qiladi.
-• Interaction Context
-• Drawing Object
-• Overlay Object
-• Indicator Overlay Data
+• Interaction Context (Chart_Interaction)
+• Chart Data (Chart_Data)
+• Chart State (Chart_Core)
 ---
 # Output
-Objects yaratadi.
+Objects yaratadi (Shared Render State'ga yozadi).
 • Object List
 • Object State
 • Object Metadata
@@ -59,7 +59,7 @@ Chart_Interaction
 ↓
 Objects
 ↓
-Drawing_Tools
+Shared Render State
 ```
 ---
 # Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
@@ -89,7 +89,7 @@ Objects/
 ├── ModuleMap.md
 └── Contracts.md
 ```
-Predecessor: Chart_Interaction · Successor: Drawing_Tools
+Execution Order: after Chart_Interaction · writes to Shared Render State (read by Drawing_Tools, Indicators, Analysis_Overlay, Chart_Renderer)
 ---
 # Summary
 Objects GoldBot Chart Layer ichidagi Objects vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

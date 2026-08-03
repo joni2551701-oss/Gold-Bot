@@ -19,19 +19,20 @@ Chart_Renderer quyidagi vazifalarni bajaradi.
 ---
 # Layer Position
 ```text
-Chart_Data
+Shared Render State
 ↓
 Chart_Renderer
 ↓
-Chart_Interaction
+Screenshot / Alerts / Chart_API
 ```
+Chart_Renderer boshqa modullardan ketma-ket Output qabul qilmaydi — u har frame'da joriy Shared Render State'ni o'qiydi va chizadi (Render Loop Rule, `Rendering_Guide.md`).
 ---
 # Responsibilities
 Chart_Renderer
 ✓ Candle'larni chizadi
 ✓ Overlay'larni chizadi
 ✓ Object'larni chizadi
-✓ Render Pipeline'ni boshqaradi
+✓ Render Loop'ni boshqaradi (har frame Shared Render State'ni o'qiydi)
 ✓ Frame'larni yangilaydi
 ---
 # Not Responsible
@@ -45,9 +46,7 @@ Chart_Renderer
 ---
 # Input
 Chart_Renderer qabul qiladi.
-• Candle Data
-• Object List
-• Overlay Data
+• Shared Render State (Chart_Data, Objects, Drawing_Tools, Indicators, Analysis_Overlay tomonidan yangilangan)
 • Theme
 • Viewport Context
 ---
@@ -59,11 +58,11 @@ Chart_Renderer yaratadi.
 ---
 # Workflow
 ```text
-Chart_Data
+Shared Render State
 ↓
-Chart_Renderer
+Chart_Renderer (har frame)
 ↓
-Chart_Interaction
+Screenshot / Alerts / Chart_API
 ```
 ---
 # Internal Modules (Planned — Foundation Freeze'dan keyin implementatsiya qilinadi)
@@ -93,7 +92,7 @@ Chart_Renderer/
 ├── ModuleMap.md
 └── Contracts.md
 ```
-Predecessor: Chart_Data · Successor: Chart_Interaction
+Reads: Shared Render State (every frame) · Successor: Screenshot, Alerts, Chart_API
 ---
 # Summary
 Chart_Renderer GoldBot Chart Layer ichidagi Chart Renderer vazifalarini bajaruvchi Canonical modul hisoblanadi. Bu hujjat Blueprint bosqichida bo'lib, yuqoridagi Internal Modules ro'yxati Foundation Freeze'dan keyin haqiqiy implementatsiya bilan to'ldiriladi.

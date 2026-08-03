@@ -16,11 +16,11 @@ Alerts
 ---
 # Module Position
 ```text
-Analysis_Overlay
+Shared Render State / Chart State
 ↓
 Alerts
 ↓
-Screenshot
+Chart_API (Exit)
 ```
 ---
 # Processing Pipeline (Planned)
@@ -30,17 +30,18 @@ PriceAlerts → IndicatorAlerts → DrawingAlerts → TimeAlerts → AlertManage
 ---
 # Dependency Map
 ```text
-Analysis_Overlay
+Shared Render State / Chart State
 ↓
 Alerts
 ↓
-Screenshot
+Chart_API (Exit)
 ```
 ---
 # Allowed Dependencies
 ✓ Analysis_Overlay
-✓ Screenshot
 ✓ Drawing_Tools
+✓ Chart_Data
+✓ Chart_API
 ---
 # Forbidden Dependencies
 ✗ Signal Layer
@@ -53,13 +54,13 @@ Screenshot
 ---
 # Runtime Flow
 ```text
-Receive Input
+Watch Render State / Chart State
 ↓
 Process (Alerts)
 ↓
 Emit Output
 ↓
-Screenshot
+Chart_API (Exit)
 ```
 ---
 # Summary
