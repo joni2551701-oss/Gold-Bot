@@ -48,16 +48,15 @@ Database Layer yaratadi.
 DatabaseService (Entry)
 ↓
 DatabaseManager
-↓
-TradeRepository
-↓
-UserRepository
-↓
-MarketRepository
-↓
-JournalRepository
-↓
-CacheManager
+        │
+        ├──────────────┬──────────────┬──────────────┐
+        ▼              ▼              ▼              ▼
+TradeRepository  UserRepository  MarketRepository  JournalRepository
+        │              │              │              │
+        └──────────────┴──────────────┴──────────────┘
+                       │
+                       ▼
+                 CacheManager
 ↓
 BackupManager
 ↓
@@ -69,7 +68,7 @@ Platform Layer
 # Layer Rules
 1. Database Layer'ga barcha kirish va chiqishlar DatabaseService orqali amalga oshiriladi.
 2. DatabaseManager barcha Connection va Transaction'larni boshqarishi shart.
-3. Repository modullari faqat o'z Domain ma'lumotlari bilan ishlashi shart.
+3. Repository modullari faqat o'z Domain ma'lumotlari bilan ishlashi shart va bir-biriga bog'liq emas — parallel ishlaydi.
 4. Cache Database bilan doim sinxron bo'lishi shart.
 5. Backup Verification majburiy.
 6. Repository Business Logic bajarmaydi.

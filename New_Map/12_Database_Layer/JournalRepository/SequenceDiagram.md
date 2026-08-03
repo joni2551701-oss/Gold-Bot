@@ -18,7 +18,7 @@ Save / Update /Query
 ↓
 Return Repository Result
 ↓
-DatabaseService
+Database Storage
 ```
 ---
 # Runtime Rules
@@ -45,4 +45,4 @@ DatabaseManager
 ↓
 JournalRepository
 ↓
-DatabaseService
+Database Storage

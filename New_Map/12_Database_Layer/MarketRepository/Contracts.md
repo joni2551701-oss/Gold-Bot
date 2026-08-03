@@ -53,6 +53,10 @@ Database Storage
 ✗ JournalRepository
 ✗ CacheManager
 ✗ BackupManager
+✗ Platform Layer
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Runtime Contract
 1. Candle ma'lumotlari vaqt bo'yicha tartiblangan holda saqlanishi shart.

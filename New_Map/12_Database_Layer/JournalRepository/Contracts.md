@@ -53,6 +53,10 @@ Database Storage
 ✗ MarketRepository
 ✗ CacheManager
 ✗ BackupManager
+✗ Platform Layer
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Runtime Contract
 1. Har bir Journal Record vaqt belgisi bilan saqlanishi shart.

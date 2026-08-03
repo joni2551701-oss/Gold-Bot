@@ -57,6 +57,7 @@ Database Metadata yaratadi.
 ✗ Platform Layer
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 DatabaseManager GoldBot Database Layer ichidagi Database Infrastructure boshqaruvini amalga oshiruvchi Canonical modul hisoblanadi.

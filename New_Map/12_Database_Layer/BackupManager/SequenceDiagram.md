@@ -22,7 +22,7 @@ Store Backup
 ↓
 Return Backup Result
 ↓
-Platform Layer
+DatabaseService
 ```
 ---
 # Runtime Rules
@@ -51,4 +51,4 @@ CacheManager
 ↓
 BackupManager
 ↓
-Platform Layer
+DatabaseService

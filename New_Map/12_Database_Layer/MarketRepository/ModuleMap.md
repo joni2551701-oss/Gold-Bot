@@ -54,6 +54,10 @@ Repository Metadata yaratadi.
 ✗ JournalRepository
 ✗ CacheManager
 ✗ BackupManager
+✗ Platform Layer
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 MarketRepository GoldBot Database Layer ichidagi Market Domain ma'lumotlarini boshqaruvchi Canonical Repository modulidir.

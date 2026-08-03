@@ -55,6 +55,7 @@ Repositories
 ✗ Platform Layer
 ✗ Decision Layer
 ✗ Risk Layer
+✗ Execution Layer
 ---
 # Runtime Contract
 1. Database Configuration yuklanishi shart.

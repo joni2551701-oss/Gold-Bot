@@ -54,6 +54,10 @@ Repository Metadata yaratadi.
 ✗ JournalRepository
 ✗ CacheManager
 ✗ BackupManager
+✗ Platform Layer
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 TradeRepository GoldBot Database Layer ichidagi Trade Domain ma'lumotlarini boshqaruvchi Canonical Repository modulidir.

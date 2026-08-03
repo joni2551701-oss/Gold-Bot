@@ -54,6 +54,10 @@ Repository Metadata yaratadi.
 ✗ JournalRepository
 ✗ CacheManager
 ✗ BackupManager
+✗ Platform Layer
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 UserRepository GoldBot Database Layer ichidagi User Domain ma'lumotlarini boshqaruvchi Canonical Repository modulidir.

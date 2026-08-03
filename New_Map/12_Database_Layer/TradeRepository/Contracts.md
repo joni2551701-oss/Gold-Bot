@@ -52,6 +52,10 @@ Database Storage
 ✗ JournalRepository
 ✗ CacheManager
 ✗ BackupManager
+✗ Platform Layer
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Runtime Contract
 1. Har bir Trade Unique ID bilan saqlanishi shart.

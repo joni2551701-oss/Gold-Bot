@@ -27,7 +27,7 @@ CacheManager
 ↓
 BackupManager
 ↓
-Platform Layer
+DatabaseService
 ```
 ---
 # Input Contract
@@ -45,7 +45,7 @@ Platform Layer
 ---
 # Allowed Dependencies
 ✓ CacheManager
-✓ Platform Layer
+✓ DatabaseService
 ---
 # Forbidden Dependencies
 ✗ DatabaseManager
@@ -53,6 +53,10 @@ Platform Layer
 ✗ UserRepository
 ✗ MarketRepository
 ✗ JournalRepository
+✗ Platform Layer (to'g'ridan-to'g'ri)
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Runtime Contract
 1. Backup boshlanishidan oldin konfiguratsiya tekshirilishi shart.
@@ -61,7 +65,8 @@ Platform Layer
 4. Restore faqat Verification muvaffaqiyatli bo'lgan Backup'dan bajarilishi shart.
 5. Backup versiyalari saqlanishi shart.
 6. Disaster Recovery log qilinishi shart.
-7. Circular Dependency qat'iyan taqiqlanadi.
+7. BackupManager Layer tashqarisiga chiqmaydi — natija DatabaseService orqali Platform Layer'ga uzatiladi.
+8. Circular Dependency qat'iyan taqiqlanadi.
 ---
 # Acceptance Criteria
 ✓ Backup yaratiladi.

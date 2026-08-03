@@ -23,7 +23,7 @@ CacheManager
 ↓
 BackupManager
 ↓
-Platform Layer
+DatabaseService
 ```
 ---
 # Responsibilities

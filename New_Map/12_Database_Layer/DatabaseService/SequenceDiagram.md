@@ -14,18 +14,6 @@ Validate Request
 ↓
 DatabaseManager
 ↓
-TradeRepository
-↓
-UserRepository
-↓
-MarketRepository
-↓
-JournalRepository
-↓
-CacheManager
-↓
-BackupManager
-↓
 DatabaseService (Exit)
 ↓
 Standardize Response

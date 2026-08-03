@@ -10,7 +10,7 @@ CacheManager
 ↓
 BackupManager
 ↓
-Platform Layer
+DatabaseService
 ```
 ---
 # Module Architecture
@@ -46,7 +46,7 @@ Backup Metadata yaratadi.
 ---
 # Allowed Dependencies
 ✓ CacheManager
-✓ Platform Layer
+✓ DatabaseService
 ---
 # Forbidden Dependencies
 ✗ DatabaseManager
@@ -54,6 +54,10 @@ Backup Metadata yaratadi.
 ✗ UserRepository
 ✗ MarketRepository
 ✗ JournalRepository
+✗ Platform Layer (to'g'ridan-to'g'ri)
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
 ---
 # Summary
 BackupManager GoldBot Database Layer ichidagi barcha Backup va Restore operatsiyalarini boshqaruvchi Canonical modul hisoblanadi.
