@@ -1,0 +1,68 @@
+# Alerts Contracts
+Status: BLUEPRINT
+---
+# Purpose
+Ushbu hujjat Alerts modulining rasmiy Architecture Contract hujjati hisoblanadi.
+---
+# Module Responsibility
+Alerts quyidagilar uchun javobgar.
+✓ Price Alert Management
+✓ Indicator Alert Management
+✓ Drawing Alert Management
+✓ Time Alert Management
+✓ Alert Notification
+Alerts bajarmaydi.
+✗ Signal Generation
+✗ Decision Making
+✗ Trade Execution
+✗ Notification Delivery (Platform Layer vazifasi)
+---
+# Module Boundary
+```text
+Analysis_Overlay
+↓
+Alerts
+↓
+Screenshot
+```
+---
+# Input Contract
+• Overlay Object
+• Price Data
+• Alert Configuration
+---
+# Output Contract
+• Alert Trigger
+• Alert Status
+• Alert Metadata
+---
+# Allowed Dependencies
+✓ Analysis_Overlay
+✓ Screenshot
+✓ Drawing_Tools
+---
+# Forbidden Dependencies
+✗ Signal Layer
+✗ AI Layer
+✗ Decision Layer
+✗ Risk Layer
+✗ Execution Layer
+✗ Database Layer
+✗ Platform Layer
+---
+# Runtime Contract
+1. Alerts faqat o'z Module Boundary ichida ishlaydi.
+2. Har bir Input tekshirilishi shart.
+3. Output standart formatda yaratilishi shart.
+4. Alerts Signal yoki Decision yaratmaydi.
+5. Alerts BOS/CHoCH/FVG/Liquidity hisoblamaydi.
+6. Circular Dependency qat'iyan taqiqlanadi.
+---
+# Acceptance Criteria
+✓ Input qabul qilinadi.
+✓ Price Alert Management bajariladi.
+✓ Output yaratiladi.
+✓ Architecture Boundary buzilmaydi.
+---
+# Summary
+Alerts Contract GoldBot Chart Layer ichidagi Alerts jarayonlarini belgilovchi rasmiy Canonical Architecture Contract hisoblanadi (Blueprint bosqichi).
