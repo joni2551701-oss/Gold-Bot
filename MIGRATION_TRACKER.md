@@ -167,3 +167,58 @@ Joriy holat: **210 moduldan 3 tasi MIGRATED, 207 tasi SKELETON**.
 # Summary
 
 Phase A yakunlandi: Canonical Architecture'ning 17 Layer / 210 modul tuzilmasi `goldbot/` paketida importga yaroqli skelet sifatida aks ettirildi. Hech qanday biznes kodi ko'chirilmadi — bu Phase B'dan boshlanadi.
+
+---
+
+# ⛔ BLOCKER — Director Order No. 005 va Python import cheklovi
+
+**Status:** Director qarori kutilmoqda. Migratsiya to'xtatildi.
+
+Order No. 005 yakuniy maqsadni belgiladi: Python kod `goldbot/` da emas, Layer papkalari ichida yashashi kerak:
+
+```text
+02_Core_Layer/
+├── README.md
+├── Configuration/
+│   ├── README.md
+│   ├── Contracts.md
+│   └── settings.py     ← kod shu yerda
+```
+
+## Texnik to'siq
+
+Python moduli nomi raqam bilan boshlana olmaydi. Empirik tekshiruv (2026-08-03):
+
+```text
+from 02_Core_Layer.Configuration.settings import VALUE
+                                                  ^
+SyntaxError: invalid decimal literal
+
+import 02_Core_Layer
+             ^
+SyntaxError: invalid decimal literal
+
+importlib.import_module("02_Core_Layer.Configuration.settings")   -> ISHLAYDI
+```
+
+Ya'ni raqamli papka ichidagi kodni faqat `importlib.import_module()` orqali yuklash mumkin — oddiy `import` yoki `from ... import` bilan **hech qachon**. Bu 5400 test, ~1000 import nuqtasi, pyflakes, IDE va refactoring vositalari uchun yaroqsiz.
+
+## Variantlar
+
+| # | Yechim | Import ko'rinishi | Tartib ko'rinadimi | Idiomatik |
+|---|---|---|---|---|
+| 1 | Raqamli prefiksni olib tashlash: `data_layer/`, `core_layer/` | `from core_layer.configuration.settings import X` | ❌ (faqat hujjatda) | ✅ |
+| 2 | Harf prefiksi: `l01_data_layer/`, `l02_core_layer/` | `from l02_core_layer.configuration.settings import X` | ✅ | ⚠️ |
+| 3 | Hozirgi holat: hujjat raqamli papkada, kod `goldbot/` da | `from goldbot.core_layer.configuration.settings import X` | ✅ | ✅ |
+| 4 | Raqamli papka + hamma joyda `importlib` | `importlib.import_module("02_Core_Layer...")` | ✅ | ❌ yaroqsiz |
+
+Variant 4 texnik jihatdan mumkin, lekin amalda ishlamaydi.
+
+## Nega migratsiya to'xtatildi
+
+Order No. 005: *"Agar bugungi qaror keyinchalik kodni yana ko'chirishga majbur qilsa, yaxshiroq yechimni tanlash kerak."*
+
+Hozir `goldbot/` ichiga ko'chirishni davom ettirish aynan shunday holat yaratadi — variant 1 yoki 2 tanlansa, ko'chirilgan barcha kod ikkinchi marta ko'chiriladi. Shuning uchun Configuration, Secrets va Pipeline'dan keyin migratsiya to'xtatildi.
+
+Layer papkalari nomini o'zgartirish Foundation Freeze tarkibiga tegadi (WAR-005 / WAR-007), shuning uchun Worker o'zi hal qilmaydi.
+
