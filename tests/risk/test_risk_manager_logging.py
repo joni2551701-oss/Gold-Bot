@@ -46,7 +46,7 @@ def test_logged_entry_has_symbol(risk_manager, mock_signal_candidate, mock_ai_re
 
 
 def test_logged_entry_defaults_symbol_to_unknown_when_not_supplied(risk_manager, mock_signal_candidate, mock_ai_result):
-    """The existing core/pipeline.py and backtesting/backtest_engine.py call sites never supply symbol."""
+    """The existing core/pipeline.py and backtesting_layer/backtest_engine/backtest_engine.py call sites never supply symbol."""
     candidate = mock_signal_candidate(entry=4065.0, stop_loss=4060.0, take_profit=4080.0)
     decision = _decision(candidate, mock_ai_result(approved=True, confidence=0.95))
     risk_manager.evaluate(decision)

@@ -10,7 +10,7 @@ forbidden below. There is no third category.
 | From | To | Example |
 |---|---|---|
 | `telegram/handlers.py` | `telegram/*_service.py` | `telegram/handlers.py` → `telegram/signal_service.py` |
-| `telegram/*_service.py` | `database/*_repository.py` | `telegram/user_service.py` → `database/user_repository.py` |
+| `telegram/*_service.py` | `database/*_repository.py` | `telegram/user_service.py` → `database_layer/user_repository/user_repository.py` |
 | `telegram/owner/*.py` | corresponding service/repository | `telegram/owner/runtime_commands.py` → `ai/runtime/ai_service.py` |
 | `ai/*` | `ai/*` | `ai/runtime/ai_service.py` → `ai/router/router.py` |
 | `ai/*` | `core/*` | any `ai/` module → `core/secrets.py` |

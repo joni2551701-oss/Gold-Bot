@@ -39,7 +39,7 @@ above; it depends on nothing in this diagram.
 | `decision_layer/decision_engine/decision_engine.py`, `decision_layer/decision_engine/models.py` | `signals/`, `context/`, `core/`, plus `ai.ai_analyzer.AIAnalysisResult` (**type only** — the one sanctioned `decision/ → ai/` import, see Constitution Article 1/3) |
 | `risk_layer/risk_engine/risk_manager.py` | `decision/`, `core/` |
 | `execution_layer/execution_engine/execution_engine.py` | `risk/`, `core/` (inert — no live order calls) |
-| `lifecycle/paper_trade_monitor.py` | `decision/`, `risk/`, `core/` |
+| `trade_monitoring_layer/paper_trading/paper_trade_monitor.py` | `decision/`, `risk/`, `core/` |
 | `core/pipeline.py` | orchestrates all of the above, top to bottom |
 
 ### Telegram layer
@@ -55,7 +55,7 @@ above; it depends on nothing in this diagram.
 
 | Module | Depends on |
 |---|---|
-| `database/*_repository.py` (19 repositories) | `database/*_models.py`, `database/database.py` — SQL only, no business logic |
+| `database/*_repository.py` (19 repositories) | `database/*_models.py`, `database_layer/database_manager/database.py` — SQL only, no business logic |
 
 ### AI layer — 21 real subpackages under `ai/`
 

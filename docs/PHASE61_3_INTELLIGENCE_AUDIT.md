@@ -85,8 +85,8 @@ answers rather than re-aggregating raw records.
 
 ## `database/`
 
-`database/learning_repository.py`'s `LearningRepository.get_recent()`/
-`get_by_strategy()` and `database/signal_repository.py`'s
+`database_layer/journal_repository/learning_repository.py`'s `LearningRepository.get_recent()`/
+`get_by_strategy()` and `database_layer/trade_repository/signal_repository.py`'s
 `SignalRepository.get_closed_signals()` are the two existing read
 paths to historical trade data — TASK 4's Learning Tool and TASK 6's
 Trade Memory read through these repositories directly (read-only,
@@ -143,7 +143,7 @@ Phase 61.2's own closing verification step.
 |---|---|---|
 | 2 (Context Intelligence) | `ContextSnapshot -> MarketContext` adapter (one function) | `context_layer/context_engine/snapshot.py`'s `from_context_snapshot()`; `ai/learning_context.py`; `ai/journal/trade_journal.py`; `ai/profiles/user_profile.py`; `ai/context/context_builder.py` (unmodified) |
 | 3 (Knowledge Foundation) | `knowledge/` package (new, flat structure) | Content sourced from existing `docs/*.md` |
-| 4 (Real Tool Calling) | Real logic inside existing tool classes | `ai/tools/tool_registry.py`'s `BaseAITool`/`ToolRegistry` (unchanged); `database/learning_repository.py`, `database/signal_repository.py`, `database/market_snapshot_repository.py`; `context_layer/fundamental/fundamental_context.py`; `analytics/*` |
+| 4 (Real Tool Calling) | Real logic inside existing tool classes | `ai/tools/tool_registry.py`'s `BaseAITool`/`ToolRegistry` (unchanged); `database_layer/journal_repository/learning_repository.py`, `database_layer/trade_repository/signal_repository.py`, `database_layer/market_repository/market_snapshot_repository.py`; `context_layer/fundamental/fundamental_context.py`; `analytics/*` |
 | 5 (Conversation Engine) | `ConversationEngine` (new, thin) | `ai/session/` (entirely, unmodified); `ai/runtime/ai_service.py` (unmodified) |
 | 6 (Memory Runtime) | `MemoryRuntime` facade (new, thin) | `ai/memory/context_memory.py`'s `ContextMemory` (5 instances, unmodified) |
 | 7 (Explanation Engine) | `ExplanationEngine` (new, thin) | `ai/runtime/ai_service.py`; `signal_layer/signal_scoring/explainability.py`'s `SignalExplanation`; `analytics/learning_report.py`/`strategy_report.py` |

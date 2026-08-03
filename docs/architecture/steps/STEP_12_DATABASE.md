@@ -26,7 +26,7 @@ execution(STEP-11) ─ ExecutionIntent ─┤
               database/*_repository.py  (write via a service, never from a handler)
                                       │  SQL only
                                       ▼
-                               database/database.py  (connection)  → goldbot.db
+                               database_layer/database_manager/database.py  (connection)  → goldbot.db
 ```
 
 ## 3. Input / Output
@@ -41,7 +41,7 @@ execution(STEP-11) ─ ExecutionIntent ─┤
 
 | File | Role | Input | Output | Reads from | Passes to | New / Extend |
 |---|---|---|---|---|---|---|
-| `database/database.py` | connection/schema init | — | connection | — | repositories | **reuse** (register new tables via its init, as existing repos do) |
+| `database_layer/database_manager/database.py` | connection/schema init | — | connection | — | repositories | **reuse** (register new tables via its init, as existing repos do) |
 | `database/decision_outcome_models.py` | table def + row dataclass for `DecisionOutcome` | dict | row | decision_model | repository | **new** (mirrors `risk_decision_models.py`) |
 | `database/decision_outcome_repository.py` | SQL CRUD for decision outcomes | dict | rows | models | analytics/snapshot | **new** |
 | `database/risk_outcome_models.py` | table def + row dataclass for `RiskOutcome` | dict | row | risk_model | repository | **new** |
@@ -52,7 +52,7 @@ execution(STEP-11) ─ ExecutionIntent ─┤
 | `database/README.md` | append STEP-12 section | — | — | — | — | **extend** |
 
 ### Existing files to EXTEND (reuse-first)
-- `database/database.py` — new tables register through the same init path
+- `database_layer/database_manager/database.py` — new tables register through the same init path
   every existing repository already uses (`signal_repository`,
   `risk_decision_repository`, …). **No new connection layer.**
 - `database/migrations/` — one new, **additive** migration (new tables only;

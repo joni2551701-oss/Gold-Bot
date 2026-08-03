@@ -80,7 +80,7 @@ safety rule is actually broken. No FAIL was found anywhere.
    `monitoring<->telegram` and `analytics<->learning` bidirectional
    package-level dependencies exist but are undocumented; three
    layer-skip imports (`risk_manager.py`->`signal_layer.signal_builder.models`,
-   `database/signal_record.py`->three layers up,
+   `database_layer/trade_repository/signal_record.py`->three layers up,
    `core_layer/emergency/emergency_manager.py`->`database/`) are real but
    undocumented exceptions, none of which route AI into Decision/Risk/
    Execution/Telegram or put business logic into a repository.
@@ -88,7 +88,7 @@ safety rule is actually broken. No FAIL was found anywhere.
    Compose has never been build-tested end-to-end — both self-disclosed
    in the repo's own docs; the primary deployment path (systemd on a
    VPS) does not have this gap.
-10. **`telegram/result_handler.py`** imports `database.signal_repository`
+10. **`telegram/result_handler.py`** imports `database_layer.trade_repository.signal_repository`
     directly despite its `*_handler.py` name (it is not wired into
     `telegram/handlers.py`, so it does not violate the actual
     handlers-never-touch-repositories rule, but the name is misleading).

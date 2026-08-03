@@ -1,7 +1,7 @@
 """
 Risk Layer — Account State Tracker (Phase V1.0.1: Risk Management
 Hardening Patch, TASK 4/5). Pure calculation, backed by a single
-per-symbol persisted row (database.risk_state_repository.RiskStateRepository)
+per-symbol persisted row (database_layer.trade_repository.risk_state_repository.RiskStateRepository)
 that serves both the drawdown baseline (starting_equity/current_equity)
 and the daily-loss baseline (daily_start_balance/daily_date) -- see
 docs/PHASE_V1_0_1_RISK_AUDIT.md's TASK 4/10 section for why one table
@@ -9,7 +9,7 @@ serves both.
 
 Dormant unless a caller supplies current_equity/account_balance to
 RiskManager.evaluate() -- the existing core/pipeline.py and
-backtesting/backtest_engine.py call sites, both untouched this phase,
+backtesting_layer/backtest_engine/backtest_engine.py call sites, both untouched this phase,
 never supply either, so this tracker has zero effect on today's live
 pipeline until a future, separately-approved phase wires a real
 equity/balance source in (same "additive, off by default" posture as
@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
 
-from database.risk_state_repository import RiskStateRepository
+from database_layer.trade_repository.risk_state_repository import RiskStateRepository
 
 TRADING_PAUSED = "TRADING_PAUSED"
 NORMAL = "NORMAL"

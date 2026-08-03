@@ -5,11 +5,11 @@ Every table is created via `CREATE TABLE IF NOT EXISTS` and, where a
 phase added columns to an already-shipped table, migrated via a
 `PRAGMA table_info()`-guarded `ALTER TABLE ADD COLUMN` — both are
 idempotent and safe to run on every repository construction. All
-schema functions live in `database/models.py`.
+schema functions live in `database_layer/database_manager/models.py`.
 
 ## `users`
 
-Owned by `database/user_repository.py`.
+Owned by `database_layer/user_repository/user_repository.py`.
 
 | Column | Type | Default | Notes |
 |---|---|---|---|
@@ -29,7 +29,7 @@ Owned by `database/user_repository.py`.
 
 ## `admins`
 
-Owned by `database/admin_repository.py`.
+Owned by `database_layer/user_repository/admin_repository.py`.
 
 | Column | Type | Default |
 |---|---|---|
@@ -44,8 +44,8 @@ OWNER is **not** stored here — it is derived purely from the
 
 ## `signals`
 
-Owned by `database/signal_repository.py`. Written exclusively by
-`core/pipeline.py` (via `database/signal_record.py`); read-only from
+Owned by `database_layer/trade_repository/signal_repository.py`. Written exclusively by
+`core/pipeline.py` (via `database_layer/trade_repository/signal_record.py`); read-only from
 the Telegram layer.
 
 | Column | Type | Default | Notes |
@@ -82,7 +82,7 @@ conflate them.
 
 ## `subscriptions`
 
-Owned by `database/subscription_repository.py`. Deliberately separate
+Owned by `database_layer/user_repository/subscription_repository.py`. Deliberately separate
 from `users` — see `docs/telegram_layer.md`'s "kept separate" note.
 
 | Column | Type | Default |
@@ -98,7 +98,7 @@ from `users` — see `docs/telegram_layer.md`'s "kept separate" note.
 
 ## `feedback`
 
-Owned by `database/feedback_repository.py`. No `UNIQUE` constraint —
+Owned by `database_layer/user_repository/feedback_repository.py`. No `UNIQUE` constraint —
 multiple entries per `telegram_id` are expected.
 
 | Column | Type | Default |

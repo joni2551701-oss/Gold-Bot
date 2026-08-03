@@ -1,7 +1,7 @@
 """
 Risk Layer — Duplicate Trade Checker (Phase V1.0.1: Risk Management
 Hardening Patch, TASK 6). Reuses the risk_decisions log this same
-phase's TASK 8 already builds (database.risk_decision_repository.RiskDecisionRepository)
+phase's TASK 8 already builds (database_layer.trade_repository.risk_decision_repository.RiskDecisionRepository)
 rather than inventing a second open-positions table -- GoldBot has no
 persisted open-position store today (execution/ is simulator-only,
 see docs/PHASE_V1_AUDIT.md's Execution Audit), so "was a similar
@@ -16,7 +16,7 @@ see risk_layer/risk_engine/account_state_tracker.py's module docstring for the s
 from dataclasses import dataclass
 from typing import Optional
 
-from database.risk_decision_repository import RiskDecisionRepository
+from database_layer.trade_repository.risk_decision_repository import RiskDecisionRepository
 
 DEFAULT_DUPLICATE_WINDOW_SECONDS = 300.0
 

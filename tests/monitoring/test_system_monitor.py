@@ -1,10 +1,10 @@
-"""GoldBot Core Owner Monitoring Alpha, TASK 2 -- monitoring/system_monitor.py tests."""
+"""GoldBot Core Owner Monitoring Alpha, TASK 2 -- core_layer/health_monitor/system_monitor.py tests."""
 
 from unittest.mock import MagicMock
 
-from monitoring.models import SystemHealth
-from monitoring.provider_health import ProviderHealthReport, ProviderHealthStatus
-from monitoring.system_monitor import SystemMonitor, get_health, record_error, record_scan
+from core_layer.health_monitor.models import SystemHealth
+from core_layer.health_monitor.provider_health import ProviderHealthReport, ProviderHealthStatus
+from core_layer.health_monitor.system_monitor import SystemMonitor, get_health, record_error, record_scan
 
 
 def _admin_service(database="OK"):
@@ -56,7 +56,7 @@ def test_get_health_never_raises_on_registry_failure(monkeypatch):
     def _raise(*args, **kwargs):
         raise Exception("registry boom")
 
-    monkeypatch.setattr("monitoring.system_monitor.check_registry_health", _raise)
+    monkeypatch.setattr("core_layer.health_monitor.system_monitor.check_registry_health", _raise)
     health = monitor.get_health(admin_service=_admin_service())
     assert health.data_connection == "N/A"
 
@@ -67,7 +67,7 @@ def test_get_health_data_connection_counts_online(monkeypatch):
         ProviderHealthReport(provider_name="a", status=ProviderHealthStatus.ONLINE, latency_ms=1.0),
         ProviderHealthReport(provider_name="b", status=ProviderHealthStatus.OFFLINE, latency_ms=1.0),
     ]
-    monkeypatch.setattr("monitoring.system_monitor.check_registry_health", lambda registry: reports)
+    monkeypatch.setattr("core_layer.health_monitor.system_monitor.check_registry_health", lambda registry: reports)
     health = monitor.get_health(admin_service=_admin_service())
     assert health.data_connection == "1/2 ONLINE"
 

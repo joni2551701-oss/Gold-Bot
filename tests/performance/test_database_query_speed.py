@@ -14,7 +14,7 @@ QUERY_BUDGET_SECONDS = 1.0
 
 
 def test_indexed_user_lookup_is_fast(test_user):
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     repo = UserRepository()
     start = time.perf_counter()
@@ -26,7 +26,7 @@ def test_indexed_user_lookup_is_fast(test_user):
 
 
 def test_signal_history_query_is_fast():
-    from database.signal_repository import SignalRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
 
     repo = SignalRepository()
     for i in range(50):
@@ -48,7 +48,7 @@ def test_signal_history_query_is_fast():
 
 def test_status_filtered_query_uses_index_and_is_fast():
     """get_open_signals()/get_closed_signals() filter by the Phase 50 idx_signals_status index."""
-    from database.signal_repository import SignalRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
 
     repo = SignalRepository()
     for i in range(50):
@@ -78,7 +78,7 @@ def test_query_plan_uses_index_for_status_filter():
     """
     import sqlite3
     import config
-    from database.signal_repository import SignalRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
 
     SignalRepository()  # ensures schema + indexes exist
     conn = sqlite3.connect(config.Config.DB_PATH)

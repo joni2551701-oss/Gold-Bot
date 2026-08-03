@@ -1,7 +1,7 @@
-"""Phase B.0 TASK 7 -- monitoring/performance_collector.py tests."""
+"""Phase B.0 TASK 7 -- core_layer/health_monitor/performance_collector.py tests."""
 
-from monitoring.models import PerformanceCounters
-from monitoring.performance_collector import PerformanceCollector
+from core_layer.health_monitor.models import PerformanceCounters
+from core_layer.health_monitor.performance_collector import PerformanceCollector
 
 
 def test_get_counts_returns_performance_counters():
@@ -83,7 +83,7 @@ def test_two_collectors_do_not_share_state():
 
 
 def test_module_level_default_collector_functions_never_raise():
-    import monitoring.performance_collector as module
+    import core_layer.health_monitor.performance_collector as module
 
     module.record_signal()
     module.record_decision()

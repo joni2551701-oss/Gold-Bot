@@ -83,15 +83,15 @@ signals/                             (no logger -- see Task 1 notes below)
 strategies/                          (no logger -- see Task 1 notes below)
 execution/                           (no logger -- inert scaffolding)
 
-monitoring/performance.py            PerformanceTracker
+core_layer/health_monitor/performance.py            PerformanceTracker
 
-database/database.py                 DatabaseManager
-database/models.py                   DatabaseModels
-database/user_repository.py          UserRepository
-database/subscription_repository.py  SubscriptionRepository
-database/signal_repository.py        SignalRepository
-database/feedback_repository.py      FeedbackRepository
-database/admin_repository.py         AdminRepository
+database_layer/database_manager/database.py                 DatabaseManager
+database_layer/database_manager/models.py                   DatabaseModels
+database_layer/user_repository/user_repository.py          UserRepository
+database_layer/user_repository/subscription_repository.py  SubscriptionRepository
+database_layer/trade_repository/signal_repository.py        SignalRepository
+database_layer/user_repository/feedback_repository.py      FeedbackRepository
+database_layer/user_repository/admin_repository.py         AdminRepository
 
 telegram/polling.py                  TelegramPolling
 telegram/command_router.py           CommandRouter
@@ -117,7 +117,7 @@ dataclasses, pure functions, or static text) intentionally have none:
 `context_layer/context_engine/candle.py`, `context_layer/context_engine/context_config.py`, `context_layer/fair_value_gap/fvg.py`,
 `context_layer/liquidity/liquidity.py`, `context_layer/order_block/order_block.py`, all `database/*_models.py`,
 `ai/ai_prompt.py`, `ai/confidence_model.py`, `ai/trade_journal.py`,
-`execution/*.py`, `monitoring/signal_monitor.py`. Adding a logger to a
+`execution/*.py`, `core_layer/health_monitor/signal_monitor.py`. Adding a logger to a
 file with nothing to log would be surface for its own sake — not done.
 
 ## Examples

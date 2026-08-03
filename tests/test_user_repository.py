@@ -1,12 +1,12 @@
 """
-Phase 61.4 TASK 4 -- database/user_repository.py's phone_hash column
+Phase 61.4 TASK 4 -- database_layer/user_repository/user_repository.py's phone_hash column
 tests. Real SQLite (tests/conftest.py's autouse fresh_database
 fixture), no mocks. The raw phone number is never written by this
 repository -- only an already-computed hash.
 """
 
 from core_layer.secrets.phone_hash import hash_phone_number
-from database.user_repository import UserRepository
+from database_layer.user_repository.user_repository import UserRepository
 
 
 def test_new_user_has_no_phone_hash_by_default():

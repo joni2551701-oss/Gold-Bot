@@ -1,14 +1,14 @@
 """
-Phase 60.1, TASK 5 -- backtesting/replay_engine.py tests. Real SQLite
+Phase 60.1, TASK 5 -- backtesting_layer/replay_engine/replay_engine.py tests. Real SQLite
 (tests/conftest.py's autouse fresh_database fixture) -- no mocks.
 """
 
 from datetime import datetime, timezone
 
-from backtesting.replay_engine import ReplayEngine
-from backtesting.replay_models import ReplayConfig
-from database.raw_candle_models import create_raw_candle
-from database.raw_candle_repository import RawCandleRepository
+from backtesting_layer.replay_engine.replay_engine import ReplayEngine
+from backtesting_layer.replay_engine.replay_models import ReplayConfig
+from database_layer.market_repository.raw_candle_models import create_raw_candle
+from database_layer.market_repository.raw_candle_repository import RawCandleRepository
 
 
 def _seed_candles(n=5, symbol="XAUUSD", timeframe="M15"):
@@ -105,7 +105,7 @@ def test_is_finished_true_immediately_for_an_empty_candle_range():
 
 
 def test_engine_marks_clock_finished_when_exhausted():
-    from backtesting.replay_models import ReplayState
+    from backtesting_layer.replay_engine.replay_models import ReplayState
     _seed_candles(1)
     engine = ReplayEngine(_config())
     engine.clock.play()

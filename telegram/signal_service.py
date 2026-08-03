@@ -15,7 +15,7 @@ core_layer.pipeline.TradingPipeline / telegram.result_handler's job.
 from typing import Optional, List, Dict
 from dataclasses import dataclass, field
 
-from database.signal_repository import SignalRepository
+from database_layer.trade_repository.signal_repository import SignalRepository
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("SignalService")

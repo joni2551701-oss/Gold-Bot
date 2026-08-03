@@ -2,9 +2,9 @@
 
 from unittest.mock import MagicMock, patch
 
-from monitoring.decision_logger import DecisionLogger
-from monitoring.error_monitor import ErrorMonitor
-from monitoring.models import DecisionPipelineEntry, SignalHealth, SystemHealth
+from decision_layer.decision_logger.decision_logger import DecisionLogger
+from core_layer.health_monitor.error_monitor import ErrorMonitor
+from core_layer.health_monitor.models import DecisionPipelineEntry, SignalHealth, SystemHealth
 from telegram.owner.monitoring_commands import (
     get_daily_report,
     get_errors_report,

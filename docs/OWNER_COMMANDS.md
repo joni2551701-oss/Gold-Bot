@@ -22,7 +22,7 @@ code, not yet by a live command.
 ```
 /provider                → shows the current MARKET_DATA_PROVIDER and every registered provider's ProviderStatus
 /providers                → lists every provider in the default registry (data_layer/providers/registry.py's build_default_registry()), by name, with availability
-/provider_status          → a full monitoring/provider_health.py report for every registered provider (status, latency, reason) -- the Telegram-facing view of check_registry_health()
+/provider_status          → a full core_layer/health_monitor/provider_health.py report for every registered provider (status, latency, reason) -- the Telegram-facing view of check_registry_health()
 /enable_provider <name>   → sets ENABLE_<NAME>=True (owner-only)
 /disable_provider <name>  → sets ENABLE_<NAME>=False (owner-only)
 /system_health             → telegram/owner/system_commands.py's get_system_health()
@@ -55,7 +55,7 @@ between the two shapes.
   `build_default_registry()` and `ProviderRegistry.all_names()`/
   `available()` — done, just needs a handler to call it.
 - **`/provider_status`** — `provider_commands.py`'s `get_data_status()`
-  already calls `monitoring/provider_health.py`'s
+  already calls `core_layer/health_monitor/provider_health.py`'s
   `check_registry_health()` — done, just needs a handler.
 - **`/system_health`** — `telegram/owner/system_commands.py`'s
   `get_system_health()` already combines
@@ -79,7 +79,7 @@ between the two shapes.
   persists a day's worth of `SignalSchema`/`SignalPerformance` records
   anywhere yet. A future implementer would need to decide where
   "today's signals" comes from (a new query over
-  `database/raw_candle_repository.py`-adjacent persistence, or a fresh
+  `database_layer/market_repository/raw_candle_repository.py`-adjacent persistence, or a fresh
   in-memory accumulator process-lifetime-scoped) before a handler can
   call this function meaningfully.
 - **Does not change `MARKET_DATA_PROVIDER`/`ENABLE_*` at the process

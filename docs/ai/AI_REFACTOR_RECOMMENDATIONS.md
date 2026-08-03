@@ -129,7 +129,7 @@ These map directly to `AI_GAP_ANALYSIS.md`'s High/Medium items.
    the newer `ai/trade_journal/models.py` version already carries
    self-documentation acknowledging the collision and is the more
    actively-extended of the two. Update its ~6 known consumers
-   (`database/audit_log_models.py`, `learning/regime_memory.py`,
+   (`database_layer/audit_log/audit_log_models.py`, `learning/regime_memory.py`,
    `learning/pattern_detector.py`, `learning/models.py`,
    `core_layer/system_state/system_state.py`, `ai/context/`).
 

@@ -8,9 +8,9 @@ observe/collect/report, never mutate a trading concept.
 import ast
 import pathlib
 
-from monitoring.health_monitor import classify_health
-from monitoring.performance_collector import PerformanceCollector
-from monitoring.resource_monitor import get_resource_snapshot, record_process_start
+from core_layer.health_monitor.health_monitor import classify_health
+from core_layer.health_monitor.performance_collector import PerformanceCollector
+from core_layer.health_monitor.resource_monitor import get_resource_snapshot, record_process_start
 
 FORBIDDEN_NAMES = (
     "buy", "sell", "set_stop_loss", "set_take_profit", "set_lot", "set_risk",
@@ -20,7 +20,7 @@ FORBIDDEN_NAMES = (
 
 
 def _monitoring_dir():
-    return pathlib.Path(__file__).resolve().parents[2] / "monitoring"
+    return pathlib.Path(__file__).resolve().parents[2] / "core_layer" / "health_monitor"
 
 
 def test_performance_collector_public_methods_are_observe_only():
@@ -43,7 +43,7 @@ def test_no_forbidden_trading_method_name_defined_anywhere_in_phase_b0_files():
 
 
 def test_classify_health_is_a_pure_function_never_mutates_arguments():
-    from monitoring.models import SystemHealth
+    from core_layer.health_monitor.models import SystemHealth
 
     health = SystemHealth(status="RUNNING", uptime_seconds=1.0, data_connection="1/1 ONLINE", database_status="OK")
     before = (health.status, health.data_connection, health.database_status)

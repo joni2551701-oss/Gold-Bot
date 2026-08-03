@@ -15,8 +15,8 @@ a command handler.
 from typing import Optional
 from dataclasses import dataclass
 
-from database.subscription_repository import SubscriptionRepository
-from database.subscription_models import SubscriptionRecord
+from database_layer.user_repository.subscription_repository import SubscriptionRepository
+from database_layer.user_repository.subscription_models import SubscriptionRecord
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("SubscriptionService")

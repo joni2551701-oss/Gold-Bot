@@ -19,8 +19,8 @@ lifecycle.paper_trade.PaperTrade's own in-memory-only phase).
 from datetime import datetime
 from typing import Optional
 
-from backtesting.replay_controller import ReplayController
-from backtesting.replay_models import ReplayConfig, format_replay_report
+from backtesting_layer.replay_controller.replay_controller import ReplayController
+from backtesting_layer.replay_engine.replay_models import ReplayConfig, format_replay_report
 from telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
 

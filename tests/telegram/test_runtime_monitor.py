@@ -4,12 +4,12 @@ telegram/runtime_monitor.py tests. Constructs its own
 TelegramRuntimeMonitor() instance for isolation everywhere except the
 module-level free-function tests, which intentionally exercise the
 shared DEFAULT_RUNTIME_MONITOR singleton (matching
-monitoring/system_monitor.py's own test convention).
+core_layer/health_monitor/system_monitor.py's own test convention).
 """
 
 from dataclasses import fields
 
-import monitoring.system_monitor as system_monitor_module
+import core_layer.health_monitor.system_monitor as system_monitor_module
 from telegram.runtime_monitor import (
     DEFAULT_RUNTIME_MONITOR,
     TelegramRuntimeMonitor,

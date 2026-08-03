@@ -239,7 +239,7 @@ def test_runtime_restart_refuses_a_shutdown_runtime():
 
 
 def test_runtime_restart_writes_an_audit_entry():
-    from database.audit_log_repository import AuditLogRepository
+    from database_layer.audit_log.audit_log_repository import AuditLogRepository
 
     manager = RuntimeManager(initial_state=RuntimeState.DEGRADED)
     repo = AuditLogRepository()

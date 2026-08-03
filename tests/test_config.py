@@ -21,14 +21,14 @@ def test_validation_mode_reads_from_environment():
     """
     Phase 59.4 CI Test Isolation Hotfix: this used to call
     importlib.reload(config) in-process. Every module that does `from
-    config import Config` (database/database.py, main.py,
+    config import Config` (database_layer/database_manager/database.py, main.py,
     configuration/settings.py, and others) binds that name once, at
     its own first import -- reload() replaces config.Config with a
     brand-new class object but does NOT update those already-bound
     references, permanently desyncing them from config.Config for the
     rest of the test session. tests/conftest.py's fresh_database
     fixture mutates config.Config.DB_PATH (the live module attribute)
-    every test, but database/database.py's Database.__init__() reads
+    every test, but database_layer/database_manager/database.py's Database.__init__() reads
     the stale, pre-reload Config class -- so every repository after
     this test ran shared one frozen, un-isolated SQLite file for the
     rest of the run (the cause of the 21 CI-only failures this hotfix

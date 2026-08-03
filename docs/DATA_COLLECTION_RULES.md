@@ -18,11 +18,11 @@ Collection is observation, not intervention.
 
 | Data | Type | Where it lives | Table / module |
 |---|---|---|---|
-| Raw candles | `database.raw_candle_models.RawCandle` | SQLite, `raw_candles` table | `database/raw_candle_repository.py` |
-| Market snapshots | `database.market_snapshot_models.MarketSnapshotRecord` | SQLite, `market_snapshots` table | `database/market_snapshot_repository.py` |
-| Signal records (durable) | `database.signal_record.SignalRecord` | SQLite, `signals` table | `database/signal_repository.py` |
+| Raw candles | `database_layer.market_repository.raw_candle_models.RawCandle` | SQLite, `raw_candles` table | `database_layer/market_repository/raw_candle_repository.py` |
+| Market snapshots | `database_layer.market_repository.market_snapshot_models.MarketSnapshotRecord` | SQLite, `market_snapshots` table | `database_layer/market_repository/market_snapshot_repository.py` |
+| Signal records (durable) | `database_layer.trade_repository.signal_record.SignalRecord` | SQLite, `signals` table | `database_layer/trade_repository/signal_repository.py` |
 | Signal schema (in-memory, per cycle) | `signal_layer.signal_builder.schema.SignalSchema` (includes `market_phase` as of this phase) | `core/pipeline.py`'s `run()` result dict — not persisted as its own row | `signal_layer/signal_builder/schema.py` |
-| Paper trades | `lifecycle.paper_trade.PaperTrade` | In-memory only — no `paper_trades` table exists | `lifecycle/paper_trade.py` |
+| Paper trades | `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` | In-memory only — no `paper_trades` table exists | `trade_monitoring_layer/paper_trading/paper_trade.py` |
 | Signal performance | `analytics.signal_performance.SignalPerformance` | In-memory only | `analytics/signal_performance.py` |
 | Failure analysis entries | `ai.journal.failure_analysis.FailureAnalysisEntry` | In-memory only | `ai/journal/failure_analysis.py` |
 

@@ -165,7 +165,7 @@ fixed SL/BE values.
 `context.context_orchestrator.ContextSnapshot`'s own docstring states
 its field set is required, "no defaults by design" -- a stable
 contract every existing caller (`core/pipeline.py`,
-`backtesting/backtest_engine.py`, every test that builds one) depends
+`backtesting_layer/backtest_engine/backtest_engine.py`, every test that builds one) depends
 on. Adding a fundamental field directly onto it would force all of
 them to change: a real breaking change `CLAUDE.md`'s own restrictions
 forbid without explicit approval, and this task's own boundary ("Bu

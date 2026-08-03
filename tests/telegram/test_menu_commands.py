@@ -10,8 +10,8 @@ from telegram.menu_commands import (
     _user_menu,
     register_all_menus,
 )
-from database.admin_repository import AdminRepository
-from database.user_repository import UserRepository
+from database_layer.user_repository.admin_repository import AdminRepository
+from database_layer.user_repository.user_repository import UserRepository
 
 
 def _run(coro):

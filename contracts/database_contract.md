@@ -8,7 +8,7 @@ Persistence only. **Database never makes a business decision.**
 Principle 5.
 
 ## Input
-`database.signal_record.SignalRecord` (`SignalRepository.save_signal_record()`)
+`database_layer.trade_repository.signal_record.SignalRecord` (`SignalRepository.save_signal_record()`)
 — built by `create_signal_record(signal, decision, risk_result,
 timeframe)`, itself requiring a full `(SignalCandidate, TradeDecision,
 RiskResult)` triple. User/subscription/feedback/admin data via
@@ -17,7 +17,7 @@ RiskResult)` triple. User/subscription/feedback/admin data via
 
 ## Output
 Rows in the real, existing tables: **`signals`, `users`,
-`subscriptions`, `feedback`, `admins`** (`database/models.py`'s exact
+`subscriptions`, `feedback`, `admins`** (`database_layer/database_manager/models.py`'s exact
 `CREATE TABLE` statements). Repository query methods return typed
 Python objects (`SignalRecord`, user model rows), never raw cursors
 to a caller outside `database/`.

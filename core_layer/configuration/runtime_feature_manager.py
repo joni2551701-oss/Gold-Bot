@@ -41,10 +41,10 @@ from core_layer.configuration.feature_dependency_validator import (
 )
 from core_layer.configuration.feature_registry import FeatureDescriptor, build_feature_registry
 from core_layer.configuration.runtime_state import FeatureRuntimeState, RuntimeStateCache
-from database.audit_log_repository import AuditLogRepository
-from database.config_snapshot_repository import ConfigSnapshotRepository
-from database.config_snapshot_models import create_config_snapshot
-from database.runtime_feature_repository import RuntimeFeatureRepository
+from database_layer.audit_log.audit_log_repository import AuditLogRepository
+from database_layer.journal_repository.config_snapshot_repository import ConfigSnapshotRepository
+from database_layer.journal_repository.config_snapshot_models import create_config_snapshot
+from database_layer.journal_repository.runtime_feature_repository import RuntimeFeatureRepository
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("RuntimeFeatureManager")

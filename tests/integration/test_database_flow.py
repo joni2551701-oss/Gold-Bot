@@ -26,7 +26,7 @@ def _indexes(table: str) -> set:
 
 
 def test_users_indexes_exist():
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     UserRepository()
     indexes = _indexes("users")
@@ -35,7 +35,7 @@ def test_users_indexes_exist():
 
 
 def test_signals_indexes_exist():
-    from database.signal_repository import SignalRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
 
     SignalRepository()
     indexes = _indexes("signals")
@@ -44,7 +44,7 @@ def test_signals_indexes_exist():
 
 
 def test_feedback_indexes_exist():
-    from database.feedback_repository import FeedbackRepository
+    from database_layer.user_repository.feedback_repository import FeedbackRepository
 
     FeedbackRepository()
     indexes = _indexes("feedback")
@@ -59,9 +59,9 @@ def test_no_duplicate_index_on_unique_columns():
     index on top of it. Regression guard against that decision being
     silently reversed.
     """
-    from database.user_repository import UserRepository
-    from database.subscription_repository import SubscriptionRepository
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.user_repository import UserRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     UserRepository()
     SubscriptionRepository()
@@ -79,11 +79,11 @@ def test_no_duplicate_index_on_unique_columns():
 
 def test_repository_construction_is_idempotent_across_repeated_calls():
     """Constructing every repository twice must never raise (schema/migration/index all idempotent)."""
-    from database.user_repository import UserRepository
-    from database.signal_repository import SignalRepository
-    from database.feedback_repository import FeedbackRepository
-    from database.subscription_repository import SubscriptionRepository
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.user_repository import UserRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
+    from database_layer.user_repository.feedback_repository import FeedbackRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     for _ in range(2):
         UserRepository()
@@ -101,7 +101,7 @@ def test_basic_query_execution_is_fast(test_user):
     a regression here (e.g. an accidental full scan or N+1 pattern)
     would blow past this by orders of magnitude.
     """
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     repo = UserRepository()
     start = time.monotonic()

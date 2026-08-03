@@ -33,7 +33,7 @@ lesson or quiz (Rules 6-9). It never touches `decision/`, `risk/`,
 `learning/models.py`'s own `LearningRecord` (Phase 60.6/60.7) is a
 **trade-outcome pattern-statistics record** (`trade_id`, `signal_id`,
 `failure_type`, `success_pattern`, `htf_bias`, etc.), real-DB-persisted
-via `database/learning_repository.py` — a fundamentally different
+via `database_layer/journal_repository/learning_repository.py` — a fundamentally different
 concept from this phase's own per-user, topic-mastery record, and
 reusing it would violate Rule 3 (no database) by association.
 `ai/learning_context.py`'s `LearningContext` (Phase 60.6/60.7) is a

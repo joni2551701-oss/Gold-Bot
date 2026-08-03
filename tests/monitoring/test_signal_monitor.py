@@ -1,9 +1,9 @@
-"""GoldBot Core Owner Monitoring Alpha, TASK 4 -- monitoring/signal_monitor.py's new get_signal_health() tests. The pre-existing SignalMonitor/MonitorConfig/MonitorResult placeholder is untouched (Article 9) and not re-tested here."""
+"""GoldBot Core Owner Monitoring Alpha, TASK 4 -- core_layer/health_monitor/signal_monitor.py's new get_signal_health() tests. The pre-existing SignalMonitor/MonitorConfig/MonitorResult placeholder is untouched (Article 9) and not re-tested here."""
 
 from unittest.mock import MagicMock
 
-from monitoring.models import SignalHealth
-from monitoring.signal_monitor import get_signal_health
+from core_layer.health_monitor.models import SignalHealth
+from core_layer.health_monitor.signal_monitor import get_signal_health
 
 
 def _repository(rows):

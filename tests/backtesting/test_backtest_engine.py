@@ -1,5 +1,5 @@
 """
-Phase 60.2, TASK 3 -- backtesting/backtest_engine.py tests. Real
+Phase 60.2, TASK 3 -- backtesting_layer/backtest_engine/backtest_engine.py tests. Real
 repositories (SQLite, tests/conftest.py's autouse fresh_database
 fixture) and the real DecisionEngine/RiskManager -- only
 SignalEngine.generate_signals()/AIAnalyzer.analyze() are stubbed
@@ -12,10 +12,10 @@ seeded candle data.
 
 from datetime import datetime, timezone
 
-from backtesting.backtest_engine import BacktestEngine
-from backtesting.replay_models import ReplayConfig
-from database.raw_candle_models import create_raw_candle
-from database.raw_candle_repository import RawCandleRepository
+from backtesting_layer.backtest_engine.backtest_engine import BacktestEngine
+from backtesting_layer.replay_engine.replay_models import ReplayConfig
+from database_layer.market_repository.raw_candle_models import create_raw_candle
+from database_layer.market_repository.raw_candle_repository import RawCandleRepository
 
 
 def _seed_candles(n=250, symbol="XAUUSD", timeframe="M15"):
@@ -195,7 +195,7 @@ def test_default_learning_repository_is_the_real_class():
     _, end = _seed_candles(30)
     engine = BacktestEngine(_config(end))
 
-    from database.learning_repository import LearningRepository
+    from database_layer.journal_repository.learning_repository import LearningRepository
     assert isinstance(engine.learning_repository, LearningRepository)
 
 

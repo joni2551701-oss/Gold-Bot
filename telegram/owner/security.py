@@ -17,8 +17,8 @@ pieces -- no new role hierarchy, no new audit table:
 from dataclasses import dataclass
 from typing import Optional
 
-from database.audit_log_repository import AuditLogRepository
-from database.audit_log_models import AuditLogEntry
+from database_layer.audit_log.audit_log_repository import AuditLogRepository
+from database_layer.audit_log.audit_log_models import AuditLogEntry
 from telegram.owner.owner_roles import OwnerRole, resolve_owner_role
 from core_layer.logger.logger import setup_logger
 

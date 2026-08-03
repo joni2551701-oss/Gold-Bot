@@ -78,7 +78,7 @@ separately-approved decision — this phase does not touch
   stage in this phase. It returns a decision; it does not act on one.
 - **Every transition is audited**, never silently applied:
   `KILL_ACTIVATED`, `PAUSE_ACTIVATED`, `MAINTENANCE_ENABLED`,
-  `SYSTEM_RESTORED` (via `database.audit_log_repository.AuditLogRepository`,
+  `SYSTEM_RESTORED` (via `database_layer.audit_log.audit_log_repository.AuditLogRepository`,
   Phase 59.6) — one entry per call to `activate_kill()`/`activate_pause()`/
   `activate_maintenance()`/`restore_normal()`, `result="SUCCESS"`
   always (this phase has no rejection path — unlike Phase 59.7's

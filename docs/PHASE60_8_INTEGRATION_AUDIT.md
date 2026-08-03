@@ -5,8 +5,8 @@ instruction ("Hech qanday kod yozilmaydi"), this is read-only analysis
 of `core/pipeline.py`, `decision/`, `risk/`, `execution/`, `telegram/`,
 `configuration/runtime_feature_manager.py`,
 `core_layer/emergency/emergency_manager.py`,
-`database/learning_repository.py` (+ `learning/trade_event_bridge.py`),
-and `backtesting/replay_engine.py` (+ `backtesting/data_feed.py`).
+`database_layer/journal_repository/learning_repository.py` (+ `learning/trade_event_bridge.py`),
+and `backtesting_layer/replay_engine/replay_engine.py` (+ `backtesting_layer/data_feed/data_feed.py`).
 
 ## Method
 
@@ -171,7 +171,7 @@ Director's explicit decision.
 
 ---
 
-### `database/learning_repository.py` / `learning/trade_event_bridge.py`
+### `database_layer/journal_repository/learning_repository.py` / `learning/trade_event_bridge.py`
 
 `LearningRepository.record()` has **exactly one caller in the entire
 codebase**: `trade_event_bridge.bridge_closed_trade()` (Phase 60.7,
@@ -185,7 +185,7 @@ built and tested in isolation as pure foundation, exactly as Phase
 codebase — `lifecycle/README.md`'s own "Future Roadmap" already
 disclosed this as unbuilt. The **only** place a `PaperTrade` ever
 actually reaches `TradeState.CLOSED` today is
-`backtesting/backtest_engine.py`'s `_process_candidate()`, via
+`backtesting_layer/backtest_engine/backtest_engine.py`'s `_process_candidate()`, via
 `check_paper_trade_against_candles()`.
 
 **Safe Extension Points**: `BacktestEngine._process_candidate()`,
@@ -210,7 +210,7 @@ report, not silently reinterpreted as "wired into production."
 
 ---
 
-### `backtesting/replay_engine.py` / `backtesting/data_feed.py`
+### `backtesting_layer/replay_engine/replay_engine.py` / `backtesting_layer/data_feed/data_feed.py`
 
 `ReplayDataFeed(IDataFeed)` is real and is the only feed
 `BacktestEngine` uses (`self.data_feed = ReplayDataFeed(self.replay_engine.feed)`).
@@ -252,7 +252,7 @@ assumed.
 | Module | Real callers today | Safe to hook in Phase 60.8? |
 |---|---|---|
 | `core/pipeline.py` | `main.py` (`GoldBot.run()`) | Yes — stage-boundary guard only |
-| `decision/`, `risk/` | `core/pipeline.py`, `backtesting/backtest_engine.py` | No — out of scope, none proposed |
+| `decision/`, `risk/` | `core/pipeline.py`, `backtesting_layer/backtest_engine/backtest_engine.py` | No — out of scope, none proposed |
 | `execution_layer/execution_engine/execution_engine.py` | none | No — stays inert, separate approval required |
 | `telegram/owner/*.py` | tests only (not wired to handlers) | Yes — `dashboard.py` composition only |
 | `RuntimeFeatureManager` | tests, `telegram/owner/*`, `runtime_api.py` | Yes, but needs a feature-name mapping decision |

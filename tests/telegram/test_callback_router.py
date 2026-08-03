@@ -14,7 +14,7 @@ import asyncio
 
 from telegram.callback_router import route_callback
 from telegram.handlers import LanguageUpdateResult
-from database.user_repository import UserRepository
+from database_layer.user_repository.user_repository import UserRepository
 from telegram.registration_service import RegistrationStep
 
 

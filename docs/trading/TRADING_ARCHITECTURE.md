@@ -40,7 +40,7 @@ Execution                          execution_layer/execution_engine/execution_en
                                     MT5 order calls exist yet)
     │
     ▼
-Monitoring                            lifecycle/paper_trade_monitor.py
+Monitoring                            trade_monitoring_layer/paper_trading/paper_trade_monitor.py
 ```
 
 This matches the Director's own brief order exactly — unlike

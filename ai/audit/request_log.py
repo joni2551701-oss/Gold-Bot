@@ -3,7 +3,7 @@ AI Layer — AI Request Log (Phase 61.0: AI Infrastructure Foundation,
 TASK 9).
 
 In-memory record of an AI call *attempt* -- distinct from
-`database/audit_log_repository.py`'s `AuditLogRepository`, which is
+`database_layer/audit_log/audit_log_repository.py`'s `AuditLogRepository`, which is
 real, persisted, and scoped to Infrastructure/Trading-control actions
 (Runtime Feature toggles, Emergency transitions). "Real DB yozish
 shart emas... Foundation" (no real DB write required) per the brief --

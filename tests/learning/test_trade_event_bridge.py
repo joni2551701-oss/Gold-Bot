@@ -6,15 +6,15 @@ other learning/ test.
 """
 
 from learning.trade_event_bridge import bridge_closed_trade, build_learning_record_from_trade
-from lifecycle.paper_trade import PaperTrade, close_paper_trade, open_paper_trade
-from lifecycle.trade_state import TradeState
+from trade_monitoring_layer.paper_trading.paper_trade import PaperTrade, close_paper_trade, open_paper_trade
+from trade_monitoring_layer.paper_trading.trade_state import TradeState
 from analytics.signal_performance import SignalPerformance
 from context_layer.context_engine.context_orchestrator import ContextSnapshot
 from context_layer.fundamental.fundamental_context import compute_fundamental_context, merge_fundamental_score
 from context_layer.fundamental.fundamental_scoring import compute_fundamental_score
 from context_layer.trend.htf_bias import HTFBias, HTFBiasResult
 from context_layer.trend.market_regime import MarketRegime, MarketRegimeResult, RegimeDirection
-from database.learning_repository import LearningRepository
+from database_layer.journal_repository.learning_repository import LearningRepository
 
 
 def _htf_bias(bias) -> HTFBiasResult:

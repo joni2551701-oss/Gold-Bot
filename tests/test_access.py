@@ -3,8 +3,8 @@ Phase 47 — Signal Access Control tests (Phase 44 feature, re-verified
 here as part of the v0.2 regression suite).
 """
 
-from database.admin_repository import AdminRepository
-from database.subscription_repository import SubscriptionRepository
+from database_layer.user_repository.admin_repository import AdminRepository
+from database_layer.user_repository.subscription_repository import SubscriptionRepository
 from telegram.signal_access_service import SignalAccessService
 
 OWNER_ID = "111"  # matches conftest's TELEGRAM_OWNER_ID

@@ -39,7 +39,7 @@ from typing import Optional
 class SimulatedOrder:
     """
     The request going into the simulator -- never mutates the
-    `lifecycle.paper_trade.PaperTrade` it references; `requested_price`
+    `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` it references; `requested_price`
     is that trade's own `entry`, copied here, never recomputed.
     """
     order_id: str

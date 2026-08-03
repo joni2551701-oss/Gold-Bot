@@ -194,7 +194,7 @@ class EnrichedContextSnapshot:
     contract with "no defaults by design," so every caller supplies
     every field explicitly -- adding a fundamental field directly onto
     it would force every existing construction site (core/pipeline.py,
-    backtesting/backtest_engine.py, and every test that builds one) to
+    backtesting_layer/backtest_engine/backtest_engine.py, and every test that builds one) to
     change, a real breaking change this task's own boundary ("Decision
     hali o'zgarmaydi", decision does not change) does not ask for and
     CLAUDE.md's "No breaking changes" restriction forbids without

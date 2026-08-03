@@ -21,7 +21,7 @@ functions and sends the result.
 
 ### `provider_commands.py`
 `list_providers()`, `get_data_status()` — real, working, backed by
-`data_layer/providers/registry.py`/`monitoring/provider_health.py`.
+`data_layer/providers/registry.py`/`core_layer/health_monitor/provider_health.py`.
 `enable_provider()`/`disable_provider()` — honestly **not** working
 toggles: `config.Config.ENABLE_MT5`/`ENABLE_TWELVEDATA` are read once
 at `config.py` import time from `os.getenv()`, so there is no runtime
@@ -104,7 +104,7 @@ composing `telegram.admin_service.AdminService.get_system_status()`,
 `config.Config.MARKET_DATA_PROVIDER`/`VALIDATION_MODE`,
 `core_layer.system_state.system_state.SystemState` (used only as a display label — no
 `SystemState` instance is held or mutated anywhere), and
-`database.signal_repository.SignalRepository.get_latest_signal()`. No
+`database_layer.trade_repository.signal_repository.SignalRepository.get_latest_signal()`. No
 new health-check logic — every sub-check is an already-existing,
 already-tested call.
 
@@ -157,9 +157,9 @@ package.
 
 ### `replay_commands.py` (Phase 60.1: Historical Replay Engine)
 `replay_start()`, `replay_pause()`, `replay_stop()`, `replay_status()`
-— thin wrappers over `backtesting.replay_controller.ReplayController`,
+— thin wrappers over `backtesting_layer.replay_controller.replay_controller.ReplayController`,
 reformatted into this package's `ProviderCommandResult` shape (via
-`backtesting.replay_models.format_replay_report()`). No new
+`backtesting_layer.replay_engine.replay_models.format_replay_report()`). No new
 session/engine logic — one module-level default `ReplayController`
 holds every session in-memory for this process's lifetime. See
 `docs/REPLAY_ENGINE.md` for the full architecture and state diagram.
@@ -167,9 +167,9 @@ Not wired into the live bot, same as every module in this package.
 
 ### `backtest_commands.py` (Phase 60.2: Backtesting Engine)
 `backtest_run()` — a thin wrapper running a full
-`backtesting.backtest_engine.BacktestEngine` pass synchronously and
+`backtesting_layer.backtest_engine.backtest_engine.BacktestEngine` pass synchronously and
 reformatting its `BacktestResult` via
-`backtesting.backtest_result.format_backtest_report()`. Unlike
+`backtesting_layer.backtest_report.backtest_result.format_backtest_report()`. Unlike
 `replay_commands.py`'s session-based start/pause/stop/status API, a
 backtest runs to completion in one call — no in-progress state to
 track. No new orchestration logic. See `docs/BACKTESTING_ENGINE.md`
@@ -217,7 +217,7 @@ module in this package.
 
 ## Dependencies
 `provider_commands.py` imports `data_layer.providers.registry`,
-`monitoring.provider_health`. `system_commands.py` additionally
+`core_layer.health_monitor.provider_health`. `system_commands.py` additionally
 imports `telegram.admin_service.AdminService` and
 `provider_commands.ProviderCommandResult`. `feature_commands.py`
 imports `config.Config`, `configuration.feature_flags.DEFAULT_FLAGS`,
@@ -228,32 +228,32 @@ imports `analytics.strategy_report`, `analytics.signal_performance`,
 `analytics.signal_performance`, `config.Config`, `signal_layer.signal_builder.schema.SignalSchema`,
 and `provider_commands.ProviderCommandResult`. `dataset_commands.py`
 imports `analytics.dataset_report`, `data_layer.providers.provider_comparison`,
-`database.raw_candle_repository`, `database.sync_state_repository`,
+`database_layer.market_repository.raw_candle_repository`, `database_layer.market_repository.sync_state_repository`,
 and `provider_commands.ProviderCommandResult`. `owner_roles.py`
 imports `telegram.permissions.is_owner` and, lazily (inside
 `resolve_owner_role()`, not at module import time),
-`database.admin_repository.AdminRepository`. `status_commands.py`
+`database_layer.user_repository.admin_repository.AdminRepository`. `status_commands.py`
 imports `config.Config`, `core_layer.system_state.system_state.SystemState`,
-`data_layer.providers.registry`, `database.signal_repository.SignalRepository`,
+`data_layer.providers.registry`, `database_layer.trade_repository.signal_repository.SignalRepository`,
 `telegram.admin_service.AdminService`, and
 `provider_commands.ProviderCommandResult`. `control_commands.py`
 imports `configuration.runtime_api` and
 `provider_commands.ProviderCommandResult` — the same one-directional
 `telegram/` → `configuration/` dependency `runtime_api.py` itself
 documents, never reversed. `security.py` imports
-`database.audit_log_repository`/`audit_log_models` and
+`database_layer.audit_log.audit_log_repository`/`audit_log_models` and
 `owner_roles.OwnerRole`/`resolve_owner_role`. `dashboard.py` imports
 only other modules within this package
 (`control_commands`/`provider_commands`/`status_commands`).
 `emergency_commands.py` imports `core_layer.emergency.emergency_manager.EmergencyManager`,
 `core_layer.emergency.emergency_state.EmergencyStateRecord`, and
 `provider_commands.ProviderCommandResult`. `replay_commands.py`
-imports `backtesting.replay_controller.ReplayController`,
-`backtesting.replay_models.ReplayConfig`/`format_replay_report()`, and
+imports `backtesting_layer.replay_controller.replay_controller.ReplayController`,
+`backtesting_layer.replay_engine.replay_models.ReplayConfig`/`format_replay_report()`, and
 `provider_commands.ProviderCommandResult`. `backtest_commands.py`
-imports `backtesting.backtest_engine.BacktestEngine`,
-`backtesting.backtest_result.format_backtest_report()`,
-`backtesting.replay_models.ReplayConfig`, and
+imports `backtesting_layer.backtest_engine.backtest_engine.BacktestEngine`,
+`backtesting_layer.backtest_report.backtest_result.format_backtest_report()`,
+`backtesting_layer.replay_engine.replay_models.ReplayConfig`, and
 `provider_commands.ProviderCommandResult`. `execution_commands.py`
 imports `execution_layer.execution_engine.simulator.simulator_engine.ExecutionSimulator`,
 `execution_layer.execution_engine.simulator.slippage.SlippageConfig`, and

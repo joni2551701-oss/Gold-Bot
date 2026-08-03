@@ -54,7 +54,7 @@ Paper Validation
 stub). **Nothing below "Market Provider Layer" in the diagram changed
 in this phase** — `MarketData` (`data_layer/live_data/market_data.py`), `Data Quality`
 (`data_layer/data_validation/data_quality.py`), `Context`, `Strategy`, `Signal`, and Phase
-59's Paper Validation foundation (`lifecycle/paper_trade.py`) are all
+59's Paper Validation foundation (`trade_monitoring_layer/paper_trading/paper_trade.py`) are all
 untouched, and none of them imports `data_layer/providers/` yet. The
 provider layer exists in parallel, ready for a future,
 separately-approved wiring step — the same "foundation, not a

@@ -13,8 +13,8 @@ never propagates up to a command handler.
 from typing import List, Optional
 from dataclasses import dataclass, field
 
-from database.feedback_repository import FeedbackRepository
-from database.feedback_models import FeedbackRecord
+from database_layer.user_repository.feedback_repository import FeedbackRepository
+from database_layer.user_repository.feedback_models import FeedbackRecord
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("FeedbackService")

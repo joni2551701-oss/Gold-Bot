@@ -17,7 +17,7 @@ requirement explicitly rules out.
 
 ## The fix: `sync_state`
 
-A new, fully isolated table (`database/sync_state_repository.py`/
+A new, fully isolated table (`database_layer/market_repository/sync_state_repository.py`/
 `sync_state_models.py`, no SQL foreign key to any other table) — one
 row per `(provider, symbol, timeframe)`, storing the timestamp of the
 most recently collected candle:
@@ -76,7 +76,7 @@ sync_historical_candles(
 
 ```python
 from data_layer.providers.twelve_data_provider import TwelveDataProvider
-from database.sync_state_repository import SyncStateRepository
+from database_layer.market_repository.sync_state_repository import SyncStateRepository
 from data_layer.historical_data.historical_data_collector import sync_historical_candles
 from datetime import datetime, timedelta, timezone
 

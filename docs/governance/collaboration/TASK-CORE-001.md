@@ -93,7 +93,7 @@ Article 7). Core-audit summary:
 | `features/` | Standardization layer (`MarketFeatures`) | context/signals output | future AI/ML | `features.feature_engine` |
 | `assets/` | Asset metadata registry | config | future multi-asset | `assets.asset_registry` |
 | `lifecycle/` | Strategy/paper-trade lifecycle metadata | decision/risk | future | `lifecycle/*` |
-| `backtesting/` | Replay chain over context→…→risk (Simulation) | all Core (unmodified) | analytics/owner | `backtesting.backtest_engine` |
+| `backtesting/` | Replay chain over context→…→risk (Simulation) | all Core (unmodified) | analytics/owner | `backtesting_layer.backtest_engine.backtest_engine` |
 | `execution/` | Intentionally INERT (no MT5 order calls); `execution/simulator/` fills for backtest only | risk/ | (none live) | `execution_layer.execution_engine.execution_engine` (inert) |
 | `core/` | Orchestration (`pipeline.py`), guards, gateway, errors, logger, secrets, emergency | all | main.py | `core.pipeline.TradingPipeline` |
 

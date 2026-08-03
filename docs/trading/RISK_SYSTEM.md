@@ -35,7 +35,7 @@ to `execution/`, and `execution/` is intentionally inert today).
 
 `account_balance`, `current_equity`, and `symbol` are all optional,
 additive parameters (Phase V1.0.1) — `core/pipeline.py` and
-`backtesting/backtest_engine.py` (both Trading Core, both untouched by
+`backtesting_layer/backtest_engine/backtest_engine.py` (both Trading Core, both untouched by
 this phase) call `evaluate(trade_decision)` with none of them, so
 duplicate/drawdown/daily-loss checking is dormant in the live pipeline
 today until a future, separately-approved phase supplies real
@@ -61,7 +61,7 @@ with this phase.
 - **drawdown** — `RiskConfig.max_drawdown` (default 0.10 = 10%).
   When `current_equity` is supplied, `risk_layer.risk_engine.account_state_tracker.AccountStateTracker`
   tracks a per-symbol starting-equity baseline
-  (`database.risk_state_repository.RiskStateRepository`,
+  (`database_layer.trade_repository.risk_state_repository.RiskStateRepository`,
   `risk_account_state` table) and computes drawdown % against it; an
   excess drawdown rejects the trade and marks that symbol's status
   `TRADING_PAUSED` (Phase V1.0.1 TASK 4).
@@ -101,11 +101,11 @@ with this phase.
   documented and this phase fixes.
 - **risk logging** — every `evaluate()` call, whatever the outcome, is
   persisted to the `risk_decisions` table
-  (`database.risk_decision_repository.RiskDecisionRepository`):
+  (`database_layer.trade_repository.risk_decision_repository.RiskDecisionRepository`):
   timestamp, symbol, strategy, direction, risk %, risk/reward,
   drawdown %, decision (APPROVE/REJECT), reason, and a machine-readable
   `reject_category` (Phase V1.0.1 TASK 8).
-- **monitoring integration** — `monitoring/risk_monitor.py` is a
+- **monitoring integration** — `core_layer/health_monitor/risk_monitor.py` is a
   read-only aggregator over `risk_decisions`: total checks, approve/
   reject counts, and per-category reject counts (risk-limit, RR,
   drawdown, daily-loss, duplicate, emergency-pause), plus a combined

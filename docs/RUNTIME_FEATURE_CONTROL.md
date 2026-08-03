@@ -32,7 +32,7 @@ a plain in-memory `{name: FeatureRuntimeState}` holder — no database
 access, no validation, no audit logging; those are
 `runtime_feature_manager.py`'s job.
 
-### `database/runtime_feature_repository.py` / `runtime_feature_models.py`
+### `database_layer/journal_repository/runtime_feature_repository.py` / `runtime_feature_models.py`
 
 `RuntimeFeatureRecord(feature, enabled, created_at, updated_at,
 updated_by, reason)` persisted in the `runtime_features` table — one
@@ -69,7 +69,7 @@ above plus the Phase 59.6 foundation:
    `result="REJECTED"`, `details=<the rejection reason>`.
 4. **Snapshot** — `ConfigSnapshotRepository.save_snapshot()` of the
    full current runtime state (every feature's current `enabled`
-   value), via `database.config_snapshot_models.create_config_snapshot()`
+   value), via `database_layer.journal_repository.config_snapshot_models.create_config_snapshot()`
    (Phase 59.6, reused unmodified).
 
 ### Dependency safety — the two rejection directions

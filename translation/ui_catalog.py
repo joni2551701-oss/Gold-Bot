@@ -16,7 +16,7 @@ telegram/handlers.py calls instead of returning a literal string.
 Lookup order per key: the caller's language -> EN -> whatever entry
 exists -- so a language with an incomplete translation still degrades
 to readable text instead of a KeyError, while UZ and RU are fully
-covered here (the two languages `database.models`'s own schema default
+covered here (the two languages `database_layer.database_manager.models`'s own schema default
 and `/language`'s picker both treat as first-class, EN entries exist
 for completeness and as the fallback rung).
 """

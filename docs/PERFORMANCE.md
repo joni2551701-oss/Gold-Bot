@@ -118,7 +118,7 @@ sections 3–5 below.
   calls were deliberately left un-narrowed in Phase 50 pending a fuller
   consumer audit. That audit is now done: grepping every reader of a
   signals-table row dict (`telegram/signal_formatter.py`,
-  `monitoring/performance.py`, `telegram/admin_service.py`, and every
+  `core_layer/health_monitor/performance.py`, `telegram/admin_service.py`, and every
   test) found 16 of the table's 25 columns actually read somewhere.
   **Still not narrowed** — three reasons: (1) the expected saving is
   microseconds on a table that stays small (this app persists a
@@ -130,7 +130,7 @@ sections 3–5 below.
   near-zero measured benefit. This is the same "report, don't force
   it" call Phase 50 made, now backed by a completed audit instead of a
   deferred one.
-- **Duplicate connections**: none found — `database/database.py`'s
+- **Duplicate connections**: none found — `database_layer/database_manager/database.py`'s
   `Database.__enter__()`/`__exit__()` opens and closes a connection
   per `with self.db as conn:` block, always (commit-and-close on
   success, rollback-and-close on exception). No repository holds a

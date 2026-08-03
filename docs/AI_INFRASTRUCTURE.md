@@ -106,7 +106,7 @@ returning a fixed stub `ToolResult`. **No tool calls `database/` or
 
 `RequestLog`/`ResponseLog` record an AI call attempt and its outcome
 (provider/latency/token/cost/status/capability) in memory —
-deliberately not wired to `database/audit_log_repository.py` this
+deliberately not wired to `database_layer/audit_log/audit_log_repository.py` this
 phase (that repository is scoped to Infrastructure/Trading-control
 actions; see the audit doc). `provider_stats.compute_provider_stats()`
 aggregates an already-recorded response history into per-provider

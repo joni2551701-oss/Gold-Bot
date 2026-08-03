@@ -96,9 +96,9 @@ class FeatureFlags:
         additionally requires `AIRole.OWNER` (TASK 8).
     enable_owner_monitoring: reserved for the GoldBot Core Owner
         Monitoring Alpha's own genuine-gap additions (Phase B.0 --
-        `monitoring/resource_monitor.py`,
-        `monitoring/health_monitor.py`,
-        `monitoring/performance_collector.py`, see
+        `core_layer/health_monitor/resource_monitor.py`,
+        `core_layer/health_monitor/health_monitor.py`,
+        `core_layer/health_monitor/performance_collector.py`, see
         `docs/PHASE_B0_AUDIT.md`) -- always False by default. Distinct
         from the prior "GoldBot Core Owner Monitoring Alpha" phase's
         own seven live commands (`/owner_status`, `/health`, `/market`,

@@ -13,7 +13,7 @@ def test_get_plan_auto_creates_free_subscription():
 
 
 def test_repository_duplicate_subscription_blocked():
-    from database.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     repo = SubscriptionRepository()
     first = repo.create_subscription("201")
@@ -24,7 +24,7 @@ def test_repository_duplicate_subscription_blocked():
 
 
 def test_update_plan_free_to_premium_to_vip():
-    from database.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     repo = SubscriptionRepository()
     repo.create_subscription("202")
@@ -46,7 +46,7 @@ def test_has_signal_access_free_denied():
 
 def test_has_signal_access_premium_and_vip_allowed():
     from telegram.subscription_service import SubscriptionService
-    from database.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     service = SubscriptionService()
     service.get_plan("204")
@@ -61,7 +61,7 @@ def test_has_signal_access_premium_and_vip_allowed():
 
 def test_has_signal_access_unknown_plan_fails_safe_deny():
     from telegram.subscription_service import SubscriptionService
-    from database.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     service = SubscriptionService()
     service.get_plan("205")

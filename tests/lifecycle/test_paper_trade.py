@@ -1,12 +1,12 @@
 """
-Phase 59 Preparation, TASK 2 -- lifecycle/paper_trade.py tests.
+Phase 59 Preparation, TASK 2 -- trade_monitoring_layer/paper_trading/paper_trade.py tests.
 """
 
 from datetime import datetime, timezone
 
 import pytest
 
-from lifecycle.paper_trade import (
+from trade_monitoring_layer.paper_trading.paper_trade import (
     ALLOWED_PAPER_TRADE_RESULTS,
     cancel_paper_trade,
     close_paper_trade,
@@ -14,7 +14,7 @@ from lifecycle.paper_trade import (
     generate_trade_id,
     open_paper_trade,
 )
-from lifecycle.trade_state import TradeState
+from trade_monitoring_layer.paper_trading.trade_state import TradeState
 from signal_layer.signal_builder.schema import SignalSchema
 
 

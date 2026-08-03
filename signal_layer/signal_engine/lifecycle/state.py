@@ -8,7 +8,7 @@ layer* while it is being assembled and made ready for consumers:
                                           └-> EXPIRED / CANCELLED
 
 NAMING NOTE — read before using: this is deliberately a DIFFERENT concept
-from lifecycle/signal_state.py's SignalLifecycleState (Phase 59), which
+from trade_monitoring_layer/paper_trading/signal_state.py's SignalLifecycleState (Phase 59), which
 tracks a signal's *analysis/decision* journey (CREATED -> QUALITY_CHECKED ->
 EXPLAINED -> APPROVED/REJECTED -> PAPER_OPEN -> CLOSED), and from
 execution_layer/execution_monitor/signal_lifecycle.py's SignalState (Telegram message delivery).

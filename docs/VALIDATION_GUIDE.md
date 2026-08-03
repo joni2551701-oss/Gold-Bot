@@ -33,16 +33,16 @@ during the test window:
    `market_phase` included as of this phase's TASK 2),
    `context_snapshot`, and `market_phase`.
 2. **Store the candles.** Call
-   `database.raw_candle_repository.RawCandleRepository.save_market_candles()`
+   `database_layer.market_repository.raw_candle_repository.RawCandleRepository.save_market_candles()`
    with the provider's real `MarketCandle` list (e.g.
    `TwelveDataProvider.get_candles()`'s output) so the window is
    available for later backtesting. This is opt-in — `core/pipeline.py`
    does not call it automatically.
 3. **Track each signal's paper trade.** For a signal you want to
-   validate, call `lifecycle.paper_trade.create_paper_trade(signal)`,
+   validate, call `trade_monitoring_layer.paper_trading.paper_trade.create_paper_trade(signal)`,
    then `open_paper_trade()` once price reaches the entry zone. On
    each later cycle, call
-   `lifecycle.paper_trade_monitor.check_paper_trade_against_candles(trade,
+   `trade_monitoring_layer.paper_trading.paper_trade_monitor.check_paper_trade_against_candles(trade,
    candles)` against the accumulated candle window (from step 2) to
    let it resolve to `TP`/`SL`/`EXPIRED` on its own — see
    `lifecycle/README.md`.

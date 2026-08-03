@@ -1,13 +1,13 @@
 """
-Phase 59.7, TASK 3 -- database/runtime_feature_repository.py and
+Phase 59.7, TASK 3 -- database_layer/journal_repository/runtime_feature_repository.py and
 runtime_feature_models.py tests. Real SQLite (tests/conftest.py's
 autouse fresh_database fixture), no mocks.
 """
 
 from datetime import datetime
 
-from database.runtime_feature_models import create_runtime_feature_record
-from database.runtime_feature_repository import RuntimeFeatureRepository
+from database_layer.journal_repository.runtime_feature_models import create_runtime_feature_record
+from database_layer.journal_repository.runtime_feature_repository import RuntimeFeatureRepository
 
 
 def test_get_feature_returns_none_when_absent():

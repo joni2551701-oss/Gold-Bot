@@ -13,7 +13,7 @@ is reused, what is extended, and what is genuinely new.
 
 Three files already exist:
 
-- **`monitoring/signal_monitor.py`** — `SignalMonitor`/`MonitorConfig`/
+- **`core_layer/health_monitor/signal_monitor.py`** — `SignalMonitor`/`MonitorConfig`/
   `MonitorResult`. A dead placeholder: `monitor()` takes no parameters
   and always returns `MonitorResult(monitored=False, reason="Not
   implemented")`. Confirmed **zero callers anywhere in the codebase**
@@ -25,14 +25,14 @@ Three files already exist:
   (Article 9 discipline even though nothing calls them), and the real
   `get_signal_health()`/`SignalHealth` implementation is added
   alongside.
-- **`monitoring/provider_health.py`** — real, live logic:
+- **`core_layer/health_monitor/provider_health.py`** — real, live logic:
   `check_provider_health()`/`check_registry_health()`/
   `ProviderHealthReport`/`ProviderHealthStatus` (ONLINE/DEGRADED/
   OFFLINE), measuring how long each registered `DataProvider`'s
   `get_market_status()` call takes. **Genuinely reusable** for this
   brief's TASK 3 (Market Data Monitor) `data_source_status`/latency —
   composed, not duplicated.
-- **`monitoring/performance.py`** — real `PerformanceTracker`/
+- **`core_layer/health_monitor/performance.py`** — real `PerformanceTracker`/
   `PerformanceResult` computing win-rate/strategy-breakdown from
   `SignalRepository`'s closed signals. A **different concern**
   (historical trade-outcome performance) from this brief's
@@ -110,7 +110,7 @@ already uses.
   structured event object). Confirmed via repo-wide grep: **no
   `ErrorEvent`, no `error_monitor`, no `severity` field, no
   error-capture/persistence mechanism of any kind exists anywhere in
-  this codebase.** This is a genuine gap — `monitoring/error_monitor.py`
+  this codebase.** This is a genuine gap — `core_layer/health_monitor/error_monitor.py`
   and its persistence are new.
 - **`core_layer/system_state/system_state.py`** — `SystemState` enum + `SystemStateRecord`
   (one immutable transition record). Explicitly documented as having
@@ -150,8 +150,8 @@ worked examples implies historical trending is needed yet). Only
 **error events** (genuinely no existing capture mechanism) and
 **decision pipeline entries** (TASK 5 explicitly names these as a
 future `66.5`/`66.6` datasource, which must survive process restarts
-to accumulate) get new tables — `database/monitoring_models.py` +
-`database/monitoring_repository.py` (new, minimal, two tables).
+to accumulate) get new tables — `database_layer/audit_log/monitoring_models.py` +
+`database_layer/audit_log/monitoring_repository.py` (new, minimal, two tables).
 Signal statistics reuse `SignalRepository` — no new storage.
 
 ## `signals/` and `context/` — structured evaluation trace
@@ -165,7 +165,7 @@ the brief describes lives in **`signal_layer/signal_scoring/signal_quality.py`**
 — e.g. `("HTF_ALIGNED", "LIQUIDITY_SWEPT")`, `criteria_total`), built
 from `context.context_orchestrator.ContextSnapshot`'s own structure/
 liquidity/order-block/FVG detector output. Nothing currently logs or
-persists a `SignalQualityResult`. **Decision**: `monitoring/decision_logger.py`
+persists a `SignalQualityResult`. **Decision**: `decision_layer/decision_logger/decision_logger.py`
 accepts **primitive fields only** (`criteria_met: Sequence[str]`,
 `criteria_total: int`, `decision: str`, `reason: str`) rather than
 importing `SignalQualityResult`/`signal_layer.signal_scoring.signal_quality` directly —
@@ -179,7 +179,7 @@ forbidden imports, but this is a stricter, safer choice).
 ## `data_layer/providers/`
 
 `ProviderRegistry`/`build_default_registry()` confirmed as the plain
-catalog `monitoring/provider_health.py` already composes. No existing
+catalog `core_layer/health_monitor/provider_health.py` already composes. No existing
 "last candle received" / data-freshness concept anywhere — only
 `ProviderHealthReport.latency_ms` (API-call latency) and `.checked_at`
 (when the health check ran) exist; `ProviderStatus` itself carries no
@@ -193,18 +193,18 @@ discipline.
 
 Per Constitution Article 11 step 2: two functions (`get_system_health()`,
 provider health) are reused outright; `SignalRepository` and
-`monitoring/signal_monitor.py` are extended in place; the live
+`core_layer/health_monitor/signal_monitor.py` are extended in place; the live
 `telegram/permissions.py` + `command_router.py` gate is reused
-unchanged. The genuine new surface is: `monitoring/models.py`,
-`monitoring/system_monitor.py`, `monitoring/market_monitor.py`,
-`monitoring/decision_logger.py`, `monitoring/error_monitor.py`,
+unchanged. The genuine new surface is: `core_layer/health_monitor/models.py`,
+`core_layer/health_monitor/system_monitor.py`, `core_layer/health_monitor/market_monitor.py`,
+`decision_layer/decision_logger/decision_logger.py`, `core_layer/health_monitor/error_monitor.py`,
 `telegram/owner/monitoring_commands.py` (the brief names
 `telegram/owner_commands.py`; the existing, established convention is
 one file per feature inside the already-existing `telegram/owner/`
 package — e.g. `report_commands.py`, `performance_commands.py` — so
 `telegram/owner/monitoring_commands.py` follows that convention rather
 than creating a same-named top-level file), and
-`database/monitoring_models.py`/`database/monitoring_repository.py`.
+`database_layer/audit_log/monitoring_models.py`/`database_layer/audit_log/monitoring_repository.py`.
 No new top-level package.
 
 ## Related documents

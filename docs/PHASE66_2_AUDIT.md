@@ -63,8 +63,8 @@ closest-shaped existing record: `trade_id`, `signal_id`,
 `r_multiple`, `failure_type`, `success_pattern`, `htf_bias`,
 `volatility_state`, `fundamental_bias`, `confidence_score`,
 `engine_version`, `sample_size`, `created_at`. It has real, wired
-database persistence (`database/learning_models.py`'s
-`LearningRecordRow`, `database/learning_repository.py`) — this
+database persistence (`database_layer/journal_repository/learning_models.py`'s
+`LearningRecordRow`, `database_layer/journal_repository/learning_repository.py`) — this
 phase's own Rule 3 explicitly forbids this Foundation from touching a
 database (no SQLite/Postgres/Redis), so building on top of a
 DB-persisted type would immediately violate Rule 3. `LearningRecord`
@@ -124,7 +124,7 @@ TASK 5's pipeline leg (`TradingAnalysis → ChartAnalysis → TradeJournal`)
 reads type-only — never modified except for one Director-directed,
 LOCK-permitted additive extension (see "Chart ID extension" below).
 
-### `backtesting/replay_models.py` — related but distinct
+### `backtesting_layer/replay_engine/replay_models.py` — related but distinct
 
 `ReplayConfig`/`ReplayResult` (Phase 60.1) model a *live replay
 session* (candle-by-candle stepping over historical market data) — a
@@ -168,7 +168,7 @@ previously-LOCKed module this phase makes.
    `LearningRecord` is the closest, but it is a DB-persisted,
    pattern-analysis record (Rule 3 forbids reusing a DB-backed type),
    not a narrative journal contract.
-4. **Replay Contract bormi?** No — `backtesting/replay_models.py`'s
+4. **Replay Contract bormi?** No — `backtesting_layer/replay_engine/replay_models.py`'s
    `ReplayConfig`/`ReplayResult` model a live stepping session, not a
    journal-entry metadata pointer. Genuine gap.
 5. **Duplicate Manager kerakmi?** No — a genuinely new `TradeJournalRuntime`

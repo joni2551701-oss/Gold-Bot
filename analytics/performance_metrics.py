@@ -2,7 +2,7 @@
 Analytics Layer — Performance Metrics Engine (Phase 60.4: Performance
 Validation Foundation, TASK 2).
 
-Reuse-audit finding (TASK 1): neither `monitoring/performance.py`'s
+Reuse-audit finding (TASK 1): neither `core_layer/health_monitor/performance.py`'s
 `PerformanceTracker` (database-driven, win/loss/win_rate only) nor
 `analytics/strategy_report.py`'s `StrategyPerformanceReport`
 (win/loss/breakeven/expired/cancelled counts + average R, grouped per

@@ -14,7 +14,7 @@ def _run(coro):
 
 
 def _bootstrap_admin():
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     async def register_all():
         await route_command("/start", telegram_id=OWNER_ID)

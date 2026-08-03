@@ -110,7 +110,7 @@ DATA LAYER
 │   ├── Recovery                 -> data_layer/historical_data/gap_recovery.py
 │   ├── Historical Providers     -> data_layer/providers/
 │   ├── Data Validation          -> data_layer/data_validation/data_quality.py, data_layer/data_validation/historical_validator.py, data_layer/market_memory/data_cache.py
-│   └── Historical Database      -> database/raw_candle_repository.py + data_layer/market_memory/persistence/
+│   └── Historical Database      -> database_layer/market_repository/raw_candle_repository.py + data_layer/market_memory/persistence/
 │
 └── Live Data
     ├── PriceStreamService        -> data_layer/live_data/price_stream_service.py  (CONFLICT: stream/price_stream.py)
@@ -137,7 +137,7 @@ architecture decision. Not resolved in this document.
 | `data_layer/historical_data/gap_recovery.py` | → | Data Layer → Historical Data → Recovery |
 | `data_layer/providers/` | → | Data Layer → Historical Data → Historical Providers |
 | `data_layer/data_validation/data_quality.py`, `historical_validator.py` | → | Data Layer → Historical Data → Data Validation |
-| `database/raw_candle_repository.py` + `data_layer/market_memory/persistence/` | → | Data Layer → Historical Data → Historical Database |
+| `database_layer/market_repository/raw_candle_repository.py` + `data_layer/market_memory/persistence/` | → | Data Layer → Historical Data → Historical Database |
 | `data_layer/live_data/price_stream_service.py` **or** `stream/price_stream.py` | → | Data Layer → Live Data → PriceStreamService (CONFLICT) |
 | `data_layer/live_data/current_price_provider.py` **or** `stream/current_price.py` | → | Data Layer → Live Data → CurrentPriceProvider (CONFLICT) |
 | `data_layer/live_data/candle_builder.py` | → | Data Layer → Live Data → CandleBuilder |

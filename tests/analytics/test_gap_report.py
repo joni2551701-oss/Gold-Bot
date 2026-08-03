@@ -5,7 +5,7 @@ Phase 59.5, TASK 4 -- analytics/gap_report.py tests.
 from datetime import datetime, timedelta, timezone
 
 from analytics.gap_report import GapReport, build_gap_report, format_gap_report
-from database.raw_candle_models import create_raw_candle
+from database_layer.market_repository.raw_candle_models import create_raw_candle
 
 
 def _candle(ts, provider="twelvedata"):

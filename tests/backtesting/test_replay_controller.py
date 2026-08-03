@@ -1,15 +1,15 @@
 """
-Phase 60.1, TASK 6 -- backtesting/replay_controller.py tests. Real
+Phase 60.1, TASK 6 -- backtesting_layer/replay_controller/replay_controller.py tests. Real
 SQLite (tests/conftest.py's autouse fresh_database fixture) -- no
 mocks.
 """
 
 from datetime import datetime, timezone
 
-from backtesting.replay_controller import ReplayController
-from backtesting.replay_models import ReplayConfig, ReplayState
-from database.raw_candle_models import create_raw_candle
-from database.raw_candle_repository import RawCandleRepository
+from backtesting_layer.replay_controller.replay_controller import ReplayController
+from backtesting_layer.replay_engine.replay_models import ReplayConfig, ReplayState
+from database_layer.market_repository.raw_candle_models import create_raw_candle
+from database_layer.market_repository.raw_candle_repository import RawCandleRepository
 
 
 def _seed_candles(n=5):

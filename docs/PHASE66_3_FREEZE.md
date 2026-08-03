@@ -16,7 +16,7 @@ TASK 0's audit (`docs/PHASE66_3_AUDIT.md`) reviewed `learning/`
 `analytics/`. It found two pre-existing modules with strong surface
 similarity to what this phase needed — `learning.models.LearningRecord`
 (a trade-outcome pattern-statistics record with real, wired SQLite
-persistence via `database/learning_repository.py`) and
+persistence via `database_layer/journal_repository/learning_repository.py`) and
 `ai/learning_context.py`'s `LearningContext` (a read-only aggregation
 bundle transitively dependent on `learning/`/`analytics/`) — and
 confirmed neither could be extended without violating Rule 3 (no

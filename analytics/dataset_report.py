@@ -36,7 +36,7 @@ from data_layer.data_validation.data_quality import INTERVAL_DELTAS
 from data_layer.data_validation.historical_validator import validate_historical_candles
 
 if TYPE_CHECKING:
-    from database.raw_candle_models import RawCandle
+    from database_layer.market_repository.raw_candle_models import RawCandle
 
 
 @dataclass(frozen=True)

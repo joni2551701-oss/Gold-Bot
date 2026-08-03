@@ -67,9 +67,9 @@ either — this file follows that exact same convention.
 
 ## TASK 4 — AI User Registration Foundation
 
-`database/user_models.py`'s `UserRecord` gained `phone_hash:
+`database_layer/user_repository/user_models.py`'s `UserRecord` gained `phone_hash:
 Optional[str] = None` (additive, same convention as every prior
-lifecycle-field addition). `database/models.py`'s
+lifecycle-field addition). `database_layer/database_manager/models.py`'s
 `_migrate_users_schema()` adds the column to a pre-existing `users`
 table (idempotent, `PRAGMA table_info` check first — same pattern as
 the Phase 45 `status`/`last_activity` migration). **The raw phone
@@ -84,7 +84,7 @@ built-in pepper if unset — determinism (same phone -> same hash across
 restarts) is required for TASK 5's trial-matching to work at all, so a
 missing salt degrades security rather than breaking functionality.
 
-`database/user_repository.py` gained `set_phone_hash()` and
+`database_layer/user_repository/user_repository.py` gained `set_phone_hash()` and
 `get_users_by_phone_hash()` — the second is TASK 5's abuse-detection
 read path (every `telegram_id` sharing one phone_hash).
 

@@ -292,10 +292,10 @@ correction — Risk now consults `core_layer.emergency.emergency_manager.Emergen
 directly, so `PAUSED`/`KILLED`/`MAINTENANCE` actually stop new trade
 approval at the Risk layer, not only Telegram delivery. Every
 `RiskManager.evaluate()` call is now logged
-(`database/risk_decision_repository.py`), with a new read-only
-`monitoring/risk_monitor.py` aggregator. All changes additive/optional
+(`database_layer/trade_repository/risk_decision_repository.py`), with a new read-only
+`core_layer/health_monitor/risk_monitor.py` aggregator. All changes additive/optional
 on `RiskManager`'s public signature — the existing `core/pipeline.py`
-and `backtesting/backtest_engine.py` call sites are unchanged and all
+and `backtesting_layer/backtest_engine/backtest_engine.py` call sites are unchanged and all
 8 pre-existing risk tests pass unmodified. 127 new tests (4286 → 4413).
 See `docs/PHASE_V1_0_1_RISK_AUDIT.md`, `docs/PHASE_V1_0_1_RISK_FREEZE.md`,
 and the updated `docs/trading/RISK_SYSTEM.md`.

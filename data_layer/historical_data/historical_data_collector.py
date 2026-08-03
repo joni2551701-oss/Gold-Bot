@@ -38,12 +38,12 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, List, Optional
 
 from data_layer.data_validation.data_quality import INTERVAL_DELTAS
-from database.raw_candle_repository import RawCandleRepository
+from database_layer.market_repository.raw_candle_repository import RawCandleRepository
 from core_layer.logger.logger import setup_logger
 
 if TYPE_CHECKING:
     from data_layer.providers.base_provider import MarketCandle, MarketDataProvider
-    from database.sync_state_repository import SyncStateRepository
+    from database_layer.market_repository.sync_state_repository import SyncStateRepository
 
 logger = setup_logger("HistoricalDataCollector")
 

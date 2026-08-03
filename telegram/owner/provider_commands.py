@@ -19,7 +19,7 @@ rather than inventing a new pattern.
 from typing import Optional
 
 from data_layer.providers.registry import ProviderRegistry, build_default_registry
-from monitoring.provider_health import ProviderHealthStatus, check_registry_health
+from core_layer.health_monitor.provider_health import ProviderHealthStatus, check_registry_health
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ProviderCommands")
@@ -70,7 +70,7 @@ def get_data_status(registry: Optional[ProviderRegistry] = None) -> ProviderComm
     """
     The future /data_status command's payload -- a full health report
     (status/latency/last-checked) per registered provider, via
-    monitoring/provider_health.py's check_registry_health() (Phase
+    core_layer/health_monitor/provider_health.py's check_registry_health() (Phase
     59.2/59.3) -- not reimplemented here.
     """
     registry = registry or build_default_registry()

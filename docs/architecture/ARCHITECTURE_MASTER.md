@@ -35,7 +35,7 @@ Real modules behind each box:
 | Decision Engine     | `decision_layer/decision_engine/decision_engine.py` |
 | Risk Manager        | `risk_layer/risk_engine/risk_manager.py` |
 | Execution           | `execution_layer/execution_engine/execution_engine.py` (intentionally inert — no MT5 order calls exist yet) |
-| Trade Monitor       | `lifecycle/paper_trade_monitor.py` |
+| Trade Monitor       | `trade_monitoring_layer/paper_trading/paper_trade_monitor.py` |
 | Telegram            | `telegram/handlers.py` → `telegram/*_service.py` → `database/*_repository.py` |
 | AI Infrastructure   | `ai/providers/`, `ai/router/`, `ai/capabilities/` |
 | AI Runtime          | `ai/runtime/` (`AIService`, `RuntimeManager`, `EventBus`) |
@@ -97,7 +97,7 @@ depends-on.
   a routine addition.
 - **Depends on**: `risk/`.
 
-### Trade Monitor (`lifecycle/paper_trade_monitor.py`)
+### Trade Monitor (`trade_monitoring_layer/paper_trading/paper_trade_monitor.py`)
 - **CAN**: track the lifecycle of an approved/paper trade after
   delivery.
 - **CANNOT**: originate a new signal, alter a risk decision already

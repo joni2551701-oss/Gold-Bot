@@ -44,7 +44,7 @@ in one place, for the freeze:
 | `core_layer.system_state.system_state.SystemState` (Phase 59.6) vs `core_layer.emergency.emergency_state.EmergencyState` (Phase 59.9) | `SystemState` is a coarse, unheld display-label enum (`RUNNING`/`VALIDATION`/`MAINTENANCE`/`PANIC`/`READ_ONLY`); `EmergencyState` is the actual runtime-controlled, persisted, audited state machine (`NORMAL`/`WARNING`/`PAUSED`/`KILLED`/`MAINTENANCE`) with a manager. `SystemState`'s own docstring reserved `PANIC`/`MAINTENANCE` "for a future Phase 59.9" but `EmergencyState` ended up a separate, finer enum instead (needed `WARNING`/`PAUSED`, which `SystemState` has no equivalent of). | **Yes** — a future wiring phase should decide whether `SystemState` becomes a thin display view derived from `EmergencyManager.get_status()`, or is retired in favor of `EmergencyState` everywhere. Two sources of truth for "is the bot OK" is the one loose end this freeze surfaces. |
 | `telegram.owner.owner_roles.OwnerRole` (Phase 59.6) vs `telegram.permissions.PermissionLevel` (pre-Phase-59, live) | `PermissionLevel` (`OWNER`/`ADMIN`/`USER`) is the real enum `telegram/command_router.py`'s `_PERMISSION_RANK` gates the live 26 commands with today. `OwnerRole` (`OWNER`/`SUPER_ADMIN`/`ADMIN`/`VIEWER`) is a finer, not-yet-wired hierarchy for the future Owner Dashboard. | No — by design, documented in `docs/OWNER_PERMISSIONS.md` since Phase 59.6. A live-wiring phase for `telegram/owner/` will make `OwnerRole` real; `PermissionLevel` keeps gating the existing 26 commands unchanged either way. |
 | `telegram.owner.feature_commands.list_features()` (Phase 59.3, static `Config`/`FeatureFlags` view) vs `telegram.owner.control_commands.get_feature_states()` (Phase 59.8, runtime `RuntimeFeatureManager` view) | Answer different questions: "what does this flag default to" vs "what has an owner actually toggled right now." | **Yes** — `docs/OWNER_COMMANDS.md` already flags this: a future `/features` wiring step must pick exactly one. Both stay until that step. |
-| `configuration.feature_registry.FeatureDescriptor` / `configuration.runtime_state.FeatureRuntimeState` / `database.runtime_feature_models.RuntimeFeatureRecord` (Phase 59.6/59.7) — and the equivalent triad `core_layer.emergency.emergency_state.EmergencyStateRecord` / `database.emergency_models.EmergencyStateEntry` (Phase 59.9) | Consistent "static declaration → in-memory runtime view → DB row" split repeated twice, once for features and once for emergency state. Same pattern both times, not a duplication of each other (`FeatureDescriptor` and `EmergencyStateRecord` describe unrelated things). | No — this is the codebase's own established modeling convention (declared in `configuration/README.md`/`database/README.md`), applied consistently. Nothing to reconcile. |
+| `configuration.feature_registry.FeatureDescriptor` / `configuration.runtime_state.FeatureRuntimeState` / `database_layer.journal_repository.runtime_feature_models.RuntimeFeatureRecord` (Phase 59.6/59.7) — and the equivalent triad `core_layer.emergency.emergency_state.EmergencyStateRecord` / `database_layer.trade_repository.emergency_models.EmergencyStateEntry` (Phase 59.9) | Consistent "static declaration → in-memory runtime view → DB row" split repeated twice, once for features and once for emergency state. Same pattern both times, not a duplication of each other (`FeatureDescriptor` and `EmergencyStateRecord` describe unrelated things). | No — this is the codebase's own established modeling convention (declared in `configuration/README.md`/`database/README.md`), applied consistently. Nothing to reconcile. |
 | `core_layer.emergency.maintenance.MaintenanceMode` (Phase 59.9) vs `EmergencyState.MAINTENANCE` (same phase) | Enum value vs. detail record — same "enum value vs. detail record" split as `FeatureDescriptor` vs `FeatureRuntimeState` above. | No — intentional, same convention. |
 
 No accidental duplicate function names were found: a repo-wide scan
@@ -67,7 +67,7 @@ etc.).
 - The one place two *different* upsert conventions coexist
   (`runtime_features`: one row per name, upsert; `emergency_states`:
   append-only) is intentional and documented in both tables' own
-  schema docstrings (`database/models.py`) — a feature has one current
+  schema docstrings (`database_layer/database_manager/models.py`) — a feature has one current
   value to overwrite, an emergency transition is a historical event
   that must never be overwritten.
 
@@ -118,13 +118,13 @@ three dicts.
 | `configuration/runtime_feature_manager.py` | Real, working runtime toggle (validated/persisted/audited/snapshotted) | Nothing in `core/pipeline.py` currently constructs a `RuntimeFeatureManager` or checks a feature's runtime value before running a stage |
 | `core_layer/emergency/emergency_manager.py` | Real, working kill/pause/maintenance/restore controller | Nothing in `core/pipeline.py`/`risk_layer/risk_engine/risk_manager.py`/`execution/` reads `EmergencyManager.get_status()` before running; `core_layer/emergency/circuit_breaker.py`'s `evaluate_circuit()` is never fed live loss/drawdown/api data |
 | `core_layer/system_state/system_state.py` | A pure enum + record, no holder | No singleton exists anywhere holding "the" current `SystemState` |
-| `database/audit_log_repository.py` | Real, append-only audit trail | Only written to by `RuntimeFeatureManager`/`EmergencyManager` today — no owner command's real invocation exists yet to trigger those writes in production |
-| `database/config_snapshot_repository.py` | Real rollback-capture mechanism | Only written to by `RuntimeFeatureManager` today; nothing reads a snapshot back to actually roll back a config yet |
+| `database_layer/audit_log/audit_log_repository.py` | Real, append-only audit trail | Only written to by `RuntimeFeatureManager`/`EmergencyManager` today — no owner command's real invocation exists yet to trigger those writes in production |
+| `database_layer/journal_repository/config_snapshot_repository.py` | Real rollback-capture mechanism | Only written to by `RuntimeFeatureManager` today; nothing reads a snapshot back to actually roll back a config yet |
 
 **Live and protected (the real trading path, untouched by any Phase
 59 work):** `data/` → `context/` → `strategies/`/`signals/` → `ai/`
 → `decision_layer/decision_engine/decision_engine.py` → `risk_layer/risk_engine/risk_manager.py` →
-`telegram/notifier.py` → `database/signal_repository.py`. Every
+`telegram/notifier.py` → `database_layer/trade_repository/signal_repository.py`. Every
 signal that reaches a user still passes through
 `RiskManager.evaluate()` with no shortcut, per `CLAUDE.md`'s own
 "Never bypass Risk Manager" rule — confirmed unchanged this pass.
@@ -152,7 +152,7 @@ Director's own review of the `market/replay_*.py` candidate above
 against the Module Reuse Principle, the decision was to build it as
 `backtesting/replay_*.py` instead — no new top-level package, since
 Replay is a service over existing Historical Data
-(`database.raw_candle_repository.RawCandleRepository`), not a new
+(`database_layer.market_repository.raw_candle_repository.RawCandleRepository`), not a new
 business domain, and `backtesting/` is where its first real consumer
 (60.2) lives anyway.
 
@@ -181,7 +181,7 @@ Largest remaining blocks, still foundation-only or entirely missing:
    plan, news result processing, FRED integration (Phase 59.2's
    `FredProvider` is a stub only), macro scoring.
 3. **Learning Loop** — trade outcome analysis (Phase 59.4's
-   `analytics/`/`lifecycle/paper_trade.py` is the data source),
+   `analytics/`/`trade_monitoring_layer/paper_trading/paper_trade.py` is the data source),
    strategy performance weighting, AI knowledge updates, context
    learning.
 4. **Live wiring** — per the table in section 4 above: Runtime

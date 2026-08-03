@@ -18,7 +18,7 @@ what this new package is:
 
 | | Purpose | Question it answers |
 |---|---|---|
-| `monitoring/performance.py`'s `PerformanceTracker`/`PerformanceResult` (pre-existing) | Historical **trade outcome** statistics — win rate, per-strategy breakdown, confidence-bucket accuracy, computed from the `signals` database table. | "How well did GoldBot's signals actually perform?" |
+| `core_layer/health_monitor/performance.py`'s `PerformanceTracker`/`PerformanceResult` (pre-existing) | Historical **trade outcome** statistics — win rate, per-strategy breakdown, confidence-bucket accuracy, computed from the `signals` database table. | "How well did GoldBot's signals actually perform?" |
 | `core/pipeline.py`'s own `_log_stage()` (pre-existing) | Logs each pipeline stage's real duration today, with a slow-operation warning threshold. | "How long did *this specific pipeline run's* stages take?" |
 | `performance/` (this phase, new) | A standalone, reusable timing/metrics foundation — a data model, a collector, a timer/decorator. | "How do I *measure* any block of code, anywhere, in a standard way?" |
 
@@ -190,7 +190,7 @@ consumer later" pattern every Phase A foundation module has followed.
   else — this phase only builds the ability to *measure*, per its own
   stated purpose.
 - Does not change `core/pipeline.py`'s existing `_log_stage()`
-  mechanism, `monitoring/performance.py`, any strategy, signal logic,
+  mechanism, `core_layer/health_monitor/performance.py`, any strategy, signal logic,
   or AI logic.
 - Does not migrate the database schema.
 - Does not wire `PerformanceTimer`/`PerformanceCollector` into any

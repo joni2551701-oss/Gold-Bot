@@ -30,7 +30,7 @@ from typing import Optional, Sequence, Tuple, TYPE_CHECKING
 from data_layer.data_validation.data_quality import INTERVAL_DELTAS
 
 if TYPE_CHECKING:
-    from database.raw_candle_models import RawCandle
+    from database_layer.market_repository.raw_candle_models import RawCandle
 
 # A safety cap on how many individual "missing" timestamps one gap
 # report will enumerate -- a single, absurdly large gap (e.g. months

@@ -1,7 +1,7 @@
 # GoldBot — User System
 
 Governed by `docs/constitution/CONSTITUTION.md` Article 4. Verified
-directly against `database/user_repository.py`, `telegram/user_service.py`,
+directly against `database_layer/user_repository/user_repository.py`, `telegram/user_service.py`,
 and `ai/access/permissions.py`.
 
 ## Correction to an earlier brief's assumption
@@ -13,7 +13,7 @@ separate from..."):
 
 ```
 Lifecycle status   NEW → ACTIVE → BANNED
-                    (database/user_repository.py — set_lifecycle_status(),
+                    (database_layer/user_repository/user_repository.py — set_lifecycle_status(),
                      ban_user(), count_by_status(); a BANNED user is
                      never silently reactivated by activity tracking)
 

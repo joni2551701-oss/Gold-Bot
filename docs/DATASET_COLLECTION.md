@@ -30,7 +30,7 @@ collect_historical_candles(
 ```
 
 It fetches from the provider and saves via the already-existing
-`database.raw_candle_repository.RawCandleRepository.save_market_candles()`
+`database_layer.market_repository.raw_candle_repository.RawCandleRepository.save_market_candles()`
 (Phase 59.3/Phase 59 Real Market Validation Foundation) — this module
 adds no new fetch or storage logic, it only composes the two.
 
@@ -58,7 +58,7 @@ date-range fetch is future work, not built in this phase.
 
 ## Where it's stored
 
-The existing `raw_candles` table (`database/raw_candle_repository.py`,
+The existing `raw_candles` table (`database_layer/market_repository/raw_candle_repository.py`,
 Phase 59.3) — `UNIQUE(symbol, timeframe, timestamp, provider)`, so
 re-running a collection over an already-covered window is a safe,
 cheap no-op (duplicates are skipped, not re-inserted or overwritten).

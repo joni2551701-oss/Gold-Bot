@@ -14,8 +14,8 @@ not Language (never gated for pre-existing users either).
 import sqlite3
 from datetime import datetime, timezone
 
-from database.database import Database
-from database.models import init_user_schema
+from database_layer.database_manager.database import Database
+from database_layer.database_manager.models import init_user_schema
 
 
 def _create_pre_phase3_users_table(conn: sqlite3.Connection):
@@ -116,7 +116,7 @@ def test_a_brand_new_table_gets_column_defaults_not_the_backfill():
     get the CREATE TABLE column defaults (LANGUAGE/incomplete), not the
     pre-existing-user backfill rule.
     """
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     repo = UserRepository()
     user = repo.create_user("333", username="brandnew")

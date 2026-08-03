@@ -21,17 +21,17 @@ only — no file listed here was modified to produce this map.
 | `reply_keyboard_manager.py` | Owns Reply Keyboard section resolution (`keyboard_for_command()`, `record_section()`) and the reverse submenu-label → command map (`resolve_navigation_command()`). GoldBot's sole navigation mechanism (V2 Phase 6.3). |
 | `keyboards.py` | Inline keyboard foundation — `language_keyboard()`, `risk_keyboard()`, `timeframe_keyboard()`, `strategy_keyboard()`, tier-aware Main Reply Keyboard builders, Main-tier `resolve_navigation_command()`. Also retains `settings_keyboard()`/`admin_panel_keyboard()` — unreachable from routing today, intentionally kept (Phase 6 Freeze Stage 1, F1). |
 | `menu_commands.py` | Registers Telegram's native Menu Button command list (`Bot.set_my_commands()`, V2 Phase 4) in three tiers (USER/ADMIN/OWNER). Registration only — routes through the existing `command_router.py`, no new dispatch path. |
-| `user_service.py` | Bridges commands to `database.user_repository.UserRepository` — registration, profile read/update, lifecycle state, activity tracking. No aiogram objects, no permission logic. |
-| `subscription_service.py` | Bridges `/plan`, `/subscription`, `/upgrade` to `database.subscription_repository.SubscriptionRepository`. Plan read, lazy default-subscription creation, `has_signal_access()`. No payment/billing logic. |
+| `user_service.py` | Bridges commands to `database_layer.user_repository.user_repository.UserRepository` — registration, profile read/update, lifecycle state, activity tracking. No aiogram objects, no permission logic. |
+| `subscription_service.py` | Bridges `/plan`, `/subscription`, `/upgrade` to `database_layer.user_repository.subscription_repository.SubscriptionRepository`. Plan read, lazy default-subscription creation, `has_signal_access()`. No payment/billing logic. |
 | `signal_access_service.py` | Pure access-decision logic for `/signal` (OWNER/ADMIN bypass + plan check). Never touches the database directly, never fetches/formats a signal. |
-| `signal_service.py` | Read-only bridge to `database.signal_repository.SignalRepository` for `/signal` and `/history`. No formatting. |
-| `notification_service.py` | Per-user notification on/off and the notification-respecting recipient list. Talks to `database.user_repository.UserRepository` directly (a peer of `UserService`, not routed through it). |
-| `feedback_service.py` | Bridges `/feedback` (user) and `/feedbacks` (admin) to `database.feedback_repository.FeedbackRepository` — submission, listing, status transitions. |
-| `admin_service.py` | Admin CRUD, statistics, system health, broadcast delivery, feedback review (delegates to `FeedbackService`). Bridges to `database.admin_repository.AdminRepository` and `database.user_repository.UserRepository`. |
+| `signal_service.py` | Read-only bridge to `database_layer.trade_repository.signal_repository.SignalRepository` for `/signal` and `/history`. No formatting. |
+| `notification_service.py` | Per-user notification on/off and the notification-respecting recipient list. Talks to `database_layer.user_repository.user_repository.UserRepository` directly (a peer of `UserService`, not routed through it). |
+| `feedback_service.py` | Bridges `/feedback` (user) and `/feedbacks` (admin) to `database_layer.user_repository.feedback_repository.FeedbackRepository` — submission, listing, status transitions. |
+| `admin_service.py` | Admin CRUD, statistics, system health, broadcast delivery, feedback review (delegates to `FeedbackService`). Bridges to `database_layer.user_repository.admin_repository.AdminRepository` and `database_layer.user_repository.user_repository.UserRepository`. |
 | `bot.py` | Thin `aiogram.Bot` wrapper used for **outbound** delivery from the trading pipeline — a distinct `Bot` instance from `polling.py`'s inbound one. |
 | `notifier.py` | Sends a `FormattedSignal` via `telegram/bot.py` to the one fixed `TELEGRAM_CHAT_ID` — the pipeline's only Telegram touchpoint. Does not consult `NotificationService`/`SignalAccessService` (documented boundary, see `docs/PLATFORM_ARCHITECTURE.md` §7). |
 | `signal_formatter.py` | Formats a `SignalCandidate` + `AIAnalysisResult` + `TradeDecision` (Trading Core types, imported for type hints on its dataclass fields only) into a `FormattedSignal` string for Telegram display. |
-| `result_handler.py` | Reads/updates signal outcome data via `database.signal_repository.SignalRepository`. |
+| `result_handler.py` | Reads/updates signal outcome data via `database_layer.trade_repository.signal_repository.SignalRepository`. |
 | `runtime_monitor.py` | Tracks the aiogram Bot/Dispatcher's own operational state (connected / last heartbeat / error count / uptime) — process health, not trading health. |
 | `__init__.py` | Package marker, no logic. |
 
@@ -51,7 +51,7 @@ have no dedicated file yet, noted as honest gaps in that document):
 | Decision (visibility/replay) | `replay_commands.py`, `backtest_commands.py` | Signal/decision replay, backtest triggers |
 | Broadcast | `broadcast_commands.py`, `runtime_notifications.py` | Live delivery loop for queued alerts is an open gap per `docs/PHASE61_7_FREEZE.md` |
 | Analytics | `performance_commands.py`, `report_commands.py`, `dataset_commands.py`, `feature_commands.py`, `fundamental_commands.py`, `learning_commands.py` | |
-| Emergency | `emergency_commands.py` | Backed by `core_layer/emergency/` + `database/emergency_repository.py` |
+| Emergency | `emergency_commands.py` | Backed by `core_layer/emergency/` + `database_layer/trade_repository/emergency_repository.py` |
 | Security | `security.py` | Owner-tier security surface |
 | Cross-cutting | `dashboard.py`, `validation_commands.py`, `monitoring_commands.py` | Summary/validation surfaces spanning several sections — see `docs/PLATFORM_ARCHITECTURE.md` §8 for `dashboard.py` |
 | — | `__init__.py` | Package marker |
@@ -79,7 +79,7 @@ Trading Core / foundation layers, out of Platform Engineer scope.
 
 Schema definitions (`init_user_schema()`, `init_subscription_schema()`,
 `init_feedback_schema()`, `init_admin_schema()`) live in
-`database/models.py`, alongside every other table's schema function —
+`database_layer/database_manager/models.py`, alongside every other table's schema function —
 this file is shared infrastructure, not Platform-owned, even though
 these four functions are Platform-relevant.
 

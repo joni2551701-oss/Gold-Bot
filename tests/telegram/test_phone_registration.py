@@ -223,7 +223,7 @@ def test_start_keyboard_is_the_persistent_reply_keyboard_once_registration_is_co
 
 
 # ---------------------------------------------------------------------------
-# V2 Phase 6.1.1 (Director-reported bug, root-caused) -- database/models.py's
+# V2 Phase 6.1.1 (Director-reported bug, root-caused) -- database_layer/database_manager/models.py's
 # _backfill_registration_state() (V2 Phase 3) permanently set
 # registration_step='PHONE' for any pre-existing row with no phone_hash,
 # which includes operator accounts (OWNER/ADMIN) created before the
@@ -239,7 +239,7 @@ def test_start_keyboard_is_the_persistent_reply_keyboard_once_registration_is_co
 
 def test_start_keyboard_is_persistent_for_owner_stuck_at_phone_step(monkeypatch):
     from aiogram.types import ReplyKeyboardMarkup
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
     from telegram.permissions import PermissionLevel
 
     _run(route_command("/start", telegram_id="624"))
@@ -259,7 +259,7 @@ def test_start_keyboard_is_persistent_for_owner_stuck_at_phone_step(monkeypatch)
 
 def test_start_keyboard_is_persistent_for_admin_stuck_at_phone_step(monkeypatch):
     from aiogram.types import ReplyKeyboardMarkup
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
     from telegram.permissions import PermissionLevel
 
     _run(route_command("/start", telegram_id="625"))
@@ -279,7 +279,7 @@ def test_start_keyboard_is_persistent_for_admin_stuck_at_phone_step(monkeypatch)
 
 def test_start_keyboard_still_offers_phone_share_for_a_regular_user_stuck_at_phone_step():
     """Regression guard: the OWNER/ADMIN bypass must not leak to ordinary USER-tier accounts -- Phase 3's mandatory Phone Share policy for them is untouched."""
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     _run(route_command("/start", telegram_id="626"))
     UserRepository().set_registration_step("626", "PHONE")
@@ -311,7 +311,7 @@ def test_start_keyboard_is_reply_keyboard_remove_for_a_banned_user():
 
 
 def test_start_keyboard_is_the_admin_reply_keyboard_for_a_completed_admin(monkeypatch):
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
     from telegram.registration_service import RegistrationService
 
     monkeypatch.delenv("TELEGRAM_OWNER_ID", raising=False)

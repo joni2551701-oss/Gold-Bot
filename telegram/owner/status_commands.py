@@ -29,7 +29,7 @@ from datetime import datetime, timezone
 from config import Config
 from core_layer.system_state.system_state import SystemState
 from data_layer.providers.registry import build_default_registry
-from database.signal_repository import SignalRepository
+from database_layer.trade_repository.signal_repository import SignalRepository
 from telegram.admin_service import AdminService
 from telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
@@ -38,7 +38,7 @@ logger = setup_logger("StatusCommands")
 
 
 def _format_time_ago(timestamp: datetime) -> str:
-    """A small, self-contained "N min/hours/days ago" renderer -- no existing helper in this codebase does this generically enough to reuse (monitoring/performance.py's own age calculations are private to that module's own report shape)."""
+    """A small, self-contained "N min/hours/days ago" renderer -- no existing helper in this codebase does this generically enough to reuse (core_layer/health_monitor/performance.py's own age calculations are private to that module's own report shape)."""
     now = datetime.now(timezone.utc)
     if timestamp.tzinfo is None:
         timestamp = timestamp.replace(tzinfo=timezone.utc)

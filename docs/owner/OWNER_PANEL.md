@@ -27,7 +27,7 @@ planned):
 | **Broadcast** | `runtime_notifications.py` (queues alerts; live delivery loop is the still-open v0.7 gap noted in `docs/PHASE61_7_FREEZE.md`) |
 | **Analytics** | `performance_commands.py`, `report_commands.py`, `dataset_commands.py`, `feature_commands.py`, `fundamental_commands.py`, `learning_commands.py` |
 | **Backup** | `config_snapshot_repository.py`/`config_snapshot_models.py` (under `database/`) are read via the relevant owner command file — no dedicated `telegram/owner/backup_commands.py` exists today |
-| **Emergency** | `emergency_commands.py`, backed by `core_layer/emergency/` and `database/emergency_repository.py` |
+| **Emergency** | `emergency_commands.py`, backed by `core_layer/emergency/` and `database_layer/trade_repository/emergency_repository.py` |
 
 `dashboard.py` and `validation_commands.py` provide cross-cutting
 summary and validation surfaces over several of the sections above

@@ -11,8 +11,8 @@ from datetime import datetime, timezone
 
 from telegram.owner.replay_commands import replay_pause, replay_start, replay_status, replay_stop
 from telegram.owner.provider_commands import ProviderCommandResult
-from database.raw_candle_models import create_raw_candle
-from database.raw_candle_repository import RawCandleRepository
+from database_layer.market_repository.raw_candle_models import create_raw_candle
+from database_layer.market_repository.raw_candle_repository import RawCandleRepository
 
 
 def _seed_candles(n=3):

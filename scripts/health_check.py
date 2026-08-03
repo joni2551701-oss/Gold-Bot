@@ -65,7 +65,7 @@ def check_secrets():
 
 
 def check_database():
-    from database.database import Database
+    from database_layer.database_manager.database import Database
 
     try:
         with Database() as conn:

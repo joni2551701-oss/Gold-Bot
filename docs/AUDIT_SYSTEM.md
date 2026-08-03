@@ -34,7 +34,7 @@ phase (Phase 59.9, per the Director's own roadmap) would add the
 actual store and wire the pipeline's stages to check it before
 running.
 
-## Audit Log (`database/audit_log_repository.py`)
+## Audit Log (`database_layer/audit_log/audit_log_repository.py`)
 
 A real, persisted, append-only table — `AuditLogRepository.log_action(
 actor, action, target=None, result="SUCCESS", details=None)` records
@@ -64,7 +64,7 @@ this phase follows.
 
 ```
 core_layer/system_state/system_state.py (TASK 1)        -- system-wide mode vocabulary
-database/audit_log_repository.py (TASK 2) -- who did what, persisted
+database_layer/audit_log/audit_log_repository.py (TASK 2) -- who did what, persisted
         |
         v
 telegram/owner/owner_roles.py (TASK 3)     -- who is allowed to act
@@ -74,7 +74,7 @@ configuration/feature_registry.py (TASK 4) -- what can be toggled
 configuration/feature_dependency_validator.py (TASK 5) -- is a toggle combination valid
         |
         v
-database/config_snapshot_repository.py (TASK 6) -- point-in-time rollback capture
+database_layer/journal_repository/config_snapshot_repository.py (TASK 6) -- point-in-time rollback capture
 ```
 
 Per the Director's own roadmap, this is the last "observe only" layer

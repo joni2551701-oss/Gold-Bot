@@ -18,7 +18,7 @@ telegram/handlers.py  (or telegram/owner/<domain>_commands.py)
 telegram/*_service.py
       -> database/*_repository.py                   ONLY
 database/*_repository.py
-      -> database/*_models.py, database/database.py  ONLY (SQL, no business logic)
+      -> database/*_models.py, database_layer/database_manager/database.py  ONLY (SQL, no business logic)
 ```
 
 - `telegram/handlers.py` **never** imports `database.*` or
@@ -120,8 +120,8 @@ missing integration to add as Platform work (see
 | `telegram/reply_keyboard_manager.py`, `telegram/keyboards.py` | `translation/ui_catalog.py` (`t()`) |
 | `telegram/*_service.py` (admin/feedback/notification/signal/subscription/user) | the corresponding `database/*_repository.py` only |
 | `telegram/owner/*.py` (24 files) | the corresponding service/repository for their domain; `runtime_commands.py` additionally → `ai/runtime/` (see §4) |
-| `telegram/menu_commands.py` | `database.admin_repository.AdminRepository`, `database.user_repository.UserRepository` (read-only tier/language lookups), `telegram/commands.py` |
-| `database/*_repository.py` (platform tables) | `database/*_models.py`, `database/database.py` only |
+| `telegram/menu_commands.py` | `database_layer.user_repository.admin_repository.AdminRepository`, `database_layer.user_repository.user_repository.UserRepository` (read-only tier/language lookups), `telegram/commands.py` |
+| `database/*_repository.py` (platform tables) | `database/*_models.py`, `database_layer/database_manager/database.py` only |
 | `translation/*` | standard library only — no dependency on `telegram/`, `database/`, or any Trading Core package |
 
 ## Enforcement

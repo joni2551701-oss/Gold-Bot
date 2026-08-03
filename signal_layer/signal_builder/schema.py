@@ -16,7 +16,7 @@ Review's AC-03 task -- see signal_layer/signal_builder/adapter.py and core/pipel
 how an existing SignalCandidate becomes a SignalSchema, and
 signals/README.md/docs/SIGNAL_SCHEMA.md for the full contract.
 
-Distinct from database/signal_record.py's SignalRecord (pre-existing,
+Distinct from database_layer/trade_repository/signal_record.py's SignalRecord (pre-existing,
 untouched by this phase): SignalRecord is a persistence-layer wrapper,
 built only once a full (SignalCandidate, TradeDecision, RiskResult)
 triple already exists, immediately before a database write.
@@ -133,7 +133,7 @@ class SignalSchema:
 def generate_signal_id() -> str:
     """
     A real, collision-safe id -- the same generation convention
-    database/signal_record.py's create_signal_record() already uses
+    database_layer/trade_repository/signal_record.py's create_signal_record() already uses
     (str(uuid.uuid4())), reused here rather than inventing a new
     counter-based scheme.
     """

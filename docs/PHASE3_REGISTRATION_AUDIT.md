@@ -28,7 +28,7 @@ telegram/user_service.py       UserService.register_user()
       |                        -> UserRepository.get_user() (dup check)
       |                        -> UserRepository.create_user()
       |
-database/user_repository.py    UserRepository.create_user()
+database_layer/user_repository/user_repository.py    UserRepository.create_user()
       |                        INSERT INTO users (...)
       |
    Database (users table)
@@ -56,7 +56,7 @@ telegram/user_service.py       UserService.register_phone()
       |                        -> ai.access.identity_checker.is_phone_reused_by_another_account()
       |                        -> ai.access.trial_manager.trial_status_from_started_at()
       |
-database/user_repository.py    set_phone_hash(), set_trial_started_at()
+database_layer/user_repository/user_repository.py    set_phone_hash(), set_trial_started_at()
       |
    Database (users table: phone_hash, trial_started_at)
 ```
@@ -66,7 +66,7 @@ database/user_repository.py    set_phone_hash(), set_trial_started_at()
 `telegram/handlers.py` (`start_handler` L207-241, `contact_handler`
 L1141-1162), `telegram/command_router.py` (full file, 207 lines),
 `telegram/user_service.py` (full file, 243 lines),
-`database/user_repository.py` (schema-adjacent methods),
+`database_layer/user_repository/user_repository.py` (schema-adjacent methods),
 `telegram/polling.py` (contact-vs-text branching, L103-125),
 `telegram/keyboards.py` (`phone_share_keyboard` L138-158).
 
@@ -100,7 +100,7 @@ L1141-1162), `telegram/command_router.py` (full file, 207 lines),
 
 ## 2. Database Audit
 
-### Actual schema (`database/models.py::init_user_schema`, verified — this is the real `CREATE TABLE`, not the dataclass)
+### Actual schema (`database_layer/database_manager/models.py::init_user_schema`, verified — this is the real `CREATE TABLE`, not the dataclass)
 
 ```sql
 CREATE TABLE IF NOT EXISTS users (
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 ```
 
-`UserRecord` (`database/user_models.py`) mirrors this exactly (minus
+`UserRecord` (`database_layer/user_repository/user_models.py`) mirrors this exactly (minus
 `id`/`updated_at`, repository-internal).
 
 ### Director's example columns vs. what actually exists
@@ -159,10 +159,10 @@ RegistrationState` — the 15 matches are all unrelated bounded
 contexts: `ai/session/conversation_state.py` (AI conversation turns),
 `ai/runtime/runtime_state.py` / `configuration/runtime_state.py`
 (AI/feature runtime lifecycle), `core_layer/emergency/emergency_state.py`
-(trading pause/kill state), `lifecycle/signal_state.py` /
-`lifecycle/trade_state.py` (paper-trade lifecycle),
-`database/sync_state_models.py` (historical data sync), `assistant/
-models.py`, `backtesting/replay_models.py`. None of these are
+(trading pause/kill state), `trade_monitoring_layer/paper_trading/signal_state.py` /
+`trade_monitoring_layer/paper_trading/trade_state.py` (paper-trade lifecycle),
+`database_layer/market_repository/sync_state_models.py` (historical data sync), `assistant/
+models.py`, `backtesting_layer/replay_engine/replay_models.py`. None of these are
 Telegram-registration-scoped, and per this repo's own layering rule
 (`ai/` doesn't import `telegram/` and vice versa isn't the direction
 either), `ai/session/conversation_state.py` is not reusable here even
@@ -217,7 +217,7 @@ decision for the Director, recorded as an open question in Section 7.
 | `telegram/keyboards.py::language_keyboard()` | Yes | Already built, already localized, already has a working callback path. |
 | `telegram/callback_router.py` | Yes, as the dispatch *pattern* | `route_callback()`'s "translate callback_data to the same handler the text command already uses" principle is the template a Wizard's own callback handling (if any new callback_data is needed) should follow — not a new dispatch mechanism. |
 | `telegram/user_service.py::UserService` | Yes | `register_user()`, `register_phone()`, `get_profile()`, `touch_activity()` cover every data operation the Wizard needs. No new service method is obviously required by the 5-step diagram as scoped. |
-| `database/user_repository.py::UserRepository` | Yes | All needed reads/writes already exist. |
+| `database_layer/user_repository/user_repository.py::UserRepository` | Yes | All needed reads/writes already exist. |
 | `telegram/command_router.py`'s `_KEYBOARD_BY_COMMAND` pattern | Yes | The existing "attach a hint keyboard per command" mechanism is the natural place to extend from, not a parallel mechanism. |
 
 **Not yet built, and would be new (kept to the minimum Section 3
@@ -341,8 +341,8 @@ is created.
 | `telegram/command_router.py` | `start_handler`'s post-processing gains a call into `registration_service` to decide which keyboard to attach (`phone_share_keyboard` vs. `language_keyboard` vs. neither), replacing the current unconditional `phone_share_keyboard` mapping for `"start"`. | Extends existing dispatch table, no new mechanism. |
 | `telegram/command_router.py::route_contact()` | Add the `contact.user_id == from_user.id` check (Edge Case 4 fix). | Extends existing function. |
 | `translation/ui_catalog.py` | Add `registration.complete` (and any other net-new prompt text the Director approves in Step 6) — UZ/RU/EN, same convention as every other key. | Extends existing catalog. |
-| `database/models.py` | **Only if Option B is chosen**: add `registration_step TEXT DEFAULT 'LANGUAGE'` to `init_user_schema()` + a migration branch in `_migrate_users_schema()`, mirroring how `phone_hash`/`trial_started_at` were added in Phase 61.4/61.5. | Extends existing schema function; no new table. |
-| `database/user_models.py` / `user_repository.py` | **Only if Option B**: add `registration_step` to `UserRecord`, `_row_to_record()`, `_USER_SELECT_COLUMNS`. | Extends existing dataclass/repository, same pattern as `phone_hash`. |
+| `database_layer/database_manager/models.py` | **Only if Option B is chosen**: add `registration_step TEXT DEFAULT 'LANGUAGE'` to `init_user_schema()` + a migration branch in `_migrate_users_schema()`, mirroring how `phone_hash`/`trial_started_at` were added in Phase 61.4/61.5. | Extends existing schema function; no new table. |
+| `database_layer/user_repository/user_models.py` / `user_repository.py` | **Only if Option B**: add `registration_step` to `UserRecord`, `_row_to_record()`, `_USER_SELECT_COLUMNS`. | Extends existing dataclass/repository, same pattern as `phone_hash`. |
 | `tests/telegram/test_registration_service.py` (new) | Tests for the new orchestration file. | New test file for new code, per CLAUDE.md's "add tests" rule. |
 | `tests/telegram/test_phone_registration.py` | Add a test for the Edge Case 4 fix (contact.user_id mismatch is rejected). | Extends existing test file. |
 

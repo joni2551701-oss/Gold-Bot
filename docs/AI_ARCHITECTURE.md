@@ -143,7 +143,7 @@ rather than merged into this new module.
 `ai/profiles/user_profile.py`: `AIUserProfile` (frozen dataclass) —
 `telegram_id`, `experience_level`, `preferred_strategy`, `risk_style`,
 `language`. No database access anywhere in this file (explicitly
-forbidden this phase). Distinct from `database.user_models.UserRecord`
+forbidden this phase). Distinct from `database_layer.user_repository.user_models.UserRecord`
 (the real, database-backed settings record) — `AIUserProfile` is a
 lightweight, AI-facing *projection*, plus a field
 (`experience_level`) that doesn't exist in the `users` table at all;

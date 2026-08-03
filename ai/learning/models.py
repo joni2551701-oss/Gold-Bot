@@ -16,7 +16,7 @@ imports `decision/`, `risk/`, `execution/`, `signals/`, `telegram/`,
 DB-persisted, trade-outcome-statistics type with the same bare class
 name already exists at `learning.models.LearningRecord` (Phase 60.6,
 `trade_id`/`signal_id`/`failure_type`/`success_pattern`/etc., wired to
-real SQLite persistence via `database/learning_repository.py`). This
+real SQLite persistence via `database_layer/journal_repository/learning_repository.py`). This
 module's `ai.learning.models.LearningRecord` is a distinct,
 non-colliding fully-qualified path, never imported alongside the old
 one, and serves a genuinely different purpose (a per-user topic-mastery

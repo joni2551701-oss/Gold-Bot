@@ -1,11 +1,11 @@
 """
-Phase 60.2, TASK 2 -- backtesting/data_feed.py tests.
+Phase 60.2, TASK 2 -- backtesting_layer/data_feed/data_feed.py tests.
 """
 
 from datetime import datetime, timezone
 
-from backtesting.data_feed import LiveDataFeed, ReplayDataFeed
-from backtesting.replay_feed import ReplayFeed
+from backtesting_layer.data_feed.data_feed import LiveDataFeed, ReplayDataFeed
+from backtesting_layer.replay_engine.replay_feed import ReplayFeed
 from data_layer.providers.twelve_data_client import Candle
 
 
@@ -50,10 +50,10 @@ def test_live_and_replay_feeds_both_satisfy_idatafeed():
     Phase 60.8 TASK 4 architecture confirmation: LiveDataFeed and
     ReplayDataFeed both really implement the one common IDataFeed
     contract -- BacktestEngine already only depends on ReplayDataFeed
-    through this interface (backtesting/backtest_engine.py's own
+    through this interface (backtesting_layer/backtest_engine/backtest_engine.py's own
     `self.data_feed: IDataFeed` field).
     """
-    from backtesting.data_feed import IDataFeed
+    from backtesting_layer.data_feed.data_feed import IDataFeed
 
     assert issubclass(LiveDataFeed, IDataFeed)
     assert issubclass(ReplayDataFeed, IDataFeed)

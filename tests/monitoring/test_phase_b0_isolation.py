@@ -12,7 +12,7 @@ NEW_FILES = ("resource_monitor.py", "health_monitor.py", "performance_collector.
 
 
 def _monitoring_dir():
-    return pathlib.Path(__file__).resolve().parents[2] / "monitoring"
+    return pathlib.Path(__file__).resolve().parents[2] / "core_layer" / "health_monitor"
 
 
 def _imported_names(py_file: pathlib.Path):
@@ -52,21 +52,21 @@ def test_phase_b0_files_never_import_context_or_core_pipeline():
 
 def test_resource_monitor_confined_to_stdlib_core_logger_database_and_monitoring():
     py_file = _monitoring_dir() / "resource_monitor.py"
-    allowed_prefixes = ("threading", "datetime", "typing", "core_layer.logger.logger", "database.monitoring_repository", "monitoring.models", "monitoring.system_monitor", "resource")
+    allowed_prefixes = ("threading", "datetime", "typing", "core_layer.logger.logger", "database_layer.audit_log.monitoring_repository", "core_layer.health_monitor.models", "core_layer.health_monitor.system_monitor", "resource")
     for name in _imported_names(py_file):
         assert name.startswith(allowed_prefixes), f"{py_file}: {name}"
 
 
 def test_health_monitor_confined_to_stdlib_and_monitoring_models():
     py_file = _monitoring_dir() / "health_monitor.py"
-    allowed_prefixes = ("typing", "monitoring.models")
+    allowed_prefixes = ("typing", "core_layer.health_monitor.models")
     for name in _imported_names(py_file):
         assert name.startswith(allowed_prefixes), f"{py_file}: {name}"
 
 
 def test_performance_collector_confined_to_stdlib_and_monitoring_models():
     py_file = _monitoring_dir() / "performance_collector.py"
-    allowed_prefixes = ("time", "typing", "monitoring.models")
+    allowed_prefixes = ("time", "typing", "core_layer.health_monitor.models")
     for name in _imported_names(py_file):
         assert name.startswith(allowed_prefixes), f"{py_file}: {name}"
 

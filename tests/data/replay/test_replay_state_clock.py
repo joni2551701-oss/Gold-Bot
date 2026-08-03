@@ -4,10 +4,10 @@ from datetime import timedelta
 
 import pytest
 
-from backtesting_layer.replay_engine.replay_state import (
+from backtesting_layer.replay_engine.data_replay.replay_state import (
     ReplayState, can_transition, assert_transition, ReplayStateError,
 )
-from backtesting_layer.replay_engine.replay_clock import ReplayClock
+from backtesting_layer.replay_engine.data_replay.replay_clock import ReplayClock
 from data_layer.market_memory.candle_record import MemoryMode
 from _rfakes import ts
 

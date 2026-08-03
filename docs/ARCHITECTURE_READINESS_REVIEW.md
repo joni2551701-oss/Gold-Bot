@@ -230,7 +230,7 @@ confirm the pre-existing contract is unchanged.
 
 **Verified: already correctly distinguished.** `performance/`
 (Phase A19) measures system timing (`pipeline_total_time`,
-`api_response_time`, etc.); `monitoring/performance.py` (pre-existing)
+`api_response_time`, etc.); `core_layer/health_monitor/performance.py` (pre-existing)
 computes trade-outcome statistics (win rate, strategy breakdown).
 `performance/README.md` already states this distinction explicitly.
 The Director's own `analytics/` package (`signal_performance.py`,

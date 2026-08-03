@@ -15,11 +15,11 @@ BATCH_INSERT_BUDGET_SECONDS = 2.0
 
 def test_repository_construction_is_fast():
     """Schema init + migration checks + Phase 50 index creation, combined, for every repository."""
-    from database.user_repository import UserRepository
-    from database.signal_repository import SignalRepository
-    from database.feedback_repository import FeedbackRepository
-    from database.subscription_repository import SubscriptionRepository
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.user_repository import UserRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
+    from database_layer.user_repository.feedback_repository import FeedbackRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     start = time.perf_counter()
     UserRepository()
@@ -39,7 +39,7 @@ def test_repeated_repository_construction_does_not_degrade():
     Telegram command handler call) -- not re-run expensive migration
     work once already applied.
     """
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     UserRepository()  # first construction: full schema + migration + index path
     start = time.perf_counter()
@@ -51,7 +51,7 @@ def test_repeated_repository_construction_does_not_degrade():
 
 
 def test_batch_signal_insert_performance():
-    from database.signal_repository import SignalRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
 
     repo = SignalRepository()
     start = time.perf_counter()
@@ -69,7 +69,7 @@ def test_batch_signal_insert_performance():
 
 
 def test_user_settings_update_performance(test_user):
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     repo = UserRepository()
     start = time.perf_counter()

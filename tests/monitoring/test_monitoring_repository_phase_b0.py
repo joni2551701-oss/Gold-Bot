@@ -1,11 +1,11 @@
-"""Phase B.0 -- database/monitoring_repository.py additions (stage_durations_ms persistence, record_process_start/get_restart_count) tests."""
+"""Phase B.0 -- database_layer/audit_log/monitoring_repository.py additions (stage_durations_ms persistence, record_process_start/get_restart_count) tests."""
 
 import os
 
 import pytest
 
 from config import Config
-from database.monitoring_repository import (
+from database_layer.audit_log.monitoring_repository import (
     MonitoringRepository,
     _deserialize_stage_durations,
     _serialize_stage_durations,
@@ -66,7 +66,7 @@ def test_record_decision_entry_defaults_stage_durations_ms_to_empty(repository):
 
 
 def test_record_process_start_returns_process_start_entry(repository):
-    from database.monitoring_models import ProcessStartEntry
+    from database_layer.audit_log.monitoring_models import ProcessStartEntry
 
     entry = repository.record_process_start()
     assert isinstance(entry, ProcessStartEntry)

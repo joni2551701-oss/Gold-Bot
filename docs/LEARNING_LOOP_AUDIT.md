@@ -14,9 +14,9 @@ Principle). Six directories audited: `analytics/`, `ai/` (incl.
 | `analytics/signal_performance.py` — `SignalPerformance` | `performance_id`, `signal_id`, `strategy_id`, `context_id`, `result`, `profit_loss`, `r_multiple`, `duration`, `session`, `market_phase`, `timeframe`, `created_at`. **Largest overlap found** — 7 of `LearningRecord`'s 11 named fields already exist here under the same or an equivalent name. | **Not extended, not reused directly.** `SignalPerformance` is an in-memory, computed-on-demand analytics type with no repository and no persistence story (its own README: "Does not read or write the database"). `LearningRecord` (TASK 2) needs to be persisted append-only (TASK 5) — a different lifecycle. Reusing `SignalPerformance` as the persisted row shape would conflate an ephemeral analytics view with a permanent memory store. `learning/models.py`'s `LearningRecord` is a new, disclosed near-duplicate of `SignalPerformance`'s shared fields, adding the two genuinely new fields neither `SignalPerformance` nor any other module has anywhere in this codebase: `failure_type`, `success_pattern`. |
 | `analytics/strategy_report.py` / `context_report.py` | Aggregate `SignalPerformance` records by strategy / (session, strategy, market_phase). Both already do "which condition wins more" grouping. | **Not extended.** TASK 4 (Pattern Detector) needs a *failure/success probability per condition combination* framed around `LearningRecord.failure_type`/`success_pattern` — a different question than a plain win-rate grouping, and its output (`PatternInsight`) is intentionally learning-specific, not another `*PerformanceReport`. `pattern_detector.py` is new; it does not import or duplicate the win/loss counting arithmetic (`compute_win_rate()` is reused directly where relevant — see TASK 4). |
 | `analytics/validation_report.py` | Weekly signals/BUY/SELL + best session/market_phase report, built from `SignalPerformance`. | Confirmed no overlap — a period summary, not a pattern/failure classifier. |
-| `lifecycle/paper_trade.py` — `PaperTrade` | The real, only source of a trade's `result`/`opened_at`/`closed_at`/`entry`/`stop_loss`/`take_profit`. No analysis, no learning concept. | Read-only input to `learning/outcome_analyzer.py` (TASK 3), `TYPE_CHECKING`-only — same convention `analytics/signal_performance.py` already uses for the same type. |
-| `database/audit_log_models.py` + `audit_log_repository.py` | The exact "append-only, no update/delete, `init_X_schema()` in `database/models.py`, called from the repository's own `__init__`" pattern TASK 5 asks for verbatim ("append only, tarix o'chirilmaydi, auditga mos"). | **Reused as the structural template**, not imported — `database/learning_repository.py` (TASK 5) mirrors `AuditLogRepository`'s shape (`log_action()` → `record()`, `get_recent()`, `get_by_actor()` → `get_by_strategy()`) rather than inventing a new repository shape. |
-| `database/raw_candle_repository.py` / `raw_candle_models.py` | A second real precedent for a database-layer model kept deliberately separate from its domain-layer counterpart (`RawCandle` vs. `data_layer.providers.twelve_data_client.Candle`) despite overlapping fields — the same "different name, same layer-separation reasoning" this audit applies to `LearningRecord` vs. a new `LearningRecordRow`. | Confirms the convention, not reused directly. |
+| `trade_monitoring_layer/paper_trading/paper_trade.py` — `PaperTrade` | The real, only source of a trade's `result`/`opened_at`/`closed_at`/`entry`/`stop_loss`/`take_profit`. No analysis, no learning concept. | Read-only input to `learning/outcome_analyzer.py` (TASK 3), `TYPE_CHECKING`-only — same convention `analytics/signal_performance.py` already uses for the same type. |
+| `database_layer/audit_log/audit_log_models.py` + `audit_log_repository.py` | The exact "append-only, no update/delete, `init_X_schema()` in `database_layer/database_manager/models.py`, called from the repository's own `__init__`" pattern TASK 5 asks for verbatim ("append only, tarix o'chirilmaydi, auditga mos"). | **Reused as the structural template**, not imported — `database_layer/journal_repository/learning_repository.py` (TASK 5) mirrors `AuditLogRepository`'s shape (`log_action()` → `record()`, `get_recent()`, `get_by_actor()` → `get_by_strategy()`) rather than inventing a new repository shape. |
+| `database_layer/market_repository/raw_candle_repository.py` / `raw_candle_models.py` | A second real precedent for a database-layer model kept deliberately separate from its domain-layer counterpart (`RawCandle` vs. `data_layer.providers.twelve_data_client.Candle`) despite overlapping fields — the same "different name, same layer-separation reasoning" this audit applies to `LearningRecord` vs. a new `LearningRecordRow`. | Confirms the convention, not reused directly. |
 | `context/` (all detectors) | No failure/pattern/learning concept anywhere — confirmed via full module list read in Phase 60.5's own audit, unchanged since. | No overlap. |
 
 **No existing pattern-detection module, no existing `learning/` package, no Gemini/AI training-data exporter anywhere in this codebase.**
@@ -32,17 +32,17 @@ Principle). Six directories audited: `analytics/`, `ai/` (incl.
    establishes ("repository-internal detail... same convention as
    every other Phase 59.x model"); a `LearningRecord` built by
    `outcome_analyzer.py` has no database id yet.
-2. **`database/learning_models.py`** defines its own `LearningRecordRow`
+2. **`database_layer/journal_repository/learning_models.py`** defines its own `LearningRecordRow`
    (not a second `LearningRecord`) — same disambiguation-by-naming
    discipline as `ExecutionSimulationResult`/`FundamentalContextSnapshot`
    before it, avoiding a same-name collision between the domain type
    (`learning/models.py`, in-memory, used by `outcome_analyzer.py`/
    `pattern_detector.py`) and the persistence type (`database/`,
    matches the `learning_records` table's own columns, including `id`).
-3. **`database/learning_repository.py`** mirrors `AuditLogRepository`
+3. **`database_layer/journal_repository/learning_repository.py`** mirrors `AuditLogRepository`
    exactly: append-only (`record()` only — no `update()`/`delete()`
    method exists), `init_learning_schema()` added to
-   `database/models.py` (same file every other schema lives in),
+   `database_layer/database_manager/models.py` (same file every other schema lives in),
    called from the repository's own `__init__`, same as every other
    repository in this codebase.
 4. **`learning/outcome_analyzer.py`** and **`learning/pattern_detector.py`**

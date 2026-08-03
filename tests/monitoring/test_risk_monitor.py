@@ -1,6 +1,6 @@
 """
 Phase V1.0.1 (Risk Management Hardening Patch) -- TASK 9 (Monitoring
-Integration) tests: monitoring/risk_monitor.py is a read-only
+Integration) tests: core_layer/health_monitor/risk_monitor.py is a read-only
 aggregator over database.risk_decision_repository.RiskDecisionRepository
 -- it never writes to risk_decisions itself.
 """
@@ -10,8 +10,8 @@ import os
 import pytest
 
 from config import Config
-from database.risk_decision_repository import RiskDecisionRepository
-from monitoring.risk_monitor import RiskMonitor
+from database_layer.trade_repository.risk_decision_repository import RiskDecisionRepository
+from core_layer.health_monitor.risk_monitor import RiskMonitor
 
 
 @pytest.fixture
@@ -106,7 +106,7 @@ def test_risk_monitor_never_writes(isolated_db):
 
 
 def test_default_risk_monitor_module_function_works(isolated_db):
-    from monitoring.risk_monitor import get_risk_counts, DEFAULT_RISK_MONITOR
+    from core_layer.health_monitor.risk_monitor import get_risk_counts, DEFAULT_RISK_MONITOR
 
     DEFAULT_RISK_MONITOR.repository = RiskDecisionRepository()
     counts = get_risk_counts()

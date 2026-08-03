@@ -16,8 +16,8 @@ from context_layer.trend.market_regime import MarketRegime, MarketRegimeResult, 
 from context_layer.market_structure.market_structure import StructurePoint, StructureType, SwingPoint, SwingType
 from context_layer.order_block.order_block import OrderBlock, OrderBlockType
 from learning.outcome_analyzer import TradeAnalysis, analyze_trade_result
-from lifecycle.paper_trade import PaperTrade
-from lifecycle.trade_state import TradeState
+from trade_monitoring_layer.paper_trading.paper_trade import PaperTrade
+from trade_monitoring_layer.paper_trading.trade_state import TradeState
 from analytics.signal_performance import SignalPerformance
 
 TS = datetime(2024, 1, 2, 9, 0, tzinfo=timezone.utc)

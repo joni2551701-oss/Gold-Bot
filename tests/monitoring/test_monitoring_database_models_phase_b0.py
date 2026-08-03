@@ -1,8 +1,8 @@
-"""Phase B.0 -- database/monitoring_models.py additions (DecisionPipelineEntryRow.stage_durations_ms, ProcessStartEntry) tests."""
+"""Phase B.0 -- database_layer/audit_log/monitoring_models.py additions (DecisionPipelineEntryRow.stage_durations_ms, ProcessStartEntry) tests."""
 
 from datetime import datetime
 
-from database.monitoring_models import (
+from database_layer.audit_log.monitoring_models import (
     ProcessStartEntry,
     create_decision_pipeline_entry_row,
     create_process_start_entry,

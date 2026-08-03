@@ -238,9 +238,9 @@ correct and enforced, including a fresh runtime re-test in this audit.
 - Confirmed not imported by `core/pipeline.py` or `main.py` — fully
   unreachable from any runtime path. Consistent with README ("GoldBot
   does not place trades automatically").
-- `monitoring/signal_monitor.py` (`SignalMonitor.monitor()`) is the
+- `core_layer/health_monitor/signal_monitor.py` (`SignalMonitor.monitor()`) is the
   same pattern — inert stub, not wired anywhere.
-- `monitoring/performance.py` (`PerformanceTracker`) is a complete,
+- `core_layer/health_monitor/performance.py` (`PerformanceTracker`) is a complete,
   correct, self-contained statistics module (win rate, per-strategy
   breakdown, confidence-bucket accuracy) reading from
   `SignalRepository`, but it is not called by any Telegram command or
@@ -259,7 +259,7 @@ correct and enforced, including a fresh runtime re-test in this audit.
 - Migrations are idempotent: every table uses
   `CREATE TABLE IF NOT EXISTS`; every `ALTER TABLE ... ADD COLUMN` is
   guarded by a `PRAGMA table_info()` existing-columns check before
-  running (`database/models.py:54-92,131-169`) — safe to run on every
+  running (`database_layer/database_manager/models.py:54-92,131-169`) — safe to run on every
   app start against an existing database.
 - Duplicate-record protection: `users`/`subscriptions`/`admins`
   repositories check existence before insert **and** catch
@@ -272,7 +272,7 @@ correct and enforced, including a fresh runtime re-test in this audit.
   attacker-controlled, not an injection vector. No `.format()`-built
   SQL anywhere.
 - **P3:** `signals.symbol` is schema-declared `NOT NULL` but every
-  insert hardcodes `""` (`database/signal_repository.py:39`) — harmless
+  insert hardcodes `""` (`database_layer/trade_repository/signal_repository.py:39`) — harmless
   today (GoldBot is single-symbol XAUUSD) but would need fixing before
   any multi-symbol support.
 - **P3:** no explicit `CREATE INDEX` statements exist; `telegram_id`
@@ -453,9 +453,9 @@ docs/handler argument-signature mismatch.
    instead of raising on an unrecognized event tag.
 7. Add candle-ordering/duplicate-timestamp validation at
    `context_orchestrator.build()`'s entry point.
-8. Wire `monitoring/performance.py` (`PerformanceTracker`) into a
+8. Wire `core_layer/health_monitor/performance.py` (`PerformanceTracker`) into a
    Telegram command (e.g. `/performance`) — it's complete and unused.
-9. Decide the fate of `execution/` and `monitoring/signal_monitor.py`
+9. Decide the fate of `execution/` and `core_layer/health_monitor/signal_monitor.py`
    (real MT5 integration vs. removal) — currently inert scaffolding.
 10. Remove or consolidate the duplicate dead methods identified in the
     Telegram Layer section (`UserService.update_language`,

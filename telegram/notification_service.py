@@ -16,8 +16,8 @@ handler or a broadcast/notification-sending caller.
 from typing import List, Optional
 from dataclasses import dataclass, field
 
-from database.user_repository import UserRepository
-from database.user_models import UserRecord
+from database_layer.user_repository.user_repository import UserRepository
+from database_layer.user_repository.user_models import UserRecord
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("NotificationService")

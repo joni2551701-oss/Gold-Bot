@@ -4,7 +4,7 @@ Foundation, TASK 3).
 
 Explains a single already-closed trade: what happened, which
 already-detected structural facts support that outcome, and one short
-takeaway. Purely observational -- reads `lifecycle.paper_trade.PaperTrade`
+takeaway. Purely observational -- reads `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade`
 (the trade's own real result), `context.context_orchestrator.ContextSnapshot`
 (already-detected BOS/CHoCH/liquidity/OB/FVG events), an optional
 `context.htf_bias.HTFBiasResult`, and an optional
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from context_layer.context_engine.context_orchestrator import ContextSnapshot
     from context_layer.trend.htf_bias import HTFBiasResult
     from analytics.signal_performance import SignalPerformance
-    from lifecycle.paper_trade import PaperTrade
+    from trade_monitoring_layer.paper_trading.paper_trade import PaperTrade
 
 
 @dataclass(frozen=True)

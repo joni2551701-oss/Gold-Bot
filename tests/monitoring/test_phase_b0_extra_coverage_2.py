@@ -2,11 +2,11 @@
 
 from unittest.mock import MagicMock, patch
 
-from monitoring.decision_logger import DecisionLogger
-from monitoring.health_monitor import classify_health
-from monitoring.models import DecisionPipelineEntry, HealthStatus, ResourceSnapshot, SystemHealth
-from monitoring.performance_collector import PerformanceCollector
-from monitoring.resource_monitor import get_resource_snapshot, record_process_start
+from decision_layer.decision_logger.decision_logger import DecisionLogger
+from core_layer.health_monitor.health_monitor import classify_health
+from core_layer.health_monitor.models import DecisionPipelineEntry, HealthStatus, ResourceSnapshot, SystemHealth
+from core_layer.health_monitor.performance_collector import PerformanceCollector
+from core_layer.health_monitor.resource_monitor import get_resource_snapshot, record_process_start
 
 
 def _health(**overrides):
@@ -53,13 +53,13 @@ def test_get_resource_snapshot_thread_count_reflects_active_threads():
 
 
 def test_record_process_start_with_default_repository_never_raises():
-    with patch("monitoring.resource_monitor.MonitoringRepository") as mock_cls:
+    with patch("core_layer.health_monitor.resource_monitor.MonitoringRepository") as mock_cls:
         mock_cls.return_value.record_process_start.return_value = None
         record_process_start()
 
 
 def test_get_resource_snapshot_with_default_repository_never_raises():
-    with patch("monitoring.resource_monitor.MonitoringRepository") as mock_cls:
+    with patch("core_layer.health_monitor.resource_monitor.MonitoringRepository") as mock_cls:
         mock_cls.return_value.get_restart_count.return_value = 5
         snapshot = get_resource_snapshot()
         assert snapshot.restart_count == 5
@@ -73,7 +73,7 @@ def test_performance_collector_zero_decisions_after_only_signals():
 
 
 def test_performance_collector_default_collector_is_shared_across_module_functions():
-    import monitoring.performance_collector as module
+    import core_layer.health_monitor.performance_collector as module
 
     module.DEFAULT_COLLECTOR = module.PerformanceCollector()
     module.record_trade()
@@ -90,7 +90,7 @@ def test_decision_pipeline_entry_stage_durations_ms_is_tuple_type():
 
 def test_decision_logger_log_entry_with_empty_stage_durations_list():
     repository = MagicMock()
-    from database.monitoring_models import create_decision_pipeline_entry_row
+    from database_layer.audit_log.monitoring_models import create_decision_pipeline_entry_row
 
     repository.record_decision_entry.return_value = create_decision_pipeline_entry_row(
         "XAUUSD", "M15", (), 5, "NO TRADE",
@@ -101,7 +101,7 @@ def test_decision_logger_log_entry_with_empty_stage_durations_list():
 
 
 def test_decision_logger_get_recent_entries_relays_stage_durations_ms():
-    from database.monitoring_models import create_decision_pipeline_entry_row
+    from database_layer.audit_log.monitoring_models import create_decision_pipeline_entry_row
 
     row = create_decision_pipeline_entry_row(
         "XAUUSD", "H4", ("HTF_ALIGNED",), 5, "SELL", stage_durations_ms=(("risk", 2.0),),

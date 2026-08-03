@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 
-from monitoring.models import HealthStatus, PerformanceCounters, ResourceSnapshot, SystemHealth
+from core_layer.health_monitor.models import HealthStatus, PerformanceCounters, ResourceSnapshot, SystemHealth
 from telegram.owner.monitoring_commands import get_performance_report, get_status_report
 from telegram.owner.provider_commands import ProviderCommandResult
 

@@ -72,7 +72,7 @@ def test_paused_reject_is_logged_with_emergency_category(risk_manager, emergency
 
 def test_warning_state_does_not_block_approval(risk_manager, emergency_manager, mock_signal_candidate, mock_ai_result):
     """WARNING is advisory only -- nothing paused or killed yet."""
-    from database.emergency_repository import EmergencyRepository
+    from database_layer.trade_repository.emergency_repository import EmergencyRepository
 
     EmergencyRepository().record_transition("WARNING", reason="circuit breaker observation", source="system")
     decision = _approved_decision(mock_signal_candidate, mock_ai_result)

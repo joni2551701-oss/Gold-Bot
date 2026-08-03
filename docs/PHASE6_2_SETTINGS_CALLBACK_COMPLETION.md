@@ -28,7 +28,7 @@ Before writing any code, the following were re-read and confirmed:
 | `callback_router.py` `route_callback()`/`_handle_language()` | `telegram/callback_router.py` | the edit-in-place + always-`answer()` pattern is reused verbatim for the new `_handle_setting()` |
 | `command_router.py` `_KEYBOARD_BY_COMMAND` | `telegram/command_router.py` | extended from `{command: builder}` to `{command: (builder, current_value_accessor)}`, not replaced |
 | `notifications_keyboard()` | `telegram/keyboards.py` | existed since Phase 43 as a display-only asset; this phase wires it in, it does not recreate it |
-| DB user settings (`risk_percent`, `strategy`, `timeframe`, `notifications_enabled`) | `database/user_models.py` | all four fields already existed — no schema change |
+| DB user settings (`risk_percent`, `strategy`, `timeframe`, `notifications_enabled`) | `database_layer/user_repository/user_models.py` | all four fields already existed — no schema change |
 | `UserService.change_risk/change_strategy/change_timeframe`, `NotificationService.enable_notifications/disable_notifications` | `telegram/user_service.py`, `telegram/notification_service.py` | reused as-is, already called by the pre-existing `/risk`, `/strategy`, `/timeframe`, `/notifications` text commands |
 | Translation keys (`risk.*`, `strategy.*`, `timeframe.*`, `notifications.*`) | `translation/ui_catalog.py` | reused as-is; only `settings.menu` (extended with placeholders) and the new `settings.saved` key were added |
 
@@ -64,7 +64,7 @@ telegram/handlers.py           risk_status()/strategy_status()/
 telegram/user_service.py /             UserService / NotificationService
 telegram/notification_service.py       (unchanged)
         |
-database/user_repository.py    (unchanged -- no schema change)
+database_layer/user_repository/user_repository.py    (unchanged -- no schema change)
 ```
 
 ## Callback Flow (Stage 1-4, 6)

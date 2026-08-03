@@ -1,7 +1,7 @@
-"""Phase B.0 TASK 6 -- monitoring/health_monitor.py tests."""
+"""Phase B.0 TASK 6 -- core_layer/health_monitor/health_monitor.py tests."""
 
-from monitoring.health_monitor import classify_health
-from monitoring.models import HealthStatus, SystemHealth
+from core_layer.health_monitor.health_monitor import classify_health
+from core_layer.health_monitor.models import HealthStatus, SystemHealth
 
 
 def _health(**overrides):

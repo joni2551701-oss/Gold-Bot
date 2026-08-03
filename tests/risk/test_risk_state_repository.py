@@ -1,6 +1,6 @@
-"""Phase V1.0.1 -- database/risk_state_repository.py tests."""
+"""Phase V1.0.1 -- database_layer/trade_repository/risk_state_repository.py tests."""
 
-from database.risk_state_repository import RiskStateRepository
+from database_layer.trade_repository.risk_state_repository import RiskStateRepository
 
 
 def test_get_state_returns_none_when_absent(isolated_db):

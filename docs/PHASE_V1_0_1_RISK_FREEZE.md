@@ -38,9 +38,9 @@ backup) is a Production-Readiness concern, tracked separately.
 |---|---|
 | `risk_layer/risk_engine/account_state_tracker.py` | Drawdown (TASK 4) + daily loss (TASK 5) tracking, backed by `risk_account_state` |
 | `risk_layer/risk_validator/duplicate_checker.py` | Duplicate-trade detection (TASK 6), backed by `risk_decisions` |
-| `database/risk_decision_models.py` / `risk_decision_repository.py` | Append-only risk decision log (TASK 8) |
-| `database/risk_state_models.py` / `risk_state_repository.py` | Per-symbol drawdown/daily-loss baseline (TASK 4/5/10) |
-| `monitoring/risk_monitor.py` | Read-only aggregator over `risk_decisions` (TASK 9) |
+| `database_layer/trade_repository/risk_decision_models.py` / `risk_decision_repository.py` | Append-only risk decision log (TASK 8) |
+| `database_layer/trade_repository/risk_state_models.py` / `risk_state_repository.py` | Per-symbol drawdown/daily-loss baseline (TASK 4/5/10) |
+| `core_layer/health_monitor/risk_monitor.py` | Read-only aggregator over `risk_decisions` (TASK 9) |
 
 ## Extended modules
 
@@ -52,11 +52,11 @@ backup) is a Production-Readiness concern, tracked separately.
   (`emergency_manager`, `decision_repository`, `account_state_tracker`,
   `duplicate_checker`), all defaulting to real implementations so
   `RiskManager()` bare — the exact call shape `core/pipeline.py` and
-  `backtesting/backtest_engine.py` both use — is unchanged.
+  `backtesting_layer/backtest_engine/backtest_engine.py` both use — is unchanged.
   `evaluate()` gained three optional keyword parameters
   (`current_equity`, `symbol`, plus the pre-existing `account_balance`
   now validated), all additive and backward compatible.
-- `database/models.py` — new `init_risk_schema()` (two tables,
+- `database_layer/database_manager/models.py` — new `init_risk_schema()` (two tables,
   guarded `CREATE TABLE IF NOT EXISTS`, no migration needed since both
   are new).
 
@@ -110,7 +110,7 @@ bypass), Compatibility (existing pipeline unchanged) — exceeding the
 ## Known limitation (by design, not a defect)
 
 `current_equity`/`account_balance`/`symbol` are all optional on
-`evaluate()`, and `core/pipeline.py`/`backtesting/backtest_engine.py`
+`evaluate()`, and `core/pipeline.py`/`backtesting_layer/backtest_engine/backtest_engine.py`
 (both locked this phase) never supply them. This means drawdown,
 daily-loss, and duplicate-trade protection are **fully built, fully
 tested, and dormant in the live production pipeline** until a future,

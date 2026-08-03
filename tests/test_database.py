@@ -21,7 +21,7 @@ def _columns(table: str) -> dict:
 
 
 def test_users_table_schema_and_defaults():
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     UserRepository()
     cols = _columns("users")
@@ -37,7 +37,7 @@ def test_users_table_schema_and_defaults():
 
 
 def test_users_duplicate_telegram_id_blocked_and_update_works():
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     repo = UserRepository()
     created = repo.create_user(telegram_id="42", username="alice")
@@ -51,7 +51,7 @@ def test_users_duplicate_telegram_id_blocked_and_update_works():
 
 
 def test_admins_table_schema():
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     AdminRepository()
     cols = _columns("admins")
@@ -61,7 +61,7 @@ def test_admins_table_schema():
 
 
 def test_signals_table_schema():
-    from database.signal_repository import SignalRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
 
     SignalRepository()
     cols = _columns("signals")
@@ -75,7 +75,7 @@ def test_signals_table_schema():
 
 
 def test_signals_save_read_history():
-    from database.signal_repository import SignalRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
 
     repo = SignalRepository()
     repo.create_signal({
@@ -107,7 +107,7 @@ def test_signals_save_read_history():
 
 
 def test_subscriptions_table_schema():
-    from database.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     SubscriptionRepository()
     cols = _columns("subscriptions")
@@ -118,7 +118,7 @@ def test_subscriptions_table_schema():
 
 
 def test_feedback_table_schema():
-    from database.feedback_repository import FeedbackRepository
+    from database_layer.user_repository.feedback_repository import FeedbackRepository
 
     FeedbackRepository()
     cols = _columns("feedback")
@@ -162,7 +162,7 @@ def test_migration_old_signals_table_backfills_phase39_columns():
     conn.commit()
     conn.close()
 
-    from database.signal_repository import SignalRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
 
     repo = SignalRepository()  # triggers migration
     row = repo.get_signal("legacy-1")
@@ -197,7 +197,7 @@ def test_migration_old_users_table_backfills_phase40_and_phase45_columns():
     conn.commit()
     conn.close()
 
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     repo = UserRepository()  # triggers migration
     row = repo.get_user("123")
@@ -213,8 +213,8 @@ def test_migration_old_users_table_backfills_phase40_and_phase45_columns():
 
 def test_migration_adds_subscriptions_table_to_pre_phase42_database():
     """A database with users/admins but no subscriptions table must gain it safely."""
-    from database.user_repository import UserRepository
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.user_repository import UserRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     UserRepository()
     AdminRepository()
@@ -224,7 +224,7 @@ def test_migration_adds_subscriptions_table_to_pre_phase42_database():
     conn.close()
     assert "subscriptions" not in tables_before
 
-    from database.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     SubscriptionRepository()
 

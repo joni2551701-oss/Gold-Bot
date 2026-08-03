@@ -5,7 +5,7 @@ package) -- see that module's own docstring.
 """
 
 from data_layer.providers.registry import build_default_registry
-from monitoring.provider_health import ProviderHealthStatus, check_registry_health
+from core_layer.health_monitor.provider_health import ProviderHealthStatus, check_registry_health
 from telegram.admin_service import AdminService
 from telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
@@ -19,7 +19,7 @@ def get_system_health() -> ProviderCommandResult:
     pre-existing telegram.admin_service.AdminService.get_system_status()
     (database/telegram/market_data/ai/api env-key reachability, Phase
     41, reused not duplicated) with the new, richer per-provider health
-    report (monitoring/provider_health.py, Phase 59.2/59.3). Distinct
+    report (core_layer/health_monitor/provider_health.py, Phase 59.2/59.3). Distinct
     from the existing /system command (still only AdminService's own
     simpler view) -- this is a superset, not a replacement; /system
     itself is untouched by this phase.

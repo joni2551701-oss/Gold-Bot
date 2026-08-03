@@ -1,13 +1,13 @@
 """
-Phase 59.5, TASK 2 -- database/sync_state_repository.py and
+Phase 59.5, TASK 2 -- database_layer/market_repository/sync_state_repository.py and
 sync_state_models.py tests. Real SQLite (tests/conftest.py's autouse
 fresh_database fixture), no mocks.
 """
 
 from datetime import datetime, timezone
 
-from database.sync_state_models import create_sync_state
-from database.sync_state_repository import SyncStateRepository
+from database_layer.market_repository.sync_state_models import create_sync_state
+from database_layer.market_repository.sync_state_repository import SyncStateRepository
 
 
 def test_get_sync_state_returns_none_when_absent():

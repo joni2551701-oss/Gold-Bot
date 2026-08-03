@@ -6,7 +6,7 @@ from signal_layer.signal_builder.models import SignalCandidate, SignalType
 from core_layer.emergency.emergency_manager import EmergencyManager
 from core_layer.emergency.emergency_state import EmergencyState
 from core_layer.logger.logger import setup_logger
-from database.risk_decision_repository import RiskDecisionRepository
+from database_layer.trade_repository.risk_decision_repository import RiskDecisionRepository
 from risk_layer.risk_engine.account_state_tracker import AccountStateTracker
 from risk_layer.risk_validator.duplicate_checker import DuplicateTradeChecker, DEFAULT_DUPLICATE_WINDOW_SECONDS
 
@@ -116,7 +116,7 @@ class RiskManager:
 
         account_balance/current_equity/symbol are all optional and
         additive (Phase V1.0.1) -- `core/pipeline.py` and
-        `backtesting/backtest_engine.py` (both untouched this phase,
+        `backtesting_layer/backtest_engine/backtest_engine.py` (both untouched this phase,
         both Trading Core / locked) call this with only
         `trade_decision`, so every check gated behind one of these
         three parameters is dormant in the live pipeline today,

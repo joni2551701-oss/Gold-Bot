@@ -21,7 +21,7 @@ from telegram.permissions import is_owner
 from core_layer.logger.logger import setup_logger
 
 if TYPE_CHECKING:
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
 logger = setup_logger("OwnerRoles")
 
@@ -31,7 +31,7 @@ class OwnerRole(Enum):
     OWNER: the single configured owner (telegram.permissions.is_owner()) --
         always the highest tier, same source of truth as PermissionLevel.OWNER.
     SUPER_ADMIN/ADMIN: read from the existing 'admins' table's free-text
-        `role` column (database/admin_models.py's AdminRecord.role,
+        `role` column (database_layer/user_repository/admin_models.py's AdminRecord.role,
         already there since Phase 37/45, previously only used as a
         label -- resolve_owner_role() below is the first place its
         value is actually classified into a tier). "ADMIN" is the
@@ -63,7 +63,7 @@ def resolve_owner_role(telegram_id, admin_repository: Optional['AdminRepository'
 
     try:
         if admin_repository is None:
-            from database.admin_repository import AdminRepository as _AdminRepository
+            from database_layer.user_repository.admin_repository import AdminRepository as _AdminRepository
             admin_repository = _AdminRepository()
         record = admin_repository.get_admin(telegram_id)
     except Exception as e:

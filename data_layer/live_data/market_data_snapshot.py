@@ -3,9 +3,9 @@ Data Layer — Market Data Snapshot foundation (Phase 59 Preparation,
 TASK 1: Raw Market Data Persistence Audit).
 
 Audit finding this closes: the "signals" database table
-(database/models.py's init_schema()) stores no candle data, no
+(database_layer/database_manager/models.py's init_schema()) stores no candle data, no
 timeframe of the underlying market data, and its own "symbol" column
-is never actually populated (database/signal_repository.py's
+is never actually populated (database_layer/trade_repository/signal_repository.py's
 save_signal_record() hardcodes data["symbol"] = "" -- see
 docs/PHASE59_VALIDATION.md's audit note). There is today no way to
 reconstruct the market state a signal was generated from, later, for

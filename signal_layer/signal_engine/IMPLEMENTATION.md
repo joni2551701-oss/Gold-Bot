@@ -103,7 +103,7 @@ documented shape every module's view can be expressed in terms of —
 computing nothing itself, only standardizing. See
 `docs/SIGNAL_SCHEMA.md` for the full field table, the deliberate
 decision-status vocabulary mapping, and how this differs from
-`database/signal_record.py`'s pre-existing `SignalRecord` (a
+`database_layer/trade_repository/signal_record.py`'s pre-existing `SignalRecord` (a
 persistence wrapper, not a cross-module contract).
 
 ### What Signal Schema does NOT do
@@ -113,7 +113,7 @@ persistence wrapper, not a cross-module contract).
   decision — every one of those fields is relayed from an
   already-computed object (`SignalQualityResult`/`TradeDecision`) via
   `adapter.py`, never recomputed.
-- Does not write to the database — `database/signal_record.py`'s
+- Does not write to the database — `database_layer/trade_repository/signal_record.py`'s
   `SignalRecord`/`SignalRepository` are untouched.
 - Is not consumed by `ai/`, `decision/`, `risk/`, `telegram/`,
   `execution/`, or `core/pipeline.py` in this phase.

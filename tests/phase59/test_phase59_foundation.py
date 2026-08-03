@@ -19,18 +19,18 @@ from datetime import datetime, timezone
 from analytics.signal_performance import compute_signal_performance
 from analytics.strategy_report import build_strategy_report
 from data_layer.live_data.market_data_snapshot import capture_market_data_snapshot
-from lifecycle.paper_trade import (
+from trade_monitoring_layer.paper_trading.paper_trade import (
     cancel_paper_trade,
     close_paper_trade,
     create_paper_trade,
     open_paper_trade,
 )
-from lifecycle.signal_state import (
+from trade_monitoring_layer.paper_trading.signal_state import (
     SignalLifecycleState,
     derive_signal_lifecycle_state,
     transition_signal_state,
 )
-from lifecycle.trade_state import TradeState
+from trade_monitoring_layer.paper_trading.trade_state import TradeState
 from signal_layer.signal_builder.schema import SignalSchema
 
 

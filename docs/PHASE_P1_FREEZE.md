@@ -111,10 +111,10 @@ The first real end-to-end deploy against the production VPS (after
 this freeze) surfaced a bug this sandbox could never catch on its own:
 `production_deploy.yml`'s `rsync` excluded `database` to protect the
 shared SQLite file (RULE 4), but `database` is also this repository's
-Python package name (`database/database.py`, `database/*_repository.py`).
+Python package name (`database_layer/database_manager/database.py`, `database/*_repository.py`).
 The exclude matched the whole directory, so the release shipped
 without the package at all, and the pre-activation smoke test failed
-with `ModuleNotFoundError: No module named 'database.database'` —
+with `ModuleNotFoundError: No module named 'database_layer.database_manager.database'` —
 correctly aborting before `current` or `goldbot.service` were touched
 (the safety gate worked exactly as designed). Fixed by narrowing the
 exclude to `database/*.db` and changing `release_deploy.sh` to symlink

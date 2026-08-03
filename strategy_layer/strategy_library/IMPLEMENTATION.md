@@ -83,7 +83,7 @@ answered.
 `StrategyDefinition.performance`, `.win_rate`, and `.last_validation`
 are always `None` in this phase. This codebase does not compute
 per-strategy performance or win rate anywhere yet
-(`monitoring/performance.py` aggregates by `strategy_name` from the
+(`core_layer/health_monitor/performance.py` aggregates by `strategy_name` from the
 database, a different, already-existing concern `lifecycle/` does not
 duplicate or read from). Wiring a real value into these fields is a
 future, separately-approved phase (Phase 59 Validation/Analytics) —

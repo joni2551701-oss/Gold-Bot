@@ -12,7 +12,7 @@ import asyncio
 from telegram.handlers import language_handler, language_status
 from telegram.user_service import UserService
 from telegram.registration_service import RegistrationStep
-from database.user_repository import UserRepository
+from database_layer.user_repository.user_repository import UserRepository
 
 
 def _run(coro):

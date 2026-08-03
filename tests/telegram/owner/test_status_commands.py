@@ -8,7 +8,7 @@ set by conftest.py, so the twelvedata provider reports available=True
 
 from datetime import datetime, timedelta, timezone
 
-from database.signal_repository import SignalRepository
+from database_layer.trade_repository.signal_repository import SignalRepository
 from telegram.owner.provider_commands import ProviderCommandResult
 from telegram.owner.status_commands import _format_time_ago, get_system_status
 

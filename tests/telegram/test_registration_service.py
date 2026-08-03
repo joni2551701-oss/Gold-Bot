@@ -1,6 +1,6 @@
 """V2 Phase 3 -- telegram/registration_service.py's Wizard state machine."""
 
-from database.user_repository import UserRepository
+from database_layer.user_repository.user_repository import UserRepository
 from telegram.registration_service import RegistrationService, RegistrationStep
 
 

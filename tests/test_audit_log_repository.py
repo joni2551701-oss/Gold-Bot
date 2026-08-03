@@ -1,13 +1,13 @@
 """
-Phase 59.6, TASK 2 -- database/audit_log_repository.py and
+Phase 59.6, TASK 2 -- database_layer/audit_log/audit_log_repository.py and
 audit_log_models.py tests. Real SQLite (tests/conftest.py's autouse
 fresh_database fixture), no mocks.
 """
 
 from datetime import datetime
 
-from database.audit_log_models import create_audit_log_entry
-from database.audit_log_repository import AuditLogRepository
+from database_layer.audit_log.audit_log_models import create_audit_log_entry
+from database_layer.audit_log.audit_log_repository import AuditLogRepository
 
 
 def test_log_action_persists_and_returns_the_entry():

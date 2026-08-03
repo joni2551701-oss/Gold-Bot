@@ -1,10 +1,10 @@
-"""GoldBot Core Owner Monitoring Alpha, TASK 5 -- monitoring/decision_logger.py tests."""
+"""GoldBot Core Owner Monitoring Alpha, TASK 5 -- decision_layer/decision_logger/decision_logger.py tests."""
 
 from unittest.mock import MagicMock
 
-from database.monitoring_models import create_decision_pipeline_entry_row
-from monitoring.decision_logger import DecisionLogger
-from monitoring.models import DecisionPipelineEntry
+from database_layer.audit_log.monitoring_models import create_decision_pipeline_entry_row
+from decision_layer.decision_logger.decision_logger import DecisionLogger
+from core_layer.health_monitor.models import DecisionPipelineEntry
 
 
 def _repository(row=None, rows=None):

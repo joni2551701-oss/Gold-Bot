@@ -1,10 +1,10 @@
-"""GoldBot Core Owner Monitoring Alpha, TASK 3 -- monitoring/market_monitor.py tests."""
+"""GoldBot Core Owner Monitoring Alpha, TASK 3 -- core_layer/health_monitor/market_monitor.py tests."""
 
 from unittest.mock import MagicMock
 
-from monitoring.market_monitor import get_market_health
-from monitoring.models import MarketHealth
-from monitoring.provider_health import ProviderHealthReport, ProviderHealthStatus
+from core_layer.health_monitor.market_monitor import get_market_health
+from core_layer.health_monitor.models import MarketHealth
+from core_layer.health_monitor.provider_health import ProviderHealthReport, ProviderHealthStatus
 
 
 def _registry_with_provider(provider):
@@ -35,7 +35,7 @@ def test_get_market_health_unknown_provider_returns_unknown_status():
 def test_get_market_health_relays_latency_and_status(monkeypatch):
     registry = _registry_with_provider(MagicMock())
     report = ProviderHealthReport(provider_name="twelvedata", status=ProviderHealthStatus.ONLINE, latency_ms=42.0)
-    monkeypatch.setattr("monitoring.market_monitor.check_provider_health", lambda provider: report)
+    monkeypatch.setattr("core_layer.health_monitor.market_monitor.check_provider_health", lambda provider: report)
     health = get_market_health("XAUUSD", "twelvedata", registry=registry)
     assert health.data_source_status == "ONLINE"
     assert health.latency_ms == 42.0
@@ -47,7 +47,7 @@ def test_get_market_health_never_raises_on_health_check_failure(monkeypatch):
     def _raise(provider):
         raise Exception("boom")
 
-    monkeypatch.setattr("monitoring.market_monitor.check_provider_health", _raise)
+    monkeypatch.setattr("core_layer.health_monitor.market_monitor.check_provider_health", _raise)
     health = get_market_health("XAUUSD", "twelvedata", registry=registry)
     assert health.data_source_status == "UNKNOWN"
 

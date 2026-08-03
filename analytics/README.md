@@ -8,7 +8,7 @@ which strategy/session/market phase — never to be confused with
 (pipeline stage duration, API latency) and has no notion of a trade
 outcome at all. See `signal_performance.py`'s own module docstring for
 the full three-way distinction against `performance/` (A19) and
-`monitoring/performance.py`'s pre-existing `PerformanceTracker`
+`core_layer/health_monitor/performance.py`'s pre-existing `PerformanceTracker`
 (database-driven, strategy-only win/loss/win-rate — a real, narrower,
 already-working calculator this package does not replace or import).
 
@@ -36,7 +36,7 @@ scope — `risk_layer/risk_engine/risk_manager.py` is untouched).
 `win_count`/`loss_count`/`breakeven_count`/`expired_count`/
 `cancelled_count` (the latter two added Phase 59.4, TASK 3)/`win_rate`/
 `average_r_multiple`. `win_rate` deliberately reuses
-`monitoring/performance.py`'s own `WIN / (WIN + LOSS)` formula and
+`core_layer/health_monitor/performance.py`'s own `WIN / (WIN + LOSS)` formula and
 zero-division guard — the same convention, not a competing one.
 `compute_win_rate()` (renamed from a private `_win_rate()` in Phase
 59.4 once `context_report.py` became a second real caller — no
@@ -106,7 +106,7 @@ condition / Worst condition" worked example shape. See
 ## What this package does NOT do
 - Does not read or write the database — no new table, no migration,
   no dependency on `database/`.
-- Does not call `SignalRepository` or `monitoring/performance.py` —
+- Does not call `SignalRepository` or `core_layer/health_monitor/performance.py` —
   its input is an in-memory `List[SignalPerformance]`, built by the
   caller from already-computed `SignalSchema`/`PaperTrade` objects.
 - Does not change `risk_layer/risk_engine/risk_manager.py`, `decision_layer/decision_engine/decision_engine.py`,
@@ -118,10 +118,10 @@ condition / Worst condition" worked example shape. See
   phase's other two tasks).
 
 ## Dependencies
-`signal_performance.py` imports `lifecycle.trade_state.TradeState`
+`signal_performance.py` imports `trade_monitoring_layer.paper_trading.trade_state.TradeState`
 (Phase 59.4, TASK 1 — a real runtime import, needed to detect a
 `CANCELLED` `PaperTrade`) plus, `TYPE_CHECKING`-only,
-`lifecycle.paper_trade.PaperTrade` and `signal_layer.signal_builder.schema.SignalSchema`.
+`trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` and `signal_layer.signal_builder.schema.SignalSchema`.
 `strategy_report.py` imports `analytics.signal_performance` (same
 package) only. Neither imports `context/`, `strategies/`, `ai/`,
 `decision/`, `risk/`, `execution/`, `database/`, or `telegram/`.

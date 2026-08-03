@@ -28,7 +28,7 @@ core/pipeline.py -> data/, context/, signals/, ai/, decision/, risk/, telegram/,
 ```
 
 `*` — see "Circular Dependency" below.
-`†` — via `database/signal_record.py` only, not any `*_repository.py`.
+`†` — via `database_layer/trade_repository/signal_record.py` only, not any `*_repository.py`.
 `‡` — via `telegram/signal_formatter.py` only, not `telegram/handlers.py`.
 
 ## Edge-by-edge detail
@@ -92,7 +92,7 @@ otherwise a DAG.
   worth calling out as a positive pattern other modules don't
   currently follow (e.g. `risk_layer/risk_engine/risk_manager.py` imports
   `decision_layer.decision_engine.models` at runtime, not `TYPE_CHECKING`-gated).
-- **`database/signal_record.py`** is tightly coupled to three upstream
+- **`database_layer/trade_repository/signal_record.py`** is tightly coupled to three upstream
   layers' concrete types (`SignalCandidate`, `TradeDecision`,
   `RiskResult`) at runtime, not `TYPE_CHECKING`-gated — a schema
   change to any of those three dataclasses is a potential breaking
@@ -116,7 +116,7 @@ otherwise a DAG.
    silently), but is worth pre-empting via the documentation fix in
    Architecture Audit recommendation #1 before it happens rather than
    after.
-2. `database/signal_record.py`'s three-layer-upward type dependency
+2. `database_layer/trade_repository/signal_record.py`'s three-layer-upward type dependency
    means any of `signals/`, `decision/`, or `risk/`'s dataclasses
    changing a field name breaks persistence silently at the type level
    (Python won't error until the specific field access happens) unless
@@ -124,7 +124,7 @@ otherwise a DAG.
    (92%) is good but not 100% — the 3 uncovered lines are worth a
    look during v0.3.5 (out of scope to fix in this documentation-only
    phase).
-3. `monitoring/performance.py`'s direct `database/` import, combined
+3. `core_layer/health_monitor/performance.py`'s direct `database/` import, combined
    with zero external callers, means the module currently carries the
    *cost* of the dependency (it must be kept in sync with
    `SignalRepository`'s interface) without any of the *benefit* (it's

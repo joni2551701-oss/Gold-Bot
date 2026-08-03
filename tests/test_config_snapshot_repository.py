@@ -1,5 +1,5 @@
 """
-Phase 59.6, TASK 6 -- database/config_snapshot_repository.py and
+Phase 59.6, TASK 6 -- database_layer/journal_repository/config_snapshot_repository.py and
 config_snapshot_models.py tests. Real SQLite (tests/conftest.py's
 autouse fresh_database fixture), no mocks.
 """
@@ -7,8 +7,8 @@ autouse fresh_database fixture), no mocks.
 from datetime import datetime
 
 from core_layer.configuration.feature_registry import build_feature_registry
-from database.config_snapshot_models import create_config_snapshot
-from database.config_snapshot_repository import ConfigSnapshotRepository
+from database_layer.journal_repository.config_snapshot_models import create_config_snapshot
+from database_layer.journal_repository.config_snapshot_repository import ConfigSnapshotRepository
 
 
 def test_create_config_snapshot_serializes_registry_state():

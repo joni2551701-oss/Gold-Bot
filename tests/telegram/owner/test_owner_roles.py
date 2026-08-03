@@ -4,7 +4,7 @@ AdminRepository (SQLite, tests/conftest.py's autouse fresh_database
 fixture) -- no mocks. TELEGRAM_OWNER_ID is set to "111" by conftest.py.
 """
 
-from database.admin_repository import AdminRepository
+from database_layer.user_repository.admin_repository import AdminRepository
 from telegram.owner.owner_roles import OwnerRole, resolve_owner_role
 
 

@@ -370,7 +370,7 @@ postures, which is itself a finding:
   contract: "No SignalState / execution.signal_lifecycle import, no
   execution.*, no database.*, no telegram.*, no logger, no MT5." True
   for this file, re-confirmed by grep.
-- `performance.py` **does** import `database.signal_repository.SignalRepository`
+- `performance.py` **does** import `database_layer.trade_repository.signal_repository.SignalRepository`
   directly (re-confirmed this phase) — a real database dependency
   that `signal_monitor.py`'s stated contract does not apply to, and
   that no README documents (`monitoring/README.md` doesn't exist —
@@ -410,7 +410,7 @@ pipeline result).
 
 **Dependencies** (grepped): `config`, `core/` (expected, cross-
 cutting) — and **`signals/`, `decision/`, `risk/`** via
-`database/signal_record.py` specifically (`from signals.models import
+`database_layer/trade_repository/signal_record.py` specifically (`from signals.models import
 ...`, `from decision.models import TradeDecision`, `from
 risk.risk_manager import RiskResult`). No `*_repository.py` file
 imports any of these — the rule "`database/*_repository.py` never
@@ -464,7 +464,7 @@ all four, but exclusively from `signal_formatter.py`
 (`from signals.models import SignalCandidate`, `from
 ai.ai_analyzer import AIAnalysisResult`, `from decision.models import
 TradeDecision`, `from risk.risk_manager import RiskResult`). Unlike
-`database/signal_record.py`'s case above, this is architecturally
+`database_layer/trade_repository/signal_record.py`'s case above, this is architecturally
 consistent with the documented Data Flow diagram — Telegram sits
 downstream of AI/Decision/Risk, so importing their result types to
 format a message is expected, not an inversion. `database/` is also
@@ -530,9 +530,9 @@ Recommendations only — **nothing below has been implemented.**
 - **Migration risk**: none (this recommendation is documentation-only).
 - **Priority**: MEDIUM.
 
-### 2. `database/signal_record.py`'s upward type dependency
+### 2. `database_layer/trade_repository/signal_record.py`'s upward type dependency
 
-- **Current**: `database/signal_record.py` imports `SignalCandidate`/
+- **Current**: `database_layer/trade_repository/signal_record.py` imports `SignalCandidate`/
   `SignalType` from `signal_layer.signal_builder.models`, `TradeDecision` from
   `decision_layer.decision_engine.models`, `RiskResult` from `risk_layer.risk_engine.risk_manager`, to type a
   persistence wrapper.
@@ -561,7 +561,7 @@ Recommendations only — **nothing below has been implemented.**
 - **Current**: `signal_monitor.py` states (and honors) a strict
   "no database.*" isolation contract in its own docstring;
   `performance.py`, in the same package, directly imports
-  `database.signal_repository.SignalRepository` with no equivalent
+  `database_layer.trade_repository.signal_repository.SignalRepository` with no equivalent
   statement anywhere.
 - **Problem**: a future contributor reading `signal_monitor.py`'s
   docstring could reasonably assume the *package* is isolated from

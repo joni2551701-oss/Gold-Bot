@@ -4,7 +4,7 @@ compatibility.
 
 config.py is not rewritten by this phase -- these tests guard that
 every attribute the rest of the codebase already depends on
-(database/database.py's Config.DB_PATH, main.py's
+(database_layer/database_manager/database.py's Config.DB_PATH, main.py's
 Config.TIMEFRAME_HISTORY, etc.) is still present and behaves exactly
 as before configuration/ was added.
 """

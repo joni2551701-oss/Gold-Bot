@@ -7,7 +7,7 @@ source (FRED today) implements -- distinct from MarketDataProvider
 reading) is not a candle: it has no open/high/low/close, and often
 updates monthly or quarterly, not per-minute. Both share the same
 DataProvider root (get_provider_name(), get_market_status()) so
-registry.py/monitoring/provider_health.py (TASK 5/6) can hold both
+registry.py/core_layer/health_monitor/provider_health.py (TASK 5/6) can hold both
 kinds of provider uniformly -- see base_provider.py's own module
 docstring for the full split rationale.
 

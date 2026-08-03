@@ -6,7 +6,7 @@ fixture) -- no mocks.
 
 from core_layer.emergency.emergency_manager import EmergencyManager
 from core_layer.emergency.emergency_state import EmergencyState
-from database.audit_log_repository import AuditLogRepository
+from database_layer.audit_log.audit_log_repository import AuditLogRepository
 
 
 def test_get_status_defaults_to_normal_when_never_recorded():

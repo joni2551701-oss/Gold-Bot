@@ -18,8 +18,8 @@ from data_layer.historical_data.historical_data_collector import (
     sync_historical_candles,
 )
 from data_layer.providers.base_provider import MarketCandle, MarketDataProvider, ProviderStatus
-from database.raw_candle_repository import RawCandleRepository
-from database.sync_state_repository import SyncStateRepository
+from database_layer.market_repository.raw_candle_repository import RawCandleRepository
+from database_layer.market_repository.sync_state_repository import SyncStateRepository
 
 
 class FakeProvider(MarketDataProvider):

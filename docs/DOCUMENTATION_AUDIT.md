@@ -12,7 +12,7 @@ only, per the phase's design-only scope).
 |---|---|
 | `core/` | **No `core/README.md`.** The orchestration package — arguably the single most important module (it's what wires every layer together) — has no Purpose/Flow/Input/Output/Dependencies/Future README, unlike every other module with runtime code. |
 | `strategies/` | **No `strategies/README.md`.** The layer v0.3.5's Wyckoff work would add a fourth strategy to has zero documented contract today. |
-| `monitoring/` | **No `monitoring/README.md`.** Compounds a real finding from `docs/ARCHITECTURE_AUDIT.md`: `monitoring/signal_monitor.py`'s docstring claims a package-wide "no database.*" isolation contract that `monitoring/performance.py` (same package) already violates — with no README to state the real, per-file posture, a future reader has only the (partially wrong) docstring to go on. |
+| `monitoring/` | **No `monitoring/README.md`.** Compounds a real finding from `docs/ARCHITECTURE_AUDIT.md`: `core_layer/health_monitor/signal_monitor.py`'s docstring claims a package-wide "no database.*" isolation contract that `core_layer/health_monitor/performance.py` (same package) already violates — with no README to state the real, per-file posture, a future reader has only the (partially wrong) docstring to go on. |
 
 Both `CLAUDE.md`'s "Before Code Changes" checklist and
 `docs/DEVELOPMENT_RULES.md`'s "Review Process" section list module

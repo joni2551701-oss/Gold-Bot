@@ -195,7 +195,7 @@ by the very next one.
    these new, harmless, one-time-per-process schema lines are new.
 5. **Learning is still not connected to live trading.** See
    `docs/LEARNING_LOOP.md`'s Phase 60.8 section — `bridge_closed_trade()`
-   is now wired into `backtesting/backtest_engine.py` only, since that
+   is now wired into `backtesting_layer/backtest_engine/backtest_engine.py` only, since that
    remains the one real `CLOSED`-`PaperTrade` producer in this
    codebase (`core/pipeline.py` still never constructs a `PaperTrade`).
 

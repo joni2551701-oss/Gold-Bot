@@ -54,7 +54,7 @@ Three tiers, ranked `OWNER > ADMIN > USER`:
 - **OWNER** — identified by `TELEGRAM_OWNER_ID` (env var only, never
   hardcoded). Always satisfies every permission check.
 - **ADMIN** — membership stored in the `admins` table
-  (`database/admin_repository.py`). OWNER always counts as ADMIN too.
+  (`database_layer/user_repository/admin_repository.py`). OWNER always counts as ADMIN too.
 - **USER** — any resolvable Telegram user ID; the default tier.
 
 A command's required tier is derived from which registry it's

@@ -98,7 +98,7 @@ class ReplayContext:
     trade_id/chart_id: the same mandatory links `TradeJournalEntry`
         itself carries -- relayed, not re-derived.
     snapshot_id: an optional reference to a future replay snapshot
-        (e.g. `backtesting.replay_models.ReplayResult`'s own future
+        (e.g. `backtesting_layer.replay_engine.replay_models.ReplayResult`'s own future
         identity) -- a plain string pointer, never a live object.
     comment: a short free-text annotation for this replay point.
     sequence: this context's own ordering position within a trade's

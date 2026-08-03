@@ -12,7 +12,7 @@ owned by `ARCHITECTURE_MASTER.md`/`LAYER_CONTRACT.md`/
 — this file cross-references those, it does not restate them).
 
 **Status: mostly not built.** Subscription tiers exist
-(`database/subscription_repository.py`, `telegram/subscription_service.py`)
+(`database_layer/user_repository/subscription_repository.py`, `telegram/subscription_service.py`)
 as access-tier gating, not billing. Identity exists, but as
 `assistant/identity*.py` — the AI assistant's own identity model, not
 a user-authentication/business-identity system. Payment, Wallet,

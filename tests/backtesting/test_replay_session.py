@@ -1,11 +1,11 @@
 """
-Phase 60.1, TASK 2 -- backtesting/replay_session.py tests.
+Phase 60.1, TASK 2 -- backtesting_layer/replay_controller/replay_session.py tests.
 """
 
 from datetime import datetime, timezone
 
-from backtesting.replay_models import ReplayConfig, ReplayState
-from backtesting.replay_session import ReplaySession
+from backtesting_layer.replay_engine.replay_models import ReplayConfig, ReplayState
+from backtesting_layer.replay_controller.replay_session import ReplaySession
 
 
 def _config():

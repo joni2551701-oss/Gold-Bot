@@ -113,7 +113,7 @@ def _start_keyboard(telegram_id, language):
 
     V2 Phase 6.1.1 (Director-reported bug, root-caused): OWNER/ADMIN
     always get the tier-aware persistent Reply Keyboard, regardless of
-    registration_step. database/models.py's _backfill_registration_state()
+    registration_step. database_layer/database_manager/models.py's _backfill_registration_state()
     (V2 Phase 3) permanently set registration_step='PHONE' for any
     pre-existing row with no phone_hash -- which includes operator
     accounts (e.g. the account matching TELEGRAM_OWNER_ID) that were

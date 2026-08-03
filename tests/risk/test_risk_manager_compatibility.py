@@ -145,7 +145,7 @@ def test_risk_manager_has_no_signal_generating_method():
 # ---------------------------------------------------------------------------
 
 def test_bare_evaluate_call_still_works_exactly_like_before(risk_manager, mock_signal_candidate, mock_ai_result):
-    """The exact core/pipeline.py:463 / backtesting/backtest_engine.py:206 call shape."""
+    """The exact core/pipeline.py:463 / backtesting_layer/backtest_engine/backtest_engine.py:206 call shape."""
     candidate = mock_signal_candidate(entry=4065.0, stop_loss=4060.0, take_profit=4080.0)
     decision = _decision(candidate, mock_ai_result(approved=True, confidence=0.95))
     result = risk_manager.evaluate(decision)

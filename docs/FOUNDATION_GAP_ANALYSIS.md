@@ -108,8 +108,8 @@ gap.
 
 ### 4. Trading Style — **PARTIAL (cosmetic only)**, Priority: **MEDIUM**
 
-- `database/user_models.py`'s `UserRecord.trading_style` field exists,
-  is persisted (`database/models.py` line 134, `TEXT DEFAULT
+- `database_layer/user_repository/user_models.py`'s `UserRecord.trading_style` field exists,
+  is persisted (`database_layer/database_manager/models.py` line 134, `TEXT DEFAULT
   'Intraday'`), is settable via the `/strategy` Telegram command
   ("Change trading style" per `telegram/commands.py`), and is
   displayed back to the user in their profile
@@ -214,7 +214,7 @@ change, out of scope for a specification-only phase to decide).
   every REJECT/NO_TRADE/APPROVE already carries a human-readable why.
 - **What's missing**: no aggregated, queryable "explain this signal"
   view — the reason strings are attached to in-memory objects for one
-  pipeline cycle and then (via `database/signal_record.py`'s
+  pipeline cycle and then (via `database_layer/trade_repository/signal_record.py`'s
   `ai_decision`/`risk_status` flattened columns) partially persisted,
   but nothing surfaces the full reason chain back to a user or admin
   after the fact (no Telegram command reads
@@ -348,7 +348,7 @@ roadmap diagram in the Phase A1 brief:
 7. **Trading Style / Asset Manager** — both PARTIAL/MISSING but lower
    urgency than the signal-quality chain above; natural v0.4-adjacent
    work once the core scoring pipeline is upgraded.
-8. **Monitoring improvements** — `monitoring/performance.py`'s
+8. **Monitoring improvements** — `core_layer/health_monitor/performance.py`'s
    dormant `database/` dependency and `monitoring/README.md`'s
    absence, both flagged in the Architecture Audit.
 9. **Remaining docs** — `core/README.md`, `strategies/README.md`,

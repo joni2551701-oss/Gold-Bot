@@ -52,7 +52,7 @@ document, add only the genuinely new detail):
    chain) does not match the real code.
    `telegram/user_service.py`'s own docstring states the lifecycle
    status axis (NEW/ACTIVE/BANNED,
-   `database/user_repository.py`) is "deliberately separate from" the
+   `database_layer/user_repository/user_repository.py`) is "deliberately separate from" the
    subscription/role axis (FREE/PREMIUM/VIP, plus OWNER/ADMIN,
    `ai/access/permissions.py`'s `AIRole`). `USER_SYSTEM.md` documents
    the real two-axis model.

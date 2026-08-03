@@ -14,7 +14,7 @@ USER_ID = "333"
 
 
 def _bootstrap():
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     async def register_all():
         await route_command("/start", telegram_id=OWNER_ID)
@@ -97,7 +97,7 @@ def test_broadcast_is_async_and_safe_inside_a_running_event_loop():
     broadcast_handler). It must now be awaited cleanly with no crash.
     """
     from aiogram.client.session.aiohttp import AiohttpSession
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
     from telegram.admin_service import AdminService
 
     for i in range(4):

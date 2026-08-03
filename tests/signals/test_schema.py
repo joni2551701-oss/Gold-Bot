@@ -82,7 +82,7 @@ def test_signal_creation_matches_director_example_shape():
 
 
 def test_generate_signal_id_produces_unique_real_ids():
-    """Same generation convention as database/signal_record.py's create_signal_record() -- str(uuid.uuid4())."""
+    """Same generation convention as database_layer/trade_repository/signal_record.py's create_signal_record() -- str(uuid.uuid4())."""
     ids = {generate_signal_id() for _ in range(100)}
     assert len(ids) == 100
     for signal_id in ids:

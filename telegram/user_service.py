@@ -27,8 +27,8 @@ from datetime import datetime, timezone
 from typing import Optional
 from dataclasses import dataclass
 
-from database.user_repository import UserRepository
-from database.user_models import UserRecord
+from database_layer.user_repository.user_repository import UserRepository
+from database_layer.user_repository.user_models import UserRecord
 from core_layer.logger.logger import setup_logger
 from core_layer.secrets.phone_hash import hash_phone_number
 from ai.access.identity_checker import is_phone_reused_by_another_account

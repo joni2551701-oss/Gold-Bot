@@ -6,9 +6,9 @@ autouse fresh_database fixture), no mocks.
 
 from datetime import datetime, timedelta, timezone
 
-from database.raw_candle_models import create_raw_candle
-from database.raw_candle_repository import RawCandleRepository
-from database.sync_state_repository import SyncStateRepository
+from database_layer.market_repository.raw_candle_models import create_raw_candle
+from database_layer.market_repository.raw_candle_repository import RawCandleRepository
+from database_layer.market_repository.sync_state_repository import SyncStateRepository
 from telegram.owner.dataset_commands import (
     get_dataset_status,
     get_history_status,

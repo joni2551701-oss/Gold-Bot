@@ -1,5 +1,5 @@
 """
-Phase 59.2, TASK 6/9 -- monitoring/provider_health.py tests. Extended
+Phase 59.2, TASK 6/9 -- core_layer/health_monitor/provider_health.py tests. Extended
 by Phase 59.3 TASK 4 (checked_at field).
 """
 
@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 from data_layer.providers.base_provider import DataProvider, ProviderStatus
 from data_layer.providers.registry import build_default_registry
-from monitoring.provider_health import (
+from core_layer.health_monitor.provider_health import (
     ProviderHealthReport,
     ProviderHealthStatus,
     check_provider_health,

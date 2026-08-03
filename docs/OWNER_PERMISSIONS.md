@@ -39,7 +39,7 @@ posture `telegram.permissions.is_admin()` already uses.
 
 ### Reused, not duplicated
 
-`admins.role` (`database/admin_models.py`'s `AdminRecord.role`) has
+`admins.role` (`database_layer/user_repository/admin_models.py`'s `AdminRecord.role`) has
 existed since Phase 37/45 as a free-text column, defaulting to
 `"ADMIN"` on `AdminRepository.add_admin()`. It was never actually
 classified into a tier before this phase — `resolve_owner_role()` is

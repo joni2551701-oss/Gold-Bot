@@ -72,7 +72,7 @@ live in the surrounding STEP-08 structures, kept additive.
 | Enum | Package | Tracks |
 |---|---|---|
 | `CanonicalSignalStatus` | `signals/lifecycle/` | signals/-layer **build/publish** (CREATED→VALIDATED→ENRICHED→READY→PUBLISHED/EXPIRED/CANCELLED) |
-| `SignalLifecycleState` | `lifecycle/signal_state.py` | signal **analysis/decision** journey (CREATED→QUALITY_CHECKED→…→CLOSED) |
+| `SignalLifecycleState` | `trade_monitoring_layer/paper_trading/signal_state.py` | signal **analysis/decision** journey (CREATED→QUALITY_CHECKED→…→CLOSED) |
 | `SignalState` | `execution_layer/execution_monitor/signal_lifecycle.py` | Telegram **message delivery** (inert) |
 
 Three names, three packages, one concept each — the codebase's standing

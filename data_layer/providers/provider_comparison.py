@@ -16,7 +16,7 @@ from datetime import datetime
 from typing import Dict, List, Sequence, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from database.raw_candle_models import RawCandle
+    from database_layer.market_repository.raw_candle_models import RawCandle
 
 # A default informational threshold for `within_tolerance` -- not
 # enforced anywhere, not a validation gate, just a convenience flag a

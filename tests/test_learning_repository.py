@@ -1,13 +1,13 @@
 """
-Phase 60.6, TASK 5 -- database/learning_repository.py and
+Phase 60.6, TASK 5 -- database_layer/journal_repository/learning_repository.py and
 learning_models.py tests. Real SQLite (tests/conftest.py's autouse
 fresh_database fixture), no mocks.
 """
 
 from datetime import datetime
 
-from database.learning_models import create_learning_record_row
-from database.learning_repository import LearningRepository
+from database_layer.journal_repository.learning_models import create_learning_record_row
+from database_layer.journal_repository.learning_repository import LearningRepository
 
 
 def test_record_persists_and_returns_the_row():

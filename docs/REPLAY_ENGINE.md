@@ -11,7 +11,7 @@ this process's lifetime — see "What this phase does NOT do" below).
 
 Per the Director's own Phase 60.1 decision and `CLAUDE.md`'s Module
 Reuse Principle: Replay is a service over existing Historical Data
-(`database.raw_candle_repository.RawCandleRepository`, Phase
+(`database_layer.market_repository.raw_candle_repository.RawCandleRepository`, Phase
 59.3/59.5), not a new business domain. A `market/` top-level package
 was considered and rejected — `backtesting/` (a name already implied
 by the Phase 60 roadmap, `docs/PHASE59_ARCHITECTURE_FREEZE.md`'s own
@@ -25,29 +25,29 @@ of the same engine, not separate domains needing separate packages.
 ```
 core_layer.emergency-style "foundation, not wired" package:
 
-database/raw_candle_repository.py (Phase 59.3/59.5, +Phase 60.1's
+database_layer/market_repository/raw_candle_repository.py (Phase 59.3/59.5, +Phase 60.1's
     own additive get_candles_range() -- TASK 1 reuse finding: the
     existing get_candles() only supports "most recent N", no date
     bound a fixed historical replay window needs)
         |
         v
-backtesting/replay_engine.py (TASK 5)
+backtesting_layer/replay_engine/replay_engine.py (TASK 5)
     loads the configured window once, converts each RawCandle into
     data_layer.providers.twelve_data_client.Candle -- the exact type
     data_layer.live_data.market_data.MarketDataNormalizer.get_candles() already
     returns to the live pipeline today
         |
-        +-- backtesting/replay_clock.py (TASK 3)   -- play/pause/resume/stop/speed/seek, a pure position state machine
-        +-- backtesting/replay_feed.py (TASK 4)    -- next/previous/jump/window/current candle access
+        +-- backtesting_layer/replay_engine/replay_clock.py (TASK 3)   -- play/pause/resume/stop/speed/seek, a pure position state machine
+        +-- backtesting_layer/replay_engine/replay_feed.py (TASK 4)    -- next/previous/jump/window/current candle access
         |
         v
-backtesting/replay_controller.py (TASK 6)
+backtesting_layer/replay_controller/replay_controller.py (TASK 6)
     the public session-management API -- start()/pause()/resume()/
     stop()/restart()/step()/get_status(), each keyed by a session_id.
     Owns one ReplaySession + ReplayEngine pair per session, in-memory.
         |
         v
-backtesting/replay_session.py (TASK 2)
+backtesting_layer/replay_controller/replay_session.py (TASK 2)
     ReplaySession -- one replay run's identity/state (not candle
     traversal, not timing -- that's Feed's/Clock's job)
         |
@@ -58,7 +58,7 @@ telegram/owner/replay_commands.py (TASK 8)
     telegram/commands.py/command_router.py/handlers.py.
 ```
 
-`backtesting/replay_models.py` (TASK 2/7) holds the shared value types
+`backtesting_layer/replay_engine/replay_models.py` (TASK 2/7) holds the shared value types
 every file above imports: `ReplayState` (enum), `ReplayConfig`,
 `ReplayResult`, and `format_replay_report()` (TASK 7 — folded into
 this file rather than given its own module, the Module Reuse
@@ -121,32 +121,32 @@ later — same Strategy code, same candle shape, only the feed differs.
 
 ## API reference
 
-### `backtesting/replay_models.py`
+### `backtesting_layer/replay_engine/replay_models.py`
 - `ReplayState`: `PENDING` / `RUNNING` / `PAUSED` / `STOPPED` / `FINISHED`.
 - `ReplayConfig(symbol, timeframe, start, end, provider=None, speed=1.0)` — frozen.
 - `ReplayResult(symbol, timeframe, state, candles_total, candles_replayed, speed, started_at=None, finished_at=None)` — frozen; `.progress` (0.0-1.0), `.finished` (bool), `.duration_seconds` (float or None) are derived properties.
 - `format_replay_report(result: ReplayResult) -> str` — the future `/replay_status` payload text.
 
-### `backtesting/replay_session.py`
+### `backtesting_layer/replay_controller/replay_session.py`
 - `ReplaySession(config, candles_total=0)` — `.session_id` (uuid4), `.state`, `.candles_total`, `.candles_replayed`, `.started_at`, `.finished_at`.
 - `.mark_running()` / `.mark_paused()` / `.mark_stopped()` / `.mark_finished()` / `.record_progress(n)` (high-water mark, never decreases) / `.to_result() -> ReplayResult`.
 
-### `backtesting/replay_clock.py`
+### `backtesting_layer/replay_engine/replay_clock.py`
 - `ReplayClock(speed=1.0)` — `.state`, `.speed`, `.position` (starts at `-1`, same "before the first candle" convention as `ReplayFeed.cursor`).
 - `.play()` / `.pause()` / `.resume()` / `.stop()` / `.finish()` / `.set_speed(v)` (raises `ValueError` for `v <= 0`) / `.seek(position)` (clamped to `>= -1`) / `.advance() -> int` (moves by `max(1, int(speed))` positions only while `RUNNING`).
 - `.is_running` / `.is_paused` / `.is_stopped` properties.
 
-### `backtesting/replay_feed.py`
+### `backtesting_layer/replay_engine/replay_feed.py`
 - `ReplayFeed(candles: List[Candle])` — `.candles`, `.cursor` (starts at `-1`), `.total`, `.is_exhausted`.
 - `.current_candle()` / `.next_candle()` / `.previous_candle()` / `.jump(index)` (clamped to `[-1, total-1]`) / `.window(size) -> List[Candle]` (last `size` candles up to and including the cursor).
 
-### `backtesting/replay_engine.py`
+### `backtesting_layer/replay_engine/replay_engine.py`
 - `ReplayEngine(config: ReplayConfig, raw_candle_repository=None)` — loads the configured window once via `RawCandleRepository.get_candles_range()`, owns `.feed`/`.clock`.
 - `.candles_total` / `.candles_replayed` / `.is_finished` properties.
 - `.step() -> Optional[Candle]` — advances clock+feed together (a no-op unless `clock.is_running`); marks the clock `FINISHED` once the feed is exhausted.
 - `.seek(index) -> Optional[Candle]` — jumps both clock and feed to the same position.
 
-### `backtesting/replay_controller.py`
+### `backtesting_layer/replay_controller/replay_controller.py`
 - `ReplayController()` — one process-local `{session_id: (ReplaySession, ReplayEngine)}` map.
 - `.start(config) -> ReplaySession` / `.pause(session_id)` / `.resume(session_id)` / `.stop(session_id)` / `.restart(session_id)` / `.step(session_id) -> Optional[Candle]` / `.get_status(session_id) -> Optional[ReplayResult]` — all except `start()` return `None` for an unknown `session_id`.
 
@@ -160,7 +160,7 @@ later — same Strategy code, same candle shape, only the feed differs.
 - Does not persist `ReplaySession` to a database table — a session
   that must survive a restart is a future, separately-approved step
   (same "in-memory only, foundation phase" posture
-  `lifecycle/paper_trade.py`'s own `PaperTrade` used before any
+  `trade_monitoring_layer/paper_trading/paper_trade.py`'s own `PaperTrade` used before any
   persistence existed for it).
 - Does not call `strategies/`, `signals/`, `decision/`, or `risk/` —
   `ReplayEngine.step()` returns a `Candle`; what a caller does with it

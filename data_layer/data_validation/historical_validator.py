@@ -3,7 +3,7 @@ Data Layer — Historical Data Integrity Validator (Phase 59.5:
 Historical Data Collection & Validation Foundation, TASK 3).
 
 Validates an already-collected List[RawCandle] (the persisted
-'raw_candles' table row shape, database/raw_candle_models.py) --
+'raw_candles' table row shape, database_layer/market_repository/raw_candle_models.py) --
 missing candles, duplicate candles, timestamp ordering, future
 timestamps, timezone mismatches, invalid OHLC, and provider mismatch.
 Produces a structured ValidationReport. Does not fetch data, does not
@@ -39,7 +39,7 @@ from typing import Optional, Sequence, TYPE_CHECKING
 from data_layer.data_validation.data_quality import INTERVAL_DELTAS
 
 if TYPE_CHECKING:
-    from database.raw_candle_models import RawCandle
+    from database_layer.market_repository.raw_candle_models import RawCandle
 
 
 @dataclass(frozen=True)
@@ -57,7 +57,7 @@ class ValidationReport:
     future_timestamp_count: candles whose timestamp is after "now".
     timezone_issues: candles whose timestamp is timezone-naive
         (RawCandle.timestamp is expected tz-aware throughout this
-        codebase -- see database/raw_candle_models.py).
+        codebase -- see database_layer/market_repository/raw_candle_models.py).
     invalid_ohlc_count: candles failing the standard OHLC sanity check
         (high must be >= max(open, close); low must be <= min(open, close)).
     provider_mismatch_count: candles whose `.provider` differs from

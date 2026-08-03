@@ -84,15 +84,15 @@ own `regimes=` parameter expects.
 
 ### `trade_event_bridge.py` (Phase 60.7: Adaptive Intelligence Layer Foundation, TASK 2)
 `build_learning_record_from_trade()` + `bridge_closed_trade()` — the
-first real caller of `database.learning_repository.LearningRepository.record()`,
+first real caller of `database_layer.journal_repository.learning_repository.LearningRepository.record()`,
 closing the gap Phase 60.6 itself disclosed ("no observation point yet
 calls `LearningRepository.record()`"). Bridges an already-`CLOSED`
-`lifecycle.paper_trade.PaperTrade` into a persisted `LearningRecord`,
+`trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` into a persisted `LearningRecord`,
 reusing `outcome_analyzer.analyze_trade_result()` directly for the
 `failure_type`/`success_pattern` text. See
 `docs/ADAPTIVE_INTELLIGENCE_AUDIT.md` for TASK 1's finding that the
 only real `CLOSED` `PaperTrade` producer in this codebase is
-`backtesting/backtest_engine.py` (and the genuine Phase 60.2 bug fixed
+`backtesting_layer/backtest_engine/backtest_engine.py` (and the genuine Phase 60.2 bug fixed
 there so a trade could actually reach `CLOSED` at all).
 
 ## What this package does NOT do
@@ -114,7 +114,7 @@ there so a trade could actually reach `CLOSED` at all).
   same posture as `backtesting/`/`execution/simulator/` before it.
 
 ## Input
-An already-closed `lifecycle.paper_trade.PaperTrade`, optionally
+An already-closed `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade`, optionally
 paired with an already-built `context.context_orchestrator.ContextSnapshot`,
 `context.htf_bias.HTFBiasResult`, and
 `analytics.signal_performance.SignalPerformance` (`outcome_analyzer.py`);
@@ -130,15 +130,15 @@ runtime import, needed for enum comparison) plus, `TYPE_CHECKING`-only,
 `context.context_orchestrator.ContextSnapshot`,
 `context.htf_bias.HTFBiasResult`,
 `analytics.signal_performance.SignalPerformance`, and
-`lifecycle.paper_trade.PaperTrade`. `pattern_detector.py` imports
+`trade_monitoring_layer.paper_trading.paper_trade.PaperTrade`. `pattern_detector.py` imports
 `analytics.strategy_report.compute_win_rate` (real, runtime import,
 reused directly) and `learning.models` (same package). `models.py`
 imports nothing beyond stdlib. `trade_event_bridge.py` imports
-`lifecycle.trade_state.TradeState` (real, runtime import, needed for
+`trade_monitoring_layer.paper_trading.trade_state.TradeState` (real, runtime import, needed for
 enum comparison), `learning.models`/`learning.outcome_analyzer` (same
 package), and — its one disclosed exception —
-`database.learning_repository.LearningRepository`/
-`database.learning_models.LearningRecordRow` (`TYPE_CHECKING`-only for
+`database_layer.journal_repository.learning_repository.LearningRepository`/
+`database_layer.journal_repository.learning_models.LearningRecordRow` (`TYPE_CHECKING`-only for
 the type hints; the real call happens through an injected instance,
 not an import-time dependency). `trade_event_bridge.py` also imports
 `context.market_regime.MarketRegime` (real, runtime import, needed for

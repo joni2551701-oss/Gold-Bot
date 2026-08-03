@@ -1,9 +1,9 @@
 # Adaptive Intelligence Layer Foundation — Reuse Audit (Phase 60.7, TASK 1)
 
 Read before any new code was written, per the Director's own
-`exists? -> extend -> new module` rule. Scope: `lifecycle/paper_trade.py`,
-`lifecycle/paper_trade_monitor.py`, `analytics/`, `database/learning_repository.py`,
-plus `backtesting/backtest_engine.py` (the one real caller of both
+`exists? -> extend -> new module` rule. Scope: `trade_monitoring_layer/paper_trading/paper_trade.py`,
+`trade_monitoring_layer/paper_trading/paper_trade_monitor.py`, `analytics/`, `database_layer/journal_repository/learning_repository.py`,
+plus `backtesting_layer/backtest_engine/backtest_engine.py` (the one real caller of both
 `lifecycle/` modules above).
 
 ## Goal
@@ -14,16 +14,16 @@ trade event actually originates in this codebase today.
 ## Finding 1 (structural): the only real closed-trade producer is the Backtest Engine
 
 `core/pipeline.py` — the live cycle — **never imports or references
-`lifecycle.paper_trade` at all** (confirmed by a full grep: zero
+`trade_monitoring_layer.paper_trading.paper_trade` at all** (confirmed by a full grep: zero
 matches). No MT5/broker execution is wired (`execution_layer/execution_engine/execution_engine.py`
 remains an inert stub, per every prior phase's own audit), so a live
 cycle never creates a `PaperTrade` in the first place — there is no
 "real" closed trade to observe outside of a backtest run.
 
-`backtesting/backtest_engine.py`'s `_process_candidate()` (Phase 60.2)
+`backtesting_layer/backtest_engine/backtest_engine.py`'s `_process_candidate()` (Phase 60.2)
 is the only place in this codebase that calls `create_paper_trade()`
 → `open_paper_trade()` → `check_paper_trade_against_candles()` — the
-full CREATED → OPEN → CLOSED lifecycle `lifecycle/paper_trade.py`/
+full CREATED → OPEN → CLOSED lifecycle `trade_monitoring_layer/paper_trading/paper_trade.py`/
 `paper_trade_monitor.py` already implement. This is the real
 observation point Phase 60.7's Learning Event Bridge (TASK 2) must
 read from.
@@ -58,7 +58,7 @@ Phase 60.2's own test suite because no existing test asserted a
 non-`None` `result` after a real backtest run (only counts and
 `strategy_id` were checked).
 
-**Fix** (confined to `backtesting/backtest_engine.py`, three lines,
+**Fix** (confined to `backtesting_layer/backtest_engine/backtest_engine.py`, three lines,
 no change to `strategies/`, `signals/`, `decision/`, or `risk/`):
 
 ```python
@@ -88,11 +88,11 @@ to read from, regardless of how correctly TASK 2 itself was built.
 
 | Module | Shape | Verdict |
 |---|---|---|
-| `lifecycle/paper_trade.py`/`paper_trade_monitor.py` | Real, correct, now-actually-reached CLOSED-state trades (Finding 2). | Read-only input to the new bridge — untouched otherwise. |
+| `trade_monitoring_layer/paper_trading/paper_trade.py`/`paper_trade_monitor.py` | Real, correct, now-actually-reached CLOSED-state trades (Finding 2). | Read-only input to the new bridge — untouched otherwise. |
 | `analytics/signal_performance.py` | `compute_signal_performance()` already builds a `SignalPerformance` from a closed `PaperTrade` — session/market_phase/timeframe/r_multiple all real. | Reused directly as one of the Learning Event Bridge's inputs, not duplicated. |
 | `learning/outcome_analyzer.py` (Phase 60.6) | `analyze_trade_result(paper_trade, context, performance, htf_bias)` → `TradeAnalysis` (reasons, lesson). | Reused directly — the bridge calls this, does not reimplement trade analysis. |
 | `learning/models.py` (Phase 60.6) | `LearningRecord` — `strategy_name`/`market_phase`/`session`/`timeframe`/`result`/`r_multiple`/`failure_type`/`success_pattern`/`created_at`. Missing the six fields the Director's own brief names for TASK 3 (`htf_bias`, `volatility_state`, `fundamental_bias`, `confidence_score`, `engine_version`, `sample_size`). | Extended additively (TASK 3) — every new field `Optional`, defaulting `None`/a fixed default, so every Phase 60.6 caller/test keeps working unmodified. |
-| `database/learning_repository.py` (Phase 60.6) | `LearningRepository.record()` already append-only; nothing calls it yet (Phase 60.6's own disclosed gap). | TASK 2's bridge becomes the first real caller. Schema extended additively (TASK 3) alongside `learning/models.py`. |
+| `database_layer/journal_repository/learning_repository.py` (Phase 60.6) | `LearningRepository.record()` already append-only; nothing calls it yet (Phase 60.6's own disclosed gap). | TASK 2's bridge becomes the first real caller. Schema extended additively (TASK 3) alongside `learning/models.py`. |
 | `learning/pattern_detector.py` (Phase 60.6) | Groups by `(strategy_name, session, market_phase)` only — no `htf_bias`/`volatility_state`/minimum-sample gate beyond a flat `min_occurrences=3` default. | Extended (TASK 4), not replaced — `detect_patterns()`'s existing signature/behavior stays backward compatible; new optional grouping dimensions and a named `MIN_PATTERN_SAMPLE` constant are additive. |
 | No confidence engine anywhere | Nothing in this codebase computes a LOW/MEDIUM/HIGH confidence from sample size + consistency + recency + performance. | New `learning/confidence.py` (TASK 5) — genuinely new, no existing module to extend. |
 | `ai/learning_context.py` (Phase 60.6) | `{recent_failures, successful_patterns, strategy_stats}` only. | Extended (TASK 6) with `patterns`/`failures`/`regimes`/`confidence` fields the Director's brief names — additive, existing fields/behavior unchanged. |

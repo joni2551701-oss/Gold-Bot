@@ -5,7 +5,7 @@ Phase 59.5, TASK 6 -- data_layer/providers/provider_comparison.py tests.
 from datetime import datetime, timezone
 
 from data_layer.providers.provider_comparison import compare_providers
-from database.raw_candle_models import create_raw_candle
+from database_layer.market_repository.raw_candle_models import create_raw_candle
 
 
 def _candle(provider, ts, open=2000.0, high=2005.0, low=1995.0, close=2001.0, symbol="XAUUSD", timeframe="M15"):

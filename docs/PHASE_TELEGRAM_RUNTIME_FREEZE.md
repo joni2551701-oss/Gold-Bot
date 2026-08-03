@@ -34,7 +34,7 @@ the entry point. No Director Decision pause was required.
   `TelegramRuntimeMonitor` (`record_connected()`/`record_heartbeat()`/
   `record_error()`/`get_status()`), module-level `DEFAULT_RUNTIME_MONITOR`
   singleton + free functions. `record_error()` relays into
-  `monitoring.system_monitor.record_error()`.
+  `core_layer.health_monitor.system_monitor.record_error()`.
 - `docs/TELEGRAM_RUNTIME.md`, `docs/PHASE_TELEGRAM_RUNTIME_AUDIT.md`,
   `docs/PHASE_TELEGRAM_RUNTIME_FREEZE.md` (new documentation);
   `docs/DEPLOYMENT.md`'s Troubleshooting section updated to reference
@@ -56,7 +56,7 @@ the entry point. No Director Decision pause was required.
   behind this divergence from a literal reading of TASK 6.
 - No persisted heartbeat/runtime-status history — `TelegramRuntimeStatus`
   is computed live from an in-process singleton, matching
-  `monitoring.system_monitor.SystemMonitor`'s own established
+  `core_layer.health_monitor.system_monitor.SystemMonitor`'s own established
   convention (the process itself is long-running, so in-memory state
   persists exactly as long as it's meaningful).
 - No change to `core/`, `decision/`, `risk/`, `execution/`,
@@ -67,9 +67,9 @@ the entry point. No Director Decision pause was required.
 ## Constitution Compliance (checks run at close)
 
 - **Isolation** — `telegram/runtime_monitor.py` imports only
-  `core_layer.logger.logger`, `monitoring.system_monitor`, and stdlib.
+  `core_layer.logger.logger`, `core_layer.health_monitor.system_monitor`, and stdlib.
   `telegram/polling.py`'s new code imports only
-  `monitoring.system_monitor.get_health` and `telegram.runtime_monitor`
+  `core_layer.health_monitor.system_monitor.get_health` and `telegram.runtime_monitor`
   beyond what already existed. Neither imports `decision`/`risk`/
   `execution`/`ai.*`/`signals`/`strategies`.
 - **Trading pipeline zero-modification** — `git diff --stat` against
@@ -81,8 +81,8 @@ the entry point. No Director Decision pause was required.
   is a message-text refinement (already covered by this phase's own
   updated test), not a contract change.
 - **Article 11 (Foundation Reuse Law)** — TASK 0's audit confirmed
-  `monitoring.system_monitor.get_health()` and
-  `monitoring.system_monitor.record_error()` both already existed and
+  `core_layer.health_monitor.system_monitor.get_health()` and
+  `core_layer.health_monitor.system_monitor.record_error()` both already existed and
   are reused outright for the heartbeat's Core/Database check and the
   cross-module error sink, respectively — no duplicate health-check
   writer, no second error-storage path.
@@ -92,10 +92,10 @@ the entry point. No Director Decision pause was required.
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | — (no new top-level package) | — | `telegram/`, `monitoring/` (both pre-existing) |
-| Modules | `telegram/runtime_monitor.py` (1) | `telegram/polling.py` (1) | `monitoring/system_monitor.py` (composed, not modified) |
+| Modules | `telegram/runtime_monitor.py` (1) | `telegram/polling.py` (1) | `core_layer/health_monitor/system_monitor.py` (composed, not modified) |
 | Classes | `TelegramRuntimeMonitor` (1) | — | — |
-| Models | `TelegramRuntimeStatus` (1) | — | `monitoring.models.SystemHealth` (read via `get_health()`, not imported directly as a type) |
-| Functions | `_log_startup_secret_presence()`, `_build_startup_message()`, `_notify_owner_startup()`, `_heartbeat_loop()`, `record_connected()`, `record_heartbeat()`, `record_error()`, `get_status()` (8) | `run_polling()` (extended in place) | `monitoring.system_monitor.get_health()`, `monitoring.system_monitor.record_error()` |
+| Models | `TelegramRuntimeStatus` (1) | — | `core_layer.health_monitor.models.SystemHealth` (read via `get_health()`, not imported directly as a type) |
+| Functions | `_log_startup_secret_presence()`, `_build_startup_message()`, `_notify_owner_startup()`, `_heartbeat_loop()`, `record_connected()`, `record_heartbeat()`, `record_error()`, `get_status()` (8) | `run_polling()` (extended in place) | `core_layer.health_monitor.system_monitor.get_health()`, `core_layer.health_monitor.system_monitor.record_error()` |
 | Secrets | — | — | `Secrets.TELEGRAM_BOT_TOKEN`/`TELEGRAM_OWNER_ID`/`TWELVE_DATA_API_KEY`/`GEMINI_API_KEY` (all unchanged) |
 | Tests | 1 new file (22 tests) | 1 file extended (+31 tests) | — |
 | Docs | `docs/TELEGRAM_RUNTIME.md`, `docs/PHASE_TELEGRAM_RUNTIME_AUDIT.md`, `docs/PHASE_TELEGRAM_RUNTIME_FREEZE.md` (3, new) | `docs/DEPLOYMENT.md` (extended) | — |

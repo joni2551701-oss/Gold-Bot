@@ -23,8 +23,8 @@ this same `LearningRecord` with six additional `Optional` fields
 `sample_size`, all default `None`, plus `engine_version` defaulting to
 `LEARNING_ENGINE_VERSION`) rather than creating a second, competing
 model — purely additive, so every Phase 60.6 caller/test keeps working
-unmodified. `database/learning_models.py`'s `LearningRecordRow` and
-the `learning_records` table (`database/models.py`) were extended in
+unmodified. `database_layer/journal_repository/learning_models.py`'s `LearningRecordRow` and
+the `learning_records` table (`database_layer/database_manager/models.py`) were extended in
 lockstep, via an additive `ALTER TABLE` migration (`PRAGMA table_info()`-
 guarded, same pattern `signals`/`users` already established) — no
 existing row's meaning changes.
@@ -42,18 +42,18 @@ LEARNING_ENGINE_VERSION = "60.7"
 class LearningRecord:
     """
     Deliberately excludes a database `id` — same convention
-    `database/audit_log_models.py`'s `AuditLogEntry` already
+    `database_layer/audit_log/audit_log_models.py`'s `AuditLogEntry` already
     established ("repository-internal detail... same convention as
     every other Phase 59.x model"): a `LearningRecord` built here has
     no database row yet, so an auto-increment id doesn't belong on it.
-    `database/learning_models.py`'s `LearningRecordRow` (TASK 5) is
+    `database_layer/journal_repository/learning_models.py`'s `LearningRecordRow` (TASK 5) is
     the separate, database-layer type that does carry one.
 
     record_id: this record's own generated identity
         (generate_learning_record_id()) — distinct from a future
         database `id`; lets a caller reference one `LearningRecord`
         before it is ever persisted.
-    trade_id/signal_id: the originating `lifecycle.paper_trade.PaperTrade.trade_id`/
+    trade_id/signal_id: the originating `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade.trade_id`/
         `signal_id` — required references, never copies of the trade
         or signal themselves.
     strategy_name: matches `SignalSchema.strategy_name`'s own value —
@@ -62,7 +62,7 @@ class LearningRecord:
     market_phase/session/timeframe: the same three context dimensions
         `analytics/signal_performance.py`/`context_report.py` already
         carry — relayed, not recomputed.
-    result: one of `lifecycle.paper_trade.ALLOWED_PAPER_TRADE_RESULTS`
+    result: one of `trade_monitoring_layer.paper_trading.paper_trade.ALLOWED_PAPER_TRADE_RESULTS`
         ("TP"/"SL"/"BE"/"EXPIRED"), or "CANCELLED" — the same
         vocabulary `analytics.signal_performance.SignalPerformance.result`
         already uses.

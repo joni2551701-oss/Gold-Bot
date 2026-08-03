@@ -50,7 +50,7 @@ symbol today, any new input this phase needs (`symbol`, `current_equity`)
 must be an **optional, additive keyword argument** on `evaluate()` that
 defaults to `None` and is a no-op when omitted — preserving the exact
 existing call site unchanged (`core/pipeline.py:463`,
-`backtesting/backtest_engine.py:206`, both untouched, both still valid)
+`backtesting_layer/backtest_engine/backtest_engine.py:206`, both untouched, both still valid)
 while making every new protection available to any future caller that
 does supply richer data. This is the same "additive optional field/
 parameter" pattern used throughout this codebase's history for
@@ -72,12 +72,12 @@ dataclass is the correct, minimal extension point.
 
 ## 4. database/ — schema and repository conventions
 
-Read `database/emergency_repository.py`, `emergency_models.py`,
-`database/models.py`'s `init_emergency_state_schema()`, and
-`database/database.py`'s `Database` context-manager. Confirmed
+Read `database_layer/trade_repository/emergency_repository.py`, `emergency_models.py`,
+`database_layer/database_manager/models.py`'s `init_emergency_state_schema()`, and
+`database_layer/database_manager/database.py`'s `Database` context-manager. Confirmed
 convention for a new append-only log table: `CREATE TABLE IF NOT
 EXISTS` + autoincrement `id` + one `init_*_schema()` function in
-`database/models.py`, called from the new repository's own
+`database_layer/database_manager/models.py`, called from the new repository's own
 `__init__`. No existing table can hold a per-decision risk audit trail
 (TASK 8) or a per-symbol drawdown/daily-loss baseline (TASK 4/5) —
 both require new, purpose-built tables. Two new tables are added this
@@ -93,7 +93,7 @@ phase:
 
 ## 5. monitoring/
 
-`monitoring/decision_logger.py`, `performance_collector.py`,
+`decision_layer/decision_logger/decision_logger.py`, `performance_collector.py`,
 `health_monitor.py` all follow "the producer writes, monitoring reads
 back" (`decision_logger.log_entry()` is called by whoever owns a
 decision event; monitoring's own read functions never compute a

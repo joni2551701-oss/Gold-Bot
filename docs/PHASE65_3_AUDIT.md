@@ -47,7 +47,7 @@ profile vs. read-only static lookup vs. ephemeral per-call session).
 
 ## Question 3 — Does a User Profile already exist?
 
-**No.** `database/user_repository.py`'s user model is checked (read
+**No.** `database_layer/user_repository/user_repository.py`'s user model is checked (read
 only, not imported) — it carries account/subscription fields, nothing
 about AI identity/voice/language selection. No existing dataclass in
 `ai/`, `voice/`, or `database/` matches TASK 2's `AssistantProfile`

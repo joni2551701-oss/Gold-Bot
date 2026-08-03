@@ -5,7 +5,7 @@ an isolated DB.
 """
 
 from risk_layer.risk_validator.duplicate_checker import DuplicateTradeChecker
-from database.risk_decision_repository import RiskDecisionRepository
+from database_layer.trade_repository.risk_decision_repository import RiskDecisionRepository
 
 
 def _checker(isolated_db):

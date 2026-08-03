@@ -22,8 +22,8 @@ from decision_layer.decision_engine.models import TradeDecision, DecisionAction
 from risk_layer.risk_engine.risk_manager import RiskManager, RiskResult
 from telegram.signal_formatter import SignalFormatter
 from telegram.notifier import Notifier
-from database.signal_repository import SignalRepository
-from database.signal_record import SignalRecord, create_signal_record
+from database_layer.trade_repository.signal_repository import SignalRepository
+from database_layer.trade_repository.signal_record import SignalRecord, create_signal_record
 from core_layer.pipeline.pipeline_guard import PipelineGuard
 from core_layer.logger.logger import setup_logger
 
@@ -51,7 +51,7 @@ def _neutral_ai_result(reason: str) -> AIAnalysisResult:
     reject). The same "degrade to a documented neutral value, never
     raise, never block" posture already established for a missing HTF
     read (`context.htf_bias.compute_htf_bias`'s own UNKNOWN fallback)
-    and `backtesting/backtest_engine.py`'s `_neutral_htf_bias()`.
+    and `backtesting_layer/backtest_engine/backtest_engine.py`'s `_neutral_htf_bias()`.
     """
     return AIAnalysisResult(
         approved=True, confidence=0.5, risk_score=0.5,

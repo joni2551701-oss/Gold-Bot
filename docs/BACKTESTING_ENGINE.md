@@ -3,7 +3,7 @@
 **Not wired into the live bot.** Same "real function, not live-wired"
 posture as every phase before it. Nothing in `core/pipeline.py` or
 any Telegram routing surface constructs or reads anything in
-`backtesting/backtest_engine.py`/`data_feed.py`/`backtest_result.py`
+`backtesting_layer/backtest_engine/backtest_engine.py`/`data_feed.py`/`backtest_result.py`
 this phase.
 
 ## The one hard rule
@@ -30,7 +30,7 @@ REPLAY: backtesting.replay_feed.ReplayFeed.window()            -> List[Candle]
 `IDataFeed` has two implementations: `LiveDataFeed` (wraps
 `MarketDataNormalizer`, same call `core/pipeline.py`'s own live
 `market_data` stage already makes) and `ReplayDataFeed` (wraps a
-`backtesting.replay_feed.ReplayFeed`, Phase 60.1). Neither `strategies/`
+`backtesting_layer.replay_engine.replay_feed.ReplayFeed`, Phase 60.1). Neither `strategies/`
 nor `signal_layer/signal_engine/signal_engine.py` needed to change at all — TASK 1's own
 reuse audit found they already only depend on `ContextSnapshot`, never
 on a candle source directly.
@@ -82,7 +82,7 @@ BacktestResult
 
 Every stage above except the last is an already-existing, unmodified
 function or class read directly from source this phase (TASK 1) —
-`backtesting/backtest_engine.py` is pure orchestration, no new
+`backtesting_layer/backtest_engine/backtest_engine.py` is pure orchestration, no new
 Strategy/Signal/Decision/Risk logic anywhere.
 
 ## Reuse audit findings (TASK 1)
@@ -94,7 +94,7 @@ Strategy/Signal/Decision/Risk logic anywhere.
 - `RawCandleRepository.get_candles()` needed the additive
   `get_candles_range()` method (built in Phase 60.1, TASK 1) — reused
   here unchanged.
-- `lifecycle.paper_trade_monitor.check_paper_trade_against_candles(trade,
+- `trade_monitoring_layer.paper_trading.paper_trade_monitor.check_paper_trade_against_candles(trade,
   candles)` was built (Phase 59.4) expecting to walk a *forward* candle
   window to resolve TP/SL/EXPIRED — a perfect fit for backtesting,
   since the whole future of the replay is already loaded in memory;
@@ -135,7 +135,7 @@ Strategy/Signal/Decision/Risk logic anywhere.
 
 ## A fundamental bug found and fixed during this phase's own validation
 
-**`backtesting/replay_engine.py`'s `ReplayEngine.is_finished` had a
+**`backtesting_layer/replay_engine/replay_engine.py`'s `ReplayEngine.is_finished` had a
 genuine infinite-loop bug for an empty candle dataset**, found while
 testing `telegram/owner/backtest_commands.py`'s `backtest_run()`
 against an unknown symbol (zero candles stored). Root cause: the
@@ -169,16 +169,16 @@ trading logic was touched by this fix; it is entirely contained to
 
 ## API reference
 
-### `backtesting/data_feed.py`
+### `backtesting_layer/data_feed/data_feed.py`
 - `IDataFeed` (ABC) — `get_candles(count) -> List[Candle]`.
 - `LiveDataFeed(data_normalizer, symbol, interval)` — wraps `MarketDataNormalizer.get_candles()`.
 - `ReplayDataFeed(replay_feed)` — wraps `ReplayFeed.window()`.
 
-### `backtesting/backtest_engine.py`
+### `backtesting_layer/backtest_engine/backtest_engine.py`
 - `BacktestEngine(config: ReplayConfig, raw_candle_repository=None, ai_analyzer=None, decision_engine=None, risk_manager=None, context_window=200, htf_bias_provider=None)` — every dependency injectable, defaults to the real unmodified classes.
 - `.run() -> BacktestResult` — replays the full configured window, running the real chain at every step with enough candles for context.
 
-### `backtesting/backtest_result.py`
+### `backtesting_layer/backtest_report/backtest_result.py`
 - `BacktestResult(symbol, timeframe, candles_processed, signals_generated, trades_opened, performances, strategy_report, started_at=None, finished_at=None)` — frozen; `.overall_win_rate` derived property.
 - `build_backtest_result(...)` — wraps `analytics.strategy_report.build_strategy_report()`.
 - `format_backtest_report(result) -> str` — the future `/backtest_report` payload text.
@@ -207,7 +207,7 @@ trading logic was touched by this fix; it is entirely contained to
 docs/BACKTESTING_ENGINE.md (Phase 60.2 -- foundation, this document)
         |
         v
-backtesting/data_feed.py, backtest_engine.py, backtest_result.py,
+backtesting_layer/data_feed/data_feed.py, backtest_engine.py, backtest_result.py,
 telegram/owner/backtest_commands.py (Phase 60.2 -- real logic, not wired)
         |
         v

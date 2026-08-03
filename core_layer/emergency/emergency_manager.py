@@ -27,8 +27,8 @@ import core_layer/emergency/.
 from typing import Optional
 
 from core_layer.emergency.emergency_state import EmergencyState, EmergencyStateRecord, create_emergency_state_record
-from database.audit_log_repository import AuditLogRepository
-from database.emergency_repository import EmergencyRepository
+from database_layer.audit_log.audit_log_repository import AuditLogRepository
+from database_layer.trade_repository.emergency_repository import EmergencyRepository
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("EmergencyManager")

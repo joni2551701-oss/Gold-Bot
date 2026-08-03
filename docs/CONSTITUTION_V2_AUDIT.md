@@ -140,10 +140,10 @@ explicit "reserved, not yet wired" designation.
 
 ### 1.3 Factual error found in `MODULE_DEPENDENCIES.md`
 
-The table's entry for `lifecycle/paper_trade_monitor.py` lists its
+The table's entry for `trade_monitoring_layer/paper_trading/paper_trade_monitor.py` lists its
 dependencies as `decision/`, `risk/`, `core/`. Direct inspection shows
-the file only imports `lifecycle.paper_trade` and
-`lifecycle.trade_state` — none of the three listed packages. This is a
+the file only imports `trade_monitoring_layer.paper_trading.paper_trade` and
+`trade_monitoring_layer.paper_trading.trade_state` — none of the three listed packages. This is a
 factual inaccuracy in an authoritative document, not a design
 question; flagged for correction whenever `MODULE_DEPENDENCIES.md` is
 next revised.
@@ -314,7 +314,7 @@ found).
 
 ### 4.2 No migration or rollback tooling exists
 
-`database/models.py` performs ad hoc, idempotent
+`database_layer/database_manager/models.py` performs ad hoc, idempotent
 `CREATE TABLE IF NOT EXISTS` / `ALTER TABLE` statements on every
 repository construction. `database/migrations/` exists as a directory
 but is an empty placeholder containing only a README describing a
@@ -627,7 +627,7 @@ this audit.
    `docs/` not referenced in `docs/README.md`).
 
 4. **Correct `MODULE_DEPENDENCIES.md`'s factual error** (Section 1.3,
-   `lifecycle/paper_trade_monitor.py`'s listed dependencies) as a
+   `trade_monitoring_layer/paper_trading/paper_trade_monitor.py`'s listed dependencies) as a
    trivial fix whenever that document is next touched.
 
 5. **Add a Pattern 3 to `EXTENSION_GUIDE.md`** ("new Reply Keyboard

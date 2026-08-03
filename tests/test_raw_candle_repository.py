@@ -1,5 +1,5 @@
 """
-Phase 59.3, TASK 2 -- database/raw_candle_repository.py and
+Phase 59.3, TASK 2 -- database_layer/market_repository/raw_candle_repository.py and
 raw_candle_models.py tests. Extended by Phase 59 Real Market
 Validation Foundation, TASK 3 (from_market_candle()/
 save_market_candles() -- the MarketCandle bridge). Each test gets its
@@ -11,8 +11,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from database.raw_candle_models import create_raw_candle, from_market_candle
-from database.raw_candle_repository import RawCandleRepository
+from database_layer.market_repository.raw_candle_models import create_raw_candle, from_market_candle
+from database_layer.market_repository.raw_candle_repository import RawCandleRepository
 from data_layer.providers.base_provider import MarketCandle
 from data_layer.providers.twelve_data_provider import TwelveDataProvider
 from data_layer.providers.twelve_data_client import Candle

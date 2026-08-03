@@ -8,8 +8,8 @@ from datetime import datetime, timedelta, timezone
 
 from telegram.owner.backtest_commands import backtest_run
 from telegram.owner.provider_commands import ProviderCommandResult
-from database.raw_candle_models import create_raw_candle
-from database.raw_candle_repository import RawCandleRepository
+from database_layer.market_repository.raw_candle_models import create_raw_candle
+from database_layer.market_repository.raw_candle_repository import RawCandleRepository
 
 
 def _seed_candles(n=250):

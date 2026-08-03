@@ -127,7 +127,7 @@ Permission flow re-verified end-to-end through the real
   kwarg) is silently dropped before ever reaching the query string.
   Verified dynamically, not just read
   (`test_dynamic_update_column_allowlist_rejects_unknown_fields`).
-- **Migration DDL** (`database/models.py`'s `ALTER TABLE ... ADD
+- **Migration DDL** (`database_layer/database_manager/models.py`'s `ALTER TABLE ... ADD
   COLUMN` f-strings) interpolates `column_name`/`column_def` from a
   hardcoded, developer-authored list literal in the source — never
   from any external input.

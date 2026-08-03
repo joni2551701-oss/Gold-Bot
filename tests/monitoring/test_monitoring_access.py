@@ -1,7 +1,7 @@
-"""Phase B.0 Rule 5 -- monitoring/access.py tests."""
+"""Phase B.0 Rule 5 -- core_layer/health_monitor/access.py tests."""
 
 from core_layer.configuration.feature_flags import FeatureFlags
-from monitoring.access import is_owner_monitoring_enabled
+from core_layer.health_monitor.access import is_owner_monitoring_enabled
 
 ENABLED = FeatureFlags(enable_owner_monitoring=True)
 DISABLED = FeatureFlags(enable_owner_monitoring=False)

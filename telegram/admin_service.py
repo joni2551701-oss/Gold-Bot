@@ -27,11 +27,11 @@ command handler.
 from typing import List, Optional
 from dataclasses import dataclass, field
 
-from database.admin_repository import AdminRepository
-from database.admin_models import AdminRecord
-from database.user_repository import UserRepository
-from database.signal_repository import SignalRepository
-from database.feedback_models import FeedbackRecord
+from database_layer.user_repository.admin_repository import AdminRepository
+from database_layer.user_repository.admin_models import AdminRecord
+from database_layer.user_repository.user_repository import UserRepository
+from database_layer.trade_repository.signal_repository import SignalRepository
+from database_layer.user_repository.feedback_models import FeedbackRecord
 from telegram.bot import TelegramBot
 from telegram.feedback_service import FeedbackService
 from core_layer.secrets import Secrets

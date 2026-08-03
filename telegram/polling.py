@@ -65,7 +65,7 @@ able to block/abort the actual polling loop):
 - TASK 4: all three record into `telegram.runtime_monitor`, this
   phase's own new Telegram-connection-specific status tracker (see
   that module's docstring for why it's separate from
-  `monitoring.system_monitor.SystemMonitor`).
+  `core_layer.health_monitor.system_monitor.SystemMonitor`).
 
 V2 Phase 4 (Persistent Menu) addition: `register_all_menus()`
 (`telegram/menu_commands.py`) registers Telegram's native Menu Button
@@ -99,7 +99,7 @@ from telegram import runtime_monitor
 from telegram.callback_router import route_callback
 from telegram.command_router import route_contact, route_message
 from telegram.menu_commands import register_all_menus
-from monitoring.system_monitor import get_health as _get_core_health
+from core_layer.health_monitor.system_monitor import get_health as _get_core_health
 
 logger = setup_logger("TelegramPolling")
 

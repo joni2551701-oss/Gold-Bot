@@ -34,8 +34,8 @@ requires.
   `LearningRecord` above.
 - **Existing model bormi?** **YES**, but wrong shape — see above.
 - **Existing persistence bormi?** **YES** —
-  `database/learning_models.py`'s `LearningRecordRow` +
-  `database/learning_repository.py`'s `LearningRepository.record()`
+  `database_layer/journal_repository/learning_models.py`'s `LearningRecordRow` +
+  `database_layer/journal_repository/learning_repository.py`'s `LearningRepository.record()`
   (real, append-only SQLite persistence, wired). This is exactly the
   kind of persistence Rule 3 forbids this phase's own Foundation from
   having — confirming `learning/`'s own contract cannot be reused
@@ -124,7 +124,7 @@ in `learning/`'s own DB-touching import chain).
 ### `database/`
 
 - **Existing persistence bormi?** **YES** —
-  `database/learning_models.py`/`learning_repository.py` (covered
+  `database_layer/journal_repository/learning_models.py`/`learning_repository.py` (covered
   above under `learning/`). Confirms Rule 3's own premise: real
   persistence already exists for the *other* learning concept; this
   phase must not create a second one or touch the existing one.

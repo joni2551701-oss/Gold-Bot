@@ -8,7 +8,7 @@ docs/PERFORMANCE_METRICS.md for the full contract.
 
 Distinct from two pre-existing, unrelated concepts with a similar
 name:
-- monitoring/performance.py's PerformanceTracker/PerformanceResult
+- core_layer/health_monitor/performance.py's PerformanceTracker/PerformanceResult
   compute historical *trade outcome* statistics (win rate, strategy
   breakdown) from the database -- a completely different question
   than "how long did this code take to run."

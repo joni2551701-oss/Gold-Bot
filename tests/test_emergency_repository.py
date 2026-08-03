@@ -1,5 +1,5 @@
 """
-Phase 59.9, TASK 2 -- database/emergency_repository.py and
+Phase 59.9, TASK 2 -- database_layer/trade_repository/emergency_repository.py and
 emergency_models.py tests. Real SQLite (tests/conftest.py's autouse
 fresh_database fixture), no mocks. Flat tests/test_emergency_repository.py
 path -- matches this codebase's real convention
@@ -9,8 +9,8 @@ not a tests/database/ directory (none exists anywhere in this repo).
 
 from datetime import datetime
 
-from database.emergency_models import create_emergency_state_entry
-from database.emergency_repository import EmergencyRepository
+from database_layer.trade_repository.emergency_models import create_emergency_state_entry
+from database_layer.trade_repository.emergency_repository import EmergencyRepository
 
 
 def test_get_current_state_returns_none_when_empty():

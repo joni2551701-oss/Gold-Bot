@@ -12,8 +12,8 @@ A future, separately-approved phase would add the actual holder/store
 (in-memory singleton or persisted "current state" row) and wire
 core/pipeline.py's stages to check it before running -- that wiring is
 explicitly out of scope here, same "foundation, not full wiring"
-posture as lifecycle/trade_state.py's own TradeState before
-core/pipeline.py ever called into lifecycle/paper_trade_monitor.py.
+posture as trade_monitoring_layer/paper_trading/trade_state.py's own TradeState before
+core/pipeline.py ever called into trade_monitoring_layer/paper_trading/paper_trade_monitor.py.
 
 Distinct from lifecycle.trade_state.TradeState (a single PaperTrade's
 own CREATED/OPEN/CLOSED/CANCELLED lifecycle) and from

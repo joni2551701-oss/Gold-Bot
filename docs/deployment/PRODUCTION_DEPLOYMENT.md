@@ -69,7 +69,7 @@ only symlinks to them.
 ### `database/` — package vs. runtime data (do not confuse the two)
 
 This repository has a naming collision that matters here: `database/`
-is **both** a Python package (`database/database.py`,
+is **both** a Python package (`database_layer/database_manager/database.py`,
 `database/*_repository.py` — real application source, imported as
 `from database.database import Database`) **and**, per `config.py`'s
 `DB_PATH`, the directory the runtime SQLite file (`goldbot.db`) lives

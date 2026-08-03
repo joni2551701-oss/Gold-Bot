@@ -1,7 +1,7 @@
 from typing import Optional
 from dataclasses import dataclass
 
-from database.signal_repository import SignalRepository
+from database_layer.trade_repository.signal_repository import SignalRepository
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("ResultHandler")

@@ -101,7 +101,7 @@ pipeline; that is out of Module 10's scope.
 | Concern | Finding | Outcome |
 |---|---|---|
 | Circuit breaker | `core_layer/emergency/circuit_breaker.py` is a *trading* breaker (stateless ALLOW/BLOCK) | **New** service-reliability breaker (documented) |
-| Health grading | `monitoring/health_monitor.py` grades OK/WARNING/CRITICAL | **Reused by injection** (no upward import) |
+| Health grading | `core_layer/health_monitor/health_monitor.py` grades OK/WARNING/CRITICAL | **Reused by injection** (no upward import) |
 | Registry shape | `assets/asset_registry.py`, `platforms/platform_registry.py` | **Pattern reused**, new service instance |
 | Event vocabulary | `data_layer/event_system` EventBus | `GATEWAY.*` reserved additively; bridge deferred |
 | Platform side | `platforms/*` | Client side — Gateway is the Core side; no overlap |

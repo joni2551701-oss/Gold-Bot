@@ -8,7 +8,7 @@ the shape this task's own brief names as its goal:
 
     Liquidity Sweep: 100 trades, Win: 62, Loss: 38, RR: 2.1
 
-win_rate here deliberately reuses monitoring/performance.py's own
+win_rate here deliberately reuses core_layer/health_monitor/performance.py's own
 PerformanceTracker._win_rate() formula (WIN / (WIN + LOSS), BE
 excluded from both sides) -- the same convention, not a competing one,
 so a future consumer never has to reconcile two different definitions
@@ -21,8 +21,8 @@ rather than hidden, the same "small documented duplication" precedent
 already accepted for Wyckoff-vs-AMD and Data Quality-vs-market_data.py.
 
 "TP" is this module's WIN, "SL" is its LOSS, "BE" is its breakeven --
-SignalPerformance.result's own vocabulary (lifecycle/paper_trade.py's
-ALLOWED_PAPER_TRADE_RESULTS), not database/signal_repository.py's
+SignalPerformance.result's own vocabulary (trade_monitoring_layer/paper_trading/paper_trade.py's
+ALLOWED_PAPER_TRADE_RESULTS), not database_layer/trade_repository/signal_repository.py's
 WIN/LOSS/BE labels (a different table, untouched by this phase).
 """
 
@@ -64,7 +64,7 @@ class StrategyPerformanceReport:
 
 def compute_win_rate(win_count: int, loss_count: int) -> float:
     """
-    Same formula and zero-division guard as monitoring/performance.py's
+    Same formula and zero-division guard as core_layer/health_monitor/performance.py's
     PerformanceTracker._win_rate() -- see module docstring. Renamed
     from a private _win_rate() to this public name in Phase 59.4
     (TASK 4) once analytics/context_report.py (same package) became a

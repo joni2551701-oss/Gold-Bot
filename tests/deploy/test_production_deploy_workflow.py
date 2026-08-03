@@ -189,7 +189,7 @@ def test_workflow_rsync_does_not_exclude_the_whole_database_package():
     """
     Regression guard for the real bug caught on the first VPS deploy:
     excluding the bare 'database' directory silently drops the Python
-    package, breaking `from database.database import Database`
+    package, breaking `from database_layer.database_manager.database import Database`
     everywhere. Only the scoped database/*.db pattern is allowed.
     """
     text = _workflow_text()
@@ -217,9 +217,11 @@ def test_workflow_rsync_exclude_pattern_matches_only_db_files_not_package_source
     ][0]
     pattern = exclude_line.split("--exclude='")[1].split("'")[0]
 
-    database_dir = pathlib.Path(__file__).resolve().parents[2] / "database"
+    # Python source moved to database_layer/ in the Phase C migration; the
+    # runtime .db file stays at database/goldbot.db (Config.DB_PATH).
+    database_dir = pathlib.Path(__file__).resolve().parents[2] / "database_layer"
     source_files = [p for p in database_dir.rglob("*.py")]
-    assert source_files, "expected real .py files under database/ to test against"
+    assert source_files, "expected real .py files under database_layer/ to test against"
     for path in source_files:
         rel = path.relative_to(database_dir.parent).as_posix()
         assert not fnmatch.fnmatch(rel, pattern), (

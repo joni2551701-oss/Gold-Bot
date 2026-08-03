@@ -125,7 +125,7 @@ package). `__init__.py` imports `config.Config` plus every module in
 this package. None imports `context/`, `strategies/`, `signals/`,
 `ai/`, `decision/`, `risk/`, `execution/`, `database/`, or `telegram/`.
 Not imported by `core/pipeline.py`, `data_layer/live_data/market_data.py`, or any
-other existing module in this phase. `monitoring/provider_health.py`
+other existing module in this phase. `core_layer/health_monitor/provider_health.py`
 (Phase 59.2) imports this package — a new, one-directional dependency,
 never reversed.
 

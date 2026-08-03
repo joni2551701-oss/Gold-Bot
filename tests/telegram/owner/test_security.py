@@ -5,8 +5,8 @@ autouse fresh_database fixture) -- no mocks. TELEGRAM_OWNER_ID is "111"
 per conftest.py.
 """
 
-from database.admin_repository import AdminRepository
-from database.audit_log_repository import AuditLogRepository
+from database_layer.user_repository.admin_repository import AdminRepository
+from database_layer.audit_log.audit_log_repository import AuditLogRepository
 from telegram.owner.owner_roles import OwnerRole
 from telegram.owner.security import SecurityCheckResult, log_owner_action, require_role
 

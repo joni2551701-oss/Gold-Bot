@@ -115,20 +115,20 @@ config does anything `telegram/polling.py` doesn't already assume
   in place -- no new file, no new entry point.
 - **TASK 4/5 (runtime status model + heartbeat)**: no existing module
   tracks "is the aiogram Bot/Dispatcher connection itself alive" --
-  `monitoring.system_monitor.SystemMonitor` (Core Owner Monitoring
+  `core_layer.health_monitor.system_monitor.SystemMonitor` (Core Owner Monitoring
   Alpha, previous phase) tracks trading-pipeline uptime/last_scan/
   last_error via `AdminService`/provider registry, a different
   concern. A new, small `telegram/runtime_monitor.py` is added
   (inside the already-existing `telegram/` package -- no new
   top-level package), and it reuses
-  `monitoring.system_monitor.record_error()` as its cross-module error
+  `core_layer.health_monitor.system_monitor.record_error()` as its cross-module error
   sink (same "relay into the shared sink" pattern
-  `monitoring.error_monitor.ErrorMonitor.capture()` already
+  `core_layer.health_monitor.error_monitor.ErrorMonitor.capture()` already
   established), so a Telegram-runtime error also shows up in
   `/owner_status`'s `last_error` field without duplicating storage.
 - No new database table: `TelegramRuntimeStatus` (TASK 4) is computed
   live from an in-process singleton, mirroring
-  `monitoring.system_monitor.SystemMonitor`'s own `DEFAULT_MONITOR`
+  `core_layer.health_monitor.system_monitor.SystemMonitor`'s own `DEFAULT_MONITOR`
   module-level-singleton-in-a-long-running-process convention --
   `telegram/polling.py` is itself the long-running process, so
   in-memory state naturally persists exactly as long as it's

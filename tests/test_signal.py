@@ -8,7 +8,7 @@ chain that the Telegram layer depends on.
 
 
 def _seed_signal(signal_id="sig-1", confidence=0.8):
-    from database.signal_repository import SignalRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
 
     repo = SignalRepository()
     repo.create_signal({
@@ -90,7 +90,7 @@ def test_signal_access_free_plan_denied_premium_allowed():
     assert access.can_access_signal("7001") is False  # default FREE plan
 
     SubscriptionService().get_plan("7001")  # ensure subscription row exists
-    from database.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
     SubscriptionRepository().update_plan("7001", "PREMIUM")
 
     assert access.can_access_signal("7001") is True

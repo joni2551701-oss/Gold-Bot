@@ -17,28 +17,28 @@ decision-pipeline observation layer"). It is fully merged into the
 branch this Worker is developing on and is **live-wired**, not just a
 foundation:
 
-- `monitoring/models.py` — `SystemHealth`, `MarketHealth`,
+- `core_layer/health_monitor/models.py` — `SystemHealth`, `MarketHealth`,
   `SignalHealth`, `ErrorSeverity`, `ErrorEvent`, `DecisionPipelineEntry`
   (primitive-only, no Trading Core object references).
-- `monitoring/system_monitor.py` — `SystemMonitor` /
+- `core_layer/health_monitor/system_monitor.py` — `SystemMonitor` /
   `DEFAULT_MONITOR`: in-memory uptime tracking, `record_scan()`,
   `record_error()`, `get_health()` composing `AdminService` +
   `check_registry_health()`.
-- `monitoring/market_monitor.py` — `get_market_health()`, composing
-  `monitoring/provider_health.py`.
-- `monitoring/signal_monitor.py` — extended with `get_signal_health()`
+- `core_layer/health_monitor/market_monitor.py` — `get_market_health()`, composing
+  `core_layer/health_monitor/provider_health.py`.
+- `core_layer/health_monitor/signal_monitor.py` — extended with `get_signal_health()`
   (today's BUY/SELL/NONE counts + average confidence), aggregating
   `SignalRepository.get_signals_today()`. The pre-existing dead
   `SignalMonitor`/`MonitorConfig`/`MonitorResult` placeholder (a
   different, older, `monitor()`-returns-`Not implemented` stub) is left
   untouched alongside it.
-- `monitoring/decision_logger.py` — `DecisionLogger`: `log_entry()` /
+- `decision_layer/decision_logger/decision_logger.py` — `DecisionLogger`: `log_entry()` /
   `get_recent_entries()`, a primitive per-criterion pass/fail trace
   (`criteria_met`, `criteria_total`, `decision`, `reason`), persisted.
-- `monitoring/error_monitor.py` — `ErrorMonitor`: `capture()` /
+- `core_layer/health_monitor/error_monitor.py` — `ErrorMonitor`: `capture()` /
   `get_recent_errors()` / `get_error_counts()`, persisted, and relays
   into `SystemMonitor.record_error()`.
-- `database/monitoring_models.py` + `database/monitoring_repository.py`
+- `database_layer/audit_log/monitoring_models.py` + `database_layer/audit_log/monitoring_repository.py`
   — two new append-only tables (`monitoring_error_events`,
   `monitoring_decision_pipeline`).
 - `telegram/owner/monitoring_commands.py` — `get_status_report()`,
@@ -66,7 +66,7 @@ built end-to-end, already in production wiring.
 | `/health` | **Yes** | `telegram/owner/monitoring_commands.py::get_health_report()`, live |
 | `/status` | **Partially** — `/status` (general, "Bot status") already exists as a *non-owner* command (`telegram/commands.py:37`); the owner-scoped equivalent is `/owner_status` | Collision: this brief's `/status` would need `owner_status`'s slot, not a bare `/status` |
 | `/errors` | **Yes** | `get_errors_report()`, live |
-| `/performance` | **No** | Genuine gap — `monitoring/performance.py`'s `PerformanceTracker` is a *different* concern (computed win-rate/strategy breakdown from closed trades), not a raw counter collector |
+| `/performance` | **No** | Genuine gap — `core_layer/health_monitor/performance.py`'s `PerformanceTracker` is a *different* concern (computed win-rate/strategy breakdown from closed trades), not a raw counter collector |
 | `/market` | **Yes** | `get_market_report()`, live |
 | `/signals` | **Yes** | `get_signals_report()`, live |
 | `/decision` | **Served by `/pipeline`** | `get_pipeline_report()` already shows the decision pipeline trace under a different command name |
@@ -80,7 +80,7 @@ Cross-referencing this brief's TASK 2–8 against the existing
 1. **System resource metrics (TASK 2)** — CPU, RAM, thread count,
    event-loop health, restart count, heartbeat. Confirmed via
    repo-wide grep: **no `psutil` import anywhere in the codebase**, and
-   `monitoring/system_monitor.py` tracks only `uptime_seconds`/
+   `core_layer/health_monitor/system_monitor.py` tracks only `uptime_seconds`/
    `database_status`/`data_connection`/`last_scan`/`last_error` — no
    CPU/RAM/thread/restart-count field exists. **Genuine gap.**
 2. **OK / WARNING / CRITICAL health classification (TASK 6)** —
@@ -91,7 +91,7 @@ Cross-referencing this brief's TASK 2–8 against the existing
    explicit: "Hozircha faqat yig'adi. Hisoblamaskes ka hisoblamaydi"
    (for now, only collects, does not compute) — signal count, decision
    count, trade count, reject count, runtime, error count, reconnect
-   count, as raw tallies. `monitoring/performance.py`'s
+   count, as raw tallies. `core_layer/health_monitor/performance.py`'s
    `PerformanceTracker` computes win-rate/strategy stats from *closed
    trades* — a different, already-computing concern. No raw
    "count of decisions this session"/"count of reconnects" tally
@@ -99,7 +99,7 @@ Cross-referencing this brief's TASK 2–8 against the existing
    `PerformanceCollector` counter object.
 4. **Per-pipeline-stage timing (TASK 5)** — the brief wants each stage
    of Context → Signal → AI → Decision → Risk → Execution to have its
-   own recorded duration. `monitoring/decision_logger.py` already
+   own recorded duration. `decision_layer/decision_logger/decision_logger.py` already
    records a per-criterion pass/fail trace and a final decision, but
    **not stage-by-stage timing**. `core/pipeline.py` (read-only, Rule
    1) already logs `stage=... duration=...s` lines per
@@ -146,7 +146,7 @@ section for the prior phase.
   Owner monitoring, consistent with every prior phase's own "reviewed,
   not reused" conclusion for this package.
 - `performance/` (top-level) — does not exist; the only
-  performance-named module is `monitoring/performance.py`
+  performance-named module is `core_layer/health_monitor/performance.py`
   (`PerformanceTracker`, reviewed above).
 
 ## Conclusion

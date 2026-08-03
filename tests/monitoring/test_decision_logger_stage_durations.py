@@ -1,9 +1,9 @@
-"""Phase B.0 TASK 5 -- monitoring/decision_logger.py stage_durations_ms extension tests."""
+"""Phase B.0 TASK 5 -- decision_layer/decision_logger/decision_logger.py stage_durations_ms extension tests."""
 
 from unittest.mock import MagicMock
 
-from database.monitoring_models import create_decision_pipeline_entry_row
-from monitoring.decision_logger import DecisionLogger
+from database_layer.audit_log.monitoring_models import create_decision_pipeline_entry_row
+from decision_layer.decision_logger.decision_logger import DecisionLogger
 
 
 def _repository(row=None):

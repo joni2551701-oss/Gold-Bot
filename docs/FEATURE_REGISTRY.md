@@ -139,12 +139,12 @@ Every enable/disable is:
    depends on it (this task's own worked example, re-anchored in Phase
    60.9: `Cannot disable ENABLE_DATASET_SYNC. Dependent features
    active: ENABLE_BACKTEST`).
-2. **Persisted** — `database/runtime_feature_repository.py`'s
+2. **Persisted** — `database_layer/journal_repository/runtime_feature_repository.py`'s
    `runtime_features` table, surviving a restart.
-3. **Audited** — `database/audit_log_repository.py`, action
+3. **Audited** — `database_layer/audit_log/audit_log_repository.py`, action
    `FEATURE_ENABLED`/`FEATURE_DISABLED` (`TOGGLE_FEATURE`/`REJECTED`
    for a blocked attempt).
-4. **Snapshotted** — `database/config_snapshot_repository.py`, one
+4. **Snapshotted** — `database_layer/journal_repository/config_snapshot_repository.py`, one
    snapshot of the full runtime feature state after every successful
    change, for a future rollback.
 

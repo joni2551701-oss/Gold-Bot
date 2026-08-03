@@ -1,10 +1,10 @@
-"""GoldBot Core Owner Monitoring Alpha, TASK 6 -- monitoring/error_monitor.py tests."""
+"""GoldBot Core Owner Monitoring Alpha, TASK 6 -- core_layer/health_monitor/error_monitor.py tests."""
 
 from unittest.mock import MagicMock
 
-from database.monitoring_models import create_error_event_entry
-from monitoring.error_monitor import ErrorMonitor
-from monitoring.models import ErrorEvent, ErrorSeverity
+from database_layer.audit_log.monitoring_models import create_error_event_entry
+from core_layer.health_monitor.error_monitor import ErrorMonitor
+from core_layer.health_monitor.models import ErrorEvent, ErrorSeverity
 
 
 def _repository(row=None, rows=None):
@@ -53,7 +53,7 @@ def test_capture_never_raises_on_database_failure():
 
 
 def test_capture_updates_system_monitor_last_error():
-    from monitoring.system_monitor import DEFAULT_MONITOR
+    from core_layer.health_monitor.system_monitor import DEFAULT_MONITOR
     monitor = ErrorMonitor(repository=_repository())
     monitor.capture("system_monitor", "API timeout", "unique marker message")
     assert DEFAULT_MONITOR.get_health().last_error == "unique marker message"

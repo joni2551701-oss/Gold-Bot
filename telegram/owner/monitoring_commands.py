@@ -20,19 +20,19 @@ live `telegram.permissions`/`telegram.command_router` gate (see the
 audit's own "Security" section for why no new `access_control.py` is
 created). Phase B.0's own new surface (`get_performance_report()`, the
 resource/health lines) is additionally gated by
-`monitoring.access.is_owner_monitoring_enabled()`.
+`core_layer.health_monitor.access.is_owner_monitoring_enabled()`.
 """
 
 from config import Config
-from monitoring.access import is_owner_monitoring_enabled
-from monitoring.decision_logger import DecisionLogger
-from monitoring.error_monitor import ErrorMonitor
-from monitoring.health_monitor import classify_health
-from monitoring.market_monitor import get_market_health
-from monitoring.performance_collector import get_counts as get_performance_counts
-from monitoring.resource_monitor import get_resource_snapshot
-from monitoring.signal_monitor import get_signal_health
-from monitoring.system_monitor import get_health as get_system_health_snapshot
+from core_layer.health_monitor.access import is_owner_monitoring_enabled
+from decision_layer.decision_logger.decision_logger import DecisionLogger
+from core_layer.health_monitor.error_monitor import ErrorMonitor
+from core_layer.health_monitor.health_monitor import classify_health
+from core_layer.health_monitor.market_monitor import get_market_health
+from core_layer.health_monitor.performance_collector import get_counts as get_performance_counts
+from core_layer.health_monitor.resource_monitor import get_resource_snapshot
+from core_layer.health_monitor.signal_monitor import get_signal_health
+from core_layer.health_monitor.system_monitor import get_health as get_system_health_snapshot
 from telegram.owner.provider_commands import ProviderCommandResult
 from telegram.owner.system_commands import get_system_health
 from core_layer.logger.logger import setup_logger
@@ -55,12 +55,12 @@ def _format_uptime(seconds: float) -> str:
 
 def get_status_report() -> ProviderCommandResult:
     """
-    /status -> `monitoring.system_monitor.get_health()`. Never raises:
+    /status -> `core_layer.health_monitor.system_monitor.get_health()`. Never raises:
     the underlying `get_health()` already never raises; this function
     only formats its output. When `enable_owner_monitoring` is on
     (Phase B.0), appends an overall health classification
-    (`monitoring.health_monitor.classify_health()`) and a resource
-    snapshot line (`monitoring.resource_monitor.get_resource_snapshot()`)
+    (`core_layer.health_monitor.health_monitor.classify_health()`) and a resource
+    snapshot line (`core_layer.health_monitor.resource_monitor.get_resource_snapshot()`)
     -- both additive, never replacing the existing lines above.
     """
     try:
@@ -96,9 +96,9 @@ def get_status_report() -> ProviderCommandResult:
 
 def get_performance_report() -> ProviderCommandResult:
     """
-    /performance -> `monitoring.performance_collector.get_counts()`
+    /performance -> `core_layer.health_monitor.performance_collector.get_counts()`
     (Phase B.0 TASK 7 -- a pure counter collector, never a computed
-    metric; `monitoring.performance.PerformanceTracker`'s own win-rate
+    metric; `core_layer.health_monitor.performance.PerformanceTracker`'s own win-rate
     stats are a separate, already-existing concern). Owner-gated by
     `enable_owner_monitoring` (Rule 5) in addition to the live
     OWNER_COMMANDS gate. Never raises.
@@ -130,7 +130,7 @@ def get_health_report() -> ProviderCommandResult:
 
 
 def get_market_report(symbol: str = DEFAULT_SYMBOL) -> ProviderCommandResult:
-    """/market -> `monitoring.market_monitor.get_market_health()` for the configured provider."""
+    """/market -> `core_layer.health_monitor.market_monitor.get_market_health()` for the configured provider."""
     try:
         health = get_market_health(symbol=symbol, provider_name=Config.MARKET_DATA_PROVIDER)
         lines = [
@@ -147,7 +147,7 @@ def get_market_report(symbol: str = DEFAULT_SYMBOL) -> ProviderCommandResult:
 
 
 def get_signals_report() -> ProviderCommandResult:
-    """/signals -> `monitoring.signal_monitor.get_signal_health()`."""
+    """/signals -> `core_layer.health_monitor.signal_monitor.get_signal_health()`."""
     try:
         health = get_signal_health()
         lines = [
@@ -164,7 +164,7 @@ def get_signals_report() -> ProviderCommandResult:
 
 
 def get_errors_report(hours: int = 24) -> ProviderCommandResult:
-    """/errors -> `monitoring.error_monitor.ErrorMonitor.get_error_counts()`."""
+    """/errors -> `core_layer.health_monitor.error_monitor.ErrorMonitor.get_error_counts()`."""
     try:
         counts = ErrorMonitor().get_error_counts(hours=hours)
         lines = [f"Last {hours}h"]
@@ -180,7 +180,7 @@ def get_errors_report(hours: int = 24) -> ProviderCommandResult:
 
 
 def get_pipeline_report(limit: int = 1) -> ProviderCommandResult:
-    """/pipeline -> `monitoring.decision_logger.DecisionLogger.get_recent_entries()` -- most recent decision trace(s)."""
+    """/pipeline -> `decision_layer.decision_logger.decision_logger.DecisionLogger.get_recent_entries()` -- most recent decision trace(s)."""
     try:
         entries = DecisionLogger().get_recent_entries(limit=limit)
         if not entries:

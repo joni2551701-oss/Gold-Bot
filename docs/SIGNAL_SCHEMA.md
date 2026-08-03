@@ -59,13 +59,13 @@ reuse rather than invent:
 | `SignalCandidate(signal_type, entry, stop_loss, take_profit, strategy_name, confidence, reasons)` | `signal_layer/signal_builder/models.py` | The adapter's required input — untouched. |
 | `SignalType.BUY/SELL/NONE` | `signal_layer/signal_builder/models.py` | `SignalSchema.direction`'s exact allowed vocabulary (`ALLOWED_DIRECTIONS`) — read as plain literals, not imported as the enum type (see "Why fields are plain strings" below). |
 | `SignalQualityResult(grade: QualityGrade, score, ...)` | `signal_layer/signal_scoring/signal_quality.py` | `SignalSchema.quality_grade`/`.confidence_score`, relayed via `grade.value`/`score` in the adapter, never recomputed. |
-| `SignalRecord(signal_id: str, created_at: datetime, ...)`, `create_signal_record()`'s `signal_id=str(uuid.uuid4())`, `created_at=datetime.now(timezone.utc)` | `database/signal_record.py` (untouched) | `SignalSchema.signal_id`/`.created_at`'s exact generation convention (`generate_signal_id()`), not a new counter-based scheme. See "Relationship to SignalRecord" below for why `SignalSchema` is a distinct model, not a duplicate. |
+| `SignalRecord(signal_id: str, created_at: datetime, ...)`, `create_signal_record()`'s `signal_id=str(uuid.uuid4())`, `created_at=datetime.now(timezone.utc)` | `database_layer/trade_repository/signal_record.py` (untouched) | `SignalSchema.signal_id`/`.created_at`'s exact generation convention (`generate_signal_id()`), not a new counter-based scheme. See "Relationship to SignalRecord" below for why `SignalSchema` is a distinct model, not a duplicate. |
 | `DecisionAction.APPROVE/REJECT/NO_TRADE` | `decision_layer/decision_engine/models.py` | Confirmed **not** the same vocabulary as this phase's `SignalSchema.decision` (`APPROVED`/`REJECTED`/`PENDING`) — see "Decision status mapping" below for why, and the explicit, documented mapping. |
 | `RiskResult(approved, lot_size, risk_amount, risk_reward, reason)` — no `id` field | `risk_layer/risk_engine/risk_manager.py` | Confirmed `risk_id` has no real source anywhere today — stays an honest `None` hook, never fabricated. |
 | `SignalExplanation(direction, reasons, quality, confidence)` — no `id` field | `signal_layer/signal_scoring/explainability.py` | Confirmed `explanation_id` has no real source anywhere today — stays an honest `None` hook. |
 | `main.py`'s `symbol="XAUUSD"`, `interval="M15"`; `assets/profiles/gold.py`'s `AssetType.GOLD.value == "GOLD"` | `main.py`, `assets/` | `signal_layer/signal_builder/adapter.py`'s default `symbol`/`timeframe`/`asset_type` — real, already-established values, not new inventions (the same real-value-reuse pattern Phase A11/A12/A13 followed). `asset_type`'s default is the literal `"GOLD"` string, not an `assets/` import — see "Why no `assets/` import" below. |
 
-## Relationship to `SignalRecord` (`database/signal_record.py`)
+## Relationship to `SignalRecord` (`database_layer/trade_repository/signal_record.py`)
 
 `SignalRecord` already exists and is untouched by this phase. It is
 **not** the same thing as `SignalSchema`:
@@ -75,7 +75,7 @@ reuse rather than invent:
 | When it can exist | Only once a full `(SignalCandidate, TradeDecision, RiskResult)` triple already exists — the end of a pipeline cycle. | Right after Strategy Engine — before Decision Engine or Risk Manager have run. |
 | `decision`/`risk_result` | Required, non-optional dataclass fields. | Optional references (`decision` defaults `"PENDING"`, `risk_id` defaults `None`). |
 | Shape | Persistence-display-oriented (`rr_ratio`, `ai_decision`, `risk_status`, `signal_status` — flattened for the `signals` SQL table). | Cross-module contract-oriented (`asset_type`, `session`, `quality_grade`, `confidence_score`, `context_id`, `explanation_id` — fields `SignalRecord` has no equivalent for). |
-| Consumer | `database/signal_repository.py` only. | A future AI provider, Analytics, Replay, Education — never the database in this phase. |
+| Consumer | `database_layer/trade_repository/signal_repository.py` only. | A future AI provider, Analytics, Replay, Education — never the database in this phase. |
 | Written to the database? | Yes — that's its purpose. | No — not in this phase. |
 
 Both independently reuse the same `str(uuid.uuid4())`/

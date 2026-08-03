@@ -4,12 +4,12 @@ Point-in-time capture of a feature registry state, for a future
 rollback (Phase 59.6: Audit & Observability Foundation, TASK 6).
 Companion to `docs/FEATURE_REGISTRY.md`.
 
-## `database/config_snapshot_repository.py`
+## `database_layer/journal_repository/config_snapshot_repository.py`
 
 ```python
 from configuration.feature_registry import build_feature_registry
-from database.config_snapshot_models import create_config_snapshot
-from database.config_snapshot_repository import ConfigSnapshotRepository
+from database_layer.journal_repository.config_snapshot_models import create_config_snapshot
+from database_layer.journal_repository.config_snapshot_repository import ConfigSnapshotRepository
 
 snapshot = create_config_snapshot(
     build_feature_registry(), taken_by="owner", reason="before feature toggle",
@@ -27,7 +27,7 @@ between snapshots.
 
 Real, persisted, append-only table (`config_snapshots`) — same
 "no update/delete, a fixed point-in-time record" posture as
-`database/audit_log_repository.py`. `get_latest()`/`get_all(limit=50)`
+`database_layer/audit_log/audit_log_repository.py`. `get_latest()`/`get_all(limit=50)`
 read snapshots back, newest first.
 
 ## What this phase does NOT do

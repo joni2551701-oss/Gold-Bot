@@ -37,7 +37,7 @@ one 3.4s cold start is negligible against a 300s cycle budget.
 | Max RSS after `GoldBot()` construction | 136.4 MB |
 
 `resource.getrusage(RUSAGE_SELF).ru_maxrss` (stdlib, no `psutil`
-dependency, matching `monitoring/resource_monitor.py`'s own
+dependency, matching `core_layer/health_monitor/resource_monitor.py`'s own
 Phase B.0 approach). ~136 MB is a modest footprint for a modern VPS
 (production_setup.md's minimum spec is well above this).
 

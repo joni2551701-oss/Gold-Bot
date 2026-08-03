@@ -25,7 +25,7 @@ def _run(coro):
 
 
 def _bootstrap():
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     async def register_all():
         await route_command("/start", telegram_id=OWNER_ID)
@@ -92,7 +92,7 @@ def test_admin_denied_owner_only_commands():
 
 def test_revoked_admin_immediately_loses_access():
     """No caching/stale-permission window -- revocation takes effect on the very next call."""
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     _bootstrap()
     before = _run(route_command("/stats", telegram_id=ADMIN_ID))
@@ -124,7 +124,7 @@ def test_owner_status_is_config_only_never_a_database_row():
     adding a database row for a telegram_id must never grant OWNER,
     only ADMIN.
     """
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
     from telegram.permissions import is_owner
 
     AdminRepository().add_admin(USER_ID)

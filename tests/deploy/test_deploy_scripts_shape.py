@@ -107,7 +107,7 @@ def test_release_deploy_script_does_not_symlink_the_whole_database_directory():
     Regression guard for the real bug caught on the first VPS deploy:
     symlinking the whole database/ directory over the release's own
     (rsync'd) Python package directory would shadow it, breaking
-    `from database.database import Database`.
+    `from database_layer.database_manager.database import Database`.
     """
     text = _script_text("release_deploy.sh")
     assert 'ln -sfn "$DEPLOY_PATH/shared/database" "$RELEASE_DIR/database"' not in text
@@ -278,7 +278,7 @@ def test_simulated_deploy_ships_the_database_package_and_preserves_shared_db(tmp
     needing a VPS: (1) copy the repo into a fake release directory,
     skipping exactly what production_deploy.yml's rsync excludes; (2)
     symlink the shared runtime .db file in exactly as
-    release_deploy.sh does; (3) confirm `database.database` -- which
+    release_deploy.sh does; (3) confirm `database_layer.database_manager.database` -- which
     itself imports core_layer.logger.logger and config, so a database/-only copy
     would give a false signal -- still imports cleanly, and the shared
     file's contents are reached through the symlink, not overwritten.
@@ -323,8 +323,8 @@ def test_simulated_deploy_ships_the_database_package_and_preserves_shared_db(tmp
 
     shutil.copytree(repo_root, release_dir, ignore=_ignore, symlinks=False)
 
-    assert (release_dir / "database" / "database.py").exists(), (
-        "database/database.py must ship with the release -- the exclude "
+    assert (release_dir / "database_layer" / "database_manager" / "database.py").exists(), (
+        "database_layer/database_manager/database.py must ship with the release -- the exclude "
         "pattern must not drop the Python package"
     )
     assert not (release_dir / "database" / "goldbot.db").exists(), (
@@ -335,7 +335,7 @@ def test_simulated_deploy_ships_the_database_package_and_preserves_shared_db(tmp
     (release_dir / "database" / "goldbot.db").symlink_to(shared_db)
 
     result = sp.run(
-        [sys.executable, "-c", "from database.database import Database; print('OK')"],
+        [sys.executable, "-c", "from database_layer.database_manager.database import Database; print('OK')"],
         cwd=str(release_dir),
         capture_output=True, text=True,
     )

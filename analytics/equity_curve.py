@@ -15,7 +15,7 @@ representing "1R" — converts each trade's already-computed
 This is not a sizing or PnL computation, and `risk_layer/risk_engine/risk_manager.py`
 is completely untouched — it exists only so this module can render an
 equity curve shape, the same disclosed-assumption posture
-`backtesting/backtest_engine.py`'s own HTF-neutral-fallback used in
+`backtesting_layer/backtest_engine/backtest_engine.py`'s own HTF-neutral-fallback used in
 Phase 60.2.
 """
 

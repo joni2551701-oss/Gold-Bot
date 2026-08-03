@@ -1,7 +1,7 @@
 from config import Config
 from core_layer.logger.logger import setup_logger
 from core_layer.pipeline import TradingPipeline
-from monitoring.resource_monitor import record_process_start
+from core_layer.health_monitor.resource_monitor import record_process_start
 
 logger = setup_logger("GoldBot")
 

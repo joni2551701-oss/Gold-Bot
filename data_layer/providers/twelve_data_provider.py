@@ -52,7 +52,7 @@ class TwelveDataProvider(MarketDataProvider):
 
     def __init__(self, client: Optional[TwelveDataClient] = None):
         # Injectable for tests, same pattern as
-        # monitoring/performance.py's PerformanceTracker taking an
+        # core_layer/health_monitor/performance.py's PerformanceTracker taking an
         # optional SignalRepository.
         self.client = client or TwelveDataClient()
 

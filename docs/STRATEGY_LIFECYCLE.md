@@ -142,7 +142,7 @@ brief's own example.
 `performance`, `win_rate`, and `last_validation` are always `None` on
 every `DEFAULT_STRATEGIES` entry. This codebase does not compute
 per-strategy performance or win rate anywhere today —
-`monitoring/performance.py` aggregates *closed signals* by
+`core_layer/health_monitor/performance.py` aggregates *closed signals* by
 `strategy_name` from the database (a different, pre-existing,
 unrelated concern `lifecycle/` does not read from or duplicate).
 Wiring a real value into these three fields is Phase 59 Validation's

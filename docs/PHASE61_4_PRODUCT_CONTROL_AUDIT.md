@@ -34,7 +34,7 @@ hand-picking a role.
 
 - `telegram/subscription_service.py` (Phase 42) — `SubscriptionService`
   bridges `/plan`/`/subscription`/`/upgrade` to
-  `database.subscription_repository.SubscriptionRepository`.
+  `database_layer.user_repository.subscription_repository.SubscriptionRepository`.
   `SIGNAL_ACCESS_PLANS = {"PREMIUM", "VIP"}`, `DEFAULT_PLAN = "FREE"`
   — confirms `SubscriptionRecord.plan`'s real values already match
   `AIRole.PREMIUM`/`AIRole.VIP`/`AIRole.FREE` by name. The resolver
@@ -56,13 +56,13 @@ hand-picking a role.
 
 ## `database/` — no phone number field or hashing utility anywhere
 
-- `database/user_models.py`'s `UserRecord`: `telegram_id`, `username`,
+- `database_layer/user_repository/user_models.py`'s `UserRecord`: `telegram_id`, `username`,
   `language`, `trading_style`, `risk_percent`, `timeframe`,
   `created_at`, `strategy`, `notifications_enabled`, `status`,
   `last_activity`. **No `phone`/`phone_hash` field, no `role` field.**
-- `database/subscription_models.py`'s `SubscriptionRecord`:
+- `database_layer/user_repository/subscription_models.py`'s `SubscriptionRecord`:
   `telegram_id`, `plan`, `status`, `started_at`, `expires_at`.
-- `database/admin_models.py`'s `AdminRecord`: `telegram_id`, `role`
+- `database_layer/user_repository/admin_models.py`'s `AdminRecord`: `telegram_id`, `role`
   (free text, e.g. `"ADMIN"`/`"SUPER_ADMIN"`), `created_at`.
 - **Confirmed via repo-wide grep: zero `phone` references and zero
   `hashlib`/hash usage anywhere in `database/`, `telegram/`, or
@@ -129,7 +129,7 @@ separate home for that, unchanged this phase.
 |---|---|---|
 | 2 (AI Access Control Integration) | A resolver: real `telegram_id` -> `PermissionLevel` + `SubscriptionRecord.plan` -> `AIRole`. `tool_permissions.py`'s stale matrix corrected in place. | `telegram/permissions.py`, `telegram/subscription_service.py`, `ai/access/access_control.py`/`usage_limits.py` (all unmodified) |
 | 3 (Telegram AI Owner Commands) | `telegram/owner/ai_commands.py` — foundation only, not registered into `command_router.py`, same posture as every other `telegram/owner/*.py` module. | `telegram/commands.py`'s dict shape (read as a pattern, not imported into); `ai/router/router.py`'s `provider_metrics()`; `ai/access/access_control.py`/`capability_manager.py` for status |
-| 4 (AI User Registration Foundation) | `phone_hash` field + a `hash_phone_number()` helper (SHA-256, never store raw). | `database/user_models.py`'s existing `UserRecord` shape/migration convention |
+| 4 (AI User Registration Foundation) | `phone_hash` field + a `hash_phone_number()` helper (SHA-256, never store raw). | `database_layer/user_repository/user_models.py`'s existing `UserRecord` shape/migration convention |
 | 5 (Anti-Abuse / Trial Protection) | `ai/access/trial_manager.py` — trial-window check keyed on `(telegram_id, phone_hash)`. | TASK 4's `phone_hash`; `ai/access/usage_limits.py`'s reset/counter shape as the closest existing precedent for per-key state |
 | 6 (AI Usage Accounting) | A per-`telegram_id` aggregation function. | `ai/audit/request_log.py`/`response_log.py`/`trace.py` (all unmodified) — generalizes the existing join, no new log field |
 

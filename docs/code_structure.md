@@ -141,7 +141,7 @@ SQLite persistence — the only place SQL is written. One
 repository/model pair per table (`users`, `signals`, `subscriptions`,
 `feedback`, `admins`); every query is parameterized. See
 `docs/database_schema.md` for the full column-by-column schema and
-`database/models.py` for idempotent, `PRAGMA`-guarded migrations.
+`database_layer/database_manager/models.py` for idempotent, `PRAGMA`-guarded migrations.
 
 ### `telegram/`
 The Telegram product layer — registration, settings, subscriptions,

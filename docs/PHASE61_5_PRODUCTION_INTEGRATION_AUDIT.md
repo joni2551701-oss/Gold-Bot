@@ -104,13 +104,13 @@ the existing in-memory `status_of()` and a new persisted caller can
 share — no new module. Persistence itself follows the exact
 `phone_hash` precedent from Phase 61.4 TASK 4: `UserRecord` gains
 `trial_started_at: Optional[str] = None` (ISO string, same convention
-as `last_activity`), `database/models.py`'s `_migrate_users_schema()`
+as `last_activity`), `database_layer/database_manager/models.py`'s `_migrate_users_schema()`
 gains one more additive `ALTER TABLE` column, `UserRepository` gains
 `set_trial_started_at()`. `role` is **not** a new column: it is
 already fully derivable from existing persisted facts — `telegram.
 permissions.is_owner()`/`is_admin()` (config-driven) and
 `SubscriptionRecord.plan` (already persisted by
-`database/subscription_repository.py`) — exactly the two inputs
+`database_layer/user_repository/subscription_repository.py`) — exactly the two inputs
 `ai/access/permission_service.py`'s `resolve_ai_role()` (Phase 61.4
 TASK 2) already takes. Adding a fourth `role` column would duplicate
 state that already exists and could drift from it — CLAUDE.md's "No

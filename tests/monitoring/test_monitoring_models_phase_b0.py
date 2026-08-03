@@ -1,8 +1,8 @@
-"""Phase B.0 -- monitoring/models.py additions (HealthStatus, ResourceSnapshot, PerformanceCounters, DecisionPipelineEntry.stage_durations_ms) tests."""
+"""Phase B.0 -- core_layer/health_monitor/models.py additions (HealthStatus, ResourceSnapshot, PerformanceCounters, DecisionPipelineEntry.stage_durations_ms) tests."""
 
 import dataclasses
 
-from monitoring.models import (
+from core_layer.health_monitor.models import (
     DecisionPipelineEntry,
     HealthStatus,
     PerformanceCounters,

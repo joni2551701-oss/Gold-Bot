@@ -15,43 +15,43 @@ TASK 0's audit (`docs/PHASE_CORE_MONITORING_AUDIT.md`) reviewed
 dormant functions outright (`telegram/owner/system_commands.py`'s
 `get_system_health()` for `/health`; the live
 `telegram.permissions`/`telegram.command_router` gate for security);
-extended two existing files in place (`monitoring/signal_monitor.py`'s
-dead placeholder, `database/signal_repository.py` with one new read
+extended two existing files in place (`core_layer/health_monitor/signal_monitor.py`'s
+dead placeholder, `database_layer/trade_repository/signal_repository.py` with one new read
 method); confirmed a genuine gap for `ErrorEvent`/`DecisionPipelineEntry`
 persistence (nothing like it existed anywhere). No Director Decision
 pause was required.
 
 ## Built this phase
 
-- `monitoring/models.py` (new) — `SystemHealth`, `MarketHealth`,
+- `core_layer/health_monitor/models.py` (new) — `SystemHealth`, `MarketHealth`,
   `SignalHealth`, `ErrorSeverity`, `ErrorEvent`, `DecisionPipelineEntry`
   — primitive-only.
-- `monitoring/system_monitor.py` (new) — `SystemMonitor`: in-memory
+- `core_layer/health_monitor/system_monitor.py` (new) — `SystemMonitor`: in-memory
   `uptime_seconds()`/`record_scan()`/`record_error()`, `get_health()`
   composing `AdminService().get_system_status()` +
-  `monitoring.provider_health.check_registry_health()`. Module-level
+  `core_layer.health_monitor.provider_health.check_registry_health()`. Module-level
   `DEFAULT_MONITOR` shared across a running process.
-- `monitoring/market_monitor.py` (new) — `get_market_health()`,
-  composing `monitoring.provider_health.check_provider_health()`;
+- `core_layer/health_monitor/market_monitor.py` (new) — `get_market_health()`,
+  composing `core_layer.health_monitor.provider_health.check_provider_health()`;
   `last_price`/`last_update` are caller-supplied `Optional`s, never
   fabricated.
-- `monitoring/signal_monitor.py` (extended) — new `get_signal_health()`
+- `core_layer/health_monitor/signal_monitor.py` (extended) — new `get_signal_health()`
   aggregating `SignalRepository.get_signals_today()` by
   `direction`/`confidence_score`; the pre-existing dead `SignalMonitor`/
   `MonitorConfig`/`MonitorResult` placeholder is untouched.
-- `monitoring/decision_logger.py` (new) — `DecisionLogger`:
+- `decision_layer/decision_logger/decision_logger.py` (new) — `DecisionLogger`:
   `log_entry()`/`get_recent_entries()`, primitive `criteria_met`/
   `criteria_total`/`decision`/`reason` only — never imports
   `signal_layer.signal_scoring.signal_quality.SignalQualityResult` directly.
-- `monitoring/error_monitor.py` (new) — `ErrorMonitor`:
+- `core_layer/health_monitor/error_monitor.py` (new) — `ErrorMonitor`:
   `capture()`/`get_recent_errors()`/`get_error_counts()`; `capture()`
   also relays into `SystemMonitor.record_error()`.
-- `database/monitoring_models.py` + `database/monitoring_repository.py`
+- `database_layer/audit_log/monitoring_models.py` + `database_layer/audit_log/monitoring_repository.py`
   (new) — `ErrorEventEntry`/`DecisionPipelineEntryRow` +
   `MonitoringRepository`, two new append-only tables
   (`monitoring_error_events`, `monitoring_decision_pipeline`).
-  `database/models.py` gained `init_monitoring_schema()`.
-- `database/signal_repository.py` (extended) — new
+  `database_layer/database_manager/models.py` gained `init_monitoring_schema()`.
+- `database_layer/trade_repository/signal_repository.py` (extended) — new
   `get_signals_today()` read method (all of today's signals, any
   status; mirrors the existing `count_signals_today()`/
   `get_closed_signals_today()` pattern).
@@ -101,22 +101,22 @@ pause was required.
   `execution` imports across `monitoring/**/*.py` and
   `telegram/owner/monitoring_commands.py`: zero matches
   (`tests/monitoring/test_monitoring_isolation.py`). Additional
-  belt-and-suspenders check confirms `monitoring/decision_logger.py`
+  belt-and-suspenders check confirms `decision_layer/decision_logger/decision_logger.py`
   never imports `signals`/`context`.
 - **Trading pipeline zero-modification** — `git diff --stat` against
   `core/`, `decision/`, `risk/`, `execution/`, `strategies/`,
   `signals/`: no changes in any of those directories this phase.
-- **Article 9 (Version Compatibility)** — `monitoring/signal_monitor.py`'s
+- **Article 9 (Version Compatibility)** — `core_layer/health_monitor/signal_monitor.py`'s
   pre-existing `SignalMonitor`/`MonitorConfig`/`MonitorResult`
   placeholder is untouched (confirmed zero callers, but left in place
   rather than removed, per Article 9 discipline even for dead code
-  without explicit deletion authorization); `database/signal_repository.py`
-  gains one new, additive read method; `database/models.py` gains one
+  without explicit deletion authorization); `database_layer/trade_repository/signal_repository.py`
+  gains one new, additive read method; `database_layer/database_manager/models.py` gains one
   new, additive schema function. No existing public method/field
   signature changed anywhere.
 - **Article 11 (Foundation Reuse Law)** — TASK 0's audit confirmed
   `telegram/owner/system_commands.py`'s `get_system_health()` and
-  `monitoring/provider_health.py`'s health-check functions both
+  `core_layer/health_monitor/provider_health.py`'s health-check functions both
   already existed and are reused outright; the two genuine gaps
   (`ErrorEvent`/`DecisionPipelineEntry` persistence) were added only
   after confirming nothing comparable existed anywhere. See
@@ -124,12 +124,12 @@ pause was required.
 
 ## Dependency Compliance
 
-`monitoring/models.py` imports only `dataclasses`/`enum`/`typing`.
-`monitoring/decision_logger.py` imports only `database.monitoring_repository`,
-`monitoring.models`, `core_layer.logger.logger`, and stdlib — never `signals`/
+`core_layer/health_monitor/models.py` imports only `dataclasses`/`enum`/`typing`.
+`decision_layer/decision_logger/decision_logger.py` imports only `database_layer.audit_log.monitoring_repository`,
+`core_layer.health_monitor.models`, `core_layer.logger.logger`, and stdlib — never `signals`/
 `context` (confirmed by
 `test_decision_logger_never_imports_signals_or_context()`).
-`database/monitoring_repository.py` imports only `database.*`,
+`database_layer/audit_log/monitoring_repository.py` imports only `database.*`,
 `core_layer.logger.logger`, and stdlib (confirmed by
 `test_monitoring_repository_module_confined_to_database_and_stdlib()`).
 No file in `monitoring/` imports `ai.*` (confirmed by
@@ -140,7 +140,7 @@ No file in `monitoring/` imports `ai.*` (confirmed by
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | — (no new top-level package) | — | `monitoring/`, `telegram/owner/`, `database/` (all pre-existing) |
-| Modules | `monitoring/models.py`, `system_monitor.py`, `market_monitor.py`, `decision_logger.py`, `error_monitor.py`, `database/monitoring_models.py`, `monitoring_repository.py`, `telegram/owner/monitoring_commands.py` (8) | `monitoring/signal_monitor.py`, `database/signal_repository.py`, `database/models.py`, `telegram/commands.py`, `telegram/handlers.py` (5) | `telegram/owner/system_commands.py` (`get_system_health()`), `monitoring/provider_health.py`, `telegram/admin_service.py` (`AdminService`), `telegram.permissions`/`telegram.command_router` (all read/composed, not modified) |
+| Modules | `core_layer/health_monitor/models.py`, `system_monitor.py`, `market_monitor.py`, `decision_logger.py`, `error_monitor.py`, `database_layer/audit_log/monitoring_models.py`, `monitoring_repository.py`, `telegram/owner/monitoring_commands.py` (8) | `core_layer/health_monitor/signal_monitor.py`, `database_layer/trade_repository/signal_repository.py`, `database_layer/database_manager/models.py`, `telegram/commands.py`, `telegram/handlers.py` (5) | `telegram/owner/system_commands.py` (`get_system_health()`), `core_layer/health_monitor/provider_health.py`, `telegram/admin_service.py` (`AdminService`), `telegram.permissions`/`telegram.command_router` (all read/composed, not modified) |
 | Classes | `SystemMonitor`, `DecisionLogger`, `ErrorMonitor`, `MonitoringRepository` (4) | — | `AdminService`, `ProviderRegistry` (composed, not modified) |
 | Models | `SystemHealth`, `MarketHealth`, `SignalHealth`, `ErrorSeverity`, `ErrorEvent`, `DecisionPipelineEntry`, `ErrorEventEntry`, `DecisionPipelineEntryRow` (8) | — | `ProviderHealthReport`, `ProviderHealthStatus`, `SystemStatus` |
 | Functions | `get_health()`, `record_scan()`, `record_error()`, `get_market_health()`, `get_signal_health()`, `log_entry()`, `get_recent_entries()`, `capture()`, `get_recent_errors()`, `get_error_counts()`, 7 command functions, `init_monitoring_schema()`, `get_signals_today()` (~20) | — | `check_registry_health()`, `check_provider_health()`, `AdminService.get_system_status()` |
@@ -164,7 +164,7 @@ strategies/ signals/` returns no output.
 Per the Director's own stated order: 3–5 weeks of real Owner
 monitoring, collecting bugs and data, then AI `66.5` (Performance
 Intelligence Foundation) continues, reading from
-`monitoring.decision_logger.DecisionLogger`'s own accumulated dataset.
+`decision_layer.decision_logger.decision_logger.DecisionLogger`'s own accumulated dataset.
 Not decided here — requires its own dedicated Worker Brief per this
 session's Director Policy.
 

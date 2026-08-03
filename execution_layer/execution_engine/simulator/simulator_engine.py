@@ -5,7 +5,7 @@ Foundation, TASK 6).
     Decision APPROVE -> Risk Approved -> Execution Simulator -> Fill/Reject -> Trade Lifecycle
 
 `ExecutionSimulator.simulate()` is the one entry point, taking an
-already-OPEN `lifecycle.paper_trade.PaperTrade` (i.e. Decision already
+already-OPEN `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` (i.e. Decision already
 APPROVEd and Risk already approved -- this module does not re-check
 either) plus its `risk_layer.risk_engine.risk_manager.RiskResult` (for `lot_size`), and
 producing an `ExecutionSimulationResult` -- never mutating the
@@ -30,7 +30,7 @@ from execution_layer.execution_engine.simulator.slippage import SlippageConfig, 
 from execution_layer.execution_engine.simulator.spread import SpreadConfig, get_spread, is_spread_too_wide
 
 if TYPE_CHECKING:
-    from lifecycle.paper_trade import PaperTrade
+    from trade_monitoring_layer.paper_trading.paper_trade import PaperTrade
     from risk_layer.risk_engine.risk_manager import RiskResult
 
 

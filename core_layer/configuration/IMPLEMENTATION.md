@@ -57,9 +57,9 @@ flags = FeatureFlags()  # every flag False -- the safe default
   `validate_dependencies()`. Turns the static registry above into an
   actual runtime toggle — validated (dry run against
   `feature_dependency_validator.py`), persisted
-  (`database/runtime_feature_repository.py`), audited
-  (`database/audit_log_repository.py`), and snapshotted
-  (`database/config_snapshot_repository.py`) on every successful
+  (`database_layer/journal_repository/runtime_feature_repository.py`), audited
+  (`database_layer/audit_log/audit_log_repository.py`), and snapshotted
+  (`database_layer/journal_repository/config_snapshot_repository.py`) on every successful
   change. Never called from `core/pipeline.py` or any Telegram
   handler in this phase. See `docs/RUNTIME_FEATURE_CONTROL.md`.
 - `runtime_api.py` (Phase 59.7, TASK 9) — `enable_feature()`/
@@ -97,8 +97,8 @@ dependency on `database/`, `telegram/`, or any pipeline layer.
 `runtime_state.py` imports nothing beyond the standard library.
 `runtime_feature_manager.py` (Phase 59.7) is the first module in this
 package with a `database/` dependency — imports
-`database.runtime_feature_repository`, `database.audit_log_repository`,
-`database.config_snapshot_repository`/`config_snapshot_models` — a
+`database_layer.journal_repository.runtime_feature_repository`, `database_layer.audit_log.audit_log_repository`,
+`database_layer.journal_repository.config_snapshot_repository`/`config_snapshot_models` — a
 new, one-directional `configuration/` → `database/` dependency, never
 reversed (no `database/*_repository.py` imports `configuration/`).
 `runtime_api.py` imports only `configuration.runtime_feature_manager`

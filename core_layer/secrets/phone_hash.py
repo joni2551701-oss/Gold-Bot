@@ -5,7 +5,7 @@ TASK 4).
 "Telefon raqamni ochiq saqlamaslik" (never store the raw phone
 number) -- this module is the one place a phone number is ever
 touched before being discarded; only its hash is ever persisted
-(`database/user_models.py`'s `UserRecord.phone_hash`).
+(`database_layer/user_repository/user_models.py`'s `UserRecord.phone_hash`).
 
 Uses HMAC-SHA256 with a pepper (`core_layer.secrets.Secrets.PHONE_HASH_SALT`),
 not a bare `hashlib.sha256(phone)` -- a phone number has far less

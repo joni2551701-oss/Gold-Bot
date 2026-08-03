@@ -20,8 +20,8 @@ from typing import Optional
 
 from analytics.dataset_report import build_dataset_report, format_dataset_report
 from data_layer.providers.provider_comparison import compare_providers
-from database.raw_candle_repository import RawCandleRepository
-from database.sync_state_repository import SyncStateRepository
+from database_layer.market_repository.raw_candle_repository import RawCandleRepository
+from database_layer.market_repository.sync_state_repository import SyncStateRepository
 from telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
 

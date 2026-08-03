@@ -2014,7 +2014,7 @@ Real kodda ikkita ishlaydigan mexanizm mavjud:
 `02_Core_Layer/Secrets` noldan yaratilmadi — mavjud yechim hujjatlashtirildi. Real kodda yo'q, hujjatda kelajak qamrovi sifatida yozilgan: **Secret Rotation** va **Database Credentials**.
 
 **Correction #2 — "No dedicated Audit Log module" va "No New_Map documentation for real `performance/` package" — qisman noto'g'ri.**
-* `database/audit_log_models.py` + `database/audit_log_repository.py` real mavjud (`AuditLogEntry`, append-only). Kodning o'z izohiga ko'ra hozircha hech qanday owner buyrug'i `log_action()`ni chaqirmaydi — yozish real, ulash esa hali bajarilmagan.
+* `database_layer/audit_log/audit_log_models.py` + `database_layer/audit_log/audit_log_repository.py` real mavjud (`AuditLogEntry`, append-only). Kodning o'z izohiga ko'ra hozircha hech qanday owner buyrug'i `log_action()`ni chaqirmaydi — yozish real, ulash esa hali bajarilmagan.
 * `performance/` real mavjud: `collector.py` (`PerformanceCollector`), `metrics.py` (`PerformanceMetric`), `timer.py` (`PerformanceTimer`).
 Ikkala modul ham noldan yaratilmadi — mavjud kod hujjatlashtirildi.
 
@@ -2025,9 +2025,9 @@ Unda birorta ham `.py` fayl yo'q — u faqat governance/ADR markdown hujjatlari.
 
 | ACR | Kod holati |
 |---|---|
-| Backtesting Isolation Rule | ✅ **Verified** — `backtesting/backtest_engine.py` `risk_layer.risk_engine.risk_manager.RiskManager`ni chaqiradi va `execution/` yoki biror broker mijozini umuman import qilmaydi |
+| Backtesting Isolation Rule | ✅ **Verified** — `backtesting_layer/backtest_engine/backtest_engine.py` `risk_layer.risk_engine.risk_manager.RiskManager`ni chaqiradi va `execution/` yoki biror broker mijozini umuman import qilmaydi |
 | Canonical Event Bus Rule | ✅ **Verified** — `01_Data_Layer/Event_System` yagona Event Bus infratuzilmasi |
-| Module Reuse Rule | ✅ **Verified** — `backtest_engine.py` `lifecycle/paper_trade.py`ni qayta ishlatadi, o'z simulyatsiya modulini yaratmaydi |
+| Module Reuse Rule | ✅ **Verified** — `backtest_engine.py` `trade_monitoring_layer/paper_trading/paper_trade.py`ni qayta ishlatadi, o'z simulyatsiya modulini yaratmaydi |
 
 ## Known Gaps (Critical emas — implementatsiya bosqichida hal qilinadi)
 

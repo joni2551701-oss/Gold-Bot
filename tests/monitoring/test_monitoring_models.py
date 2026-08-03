@@ -1,8 +1,8 @@
-"""GoldBot Core Owner Monitoring Alpha, TASK 1 -- monitoring/models.py tests."""
+"""GoldBot Core Owner Monitoring Alpha, TASK 1 -- core_layer/health_monitor/models.py tests."""
 
 import dataclasses
 
-from monitoring.models import (
+from core_layer.health_monitor.models import (
     DecisionPipelineEntry,
     ErrorEvent,
     ErrorSeverity,

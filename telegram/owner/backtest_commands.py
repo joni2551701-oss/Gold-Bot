@@ -14,9 +14,9 @@ shape via backtesting.backtest_result.format_backtest_report().
 from datetime import datetime
 from typing import Optional
 
-from backtesting.backtest_engine import BacktestEngine
-from backtesting.backtest_result import format_backtest_report
-from backtesting.replay_models import ReplayConfig
+from backtesting_layer.backtest_engine.backtest_engine import BacktestEngine
+from backtesting_layer.backtest_report.backtest_result import format_backtest_report
+from backtesting_layer.replay_engine.replay_models import ReplayConfig
 from telegram.owner.provider_commands import ProviderCommandResult
 from core_layer.logger.logger import setup_logger
 

@@ -1,9 +1,9 @@
-"""Phase B.0 TASK 2 -- monitoring/resource_monitor.py tests."""
+"""Phase B.0 TASK 2 -- core_layer/health_monitor/resource_monitor.py tests."""
 
 from unittest.mock import MagicMock
 
-from monitoring.models import ResourceSnapshot
-from monitoring.resource_monitor import get_resource_snapshot, record_process_start
+from core_layer.health_monitor.models import ResourceSnapshot
+from core_layer.health_monitor.resource_monitor import get_resource_snapshot, record_process_start
 
 
 def _repository(restart_count=3):

@@ -97,7 +97,7 @@ and is the contract v0.4 AI and every phase after it must preserve.
   `execution/` import of `decision/` that bypasses `risk/`).
 - **No Hidden State** — every state transition (`RuntimeFeatureManager`
   toggles, `EmergencyManager` transitions) is persisted and audited
-  (`database/audit_log_repository.py`); nothing changes silently.
+  (`database_layer/audit_log/audit_log_repository.py`); nothing changes silently.
 - **Read-only Learning** — `learning/` observes closed trades and
   reports patterns; it never writes to `decision/`, `risk/`,
   `strategies/`, or `signals/`. Verified structurally: TASK 2's

@@ -18,7 +18,7 @@ from typing import Dict
 # implementation detail of TwelveDataClient's own request-building
 # code, not a public contract; this is a small, disclosed, read-only
 # duplication, same reasoning as compute_r_multiple() mirroring
-# database/signal_record.py's _calculate_rr_ratio() formula in Phase
+# database_layer/trade_repository/signal_record.py's _calculate_rr_ratio() formula in Phase
 # 59 Preparation).
 _TWELVEDATA_TIMEFRAMES: Dict[str, str] = {
     "M5": "5min",

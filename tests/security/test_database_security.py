@@ -36,7 +36,7 @@ def _table_exists(table: str) -> bool:
 
 
 def test_sql_injection_payload_as_telegram_id_is_stored_literally():
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     repo = UserRepository()
     for payload in SQLI_PAYLOADS:
@@ -54,7 +54,7 @@ def test_sql_injection_payload_as_telegram_id_is_stored_literally():
 
 
 def test_sql_injection_payload_as_username_does_not_corrupt_query():
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     repo = UserRepository()
     for i, payload in enumerate(SQLI_PAYLOADS):
@@ -99,7 +99,7 @@ def test_dynamic_update_column_allowlist_rejects_unknown_fields():
     filtered against a fixed allowlist first -- an unrecognized/attacker
     -supplied field name must be silently dropped, never reach SQL.
     """
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     repo = UserRepository()
     repo.create_user(telegram_id="allowlist-1", username="victim")
@@ -115,8 +115,8 @@ def test_dynamic_update_column_allowlist_rejects_unknown_fields():
 
 
 def test_admins_table_survives_injection_attempt_via_admin_id():
-    from database.admin_repository import AdminRepository
-    from database.user_repository import UserRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
+    from database_layer.user_repository.user_repository import UserRepository
 
     UserRepository()  # a sibling table -- must be unaffected by admins-table injection attempts
     repo = AdminRepository()

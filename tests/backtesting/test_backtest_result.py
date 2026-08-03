@@ -1,11 +1,11 @@
 """
-Phase 60.2, TASK 4 -- backtesting/backtest_result.py tests.
+Phase 60.2, TASK 4 -- backtesting_layer/backtest_report/backtest_result.py tests.
 """
 
 from datetime import datetime, timezone
 
 from analytics.signal_performance import SignalPerformance
-from backtesting.backtest_result import build_backtest_result, format_backtest_report
+from backtesting_layer.backtest_report.backtest_result import build_backtest_result, format_backtest_report
 
 
 def _performance(strategy_id="LIQUIDITY_SWEEP", result=None):

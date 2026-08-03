@@ -99,7 +99,7 @@ finding), unrelated to folder layout.
 
 ### Analytics — PARTIAL
 
-`monitoring/performance.py` exists, imports `SignalRepository`, and is
+`core_layer/health_monitor/performance.py` exists, imports `SignalRepository`, and is
 fully built — but has zero external callers (Architecture Audit
 finding) and there is no dedicated `analytics/` package or Telegram-
 facing analytics surface. The current `monitoring/` folder is

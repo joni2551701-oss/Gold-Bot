@@ -4,11 +4,11 @@ Activation Alpha, TASK 4).
 
 Tracks the aiogram Bot/Dispatcher connection's own operational state
 (connected / last heartbeat / error count / uptime) -- a different
-concern from `monitoring.system_monitor.SystemMonitor`'s trading-
+concern from `core_layer.health_monitor.system_monitor.SystemMonitor`'s trading-
 pipeline uptime/last_scan (Core Owner Monitoring Alpha, previous
 phase). `record_error()` relays into
-`monitoring.system_monitor.record_error()` as a cross-module sink
-(the same pattern `monitoring.error_monitor.ErrorMonitor.capture()`
+`core_layer.health_monitor.system_monitor.record_error()` as a cross-module sink
+(the same pattern `core_layer.health_monitor.error_monitor.ErrorMonitor.capture()`
 already established), so a Telegram-runtime error also surfaces in
 `/owner_status`'s `last_error` field without duplicating storage.
 
@@ -17,7 +17,7 @@ mirroring `SystemMonitor`'s own convention -- `telegram/polling.py` is
 itself the long-running process this tracks, so a fresh process
 restart is a legitimate "runtime reset," no persistence needed. Tests
 construct their own `TelegramRuntimeMonitor()` instance for isolation,
-same as `monitoring.system_monitor`'s own test suite does.
+same as `core_layer.health_monitor.system_monitor`'s own test suite does.
 """
 
 import time
@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from core_layer.logger.logger import setup_logger
-from monitoring.system_monitor import record_error as _record_core_error
+from core_layer.health_monitor.system_monitor import record_error as _record_core_error
 
 logger = setup_logger("TelegramRuntimeMonitor")
 

@@ -20,7 +20,7 @@ breaking /start or /language.
 
 from typing import Optional
 
-from database.user_repository import UserRepository
+from database_layer.user_repository.user_repository import UserRepository
 from core_layer.logger.logger import setup_logger
 
 logger = setup_logger("RegistrationService")

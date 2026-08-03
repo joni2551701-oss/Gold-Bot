@@ -50,15 +50,15 @@ The Telegram user profile: registration, settings (`language`,
 `notifications_enabled`), and lifecycle state (`status`:
 `NEW`/`ACTIVE`/`BANNED`, `last_activity`). One row per Telegram user,
 enforced by `telegram_id UNIQUE NOT NULL`. Owned by
-`database/user_repository.py` / `database/user_models.py`.
+`database_layer/user_repository/user_repository.py` / `database_layer/user_repository/user_models.py`.
 
 ### `subscriptions`
 One active plan (`FREE`/`PREMIUM`/`VIP`) per user, `telegram_id UNIQUE
 NOT NULL`. Deliberately separate from `users.status` — subscription
 plan and account lifecycle are independent concerns (a `BANNED` user
 can still technically hold a `PREMIUM` plan; access control checks
-both). Owned by `database/subscription_repository.py` /
-`database/subscription_models.py`.
+both). Owned by `database_layer/user_repository/subscription_repository.py` /
+`database_layer/user_repository/subscription_models.py`.
 
 ### `signals`
 Every signal candidate the trading pipeline produces, approved or not
@@ -66,20 +66,20 @@ Every signal candidate the trading pipeline produces, approved or not
 rejected/blocked signals stay available for analytics even though they
 never reach Telegram. No relation to `users` at all; this table is
 written exclusively by the scheduled pipeline process, read by the
-Telegram layer (`/signal`, `/history`) and `monitoring/performance.py`.
-Owned by `database/signal_repository.py` / `database/signal_record.py`.
+Telegram layer (`/signal`, `/history`) and `core_layer/health_monitor/performance.py`.
+Owned by `database_layer/trade_repository/signal_repository.py` / `database_layer/trade_repository/signal_record.py`.
 
 ### `feedback`
 Free-text feedback messages from users, `status`
 (`OPEN`/`REVIEWED`/`RESOLVED`). `telegram_id` is intentionally **not**
 unique — many feedback entries per user are valid and expected. Owned
-by `database/feedback_repository.py` / `database/feedback_models.py`.
+by `database_layer/user_repository/feedback_repository.py` / `database_layer/user_repository/feedback_models.py`.
 
 ### `admins`
 ADMIN-tier Telegram users, `telegram_id UNIQUE NOT NULL`, `role`
 (currently always `"ADMIN"` — OWNER is identified purely by
 `TELEGRAM_OWNER_ID` and never gets a row here). Owned by
-`database/admin_repository.py` / `database/admin_models.py`.
+`database_layer/user_repository/admin_repository.py` / `database_layer/user_repository/admin_models.py`.
 
 ### `raw_candles` (Phase 59.3)
 The first table added by any Phase A/AC/Phase-59 foundation module —
@@ -92,18 +92,18 @@ table, including `signals` — no relation, no foreign key, nothing in
 `core/pipeline.py` writes to it in this phase (see
 `docs/MARKET_DATA_ARCHITECTURE.md`'s "As implemented today" section
 for the same disclosed non-wiring already true of the provider layer
-itself). Owned by `database/raw_candle_repository.py` /
-`database/raw_candle_models.py`.
+itself). Owned by `database_layer/market_repository/raw_candle_repository.py` /
+`database_layer/market_repository/raw_candle_models.py`.
 
 ### `market_snapshots` (Phase 59.3)
 The persisted counterpart to `data_layer.live_data.market_data_snapshot.MarketDataSnapshot`
 (Phase 59 Preparation/59.1, which stays in-memory-only itself —
-`database/market_snapshot_models.py`'s `from_market_data_snapshot()`
+`database_layer/market_repository/market_snapshot_models.py`'s `from_market_data_snapshot()`
 is the one bridge between the two). `market_snapshot_id UNIQUE NOT
 NULL`. Same isolation as `raw_candles` — no relation to `signals`
 either, and nothing in `core/pipeline.py` writes to it in this phase.
-Owned by `database/market_snapshot_repository.py` /
-`database/market_snapshot_models.py`.
+Owned by `database_layer/market_repository/market_snapshot_repository.py` /
+`database_layer/market_repository/market_snapshot_models.py`.
 
 ### `sync_state` (Phase 59.5)
 One row per `(provider, symbol, timeframe)` — that three-part tuple is
@@ -115,8 +115,8 @@ resume forward instead of re-fetching a large window every time.
 Independent of every other table, including `raw_candles` — no
 foreign key, linked only by convention (shared `provider`/`symbol`/
 `timeframe` values), nothing in `core/pipeline.py` writes to it.
-Owned by `database/sync_state_repository.py` /
-`database/sync_state_models.py`.
+Owned by `database_layer/market_repository/sync_state_repository.py` /
+`database_layer/market_repository/sync_state_models.py`.
 
 ### `audit_log` (Phase 59.6)
 Append-only — no update/delete method exists on
@@ -125,8 +125,8 @@ Append-only — no update/delete method exists on
 `details`, `created_at`). Independent of every other table, including
 `admins` — `actor` holds the same kind of identifier by convention,
 never enforced structurally. Nothing calls `log_action()`
-automatically yet. Owned by `database/audit_log_repository.py` /
-`database/audit_log_models.py`.
+automatically yet. Owned by `database_layer/audit_log/audit_log_repository.py` /
+`database_layer/audit_log/audit_log_models.py`.
 
 ### `config_snapshots` (Phase 59.6)
 Append-only, same posture as `audit_log`. One row per captured
@@ -134,8 +134,8 @@ Append-only, same posture as `audit_log`. One row per captured
 (`snapshot_id UNIQUE NOT NULL`, `feature_state` — a JSON object string
 of `{feature_name: enabled}`, `taken_at`, `taken_by`, `reason`). No
 apply/restore function exists — capture and read only. Owned by
-`database/config_snapshot_repository.py` /
-`database/config_snapshot_models.py`. As of Phase 59.7, every
+`database_layer/journal_repository/config_snapshot_repository.py` /
+`database_layer/journal_repository/config_snapshot_models.py`. As of Phase 59.7, every
 successful `RuntimeFeatureManager` toggle also writes one of these
 rows — no longer purely a manual/future-command capture.
 
@@ -146,8 +146,8 @@ One row per feature name (`feature UNIQUE NOT NULL`, `enabled`,
 is stamped once on the first INSERT and never touched by any later
 UPDATE, so it always reflects when a feature was first toggled, not
 when it was most recently changed. Independent of every other table —
-no foreign key. Owned by `database/runtime_feature_repository.py` /
-`database/runtime_feature_models.py`.
+no foreign key. Owned by `database_layer/journal_repository/runtime_feature_repository.py` /
+`database_layer/journal_repository/runtime_feature_models.py`.
 
 ---
 
@@ -193,7 +193,7 @@ Index Audit. Recommendation: none further.
 
 ### Index Audit
 
-Added this phase (`database/models.py`, `CREATE INDEX IF NOT EXISTS`,
+Added this phase (`database_layer/database_manager/models.py`, `CREATE INDEX IF NOT EXISTS`,
 idempotent):
 
 | Table | Column | Backing query |
@@ -264,7 +264,7 @@ adding a precondition check in the service layer (outside this
 phase's `database/`-only scope). No duplicate `telegram_id` rows or
 `NULL`-where-`NOT NULL` values are possible today — those are already
 prevented by each table's own `UNIQUE`/`NOT NULL` constraints,
-verified directly from the schema in `database/models.py`.
+verified directly from the schema in `database_layer/database_manager/models.py`.
 
 ### Timestamp Consistency
 
@@ -285,14 +285,14 @@ only** per this phase's explicit "Majburan ko'chirma" (do not
 force-move) rule:
 
 - `UserRepository.update_last_activity()`
-  (`database/user_repository.py`) embeds a small lifecycle business
+  (`database_layer/user_repository/user_repository.py`) embeds a small lifecycle business
   rule directly in the repository: it promotes a `NEW` user to
   `ACTIVE` as a side effect of recording activity, rather than that
   decision being made in `telegram/user_service.py`. Low risk as-is
   (well-documented, single call site, test-covered), but is business
   logic living below the service layer.
 - `SignalRepository.update_signal_result()`
-  (`database/signal_repository.py`) validates its `result` argument
+  (`database_layer/trade_repository/signal_repository.py`) validates its `result` argument
   against a hardcoded `ALLOWED_RESULTS` set and raises `ValueError` on
   an invalid value — a validation rule, not pure SQL. Low risk as-is
   (defensive, prevents bad data from ever reaching the table), same
@@ -310,10 +310,10 @@ parameterized CRUD operation.
 |---|---|---|
 | `INTEGER PRIMARY KEY AUTOINCREMENT` | Needs change | SQLite-specific rowid alias + autoincrement keyword; Postgres equivalent is `GENERATED ALWAYS AS IDENTITY` / `SERIAL`. |
 | `PRAGMA table_info(...)` | Needs change | SQLite-only introspection; Postgres equivalent is querying `information_schema.columns`. |
-| `date('now')` | Needs change | SQLite date function (`database/user_repository.py:131`); Postgres equivalent is `CURRENT_DATE`. |
+| `date('now')` | Needs change | SQLite date function (`database_layer/user_repository/user_repository.py:131`); Postgres equivalent is `CURRENT_DATE`. |
 | `?` parameter placeholders | Needs change | SQLite's `sqlite3` driver style; `psycopg2`/most Postgres drivers use `%s`. Used everywhere in this codebase — a mechanical but repo-wide change. |
 | `sqlite3.IntegrityError` | Needs change | Driver-specific exception class caught in `user_repository.py`, `subscription_repository.py`, `admin_repository.py`, `signal_repository.py` for duplicate-key handling; Postgres drivers raise a different exception type. |
-| `sqlite3.connect()` / `row_factory = sqlite3.Row` | Needs change | `database/database.py`'s `Database` class is written directly against the stdlib `sqlite3` module; a Postgres port needs an equivalent connection/row-mapping layer. |
+| `sqlite3.connect()` / `row_factory = sqlite3.Row` | Needs change | `database_layer/database_manager/database.py`'s `Database` class is written directly against the stdlib `sqlite3` module; a Postgres port needs an equivalent connection/row-mapping layer. |
 | `notifications_enabled INTEGER DEFAULT 1` (bool-as-int) | Ready | Works identically in Postgres as an `INTEGER` column storing 0/1; not idiomatic (Postgres has a native `BOOLEAN`), but functionally portable with zero code change. |
 | Timestamps stored as `TEXT` (ISO 8601) | Ready | ISO 8601 strings sort/compare correctly lexicographically in both engines; functionally portable, though a native `TIMESTAMPTZ` column would be more idiomatic on Postgres. |
 | `CREATE TABLE IF NOT EXISTS` / `CREATE INDEX IF NOT EXISTS` | Ready | Both are valid Postgres syntax as well. |

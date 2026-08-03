@@ -1,13 +1,13 @@
 """
-Phase 59.3, TASK 2 -- database/market_snapshot_repository.py and
+Phase 59.3, TASK 2 -- database_layer/market_repository/market_snapshot_repository.py and
 market_snapshot_models.py tests.
 """
 
 from datetime import datetime, timezone
 
 from data_layer.live_data.market_data_snapshot import capture_market_data_snapshot
-from database.market_snapshot_models import MarketSnapshotRecord, from_market_data_snapshot
-from database.market_snapshot_repository import MarketSnapshotRepository
+from database_layer.market_repository.market_snapshot_models import MarketSnapshotRecord, from_market_data_snapshot
+from database_layer.market_repository.market_snapshot_repository import MarketSnapshotRepository
 
 
 def _record(snapshot_id="snap-1", symbol="XAUUSD", timeframe="M15"):

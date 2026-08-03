@@ -96,8 +96,8 @@ Three additional, standalone modules -- none called from
 `historical_data_collector.py` (`collect_historical_candles()`/
 `sync_historical_candles()` -- fetches via an existing
 `data_layer/providers/` `MarketDataProvider` and persists via
-`database/raw_candle_repository.py`, with incremental resume backed by
-the new `database/sync_state_repository.py`), `historical_validator.py`
+`database_layer/market_repository/raw_candle_repository.py`, with incremental resume backed by
+the new `database_layer/market_repository/sync_state_repository.py`), `historical_validator.py`
 (`validate_historical_candles()` -- missing/duplicate/ordering/future-
 timestamp/timezone/invalid-OHLC/provider-mismatch checks over a
 persisted `List[RawCandle]`, producing a `ValidationReport`; see

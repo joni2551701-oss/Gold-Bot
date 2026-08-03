@@ -53,7 +53,7 @@ Phase 60.3).
 ## Dependencies
 `execution_engine.py`/`signal_lifecycle.py`: none beyond stdlib. Not
 imported by `core/pipeline.py` or `main.py` (confirmed by the Phase 48
-audit). `simulator/` imports `lifecycle.paper_trade.PaperTrade` and
+audit). `simulator/` imports `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` and
 `risk_layer.risk_engine.risk_manager.RiskResult` (`TYPE_CHECKING`-only) — a new,
 one-directional `execution/` → `lifecycle/`/`risk/` dependency, read
 only, never reversed; `lifecycle/`/`risk/` do not import `execution/`.

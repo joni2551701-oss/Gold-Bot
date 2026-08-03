@@ -3,7 +3,7 @@ Gateway health service (v1.1 Phase 1, module 10).
 
 Aggregates named health checks into one OK/DEGRADED/DOWN grade the Gateway
 can serve. Checks are injected callables returning bool -- so the real
-system-health source (`monitoring/health_monitor.py::classify_health`) is
+system-health source (`core_layer/health_monitor/health_monitor.py::classify_health`) is
 wired in at composition time rather than imported here.
 
 Foundation Reuse Audit (Constitution Art. 11): `monitoring/health_monitor`

@@ -52,7 +52,7 @@ ExecutionAnalyticsRecord (requested price, fill price, slippage, latency, reject
 `ExecutionSimulator.simulate()` never mutates the `PaperTrade` it
 reads — `PaperTrade.entry`/`stop_loss`/`take_profit` stay exactly what
 `create_paper_trade()` set them to (copied from an already-APPROVEd
-`SignalSchema`, per `lifecycle/paper_trade.py`'s own "What this module
+`SignalSchema`, per `trade_monitoring_layer/paper_trading/paper_trade.py`'s own "What this module
 does NOT do" list, itself untouched by this phase). The simulator
 produces a separate result describing what a *fill* would look like,
 alongside the trade, not instead of it.
@@ -139,7 +139,7 @@ approved the trade.
   — every eligibility decision (APPROVE/REJECT, risk-approved) is made
   entirely upstream, unchanged; the simulator only decides fill-vs-reject
   on its own spread condition.
-- Does not mutate `lifecycle.paper_trade.PaperTrade` — the simulator
+- Does not mutate `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` — the simulator
   reads a trade's `entry`/`direction`, never writes back to it.
 - Does not model a real bid/ask order book, partial fills, or
   requotes — spread + slippage are both single scalar offsets.
@@ -160,7 +160,7 @@ telegram/owner/execution_commands.py (Phase 60.3 -- real logic, not wired)
         v
 A future, separately-approved phase (60.4 Performance Validation per
 the current roadmap):
-  - Wire ExecutionSimulator.simulate() into backtesting/backtest_engine.py's
+  - Wire ExecutionSimulator.simulate() into backtesting_layer/backtest_engine/backtest_engine.py's
     own loop, alongside create_paper_trade()/open_paper_trade(), so a
     backtest produces both a PaperTrade result AND an
     ExecutionAnalyticsRecord per trade

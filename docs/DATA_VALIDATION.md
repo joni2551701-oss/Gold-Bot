@@ -39,7 +39,7 @@ different job: it scores a single, already-fetched, in-memory
 of its own) for the live trading pipeline's own `market_data` stage,
 producing one 0-100 score per pipeline cycle. `historical_validator.py`
 audits a persisted, multi-symbol/multi-timeframe/multi-provider
-archive (`database.raw_candle_models.RawCandle`) for an offline
+archive (`database_layer.market_repository.raw_candle_models.RawCandle`) for an offline
 dataset review, producing structured per-issue-type counts. Two checks
 (invalid OHLC, gap detection) are intentionally re-implemented
 independently rather than imported from `data_quality.py` — the same

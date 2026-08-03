@@ -2,10 +2,10 @@
 
 from unittest.mock import MagicMock
 
-from monitoring.health_monitor import classify_health
-from monitoring.models import HealthStatus, PerformanceCounters, ResourceSnapshot, SystemHealth
-from monitoring.performance_collector import PerformanceCollector
-from monitoring.resource_monitor import get_resource_snapshot
+from core_layer.health_monitor.health_monitor import classify_health
+from core_layer.health_monitor.models import HealthStatus, PerformanceCounters, ResourceSnapshot, SystemHealth
+from core_layer.health_monitor.performance_collector import PerformanceCollector
+from core_layer.health_monitor.resource_monitor import get_resource_snapshot
 
 
 def _health(**overrides):
@@ -175,11 +175,11 @@ def test_performance_counters_inequality_by_value():
     assert a != b
 
 
-# -- monitoring/access.py: additional coverage --
+# -- core_layer/health_monitor/access.py: additional coverage --
 
 def test_is_owner_monitoring_enabled_independent_of_other_flags():
     from core_layer.configuration.feature_flags import FeatureFlags
-    from monitoring.access import is_owner_monitoring_enabled
+    from core_layer.health_monitor.access import is_owner_monitoring_enabled
 
     flags = FeatureFlags(enable_ai=True, enable_owner_monitoring=False)
     assert is_owner_monitoring_enabled(flags) is False
@@ -187,7 +187,7 @@ def test_is_owner_monitoring_enabled_independent_of_other_flags():
 
 def test_is_owner_monitoring_enabled_true_alongside_other_flags():
     from core_layer.configuration.feature_flags import FeatureFlags
-    from monitoring.access import is_owner_monitoring_enabled
+    from core_layer.health_monitor.access import is_owner_monitoring_enabled
 
     flags = FeatureFlags(enable_ai=True, enable_owner_monitoring=True)
     assert is_owner_monitoring_enabled(flags) is True

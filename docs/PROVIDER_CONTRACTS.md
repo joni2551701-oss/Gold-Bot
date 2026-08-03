@@ -20,7 +20,7 @@ own brief asked for a single `PROVIDER_CONTRACTS.md`.
 
 | Candidate | Decision | Why |
 |---|---|---|
-| `get_provider_name()` | **Added**, on `DataProvider` | Needed by `registry.py` (registration key) and `monitoring/provider_health.py` (report label). |
+| `get_provider_name()` | **Added**, on `DataProvider` | Needed by `registry.py` (registration key) and `core_layer/health_monitor/provider_health.py` (report label). |
 | `get_supported_timeframes()` | **Added**, on `MarketDataProvider` only | Needed by the same two consumers; not universal (no timeframe concept for `FundamentalDataProvider`). |
 | `get_symbol_info()` | **Not added** | No concrete consumer in this phase. Revisit when a real multi-provider symbol-translation consumer exists. |
 
@@ -113,7 +113,7 @@ four concrete provider classes (same package). `__init__.py` imports
 `config.Config` (cross-cutting) plus every module in this package.
 None of `data_layer/providers/*.py` imports `context/`, `strategies/`,
 `signals/`, `ai/`, `decision/`, `risk/`, `execution/`, `database/`, or
-`telegram/`. `monitoring/provider_health.py` imports
+`telegram/`. `core_layer/health_monitor/provider_health.py` imports
 `data_layer.providers.base_provider`/`data_layer.providers.registry` — a new,
 one-directional `monitoring/` → `data_layer/providers/` dependency, not
 reversed (no file in `data_layer/providers/` imports `monitoring/`).

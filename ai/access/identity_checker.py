@@ -8,7 +8,7 @@ itself. `ai/` deliberately holds no runtime dependency on `database/`
 (`docs/PHASE61_4_PRODUCT_CONTROL_AUDIT.md`'s own finding, and
 `ai/access/permission_service.py`'s docstring for the established
 pattern this reuses): a caller who already legitimately queried
-`database.user_repository.UserRepository.get_users_by_phone_hash()`
+`database_layer.user_repository.user_repository.UserRepository.get_users_by_phone_hash()`
 extracts the matching `telegram_id`s and passes them in here.
 """
 

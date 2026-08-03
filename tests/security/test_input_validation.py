@@ -152,5 +152,5 @@ def test_addadmin_command_with_special_character_argument_does_not_crash(owner_u
     result = _run(route_command("/addadmin ';DROP_TABLE_admins;--", telegram_id=owner_user))
     assert result.text == "Admin added."
 
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
     assert AdminRepository().is_admin("';DROP_TABLE_admins;--") is True

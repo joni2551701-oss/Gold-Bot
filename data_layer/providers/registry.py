@@ -5,7 +5,7 @@ ProviderRegistry is a catalog of every DataProvider instance GoldBot
 knows about (candle-based or fundamental) -- "TwelveData, MT5,
 TradingView, Binance, FRED bitta joydan boshqariladi" (all managed
 from one place), per this task's own brief. Consumed by
-monitoring/provider_health.py (TASK 6) to report status for every
+core_layer/health_monitor/provider_health.py (TASK 6) to report status for every
 registered provider, and named as the future backing store for the
 Owner Mode /providers command (docs/OWNER_COMMANDS.md, TASK 7 --
 contract only, not implemented).

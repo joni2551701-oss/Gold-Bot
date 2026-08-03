@@ -8,7 +8,7 @@ the existing telegram.command_router.route_command() exactly as if
 typed by hand. This module owns registration only; it never talks to
 handlers/services beyond the read-only lookups needed to know who is
 an ADMIN/OWNER and what language they've chosen
-(database.admin_repository.AdminRepository,
+(database_layer.user_repository.admin_repository.AdminRepository,
 database.user_repository.UserRepository) -- the same kind of direct
 repository read every other telegram/*_service.py module already
 performs, not new business logic.
@@ -65,8 +65,8 @@ from typing import List
 from aiogram import Bot
 from aiogram.types import BotCommand, BotCommandScopeChat, BotCommandScopeDefault
 
-from database.admin_repository import AdminRepository
-from database.user_repository import UserRepository
+from database_layer.user_repository.admin_repository import AdminRepository
+from database_layer.user_repository.user_repository import UserRepository
 from translation.ui_catalog import t
 from core_layer.secrets import Secrets
 from core_layer.logger.logger import setup_logger

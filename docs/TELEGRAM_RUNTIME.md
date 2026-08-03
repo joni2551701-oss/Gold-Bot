@@ -40,7 +40,7 @@ one-shot trading pipeline — the two are never combined.
 | Secret validation | `telegram/polling.py`'s `_log_startup_secret_presence()` | Logs presence/absence (never the value) of `TELEGRAM_BOT_TOKEN`/`TELEGRAM_OWNER_ID`/`TWELVE_DATA_API_KEY`/`GEMINI_API_KEY` at every startup. Only `TELEGRAM_BOT_TOKEN` actually aborts startup (`Startup aborted: Missing TELEGRAM_BOT_TOKEN`) — see "Why only one secret gates startup" below. |
 | Startup notification | `telegram/polling.py`'s `_notify_owner_startup()` | Sends a one-time "🟢 GoldBot Online" message to `TELEGRAM_OWNER_ID` once polling actually starts. Silently skipped (not an error) if no owner is configured. Regular users never see this message — it is not a broadcast. |
 | Heartbeat | `telegram/polling.py`'s `_heartbeat_loop()` | Every `HEARTBEAT_INTERVAL_SECONDS` (300s / 5 minutes), logs an internal `BOT_HEARTBEAT Telegram=OK Core=<OK/DOWN> Database=<OK/DOWN>` line and records a ping on `telegram.runtime_monitor`. **Never sent to the owner as a Telegram message** — internal log/monitoring only, per the brief's own rule. |
-| Runtime status | `telegram/runtime_monitor.py` (new) | `TelegramRuntimeStatus`/`TelegramRuntimeMonitor` — tracks the Bot/Dispatcher connection's own `status`/`last_ping`/`errors`/`uptime_seconds`. In-memory only (module-level `DEFAULT_RUNTIME_MONITOR` singleton), mirrors `monitoring.system_monitor.SystemMonitor`'s own convention. |
+| Runtime status | `telegram/runtime_monitor.py` (new) | `TelegramRuntimeStatus`/`TelegramRuntimeMonitor` — tracks the Bot/Dispatcher connection's own `status`/`last_ping`/`errors`/`uptime_seconds`. In-memory only (module-level `DEFAULT_RUNTIME_MONITOR` singleton), mirrors `core_layer.health_monitor.system_monitor.SystemMonitor`'s own convention. |
 
 ## Why only one secret gates startup
 
@@ -91,14 +91,14 @@ class TelegramRuntimeStatus:
 
 Field name is `uptime_seconds`, not the brief's own literal `uptime` —
 matching every comparable model in this codebase
-(`monitoring.models.SystemHealth.uptime_seconds`,
-`monitoring.models.MarketHealth`) rather than introducing a
+(`core_layer.health_monitor.models.SystemHealth.uptime_seconds`,
+`core_layer.health_monitor.models.MarketHealth`) rather than introducing a
 one-off different name for the same concept.
 
 `telegram.runtime_monitor.record_error()` also relays into
-`monitoring.system_monitor.record_error()` (the same
+`core_layer.health_monitor.system_monitor.record_error()` (the same
 "relay into the shared sink" pattern
-`monitoring.error_monitor.ErrorMonitor.capture()` already
+`core_layer.health_monitor.error_monitor.ErrorMonitor.capture()` already
 established in the prior GoldBot Core Owner Monitoring Alpha phase),
 so a Telegram-runtime error also surfaces in `/owner_status`'s
 `last_error` field without a second, duplicate storage path.
@@ -109,7 +109,7 @@ Runs alongside `dispatcher.start_polling()` as a background
 `asyncio.Task`, cancelled cleanly in `run_polling()`'s `finally` block
 on shutdown. Each tick:
 
-1. Calls `monitoring.system_monitor.get_health()` (reused outright,
+1. Calls `core_layer.health_monitor.system_monitor.get_health()` (reused outright,
    not duplicated) to derive `Core`/`Database` status.
 2. Records a heartbeat timestamp on `telegram.runtime_monitor`.
 3. Logs `BOT_HEARTBEAT Telegram=OK Core=<OK/DOWN> Database=<OK/DOWN>`
@@ -143,10 +143,10 @@ documents readiness only.
 ## Dependency rules
 
 `telegram/runtime_monitor.py` imports only `core_layer.logger.logger`,
-`monitoring.system_monitor` (the established cross-module error sink),
+`core_layer.health_monitor.system_monitor` (the established cross-module error sink),
 and stdlib — never `decision`/`risk`/`execution`/`ai.*`/`signals`/
 `strategies`. `telegram/polling.py`'s new code adds one import
-(`monitoring.system_monitor.get_health`) alongside its existing
+(`core_layer.health_monitor.system_monitor.get_health`) alongside its existing
 `telegram.runtime_monitor` import — same isolation boundary every
 other `telegram/owner/*.py` monitoring integration already respects.
 

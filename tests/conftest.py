@@ -53,7 +53,7 @@ def premium_user():
     """A registered user with an active PREMIUM subscription."""
     from telegram.user_service import UserService
     from telegram.subscription_service import SubscriptionService
-    from database.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     telegram_id = "8002"
     UserService().register_user(telegram_id, username="fixture_premium")
@@ -67,7 +67,7 @@ def vip_user():
     """A registered user with an active VIP subscription."""
     from telegram.user_service import UserService
     from telegram.subscription_service import SubscriptionService
-    from database.subscription_repository import SubscriptionRepository
+    from database_layer.user_repository.subscription_repository import SubscriptionRepository
 
     telegram_id = "8003"
     UserService().register_user(telegram_id, username="fixture_vip")
@@ -80,7 +80,7 @@ def vip_user():
 def admin_user():
     """A registered user who is also an ADMIN (not OWNER)."""
     from telegram.user_service import UserService
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     telegram_id = "8004"
     UserService().register_user(telegram_id, username="fixture_admin")

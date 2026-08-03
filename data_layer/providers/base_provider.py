@@ -44,7 +44,7 @@ rates, CPI, DXY), not OHLC candles -- forcing FredProvider to implement
 get_candles()/get_latest_price() would mean fabricating a fake
 "candle" for a number that isn't priced data at all. Splitting the
 truly universal contract (a stable name + a safe status check, needed
-by registry.py and monitoring/provider_health.py, TASK 5/6) from the
+by registry.py and core_layer/health_monitor/provider_health.py, TASK 5/6) from the
 candle-specific contract lets both TwelveDataProvider-family and
 FredProvider-family providers share one registry without either
 faking the other's shape. See docs/PROVIDER_CONTRACTS.md for the full
@@ -53,7 +53,7 @@ audit.
 Audit decision on the brief's own three candidate methods:
 - get_provider_name() -- ADDED (new abstract method on DataProvider).
   Needed by registry.py (TASK 5, keys/labels a provider) and
-  monitoring/provider_health.py (TASK 6, reports "TwelveData: ONLINE").
+  core_layer/health_monitor/provider_health.py (TASK 6, reports "TwelveData: ONLINE").
 - get_supported_timeframes() -- ADDED (new abstract method on
   MarketDataProvider only -- not universal, since FundamentalDataProvider
   has no timeframe concept in the candle sense). Needed by the same
@@ -143,7 +143,7 @@ class DataProvider(ABC):
         A short, stable, lowercase identifier -- e.g. "twelvedata",
         "mt5", "binance", "fred". Used as the registry key
         (data_layer/providers/registry.py) and the label
-        monitoring/provider_health.py reports against. Must never
+        core_layer/health_monitor/provider_health.py reports against. Must never
         raise, and must be a fixed constant, not derived from live
         state.
         """

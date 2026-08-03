@@ -10,7 +10,7 @@ from analytics.signal_performance import (
     compute_signal_performance,
     generate_performance_id,
 )
-from lifecycle.paper_trade import cancel_paper_trade, create_paper_trade, open_paper_trade, close_paper_trade
+from trade_monitoring_layer.paper_trading.paper_trade import cancel_paper_trade, create_paper_trade, open_paper_trade, close_paper_trade
 from signal_layer.signal_builder.schema import SignalSchema
 
 

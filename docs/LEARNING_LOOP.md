@@ -88,7 +88,7 @@ than broadening `FailureAnalysisEntry` past its own stated purpose.
 `strategy_name`, `market_phase`, `session`, `timeframe`, `result`,
 `r_multiple`, `failure_type`, `success_pattern`, `created_at`) +
 `create_learning_record()`. `id` is deliberately excluded from this
-dataclass — same convention `database/audit_log_models.py`'s
+dataclass — same convention `database_layer/audit_log/audit_log_models.py`'s
 `AuditLogEntry` already established (a database auto-increment id is
 repository-internal, and a record built here has no row yet).
 
@@ -122,16 +122,16 @@ text into structured sub-conditions — the single most common string in
 a group is surfaced as an illustrative example only, never as a
 generalized rule.
 
-## TASK 5: `database/learning_models.py` + `learning_repository.py`
+## TASK 5: `database_layer/journal_repository/learning_models.py` + `learning_repository.py`
 
 `LearningRecordRow` (mirrors `LearningRecord`'s fields plus a real
 database `id`) + `LearningRepository`, mirroring
-`database/audit_log_repository.py`'s structure exactly: `record()`,
+`database_layer/audit_log/audit_log_repository.py`'s structure exactly: `record()`,
 `get_recent()`, `get_by_strategy()`, `count()` — **no `update()`/
 `delete()` method exists**, append-only by design, per the Director's
 own brief ("append only, tarix o'chirilmaydi, auditga mos").
 `init_learning_schema()` (new `learning_records` table, indexed on
-`strategy_name`/`session`/`trade_id`) was added to `database/models.py`,
+`strategy_name`/`session`/`trade_id`) was added to `database_layer/database_manager/models.py`,
 the same file every other schema already lives in.
 
 ## TASK 6: `analytics/learning_report.py`
@@ -236,7 +236,7 @@ touched.
 
 The audit found `core/pipeline.py` never constructs a `PaperTrade` at
 all (no live execution is wired) — the *only* real closed-trade
-producer in this codebase is `backtesting/backtest_engine.py`. Reading
+producer in this codebase is `backtesting_layer/backtest_engine/backtest_engine.py`. Reading
 it line by line surfaced a genuine Phase 60.2 defect:
 `_process_candidate()` called `open_paper_trade()`/
 `check_paper_trade_against_candles()` without capturing either
@@ -244,7 +244,7 @@ function's returned (new, since `PaperTrade` is frozen) `.trade` — so
 every backtest's `PaperTrade` stayed at `TradeState.CREATED` forever,
 and `SignalPerformance.result` was silently `None` for every trade,
 every run, since Phase 60.2 shipped. **Fixed** (three lines, confined
-to `backtesting/backtest_engine.py`, no change to `strategies/`,
+to `backtesting_layer/backtest_engine/backtest_engine.py`, no change to `strategies/`,
 `decision/`, or `risk/`): both calls' returned `.trade` are now
 threaded through. A regression test
 (`test_approved_candidates_paper_trade_actually_resolves`) proves a
@@ -352,7 +352,7 @@ and TASK 7 without either module importing the other's internals.
 
 Closes the gap Phase 60.7 itself disclosed above ("nothing in this
 codebase yet calls `bridge_closed_trade()` from a real pipeline"):
-`backtesting/backtest_engine.py`'s `_process_candidate()` now calls
+`backtesting_layer/backtest_engine/backtest_engine.py`'s `_process_candidate()` now calls
 `bridge_closed_trade()` for every `PaperTrade` that reaches
 `TradeState.CLOSED`, immediately after `compute_signal_performance()`
 so `context`/`performance`/`htf_bias` are all available to pass
@@ -372,7 +372,7 @@ observing.
 never constructs a `PaperTrade` (re-confirmed by Phase 60.8's own
 TASK 1 audit, `docs/PHASE60_8_INTEGRATION_AUDIT.md`) — the only real
 `CLOSED`-`PaperTrade` producer in this codebase remains
-`backtesting/backtest_engine.py`. Live learning integration is
+`backtesting_layer/backtest_engine/backtest_engine.py`. Live learning integration is
 deferred until a real MT5/broker execution lifecycle exists to produce
 a real closed trade to observe — a separate, future, explicitly-
 approvable step, per the Director's own TASK 3 instruction.

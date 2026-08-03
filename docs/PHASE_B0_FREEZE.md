@@ -11,7 +11,7 @@ Constitution/Dependency compliance checks run at close.
 
 TASK 0's audit (`docs/PHASE_B0_AUDIT.md`) found that ~90% of this
 brief's own scope already existed, live-wired, tested (126+ tests at
-the time), and frozen: `monitoring/system_monitor.py`,
+the time), and frozen: `core_layer/health_monitor/system_monitor.py`,
 `market_monitor.py`, `signal_monitor.py`, `error_monitor.py`,
 `decision_logger.py`, two database tables, and seven Owner Telegram
 commands already registered in `OWNER_COMMANDS`
@@ -26,11 +26,11 @@ subpackage.
 
 ## Built this phase
 
-- `monitoring/models.py` (extended) — `HealthStatus` (OK/WARNING/
+- `core_layer/health_monitor/models.py` (extended) — `HealthStatus` (OK/WARNING/
   CRITICAL), `ResourceSnapshot`, `PerformanceCounters`; `DecisionPipelineEntry`
   gained an additive `stage_durations_ms: Sequence[Tuple[str, float]] = ()`
   field.
-- `monitoring/resource_monitor.py` (new) — `get_resource_snapshot()` /
+- `core_layer/health_monitor/resource_monitor.py` (new) — `get_resource_snapshot()` /
   `record_process_start()`. CPU time and max RSS via stdlib `resource`
   (POSIX-only, `None` when unavailable, never fabricated); thread
   count via `threading.active_count()`; restart count persisted via
@@ -40,34 +40,34 @@ subpackage.
   (never a second uptime tracker). "Loop" and "Latency" from the
   brief's own TASK 2 list are deliberately not duplicated —
   represented by the already-existing `record_scan()`/`last_scan`
-  mechanism and `monitoring/provider_health.py`'s own latency field,
+  mechanism and `core_layer/health_monitor/provider_health.py`'s own latency field,
   respectively.
-- `monitoring/health_monitor.py` (new) — `classify_health()`, a pure,
+- `core_layer/health_monitor/health_monitor.py` (new) — `classify_health()`, a pure,
   deterministic classifier over already-known `SystemHealth` fields
   and optional error counts. No scoring, no weighting, no fabrication.
-- `monitoring/performance_collector.py` (new) — `PerformanceCollector`:
+- `core_layer/health_monitor/performance_collector.py` (new) — `PerformanceCollector`:
   `record_signal()`/`record_decision()`/`record_trade()`/
   `record_reject()`/`record_error()`/`record_reconnect()`/`get_counts()`.
   In-memory only, "Hozircha faqat yig'adi. Hisoblamaydi" (for now,
   only collects, never computes) — distinct from the already-existing
-  `monitoring/performance.py`'s `PerformanceTracker`, which computes
+  `core_layer/health_monitor/performance.py`'s `PerformanceTracker`, which computes
   win-rate/strategy stats from closed trades.
-- `monitoring/access.py` (new) — `is_owner_monitoring_enabled()`,
+- `core_layer/health_monitor/access.py` (new) — `is_owner_monitoring_enabled()`,
   gating only this phase's own new surface (not the seven pre-existing
   live commands, which stay gated by the existing
   `telegram.permissions`/`telegram.command_router` mechanism alone).
-- `monitoring/decision_logger.py` (extended) — `log_entry()` and
+- `decision_layer/decision_logger/decision_logger.py` (extended) — `log_entry()` and
   `get_recent_entries()` both now accept/relay `stage_durations_ms`
   (caller-supplied only; this module never measures a stage's
   duration itself).
-- `database/monitoring_models.py` (extended) — `DecisionPipelineEntryRow`
+- `database_layer/audit_log/monitoring_models.py` (extended) — `DecisionPipelineEntryRow`
   gained `stage_durations_ms`; new `ProcessStartEntry` +
   `create_process_start_entry()`.
-- `database/monitoring_repository.py` (extended) — `record_decision_entry()`/
+- `database_layer/audit_log/monitoring_repository.py` (extended) — `record_decision_entry()`/
   `get_recent_decision_entries()` persist/restore `stage_durations_ms`
   (comma-joined `stage:ms` string, mirroring `criteria_met`'s own
   convention); new `record_process_start()`/`get_restart_count()`.
-- `database/models.py` (extended) — `init_monitoring_schema()` gained
+- `database_layer/database_manager/models.py` (extended) — `init_monitoring_schema()` gained
   a new `monitoring_process_starts` table and a guarded
   `ALTER TABLE ... ADD COLUMN stage_durations_ms` migration (mirrors
   the codebase's own established `_migrate_signals_table()` pattern).
@@ -144,12 +144,12 @@ subpackage.
 
 ## Dependency Compliance
 
-`monitoring/access.py` imports only `configuration.feature_flags`.
-`monitoring/health_monitor.py` imports only `monitoring.models` and
-stdlib `typing`. `monitoring/performance_collector.py` imports only
-`monitoring.models` and stdlib `time`. `monitoring/resource_monitor.py`
-imports `monitoring.models`, `monitoring.system_monitor`,
-`database.monitoring_repository`, `core_layer.logger.logger`, and stdlib
+`core_layer/health_monitor/access.py` imports only `configuration.feature_flags`.
+`core_layer/health_monitor/health_monitor.py` imports only `core_layer.health_monitor.models` and
+stdlib `typing`. `core_layer/health_monitor/performance_collector.py` imports only
+`core_layer.health_monitor.models` and stdlib `time`. `core_layer/health_monitor/resource_monitor.py`
+imports `core_layer.health_monitor.models`, `core_layer.health_monitor.system_monitor`,
+`database_layer.audit_log.monitoring_repository`, `core_layer.logger.logger`, and stdlib
 (`threading`, `datetime`, `typing`, `resource`) — never `decision/`,
 `risk/`, `execution/`, `strategies/`, `signals/`, `ai.*`. Nothing in
 this phase imports `context/` or `core.pipeline` directly.
@@ -159,7 +159,7 @@ this phase imports `context/` or `core.pipeline` directly.
 | Item | New | Extended | Reused |
 |------|-----|----------|--------|
 | Packages | — (no new top-level or sub-package) | — | `monitoring/`, `database/`, `telegram/owner/`, `configuration/` (all pre-existing) |
-| Modules | `resource_monitor.py`, `health_monitor.py`, `performance_collector.py`, `access.py` (4) | `models.py`, `decision_logger.py`, `monitoring_models.py`, `monitoring_repository.py`, `database/models.py`, `feature_flags.py`, `monitoring_commands.py`, `telegram/handlers.py`, `telegram/commands.py`, `main.py` (10) | `system_monitor.py`, `market_monitor.py`, `signal_monitor.py`, `error_monitor.py` (read/composed, not modified) |
+| Modules | `resource_monitor.py`, `health_monitor.py`, `performance_collector.py`, `access.py` (4) | `models.py`, `decision_logger.py`, `monitoring_models.py`, `monitoring_repository.py`, `database_layer/database_manager/models.py`, `feature_flags.py`, `monitoring_commands.py`, `telegram/handlers.py`, `telegram/commands.py`, `main.py` (10) | `system_monitor.py`, `market_monitor.py`, `signal_monitor.py`, `error_monitor.py` (read/composed, not modified) |
 | Classes | `PerformanceCollector` (1) | `DecisionPipelineEntry`, `DecisionPipelineEntryRow`, `MonitoringRepository`, `FeatureFlags` (+1 field each) | `SystemMonitor` (composed via `DEFAULT_MONITOR.uptime_seconds()`) |
 | Models | `HealthStatus`, `ResourceSnapshot`, `PerformanceCounters`, `ProcessStartEntry` (4) | `DecisionPipelineEntry.stage_durations_ms`, `DecisionPipelineEntryRow.stage_durations_ms` | `SystemHealth`, `MarketHealth`, `SignalHealth`, `ErrorEvent` |
 | Functions | `get_resource_snapshot()`, `record_process_start()`, `classify_health()`, `is_owner_monitoring_enabled()`, `get_performance_report()`, `performance_handler()`, `record_process_start()` (in `resource_monitor.py`), `record_signal/decision/trade/reject/error/reconnect()` module functions (~13) | `log_entry()`, `get_recent_entries()`, `record_decision_entry()`, `get_recent_decision_entries()`, `init_monitoring_schema()`, `get_status_report()` | — |

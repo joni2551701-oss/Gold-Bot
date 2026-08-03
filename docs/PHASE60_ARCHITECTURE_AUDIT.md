@@ -41,7 +41,7 @@ Every edge was individually checked for direction correctness against
 risk → telegram → database` chain:
 
 - **`database → decision/risk/signals`**: real, but expected —
-  `database/signal_record.py`'s `SignalRecord` wraps a
+  `database_layer/trade_repository/signal_record.py`'s `SignalRecord` wraps a
   `(SignalCandidate, TradeDecision, RiskResult)` triple for
   persistence-identity. `database/` sits at the *end* of the chain; it
   is supposed to import upstream result types to store them. Not a
@@ -59,7 +59,7 @@ risk → telegram → database` chain:
   `telegram/signal_formatter.py`, which formats the same
   `(SignalCandidate, TradeDecision, RiskResult, AIAnalysisResult)`
   tuple for a Telegram message — the same "downstream formats
-  upstream's output" pattern as `database/signal_record.py` above.
+  upstream's output" pattern as `database_layer/trade_repository/signal_record.py` above.
 - **`core → ai/context/data/database/decision/features/risk/signals/telegram`**:
   all from `core/pipeline.py`, the orchestrator — expected to import
   every layer it sequences.
@@ -82,7 +82,7 @@ docstrings rather than accidental orphans:
 | Item | File | Status |
 |---|---|---|
 | `class DecisionResult` | `decision_layer/decision_engine/decision_engine.py:24` | Superseded — `DecisionEngine.decide()` actually returns `TradeDecision` (from `decision_layer/decision_engine/models.py`), never `DecisionResult`. Zero references anywhere. |
-| `class SignalMonitor` | `monitoring/signal_monitor.py:16` | Self-documented placeholder ("Currently a placeholder... Signal ID, state, and timestamp will arrive via a future event contract"). Never constructed anywhere. |
+| `class SignalMonitor` | `core_layer/health_monitor/signal_monitor.py:16` | Self-documented placeholder ("Currently a placeholder... Signal ID, state, and timestamp will arrive via a future event contract"). Never constructed anywhere. |
 | `def build_prompt()` | `ai/ai_prompt.py:40` | `ai/ai_analyzer.py` (the real, live AI analyzer) never imports `ai_prompt` — this is a disconnected, earlier-generation prompt builder. |
 | `def evaluate_confidence()` | `ai/confidence_model.py:23` | Same disconnection — `ai_analyzer.py` never imports `confidence_model`. Its own docstring already says it's a no-op until a future phase populates `SignalCandidate.context_refs`. |
 | `def is_doji()`, `body_ratio()`, `upper_wick()`, `lower_wick()` | `context_layer/context_engine/candle.py:23,33,36,42` | Candle-shape helper functions with zero callers anywhere (sibling functions `direction()`/`is_bullish()`/`is_bearish()`/`body_size()`/`range_size()` in the same file *are* used elsewhere and were correctly not flagged). |
@@ -149,7 +149,7 @@ wants), not an architecture one.
 ## 4. Database Audit
 
 12 tables, 12 repositories, 1:1 — verified by cross-referencing every
-`CREATE TABLE IF NOT EXISTS` in `database/models.py` against
+`CREATE TABLE IF NOT EXISTS` in `database_layer/database_manager/models.py` against
 `database/*_repository.py`:
 
 | Table | Repository | Purpose |
@@ -250,7 +250,7 @@ live today — **all confirmed foundation-only, not wired**:
 - **Execution**: `execution_layer/execution_engine/execution_engine.py` — confirmed inert,
   zero `order_send`/MT5 calls anywhere in `execution/` (re-grepped
   this pass), per `CLAUDE.md`'s own statement.
-- **Paper**: `lifecycle/paper_trade.py` + `lifecycle/paper_trade_monitor.py`
+- **Paper**: `trade_monitoring_layer/paper_trading/paper_trade.py` + `trade_monitoring_layer/paper_trading/paper_trade_monitor.py`
   (Phase 59.4) — `PaperTradeMonitor` is never constructed anywhere
   outside `tests/` (re-grepped this pass); no cron/scheduler/pipeline
   call site exists.

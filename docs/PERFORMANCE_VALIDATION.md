@@ -32,7 +32,7 @@ section, unchanged by this phase.
 
 ## TASK 1: Reuse audit
 
-Read `monitoring/performance.py` (`PerformanceTracker`: database-driven
+Read `core_layer/health_monitor/performance.py` (`PerformanceTracker`: database-driven
 win/loss/win_rate off the persisted `signals` table via
 `SignalRepository`) and `analytics/validation_report.py`
 (`ValidationReport`: per-strategy breakdown + best session/market

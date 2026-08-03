@@ -131,7 +131,7 @@ keys rather than echoing raw English.
   `PERMISSION_DENIED_TEXT`) — deferred to V2.2 (a future Generic Error
   Catalog).
 
-**Default language.** `database/models.py`'s schema default is
+**Default language.** `database_layer/database_manager/models.py`'s schema default is
 `users.language = 'UZ'` — a fresh/unconfigured user gets Uzbek text,
 not English. This is a deliberate GoldBot V2 product decision (not a
 bug or a fallback-of-convenience); tests assert against this default,

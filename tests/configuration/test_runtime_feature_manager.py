@@ -5,9 +5,9 @@ fresh_database fixture) -- no mocks.
 """
 
 from core_layer.configuration.runtime_feature_manager import RuntimeFeatureManager, ToggleResult
-from database.audit_log_repository import AuditLogRepository
-from database.config_snapshot_repository import ConfigSnapshotRepository
-from database.runtime_feature_repository import RuntimeFeatureRepository
+from database_layer.audit_log.audit_log_repository import AuditLogRepository
+from database_layer.journal_repository.config_snapshot_repository import ConfigSnapshotRepository
+from database_layer.journal_repository.runtime_feature_repository import RuntimeFeatureRepository
 
 
 # --- TASK 1/4: construction, load(), status(), list_features() ---

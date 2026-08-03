@@ -40,16 +40,16 @@ Owner Telegram Panel
 
 | Area | Model | Module | Command |
 |------|-------|--------|---------|
-| System health | `monitoring.models.SystemHealth` | `monitoring/system_monitor.py` | `/owner_status` |
+| System health | `core_layer.health_monitor.models.SystemHealth` | `core_layer/health_monitor/system_monitor.py` | `/owner_status` |
 | Full diagnostics | (reuses `AdminService` + provider registry) | `telegram/owner/system_commands.py` (existing, now wired) | `/health` |
-| Market data | `monitoring.models.MarketHealth` | `monitoring/market_monitor.py` | `/market` |
-| Signal activity | `monitoring.models.SignalHealth` | `monitoring/signal_monitor.py` | `/signals` |
-| Errors | `monitoring.models.ErrorEvent` | `monitoring/error_monitor.py` | `/errors` |
-| Decision pipeline trace | `monitoring.models.DecisionPipelineEntry` (+ Phase B.0's own `stage_durations_ms`) | `monitoring/decision_logger.py` | `/pipeline` |
+| Market data | `core_layer.health_monitor.models.MarketHealth` | `core_layer/health_monitor/market_monitor.py` | `/market` |
+| Signal activity | `core_layer.health_monitor.models.SignalHealth` | `core_layer/health_monitor/signal_monitor.py` | `/signals` |
+| Errors | `core_layer.health_monitor.models.ErrorEvent` | `core_layer/health_monitor/error_monitor.py` | `/errors` |
+| Decision pipeline trace | `core_layer.health_monitor.models.DecisionPipelineEntry` (+ Phase B.0's own `stage_durations_ms`) | `decision_layer/decision_logger/decision_logger.py` | `/pipeline` |
 | Daily digest | (composes the above) | `telegram/owner/monitoring_commands.py` | `/report` |
-| Resource metrics (CPU/RAM/threads/restarts/heartbeat) | `monitoring.models.ResourceSnapshot` | `monitoring/resource_monitor.py` (Phase B.0) | appended to `/owner_status` |
-| Overall health classification (OK/WARNING/CRITICAL) | `monitoring.models.HealthStatus` | `monitoring/health_monitor.py` (Phase B.0) | appended to `/owner_status` |
-| Performance counters (raw tallies, never computed) | `monitoring.models.PerformanceCounters` | `monitoring/performance_collector.py` (Phase B.0) | `/performance` |
+| Resource metrics (CPU/RAM/threads/restarts/heartbeat) | `core_layer.health_monitor.models.ResourceSnapshot` | `core_layer/health_monitor/resource_monitor.py` (Phase B.0) | appended to `/owner_status` |
+| Overall health classification (OK/WARNING/CRITICAL) | `core_layer.health_monitor.models.HealthStatus` | `core_layer/health_monitor/health_monitor.py` (Phase B.0) | appended to `/owner_status` |
+| Performance counters (raw tallies, never computed) | `core_layer.health_monitor.models.PerformanceCounters` | `core_layer/health_monitor/performance_collector.py` (Phase B.0) | `/performance` |
 
 ## What is *not* monitored (or not yet)
 
@@ -65,7 +65,7 @@ Owner Telegram Panel
   no "last candle received" or price-freshness concept anywhere today
   (confirmed by the audit). Never fabricated.
 - **`SystemHealth.last_scan`** is populated only via
-  `monitoring.system_monitor.record_scan()`, a passive sink. Nothing
+  `core_layer.health_monitor.system_monitor.record_scan()`, a passive sink. Nothing
   currently calls it (no `core/pipeline.py` hook this phase) — it
   reads "N/A" until a future, separately-approved integration calls it.
 
@@ -125,7 +125,7 @@ telegram/owner/
 `SystemHealth`/`MarketHealth`/`SignalHealth` are **computed live, on
 demand** — no new table for any of the three (matching the existing
 `AdminService.get_system_status()`/`telegram.owner.system_commands.get_system_health()`/
-`monitoring.performance.PerformanceTracker.calculate()` precedent).
+`core_layer.health_monitor.performance.PerformanceTracker.calculate()` precedent).
 Only `ErrorEvent` and `DecisionPipelineEntry` are persisted, because
 both need to survive a process restart (an error history, and the
 future `66.5`/`66.6` Performance/Strategy Intelligence datasource).
@@ -134,7 +134,7 @@ future `66.5`/`66.6` Performance/Strategy Intelligence datasource).
 
 Monitoring never imports `decision/`, `risk/`, or `execution/`
 (enforced by `tests/monitoring/test_monitoring_isolation.py`, AST-based).
-`monitoring/decision_logger.py` additionally never imports
+`decision_layer/decision_logger/decision_logger.py` additionally never imports
 `signals/`/`context/` — it accepts primitive `criteria_met`/
 `criteria_total`/`decision`/`reason` values only, the same
 "primitive contract, no upstream object import" discipline this
@@ -166,7 +166,7 @@ already satisfies exactly.
 - `SignalHealth.none_count`, `MarketHealth.last_price`/`.last_update`,
   and `SystemHealth.last_scan` all need a future, separately-approved
   `core/pipeline.py` hook to become real — not built this phase.
-- `monitoring.decision_logger.DecisionLogger` is this phase's own
+- `decision_layer.decision_logger.decision_logger.DecisionLogger` is this phase's own
   named datasource for `66.5` (Performance Intelligence) and `66.6`
   (Strategy Intelligence) — a future AI phase reads from
   `MonitoringRepository.get_recent_decision_entries()`, type-only,

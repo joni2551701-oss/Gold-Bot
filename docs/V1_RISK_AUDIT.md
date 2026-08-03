@@ -124,7 +124,7 @@ match what actually happens internally.
 `RiskManager.evaluate(self, trade_decision: TradeDecision,
 account_balance: Optional[float] = None) -> RiskResult` matches both
 call sites exactly (`core/pipeline.py:463`,
-`backtesting/backtest_engine.py:206`), both omitting `account_balance`
+`backtesting_layer/backtest_engine/backtest_engine.py:206`), both omitting `account_balance`
 by design (`contracts/risk_contract.md` confirms GoldBot has "no
 built-in source of account balance"). Note: in production,
 `account_balance` is never supplied, so `lot_size`/`risk_amount` are

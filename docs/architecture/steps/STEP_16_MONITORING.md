@@ -25,10 +25,10 @@ execution(STEP-11) ─┤
 platform (STEP-15) ─┘
         │
         ▼
-monitoring/decision_logger.py · risk_monitor.py · signal_monitor.py · health_monitor.py
+decision_layer/decision_logger/decision_logger.py · risk_monitor.py · signal_monitor.py · health_monitor.py
         │  aggregate (pure counters, no writes to trade path)
         ▼
-monitoring/system_monitor.py  ──►  owner snapshot / /status / /performance
+core_layer/health_monitor/system_monitor.py  ──►  owner snapshot / /status / /performance
 ```
 
 ## 3. Input / Output
@@ -44,12 +44,12 @@ monitoring/system_monitor.py  ──►  owner snapshot / /status / /performance
 
 | File | Role | Input | Output | Reads from | Passes to | New / Extend |
 |---|---|---|---|---|---|---|
-| `monitoring/decision_logger.py` | per-stage decision timing/verdict log | decision events | log rows | decision | system_monitor | **extend** (add DecisionOutcome status counts APPROVE/REJECT/HOLD/EXPIRE) |
-| `monitoring/risk_monitor.py` | risk checks/reject/drawdown/pause counters | risk events | counters | risk | system_monitor | **extend** (add RiskOutcome status APPROVED/REJECTED/PAUSED/BLOCKED) |
-| `monitoring/signal_monitor.py` | signal counters | signal events | counters | signals | system_monitor | **reuse** (already covers signal side) |
-| `monitoring/health_monitor.py` | OK/WARNING/CRITICAL rollup | monitors | health | all monitors | snapshot | **reuse/extend** (fold new counters into health) |
-| `monitoring/performance_collector.py` | pure per-stage counters | events | counters | stages | performance | **extend** (add platform-delivery counters SENT/SKIPPED/FAILED) |
-| `monitoring/system_monitor.py` | system rollup | all monitors | snapshot fields | monitors | owner snapshot | **extend** |
+| `decision_layer/decision_logger/decision_logger.py` | per-stage decision timing/verdict log | decision events | log rows | decision | system_monitor | **extend** (add DecisionOutcome status counts APPROVE/REJECT/HOLD/EXPIRE) |
+| `core_layer/health_monitor/risk_monitor.py` | risk checks/reject/drawdown/pause counters | risk events | counters | risk | system_monitor | **extend** (add RiskOutcome status APPROVED/REJECTED/PAUSED/BLOCKED) |
+| `core_layer/health_monitor/signal_monitor.py` | signal counters | signal events | counters | signals | system_monitor | **reuse** (already covers signal side) |
+| `core_layer/health_monitor/health_monitor.py` | OK/WARNING/CRITICAL rollup | monitors | health | all monitors | snapshot | **reuse/extend** (fold new counters into health) |
+| `core_layer/health_monitor/performance_collector.py` | pure per-stage counters | events | counters | stages | performance | **extend** (add platform-delivery counters SENT/SKIPPED/FAILED) |
+| `core_layer/health_monitor/system_monitor.py` | system rollup | all monitors | snapshot fields | monitors | owner snapshot | **extend** |
 | `monitoring/snapshot_collector.py` (owner snapshot) | assemble owner snapshot | monitors | `OwnerSnapshot` | monitors | telegram owner | **extend** (surface new sections; honest, no fabricated stats) |
 | `docs/architecture/MONITORING.md` | append STEP-16 section | — | — | — | — | **extend** |
 

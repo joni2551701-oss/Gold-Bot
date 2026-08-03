@@ -169,11 +169,11 @@ deployment. `.env.production`'s own header explains this.
   `config.Config.DB_PATH` (`BASE_DIR/database/goldbot.db`, where
   `BASE_DIR` is the repository root at runtime — see `config.py`).
   Unchanged from `docs/DEPLOYMENT.md`.
-- **Migration startup**: `database.database.Database.init_db()` calls
-  `database.models.init_schema()` (and each repository's own
+- **Migration startup**: `database_layer.database_manager.database.Database.init_db()` calls
+  `database_layer.database_manager.models.init_schema()` (and each repository's own
   `init_*_schema()`) on construction — idempotent `CREATE TABLE IF NOT
   EXISTS` / `CREATE INDEX IF NOT EXISTS` / `PRAGMA table_info()`-guarded
-  `ALTER TABLE`, confirmed by reading `database/models.py` this phase.
+  `ALTER TABLE`, confirmed by reading `database_layer/database_manager/models.py` this phase.
   Nothing to run manually; the schema is always current on process
   start. `database/migrations/README.md` documents the (still unused)
   foundation for a future versioned-migration script, unchanged this

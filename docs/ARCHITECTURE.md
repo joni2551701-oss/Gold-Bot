@@ -448,7 +448,7 @@ other Phase A module, `core/pipeline.py` never constructs or reads a
 not gate which strategies actually run. `performance`/`win_rate`/
 `last_validation` are always `None`: this codebase computes no
 per-strategy performance or win rate anywhere today (unrelated to
-`monitoring/performance.py`'s database-driven, already-existing
+`core_layer/health_monitor/performance.py`'s database-driven, already-existing
 per-strategy aggregation) — explicit, honest hooks for Phase 59
 Validation to populate, never fabricated values. See
 `docs/STRATEGY_LIFECYCLE.md` for the full contract.
@@ -533,14 +533,14 @@ computes nothing, relays already-computed values
 honest `None` reference (`context_id`/`explanation_id`/`risk_id`,
 none of which has a real id source anywhere in this codebase today).
 
-Distinct from `database/signal_record.py`'s pre-existing
+Distinct from `database_layer/trade_repository/signal_record.py`'s pre-existing
 `SignalRecord` (untouched by this phase): `SignalRecord` is a
 persistence wrapper requiring a full `(SignalCandidate, TradeDecision,
 RiskResult)` triple; `SignalSchema` can exist earlier — right after
 Strategy Engine, before Decision Engine or Risk Manager have run
 (`decision` defaults `"PENDING"`) — and is never itself written to
 the database in this phase. Both independently reuse
-`database/signal_record.py`'s own `str(uuid.uuid4())`/
+`database_layer/trade_repository/signal_record.py`'s own `str(uuid.uuid4())`/
 `datetime.now(timezone.utc)` convention for identity/timestamp
 generation — not a new scheme.
 
@@ -677,7 +677,7 @@ decorator form, both using `time.perf_counter()` — the same primitive
 duration; computes nothing else, decides nothing, generates no
 signal.
 
-**Not what it sounds like**: `monitoring/performance.py`'s
+**Not what it sounds like**: `core_layer/health_monitor/performance.py`'s
 pre-existing `PerformanceTracker`/`PerformanceResult` compute
 historical *trade outcome* statistics (win rate, strategy breakdown)
 from the database — an unrelated question from "how long did this
@@ -742,8 +742,8 @@ catalog — explicitly not a replacement for Phase 59.1's `get_provider()`
 docstring for the exact relationship. `build_default_registry()`
 registers all four real/stub providers (not TradingView).
 
-`monitoring/provider_health.py` (a new file in the pre-existing
-`monitoring/` package, alongside `monitoring/performance.py`) adds
+`core_layer/health_monitor/provider_health.py` (a new file in the pre-existing
+`monitoring/` package, alongside `core_layer/health_monitor/performance.py`) adds
 `ProviderHealthStatus` (`ONLINE`/`DEGRADED`/`OFFLINE`) and
 `check_provider_health()`/`check_registry_health()`, timing each
 provider's own always-safe `get_market_status()` call — a third,
@@ -786,8 +786,8 @@ added by any Phase A/AC/Phase-59 module; every prior one deliberately
 stayed in-memory-only. Two new, fully isolated tables (`raw_candles`,
 `market_snapshots` — see `docs/DATABASE.md`), following the exact
 established idempotent `CREATE TABLE IF NOT EXISTS` pattern, never
-touching `signals`/`users`/etc. `database/raw_candle_models.py`/
-`raw_candle_repository.py`, `database/market_snapshot_models.py`/
+touching `signals`/`users`/etc. `database_layer/market_repository/raw_candle_models.py`/
+`raw_candle_repository.py`, `database_layer/market_repository/market_snapshot_models.py`/
 `market_snapshot_repository.py` (the latter's `from_market_data_snapshot()`
 bridges Phase 59 Preparation's own in-memory `MarketDataSnapshot` to a
 real row). Not called from `core/pipeline.py`.
@@ -800,14 +800,14 @@ anywhere. No competing `data/cache/market_cache.py` was built;
 `tests/data/test_data_cache.py` closes the real, disclosed gap
 (coverage only).
 
-**TASK 4 (Provider Health Integration)** — `monitoring/provider_health.py`'s
+**TASK 4 (Provider Health Integration)** — `core_layer/health_monitor/provider_health.py`'s
 `ProviderHealthReport` gained `checked_at` (additive, the brief's own
 "Last Update" example), stamped by `check_provider_health()`.
 
 **TASK 5 (Owner Command Foundation)** — new `telegram/owner/` package
 (`provider_commands.py`, `system_commands.py`, `feature_commands.py`)
 with real, tested functions reusing `data_layer/providers/registry.py` and
-`monitoring/provider_health.py` — a scope shift from Phase 59.2's own
+`core_layer/health_monitor/provider_health.py` — a scope shift from Phase 59.2's own
 "contract only" instruction for the same idea. **Not** registered into
 `telegram/commands.py`'s `OWNER_COMMANDS`/`ADMIN_COMMANDS`, **not**
 called from `telegram/command_router.py`/`telegram/handlers.py` — the
@@ -847,7 +847,7 @@ Foundation layers rather than replacing any of them. Full detail:
 **TASK 1 (Historical Data Collector)** — new `data_layer/historical_data/historical_data_collector.py`.
 `collect_historical_candles(provider, symbol, timeframe, start, end)`
 fetches via an existing `data_layer/providers/` `MarketDataProvider` and
-saves via `database/raw_candle_repository.py`'s
+saves via `database_layer/market_repository/raw_candle_repository.py`'s
 `save_market_candles()` — no new fetch/storage logic, only composition
 of the two. Disclosed gap: neither `TwelveDataClient.fetch_candles()`
 nor `MarketDataProvider.get_candles()` accepts a real date range (both
@@ -858,7 +858,7 @@ largest single window a provider call can serve (capped at
 partial result rather than silently trusting a complete one.
 
 **TASK 2 (Incremental Sync)** — new, fully isolated `sync_state` table
-(`database/sync_state_models.py`/`sync_state_repository.py`, one row
+(`database_layer/market_repository/sync_state_models.py`/`sync_state_repository.py`, one row
 per `(provider, symbol, timeframe)`, no foreign key to any other
 table) plus `historical_data_collector.py`'s `sync_historical_candles()`,
 which resumes from the stored `last_timestamp` instead of re-fetching
@@ -929,7 +929,7 @@ Emergency Layer (Phase 59.9 — the first phase where `SystemState`/
 state" holder, nothing in `core/pipeline.py` reads it.
 
 **TASK 2 (Audit Log)** — new, isolated, append-only `audit_log` table
-(`database/audit_log_models.py`/`audit_log_repository.py`).
+(`database_layer/audit_log/audit_log_models.py`/`audit_log_repository.py`).
 `log_action(actor, action, target, result, details)` records one
 entry; no update/delete method exists. Nothing calls it automatically
 yet — no owner command is wired to log itself.
@@ -961,7 +961,7 @@ the contract exists for whichever future phase makes one of these
 names real.
 
 **TASK 6 (Configuration Snapshot)** — new, isolated, append-only
-`config_snapshots` table (`database/config_snapshot_models.py`/
+`config_snapshots` table (`database_layer/journal_repository/config_snapshot_models.py`/
 `config_snapshot_repository.py`). `create_config_snapshot(registry)`
 serializes a feature registry's `{name: enabled}` state to JSON;
 `save_snapshot()`/`get_latest()`/`get_all()` persist and read it back.
@@ -985,7 +985,7 @@ o'zgartirmaydi. Faqat Runtime Controller quriladi."* Full detail:
 Feature Loader)** — new `configuration/runtime_state.py`
 (`FeatureRuntimeState` + `RuntimeStateCache`, in-memory only), new
 isolated `runtime_features` table
-(`database/runtime_feature_models.py`/`runtime_feature_repository.py`,
+(`database_layer/journal_repository/runtime_feature_models.py`/`runtime_feature_repository.py`,
 one row per feature name, `created_at` preserved across every later
 upsert), and new `configuration/runtime_feature_manager.py`'s
 `RuntimeFeatureManager` — `load()`/`reload()` seed the in-memory cache
@@ -1096,9 +1096,9 @@ because `SystemState` has no `WARNING`/`PAUSED` equivalent that
 **`emergency_manager.py`** — `EmergencyManager`:
 `activate_pause()`/`activate_kill()`/`activate_maintenance()`/
 `restore_normal()`/`get_status()`. Every transition is persisted via
-`database.emergency_repository.EmergencyRepository` (append-only —
+`database_layer.trade_repository.emergency_repository.EmergencyRepository` (append-only —
 history is never overwritten, unlike `runtime_features`' one-row-per-
-name upsert) and audited via `database.audit_log_repository.AuditLogRepository`
+name upsert) and audited via `database_layer.audit_log.audit_log_repository.AuditLogRepository`
 (`KILL_ACTIVATED`/`PAUSE_ACTIVATED`/`MAINTENANCE_ENABLED`/
 `SYSTEM_RESTORED`) — the same one-directional `core/` → `database/`
 dependency `configuration/runtime_feature_manager.py` already
@@ -1116,7 +1116,7 @@ decision, it does not act on one.
 `EmergencyState.MAINTENANCE`, same "enum value vs. detail record"
 split as `FeatureDescriptor` vs `FeatureRuntimeState`.
 
-**`database/emergency_models.py`/`emergency_repository.py`** — new
+**`database_layer/trade_repository/emergency_models.py`/`emergency_repository.py`** — new
 `emergency_states` table, append-only (mirrors `audit_log`'s own
 posture, not `runtime_features`' upsert). `EmergencyRepository.get_current_state()`
 derives "current" from the most recent row; `get_history()` returns
@@ -1153,7 +1153,7 @@ Added the mandatory Module Reuse Principle to `CLAUDE.md` itself.
 New `backtesting/` package — deliberately not a new `market/`
 top-level package (the Director's own Module-Reuse-Principle-guided
 decision): Replay is a service over existing Historical Data
-(`database.raw_candle_repository.RawCandleRepository`, Phase
+(`database_layer.market_repository.raw_candle_repository.RawCandleRepository`, Phase
 59.3/59.5), not a new business domain. Still, per the Director's own
 explicit rule, **not** wired into `core/pipeline.py`, `strategies/`,
 `signals/`, `decision/`, `risk/`, or `execution/` — Replay replaces
@@ -1203,7 +1203,7 @@ same "in-memory holder" convention as
 `command_router.py`/`handlers.py`, same posture as every Owner Mode
 module before it.
 
-**`database/raw_candle_repository.py`** gained one additive method,
+**`database_layer/market_repository/raw_candle_repository.py`** gained one additive method,
 `get_candles_range(symbol, timeframe, start, end, provider=None)` —
 TASK 1's own reuse-audit finding: the existing `get_candles()` only
 supports "most recent N rows," no date bound, which a fixed
@@ -1223,7 +1223,7 @@ reimplemented anywhere. Still, per the Director's own explicit rule,
 **not** wired into `core/pipeline.py` or any live routing surface.
 Full detail: `docs/BACKTESTING_ENGINE.md`.
 
-**`backtesting/data_feed.py`** — `IDataFeed` (ABC) + `LiveDataFeed`/
+**`backtesting_layer/data_feed/data_feed.py`** — `IDataFeed` (ABC) + `LiveDataFeed`/
 `ReplayDataFeed`. Per the Director's own rule ("no `if backtest: ...
 else: ...`"): TASK 1's reuse audit found `strategies/`/
 `signal_layer/signal_engine/signal_engine.py` were already source-agnostic (they consume
@@ -1232,7 +1232,7 @@ one level up, between the live `market_data` stage
 (`MarketDataNormalizer.get_candles()`) and Phase 60.1's `ReplayFeed`.
 `IDataFeed` unifies exactly those two.
 
-**`backtesting/backtest_engine.py`** — `BacktestEngine`: composes
+**`backtesting_layer/backtest_engine/backtest_engine.py`** — `BacktestEngine`: composes
 `ReplayEngine` (Phase 60.1), `build_context_snapshot()`,
 `compute_market_phase()`, `SignalEngine().generate_signals()`,
 `compute_signal_quality()`, `AIAnalyzer().analyze()`,
@@ -1252,7 +1252,7 @@ degrade path `core/pipeline.py` itself already uses on a live HTF
 fetch failure) since true multi-timeframe HTF replay is out of scope
 for this phase.
 
-**`backtesting/backtest_result.py`** — `BacktestResult` + `build_backtest_result()`
+**`backtesting_layer/backtest_report/backtest_result.py`** — `BacktestResult` + `build_backtest_result()`
 (wraps `analytics.strategy_report.build_strategy_report()`, unmodified)
 + `format_backtest_report()`.
 
@@ -1365,7 +1365,7 @@ holder — not persisted, not wired into `telegram/commands.py`/
 
 None of `core/pipeline.py`, `decision/`, `risk_layer/risk_engine/risk_manager.py`,
 `execution_layer/execution_engine/execution_engine.py`, `execution_layer/execution_monitor/signal_lifecycle.py`,
-`strategies/`, `signals/`, `context/`, `ai/`, `lifecycle/paper_trade.py`,
+`strategies/`, `signals/`, `context/`, `ai/`, `trade_monitoring_layer/paper_trading/paper_trade.py`,
 `telegram/handlers.py`, `telegram/command_router.py`, or
 `telegram/commands.py` changed in this phase.
 
@@ -1397,7 +1397,7 @@ itself is unchanged. New `EnrichedContextSnapshot` +
 `FundamentalContextSnapshot` by composition — `ContextSnapshot` itself
 was deliberately not touched, since its own docstring states "no
 defaults by design," a stable contract every existing caller
-(`core/pipeline.py`, `backtesting/backtest_engine.py`) depends on.
+(`core/pipeline.py`, `backtesting_layer/backtest_engine/backtest_engine.py`) depends on.
 
 **`data_layer/providers/fred_provider.py` extension (TASK 3)** —
 `FredProvider.collect_snapshot()`, a new method (not a new file)
@@ -1479,11 +1479,11 @@ parse `failure_type`/`success_pattern` free text into structured
 sub-conditions — a most-common-string example only, never a
 generalized rule.
 
-**`database/learning_models.py` + `learning_repository.py`** (TASK 5)
+**`database_layer/journal_repository/learning_models.py` + `learning_repository.py`** (TASK 5)
 — `LearningRecordRow` + `LearningRepository`, mirroring
-`database/audit_log_repository.py`'s structure exactly. Append-only:
+`database_layer/audit_log/audit_log_repository.py`'s structure exactly. Append-only:
 **no `update()`/`delete()` method exists**. New `learning_records`
-table (`init_learning_schema()` in `database/models.py`).
+table (`init_learning_schema()` in `database_layer/database_manager/models.py`).
 
 **`analytics/learning_report.py`** (TASK 6) — `LearningReport` +
 `build_learning_report()`/`format_learning_report()`, reusing
@@ -1519,7 +1519,7 @@ there — still `observe -> analyze -> report`, never
 section, `docs/ADAPTIVE_INTELLIGENCE_AUDIT.md`.
 
 **A genuine Phase 60.2 bug found and fixed during TASK 1's own
-audit** — `backtesting/backtest_engine.py`'s `_process_candidate()`
+audit** — `backtesting_layer/backtest_engine/backtest_engine.py`'s `_process_candidate()`
 never captured `open_paper_trade()`/`check_paper_trade_against_candles()`'s
 returned trade (both pure, frozen-dataclass functions), so every
 backtest's `PaperTrade` stayed `CREATED` forever and
@@ -1572,7 +1572,7 @@ no detector anywhere in this codebase and is only recorded when a
 caller supplies it explicitly.
 
 Nothing in this phase calls `bridge_closed_trade()` from
-`backtesting/backtest_engine.py`'s own loop — the bridge exists and is
+`backtesting_layer/backtest_engine/backtest_engine.py`'s own loop — the bridge exists and is
 tested end-to-end, but wiring it into a real run is a separate, future
 step. None of `core/pipeline.py`, `decision/`, `risk/`, `execution/`,
 `strategies/`, `signals/`, `telegram/handlers.py`,
@@ -1618,7 +1618,7 @@ entire registry snapshot on each dry run. Reverted;
 resolves the naming conflict. Full account:
 `docs/PIPELINE_GUARD.md`'s "Disclosed Findings" (finding 3).
 
-**Learning Auto Hook** (TASK 3) — `backtesting/backtest_engine.py`'s
+**Learning Auto Hook** (TASK 3) — `backtesting_layer/backtest_engine/backtest_engine.py`'s
 `_process_candidate()` now calls `bridge_closed_trade()` for every
 `PaperTrade` that reaches `TradeState.CLOSED`, closing Phase 60.7's
 own disclosed gap. Live trading still records nothing to Learning —
@@ -1626,7 +1626,7 @@ own disclosed gap. Live trading still records nothing to Learning —
 integration is deferred until a real MT5/broker execution lifecycle
 exists.
 
-**IDataFeed confirmation** (TASK 4) — `backtesting/data_feed.py`'s
+**IDataFeed confirmation** (TASK 4) — `backtesting_layer/data_feed/data_feed.py`'s
 `LiveDataFeed`/`ReplayDataFeed` both really implement `IDataFeed`
 (confirmed by test, not just by inspection); `core/pipeline.py`'s live
 `market_data` stage still calls `MarketDataNormalizer.get_candles()`
@@ -1768,7 +1768,7 @@ decision_layer/decision_engine/decision_engine.py                               
 risk_layer/risk_engine/risk_manager.py                                                (Risk -- the one hard gate)
   |
   v
-lifecycle/paper_trade.py                                            (Paper Trade)
+trade_monitoring_layer/paper_trading/paper_trade.py                                            (Paper Trade)
   |
   v
 execution/simulator/simulator_engine.py                             (Execution Simulator -- foundation)
@@ -1790,9 +1790,9 @@ analytics/equity_curve.py, analytics/benchmark.py                    (Analytics)
 database/*_repository.py                                             (Database)
 ```
 
-Parallel, not sequential: `backtesting/backtest_engine.py` composes
+Parallel, not sequential: `backtesting_layer/backtest_engine/backtest_engine.py` composes
 the exact same Context->Strategy->Signal->AI->Decision->Risk->Paper
-Trade->Learning chain above, off `backtesting/replay_engine.py`'s
+Trade->Learning chain above, off `backtesting_layer/replay_engine/replay_engine.py`'s
 `IDataFeed` instead of live market data (Phase 60.1/60.2/60.8).
 `core_layer/emergency/emergency_manager.py` sits beside `core/pipeline.py`,
 read by `PipelineGuard` only — never itself in the data-flow chain.
@@ -1988,8 +1988,8 @@ ai/access/trial_manager.py              (TrialManager -- 7-day FREE trial, "1 ph
 ai/audit/usage_accounting.py            (compute_user_usage() -- generalizes trace.py's request_id join)
 
 core_layer/secrets/phone_hash.py                      (hash_phone_number() -- HMAC-SHA256 salted; raw phone never stored)
-database/user_models.py                 (+phone_hash field, additive)
-database/user_repository.py             (+set_phone_hash()/get_users_by_phone_hash())
+database_layer/user_repository/user_models.py                 (+phone_hash field, additive)
+database_layer/user_repository/user_repository.py             (+set_phone_hash()/get_users_by_phone_hash())
 
 telegram/owner/ai_commands.py           (new -- /ai_status /ai_provider /ai_disable /ai_enable /ai_limit /ai_cost /ai_usage)
 ```
@@ -2032,8 +2032,8 @@ telegram/polling.py                     (+contact-message dispatch conditional)
 telegram/keyboards.py                   (+phone_share_keyboard() -- first ReplyKeyboardMarkup)
 telegram/user_service.py                (+register_phone() -- LIVE registration flow)
 
-database/user_models.py                 (+trial_started_at field, additive)
-database/user_repository.py             (+set_trial_started_at())
+database_layer/user_repository/user_models.py                 (+trial_started_at field, additive)
+database_layer/user_repository/user_repository.py             (+set_trial_started_at())
 ai/access/trial_manager.py              (+trial_status_from_started_at(), stateless, shared with status_of())
 ```
 
@@ -2192,7 +2192,7 @@ pipeline wiring" — into a live record. Per cycle: one
 per candidate, one `SignalSchema` is built via `from_signal_candidate()`
 with `context_id=context_snapshot.snapshot_id` (the two sides of the
 same link) and a freshly generated `decision_id=str(uuid.uuid4())`
-(mirroring `database/signal_record.py`'s own `signal_id` generation
+(mirroring `database_layer/trade_repository/signal_record.py`'s own `signal_id` generation
 convention — `decision_layer.decision_engine.models.TradeDecision`, a Trading-Safety-protected
 file, is deliberately left with no id field of its own). `strategy_id`
 needed no new field: `SignalSchema.strategy_name` (Phase A15) already
@@ -2250,7 +2250,7 @@ pipeline sequence above:
   `timeframe`, `candle_count`, `first_timestamp`, `last_timestamp`,
   `candles_reference`), closing the audit finding that the `signals`
   database table stores no candle data and its own `symbol` column is
-  never actually populated (`database/signal_repository.py`'s
+  never actually populated (`database_layer/trade_repository/signal_repository.py`'s
   `save_signal_record()` hardcodes `data["symbol"] = ""`) — so market
   state at signal time could not be reconstructed before this phase.
   Deliberately not a full candle store (no database migration, per
@@ -2282,7 +2282,7 @@ pipeline sequence above:
   performance (win/loss/R-multiple by strategy/session/market phase),
   never to be confused with `performance/` (Phase A19, **system**
   timing) — the exact distinction this task's own brief required.
-  Deliberately does not duplicate `monitoring/performance.py`'s
+  Deliberately does not duplicate `core_layer/health_monitor/performance.py`'s
   pre-existing `PerformanceTracker` (a real, working, database-driven
   strategy win-rate calculator) — `strategy_report.py` reuses its
   exact `WIN / (WIN + LOSS)` formula by convention, disclosed, not
@@ -2333,8 +2333,8 @@ for `API_003`. `data_layer/live_data/market_data_snapshot.py`'s `MarketDataSnaps
 
 | Module | Responsibility |
 |---|---|
-| `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core_layer/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. Phase 59.9 added `emergency/` — `EmergencyState`/`EmergencyManager` (a runtime controller, persisted append-only via `database.emergency_repository`, audited via `AuditLogRepository`) and stateless `circuit_breaker.evaluate_circuit()`; still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`. |
-| `backtesting/` | New in Phase 60.1 (Historical Replay Engine) — `replay_models.py`/`replay_session.py`/`replay_clock.py`/`replay_feed.py`/`replay_engine.py`/`replay_controller.py`. A service over existing Historical Data (`database.raw_candle_repository.RawCandleRepository`), not a new business domain — deliberately not a `market/` top-level package, per the Module Reuse Principle. `ReplayFeed` hands out `data_layer.providers.twelve_data_client.Candle`, the same type the live pipeline already uses, so a future Strategy consumer needs no shape change. Phase 60.2 (Backtesting Engine) added `data_feed.py` (`IDataFeed`/`LiveDataFeed`/`ReplayDataFeed`), `backtest_engine.py` (`BacktestEngine`, composing `strategies/`/`signals/`/`ai/`/`decision/`/`risk/`/`lifecycle/`/`analytics/` unmodified), and `backtest_result.py`. Still never *modifies* `strategies/`/`signals/`/`decision/`/`risk/`; nothing in `core/pipeline.py` constructs anything here. |
+| `core/` | Cross-cutting infrastructure: pipeline orchestration, logging, secrets, and (Phase A18) the `GoldBotError` exception hierarchy (`core_layer/errors/`) — implemented, not yet wired into any existing raise site. Phase 59.6 added `system_state.py` — `SystemState`/`SystemStateRecord`, a pure model with no mutable "current state" holder and no pipeline wiring. Phase 59.9 added `emergency/` — `EmergencyState`/`EmergencyManager` (a runtime controller, persisted append-only via `database_layer.trade_repository.emergency_repository`, audited via `AuditLogRepository`) and stateless `circuit_breaker.evaluate_circuit()`; still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`. |
+| `backtesting/` | New in Phase 60.1 (Historical Replay Engine) — `replay_models.py`/`replay_session.py`/`replay_clock.py`/`replay_feed.py`/`replay_engine.py`/`replay_controller.py`. A service over existing Historical Data (`database_layer.market_repository.raw_candle_repository.RawCandleRepository`), not a new business domain — deliberately not a `market/` top-level package, per the Module Reuse Principle. `ReplayFeed` hands out `data_layer.providers.twelve_data_client.Candle`, the same type the live pipeline already uses, so a future Strategy consumer needs no shape change. Phase 60.2 (Backtesting Engine) added `data_feed.py` (`IDataFeed`/`LiveDataFeed`/`ReplayDataFeed`), `backtest_engine.py` (`BacktestEngine`, composing `strategies/`/`signals/`/`ai/`/`decision/`/`risk/`/`lifecycle/`/`analytics/` unmodified), and `backtest_result.py`. Still never *modifies* `strategies/`/`signals/`/`decision/`/`risk/`; nothing in `core/pipeline.py` constructs anything here. |
 | `configuration/` | Configuration & Feature Flags foundation (Phase A13) — `Environment`/`ApplicationSettings`/`FeatureFlags`, additive to `config.py` (untouched). Every feature flag defaults `False`; no pipeline wiring. Phase 59.6 added `feature_registry.py` (`FeatureDescriptor`/`build_feature_registry()`, unifying real + declared-only flag names) and `feature_dependency_validator.py` (`validate_feature_dependencies()`) — still not runtime, gates nothing. Phase 59.7 added the first genuinely *runtime* control in this package — `runtime_state.py`/`runtime_feature_manager.py`/`runtime_api.py` (`RuntimeFeatureManager`: validated, persisted, audited, snapshotted enable/disable) — still gates nothing in `core/pipeline.py`/`decision/`/`risk/`/`execution/`, none of which import `configuration/`. |
 | `assets/` | Asset Intelligence foundation (Phase A12) — `AssetDefinition`/`AssetRegistry`, one metadata record per tradable asset (symbol, type, market, currency, plus seven not-yet-implemented `None` hooks). Registers only `GOLD_ASSET` (XAUUSD) today; no market data, no execution, no pipeline wiring. |
 | `data/` | Market data fetch and normalization, plus Data Quality assessment (`data_quality.py`, Phase A8) — observational scoring, not filtering — API error classification (`api_error_classifier.py`, AC-07/Phase 59.1 TASK 5) — maps a caught fetch exception (or a known empty-response condition) to a structured `ExternalAPIError` for logging only, never changes control flow — Market Data Snapshot (`market_data_snapshot.py`, Phase 59 Preparation/59.1) — a lightweight, unwired window-identity/fingerprint record for a future replay/backtesting step; not a full candle store — and Market Provider Abstraction (`providers/`, Phase 59.1) — `DataProvider`/`MarketDataProvider`/`FundamentalDataProvider`, `TwelveDataProvider`/`MT5Provider`/`BinanceProvider`/`FredProvider`, `ProviderRegistry`, data-only, not wired into the live pipeline — plus Provider Normalization (`normalization/`, Phase 59.3) — `symbol_mapper.py`/`timeframe_mapper.py`/`candle_normalizer.py`, centralized per-provider format tables, no new candle type. |
@@ -2347,11 +2347,11 @@ for `API_003`. `data_layer/live_data/market_data_snapshot.py`'s `MarketDataSnaps
 | `risk/` | SL/TP geometry and stop-loss-distance validation; sizing suggestion only. |
 | `execution/` | Inert scaffolding for future MT5 integration — not reachable from any runtime path today. |
 | `monitoring/` | Historical trade-outcome statistics (win rate, strategy breakdown — `performance.py`'s `PerformanceTracker`), not wired into any live command yet. Distinct from `performance/` (Phase A19) — see that row. Also `provider_health.py` (Phase 59.2) — `ProviderHealthStatus`/`check_provider_health()`, a third, distinct kind of “performance” (a provider's own live availability/latency), not wired into any live command yet either. |
-| `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `monitoring/performance.py`'s trade-outcome statistics. |
+| `performance/` | Performance Metrics foundation (Phase A19) — `PerformanceMetric`/`PerformanceCollector`/`PerformanceTimer`, a standalone code-timing foundation. Not wired into `core/pipeline.py`; not the same concept as `core_layer/health_monitor/performance.py`'s trade-outcome statistics. |
 | `database/` | SQLite persistence — the only place SQL is written. Phase 59.3 added the first tables from any Phase A/AC/Phase-59 foundation module (`raw_candles`, `market_snapshots` — `raw_candle_models.py`/`raw_candle_repository.py`, `market_snapshot_models.py`/`market_snapshot_repository.py`), fully isolated, not wired into `core/pipeline.py`. Phase 59.5 added `sync_state` (`sync_state_models.py`/`sync_state_repository.py`) — one row per `(provider, symbol, timeframe)`, the historical collector's own incremental resume watermark. Phase 59.6 added `audit_log`/`config_snapshots` (`audit_log_models.py`/`audit_log_repository.py`, `config_snapshot_models.py`/`config_snapshot_repository.py`) — both append-only. Phase 59.7 added `runtime_features` (`runtime_feature_models.py`/`runtime_feature_repository.py`) — one row per feature name, `configuration.runtime_feature_manager.RuntimeFeatureManager`'s persistence layer; `audit_log`/`config_snapshots` are now actually written to on every successful runtime toggle, no longer purely a manual/future-command capture. Phase 59.9 added `emergency_states` (`emergency_models.py`/`emergency_repository.py`) — append-only (like `audit_log`, unlike `runtime_features`' upsert), `core_layer.emergency.emergency_manager.EmergencyManager`'s persistence layer; every transition is also written to `audit_log`. |
 | `telegram/` | The Telegram product layer: routing, permissions, handlers, services. `owner/` (Phase 59.3-59.5) — real, tested owner-command service functions (`provider_commands.py`/`system_commands.py`/`feature_commands.py`/`report_commands.py`/`validation_commands.py`/`dataset_commands.py`), not registered into `commands.py`/`command_router.py`/`handlers.py` — the live bot's command surface is unaffected. |
 | `lifecycle/` | Phase 59 Preparation foundation — `PaperTrade`/`TradeState` (simulated, broker-free trade state machine) and `SignalLifecycleState` (a signal's own progress through the analysis pipeline). In-memory only: no database persistence, no pipeline wiring. Not the same as `strategies/lifecycle/` (per-strategy metadata) or `execution_layer/execution_monitor/signal_lifecycle.py` (a pre-existing, inert, Telegram-delivery state machine). |
-| `analytics/` | Phase 59 Preparation foundation — `SignalPerformance`/`StrategyPerformanceReport`, **trading** performance (win/loss/R-multiple by strategy). Not wired into `core/pipeline.py`; not the same concept as `performance/` (Phase A19, system timing) or a replacement for `monitoring/performance.py`'s pre-existing, database-driven `PerformanceTracker`. |
+| `analytics/` | Phase 59 Preparation foundation — `SignalPerformance`/`StrategyPerformanceReport`, **trading** performance (win/loss/R-multiple by strategy). Not wired into `core/pipeline.py`; not the same concept as `performance/` (Phase A19, system timing) or a replacement for `core_layer/health_monitor/performance.py`'s pre-existing, database-driven `PerformanceTracker`. |
 
 ## Dependency Rules
 
@@ -2470,11 +2470,11 @@ import sweep):
   `signals/`, `ai/`, `decision/`, `risk/`, `execution/`, `database/`,
   or `telegram/`. Not imported by `core/pipeline.py` or
   `data_layer/live_data/market_data.py`.
-- `database/raw_candle_models.py`/`raw_candle_repository.py` and
-  `database/market_snapshot_models.py`/`market_snapshot_repository.py`
+- `database_layer/market_repository/raw_candle_models.py`/`raw_candle_repository.py` and
+  `database_layer/market_repository/market_snapshot_models.py`/`market_snapshot_repository.py`
   (Phase 59.3) follow the exact same dependency shape as every other
-  `database/*_repository.py` — `database/database.py` and
-  `database/models.py` only, plus (for `market_snapshot_models.py`'s
+  `database/*_repository.py` — `database_layer/database_manager/database.py` and
+  `database_layer/database_manager/models.py` only, plus (for `market_snapshot_models.py`'s
   `from_market_data_snapshot()`)
   `data_layer.live_data.market_data_snapshot.MarketDataSnapshot`, `TYPE_CHECKING`-only.
   No dependency on `telegram/`, `ai/`, `decision/`, `risk/`,
@@ -2487,7 +2487,7 @@ import sweep):
   `risk/`, `database/`, or `telegram/`. Not imported by
   `core/pipeline.py`, `ai/`, or `decision/` in this phase.
 - `telegram/owner/` (Phase 59.3) imports `data_layer.providers.registry`,
-  `monitoring.provider_health`, `telegram.admin_service.AdminService`,
+  `core_layer.health_monitor.provider_health`, `telegram.admin_service.AdminService`,
   `config.Config`, and `configuration.feature_flags.DEFAULT_FLAGS` —
   no dependency on `telegram.handlers`, `telegram.command_router`, or
   `telegram.commands`. Not imported by any of those three, or by
@@ -2501,7 +2501,7 @@ import sweep):
 - `lifecycle/` (Phase 59 Preparation TASK 2 + TASK 4) imports
   `signal_layer.signal_builder.schema.SignalSchema` (`TYPE_CHECKING`-only, in both
   `paper_trade.py` and `signal_state.py`) and, within the package,
-  `lifecycle.trade_state`/`lifecycle.paper_trade` — no dependency on
+  `trade_monitoring_layer.paper_trading.trade_state`/`trade_monitoring_layer.paper_trading.paper_trade` — no dependency on
   `context/`, `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`,
   `database/`, or `telegram/`. Deliberately does **not** import
   `execution/` — `lifecycle/`'s `PaperTrade` never calls a broker, and
@@ -2520,24 +2520,24 @@ import sweep):
   `binance_provider.py`/`fred_provider.py`/`fundamental_base.py`/
   `registry.py` all import only other files within `data_layer/providers/`
   — no new external dependency (no exchange or FRED API package).
-  `monitoring/provider_health.py` (Phase 59.2) imports
+  `core_layer/health_monitor/provider_health.py` (Phase 59.2) imports
   `data_layer.providers.base_provider`/`data_layer.providers.registry` — a new,
   one-directional `monitoring/` → `data_layer/providers/` dependency, never
   reversed.
 - `analytics/` (Phase 59 Preparation TASK 3) imports
-  `lifecycle.paper_trade.PaperTrade` and `signal_layer.signal_builder.schema.SignalSchema`
+  `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` and `signal_layer.signal_builder.schema.SignalSchema`
   (`TYPE_CHECKING`-only) plus, within the package,
   `analytics.signal_performance` — no dependency on `context/`,
   `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`,
   `database/`, or `telegram/`. Does not import
-  `monitoring/performance.py` or `database/signal_repository.py` —
+  `core_layer/health_monitor/performance.py` or `database_layer/trade_repository/signal_repository.py` —
   its input is an in-memory `List[SignalPerformance]`, not a database
   read. Not imported by `core/pipeline.py` or `monitoring/` in this
   phase.
 - `data_layer/historical_data/historical_data_collector.py`/`historical_validator.py`/
   `provider_comparison.py` (Phase 59.5) import `data_layer.providers.base_provider`,
   `data_layer.data_validation.data_quality.INTERVAL_DELTAS` (same top-level `data/` package),
-  `database.raw_candle_repository`/`database.sync_state_repository`
+  `database_layer.market_repository.raw_candle_repository`/`database_layer.market_repository.sync_state_repository`
   (a new, one-directional `data/` → `database/` dependency — the first
   time anything in `data/` has depended on `database/`, since a
   collector's whole job is persisting what it fetches; never reversed,
@@ -2550,7 +2550,7 @@ import sweep):
   `strategies/`, `ai/`, `decision/`, `risk/`, `execution/`, or
   `telegram/`. `telegram/owner/dataset_commands.py` (Phase 59.5)
   imports `analytics.dataset_report`, `data_layer.providers.provider_comparison`,
-  `database.raw_candle_repository`, `database.sync_state_repository`,
+  `database_layer.market_repository.raw_candle_repository`, `database_layer.market_repository.sync_state_repository`,
   and `provider_commands.ProviderCommandResult` (same package) — not
   imported by `telegram/handlers.py`, `telegram/command_router.py`, or
   `telegram/commands.py`. None of the six new modules are imported by
@@ -2558,8 +2558,8 @@ import sweep):
 - `core_layer/system_state/system_state.py` (Phase 59.6) imports only the standard
   library (`dataclasses`, `datetime`, `enum`) — no dependency on any
   other package, not imported by `core/pipeline.py`.
-  `database/audit_log_models.py`/`audit_log_repository.py` and
-  `database/config_snapshot_models.py`/`config_snapshot_repository.py`
+  `database_layer/audit_log/audit_log_models.py`/`audit_log_repository.py` and
+  `database_layer/journal_repository/config_snapshot_models.py`/`config_snapshot_repository.py`
   (Phase 59.6) follow the exact same shape as every other
   `database/*_repository.py` pair — `config_snapshot_models.py`
   additionally imports `configuration.feature_registry.FeatureDescriptor`
@@ -2568,7 +2568,7 @@ import sweep):
   `telegram/owner/owner_roles.py` (Phase 59.6) imports
   `telegram.permissions.is_owner` and, lazily inside
   `resolve_owner_role()` (not at module import time),
-  `database.admin_repository.AdminRepository` — never imports or
+  `database_layer.user_repository.admin_repository.AdminRepository` — never imports or
   modifies `telegram.permissions.PermissionLevel` itself.
   `configuration/feature_registry.py`/`feature_dependency_validator.py`
   (Phase 59.6) import `config.Config` and
@@ -2579,12 +2579,12 @@ import sweep):
   `signals/`, or `telegram/command_router.py`.
 - `configuration/runtime_state.py` (Phase 59.7) imports only the
   standard library. `configuration/runtime_feature_manager.py` (Phase
-  59.7) imports `database.runtime_feature_repository`,
-  `database.audit_log_repository`,
-  `database.config_snapshot_repository`/`config_snapshot_models` — the
+  59.7) imports `database_layer.journal_repository.runtime_feature_repository`,
+  `database_layer.audit_log.audit_log_repository`,
+  `database_layer.journal_repository.config_snapshot_repository`/`config_snapshot_models` — the
   first *runtime* (not `TYPE_CHECKING`-only) `configuration/` →
   `database/` dependency in this codebase. Combined with Phase 59.6's
-  `database/config_snapshot_models.py`'s own `TYPE_CHECKING`-only
+  `database_layer/journal_repository/config_snapshot_models.py`'s own `TYPE_CHECKING`-only
   `configuration.feature_registry.FeatureDescriptor` import, the two
   packages now reference each other from different files — never a
   circular import in practice (Python resolves each module
@@ -2601,7 +2601,7 @@ import sweep):
 - `core_layer/emergency/emergency_state.py`/`circuit_breaker.py`/
   `maintenance.py` (Phase 59.9) import only the standard library.
   `core_layer/emergency/emergency_manager.py` (Phase 59.9) imports
-  `database.emergency_repository`, `database.audit_log_repository` —
+  `database_layer.trade_repository.emergency_repository`, `database_layer.audit_log.audit_log_repository` —
   a new, one-directional `core/` → `database/` dependency, the same
   shape `configuration/runtime_feature_manager.py` already established
   for `configuration/` → `database/` (Phase 59.7); never reversed,
@@ -2624,9 +2624,9 @@ import sweep):
   gained a new import beyond its original Phase A1-A19 set. Never
   reversed: nothing in `configuration/` or `core_layer/emergency/` imports
   `core/pipeline.py` or `core/guards/`.
-  `backtesting/backtest_engine.py` (Phase 60.8) gained
-  `learning.trade_event_bridge`, `lifecycle.trade_state`, and
-  `database.learning_repository` imports — confined to `backtesting/`,
+  `backtesting_layer/backtest_engine/backtest_engine.py` (Phase 60.8) gained
+  `learning.trade_event_bridge`, `trade_monitoring_layer.paper_trading.trade_state`, and
+  `database_layer.journal_repository.learning_repository` imports — confined to `backtesting/`,
   not `core/pipeline.py`.
 
 If a change requires violating one of these rules, that is a signal

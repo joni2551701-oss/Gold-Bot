@@ -4,14 +4,14 @@ Intelligence Layer Foundation, TASK 2).
 
 The one missing connection Phase 60.6's own docs disclosed ("no
 observation point yet calls LearningRepository.record()"): bridges an
-already-CLOSED `lifecycle.paper_trade.PaperTrade` into a persisted
+already-CLOSED `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` into a persisted
 `learning.models.LearningRecord`, via
 `learning.outcome_analyzer.analyze_trade_result()` (reused directly,
 not reimplemented) for the `failure_type`/`success_pattern` text.
 
 TASK 1's audit (`docs/ADAPTIVE_INTELLIGENCE_AUDIT.md`) found the only
 real CLOSED `PaperTrade` producer in this codebase today is
-`backtesting/backtest_engine.py` — a genuine Phase 60.2 bug (the
+`backtesting_layer/backtest_engine/backtest_engine.py` — a genuine Phase 60.2 bug (the
 engine never actually captured a trade's CLOSED transition) was found
 and fixed there as part of that same audit, since without that fix
 this bridge would have had nothing but permanently-`CREATED` trades to
@@ -20,7 +20,7 @@ observe.
 The one disclosed exception to this package's own "does not persist
 anything itself" rule (see `learning/README.md`):
 `bridge_closed_trade()` accepts an already-constructed
-`database.learning_repository.LearningRepository` and calls its
+`database_layer.journal_repository.learning_repository.LearningRepository` and calls its
 `record()` method — the same dependency-injection posture
 `telegram/*_service.py` already uses for its own repository calls, not
 a new "`learning/` always imports `database/`" precedent (every other
@@ -30,14 +30,14 @@ Per this whole phase's hard boundary: this bridge only OBSERVES an
 already-closed trade and RECORDS what happened — it never calls
 `strategies/`, `decision/`, or `risk/`, and nothing about a trade's own
 result/lifecycle is altered by bridging it. Still not wired into
-`core/pipeline.py` or `backtesting/backtest_engine.py` — a caller must
+`core/pipeline.py` or `backtesting_layer/backtest_engine/backtest_engine.py` — a caller must
 invoke this explicitly.
 """
 
 from typing import Optional, TYPE_CHECKING
 
 from context_layer.trend.market_regime import MarketRegime
-from lifecycle.trade_state import TradeState
+from trade_monitoring_layer.paper_trading.trade_state import TradeState
 from learning.models import LearningRecord, create_learning_record
 from learning.outcome_analyzer import analyze_trade_result
 
@@ -46,9 +46,9 @@ if TYPE_CHECKING:
     from context_layer.fundamental.fundamental_context import FundamentalContextSnapshot
     from context_layer.trend.htf_bias import HTFBiasResult
     from analytics.signal_performance import SignalPerformance
-    from lifecycle.paper_trade import PaperTrade
-    from database.learning_repository import LearningRepository
-    from database.learning_models import LearningRecordRow
+    from trade_monitoring_layer.paper_trading.paper_trade import PaperTrade
+    from database_layer.journal_repository.learning_repository import LearningRepository
+    from database_layer.journal_repository.learning_models import LearningRecordRow
 
 _VOLATILITY_REGIMES = (MarketRegime.HIGH_VOLATILITY, MarketRegime.LOW_VOLATILITY)
 

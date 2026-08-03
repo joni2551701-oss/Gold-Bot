@@ -8,7 +8,7 @@ value -- distinct from configuration.feature_registry.FeatureDescriptor
 config.Config.ENABLE_MT5's os.getenv-read value at process start).
 FeatureRuntimeState is what an owner has actually toggled at runtime,
 held in RuntimeStateCache (this module) and persisted by
-database/runtime_feature_repository.py (TASK 3) -- neither of which
+database_layer/journal_repository/runtime_feature_repository.py (TASK 3) -- neither of which
 this module touches directly; RuntimeStateCache is a plain in-memory
 dict wrapper, no I/O.
 """
@@ -32,7 +32,7 @@ class FeatureRuntimeState:
     source: "default" when this state came only from
         configuration.feature_registry.build_feature_registry()'s own
         static value (never toggled at runtime), or "runtime" once a
-        database/runtime_feature_repository.py row exists for this
+        database_layer/journal_repository/runtime_feature_repository.py row exists for this
         name (an owner has toggled it at least once, whether or not
         the current value still matches the static default).
     created_at: when this feature was first toggled at runtime --

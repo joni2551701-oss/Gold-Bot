@@ -75,7 +75,7 @@ Two **package-level** (not file-level) bidirectional dependencies exist
 — both directions have real, unguarded imports, but no single file
 pair loops back on itself, so no `ImportError` occurs:
 
-- **`monitoring` ↔ `telegram`**: `monitoring/system_monitor.py`,
+- **`monitoring` ↔ `telegram`**: `core_layer/health_monitor/system_monitor.py`,
   `run_snapshot.py`, `snapshot_collector.py` import `telegram.*`;
   reverse, `telegram/owner/monitoring_commands.py` and others import
   `monitoring.*`.
@@ -100,7 +100,7 @@ actual import failure results).
    types, not new business logic), but the docs need updating to
    match reality, or the import needs re-routing through `decision/`'s
    own re-exported types.
-2. `database/signal_record.py:5-7` imports `signal_layer.signal_builder.models`,
+2. `database_layer/trade_repository/signal_record.py:5-7` imports `signal_layer.signal_builder.models`,
    `decision_layer.decision_engine.models`, `risk_layer.risk_engine.risk_manager.RiskResult` — reaches three
    layers up from the documented bottom-most layer. Used by
    `core/pipeline.py` as the composition root's persistence-shape
@@ -108,7 +108,7 @@ actual import failure results).
    table, not a business-logic leak into a repository (it's used for
    type composition, not SQL/business logic).
 3. `core_layer/emergency/emergency_manager.py:30-31` imports
-   `database.audit_log_repository`/`database.emergency_repository`
+   `database_layer.audit_log.audit_log_repository`/`database_layer.trade_repository.emergency_repository`
    directly — `IMPORT_RULES.md`'s Forbidden table states `core/` never
    imports back up. The module's own docstring self-justifies this as
    intentional (analogous to `configuration/runtime_feature_manager.py`),
@@ -145,7 +145,7 @@ only `ai/` import is `TYPE_CHECKING`-guarded; `decision_layer/decision_engine/mo
 `telegram.owner.*`, `telegram.permissions`, `core_layer.logger.logger` — no
 `database.*`, no `core.pipeline`, matching its own module docstring.
 One naming caveat: `telegram/result_handler.py` imports
-`database.signal_repository.SignalRepository` directly and is *not*
+`database_layer.trade_repository.signal_repository.SignalRepository` directly and is *not*
 wired into `telegram/handlers.py` — it is a standalone bridge module
 functioning as a service despite its `*_handler.py` name. Not a rule
 violation (it isn't `handlers.py`), but the filename is misleading
@@ -203,8 +203,8 @@ pipeline's own docstring and `docs/AUDIT_REPORT.md`'s confirmation
 that "the Phase 48 fix holds."
 
 **Observability gap (self-documented elsewhere, re-confirmed live)**:
-`monitoring/decision_logger.py`'s `log_entry()` and
-`monitoring/performance_collector.py`'s record functions are never
+`decision_layer/decision_logger/decision_logger.py`'s `log_entry()` and
+`core_layer/health_monitor/performance_collector.py`'s record functions are never
 called from `core/pipeline.py` or `main.py` — a pre-existing,
 already-disclosed gap (`docs/PHASE_OWNER_SNAPSHOT_V1_1_AUDIT.md`
 states this explicitly: "zero production callers... this table will
@@ -237,9 +237,9 @@ raises `NotImplementedError` for candle/price fetches) — no order
 infrastructure.
 
 **Simulated flow**: `SignalSchema` (APPROVED) ->
-`lifecycle/paper_trade.py` (CREATED/OPEN, in-memory only, never
+`trade_monitoring_layer/paper_trading/paper_trade.py` (CREATED/OPEN, in-memory only, never
 persisted) -> `execution/simulator/simulator_engine.py` (fill/reject
-via spread+slippage+latency) -> `lifecycle/paper_trade_monitor.py`
+via spread+slippage+latency) -> `trade_monitoring_layer/paper_trading/paper_trade_monitor.py`
 (TP/SL/EXPIRED against candle history, arithmetic only).
 `monitoring/trade_monitor.py` and `monitoring/trade_manager.py` (the
 two filenames this brief's Strict Rules flag as off-limits Trading
@@ -416,8 +416,8 @@ default, correct secrets segregation.
 `core_layer/errors/base.py`'s `GoldBotError` (and its 9-class hierarchy in
 `core_layer/errors/exceptions.py`) auto-populates `code`, `message`,
 `module`, `timestamp` on every raise. The persisted
-`ErrorEvent`/`ErrorEventEntry` (`monitoring/models.py`,
-`database/monitoring_models.py`) carries the requested
+`ErrorEvent`/`ErrorEventEntry` (`core_layer/health_monitor/models.py`,
+`database_layer/audit_log/monitoring_models.py`) carries the requested
 Time/Module/Message/Severity fields, populated by
 `ErrorMonitor.capture()`.
 

@@ -43,7 +43,7 @@ def test_history_command_empty_then_populated():
     empty = _run(route_command("/history", telegram_id=USER_ID))
     assert empty.text == "Signal tarixi mavjud emas."
 
-    from database.signal_repository import SignalRepository
+    from database_layer.trade_repository.signal_repository import SignalRepository
     SignalRepository().create_signal({
         "signal_id": "hist-1", "symbol": "XAUUSD", "direction": "BUY",
         "entry_zone_min": 2000.0, "entry_zone_max": 2000.0, "stop_loss": 1990.0,
@@ -80,7 +80,7 @@ def test_notifications_command_rejects_invalid_argument():
 
 
 def test_users_command_requires_admin_and_reports_counts():
-    from database.admin_repository import AdminRepository
+    from database_layer.user_repository.admin_repository import AdminRepository
 
     _run(route_command("/start", telegram_id=USER_ID))
     _run(route_command("/start", telegram_id=ADMIN_ID))

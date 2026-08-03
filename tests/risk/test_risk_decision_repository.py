@@ -1,6 +1,6 @@
-"""Phase V1.0.1 -- database/risk_decision_repository.py tests."""
+"""Phase V1.0.1 -- database_layer/trade_repository/risk_decision_repository.py tests."""
 
-from database.risk_decision_repository import RiskDecisionRepository
+from database_layer.trade_repository.risk_decision_repository import RiskDecisionRepository
 
 
 def test_record_returns_entry(isolated_db):

@@ -8,7 +8,7 @@ timer/decorator (`PerformanceTimer`/`measure_performance`). Not a
 speed-up: no caching, no API/database optimization, no pipeline
 change. See `docs/PERFORMANCE_METRICS.md` for the full contract,
 including how this differs from the two pre-existing, similarly-named
-concepts (`monitoring/performance.py`'s trade-outcome statistics and
+concepts (`core_layer/health_monitor/performance.py`'s trade-outcome statistics and
 `core/pipeline.py`'s own `_log_stage()` timing).
 
 ## Usage

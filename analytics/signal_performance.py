@@ -10,7 +10,7 @@ performance -- did a signal make money, how many R did it realize, in
 which strategy/session/market phase -- an entirely different question,
 explicitly kept separate per this task's own brief.
 
-Also distinct from monitoring/performance.py's pre-existing
+Also distinct from core_layer/health_monitor/performance.py's pre-existing
 PerformanceTracker: that class already computes win/loss/win_rate,
 grouped by strategy_name, from the persisted "signals" database table
 (via SignalRepository.get_open_signals()/get_closed_signals(), reading
@@ -42,10 +42,10 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
 
-from lifecycle.trade_state import TradeState
+from trade_monitoring_layer.paper_trading.trade_state import TradeState
 
 if TYPE_CHECKING:
-    from lifecycle.paper_trade import PaperTrade
+    from trade_monitoring_layer.paper_trading.paper_trade import PaperTrade
     from signal_layer.signal_builder.schema import SignalSchema
 
 
@@ -81,7 +81,7 @@ class SignalPerformance:
         computation exists anywhere in this codebase (see module
         docstring).
     r_multiple: the realized risk-multiple, using the SAME formula
-        database/signal_record.py's _calculate_rr_ratio() already uses
+        database_layer/trade_repository/signal_record.py's _calculate_rr_ratio() already uses
         for the *planned* R (a small, deliberate, documented
         duplication -- see compute_r_multiple()'s own docstring for
         why it is not imported from there instead), applied against
@@ -128,7 +128,7 @@ def compute_r_multiple(
     """
     A pure, deterministic arithmetic derivation -- not a new risk
     formula, and it never touches risk_layer/risk_engine/risk_manager.py. Deliberately
-    mirrors database/signal_record.py's _calculate_rr_ratio() (BUY:
+    mirrors database_layer/trade_repository/signal_record.py's _calculate_rr_ratio() (BUY:
     (TP-Entry)/(Entry-SL); SELL: (Entry-TP)/(SL-Entry)) rather than
     importing it, since that function is a private, database-layer
     helper and analytics/ has no reason to depend on database/ for a

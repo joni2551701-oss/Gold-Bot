@@ -40,10 +40,10 @@ from analytics.strategy_report import compute_win_rate
 from core_layer.emergency.emergency_manager import EmergencyManager
 from core_layer.emergency.emergency_state import EmergencyState
 from core_layer.logger.logger import setup_logger
-from database.audit_log_repository import AuditLogRepository
-from database.learning_repository import LearningRepository
-from database.signal_repository import SignalRepository
-from database.subscription_repository import SubscriptionRepository
+from database_layer.audit_log.audit_log_repository import AuditLogRepository
+from database_layer.journal_repository.learning_repository import LearningRepository
+from database_layer.trade_repository.signal_repository import SignalRepository
+from database_layer.user_repository.subscription_repository import SubscriptionRepository
 from telegram.admin_service import AdminService
 from telegram.owner.ai_commands import ai_cost, ai_runtime_online, current_provider_for
 from telegram.owner.control_commands import get_feature_states

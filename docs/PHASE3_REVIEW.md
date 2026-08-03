@@ -9,8 +9,8 @@ Phase 3.x fix first.
 Scope reviewed: `telegram/registration_service.py`,
 `telegram/command_router.py`, `telegram/callback_router.py`,
 `telegram/handlers.py` (start_handler/_registration_step/
-contact_handler), `database/models.py` (migration + backfill),
-`database/user_repository.py`, `database/user_models.py`,
+contact_handler), `database_layer/database_manager/models.py` (migration + backfill),
+`database_layer/user_repository/user_repository.py`, `database_layer/user_repository/user_models.py`,
 `translation/ui_catalog.py` (new keys), `telegram/keyboards.py`
 (phone_share_keyboard), and the full Phase 3 test suite.
 
