@@ -1,10 +1,10 @@
 # IMPLEMENTATION.md -- trade_monitoring_layer/trailing_stop
 
-No implementation notes beyond `README.md` -- this module has no top-level classes or functions in its own `.py` files at rollout time (it may be a pure re-export / skeleton / grouping package).
+`README.md`dan tashqari implementation eslatmalari yo'q -- bu modul rollout vaqtida o'zining `.py` fayllarida top-level class yoki function'larga ega emas (u sof re-export / skeleton / grouping package bo'lishi mumkin).
 
 ## Runtime / Algorithms / Pipeline / Event Flow / Sequence / Design Decisions / Performance Notes
 
-Not authored at rollout time -- this section requires domain understanding beyond what can be mechanically derived from code, and is left for a future Development Phase to fill in (per Director Order No. 012/013, this rollout is documentation standardization only, not new authorship of technical narrative).
+Rollout vaqtida yozilmagan -- bu bo'lim koddan mexanik ravishda chiqarib bo'lmaydigan domain tushunchasini talab qiladi va kelajakdagi Development Phase tomonidan to'ldirish uchun qoldirilgan (Director Order No. 012/013'ga ko'ra, bu rollout faqat hujjatlashtirish standartizatsiyasi, texnik bayonning yangi muallifligi emas).
 
 ---
-*Generated 2026-08-03 by GoldBot Engineering Standard v1.0 rollout (Director Order No. 012/013).*
+*2026-08-03'da GoldBot Engineering Standard v1.0 rollout tomonidan yaratilgan (Director Order No. 012/013).*

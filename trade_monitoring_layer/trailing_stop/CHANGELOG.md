@@ -2,17 +2,17 @@
 
 ## v1.0.0 -- 2026-08-03
 
-### Added
-- Initial Engineering Standard (Director Order No. 012/013).
+### Qo'shildi
+- Boshlang'ich Engineering Standard (Director Order No. 012/013).
 
-### Changed
-- None.
+### O'zgartirildi
+- Yo'q.
 
-### Fixed
-- None.
+### Tuzatildi
+- Yo'q.
 
-### Removed
-- None.
+### O'chirildi
+- Yo'q.
 
-### Deprecated
-- None.
+### Eskirgan deb belgilandi
+- Yo'q.
