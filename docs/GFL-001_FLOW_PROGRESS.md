@@ -6,6 +6,13 @@ Ushbu hujjat GoldBot Data Flow rivojlanishining rasmiy holatini yuritadi.
 
 Har bir Flow quyidagi statuslardan biriga ega bo'ladi va Development davomida muntazam yangilanadi.
 
+**V3 qayta ko'rib chiqish (GFL-002, Director Order):** Flow ID'lar V3
+Architecture asosida qayta tashkil qilindi. Hech bir bajarilgan ish
+yo'qolmadi -- faqat mapping yangilandi (eski FLOW-001 "Current Price"
+endi FLOW-002, statusi va 100% progress'i saqlanib qoldi). Old -> New
+mapping jadvali shu buyruqqa javoban yozilgan Director Review chat
+xabarida keltirilgan.
+
 ---
 
 # Status
@@ -50,29 +57,33 @@ Director Review talab qilinadi.
 
 # Flow Progress
 
-| Flow | Nomi | Status | Progress | Owner | Izoh |
-|------|------|--------|----------|-------|------|
-| FLOW-001 | Current Price | 🟩 | 100% | Worker | Yakunlandi -- 2026-08-04. Audit shuni ko'rsatdi: barcha modullar allaqachon mavjud edi, faqat ulanmagan (Price Stream `tick()`ni hech kim chaqirmasdi, `CurrentPriceProvider` default holatda har safar yangi/alohida instance qurar edi). Tuzatildi: shared singleton + default StreamValidator + default MarketMemoryRegistry + polling.py'da tick driver. 5411 test PASS, E2E test qo'shildi. |
-| FLOW-002 | Market Memory | 🟦 | 0% | Worker | Navbatda |
-| FLOW-003 | Market Engine | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-004 | Context Engine | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-005 | Analysis Engine | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-006 | Indicator Engine | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-007 | Strategy Engine | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-008 | Confluence Engine | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-009 | Decision Engine | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-010 | Risk Engine | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-011 | Signal Engine | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-012 | Execution Engine | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-013 | Trade Monitoring | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-014 | GoldBot Core API | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-015 | Application Services | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-016 | Telegram | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-017 | Mini App | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-018 | Android | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-019 | iOS | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-020 | Desktop | 🟦 | 0% | Worker | Kutmoqda |
-| FLOW-021 | Web | 🟦 | 0% | Worker | Kutmoqda |
+| Flow | Nomi | Layer / Subsystem | Status | Progress | Owner | Izoh |
+|------|------|--------------------|--------|----------|-------|------|
+| FLOW-001 | System Bootstrap / Configuration | Foundation Layer | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- avval alohida Flow sifatida mavjud emas edi |
+| FLOW-002 | Current Price | Data Layer | 🟩 | 100% | Worker | Eski FLOW-001. Yakunlandi -- 2026-08-04. Audit shuni ko'rsatdi: barcha modullar allaqachon mavjud edi, faqat ulanmagan (Price Stream `tick()`ni hech kim chaqirmasdi, `CurrentPriceProvider` default holatda har safar yangi/alohida instance qurar edi). Tuzatildi: shared singleton + default StreamValidator + default MarketMemoryRegistry + polling.py'da tick driver. 5411 test PASS, E2E test qo'shildi. |
+| FLOW-003 | Market Memory | Data Layer | 🟦 | 0% | Worker | Eski FLOW-002. Navbatda -- V3 refactor tasdiqlangandan keyin boshlanadi. |
+| FLOW-004 | Market Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-003. Kutmoqda. |
+| FLOW-005 | Context Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-004. Kutmoqda. |
+| FLOW-006 | Analysis Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-005. Kutmoqda. |
+| FLOW-007 | Indicator Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-006. Kutmoqda. |
+| FLOW-008 | Strategy Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-007. Kutmoqda. |
+| FLOW-009 | Confluence Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-008. Kutmoqda. |
+| FLOW-010 | Decision Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-009. Kutmoqda. |
+| FLOW-011 | Risk Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-010. Kutmoqda. |
+| FLOW-012 | Signal Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-011. Kutmoqda. |
+| FLOW-013 | Execution Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-012. Kutmoqda. |
+| FLOW-014 | Trade Monitoring | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-013. Kutmoqda. |
+| FLOW-015 | GoldBot Core API | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-014. Kutmoqda. |
+| FLOW-016 | Chart Service | GoldBot > Chart Service | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- `chart_layer/` mavjud, lekin GFL Flow sifatida hali audit qilinmagan. |
+| FLOW-017 | Personal AI Core | GoldBot > Personal AI Core | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- `ai_layer/` mavjud, lekin GFL Flow sifatida hali audit qilinmagan. |
+| FLOW-018 | Backtesting Engine | GoldBot > Backtesting Engine | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- `backtesting_layer/` mavjud, lekin GFL Flow sifatida hali audit qilinmagan. |
+| FLOW-019 | Application Services | Application Services | 🟦 | 0% | Worker | Eski FLOW-015. Kutmoqda. |
+| FLOW-020 | Telegram | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-016. Kutmoqda. |
+| FLOW-021 | Mini App | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-017. Kutmoqda. |
+| FLOW-022 | Android | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-018. Kutmoqda. |
+| FLOW-023 | iOS | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-019. Kutmoqda. |
+| FLOW-024 | Desktop | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-020. Kutmoqda. |
+| FLOW-025 | Web | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-021. Kutmoqda. |
 
 ---
 

@@ -18,16 +18,22 @@ Har bir modul o'zidan oldingi modulning Output'ini qabul qiladi va keyingi modul
 
 Development yuqoridan pastga emas, balki ma'lumot oqimi bo'yicha ketadi.
 
+**V3 Architecture (GFL-002, Director qarori):** Development endi
+quyidagi olti Layer bo'yicha ketadi -- Foundation Layer -> Data Layer
+-> GoldBot -> Application Services -> Platform Layer -> End User.
+GoldBot ichida to'rtta parallel subsystem bor: GoldBot Core, Chart
+Service, Personal AI Core, Backtesting Engine. To'liq diagramma:
+`GFL-001_FLOW_FIRST_DIAGRAM.md`.
+
 Misol:
 
-Current Price
-→ Provider Factory
-→ Data Validation
-→ Market Memory (SSOT)
-→ Market Engine
-→ Core API
+Configuration (Foundation Layer)
+→ Provider Factory / Price Stream / Data Validation (Data Layer)
+→ Market Memory (SSOT, Data Layer)
+→ GoldBot Core (Market Engine → ... → GoldBot Core API)
+  | Chart Service | Personal AI Core | Backtesting Engine  (GoldBot, parallel subsystemlar)
 → Application Services
-→ Telegram / Mini App / Android / iOS / PC / Web
+→ Telegram / Mini App / Android / iOS / Desktop / Web (Platform Layer)
 
 Bu yerda bitta Producer'dan chiqqan data bir nechta Consumer'ga tarqalishi mumkin.
 
@@ -96,15 +102,19 @@ Agar bitta Consumer ishlamasa:
 
 Flow Completed EMAS.
 
-Eslatma (repo hozirgi holati): canonical 21-Flow modelida Telegram
-(FLOW-016), Mini App (FLOW-017), Android (FLOW-018), iOS (FLOW-019),
-Desktop (FLOW-020), Web (FLOW-021) — bularning barchasi Application
-Services (FLOW-015) fan-out nuqtasining Consumer'lari. Shu sabab
-Fan-Out Rule eng kuchli aynan FLOW-015 tugaganda qo'llanadi. Hozirda
-faqat Telegram real platforma sifatida mavjud; qolgan platformalar
-(Mini App/Android/iOS/Desktop/Web) hali kod sifatida mavjud emas —
-ular kelajakdagi FLOW-017...021. Har bir platforma paydo bo'lgach,
-o'sha Flow uchun Fan-Out Rule majburiy bo'ladi.
+Eslatma (repo hozirgi holati, V3 raqamlash bo'yicha): canonical
+25-Flow modelida ikkita fan-out nuqtasi bor. (1) Data Layer -> GoldBot:
+Market Memory (FLOW-003) to'rtta parallel subsystemga -- GoldBot Core
+(FLOW-004), Chart Service (FLOW-016), Personal AI Core (FLOW-017),
+Backtesting Engine (FLOW-018) -- tarqaladi. (2) GoldBot -> Platform:
+Telegram (FLOW-020), Mini App (FLOW-021), Android (FLOW-022), iOS
+(FLOW-023), Desktop (FLOW-024), Web (FLOW-025) -- bularning barchasi
+Application Services (FLOW-019) fan-out nuqtasining Consumer'lari.
+Hozirda faqat Telegram real platforma sifatida va faqat GoldBot Core
+zanjiri (FLOW-004..015) haqiqiy Flow sifatida mavjud; qolganlari
+(Mini App/Android/iOS/Desktop/Web, Chart Service/Personal AI
+Core/Backtesting Engine) hali Blueprint. Har bir platforma/subsystem
+paydo bo'lgach, tegishli Flow uchun Fan-Out Rule majburiy bo'ladi.
 
 ## Latency Rule
 
@@ -143,11 +153,21 @@ Quyidagilar taqiqlanadi:
 ## Canonical Flow raqamlash
 
 Flow raqamlash uchun yagona canonical manba —
-`GFL-001_FLOW_CATALOG.md` va `GFL-001_FLOW_PROGRESS.md` (21 ta Flow:
-FLOW-001 Current Price ... FLOW-021 Web).
+`GFL-001_FLOW_CATALOG.md` va `GFL-001_FLOW_PROGRESS.md`.
 
-`GFL-001_FLOW_DEPENDENCY.md` shu raqamlashga moslashtiriladi. Eski 25
-ta Flow raqamlashi bekor qilingan.
+**V3 qayta ko'rib chiqish (GFL-002, Director qarori):** canonical
+raqamlash endi GoldBot V3 Architecture asosida, 25 ta Flow: FLOW-001
+(Foundation Layer, System Bootstrap) ... FLOW-002/003 (Data Layer) ...
+FLOW-004..018 (GoldBot: GoldBot Core / Chart Service / Personal AI
+Core / Backtesting Engine) ... FLOW-019 (Application Services) ...
+FLOW-020..025 (Platform Layer).
+
+Bundan oldingi GFL-001 pilot davridagi 21-Flow raqamlash bekor
+qilingan (undan ham oldingi 25-Flow legacy raqamlash allaqachon bekor
+qilingan edi). Old -> New mapping GFL-002 Director Review hisobotida
+qayd etilgan.
+
+`GFL-001_FLOW_DEPENDENCY.md` shu V3 raqamlashga moslashtirilgan.
 
 ## Relationship with other standards
 

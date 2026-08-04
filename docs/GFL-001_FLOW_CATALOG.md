@@ -11,6 +11,17 @@ Har bir Flow:
 - End-to-End tekshiriladi;
 - faqat Completed bo'lgandan keyin keyingi Flow boshlanadi.
 
+**V3 qayta ko'rib chiqish (GFL-002, Director Order):** Flow tartibi
+endi GoldBot V3 Architecture asosida quriladi:
+
+Foundation Layer -> Data Layer -> GoldBot (GoldBot Core / Chart
+Service / Personal AI Core / Backtesting Engine) -> Application
+Services -> Platform Layer -> End User.
+
+Eski (GFL-001 pilot davridagi) 21-Flow raqamlash **bekor qilindi**.
+Old -> New mapping jadvali Director Review hisobotida keltirilgan
+(shu buyruqqa javoban yozilgan chat xabarida).
+
 ---
 
 # FLOW STATUS
@@ -27,13 +38,52 @@ Status:
 
 ---
 
+# LAYER: Foundation Layer
+
 # FLOW-001
 
-## Current Price Flow
+## System Bootstrap / Configuration
 
 Status
 
-Completed
+Blueprint (yangi -- V3 refactorda qo'shildi, ilgari GFL-001 21-Flow
+katalogida alohida Flow sifatida mavjud emas edi)
+
+Producer
+
+System Start (`main.py`, `platform_layer/telegram/polling.py`)
+
+Input
+
+Environment variables, secrets (`core_layer.secrets`)
+
+Processing
+
+Settings build (`config.py` -- `build_settings()` / `get_settings()`)
+
+Output
+
+Runtime Config (`Settings`)
+
+Consumer
+
+Data Layer (FLOW-002)
+
+Next Flow
+
+FLOW-002
+
+---
+
+# LAYER: Data Layer
+
+# FLOW-002
+
+## Current Price
+
+Status
+
+**Completed** (GFL-001 pilot, 2026-08-04)
 
 Producer
 
@@ -41,7 +91,7 @@ Provider Factory (mavjud, qayta ishlatildi -- ProviderRegistry/ProviderManager)
 
 Input
 
-Price Stream (PriceStreamService, endi `get_shared_price_stream_service()` orqali umumiy instance)
+Price Stream (PriceStreamService, `get_shared_price_stream_service()` orqali umumiy instance)
 
 Processing
 
@@ -53,39 +103,7 @@ Validated Current Price (PriceTick, PriceCache'da)
 
 Consumer
 
-Market Memory (MarketMemoryRegistry, default sifatida yaratiladi va CandleBuilder single-writer orqali to'ldiriladi)
-
-Next Flow
-
-FLOW-002
-
----
-
-# FLOW-002
-
-## Market Memory Flow
-
-Producer
-
-FLOW-001
-
-Input
-
-Validated Current Price
-
-Processing
-
-Store
-Cache
-Synchronization
-
-Output
-
-Market State
-
-Consumer
-
-Market Engine
+Market Memory (FLOW-003)
 
 Next Flow
 
@@ -95,11 +113,51 @@ FLOW-003
 
 # FLOW-003
 
-## Market Engine Flow
+## Market Memory (SSOT)
+
+Status
+
+Blueprint
 
 Producer
 
-Market Memory
+FLOW-002 (Current Price)
+
+Input
+
+Validated Current Price
+
+Processing
+
+Store / Cache / Synchronization (`data_layer.market_memory`, CandleBuilder single-writer)
+
+Output
+
+Market State
+
+Consumer
+
+GoldBot Core (FLOW-004), Chart Service (FLOW-016), Personal AI Core (FLOW-017), Backtesting Engine (FLOW-018)
+
+Next Flow
+
+FLOW-004
+
+---
+
+# LAYER: GoldBot > GoldBot Core
+
+Real modullar: `core_layer/`, `context_layer/`, `strategy_layer/`,
+`signal_layer/`, `decision_layer/`, `risk_layer/`, `execution_layer/`,
+`trade_monitoring_layer/`, `indicator_layer/`.
+
+# FLOW-004
+
+## Market Engine
+
+Producer
+
+Market Memory (FLOW-003)
 
 Input
 
@@ -115,43 +173,7 @@ Market Context
 
 Consumer
 
-Context Engine
-
-Next Flow
-
-FLOW-004
-
----
-
-# FLOW-004
-
-## Context Engine Flow
-
-Producer
-
-Market Engine
-
-Input
-
-Market Context
-
-Processing
-
-SMC
-
-Wyckoff
-
-Liquidity
-
-Structure
-
-Output
-
-Market Context Result
-
-Consumer
-
-Analysis Engine
+Context Engine (FLOW-005)
 
 Next Flow
 
@@ -161,29 +183,27 @@ FLOW-005
 
 # FLOW-005
 
-## Analysis Engine Flow
+## Context Engine
 
 Producer
 
-Context Engine
+Market Engine (FLOW-004)
 
 Input
 
-Market Context Result
+Market Context
 
 Processing
 
-Analysis
-
-Scoring
+SMC, Wyckoff, Liquidity, Structure
 
 Output
 
-Analysis Result
+Market Context Result
 
 Consumer
 
-Indicator Engine
+Analysis Engine (FLOW-006)
 
 Next Flow
 
@@ -193,97 +213,627 @@ FLOW-006
 
 # FLOW-006
 
-Indicator Engine
+## Analysis Engine
 
-↓
+Producer
+
+Context Engine (FLOW-005)
+
+Input
+
+Market Context Result
+
+Processing
+
+Analysis, Scoring
+
+Output
+
+Analysis Result
+
+Consumer
+
+Indicator Engine (FLOW-007)
+
+Next Flow
 
 FLOW-007
 
-Strategy Engine
+---
 
-↓
+# FLOW-007
+
+## Indicator Engine
+
+Producer
+
+Analysis Engine (FLOW-006)
+
+Input
+
+Analysis Result
+
+Processing
+
+Indicator calculation
+
+Output
+
+Indicators
+
+Consumer
+
+Strategy Engine (FLOW-008)
+
+Next Flow
 
 FLOW-008
 
-Confluence Engine
+---
 
-↓
+# FLOW-008
+
+## Strategy Engine
+
+Producer
+
+Indicator Engine (FLOW-007)
+
+Input
+
+Indicators
+
+Processing
+
+Strategy rules
+
+Output
+
+Strategy Result
+
+Consumer
+
+Confluence Engine (FLOW-009)
+
+Next Flow
 
 FLOW-009
 
-Decision Engine
+---
 
-↓
+# FLOW-009
+
+## Confluence Engine
+
+Producer
+
+Strategy Engine (FLOW-008)
+
+Input
+
+Strategy Result
+
+Processing
+
+Confluence scoring
+
+Output
+
+Confluence
+
+Consumer
+
+Decision Engine (FLOW-010)
+
+Next Flow
 
 FLOW-010
 
-Risk Engine
+---
 
-↓
+# FLOW-010
+
+## Decision Engine
+
+Producer
+
+Confluence Engine (FLOW-009)
+
+Input
+
+Confluence
+
+Processing
+
+Confidence blending, APPROVE/REJECT/NO_TRADE
+
+Output
+
+Decision
+
+Consumer
+
+Risk Engine (FLOW-011)
+
+Next Flow
 
 FLOW-011
 
-Signal Engine
+---
 
-↓
+# FLOW-011
+
+## Risk Engine
+
+Producer
+
+Decision Engine (FLOW-010)
+
+Input
+
+Decision
+
+Processing
+
+Geometry/stop-loss validation, sizing
+
+Output
+
+Safe Decision
+
+Consumer
+
+Signal Engine (FLOW-012)
+
+Next Flow
 
 FLOW-012
 
-Execution Engine
+---
 
-↓
+# FLOW-012
+
+## Signal Engine
+
+Producer
+
+Risk Engine (FLOW-011)
+
+Input
+
+Safe Decision
+
+Processing
+
+Signal assembly/validation
+
+Output
+
+Signal
+
+Consumer
+
+Execution Engine (FLOW-013)
+
+Next Flow
 
 FLOW-013
 
-Trade Monitoring
+---
 
-↓
+# FLOW-013
+
+## Execution Engine
+
+Producer
+
+Signal Engine (FLOW-012)
+
+Input
+
+Signal
+
+Processing
+
+Order placement (hozircha inert -- haqiqiy MT5 order yo'q)
+
+Output
+
+Execution Result
+
+Consumer
+
+Trade Monitoring (FLOW-014)
+
+Next Flow
 
 FLOW-014
 
-GoldBot Core API
+---
 
-↓
+# FLOW-014
+
+## Trade Monitoring
+
+Producer
+
+Execution Engine (FLOW-013)
+
+Input
+
+Execution Result
+
+Processing
+
+Lifecycle tracking
+
+Output
+
+Trade State
+
+Consumer
+
+GoldBot Core API (FLOW-015)
+
+Next Flow
 
 FLOW-015
 
-Application Services
+---
 
-↓
+# FLOW-015
 
-FLOW-016
+## GoldBot Core API
 
-Telegram
+Producer
 
-↓
+Trade Monitoring (FLOW-014)
 
-FLOW-017
+Input
 
-Mini App
+Trade State
 
-↓
+Processing
 
-FLOW-018
+API response assembly
 
-Android
+Output
 
-↓
+API Response
+
+Consumer
+
+Application Services (FLOW-019)
+
+Next Flow
 
 FLOW-019
 
-iOS
+---
 
-↓
+# LAYER: GoldBot > Chart Service
 
-FLOW-020
+# FLOW-016
 
-Desktop
+## Chart Service
 
-↓
+Status
 
-FLOW-021
+Blueprint (yangi -- V3 refactorda subsystem sifatida ajratildi, ichi
+hali GFL Flow sifatida rasmiylashtirilmagan)
 
-Web
+Producer
+
+Market Memory (FLOW-003)
+
+Input
+
+Market State (aniq kontrakt hali belgilanmagan)
+
+Processing
+
+`chart_layer/` (mavjud kod, GFL Flow sifatida hali audit qilinmagan)
+
+Output
+
+Aniqlanmagan
+
+Consumer
+
+Application Services (FLOW-019)
+
+Next Flow
+
+FLOW-019 (kelajakda)
+
+---
+
+# LAYER: GoldBot > Personal AI Core
+
+# FLOW-017
+
+## Personal AI Core
+
+Status
+
+Blueprint (yangi -- V3 refactorda subsystem sifatida ajratildi, ichi
+hali GFL Flow sifatida rasmiylashtirilmagan)
+
+Producer
+
+Market Memory (FLOW-003) / GoldBot Core (FLOW-004..FLOW-015, advisory input)
+
+Input
+
+Aniqlanmagan (Constitution Article 1/3: faqat advisory, hech qachon
+boshqaruvchi emas)
+
+Processing
+
+`ai_layer/` (mavjud kod, GFL Flow sifatida hali audit qilinmagan)
+
+Output
+
+Aniqlanmagan
+
+Consumer
+
+Application Services (FLOW-019)
+
+Next Flow
+
+FLOW-019 (kelajakda)
+
+---
+
+# LAYER: GoldBot > Backtesting Engine
+
+# FLOW-018
+
+## Backtesting Engine
+
+Status
+
+Blueprint (yangi -- V3 refactorda subsystem sifatida ajratildi, ichi
+hali GFL Flow sifatida rasmiylashtirilmagan)
+
+Producer
+
+Data Layer (tarixiy ma'lumot) / GoldBot Core (strategiya qoidalari)
+
+Input
+
+Aniqlanmagan
+
+Processing
+
+`backtesting_layer/` (mavjud kod, GFL Flow sifatida hali audit qilinmagan)
+
+Output
+
+Aniqlanmagan
+
+Consumer
+
+Application Services (FLOW-019)
+
+Next Flow
+
+FLOW-019 (kelajakda)
+
+---
+
+# LAYER: Application Services
+
+# FLOW-019
+
+## Application Services
+
+Producer
+
+GoldBot Core API (FLOW-015) / Chart Service (FLOW-016) / Personal AI Core (FLOW-017) / Backtesting Engine (FLOW-018)
+
+Input
+
+API Response (va boshqa subsystemlar output'i)
+
+Processing
+
+Service composition
+
+Output
+
+Service Data
+
+Consumer
+
+Telegram (FLOW-020), Mini App (FLOW-021), Android (FLOW-022), iOS (FLOW-023), Desktop (FLOW-024), Web (FLOW-025)
+
+Next Flow
+
+FLOW-020...025 (Fan-Out Rule qo'llanadi -- barcha Consumer PASS bo'lishi shart)
+
+---
+
+# LAYER: Platform Layer
+
+# FLOW-020
+
+## Telegram
+
+Producer
+
+Application Services (FLOW-019)
+
+Input
+
+Service Data
+
+Processing
+
+Handler -> Service -> Repository
+
+Output
+
+User Message
+
+Consumer
+
+End User
+
+Next Flow
+
+-- (Platform Layer terminal flow)
+
+---
+
+# FLOW-021
+
+## Mini App
+
+Producer
+
+Application Services (FLOW-019)
+
+Input
+
+Service Data
+
+Processing
+
+UI render
+
+Output
+
+UI View
+
+Consumer
+
+End User
+
+Next Flow
+
+-- (Platform Layer terminal flow)
+
+---
+
+# FLOW-022
+
+## Android
+
+Producer
+
+Application Services (FLOW-019)
+
+Input
+
+Service Data
+
+Processing
+
+UI render
+
+Output
+
+UI View
+
+Consumer
+
+End User
+
+Next Flow
+
+-- (Platform Layer terminal flow)
+
+---
+
+# FLOW-023
+
+## iOS
+
+Producer
+
+Application Services (FLOW-019)
+
+Input
+
+Service Data
+
+Processing
+
+UI render
+
+Output
+
+UI View
+
+Consumer
+
+End User
+
+Next Flow
+
+-- (Platform Layer terminal flow)
+
+---
+
+# FLOW-024
+
+## Desktop
+
+Producer
+
+Application Services (FLOW-019)
+
+Input
+
+Service Data
+
+Processing
+
+UI render
+
+Output
+
+UI View
+
+Consumer
+
+End User
+
+Next Flow
+
+-- (Platform Layer terminal flow)
+
+---
+
+# FLOW-025
+
+## Web
+
+Producer
+
+Application Services (FLOW-019)
+
+Input
+
+Service Data
+
+Processing
+
+UI render
+
+Output
+
+UI View
+
+Consumer
+
+End User
+
+Next Flow
+
+-- (Platform Layer terminal flow)
 
 ---
 
@@ -359,12 +909,15 @@ Worker:
 - Ikki Flow ustida parallel ishlamaydi.
 - Completed bo'lmagan Flow'dan keyingisiga o'tmaydi.
 - Batch Development qilmaydi.
+- V3 Architecture'dan tashqari yangi Layer/Subsystem qo'shmaydi (Director tasdig'isiz).
 
 ---
 
 # Final Principle
 
-GoldBot har doim bitta Flow bo'yicha rivojlanadi.
+GoldBot har doim bitta Flow bo'yicha, V3 Architecture (Foundation ->
+Data -> GoldBot[Core/Chart/AI/Backtesting] -> Application Services ->
+Platform -> End User) doirasida rivojlanadi.
 
 Flow tugaydi.
 
