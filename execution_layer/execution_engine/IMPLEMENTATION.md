@@ -1,10 +1,11 @@
 # execution/
 
 ## Purpose
-Scaffolding for a future MT5 order-execution layer (`execution_engine.py`/
-`signal_lifecycle.py`, both still inert), plus — Phase 60.3 — a
-simulated-fill subpackage (`simulator/`) used only by `backtesting/`
-and analytics, never by live execution.
+Kelajakdagi MT5 order-execution layer uchun scaffolding
+(`execution_engine.py`/`signal_lifecycle.py`, ikkisi ham hali inert),
+plus — Phase 60.3 — faqat `backtesting/` va analytics tomonidan
+ishlatiladigan, hech qachon live execution tomonidan emas, simulated-fill
+subpackage (`simulator/`).
 
 ## Flow
 ```
@@ -28,38 +29,43 @@ ExecutionSimulationResult (simulated fill or reject) -- see docs/EXECUTION_SIMUL
 ```
 
 ## Responsibilities
-`execution_engine.py`/`signal_lifecycle.py` unconditionally return
-"not implemented" — no MT5 client, no order calls, no I/O. GoldBot
-v0.2/v0.3 does not place trades automatically; execution is manual by
-the trader. Phase 60.3 does not change either file.
+`execution_engine.py`/`signal_lifecycle.py` shartsiz ravishda "not
+implemented" qaytaradi — MT5 client yo'q, order call yo'q, I/O yo'q.
+GoldBot v0.2/v0.3 avtomatik ravishda trade joylashtirmaydi; execution
+trader tomonidan qo'lda amalga oshiriladi. Phase 60.3 ikkala faylni ham
+o'zgartirmaydi.
 
 `simulator/` (Phase 60.3: Execution Simulator Foundation) —
 `models.py`/`slippage.py`/`spread.py`/`latency.py`/`simulator_engine.py`.
-Computes what a fill *would* look like (spread + slippage + latency),
-for `backtesting/`/analytics consumption only — never calls a broker,
-MT5, or `execution_engine.py`/`signal_lifecycle.py`. See
-`docs/EXECUTION_SIMULATOR.md` for the full contract.
+Fill qanday ko'rinishga ega bo'lishini (spread + slippage + latency)
+hisoblaydi, faqat `backtesting/`/analytics tomonidan iste'mol qilinishi
+uchun — hech qachon broker, MT5 yoki
+`execution_engine.py`/`signal_lifecycle.py`ni chaqirmaydi. To'liq
+kontrakt uchun `docs/EXECUTION_SIMULATOR.md`ga qarang.
 
 ## Input
-`execution_engine.py`/`signal_lifecycle.py`: none — not called from
-any runtime path. `simulator/`: an already-OPEN `PaperTrade` +
-`RiskResult`, from a future `backtesting/` caller (not wired as of
-Phase 60.3).
+`execution_engine.py`/`signal_lifecycle.py`: yo'q — hech qanday runtime
+yo'lidan chaqirilmaydi. `simulator/`: allaqachon-OPEN `PaperTrade` +
+`RiskResult`, kelajakdagi `backtesting/` chaqiruvchisidan (Phase
+60.3 holatiga ko'ra ulanmagan).
 
 ## Output
-`execution_engine.py`/`signal_lifecycle.py`: none.
+`execution_engine.py`/`signal_lifecycle.py`: yo'q.
 `simulator/`: `ExecutionSimulationResult`.
 
 ## Dependencies
-`execution_engine.py`/`signal_lifecycle.py`: none beyond stdlib. Not
-imported by `core/pipeline.py` or `main.py` (confirmed by the Phase 48
-audit). `simulator/` imports `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` and
-`risk_layer.risk_engine.risk_manager.RiskResult` (`TYPE_CHECKING`-only) — a new,
-one-directional `execution/` → `lifecycle/`/`risk/` dependency, read
-only, never reversed; `lifecycle/`/`risk/` do not import `execution/`.
+`execution_engine.py`/`signal_lifecycle.py`: stdlib'dan tashqari yo'q.
+`core/pipeline.py` yoki `main.py` tomonidan import qilinmaydi (Phase 48
+audit tomonidan tasdiqlangan). `simulator/`
+`trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` va
+`risk_layer.risk_engine.risk_manager.RiskResult`ni (faqat
+`TYPE_CHECKING`) import qiladi — yangi, bir tomonlama `execution/` →
+`lifecycle/`/`risk/` dependency, faqat read, hech qachon teskari
+yo'nalishda emas; `lifecycle/`/`risk/` `execution/`ni import qilmaydi.
 
 ## Future Roadmap
-Real MT5 integration is the eventual purpose of this directory, but
-no phase has scoped that work yet. Decide its fate (implement vs.
-remove) before v0.4 rather than leaving it inert indefinitely — noted
-as an open item in `docs/AUDIT_REPORT.md`.
+Real MT5 integratsiya bu directory'ning yakuniy maqsadi hisoblanadi,
+lekin hech bir faza bu ishni hali scope qilmagan. Uning taqdirini
+(implement qilish vs olib tashlash) v0.4'dan oldin, uni cheksiz inert
+holatda qoldirmasdan hal qilish kerak — `docs/AUDIT_REPORT.md`da ochiq
+band sifatida qayd etilgan.

@@ -2,19 +2,19 @@
 
 ## v1
 
-Current state as migrated under Foundation Freeze v1.0 / goldbot-v1 migration (Phase A-F). See `README.md` / `IMPLEMENTATION.md` for what exists today.
+Foundation Freeze v1.0 / goldbot-v1 migratsiyasi (A-F bosqichlar) doirasida ko'chirilgan joriy holat. Bugungi kunda mavjud bo'lgan narsalar uchun `README.md` / `IMPLEMENTATION.md`ga qarang.
 
 ## v2
 
-Not yet defined.
+Hali belgilanmagan.
 
 ## v3
 
-Not yet defined.
+Hali belgilanmagan.
 
 ## Future
 
-Not yet defined -- to be scheduled by Director / a future Development Phase, not invented at rollout time.
+Hali belgilanmagan -- Direktor / kelajakdagi Development Phase tomonidan rejalashtiriladi, rollout vaqtida o'ylab topilmaydi.
 
 ---
-*Generated 2026-08-03 by GoldBot Engineering Standard v1.0 rollout (Director Order No. 012/013).*
+*2026-08-03'da GoldBot Engineering Standard v1.0 rollout tomonidan yaratilgan (Director Order No. 012/013).*
