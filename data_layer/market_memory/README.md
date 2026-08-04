@@ -36,6 +36,33 @@ Market Memory quyidagi vazifalarni bajaradi:
 
 ---
 
+# GFL-001 FLOW-003 Holati (2026-08-04)
+
+Status: Completed (Director Order GFL-003).
+
+Joriy real implementatsiya blueprint'dagi `MarketMemoryService/`,
+`MemoryWriter/`, `MemoryStorage/`, `MemoryCache/`, `MemoryLifecycle/`
+papka nomlari ostida emas -- ular "Foundation Freeze v1.0" (MIR-001)
+bo'sh skeletonlar, GFL-001 doirasidan tashqari alohida migratsiya
+tashabbusi. Haqiqiy ishlaydigan kod hozircha shu paket ichidagi tekis
+(flat) modullarda joylashgan: `market_memory.py`,
+`market_memory_registry/`, `memory_reader/` (= `MemoryReader`),
+`timeframe_memory/`, `candle_record/`, `data_cache/`, `persistence/*`.
+
+Producer: Data Validation (`StreamValidator`) -> `CandleBuilder`
+(yagona yozuvchi) -- `data_layer.live_data.price_stream_service`
+orqali allaqachon production'da ishlaydi.
+
+Consumer: `MemoryReader` / `data_layer.live_data.market.market_manager.MarketManager`
+-- `PriceStreamService.memory_registry` public accessor orqali jonli
+registry'ga ulanadi. To'liq zanjir (`Provider -> Validation -> Market
+Memory -> Consumer`) E2E test bilan tasdiqlangan
+(`tests/data/stream/test_flow_003_market_memory_e2e.py`).
+
+Batafsil: `WORK_LOG.md`, `docs/GFL-001_FLOW_CATALOG.md` (FLOW-003).
+
+---
+
 # Layer Position
 
 Live Data Layer

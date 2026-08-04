@@ -1,5 +1,25 @@
 # CHANGELOG.md -- data_layer/live_data/price_stream_service
 
+## v1.2.0 -- 2026-08-04 (GFL-001 FLOW-003, Market Memory Flow)
+
+### Added
+- `PriceStreamService.memory_registry` (read-only property) -- the
+  sanctioned way for a Consumer (`MemoryReader`, `MarketManager`) to
+  reach the same live `MarketMemoryRegistry` this service writes into,
+  without a private-attribute reach-in.
+
+### Changed
+- None.
+
+### Fixed
+- None.
+
+### Removed
+- None.
+
+### Deprecated
+- None.
+
 ## v1.1.0 -- 2026-08-04 (GFL-001 FLOW-001, Current Price Flow)
 
 ### Added

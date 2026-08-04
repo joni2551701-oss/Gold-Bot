@@ -117,27 +117,45 @@ FLOW-003
 
 Status
 
-Blueprint
+Completed (2026-08-04, Director Order GFL-003)
 
 Producer
 
-FLOW-002 (Current Price)
+Data Validation (`StreamValidator`) -> `CandleBuilder` (yagona yozuvchi, FLOW-002 orqali allaqachon ulangan)
 
 Input
 
-Validated Current Price
+Validated PriceTick / Candle (FLOW-002 chiqishi)
 
 Processing
 
-Store / Cache / Synchronization (`data_layer.market_memory`, CandleBuilder single-writer)
+Store / Update / Sync (`data_layer.market_memory` -- `MarketMemoryRegistry`,
+`MarketMemory`, `TimeframeMemory`, `CandleBuilder` single-writer)
 
 Output
 
-Market State
+Current Price / Current Candle / Market Snapshot / Historical Data --
+`MemoryReader` (kanonik o'qish fasadi) va `MarketManager` (Facade Layer,
+`data_layer/live_data/market/`) orqali
 
-Consumer
+Consumer (bugungi kunda haqiqiy va sinovdan o'tgan)
 
-GoldBot Core (FLOW-004), Chart Service (FLOW-016), Personal AI Core (FLOW-017), Backtesting Engine (FLOW-018)
+`MemoryReader` / `MarketManager` -- kelajakda GoldBot Core (FLOW-004),
+Chart Service (FLOW-016), Personal AI Core (FLOW-017), Backtesting Engine
+(FLOW-018) shular orqali o'qiydi (bu Flow'lar hali boshlanmagan, shuning
+uchun hozircha real chaqiruvchi yo'q -- lekin o'qish yo'li E2E test bilan
+isbotlangan).
+
+Audit natijasi
+
+Yozish tomoni (Producer) FLOW-001/002 ishi natijasida allaqachon
+production'da ishlagan. Consumer (`MemoryReader`/`MarketManager`) to'liq
+qurilgan va unit test qilingan edi, lekin production kodida hech qachon
+chaqirilmagan edi -- `PriceStreamService` yozayotgan jonli
+`MarketMemoryRegistry`ga yetib borishning ochiq (public) yo'li yo'q edi.
+Tuzatildi: `PriceStreamService.memory_registry` public accessor qo'shildi
+(qarang: `data_layer/live_data/price_stream_service/WORK_LOG.md`,
+`data_layer/market_memory/WORK_LOG.md`).
 
 Next Flow
 

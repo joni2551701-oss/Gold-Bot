@@ -165,6 +165,36 @@ def test_default_no_registry_constructs_no_memory():
     assert service.get_price("XAUUSD").price == 2400.0
 
 
+# ---------------- GFL-001 FLOW-003: Market Memory Consumer read seam ----------------
+
+def test_memory_registry_property_returns_none_when_unwired():
+    service = PriceStreamService()
+    assert service.memory_registry is None
+
+
+def test_memory_registry_property_returns_the_wired_instance():
+    registry = MarketMemoryRegistry()
+    service = PriceStreamService(memory_registry=registry)
+    assert service.memory_registry is registry
+
+
+def test_memory_registry_property_lets_a_consumer_read_live_ticks():
+    """The FLOW-003 gap this closes: a Consumer builds its own
+    MemoryReader over the SAME registry the service writes into via the
+    public `.memory_registry` accessor -- no private-attribute reach-in."""
+    from data_layer.market_memory import MemoryReader
+
+    service = PriceStreamService(memory_registry=MarketMemoryRegistry())
+    provider = FakeProvider()
+    service.register_source("XAUUSD", provider, provider_name="twelvedata")
+    _drive_one_tick(service, provider, "XAUUSD", 2401.25)
+
+    reader = MemoryReader(service.memory_registry)
+    forming = reader.get_forming("XAUUSD", "M1")
+    assert forming is not None
+    assert forming.close == 2401.25
+
+
 def test_shared_registry_is_single_source_of_truth_for_both_services():
     """MarketDataService (hydrate) and PriceStreamService (tick) writing
     into ONE shared registry land in the same MarketMemory."""

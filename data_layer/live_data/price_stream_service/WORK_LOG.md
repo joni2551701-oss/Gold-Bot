@@ -58,3 +58,31 @@ Lessons Learned: Lazy-constructed default'lar process darajasida
   tuzatadi va test isolation'ni ham saqlab qoladi.
 
 ---
+
+Issue ID: GFL-001-FLOW-003
+Date: 2026-08-04
+Severity: Minor
+Problem: FLOW-003 (Market Memory) auditida aniqlandiki, yozish
+  tomoni (`CandleBuilder` -- yagona yozuvchi) allaqachon production'da
+  ishlagan (FLOW-001/002 natijasi), lekin `MarketMemoryRegistry`'ga
+  o'qish tomonidan (Consumer) yetib borishning ochiq, sanksiyalangan
+  usuli yo'q edi -- faqat testlar `service._memory_registry` orqali
+  shaxsiy atributga to'g'ridan-to'g'ri kirar edi.
+Cause: `PriceStreamService.__init__` `memory_registry`ni faqat
+  shaxsiy `self._memory_registry` sifatida saqlagan -- ochiq accessor
+  mavjud emas edi.
+Decision: Kichik, qo'shimcha (additive) `PriceStreamService.memory_registry`
+  property qo'shildi -- Consumer (masalan `MemoryReader`,
+  `MarketManager`) endi shaxsiy atributga tegmasdan, xuddi shu jonli
+  registry ustidan o'qiy oladi.
+Implementation: `price_stream_service.py`ga `memory_registry` @property
+  qo'shildi (faqat o'qish, `self._memory_registry`ni qaytaradi).
+  Boshqa hech narsa o'zgarmadi -- signature buzilishi yo'q.
+Validation: pyflakes/compileall/pytest (5411+ test, jumladan 3 ta
+  yangi unit test) / `python main.py` -- barchasi PASS.
+Lessons Learned: FLOW-001'da bo'lgani kabi, ko'p hollarda "Production
+  Code" gap kichik va aniq bo'ladi -- yozish infratuzilmasi allaqachon
+  mavjud bo'lganda, yetishmayotgan narsa ko'pincha faqat sanksiyalangan
+  o'qish nuqtasi (public accessor) bo'ladi, yangi arxitektura emas.
+
+---

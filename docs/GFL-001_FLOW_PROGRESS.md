@@ -61,7 +61,7 @@ Director Review talab qilinadi.
 |------|------|--------------------|--------|----------|-------|------|
 | FLOW-001 | System Bootstrap / Configuration | Foundation Layer | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- avval alohida Flow sifatida mavjud emas edi |
 | FLOW-002 | Current Price | Data Layer | 🟩 | 100% | Worker | Eski FLOW-001. Yakunlandi -- 2026-08-04. Audit shuni ko'rsatdi: barcha modullar allaqachon mavjud edi, faqat ulanmagan (Price Stream `tick()`ni hech kim chaqirmasdi, `CurrentPriceProvider` default holatda har safar yangi/alohida instance qurar edi). Tuzatildi: shared singleton + default StreamValidator + default MarketMemoryRegistry + polling.py'da tick driver. 5411 test PASS, E2E test qo'shildi. |
-| FLOW-003 | Market Memory | Data Layer | 🟦 | 0% | Worker | Eski FLOW-002. GFL-003 (Sequential Flow Rule) bo'yicha navbatdagi Flow -- eng kichik raqamli bajarilmagan Flow ID. |
+| FLOW-003 | Market Memory | Data Layer | 🟩 | 100% | Worker | Eski FLOW-002. Yakunlandi -- 2026-08-04. Audit shuni ko'rsatdi: yozish tomoni (Data Validation -> CandleBuilder yagona yozuvchi) FLOW-001/002 orqali allaqachon production'da ishlagan; Consumer (`MemoryReader`/`MarketManager`) to'liq qurilgan va test qilingan, lekin production kodida hech qachon chaqirilmagan edi. Tuzatildi: `PriceStreamService.memory_registry` public accessor qo'shildi. E2E test to'liq zanjirni (Provider -> Validation -> Market Memory -> Consumer) isbotladi. 5411+ test PASS. |
 | FLOW-004 | Market Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-003. Kutmoqda. |
 | FLOW-005 | Context Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-004. Kutmoqda. |
 | FLOW-006 | Analysis Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-005. Kutmoqda. |

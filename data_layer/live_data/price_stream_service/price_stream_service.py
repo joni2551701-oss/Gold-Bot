@@ -129,6 +129,18 @@ class PriceStreamService:
         self._memory_registry = memory_registry
         self._manager = StreamManager()
 
+    @property
+    def memory_registry(self) -> Any:
+        """GFL-001 FLOW-003 (Market Memory, Consumer read seam): the
+        `data_layer.market_memory.MarketMemoryRegistry` this service folds
+        ticks into, or `None` if it was built without one. A Consumer
+        (e.g. `data_layer.market_memory.MemoryReader`, `data_layer.live_data
+        .market.market_manager.MarketManager`) builds its reader over
+        this SAME instance rather than reaching into the private
+        `_memory_registry` attribute -- the sanctioned way to read what
+        `get_shared_price_stream_service()` writes."""
+        return self._memory_registry
+
     def register_source(self, symbol: str, provider: PriceProvider,
                          provider_name: str,
                          asset_class: AssetClass = AssetClass.METAL,
