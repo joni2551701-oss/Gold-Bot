@@ -1,10 +1,11 @@
 # decision/
 
 ## Purpose
-Blends signal confidence, HTF bias, (inverted) AI risk score, and AI
-confidence into one final trade verdict: APPROVE, REJECT, or
-NO_TRADE. As of Phase A3 ("Decision Engine v2"), this is a weighted
-four-input formula, replacing the pre-A3 flat two-input average.
+Signal confidence, HTF bias, (inverted) AI risk score va AI
+confidence'ni bitta yakuniy trade verdict'ga birlashtiradi: APPROVE,
+REJECT yoki NO_TRADE. Phase A3 ("Decision Engine v2") holatiga ko'ra,
+bu A3'dan oldingi flat ikki-input average'ni almashtiruvchi weighted
+to'rt-input formula hisoblanadi.
 
 ## Flow
 ```
@@ -19,29 +20,31 @@ Risk Manager
 
 ## Decision v2: Input flow
 
-`DecisionEngine.evaluate(signal, ai_analysis, htf_bias=None)` builds
-a `DecisionInput` (`_build_decision_input()`) from the three objects
-it already receives — no new fetch, no new pipeline stage:
+`DecisionEngine.evaluate(signal, ai_analysis, htf_bias=None)`
+allaqachon qabul qilgan uch obyektdan `DecisionInput` quradi
+(`_build_decision_input()`) — hech qanday yangi fetch, hech qanday
+yangi pipeline stage yo'q:
 
-| `DecisionInput` field | Sourced from | Notes |
+| `DecisionInput` maydoni | Manba | Eslatmalar |
 |---|---|---|
-| `signal_confidence` | `SignalCandidate.confidence` | Unchanged from pre-A3. |
-| `htf_bias` | `HTFBiasResult.bias` (or `HTFBias.UNKNOWN` if `htf_bias=None`) | `context_layer/trend/htf_bias.py`, Phase A2. |
-| `htf_quality_score` | `HTFBiasResult.quality_score` (or `0.0` if `htf_bias=None`) | Drives Step-5 quality dampening — see below. |
-| `risk_score` | `1.0 - AIAnalysisResult.risk_score` | **Inverted** — `AIAnalysisResult.risk_score` is `0.0`=no risk .. `1.0`=max risk (`ai_layer/ai_engine/ai_analyzer.py`); `DecisionInput.risk_score` is flipped so "higher is always better," matching the other three inputs. Note this is *not* `risk_layer.risk_engine.risk_manager.RiskResult` — that object doesn't exist yet at Decision Engine time (Risk runs *after* Decision in the pipeline). |
-| `ai_score` | `AIAnalysisResult.confidence` | Unchanged from pre-A3. |
+| `signal_confidence` | `SignalCandidate.confidence` | A3'dan oldingi holatdan o'zgarmagan. |
+| `htf_bias` | `HTFBiasResult.bias` (yoki `htf_bias=None` bo'lsa `HTFBias.UNKNOWN`) | `context_layer/trend/htf_bias.py`, Phase A2. |
+| `htf_quality_score` | `HTFBiasResult.quality_score` (yoki `htf_bias=None` bo'lsa `0.0`) | Step-5 quality dampening'ni boshqaradi — quyida qarang. |
+| `risk_score` | `1.0 - AIAnalysisResult.risk_score` | **Inverted** — `AIAnalysisResult.risk_score` `0.0`=risk yo'q .. `1.0`=maksimal risk (`ai_layer/ai_engine/ai_analyzer.py`); `DecisionInput.risk_score` teskari qilingan, shunda "yuqoriroq doim yaxshiroq" bo'ladi, boshqa uch input bilan mos. E'tibor bering, bu `risk_layer.risk_engine.risk_manager.RiskResult` *emas* — bu obyekt Decision Engine vaqtida hali mavjud emas (Risk pipeline'da Decision'dan *keyin* ishlaydi). |
+| `ai_score` | `AIAnalysisResult.confidence` | A3'dan oldingi holatdan o'zgarmagan. |
 
-A caller that omits `htf_bias` (any pre-Phase-A2/A3 call site) still
-works unchanged — see "Backward compatibility" below.
+`htf_bias`ni o'tkazib yuboradigan chaqiruvchi (har qanday
+pre-Phase-A2/A3 call site) o'zgarmagan holda ishlashda davom etadi —
+quyidagi "Backward compatibility"ga qarang.
 
 ## Weight system
 
-`DecisionWeights` (a frozen dataclass, injectable into
-`DecisionEngine.__init__` exactly like `DecisionConfig` already was)
-holds the four weights as named constants — never hardcoded inline in
-`evaluate()`:
+`DecisionWeights` (frozen dataclass, `DecisionConfig` xuddi avvalgidek
+`DecisionEngine.__init__`ga inject qilinadigan) to'rt weight'ni nomli
+konstantalar sifatida saqlaydi — `evaluate()` ichida hech qachon
+hardcoded emas:
 
-| Component | Weight |
+| Komponent | Weight |
 |---|---|
 | Signal Confidence | 40% |
 | HTF Bias | 25% |
@@ -53,162 +56,171 @@ final_confidence = 0.40*signal_score + 0.25*htf_score
                   + 0.20*risk_score  + 0.15*ai_score
 ```
 
-All four component scores and `final_confidence` stay on the existing
-0.0–1.0 scale — the same scale `DecisionConfig.min_confidence`/
-`approve_confidence`, `SignalCandidate.confidence`, and
-`AIAnalysisResult.confidence` already used before Phase A3, so no
-existing threshold or downstream consumer needed to change scale.
+To'rt komponent score va `final_confidence` mavjud 0.0–1.0 shkalasida
+qoladi — bu `DecisionConfig.min_confidence`/`approve_confidence`,
+`SignalCandidate.confidence`, va `AIAnalysisResult.confidence` Phase
+A3'dan oldin ham ishlatgan bir xil shkala, shuning uchun hech qanday
+mavjud threshold yoki downstream consumer shkalani o'zgartirishga
+muhtoj emas.
 
 ## HTF integration
 
-`HTF_BIAS_SCORE_MAP` (module-level constant in `decision_engine.py`)
-maps `HTFBias` to a base score, adapted from the Phase A3 brief's 0–100
-example onto GoldBot's existing 0.0–1.0 confidence scale:
+`HTF_BIAS_SCORE_MAP` (`decision_engine.py`da module-level konstanta)
+`HTFBias`ni base score'ga moslaydi, Phase A3 brief'ining 0–100
+misolidan GoldBot'ning mavjud 0.0–1.0 confidence shkalasiga
+moslashtirilgan:
 
 | `HTFBias` | Base score |
 |---|---|
 | `BULLISH` | `1.0` |
 | `NEUTRAL` | `0.5` |
 | `BEARISH` | `0.0` |
-| `UNKNOWN` | `0.5` (same as `NEUTRAL` — an unresolved HTF read must never push the outcome either direction) |
+| `UNKNOWN` | `0.5` (`NEUTRAL` bilan bir xil — hal qilinmagan HTF o'qish natijani hech qaysi tomonga itarmasligi kerak) |
 
-**Quality handling** (poor HTF data quality dampens the contribution
-toward neutral — it never causes an automatic rejection):
+**Quality handling** (past HTF ma'lumot sifati contribution'ni neytral
+tomon susaytiradi — u hech qachon avtomatik rejection'ga sabab
+bo'lmaydi):
 
 ```
 htf_score = base_score * htf_quality_score + 0.5 * (1 - htf_quality_score)
 ```
 
-`quality_score=1.0` (100%) → full weight (the base score passes
-through unchanged). `quality_score=0.0` (0%) → the base score is
-completely replaced by the neutral midpoint `0.5`, regardless of what
-the underlying bias was. Anything in between is a linear blend.
+`quality_score=1.0` (100%) → to'liq weight (base score o'zgarishsiz
+o'tadi). `quality_score=0.0` (0%) → base score to'liq neytral o'rta
+nuqta `0.5` bilan almashtiriladi, asosdagi bias qanday bo'lishidan
+qat'i nazar. Oradagi har qanday qiymat — chiziqli blend.
 
 ## Explainability
 
-`TradeDecision` (Phase A3) exposes every component the formula used,
-in addition to the pre-existing `action`/`confidence`/`reason`/
-`signal`/`ai_analysis` fields:
+`TradeDecision` (Phase A3) formula ishlatgan har bir komponentni,
+oldindan mavjud `action`/`confidence`/`reason`/`signal`/`ai_analysis`
+maydonlariga qo'shimcha ravishda, ochib beradi:
 
-| Field | Meaning |
+| Maydon | Ma'nosi |
 |---|---|
-| `signal_score` | `DecisionInput.signal_confidence`, unweighted. |
-| `htf_score` | The quality-dampened HTF contribution (see above). |
-| `risk_score` | `DecisionInput.risk_score` (inverted AI risk score), unweighted. |
-| `ai_score` | `DecisionInput.ai_score`, unweighted. |
-| `final_score` | The full weighted blend — always equal to `confidence`; a separate named field only because it's one of the formula's five components, not because it carries different information. |
+| `signal_score` | `DecisionInput.signal_confidence`, weight qo'llanmagan. |
+| `htf_score` | Quality bilan susaytirilgan HTF hissasi (yuqoriga qarang). |
+| `risk_score` | `DecisionInput.risk_score` (inverted AI risk score), weight qo'llanmagan. |
+| `ai_score` | `DecisionInput.ai_score`, weight qo'llanmagan. |
+| `final_score` | To'liq weighted blend — doim `confidence`ga teng; alohida nomlangan maydon faqat formula'ning besh komponentidan biri bo'lgani uchun, boshqacha ma'lumot olib yurgani uchun emas. |
 
-This is data exposure only — no UI/Telegram change was made to
-surface it (`platform_layer/telegram/signal_formatter.py` is untouched).
+Bu faqat data exposure — buni ko'rsatish uchun hech qanday UI/Telegram
+o'zgarishi qilinmagan (`platform_layer/telegram/signal_formatter.py`ga
+tegilmagan).
 
 ## Backward compatibility
 
-- `DecisionEngine.evaluate(signal, ai_analysis)` — no third argument —
-  still works exactly as before: `htf_bias` defaults to `None`, which
-  `_build_decision_input()` treats as `HTFBias.UNKNOWN` with
-  `htf_quality_score=0.0`, which the quality formula above always
-  resolves to exactly `0.5` — the same neutral contribution as an
-  explicit `UNKNOWN` result, never an error.
-- `DecisionEngine()` — no arguments — still works: both `config` and
-  the new `weights` default to their standard values.
-- The three-branch APPROVE/REJECT/NO_TRADE threshold logic against
-  `DecisionConfig.min_confidence`/`approve_confidence`, and the
-  AI-approval hard gate (`if not ai_analysis.approved: REJECT`,
-  checked before any threshold), are byte-for-byte unchanged — only
-  what feeds into `final_confidence` changed.
-- `TradeDecision`'s five new fields all default to `0.0`, so any
-  hypothetical caller constructing one directly (none exist in this
-  codebase today — `DecisionEngine.evaluate()` is the sole
-  construction site) would not break either.
+- `DecisionEngine.evaluate(signal, ai_analysis)` — uchinchi argumentsiz
+  — xuddi avvalgidek ishlaydi: `htf_bias` `None`ga default bo'ladi,
+  buni `_build_decision_input()` `htf_quality_score=0.0` bilan
+  `HTFBias.UNKNOWN` sifatida ko'radi, buni yuqoridagi quality formula
+  doim aynan `0.5`ga hal qiladi — aniq `UNKNOWN` natijasi bilan bir xil
+  neytral hissa, hech qachon xato emas.
+- `DecisionEngine()` — argumentsiz — hali ham ishlaydi: `config` ham,
+  yangi `weights` ham o'z standart qiymatlariga default bo'ladi.
+- `DecisionConfig.min_confidence`/`approve_confidence`ga qarshi
+  uch-tarmoqli APPROVE/REJECT/NO_TRADE threshold logikasi, va
+  AI-approval hard gate (`if not ai_analysis.approved: REJECT`, har
+  qanday threshold'dan oldin tekshiriladi) — bayt-ba-bayt
+  o'zgarmagan — faqat `final_confidence`ga uzatiladigan narsa
+  o'zgargan.
+- `TradeDecision`'ning besh yangi maydoni hammasi `0.0`ga default
+  bo'ladi, shuning uchun uni to'g'ridan-to'g'ri quruvchi har qanday
+  gipotetik chaqiruvchi (bu kodbazada bugun bunday hech kim yo'q —
+  `DecisionEngine.evaluate()` yagona qurilish nuqtasi) ham buzilmaydi.
 
-**What did change, deliberately**: the exact numeric value of
-`confidence` for a given `(signal, ai_analysis)` pair, since the
-formula itself was replaced (per Phase A3's explicit brief) — this is
-why `tests/unit/test_decision_engine.py`'s two formula-dependent
-assertions were updated to the new formula's real output, while every
-behavioral guarantee (AI-reject always REJECTs, threshold crossings
-still produce the right action, `TradeDecision` still carries the
-original signal/AI analysis) was re-verified, not merely assumed, to
-still hold.
+**Ataylab o'zgargan narsa**: berilgan `(signal, ai_analysis)` jufti
+uchun `confidence`ning aniq raqamli qiymati, chunki formula'ning o'zi
+almashtirilgan (Phase A3'ning aniq brief'iga muvofiq) — shu sababli
+`tests/unit/test_decision_engine.py`'ning formula'ga bog'liq ikki
+assertion'i yangi formula'ning haqiqiy natijasiga yangilangan, har bir
+behavioral kafolat esa (AI-reject doim REJECT qiladi, threshold
+kesishmalari hali ham to'g'ri action ishlab chiqaradi, `TradeDecision`
+hali ham asl signal/AI analysis'ni olib yuradi) shunchaki
+faraz qilinmagan, qayta tasdiqlangan.
 
 ## Input
-`SignalCandidate` (from `signals/`) + `AIAnalysisResult` (from `ai/`)
-+ optionally `HTFBiasResult` (from `context/`, Phase A2).
+`SignalCandidate` (`signals/`dan) + `AIAnalysisResult` (`ai/`dan) +
+ixtiyoriy ravishda `HTFBiasResult` (`context/`dan, Phase A2).
 
 ## Output
 `TradeDecision` (`action`, `confidence`, `reason`, `signal`,
-`ai_analysis`, plus the five explainability fields above).
+`ai_analysis`, plus yuqoridagi besh explainability maydoni).
 
 ## Dependencies
-`ai/` (for `AIAnalysisResult`) and `signals/` (for `SignalCandidate`)
-— both still `TYPE_CHECKING`-only, unchanged from pre-A3. `context/`
-(for `HTFBias`, a real runtime import — the enum is used as
-`HTF_BIAS_SCORE_MAP`'s dict keys at module load time; `HTFBiasResult`
-itself stays `TYPE_CHECKING`-only). Still no dependency on
-`database/`, `telegram/`, or `risk/`.
+`ai/` (`AIAnalysisResult` uchun) va `signals/` (`SignalCandidate`
+uchun) — ikkisi ham hali `TYPE_CHECKING`-only, A3'dan oldingi holatdan
+o'zgarmagan. `context/` (`HTFBias` uchun, haqiqiy runtime import — enum
+module load vaqtida `HTF_BIAS_SCORE_MAP`ning dict key'lari sifatida
+ishlatiladi; `HTFBiasResult`ning o'zi `TYPE_CHECKING`-only qoladi).
+Hali ham `database/`, `telegram/` yoki `risk/`ga dependency yo'q.
 
 ## Future Expansion
-Confidence-threshold values (`DecisionConfig`) and the weight values
-(`DecisionWeights`) are both named explicitly in `CLAUDE.md`'s Trading
-Safety rules as requiring approval before any further change — Phase
-A3 itself was one such explicitly-approved change. Natural future
-inputs to the same weighted-formula shape (not implemented in this
-phase): Signal Quality Score, Market Regime, Session Intelligence —
-see `docs/v0.3.5_SPECIFICATION.md` and `docs/FOUNDATION_GAP_ANALYSIS.md`.
+Confidence-threshold qiymatlari (`DecisionConfig`) va weight
+qiymatlari (`DecisionWeights`) ikkisi ham `CLAUDE.md`'ning Trading
+Safety qoidalarida har qanday keyingi o'zgarishdan oldin tasdiq talab
+qilinadigan deb aniq nomlangan — Phase A3'ning o'zi shunday aniq
+tasdiqlangan o'zgarish edi. Bir xil weighted-formula shakliga tabiiy
+kelajakdagi input'lar (bu fazada implementatsiya qilinmagan): Signal
+Quality Score, Market Regime, Session Intelligence — qarang
+`docs/v0.3.5_SPECIFICATION.md` va
+`docs/FOUNDATION_GAP_ANALYSIS.md`.
 
 ---
 
 ## STEP-09 business-decision layer (TASK-CORE-009)
 
-Everything above describes the **live, FROZEN** path:
-`DecisionEngine.evaluate()` → `TradeDecision` with a `DecisionAction`
-(APPROVE / REJECT / NO_TRADE). That path is untouched.
+Yuqoridagi hammasi **live, FROZEN** yo'lni tasvirlaydi:
+`DecisionEngine.evaluate()` → `DecisionAction` (APPROVE / REJECT /
+NO_TRADE) bilan `TradeDecision`. Bu yo'l tegilmagan.
 
-STEP-09 adds an **additive, parallel** business-decision layer
-(Director decision: *"Additive parallel + reuse-first"*) that consumes
-a **canonical signal** (`signal_layer.signal_builder.schema.SignalSchema`) rather than a
-`SignalCandidate` + `AIAnalysisResult`, and produces the richer verdict
-vocabulary the roadmap calls for: **APPROVE / REJECT / HOLD / EXPIRE**.
-It **reuses** the frozen engine's verdict — it does not recompute the
-confidence blend.
+STEP-09 **additive, parallel** business-decision layer qo'shadi
+(Director qarori: *"Additive parallel + reuse-first"*), bu
+`SignalCandidate` + `AIAnalysisResult` o'rniga **canonical signal**ni
+(`signal_layer.signal_builder.schema.SignalSchema`) iste'mol qiladi va
+roadmap talab qilgan boyroq verdict lug'atini ishlab chiqaradi:
+**APPROVE / REJECT / HOLD / EXPIRE**. U frozen engine'ning verdict'ini
+**qayta ishlatadi** — confidence blend'ni qayta hisoblamaydi.
 
 ### Entry point
 `decision_layer.decision_service.decision_manager.DecisionManager.decide(signal, *, now=None,
-trade_decision=None)` → `DecisionOutcome`. Stateless, never raises
-(the signal is read duck-typed, so a None/partial signal yields a
-defined outcome).
+trade_decision=None)` → `DecisionOutcome`. Stateless, hech qachon
+ko'tarmaydi (signal duck-typed tarzda o'qiladi, shuning uchun
+None/qisman signal ham aniqlangan natija beradi).
 
-Named `decision_manager.py` — **not** `decision_engine.py`, which
-exists and is frozen — the same discipline STEP-08 used with
-`signal_layer/signal_service/manager.py` alongside the frozen `signal_engine.py`.
+`decision_manager.py` deb nomlangan — `decision_engine.py` **emas**,
+bu mavjud va frozen — bu xuddi STEP-08 frozen `signal_engine.py` bilan
+bir qatorda `signal_layer/signal_service/manager.py`da qo'llagan bir
+xil intizom.
 
-### Reuse mapping (the fork point)
-The base status is the **reuse** of the frozen verdict, mapped into the
-richer vocabulary:
+### Reuse mapping (fork nuqtasi)
+Base status — frozen verdict'ning **reuse**'i, boyroq lug'atga
+map qilingan:
 
-| Source | Value | → `DecisionStatus` |
+| Manba | Qiymat | → `DecisionStatus` |
 |---|---|---|
-| frozen `DecisionAction` (via `trade_decision`) | `APPROVE` | `APPROVE` |
+| frozen `DecisionAction` (`trade_decision` orqali) | `APPROVE` | `APPROVE` |
 | | `REJECT` | `REJECT` |
 | | `NO_TRADE` | **`HOLD`** |
-| canonical `SignalSchema.decision` (default source) | `APPROVED` | `APPROVE` |
+| canonical `SignalSchema.decision` (default manba) | `APPROVED` | `APPROVE` |
 | | `REJECTED` | `REJECT` |
 | | `PENDING` / `None` | **`HOLD`** |
 
-`EXPIRE` is a **new** time-based status STEP-09 adds (a stale canonical
-signal); the frozen engine has no concept of it.
+`EXPIRE` — STEP-09 qo'shgan **yangi** vaqtga asoslangan status (eskirgan
+canonical signal); frozen engine bu haqda tushunchaga ega emas.
 
-### STEP-09 files
-| File | Does | Does NOT |
+### STEP-09 fayllari
+| Fayl | Nima qiladi | Nima qilmaydi |
 |---|---|---|
-| `decision_status.py` | `DecisionStatus` vocab + reuse mappings (`from_decision_action`, `from_signal_decision`) | recompute a verdict |
-| `decision_model.py` | `DecisionOutcome` frozen dataclass (+ `to_dict`/`to_json`) | hold a risk figure |
-| `decision_rules.py` | pure decision rules (reject-invalid, expire-stale, hold-low-confidence) | size risk / stops |
-| `decision_router.py` | consumer route metadata (`RISK` only for APPROVE) | send anything |
-| `decision_manager.py` | orchestrate the STEP-09 pipeline | modify the frozen engine |
+| `decision_status.py` | `DecisionStatus` lug'ati + reuse mapping'lari (`from_decision_action`, `from_signal_decision`) | verdict'ni qayta hisoblamaydi |
+| `decision_model.py` | `DecisionOutcome` frozen dataclass (+ `to_dict`/`to_json`) | risk ko'rsatkichini saqlamaydi |
+| `decision_rules.py` | sof decision qoidalari (reject-invalid, expire-stale, hold-low-confidence) | risk/stop'larni o'lchamaydi |
+| `decision_router.py` | consumer route metadata (faqat APPROVE uchun `RISK`) | hech narsa yubormaydi |
+| `decision_manager.py` | STEP-09 pipeline'ni orkestratsiya qiladi | frozen engine'ni o'zgartirmaydi |
 
 ### Boundary
-STEP-09 **does not**: compute risk, size a position, send an order,
-format a platform message, or modify `decision_engine.py` /
-`models.py`. It records a verdict and its justification only; risk
-sizing is STEP-10. See `docs/PHASE_DECISION.md` for the full map.
+STEP-09 **qilmaydi**: risk hisoblamaydi, position o'lchamaydi, order
+yubormaydi, platform xabarini formatlamaydi, yoki
+`decision_engine.py` / `models.py`ni o'zgartirmaydi. U faqat verdict va
+uning asoslanishini qayd etadi; risk sizing — STEP-10. To'liq map uchun
+`docs/PHASE_DECISION.md`ga qarang.
