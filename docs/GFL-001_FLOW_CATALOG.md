@@ -522,6 +522,12 @@ Status
 Blueprint (yangi -- V3 refactorda subsystem sifatida ajratildi, ichi
 hali GFL Flow sifatida rasmiylashtirilmagan)
 
+Sub-Status Lifecycle (GFL-003)
+
+Blueprint -> Design -> Development -> Testing -> Stable
+
+Hozirgi bosqich: **Blueprint** (Design hali boshlanmagan)
+
 Producer
 
 Market Memory (FLOW-003)
@@ -558,6 +564,12 @@ Status
 
 Blueprint (yangi -- V3 refactorda subsystem sifatida ajratildi, ichi
 hali GFL Flow sifatida rasmiylashtirilmagan)
+
+Sub-Status Lifecycle (GFL-003)
+
+Blueprint -> Design -> Development -> Testing -> Stable
+
+Hozirgi bosqich: **Blueprint** (Design hali boshlanmagan)
 
 Producer
 
@@ -596,6 +608,12 @@ Status
 
 Blueprint (yangi -- V3 refactorda subsystem sifatida ajratildi, ichi
 hali GFL Flow sifatida rasmiylashtirilmagan)
+
+Sub-Status Lifecycle (GFL-003)
+
+Blueprint -> Design -> Development -> Testing -> Stable
+
+Hozirgi bosqich: **Blueprint** (Design hali boshlanmagan)
 
 Producer
 
@@ -841,6 +859,13 @@ Next Flow
 
 Worker faqat bitta Flow ustida ishlaydi.
 
+**GFL-003 (Sequential Flow Rule):** navbatdagi ishlanadigan Flow --
+eng kichik raqamli bajarilmagan Flow ID (`GFL-001_FLOW_PROGRESS.md`da
+yuqoridan pastga birinchi 🟩 Completed bo'lmagan qator). Har bir Flow
+faqat o'zidan oldingi Flow Approved + Completed + CI Passed
+bo'lgandan keyingina boshlanadi -- tartibdan tashqariga chiqib orqaga
+qaytish (masalan FLOW-010'dan FLOW-005'ga) taqiqlanadi.
+
 Har bir Flow:
 
 Audit
@@ -910,6 +935,7 @@ Worker:
 - Completed bo'lmagan Flow'dan keyingisiga o'tmaydi.
 - Batch Development qilmaydi.
 - V3 Architecture'dan tashqari yangi Layer/Subsystem qo'shmaydi (Director tasdig'isiz).
+- GFL-003 Sequential Flow Rule'ni buzib, tartibdan tashqariga chiqib Flow boshlamaydi.
 
 ---
 

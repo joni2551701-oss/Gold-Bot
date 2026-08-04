@@ -61,7 +61,7 @@ Director Review talab qilinadi.
 |------|------|--------------------|--------|----------|-------|------|
 | FLOW-001 | System Bootstrap / Configuration | Foundation Layer | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- avval alohida Flow sifatida mavjud emas edi |
 | FLOW-002 | Current Price | Data Layer | 🟩 | 100% | Worker | Eski FLOW-001. Yakunlandi -- 2026-08-04. Audit shuni ko'rsatdi: barcha modullar allaqachon mavjud edi, faqat ulanmagan (Price Stream `tick()`ni hech kim chaqirmasdi, `CurrentPriceProvider` default holatda har safar yangi/alohida instance qurar edi). Tuzatildi: shared singleton + default StreamValidator + default MarketMemoryRegistry + polling.py'da tick driver. 5411 test PASS, E2E test qo'shildi. |
-| FLOW-003 | Market Memory | Data Layer | 🟦 | 0% | Worker | Eski FLOW-002. Navbatda -- V3 refactor tasdiqlangandan keyin boshlanadi. |
+| FLOW-003 | Market Memory | Data Layer | 🟦 | 0% | Worker | Eski FLOW-002. GFL-003 (Sequential Flow Rule) bo'yicha navbatdagi Flow -- eng kichik raqamli bajarilmagan Flow ID. |
 | FLOW-004 | Market Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-003. Kutmoqda. |
 | FLOW-005 | Context Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-004. Kutmoqda. |
 | FLOW-006 | Analysis Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-005. Kutmoqda. |
@@ -74,9 +74,9 @@ Director Review talab qilinadi.
 | FLOW-013 | Execution Engine | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-012. Kutmoqda. |
 | FLOW-014 | Trade Monitoring | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-013. Kutmoqda. |
 | FLOW-015 | GoldBot Core API | GoldBot > GoldBot Core | 🟦 | 0% | Worker | Eski FLOW-014. Kutmoqda. |
-| FLOW-016 | Chart Service | GoldBot > Chart Service | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- `chart_layer/` mavjud, lekin GFL Flow sifatida hali audit qilinmagan. |
-| FLOW-017 | Personal AI Core | GoldBot > Personal AI Core | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- `ai_layer/` mavjud, lekin GFL Flow sifatida hali audit qilinmagan. |
-| FLOW-018 | Backtesting Engine | GoldBot > Backtesting Engine | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- `backtesting_layer/` mavjud, lekin GFL Flow sifatida hali audit qilinmagan. |
+| FLOW-016 | Chart Service | GoldBot > Chart Service | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- `chart_layer/` mavjud, lekin GFL Flow sifatida hali audit qilinmagan. Sub-Status: Blueprint (Design boshlanmagan). |
+| FLOW-017 | Personal AI Core | GoldBot > Personal AI Core | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- `ai_layer/` mavjud, lekin GFL Flow sifatida hali audit qilinmagan. Sub-Status: Blueprint (Design boshlanmagan). |
+| FLOW-018 | Backtesting Engine | GoldBot > Backtesting Engine | 🟦 | 0% | Worker | Yangi (V3 refactor, GFL-002) -- `backtesting_layer/` mavjud, lekin GFL Flow sifatida hali audit qilinmagan. Sub-Status: Blueprint (Design boshlanmagan). |
 | FLOW-019 | Application Services | Application Services | 🟦 | 0% | Worker | Eski FLOW-015. Kutmoqda. |
 | FLOW-020 | Telegram | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-016. Kutmoqda. |
 | FLOW-021 | Mini App | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-017. Kutmoqda. |
@@ -91,7 +91,13 @@ Director Review talab qilinadi.
 
 Worker faqat bitta Flow ustida ishlaydi.
 
-Oldingi Flow Completed bo'lmaguncha keyingi Flow boshlanmaydi.
+**GFL-003 -- Sequential Flow Rule (Director qarori):** navbatdagi
+ishlanadigan Flow -- ushbu jadvalda yuqoridan pastga qarab birinchi
+🟩 Completed bo'lmagan Flow (eng kichik raqamli bajarilmagan Flow ID).
+Har bir Flow faqat o'zidan oldingi Flow Approved + Completed + CI
+Passed bo'lgandan keyingina boshlanadi. Tartibdan tashqariga chiqib
+(masalan FLOW-010'dan FLOW-005'ga) qaytish taqiqlanadi. To'liq ta'rif:
+`GFL-001_FLOW_FIRST_STANDARD.md`.
 
 Flow statusi ushbu hujjatda darhol yangilanadi.
 

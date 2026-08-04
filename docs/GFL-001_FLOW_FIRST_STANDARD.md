@@ -138,6 +138,79 @@ network mavjud bo'lmasa, in-process latency (tick→cache→render, network
 hisobga olinmagan) baseline sifatida yoziladi va shundayligi belgilab
 qo'yiladi.
 
+## GFL-003 — Sequential Flow Rule
+
+(Director qarori — GFL-002 tasdig'idan keyin kiritildi.)
+
+Navbatdagi ishlanadigan Flow — **eng kichik raqamli bajarilmagan Flow
+ID** hisoblanadi. Bu "tabiiy" yoki ixtiyoriy tanlov emas, balki qoida:
+
+Har bir Flow faqat o'zidan oldingi Flow:
+
+✓ Approved (Director tomonidan)
+
+✓ Completed
+
+✓ CI Passed
+
+bo'lgandan keyingina boshlanishi mumkin.
+
+Ya'ni:
+
+FLOW-001
+↓
+FLOW-002
+↓
+FLOW-003
+↓
+FLOW-004
+↓
+...
+
+Hech qachon:
+
+FLOW-010
+↓
+FLOW-005
+
+bo'lmaydi -- ID tartibidan tashqariga chiqib, keyinroq orqaga qaytib
+kichikroq ID'li Flow'ni boshlash taqiqlanadi.
+
+Amaliy natija: `GFL-001_FLOW_PROGRESS.md` jadvalida yuqoridan pastga
+qarab birinchi 🟦/🟨/🟥 statusli (ya'ni hali 🟩 Completed bo'lmagan) Flow
+-- navbatdagi ishlanadigan Flow'dir. Worker bu tartibni o'zi tanlamaydi
+-- jadval o'zi ko'rsatadi.
+
+## GoldBot Subsystem Sub-Status Lifecycle
+
+(Director qarori — GFL-002 tasdig'idan keyin kiritildi.)
+
+GoldBot ichidagi parallel subsystem darajasidagi Flow'lar (masalan
+Chart Service, Personal AI Core, Backtesting Engine) -- oddiy
+5-holatli Flow Status'dan (Blueprint/In Progress/Review/
+Completed/Blocked) tashqari, qo'shimcha ichki bosqichlarga ega:
+
+Blueprint
+↓
+Design
+↓
+Development
+↓
+Testing
+↓
+Stable
+
+Bu subsystemning o'zi hali GFL Flow sifatida to'liq audit
+qilinmaganini va shu sabab hech kim uni shoshilib implement
+qilmasligini aniq ko'rsatadi. Flow Status (Blueprint/In
+Progress/...) subsystem qachon rasmiy Development'ga kirishini
+belgilaydi; Sub-Status Lifecycle esa o'sha subsystem ichidagi
+progress'ni ko'rsatadi.
+
+Hozirgi holat (`GFL-001_FLOW_CATALOG.md`): FLOW-016 (Chart Service),
+FLOW-017 (Personal AI Core), FLOW-018 (Backtesting Engine) --
+uchalasi ham Sub-Status: **Blueprint** (Design hali boshlanmagan).
+
 ## Forbidden
 
 Quyidagilar taqiqlanadi:
@@ -174,6 +247,8 @@ qayd etilgan.
 Bu hujjat quyidagi standartlar bilan birga ishlaydi:
 
 - GEL-001 — Canonical Module = Package
+- GFL-002 — V3 Architecture Flow Catalog Refactor
+- GFL-003 — Sequential Flow Rule (shu hujjat ichida)
 - GLS-001 — Docs va reports O'zbek tilida
 - DD-005 — Compatibility Exception registry
 - GDS — Development Workflow
