@@ -231,6 +231,10 @@ FLOW-005
 
 ## Context Engine
 
+Status
+
+Completed (2026-08-04, GFL-004 Lightweight Loop -- Qisqa Audit)
+
 Producer
 
 Market Engine (FLOW-004)
@@ -241,15 +245,26 @@ Market Context
 
 Processing
 
-SMC, Wyckoff, Liquidity, Structure
+SMC, Wyckoff, Liquidity, Structure -- `context_layer.context_engine
+.context_orchestrator.ContextEngine` (mavjud, real kod) orqali.
 
 Output
 
-Market Context Result
+Market Context Result -- `ContextSnapshot` (candles, structure,
+bos_events, choch_events, liquidity_zones, liquidity_sweeps,
+order_blocks, fair_value_gaps, amd_events, wyckoff_events,
+session_events, market_regime).
 
 Consumer
 
-Analysis Engine (FLOW-006)
+Analysis Engine (FLOW-006) -- amalda hozircha `core_layer/pipeline.py`
+o'zi (`build_context_snapshot`) to'g'ridan-to'g'ri ishlatadi.
+
+Qisqa Audit
+
+`ContextEngine` allaqachon to'liq amalga oshirilgan va allaqachon real
+`TradingPipeline`ga ulangan (`core_layer/pipeline.py`). Kod yozish
+kerak emas.
 
 Next Flow
 
