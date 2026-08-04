@@ -378,3 +378,81 @@ re-evaluation (e.g. once the AST/monkeypatch/Public API coupling that
 justified it is itself refactored away, per DD-005's own "Future path"
 clause) or for closure. This rule binds `GEL001_EXCEPTIONS.md` itself,
 whenever that registry is created/updated.
+
+### DD-005 Correction — Exception Registry Verification (Empirical Re-Verification, kengaytirilgan metodologiya)
+
+**Kelib chiqishi:** Director Order "DD-005 Exception Registry
+Verification" — avvalgi tor-metodologiyali audit (`GEL001_EXCEPTIONS.md`,
+commit `72135eb`) faqat `Path(...).read_text()` + `ast.parse()`
+kombinatsiyasini "bitta test = bitta literal Path" naqshi bo'yicha
+qidirgan va 9 ta Compatibility Exception topgan edi, DD-005'ning asl
+"11" raqamiga zid holda.
+
+**Muammo tavsifi:** Direktor ushbu 9 vs 11 farqni hal qilishdan oldin
+kengroq qidiruv metodologiyasi bilan (`ast.parse`, `inspect.getsource`/
+`getfile`, `.exists()`/`.is_file()`, `importlib.resources`, `pkgutil`,
+`monkeypatch.setattr`/`mock.patch` literal-yo'l nishonlari va boshqa
+literal fayl-yo'l satrlari) butun repozitoriyni (barcha 17 Layer) qayta
+tekshirishni buyurdi.
+
+**Root Cause Analysis:** Kengaytirilgan qidiruv shuni ko'rsatdi — ikkala
+oldingi audit ham (DD-005'ning o'zi va undan keyingi 9-tali tor audit)
+faqat "bitta test funksiyasi bitta modulga literal Path quradi" naqshini
+qidirgan. Ammo repoda uchtа qo'shimcha test **bir nechta modulni bitta
+`for filename in (...)` sikli ichida ketma-ket** literal yo'l bilan
+qurib, har birini alohida `.read_text()` + `ast.parse()` bilan o'qiydi:
+`tests/media/test_media_adapter.py` (2 fayl: `media_adapter.py`,
+`media_pipeline.py`), `tests/monitoring/test_monitoring_isolation.py`
+va `tests/monitoring/test_phase_b0_isolation.py`/
+`test_phase_b0_compatibility.py` (`core_layer/health_monitor/` ichidagi
+9 fayl: `system_monitor.py`, `market_monitor.py`, `signal_monitor.py`,
+`error_monitor.py`, `models.py`, `resource_monitor.py`,
+`health_monitor.py`, `performance_collector.py`, `access.py`). Bu
+naqsh mezonning ikkala shartiga ((a) muayyan bitta modul fayliga
+literal yo'l, (b) shu aniq faylni o'qish/tahlil qilish) to'liq mos
+keladi, faqat bir nechta modul bitta test funksiyasida qamrab olingani
+sababli avvalgi ikkala audit metodologiyasi buni ko'rmagan.
+
+**Ta'sir doirasi:** Media Layer (`media_layer/content_manager/`) va
+Core Layer (`core_layer/health_monitor/`) — jami 11 ta qo'shimcha modul
+avvalgi 9 taga qo'shildi.
+
+**Natija:** Ushbu kengaytirilgan tekshiruvda haqiqiy dalil bilan
+tasdiqlangan Compatibility Exception soni **20** — bu DD-005'ning asl
+**"11"** raqamidan ham, avvalgi tor audit topgan **"9"** raqamidan ham
+farq qiladi. To'liq ro'yxat, har biri uchun Evidence (fayl:qator,
+kod parchasi), Confidence va Status bilan — `GEL001_EXCEPTIONS.md`da
+qayd etilgan.
+
+**Risk darajasi:** Low — bu hujjatlashtirish/hisob farqi, Trading
+Safety, Signal Logic, Risk Logic yoki Decision Logic'ga hech qanday
+ta'siri yo'q; DD-005'ning "Exception ≠ Violation" tamoyili
+o'zgarishsiz qolmoqda (0 Violations tasdiqlangan holicha qoladi).
+
+**DD-005'ning asl "11" raqami** ushbu empirik topilma bilan
+**superseded** deb belgilanadi — DD-003 Append-Only Discipline
+tamoyiliga ko'ra yuqoridagi original DD-005 matni o'zgartirilmadi/
+o'chirilmadi, faqat mazkur yozuv orqali tuzatiladi: haqiqiy son 11
+emas, **20 (empirik tasdiqlangan, GEL001_EXCEPTIONS.md'da to'liq
+ro'yxatlangan)**.
+
+**Director Review uchun ochiq savol:** DD-005'ning "274 Canonical
+Packages / 11 Compatibility Exceptions" metrikasi Compatibility
+Exceptions ustuniga nisbatan "20" ga yangilanishi kerakmi, yoki
+Direktor 274 Canonical Packages sonini ham qayta hisoblashni
+buyuradimi (chunki 11 ta qo'shimcha flat modul — `media_adapter.py`,
+`media_pipeline.py` va `core_layer/health_monitor/`ning 9 fayli —
+hozircha "274 Canonical Packages" ichida paketlashtirilmagan flat
+modul sifatida hisoblanayotgan bo'lishi mumkin).
+
+**Worker tavsiyasi:** DD-005 metrikasi jadvalida Compatibility
+Exceptions ustunini 11'dan 20'ga yangilash, Canonical Packages sonini
+(274) o'zgartirmaslik — chunki bu 20 modul hali paketlanmagan holda
+qolmoqda (ular hali "Compatibility Exception" holatida, "Canonical
+Package" emas).
+
+**Manba:** Ushbu qayta tekshiruvning to'liq metodologiyasi, ko'rib
+chiqilgan va False Positive deb rad etilgan holatlar ro'yxati (110 ta
+`mock.patch`/`monkeypatch.setattr` dotted-path chaqiruvi, 6 ta
+`inspect.getsource` chaqiruvi, va boshqalar) `GEL001_EXCEPTIONS.md`da
+to'liq keltirilgan.
