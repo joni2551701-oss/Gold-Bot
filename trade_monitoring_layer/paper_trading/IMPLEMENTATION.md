@@ -2,105 +2,118 @@
 
 ## Purpose
 Phase 59 Preparation foundation (TASK 2: Paper Trading Contract,
-TASK 4: Signal Lifecycle Audit). Standard, in-memory state machines
-for a simulated trade (`PaperTrade`, never a real broker order) and
-for a signal's own progress through the analysis pipeline
-(`SignalLifecycleState`). Neither is wired into `core/pipeline.py`,
-`execution/`, or the database in this phase — both are standalone
-foundations, matching every Phase A/AC module's own "foundation, not a
-rewrite" posture.
+TASK 4: Signal Lifecycle Audit). Simulyatsiya qilingan Trade
+(`PaperTrade`, hech qachon real broker order emas) uchun va signal'ning
+analysis pipeline bo'ylab o'z progressini (`SignalLifecycleState`)
+ifodalash uchun standart, in-memory state machine'lar. Ikkisi ham bu
+faza doirasida `core/pipeline.py`, `execution/` yoki database'ga
+ulanmagan — ikkisi ham har bir Phase A/AC modulining o'z "foundation,
+rewrite emas" pozitsiyasiga mos, alohida-mustaqil foundation'lardir.
 
-## Not the same as `strategies/lifecycle/`
-`strategies/lifecycle/` (Phase A11) is a per-*strategy* metadata
-registry (`StrategyDefinition`/`StrategyRegistry` — status/version per
-SMC methodology). `lifecycle/` (this package) is a per-*trade*/
-per-*signal* runtime state machine. Unrelated concepts that happen to
-share the word "lifecycle" — neither package imports the other.
+## `strategies/lifecycle/` bilan bir xil emas
+`strategies/lifecycle/` (Phase A11) — bu har bir *strategy* uchun
+metadata registry (`StrategyDefinition`/`StrategyRegistry` — SMC
+metodologiyasi bo'yicha status/version). `lifecycle/` (mana shu
+package) — bu har bir *trade*/*signal* uchun runtime state machine.
+Bir-biriga aloqasi bo'lmagan, faqat "lifecycle" so'zini baham
+ko'radigan tushunchalar — ikki package bir-birini import qilmaydi.
 
-## Not the same as `execution/`
-`execution_layer/execution_engine/execution_engine.py` and `execution_layer/execution_monitor/signal_lifecycle.py`
-are pre-existing, deliberately inert stubs in the Trading-Safety-
-protected `execution/` package (`ExecutionEngine.dispatch()` and
-`SignalLifecycle.transition()` both always return "Not implemented").
-`execution_layer/execution_monitor/signal_lifecycle.py`'s own `SignalState` enum
-(`CREATED`/`SENT`/`ACKNOWLEDGED`/`CLOSED`) describes Telegram message
-delivery, not a signal's analysis-pipeline progress or a trade's own
-life. `lifecycle/` never imports from or calls `execution/`, and does
-not make `execution/`'s own stubs any less inert — this package adds
-no broker call, no real order, no MT5 integration. See
-`trade_monitoring_layer/paper_trading/paper_trade.py`'s and `trade_monitoring_layer/paper_trading/signal_state.py`'s own
-docstrings for the exact naming disambiguation
-(`PaperTrade`/`TradeState` vs. nothing pre-existing; `SignalLifecycleState`
-vs. `execution_layer.execution_monitor.signal_lifecycle.SignalState`).
+## `execution/` bilan bir xil emas
+`execution_layer/execution_engine/execution_engine.py` va
+`execution_layer/execution_monitor/signal_lifecycle.py` — Trading-Safety
+bilan himoyalangan `execution/` package'ida oldindan mavjud bo'lgan,
+ataylab inert qilingan stub'lardir (`ExecutionEngine.dispatch()` va
+`SignalLifecycle.transition()` ikkisi ham doim "Not implemented"
+qaytaradi). `execution_layer/execution_monitor/signal_lifecycle.py`'ning o'z
+`SignalState` enum'i (`CREATED`/`SENT`/`ACKNOWLEDGED`/`CLOSED`) Telegram
+xabar yetkazilishini tasvirlaydi, signal'ning analysis-pipeline
+progressini yoki trade'ning o'z hayotini emas. `lifecycle/` hech qachon
+`execution/`dan import qilmaydi yoki uni chaqirmaydi va
+`execution/`ning o'z stub'larini kamroq inert qilmaydi — bu package
+hech qanday broker call, real order, MT5 integratsiya qo'shmaydi.
+Aniq nomlash farqlanishi (`PaperTrade`/`TradeState` vs oldindan mavjud
+hech narsa; `SignalLifecycleState` vs
+`execution_layer.execution_monitor.signal_lifecycle.SignalState`) uchun
+`trade_monitoring_layer/paper_trading/paper_trade.py` va
+`trade_monitoring_layer/paper_trading/signal_state.py`'ning o'z docstring'lariga
+qarang.
 
 ## Modules
 
 ### `trade_state.py`
-`TradeState` — `CREATED`/`OPEN`/`CLOSED`/`CANCELLED`. The status
-vocabulary for a `PaperTrade`.
+`TradeState` — `CREATED`/`OPEN`/`CLOSED`/`CANCELLED`. `PaperTrade` uchun
+status lug'ati.
 
 ### `paper_trade.py`
 `PaperTrade` (`trade_id`, `signal_id`, `symbol`, `direction`, `entry`,
 `stop_loss`, `take_profit`, `status`, `result`, `opened_at`,
 `closed_at`, `created_at`) plus:
-- `create_paper_trade(signal)` — builds a `CREATED` `PaperTrade` from
-  an already-`APPROVED` `SignalSchema`. Raises `ValueError` if the
-  signal isn't `APPROVED` or is missing a price field — a genuine
-  caller error, not a data-driven condition.
+- `create_paper_trade(signal)` — allaqachon `APPROVED` bo'lgan
+  `SignalSchema`'dan `CREATED` `PaperTrade` yaratadi. Agar signal
+  `APPROVED` bo'lmasa yoki narx maydoni yetishmasa `ValueError`
+  ko'taradi — bu haqiqiy chaqiruvchi xatosi, ma'lumotga bog'liq holat
+  emas.
 - `open_paper_trade(trade)` / `close_paper_trade(trade, result)` /
-  `cancel_paper_trade(trade)` — pure transition functions, each
-  returning a `PaperTradeTransitionResult(trade, success, reason)`.
-  Never raise: an invalid transition (e.g. closing a trade that was
-  never opened) returns `success=False` with the original, unchanged
-  trade.
+  `cancel_paper_trade(trade)` — har biri
+  `PaperTradeTransitionResult(trade, success, reason)` qaytaruvchi
+  sof transition function'lar. Hech qachon ko'tarmaydi: noto'g'ri
+  transition (masalan, hech qachon ochilmagan trade'ni yopish)
+  `success=False`ni asl, o'zgarmagan trade bilan qaytaradi.
 - `ALLOWED_PAPER_TRADE_RESULTS = ("TP", "SL", "BE", "EXPIRED")` —
-  `docs/PHASE59_VALIDATION.md`'s own Result vocabulary, deliberately
-  distinct from `database_layer/trade_repository/signal_repository.py`'s pre-existing
-  `{"WIN","LOSS","BE","CANCELLED"}` (that set belongs to the real,
-  persisted `signals` table, untouched by this phase, and already
-  uses `CANCELLED` as a result where `PaperTrade` uses it as a
-  status).
+  `docs/PHASE59_VALIDATION.md`'ning o'z Result lug'ati, ataylab
+  `database_layer/trade_repository/signal_repository.py`'da oldindan mavjud
+  bo'lgan `{"WIN","LOSS","BE","CANCELLED"}`dan farqli (bu to'plam
+  real, persisted `signals` jadvaliga tegishli, bu faza tomonidan
+  tegilmagan, va allaqachon `CANCELLED`ni `PaperTrade` uni status
+  sifatida ishlatgan joyda result sifatida ishlatadi).
 
 ### `signal_state.py`
 `SignalLifecycleState` — `CREATED`/`QUALITY_CHECKED`/`EXPLAINED`/
 `APPROVED`/`REJECTED`/`PAPER_OPEN`/`CLOSED`, plus:
 - `ALLOWED_TRANSITIONS` / `transition_signal_state(current, next)` —
-  a pure transition validator, `SignalStateTransitionResult(success,
-  reason)`, never raises.
+  sof transition validator, `SignalStateTransitionResult(success,
+  reason)`, hech qachon ko'tarmaydi.
 - `derive_signal_lifecycle_state(signal, paper_trade=None)` —
-  observational classification from already-computed
-  `SignalSchema`/`PaperTrade` fields (same priority-ordered,
-  read-only pattern `context_layer/trend/market_phase.py`'s
-  `compute_market_phase()` established). Documented limitation:
-  `EXPLAINED` cannot be reliably derived, since
-  `SignalSchema.explanation_id` is never populated anywhere in this
-  codebase today (see the function's own docstring).
+  allaqachon hisoblangan `SignalSchema`/`PaperTrade` maydonlaridan
+  observational klassifikatsiya (xuddi
+  `context_layer/trend/market_phase.py`'ning `compute_market_phase()`
+  o'rnatgan priority-ordered, read-only pattern). Hujjatlashtirilgan
+  cheklov: `EXPLAINED` ishonchli tarzda chiqarib bo'lmaydi, chunki
+  `SignalSchema.explanation_id` bu kodbazada hech qayerda hech qachon
+  to'ldirilmagan (function'ning o'z docstring'iga qarang).
 
 ## Dependencies
-`paper_trade.py` imports `trade_monitoring_layer.paper_trading.trade_state` (same package) plus,
-`TYPE_CHECKING`-only, `signal_layer.signal_builder.schema.SignalSchema`. `signal_state.py`
-imports `trade_monitoring_layer.paper_trading.trade_state` plus, `TYPE_CHECKING`-only,
-`trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` and `signal_layer.signal_builder.schema.SignalSchema`.
-Neither imports `context/`, `strategies/`, `ai/`, `decision/`,
-`risk/`, `execution/`, `database/`, or `telegram/`.
+`paper_trade.py` `trade_monitoring_layer.paper_trading.trade_state`ni (bir xil
+package) import qiladi, plus, faqat `TYPE_CHECKING`,
+`signal_layer.signal_builder.schema.SignalSchema`. `signal_state.py`
+`trade_monitoring_layer.paper_trading.trade_state`ni import qiladi, plus, faqat
+`TYPE_CHECKING`, `trade_monitoring_layer.paper_trading.paper_trade.PaperTrade` va
+`signal_layer.signal_builder.schema.SignalSchema`. Ikkisi ham `context/`,
+`strategies/`, `ai/`, `decision/`, `risk/`, `execution/`, `database/`
+yoki `telegram/`ni import qilmaydi.
 
 ### `paper_trade_monitor.py` (Phase 59.4, TASK 2)
-`check_paper_trade_against_candles(trade, candles)` — the monitor loop
-named as unimplemented below, now built: walks a caller-supplied
-candle list looking for entry, then TP/SL, closing the trade via
-`close_paper_trade()` (reused, not duplicated) with `"TP"`/`"SL"`, or
-`"EXPIRED"` if entry is never touched across the whole window. Stateless
-per call — the caller must supply the full candle history since
-`trade.opened_at`, not just new candles each cycle (see the module's
-own docstring for why). Ambiguity rule: SL wins if a single candle's
-range covers both TP and SL (the conservative backtesting convention).
+`check_paper_trade_against_candles(trade, candles)` — quyida
+implementatsiya qilinmagan deb nomlangan monitor loop, endi
+qurilgan: chaqiruvchi tomonidan berilgan candle ro'yxati bo'ylab
+entry'ni, keyin TP/SL'ni qidirib o'tadi, trade'ni `close_paper_trade()`
+orqali (qayta ishlatilgan, takrorlanmagan) `"TP"`/`"SL"` bilan yopadi,
+yoki agar entry butun window davomida hech qachon tegilmasa
+`"EXPIRED"` bilan yopadi. Har bir chaqiruv uchun stateless — chaqiruvchi
+`trade.opened_at`dan boshlab to'liq candle tarixini berishi kerak, har
+bir sikldagi faqat yangi candle'larni emas (nima uchun ekanligi uchun
+modulning o'z docstring'iga qarang). Noaniqlik qoidasi: agar bitta
+candle'ning diapazoni ham TP'ni, ham SL'ni qamrab olsa, SL g'alaba
+qiladi (konservativ backtesting konvensiyasi).
 
 ## Future Roadmap
-Persistence (a `paper_trades` table, a `PaperTradeRepository` — note
-`database_layer/market_repository/raw_candle_repository.py`/`market_snapshot_repository.py`,
-Phase 59.3, already provide the raw candle history a real monitor loop
-would feed into `paper_trade_monitor.py`) and `core/pipeline.py`
-wiring (constructing a `PaperTrade` per `APPROVE`d decision
-automatically, and calling the new monitor each cycle) both remain
-unimplemented — each a separate, explicitly-approvable future step, in
-line with `docs/PHASE59_VALIDATION.md`'s own scope notes.
+Persistence (`paper_trades` jadvali, `PaperTradeRepository` — e'tibor
+bering, `database_layer/market_repository/raw_candle_repository.py`/
+`market_snapshot_repository.py`, Phase 59.3, allaqachon real monitor
+loop `paper_trade_monitor.py`ga uzatadigan raw candle tarixini
+ta'minlaydi) va `core/pipeline.py` ulanishi (har bir `APPROVE` qilingan
+decision uchun avtomatik ravishda `PaperTrade` yaratish va har bir
+siklda yangi monitor'ni chaqirish) ikkisi ham implementatsiya
+qilinmagan holda qolmoqda — har biri alohida, aniq tasdiqlanishi
+mumkin bo'lgan kelajakdagi qadam, `docs/PHASE59_VALIDATION.md`'ning o'z
+scope eslatmalariga muvofiq.
