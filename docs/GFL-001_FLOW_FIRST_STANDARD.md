@@ -64,9 +64,69 @@ Har bir Flow quyidagilar bilan tugallangan hisoblanadi:
 - Processing ishlaydi
 - Output ishlaydi
 - Consumer ishlaydi
+- **Barcha Consumer'lar PASS** (Fan-Out Rule — pastga qarang)
 - End-to-end test o'tadi
+- **Har bir Producer→Consumer latency o'lchangan va yozilgan** (Latency Rule — pastga qarang)
 - Documentation yangilanadi
 - WORK_LOG yoziladi
+
+## Fan-Out Rule
+
+(Director qarori — GFL-001 pilot natijasidan keyin kiritildi.)
+
+Bitta Producer bir nechta Consumer'ga ma'lumot tarqatishi mumkin
+(fan-out). Bunday Flow faqat **barcha** Consumer'lar tekshirilib PASS
+bo'lgandagina Completed hisoblanadi.
+
+Misol:
+
+Current Price
+↓
+Telegram   PASS
+↓
+Web        PASS
+↓
+Android    PASS
+↓
+Desktop    PASS
+↓
+Mini App   PASS
+
+Agar bitta Consumer ishlamasa:
+
+Flow Completed EMAS.
+
+Eslatma (repo hozirgi holati): canonical 21-Flow modelida Telegram
+(FLOW-016), Mini App (FLOW-017), Android (FLOW-018), iOS (FLOW-019),
+Desktop (FLOW-020), Web (FLOW-021) — bularning barchasi Application
+Services (FLOW-015) fan-out nuqtasining Consumer'lari. Shu sabab
+Fan-Out Rule eng kuchli aynan FLOW-015 tugaganda qo'llanadi. Hozirda
+faqat Telegram real platforma sifatida mavjud; qolgan platformalar
+(Mini App/Android/iOS/Desktop/Web) hali kod sifatida mavjud emas —
+ular kelajakdagi FLOW-017...021. Har bir platforma paydo bo'lgach,
+o'sha Flow uchun Fan-Out Rule majburiy bo'ladi.
+
+## Latency Rule
+
+(Director qarori — GFL-001 pilot natijasidan keyin kiritildi.)
+
+Har bir Flow tugaganda Producer'dan har bir Consumer'gacha bo'lgan
+latency o'lchanadi va `GFL-001_FLOW_DEPENDENCY.md` Dependency
+Matrix'ining "Latency" ustuniga yoziladi.
+
+Misol:
+
+Provider → Telegram   340 ms
+Provider → Web        290 ms
+Provider → Android    310 ms
+
+Bu orqali bottleneck qayerdaligi ko'rinadi.
+
+Amaliy eslatma: real (network bilan) Producer→Consumer latency uchun
+tirik provider (masalan TwelveData/Bitget) kerak. Agar test muhitida
+network mavjud bo'lmasa, in-process latency (tick→cache→render, network
+hisobga olinmagan) baseline sifatida yoziladi va shundayligi belgilab
+qo'yiladi.
 
 ## Forbidden
 
@@ -79,6 +139,15 @@ Quyidagilar taqiqlanadi:
 - Batch coding
 - Bir nechta Flow'ni aralashtirish
 - Verification qilmasdan keyingi bosqichga o'tish
+
+## Canonical Flow raqamlash
+
+Flow raqamlash uchun yagona canonical manba —
+`GFL-001_FLOW_CATALOG.md` va `GFL-001_FLOW_PROGRESS.md` (21 ta Flow:
+FLOW-001 Current Price ... FLOW-021 Web).
+
+`GFL-001_FLOW_DEPENDENCY.md` shu raqamlashga moslashtiriladi. Eski 25
+ta Flow raqamlashi bekor qilingan.
 
 ## Relationship with other standards
 

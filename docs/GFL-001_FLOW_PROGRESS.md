@@ -166,7 +166,11 @@ Flow Completed bo'lishi uchun:
 
 ✓ Consumer ishlaydi
 
+✓ Barcha Consumer'lar PASS (Fan-Out Rule)
+
 ✓ End-to-End Test PASS
+
+✓ Producer→Consumer latency o'lchangan va yozilgan (Latency Rule)
 
 ✓ Documentation yangilangan
 

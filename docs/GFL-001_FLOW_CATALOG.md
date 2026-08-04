@@ -337,7 +337,11 @@ Next Flow
 
 □ Consumer ishlaydi
 
+□ Barcha Consumer'lar PASS (Fan-Out Rule)
+
 □ End-to-End Test PASS
+
+□ Producer→Consumer latency o'lchandi va yozildi (Latency Rule)
 
 □ Documentation yangilandi
 
