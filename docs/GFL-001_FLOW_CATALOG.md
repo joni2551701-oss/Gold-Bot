@@ -286,15 +286,27 @@ Market Context Result
 
 Processing
 
-Analysis, Scoring
+Analysis, Scoring -- `context_layer.trend.market_phase.compute_market_phase()`
+(mavjud, real kod) orqali. `ContextSnapshot`ning allaqachon mavjud
+`wyckoff_events`/`amd_events`/`market_regime` maydonlaridan 5-holatli
+(Accumulation/Manipulation/Distribution/Markup/Markdown/Unknown)
+tsikl bosqichini scoring/priority-order qoidalari bilan hisoblaydi.
 
 Output
 
-Analysis Result
+Analysis Result -- `MarketPhaseResult` (phase, reason).
 
 Consumer
 
-Indicator Engine (FLOW-007)
+Indicator Engine (FLOW-007) -- amalda hozircha `core_layer/pipeline.py`
+o'zi (`market_phase` stage, `context` stage'idan keyin) to'g'ridan-
+to'g'ri ishlatadi.
+
+Qisqa Audit
+
+`compute_market_phase()` allaqachon to'liq amalga oshirilgan va
+allaqachon real `TradingPipeline`ga ulangan (`core_layer/pipeline.py`,
+`market_phase` stage). Kod yozish kerak emas.
 
 Next Flow
 
