@@ -26,14 +26,18 @@ Reuses existing detection output rather than duplicating it:
   signal_quality and confidence -- both already computed by Signal
   Quality Score/Explainability, relayed here, never recomputed.
 
-Deliberately does NOT compute atr: a textbook Average True Range would
-be a new indicator, out of scope for this standardization-only phase
--- atr is always None, an explicit hook for a future phase.
+- core_layer.features.atr.compute_atr() (GFL-001 FLOW-007, Director-
+  approved) supplies atr -- Wilder's Average True Range computed
+  directly from ContextSnapshot.candles, None when fewer than
+  period + 1 candles are available. Still purely advisory: atr is not
+  passed into SignalEngine/AIAnalyzer/DecisionEngine/RiskManager in
+  this phase, same as every other MarketFeatures field.
 """
 
 from typing import Optional, TYPE_CHECKING
 
 from context_layer.trend.market_regime import MarketRegime
+from core_layer.features.atr import compute_atr
 from core_layer.features.feature_model import MarketFeatures
 
 if TYPE_CHECKING:
@@ -94,5 +98,5 @@ def compute_market_features(
         trend_strength=trend_strength,
         liquidity_distance=liquidity_distance,
         volume=None,
-        atr=None,
+        atr=compute_atr(context.candles),
     )

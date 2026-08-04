@@ -48,12 +48,15 @@ class MarketFeatures:
         all (Twelve Data's Candle payload is OHLC-only, confirmed
         repeatedly since Phase A1's audit) -- an explicit, honest
         hook, never a fabricated value.
-    atr: always None in this phase. A textbook Average True Range
-        would be a new indicator, out of scope for a foundation/
-        standardization phase -- an explicit hook for a future,
-        separately-approved phase (Advanced Risk/Quant Research/ML),
-        never a fabricated value. See docs/FEATURE_ENGINEERING.md's
-        "ATR hook" section.
+    atr: Wilder's Average True Range, computed by
+        core_layer.features.atr.compute_atr() from
+        ContextSnapshot.candles (GFL-001 FLOW-007, Director-approved).
+        None when fewer than period + 1 (default period=14) closed
+        candles are available -- never a fabricated value. Still
+        purely advisory, same as every other MarketFeatures field: not
+        passed into SignalEngine/AIAnalyzer/DecisionEngine/RiskManager
+        in this phase. See docs/FEATURE_ENGINEERING.md's "ATR hook"
+        section.
     """
     asset: str
     timeframe: str

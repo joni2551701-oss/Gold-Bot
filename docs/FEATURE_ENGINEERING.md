@@ -33,9 +33,13 @@ Context/Strategy/Signal Quality/Explainability themselves.
 - Feature Engineering is a normalization layer, not an analysis
   layer — it runs at the **end** of the per-candidate analysis chain
   (after Signal Quality Score and Explainability), not before it.
-- No new technical indicator is introduced (ATR, RSI, MACD, etc.).
-- Unsupported values (`volume`, `atr`) remain explicit `None`
-  placeholders, never synthetic estimates.
+- No new technical indicator is introduced (RSI, MACD, etc.) *in this
+  Phase A10 foundation phase* — `atr` was later filled by GFL-001
+  FLOW-007 (Director-approved); see "ATR hook" below.
+- Unsupported values (`volume`) remain an explicit `None` placeholder,
+  never a synthetic estimate. `atr` is now a real computation
+  (GFL-001 FLOW-007), still `None`-safe when there isn't enough
+  history.
 - The output model is stable and extensible so future AI, Research,
   Backtesting, and Analytics modules can consume it without schema
   changes.
@@ -74,18 +78,21 @@ class MarketFeatures:
 | `trend_strength` | `context.market_regime.MarketRegimeResult.confidence` (Phase A7) | `confidence / 100.0` when `regime == TRENDING`, else `0.0`. The exact same HTF+structure-agreement signal Market Regime already computed — not a new trend calculation. |
 | `liquidity_distance` | `context.liquidity_zones` (unchanged) | Absolute distance from the most recent candle's close to the nearest zone's price. `None` if no candles or no zones. |
 | `volume` | — | Always `None` — see "Volume hook" below. |
-| `atr` | — | Always `None` — see "ATR hook" below. |
+| `atr` | `core_layer.features.atr.compute_atr(context.candles)` (GFL-001 FLOW-007, Director-approved) | Wilder's Average True Range. `None` when fewer than `period + 1` (default 14) closed candles are available. |
 
-### ATR hook
+### ATR hook (filled — GFL-001 FLOW-007)
 
-`atr` is always `None` in this phase. A textbook Average True Range
-(`max(high-low, |high-prev_close|, |low-prev_close|)`, typically
-Wilder-smoothed over a fixed period) is a genuinely new indicator —
-out of scope for a standardization-only foundation phase whose rule
-is "no new technical indicators." A real ATR is deferred to a future,
-separately-approved phase (Advanced Risk / Quant Research / ML), at
-which point only `feature_engine.py`'s `atr=None` line would need to
-change.
+`atr` was always `None` through Phase A10/foundation-freeze: a
+textbook Average True Range (`max(high-low, |high-prev_close|,
+|low-prev_close|)`, Wilder-smoothed over a fixed period) was judged a
+genuinely new indicator, out of scope for a standardization-only
+foundation phase. GFL-001 FLOW-007 (Indicator Engine), Director-
+approved, filled this hook with `core_layer/features/atr/atr.py`'s
+`compute_atr()` — a pure function reusing the same `Candle` shape
+every other detector already consumes, `None`-safe (no fabricated
+value) when there isn't enough history. Still purely advisory: `atr`
+is not read by `strategies/*.py`, `signal_layer/`, `ai/`, or
+`decision_layer/decision_engine/decision_engine.py` in this phase.
 
 ### Volume hook
 
@@ -140,7 +147,9 @@ one new key, `"features"` (`List[MarketFeatures]`, same order as
   phase, and none read `MarketFeatures`.
 - Does not grade, explain, or re-derive anything itself — `signal_quality`/
   `confidence` are relayed from `SignalExplanation`, not recomputed.
-- Does not implement a real ATR or fabricate a volume value.
+- Does not fabricate a volume value (still `None` — no volume data
+  source exists). `atr` is now a real computation (GFL-001 FLOW-007),
+  not a hook — see "ATR hook" above.
 - Does not persist `MarketFeatures` anywhere — no schema change, no
   new table.
 - Does not implement backtesting or a research harness — `features/`
@@ -179,7 +188,7 @@ Regime (`docs/MARKET_REGIME.md`) and Explainability
   `signal_quality`/`confidence` alongside full market context, a
   future module could join it against actual trade outcomes without
   re-deriving either — not implemented in this phase.
-- **A real ATR / real volume**: both named above as the two
-  deliberate hooks this phase carries forward, each with an explicit,
-  minimal path to becoming real once the underlying data source or
-  scope decision exists.
+- **Real volume**: still a deliberate hook this phase carries forward
+  — no volume data source exists yet. `atr` is no longer a hook: GFL-001
+  FLOW-007 filled it with a real `compute_atr()` (see "ATR hook"
+  above).

@@ -88,7 +88,7 @@ def test_feature_creation_from_full_context():
     assert features.volatility == "NORMAL"
     assert features.liquidity_distance == 15.0  # |105 - 120|
     assert features.volume is None
-    assert features.atr is None  # atr is always a hook, never computed in this phase
+    assert features.atr is None  # only 1 candle -- fewer than compute_atr()'s minimum period+1
 
 
 def test_signal_quality_and_confidence_are_relayed_not_recomputed():
@@ -150,8 +150,10 @@ def test_empty_data_produces_no_crash_and_none_fields():
     assert isinstance(features, MarketFeatures)
 
 
-def test_no_fake_volume_or_atr_ever():
-    """volume and atr must always be None -- across every scenario, never a fabricated number."""
+def test_no_fake_volume_ever_and_atr_is_none_with_too_few_candles():
+    """volume must always be None -- no volume data source. atr is None here because
+    every scenario has far fewer than compute_atr()'s default period+1=15 candles,
+    not because atr is hardcoded (see test_atr_is_computed_with_enough_candles)."""
     scenarios = [
         _empty_context(),
         _empty_context(candles=[_candle(9)]),
@@ -166,6 +168,17 @@ def test_no_fake_volume_or_atr_ever():
         features = compute_market_features(context, _explanation(), "XAUUSD", "M15", _htf(HTFBias.BULLISH))
         assert features.volume is None
         assert features.atr is None
+
+
+def test_atr_is_computed_with_enough_candles():
+    """With >= period+1 (default 15) candles, atr is a real Wilder's ATR value, not None."""
+    candles = [_candle(i, high=110.0 + i, low=100.0 + i, close=105.0 + i) for i in range(15)]
+    context = _empty_context(candles=candles)
+
+    features = compute_market_features(context, _explanation(), "XAUUSD", "M15", None)
+
+    assert features.atr is not None
+    assert features.atr > 0.0
 
 
 def test_future_compatibility_field_shape_is_stable():

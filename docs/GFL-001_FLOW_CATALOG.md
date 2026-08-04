@@ -328,15 +328,32 @@ Analysis Result
 
 Processing
 
-Indicator calculation
+Indicator calculation -- `core_layer.features.atr.compute_atr()`
+(mavjud, real kod, GFL-001 FLOW-007, Director-approved) orqali.
+Wilder's Average True Range, `ContextSnapshot.candles`dan hisoblanadi.
 
 Output
 
-Indicators
+Indicators -- `MarketFeatures.atr` (`Optional[float]`, `None` agar
+`period + 1`dan kam candle bo'lsa).
 
 Consumer
 
-Strategy Engine (FLOW-008)
+Strategy Engine (FLOW-008) -- amalda hozircha
+`core_layer/features/feature_engine.py`ning o'zi
+(`compute_market_features`) to'g'ridan-to'g'ri ishlatadi.
+
+Qisqa Audit
+
+Real indicator hisoblash hech qayerda mavjud emas edi;
+`indicator_layer/` va `chart_layer/indicators/` Foundation Freeze
+v1.0/MIR-001 skeleton (GFL-001 doirasidan tashqari, yangi business
+logic yozish taqiqlanadi). `core_layer/features/feature_engine.py`
+va `feature_model.py` Phase A10'dan beri `atr=None`ni aniq "future
+phase" hook sifatida hujjatlashtirgan edi. Module Reuse Principle
+bo'yicha yangi top-level modul o'rniga, mavjud `core_layer/features/`
+paketi ichida yangi `atr/` sub-modul qo'shildi (GEL-001 Strict).
+Owner/Director'dan aniq tasdiq olindi (Director Decision: Approve).
 
 Next Flow
 
