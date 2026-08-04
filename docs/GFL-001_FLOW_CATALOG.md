@@ -467,15 +467,29 @@ Confluence
 
 Processing
 
-Confidence blending, APPROVE/REJECT/NO_TRADE
+Confidence blending, APPROVE/REJECT/NO_TRADE -- `decision_layer
+.decision_engine.decision_engine.DecisionEngine` (mavjud, real kod)
+orqali. CLAUDE.md Trading Safety'da himoyalangan modul --
+"confidence-blending and APPROVE/REJECT/NO_TRADE thresholds", ushbu
+Flow doirasida o'zgartirilmadi.
 
 Output
 
-Decision
+Decision -- `TradeDecision` (`DecisionAction`: APPROVE/REJECT/NO_TRADE).
 
 Consumer
 
-Risk Engine (FLOW-011)
+Risk Engine (FLOW-011) -- amalda hozircha `core_layer/pipeline.py`ning
+`decision` stage'i orqali, so'ng `risk` stage'iga uzatiladi.
+
+Qisqa Audit
+
+`DecisionEngine` allaqachon to'liq amalga oshirilgan, CLAUDE.md Trading
+Safety qoidasi bilan himoyalangan (o'zgartirish uchun alohida ruxsat
+talab qilinadi), test qilingan (`tests/unit/test_decision_engine.py`)
+va allaqachon real `TradingPipeline`ga ulangan
+(`self.decision_engine = DecisionEngine()`). Kod yozish/o'zgartirish
+kerak emas va ruxsat etilmagan.
 
 Next Flow
 
