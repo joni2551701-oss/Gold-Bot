@@ -4,13 +4,13 @@
 
 Decision — STEP-09 business rules (TASK-CORE-009).
 
-Classes: `RuleContext`
+Class'lar: `RuleContext`
 
-Top-level functions: `rule_reject_invalid()`, `rule_expire_stale()`, `rule_hold_low_confidence()`, `apply_rules()`
+Top-level function'lar: `rule_reject_invalid()`, `rule_expire_stale()`, `rule_hold_low_confidence()`, `apply_rules()`
 
 ## Runtime / Algorithms / Pipeline / Event Flow / Sequence / Design Decisions / Performance Notes
 
-Not authored at rollout time -- this section requires domain understanding beyond what can be mechanically derived from code, and is left for a future Development Phase to fill in (per Director Order No. 012/013, this rollout is documentation standardization only, not new authorship of technical narrative).
+Rollout vaqtida yozilmagan -- bu bo'lim koddan mexanik ravishda chiqarib bo'lmaydigan domain tushunchasini talab qiladi va kelajakdagi Development Phase tomonidan to'ldirish uchun qoldirilgan (Director Order No. 012/013'ga ko'ra, bu rollout faqat hujjatlashtirish standartizatsiyasi, texnik bayonning yangi muallifligi emas).
 
 ---
-*Generated 2026-08-03 by GoldBot Engineering Standard v1.0 rollout (Director Order No. 012/013).*
+*2026-08-03'da GoldBot Engineering Standard v1.0 rollout tomonidan yaratilgan (Director Order No. 012/013).*
