@@ -231,3 +231,56 @@ Worker documents the constraint and raises a Director Review to adapt
 the rule — as happened here (GEL-001's flat-facade assumption in DD-004
 did not hold empirically, so GEL-001 itself was adapted via DD-005
 rather than forcing an unworkable rule on real code).
+
+### DD-005 Compliance Audit — Result (commit `d9e0a84`)
+
+A full DD-005 compliance audit (`DD005_COMPLIANCE_REPORT.md`, Uzbek,
+per GLS-001 below) checked all 146 top-level canonical modules across
+all 17 Layers against the seven DD-005 audit questions. Result: 146/146
+`Compatible`, 0 `Potential Violations`. **One item raised for Director
+Review** (documentation-completeness gap, not a Foundation Rule
+breach): DD-005 states 274 Canonical Packages / 11 Compatibility
+Exceptions, but no document itemizes those 11 exceptions by module
+name — the audit's own top-level scope found 0 exceptions, meaning the
+11 exist at a narrower/nested-file granularity that isn't registered
+anywhere. Open question for Director: should a dedicated itemized
+registry (e.g. `GEL001_EXCEPTIONS.md`) be created to name all 11, so
+this count is independently verifiable rather than only asserted.
+
+### Director Order — GLS-001 (GoldBot Engineering Language Standard)
+
+**Approved.** All documents, audits, reports, and engineering records
+in the GoldBot repository are written in Uzbek. Exceptions, kept in
+their original form: programming languages, code elements (class/
+function/file names, import statements, code blocks), API names,
+library/framework names, standard protocols, and international
+technical terms (the Director's own list: API, REST API, WebSocket,
+Event Bus, Cache, Queue, Pipeline, Layer, Module, Package, Interface,
+Dependency, Import, Export, Commit, Branch, Merge, Pull Request,
+CI/CD, Docker, Kubernetes, PostgreSQL, Redis, Logger, Metrics, Health
+Check, Benchmark, Performance, Rollback, Refactor, Compatibility,
+Regression, Unit Test, Integration Test, Mock, Fixture — extensible,
+not exhaustive). Report section headers use Uzbek terms, not copied
+English templates (`Muammo`/`Sabab`/`Tavsiya`, not `Problem`/`Cause`/
+`Recommendation`). Standard technical values (YES/NO, PASS/FAIL) are
+exempt.
+
+**Scope decision (Director-selected option): phased via RFC, not
+immediate retroactive translation.** GLS-001 applies from this
+decision onward to every newly created document, audit, and report —
+already demonstrated by `DD005_COMPLIANCE_REPORT.md`, written fully
+in Uzbek per this rule. The repository's existing English-language
+documents (`CLAUDE.md`, `README.md`, `ARCHITECTURE.md`,
+`GOLDBOT_DEVELOPMENT_STANDARD.md`, `RFC_STANDARD.md`, `ADR_STANDARD.md`,
+`RELEASE_MANAGEMENT_STANDARD.md`, `DIRECTOR_DECISIONS.md` itself, and
+others) are **not** retroactively translated by this decision. Full
+retroactive translation — a large, risk-bearing effort, especially for
+Trading Safety/Risk Logic text where a translation slip could shift
+meaning — is deferred to its own dedicated RFC (per `RFC_STANDARD.md`,
+since it is a Development/Engineering Standard-affecting change),
+carrying its own Impact Analysis and Rollback Plan, to be scheduled as
+a future Sprint rather than executed under this order.
+
+Full order text recorded here (`DIRECTOR_DECISIONS.md`); no new
+top-level file created for GLS-001 itself, per the Module Reuse
+Principle — this entry is its canonical record.
