@@ -122,8 +122,12 @@ class PriceStreamLastPriceSource:
 
     def _get_service(self):
         if self._service is None:
-            from data_layer.live_data.price_stream_service import build_default_price_stream_service
-            self._service = build_default_price_stream_service()
+            # GFL-001 FLOW-001 (Current Price): the shared, process-wide
+            # instance -- not a fresh, never-ticked one -- so a driver
+            # (e.g. platform_layer.telegram.polling's tick loop) ticking
+            # the shared service is what this read actually observes.
+            from data_layer.live_data.price_stream_service import get_shared_price_stream_service
+            self._service = get_shared_price_stream_service()
         return self._service
 
     def get_current_price(self, symbol: str) -> Optional[CurrentPrice]:

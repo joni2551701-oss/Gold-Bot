@@ -33,27 +33,27 @@ Status:
 
 Status
 
-Blueprint
+Completed
 
 Producer
 
-Provider Factory
+Provider Factory (mavjud, qayta ishlatildi -- ProviderRegistry/ProviderManager)
 
 Input
 
-Price Stream
+Price Stream (PriceStreamService, endi `get_shared_price_stream_service()` orqali umumiy instance)
 
 Processing
 
-Data Validation
+Data Validation (StreamValidator, default sifatida ulandi)
 
 Output
 
-Validated Current Price
+Validated Current Price (PriceTick, PriceCache'da)
 
 Consumer
 
-Market Memory
+Market Memory (MarketMemoryRegistry, default sifatida yaratiladi va CandleBuilder single-writer orqali to'ldiriladi)
 
 Next Flow
 

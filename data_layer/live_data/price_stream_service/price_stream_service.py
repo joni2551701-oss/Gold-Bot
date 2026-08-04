@@ -208,15 +208,67 @@ def build_default_price_stream_service(memory_registry: Any = None
     `build_default_market_data_service()` for one source of truth).
     Omitted by default so the Phase 3 `CurrentPriceProvider` path that
     lazily builds this service is completely unchanged (no memory
-    objects constructed, no behavior change)."""
+    objects constructed, no behavior change).
+
+    GFL-001 FLOW-001 (Current Price, Data Validation module): every
+    registered source is wired with the canonical
+    `data_layer.live_data.stream_validator.StreamValidator` (TASK-ARCH-101),
+    dropping empty/non-finite/non-positive-price/future-timestamp/
+    duplicate/out-of-order ticks before they ever reach the cache or
+    MarketMemory -- reusing the validator that already existed for this
+    exact purpose rather than adding a second one."""
     from data_layer.live_data.bitget_price_source import BitgetPriceSource
+    from data_layer.live_data.stream_validator import StreamValidator
     from data_layer.live_data.twelve_data_provider import TwelveDataProvider
 
+    validator = StreamValidator()
     service = PriceStreamService(memory_registry=memory_registry)
     service.register_source("XAUUSD", TwelveDataProvider(asset="XAUUSD"),
                              provider_name="twelvedata",
-                             asset_class=AssetClass.METAL)
+                             asset_class=AssetClass.METAL,
+                             validator=validator)
     service.register_source("BTCUSDT", BitgetPriceSource(asset="BTCUSDT"),
                              provider_name="bitget",
-                             asset_class=AssetClass.CRYPTO)
+                             asset_class=AssetClass.CRYPTO,
+                             validator=validator)
     return service
+
+
+_shared_service: Optional[PriceStreamService] = None
+
+
+def get_shared_price_stream_service(memory_registry: Any = None
+                                     ) -> PriceStreamService:
+    """GFL-001 FLOW-001 (Current Price, Price Stream + Market Memory
+    modules): the ONE process-wide `PriceStreamService` every default
+    `CurrentPriceProvider` reads through (see
+    `data_layer.live_data.current_price_provider.PriceStreamLastPriceSource`)
+    AND the one a driver's `tick(now)` loop (e.g.
+    `platform_layer.telegram.polling._price_stream_tick_loop`) advances --
+    the same object, so ticking it is what a Telegram `/price` reader
+    actually observes. Without this, each `CurrentPriceProvider()`
+    default-constructed its own private, never-ticked service (see
+    `build_default_price_stream_service()`'s own docstring history), so
+    a driver ticking one instance could never be seen by a reader
+    holding a different one.
+
+    Built once, lazily, on first call; `memory_registry` only matters
+    for that first build (a `MarketMemoryRegistry()` is constructed by
+    default so live ticks also fold into the canonical, Director-
+    accepted MarketMemory SSOT -- MA-001/DD-030/DD-031 -- satisfying
+    FLOW-001's documented Consumer without a second write path).
+    Subsequent calls return the same instance regardless of arguments.
+    `reset_shared_price_stream_service()` clears it (test isolation)."""
+    global _shared_service
+    if _shared_service is None:
+        from data_layer.market_memory import MarketMemoryRegistry
+        _shared_service = build_default_price_stream_service(
+            memory_registry=memory_registry or MarketMemoryRegistry())
+    return _shared_service
+
+
+def reset_shared_price_stream_service() -> None:
+    """Test-isolation helper: clears the process-wide singleton so the
+    next `get_shared_price_stream_service()` call builds a fresh one."""
+    global _shared_service
+    _shared_service = None

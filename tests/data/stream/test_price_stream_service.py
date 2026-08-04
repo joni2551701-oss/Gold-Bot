@@ -1,10 +1,18 @@
 """Unit tests for data_layer/live_data/price_stream_service.py (TASK-DATA-001;
-TASK-DATA-004 MarketMemory single-writer wiring)."""
+TASK-DATA-004 MarketMemory single-writer wiring; GFL-001 FLOW-001 shared
+singleton + default validator/memory wiring)."""
+
+import pytest
 
 from data_layer.event_system.event_bus import EventBus
 from data_layer.event_system.event_model import EventType
 from data_layer.market_memory import MarketMemoryRegistry
-from data_layer.live_data.price_stream_service import PriceStreamService
+from data_layer.live_data.price_stream_service import (
+    PriceStreamService,
+    build_default_price_stream_service,
+    get_shared_price_stream_service,
+    reset_shared_price_stream_service,
+)
 from data_layer.live_data.stream_event import AssetClass
 
 from _fakes import FakeProvider, event, ts
@@ -185,3 +193,82 @@ def test_shared_registry_is_single_source_of_truth_for_both_services():
     mem = registry.get("XAUUSD")
     assert mem.timeframe("M15").closed_count() == 1      # from MarketDataService
     assert mem.timeframe("M1").get_forming().close == 2400.5  # from PriceStreamService
+
+
+# ---------------- GFL-001 FLOW-001: Data Validation module (default validator) ----------------
+
+def test_build_default_wires_validator_that_drops_invalid_ticks():
+    """The Data Validation module for FLOW-001: build_default_price_stream_service()
+    wires a canonical StreamValidator into every source, dropping bad ticks
+    before they reach the cache -- reusing TASK-ARCH-101's validator, not a
+    second one."""
+    service = PriceStreamService()
+    provider = FakeProvider()
+    from data_layer.live_data.stream_validator import StreamValidator
+    service.register_source("XAUUSD", provider, provider_name="fake",
+                             validator=StreamValidator())
+
+    service.tick(ts(0)); service.tick(ts(1))
+    # a non-positive price must be dropped by the validator, never cached
+    provider.batches.append([event(asset="XAUUSD", price=-5.0, i=2)])
+    service.tick(ts(4))
+    assert service.get_price("XAUUSD") is None
+
+    provider.batches.append([event(asset="XAUUSD", price=2400.0, i=3)])
+    service.tick(ts(5))
+    assert service.get_price("XAUUSD").price == 2400.0
+
+
+# ---------------- GFL-001 FLOW-001: shared process-wide singleton ----------------
+
+@pytest.fixture(autouse=True)
+def _reset_shared_service():
+    reset_shared_price_stream_service()
+    yield
+    reset_shared_price_stream_service()
+
+
+def test_get_shared_price_stream_service_returns_same_instance():
+    a = get_shared_price_stream_service()
+    b = get_shared_price_stream_service()
+    assert a is b
+
+
+def test_reset_shared_price_stream_service_forces_rebuild():
+    a = get_shared_price_stream_service()
+    reset_shared_price_stream_service()
+    b = get_shared_price_stream_service()
+    assert a is not b
+
+
+def test_shared_service_ticked_by_one_caller_is_seen_by_another_reader():
+    """The exact FLOW-001 gap this closes: a driver ticking the shared
+    service must be visible to any other holder of the same default --
+    e.g. CurrentPriceProvider's default PriceStreamLastPriceSource."""
+    from data_layer.live_data.current_price_provider import PriceStreamLastPriceSource
+
+    driver_service = get_shared_price_stream_service()
+    reader = PriceStreamLastPriceSource()  # lazily resolves the same shared instance
+    assert reader.get_current_price("TESTXYZ") is None
+
+    # Register an extra, unused-by-default symbol with a fake provider so
+    # the tick is deterministic (no real network call in a unit test) --
+    # XAUUSD/BTCUSDT are already registered by build_default_price_stream_service().
+    provider = FakeProvider()
+    driver_service.register_source("TESTXYZ", provider, provider_name="fake")
+    driver_service.tick(ts(0)); driver_service.tick(ts(1))
+    provider.batches.append([event(asset="TESTXYZ", price=3300.0, i=2)])
+    driver_service.tick(ts(4))
+
+    seen = reader.get_current_price("TESTXYZ")
+    assert seen is not None
+    assert seen.price == 3300.0
+
+
+def test_build_default_price_stream_service_unaffected_by_shared_singleton():
+    """build_default_price_stream_service() itself stays a plain factory --
+    calling it directly still returns a fresh, independent instance, never
+    the shared one (only get_shared_price_stream_service() shares)."""
+    a = build_default_price_stream_service(memory_registry=MarketMemoryRegistry())
+    b = build_default_price_stream_service(memory_registry=MarketMemoryRegistry())
+    assert a is not b

@@ -21,6 +21,7 @@ from types import SimpleNamespace
 from platform_layer.telegram import runtime_monitor
 from platform_layer.telegram.polling import (
     HEARTBEAT_INTERVAL_SECONDS,
+    PRICE_STREAM_TICK_INTERVAL_SECONDS,
     _build_startup_message,
     _heartbeat_loop,
     _log_startup_secret_presence,
@@ -520,6 +521,77 @@ def test_heartbeat_loop_survives_health_check_failure(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
+# GFL-001 FLOW-001 (Current Price, Price Stream module) -- price-stream
+# tick loop, mirroring the heartbeat loop's own test style.
+# ---------------------------------------------------------------------------
+
+def test_price_stream_tick_interval_matches_configured_stream_setting():
+    from config import get_settings
+    assert PRICE_STREAM_TICK_INTERVAL_SECONDS == float(get_settings().stream.polling_interval)
+
+
+def test_price_stream_tick_loop_ticks_the_shared_service(monkeypatch):
+    import platform_layer.telegram.polling as polling_module
+    from data_layer.live_data.price_stream_service import (
+        get_shared_price_stream_service,
+        reset_shared_price_stream_service,
+    )
+
+    reset_shared_price_stream_service()
+    ticks = []
+    service = get_shared_price_stream_service()
+    real_tick = service.tick
+
+    def counting_tick(now=None):
+        ticks.append(now)
+        return real_tick(now)
+
+    monkeypatch.setattr(service, "tick", counting_tick)
+
+    async def run_one_tick():
+        task = asyncio.create_task(polling_module._price_stream_tick_loop(interval_seconds=0.01))
+        await asyncio.sleep(0.03)
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+
+    try:
+        asyncio.run(run_one_tick())
+    finally:
+        reset_shared_price_stream_service()
+
+    assert len(ticks) >= 1
+
+
+def test_price_stream_tick_loop_survives_tick_failure(monkeypatch):
+    """Same fail-safe posture as _heartbeat_loop: a tick failure must
+    never kill the polling process."""
+    import platform_layer.telegram.polling as polling_module
+    from data_layer.live_data.price_stream_service import reset_shared_price_stream_service
+
+    def failing_getter():
+        raise RuntimeError("provider unreachable")
+
+    monkeypatch.setattr(polling_module, "get_shared_price_stream_service", failing_getter)
+
+    async def run_one_tick():
+        task = asyncio.create_task(polling_module._price_stream_tick_loop(interval_seconds=0.01))
+        await asyncio.sleep(0.03)
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+
+    try:
+        asyncio.run(run_one_tick())  # must not raise/kill the loop
+    finally:
+        reset_shared_price_stream_service()
+
+
+# ---------------------------------------------------------------------------
 # run_polling() integration -- Bot/Dispatcher fully faked, no real network
 # ---------------------------------------------------------------------------
 
@@ -636,6 +708,10 @@ def test_run_polling_closes_bot_session_on_exit(monkeypatch):
 
 
 def test_run_polling_cancels_heartbeat_task_on_exit(monkeypatch):
+    """GFL-001 FLOW-001 (Current Price, Price Stream module): run_polling()
+    now starts two background tasks alongside dispatcher.start_polling()
+    -- the pre-existing heartbeat loop and the new price-stream tick
+    loop -- and both must be cancelled cleanly on exit, same as before."""
     import platform_layer.telegram.polling as polling_module
 
     monkeypatch.setattr(polling_module, "Bot", _FakeBot)
@@ -656,9 +732,10 @@ def test_run_polling_cancels_heartbeat_task_on_exit(monkeypatch):
     except _StopPolling:
         pass
 
-    assert len(created_tasks) == 1
-    assert created_tasks[0].done()
-    assert created_tasks[0].cancelled()
+    assert len(created_tasks) == 2
+    for task in created_tasks:
+        assert task.done()
+        assert task.cancelled()
 
 
 def test_run_polling_still_starts_when_owner_notification_fails(monkeypatch):

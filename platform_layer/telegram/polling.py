@@ -93,6 +93,7 @@ from datetime import datetime, timezone
 from aiogram import Bot, Dispatcher
 from aiogram.types import CallbackQuery, Message
 
+from config import get_settings
 from core_layer.secrets import Secrets
 from core_layer.logger.logger import setup_logger
 from platform_layer.telegram import runtime_monitor
@@ -100,12 +101,19 @@ from platform_layer.telegram.callback_router import route_callback
 from platform_layer.telegram.command_router import route_contact, route_message
 from platform_layer.telegram.menu_commands import register_all_menus
 from core_layer.health_monitor.system_monitor import get_health as _get_core_health
+from data_layer.live_data.price_stream_service import get_shared_price_stream_service
 
 logger = setup_logger("TelegramPolling")
 
 # TASK 5: "Har 5-10 minut" -- 5 minutes, the low end of the brief's
 # own stated range.
 HEARTBEAT_INTERVAL_SECONDS = 300.0
+
+# GFL-001 FLOW-001 (Current Price, Price Stream module): the already-
+# configured get_settings().stream.polling_interval (StreamConfig, env
+# POLLING_INTERVAL, default 60s) -- this field existed for exactly this
+# purpose and had zero callers anywhere in the repo before this driver.
+PRICE_STREAM_TICK_INTERVAL_SECONDS = float(get_settings().stream.polling_interval)
 
 # TASK 6: every secret name the brief asks to validate at startup.
 _STARTUP_SECRET_NAMES = (
@@ -276,6 +284,33 @@ async def _heartbeat_loop(interval_seconds: float = HEARTBEAT_INTERVAL_SECONDS) 
         )
 
 
+async def _price_stream_tick_loop(
+    interval_seconds: float = PRICE_STREAM_TICK_INTERVAL_SECONDS,
+) -> None:
+    """
+    GFL-001 FLOW-001 (Current Price, Price Stream module) -- runs
+    alongside `dispatcher.start_polling()` exactly like `_heartbeat_loop`
+    above, driving `get_shared_price_stream_service().tick(now)` so the
+    Price Stream actually advances in production. Without this loop,
+    `PriceStreamService.tick()` (see its own docstring) has no caller
+    anywhere outside tests, so the shared cache `CurrentPriceProvider`
+    reads for `/price` stays empty forever.
+
+    A tick failure (provider error, validator exception, etc.) is
+    already fail-safe deep inside `PriceStreamService`/`PriceStream`
+    (DD-051 provider isolation); this loop adds one more layer so a
+    truly unexpected exception here still cannot kill polling, matching
+    `_heartbeat_loop`'s own posture.
+    """
+    while True:
+        await asyncio.sleep(interval_seconds)
+        try:
+            get_shared_price_stream_service().tick(datetime.now(timezone.utc))
+        except Exception as e:  # noqa: BLE001 -- this loop must never crash polling
+            logger.warning(f"price stream tick failed: {e}")
+            runtime_monitor.record_error(f"price stream tick failed: {e}")
+
+
 async def run_polling() -> None:
     """
     Creates the inbound Bot, wires the Dispatcher, and starts
@@ -301,14 +336,18 @@ async def run_polling() -> None:
 
     logger.info("Telegram polling started.")
     heartbeat_task = asyncio.create_task(_heartbeat_loop())
+    price_stream_task = asyncio.create_task(_price_stream_tick_loop())
     try:
         await register_all_menus(bot)
         await _notify_owner_startup(bot)
         await dispatcher.start_polling(bot)
     finally:
         heartbeat_task.cancel()
+        price_stream_task.cancel()
         with contextlib.suppress(asyncio.CancelledError):
             await heartbeat_task
+        with contextlib.suppress(asyncio.CancelledError):
+            await price_stream_task
         await bot.session.close()
         logger.info("Telegram polling stopped.")
 
