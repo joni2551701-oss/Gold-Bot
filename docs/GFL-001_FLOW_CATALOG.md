@@ -173,25 +173,53 @@ Real modullar: `core_layer/`, `context_layer/`, `strategy_layer/`,
 
 ## Market Engine
 
+Status
+
+Completed (2026-08-04, Director Order GFL-004)
+
 Producer
 
-Market Memory (FLOW-003)
+Market Memory (FLOW-003) -- `data_layer.market_memory.MemoryReader`
+orqali
 
 Input
 
-Market State
+Market State -- Market Memory'dagi yopilgan (closed) candle seriyasi
 
 Processing
 
-Market Processing
+Market Processing -- `MarketDataService.get_candles_from_memory()`:
+Market Memory'dan `MemoryReader.get_series()` orqali o'qiydi va
+`context.context_orchestrator.ContextEngine.build()`ning mavjud,
+o'zgarmagan `candles` kontraktiga (`List[Candle]`) mos shaklda
+qaytaradi. Hech qanday yangi tahlil/hisoblash yo'q -- faqat o'qish va
+shakl moslashtirish.
 
 Output
 
-Market Context
+Market Context -- `List[Candle]`, `get_candles()`'ning o'zi bilan bir
+xil shaklda, Context Engine (FLOW-005) uchun tayyor.
 
 Consumer
 
-Context Engine (FLOW-005)
+Context Engine (FLOW-005) -- hali real chaqiruvchi yo'q (Sequential
+Flow Rule bo'yicha FLOW-005 hali boshlanmagan), lekin chiqish shakli
+E2E test bilan Context Engine'ning mavjud kontraktiga mosligi
+isbotlangan (`core_layer/pipeline/pipeline.py`ga tegilmadi).
+
+Audit natijasi
+
+Real "Market Engine" moduli GoldBot Core'da mavjud emas edi
+(`core_layer/core_engine/` faqat "Foundation Freeze v1.0" bo'sh
+skeleton). `data_layer/live_data/market/` (`MarketManager`) dastlab
+nomi bo'yicha nomzod ko'rindi, lekin o'z hujjatida aniq: "market/ is
+NOT a Data Layer member and NOT GoldBot Core" -- FLOW-004 esa GoldBot
+Core doirasida. Haqiqiy Reuse: `MarketDataService`
+(`data_layer/live_data/market_data_service/`) Market Memory'ga
+allaqachon yozar edi (TASK-DATA-004), lekin o'qib qaytarish yo'q edi.
+Tuzatildi: `get_candles_from_memory()` + `get_shared_market_data_service()`
+qo'shildi -- yangi modul yaratilmadi (qarang:
+`data_layer/live_data/market_data_service/WORK_LOG.md`).
 
 Next Flow
 

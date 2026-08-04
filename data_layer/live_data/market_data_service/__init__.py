@@ -16,6 +16,8 @@ from data_layer.live_data.market_data_service.market_data_service import (
     logger,
     MarketDataService,
     build_default_market_data_service,
+    get_shared_market_data_service,
+    reset_shared_market_data_service,
 )
 
 __all__ = [
@@ -30,4 +32,6 @@ __all__ = [
     "logger",
     "MarketDataService",
     "build_default_market_data_service",
+    "get_shared_market_data_service",
+    "reset_shared_market_data_service",
 ]

@@ -111,6 +111,36 @@ class MarketDataService:
                 "MarketDataService memory hydrate failed for %s %s: %s: %s",
                 symbol, interval, type(e).__name__, str(e)[:200])
 
+    def get_candles_from_memory(self, symbol: str, interval: str,
+                                 n: Optional[int] = None) -> List[Candle]:
+        """
+        GFL-001 FLOW-004 (Market Engine): reads a closed-candle series
+        back OUT of Market Memory (the SSOT `get_candles()`/`get_snapshot()`
+        already hydrate INTO via `_hydrate_memory()`, TASK-DATA-004)
+        through the canonical `data_layer.market_memory.MemoryReader`
+        facade -- never reaches into `_memory_registry` directly. Same
+        return shape as `get_candles()` (`List[Candle]`, closed bars
+        only, oldest -> newest) so this is a drop-in alternative candle
+        source for anything that already consumes `get_candles()`'s
+        output, ready for
+        `context.context_orchestrator.ContextEngine.build()`'s existing,
+        frozen `candles` contract. Fail-safe like `get_candles()`: an
+        unconfigured registry, an unregistered asset/timeframe, or any
+        read failure returns `[]`, never raises.
+        """
+        if self._memory_registry is None:
+            return []
+        try:
+            from data_layer.market_memory import MemoryReader
+            reader = MemoryReader(self._memory_registry)
+            records = reader.get_series(symbol, interval, n=n, include_forming=False)
+            return [record.to_candle() for record in records]
+        except Exception as e:  # noqa: BLE001 -- fail-safe memory read
+            logger.warning(
+                "MarketDataService memory read failed for %s %s: %s: %s",
+                symbol, interval, type(e).__name__, str(e)[:200])
+            return []
+
     def get_historical_candles(self, symbol: str, timeframe: str, start, end,
                                 provider=None):
         """Delegates to the existing `historical_data_collector`
@@ -138,3 +168,36 @@ def build_default_market_data_service(memory_registry: Any = None
     bare, memory-less `MarketDataService()` and is unaffected."""
     return MarketDataService(normalizer=MarketDataNormalizer(),
                              memory_registry=memory_registry)
+
+
+_shared_service: Optional[MarketDataService] = None
+
+
+def get_shared_market_data_service() -> MarketDataService:
+    """
+    GFL-001 FLOW-004 (Market Engine): the ONE process-wide
+    MarketDataService, sharing the SAME `MarketMemoryRegistry` as
+    `data_layer.live_data.price_stream_service.get_shared_price_stream_service()`
+    -- exactly the pairing `build_default_price_stream_service()`'s own
+    docstring already anticipated ("share the same instance with
+    `build_default_market_data_service()` for one source of truth",
+    TASK-DATA-004), now made real. Built once, lazily, on first call --
+    this also lazily builds the shared Price Stream Service if it does
+    not exist yet, so whichever of the two callers runs first, both end
+    up reading/writing the same registry. Subsequent calls return the
+    same instance. `reset_shared_market_data_service()` clears it (test
+    isolation).
+    """
+    global _shared_service
+    if _shared_service is None:
+        from data_layer.live_data.price_stream_service import get_shared_price_stream_service
+        registry = get_shared_price_stream_service().memory_registry
+        _shared_service = build_default_market_data_service(memory_registry=registry)
+    return _shared_service
+
+
+def reset_shared_market_data_service() -> None:
+    """Test-isolation helper: clears the process-wide singleton so the
+    next get_shared_market_data_service() call builds a fresh one."""
+    global _shared_service
+    _shared_service = None

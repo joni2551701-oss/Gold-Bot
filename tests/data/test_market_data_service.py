@@ -153,3 +153,90 @@ def test_default_no_registry_writes_no_memory():
     assert service._memory_registry is None
     candles = service.get_candles("XAUUSD", "M15", 200)
     assert len(candles) == 1
+
+
+# ---------------- GFL-001 FLOW-004: Market Engine read-out ----------------
+
+def test_get_candles_from_memory_returns_empty_when_no_registry():
+    service = MarketDataService(normalizer=FakeNormalizer())
+    assert service.get_candles_from_memory("XAUUSD", "M15") == []
+
+
+def test_get_candles_from_memory_reads_back_hydrated_candles():
+    registry = MarketMemoryRegistry()
+    service = MarketDataService(normalizer=_SnapshotNormalizer(),
+                               memory_registry=registry)
+
+    written = service.get_candles("XAUUSD", "M15", 200)
+    read_back = service.get_candles_from_memory("XAUUSD", "M15")
+
+    assert len(read_back) == 3
+    assert [c.close for c in read_back] == [c.close for c in written]
+
+
+def test_get_candles_from_memory_returns_empty_for_unregistered_asset():
+    registry = MarketMemoryRegistry()
+    service = MarketDataService(normalizer=_SnapshotNormalizer(),
+                               memory_registry=registry)
+    # Nothing was ever hydrated for this symbol -- fail-safe, not an
+    # UnknownAssetError leaking out to the caller.
+    assert service.get_candles_from_memory("NEVERSEEN", "M15") == []
+
+
+def test_get_candles_from_memory_shape_matches_get_candles():
+    registry = MarketMemoryRegistry()
+    service = MarketDataService(normalizer=_SnapshotNormalizer(),
+                               memory_registry=registry)
+    service.get_candles("XAUUSD", "M15", 200)
+
+    read_back = service.get_candles_from_memory("XAUUSD", "M15")
+    for candle in read_back:
+        assert hasattr(candle, "timestamp")
+        assert hasattr(candle, "open")
+        assert hasattr(candle, "high")
+        assert hasattr(candle, "low")
+        assert hasattr(candle, "close")
+
+
+# ---------------- GFL-001 FLOW-004: shared MarketDataService singleton ----------------
+
+def test_get_shared_market_data_service_shares_registry_with_price_stream_service():
+    from data_layer.live_data.market_data_service import (
+        get_shared_market_data_service,
+        reset_shared_market_data_service,
+    )
+    from data_layer.live_data.price_stream_service import (
+        get_shared_price_stream_service,
+        reset_shared_price_stream_service,
+    )
+
+    reset_shared_price_stream_service()
+    reset_shared_market_data_service()
+    try:
+        mds = get_shared_market_data_service()
+        pss = get_shared_price_stream_service()
+        assert mds._memory_registry is pss.memory_registry
+        # Idempotent: a second call returns the exact same instance.
+        assert get_shared_market_data_service() is mds
+    finally:
+        reset_shared_price_stream_service()
+        reset_shared_market_data_service()
+
+
+def test_reset_shared_market_data_service_forces_a_fresh_instance():
+    from data_layer.live_data.market_data_service import (
+        get_shared_market_data_service,
+        reset_shared_market_data_service,
+    )
+    from data_layer.live_data.price_stream_service import reset_shared_price_stream_service
+
+    reset_shared_price_stream_service()
+    reset_shared_market_data_service()
+    try:
+        first = get_shared_market_data_service()
+        reset_shared_market_data_service()
+        second = get_shared_market_data_service()
+        assert first is not second
+    finally:
+        reset_shared_price_stream_service()
+        reset_shared_market_data_service()
