@@ -1,38 +1,41 @@
 # risk/
 
-## Purpose
-Validates a decision's trade geometry and computes a sizing
-suggestion. The last gate before a signal can reach Telegram.
+## Maqsad
+Decision'ning trade geometriyasini tekshiradi va sizing bo'yicha
+tavsiya hisoblab chiqaradi. Signal Telegram'ga yetib borishidan oldingi
+oxirgi to'siq (gate).
 
-## Flow
+## Oqim
 ```
 Decision Engine
       |
       v
-Risk Manager   -- geometry + stop-loss validation
+Risk Manager   -- geometriya + stop-loss validatsiyasi
       |
       v
 Telegram Notification Filter (core/pipeline.py)
 ```
 
-## Responsibilities
-- SL/TP geometry validation (BUY: `stop_loss < entry < take_profit`;
-  SELL: mirrored).
-- Stop-loss distance validation.
-- Risk/reward and position-size calculation (sizing suggestion only —
-  no broker/MT5 connection, never an order instruction).
+## Vazifalar
+- SL/TP geometriya validatsiyasi (BUY: `stop_loss < entry < take_profit`;
+  SELL: teskarisi).
+- Stop-loss masofasi validatsiyasi.
+- Risk/reward va position-size hisoblash (faqat sizing bo'yicha
+  tavsiya — broker/MT5 ulanishi yo'q, hech qachon order instruksiyasi
+  emas).
 
-## Input
-`TradeDecision` (from `decision/`), optional `account_balance`.
+## Kirish (Input)
+`TradeDecision` (`decision/`dan), ixtiyoriy `account_balance`.
 
-## Output
+## Chiqish (Output)
 `RiskResult` (`approved`, `lot_size`, `risk_amount`, `risk_reward`,
 `reason`).
 
-## Dependencies
-`decision/` and `signals/` (for their model types). No dependency on
-`database/`, `telegram/`, or `ai/`.
+## Bog'liqliklar (Dependencies)
+`decision/` va `signals/` (ularning model turlari uchun). `database/`,
+`telegram/` yoki `ai/`ga bog'liqlik yo'q.
 
-## Future Roadmap
-None planned. This is the layer `CLAUDE.md`'s Trading Safety rules
-name explicitly: never bypassed, never modified without approval.
+## Kelajakdagi Roadmap
+Hech narsa rejalashtirilmagan. Bu shu Layer'ning `CLAUDE.md`sidagi
+Trading Safety qoidalari aynan nomlaydigan narsa: hech qachon chetlab
+o'tilmaydi, ruxsatsiz o'zgartirilmaydi.
