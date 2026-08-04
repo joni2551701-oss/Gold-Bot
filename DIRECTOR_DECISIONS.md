@@ -284,3 +284,64 @@ a future Sprint rather than executed under this order.
 Full order text recorded here (`DIRECTOR_DECISIONS.md`); no new
 top-level file created for GLS-001 itself, per the Module Reuse
 Principle — this entry is its canonical record.
+
+### GLS-001 Amendment 1 — Report/Record Types in Scope
+
+**Approved.** GLS-001's Uzbek-language requirement is not limited to
+newly created *documents* — it explicitly covers every one of these
+report/record types, generated at any time from this decision onward:
+Audit Report, Director Review, Worker Report, `WORK_LOG.md` entries,
+`CHANGELOG.md` entries, Pull Request description, RFC Summary, ADR
+Summary, Release Notes, Sprint Report, Bug Report, Investigation
+Report, Root Cause Analysis, Performance Report, Compliance Report.
+
+**Exception list for this amendment** (stays in English, unchanged by
+GLS-001): code, class, function, and variable names; package and
+module names; file names; commit messages; API and protocol names;
+RFC IDs, ADR IDs, and GEL/DD/GLS identifiers; other technical terms
+already covered by GLS-001's base exception list.
+
+This does not change GLS-001's retroactive-scope decision above —
+existing English-language documents are still not translated by this
+amendment; it only confirms which *kinds* of future output must be
+Uzbek, closing the "does this apply beyond brand-new files" ambiguity.
+
+### GLS-001 Amendment 1, mavjud hujjatlarga ta'siri
+
+`GOLDBOT_DEVELOPMENT_STANDARD.md`'s Development Workflow (GDS-010) va
+Rollback Strategy bo'limlaridagi "commit message"/"PR description"
+namunalari — bu amendment ular endi Uzbek tilida yozilishini talab
+qiladi; mavjud GDS matni o'zi ingliz tilida qolaveradi (yuqoridagi
+scope decision'ga ko'ra), faqat undan keyin yozilgan haqiqiy commit
+message va PR description'lar shu qoidaga bo'ysunadi.
+
+### Director Order — Options-Before-Review (Worker Decision-Support Rule)
+
+**Approved, Foundation-level.** Before opening any Director Review,
+the Worker must first, on its own: (1) aniqlashi — identify the
+problem precisely; (2) tahlil qilishi — analyze its root cause; (3)
+kamida 2–3 ta yechim variantini tayyorlashi — prepare at least 2-3
+solution options; (4) har birining afzallik va kamchiligini yozishi —
+document each option's pros and cons; (5) tavsiya etilgan variantni
+ko'rsatishi — state its own recommended option. Only after all five
+steps does the Worker open a Director Review — and it opens with the
+analysis already attached, not a bare question.
+
+**Purpose, in the Director's own words:** this reduces how many
+Director Reviews are needed and raises their quality — the Director
+decides between concretely evaluated options, not from a blank
+problem statement.
+
+**Applies to:** every Director Review trigger already defined in
+Director Order No. 016 (Layer Architecture, Pipeline, Trading Logic,
+AI Logic, Decision Logic, Risk Logic, a public-API breaking change,
+Ownership, a Canonical Contract, a Foundation Rule) and RFC/ADR
+triggers (`RFC_STANDARD.md`, `ADR_STANDARD.md`) alike — this rule
+governs *how* a review is opened, not *when* one is required; it does
+not loosen or expand any existing Director Review trigger list.
+
+**Exception:** a genuine emergency (Trading Safety incident requiring
+immediate Director attention) may open a review without the full
+options analysis if delay itself would be the greater risk — the
+Worker states this explicitly when it happens, then backfills the
+options analysis once the immediate risk is addressed.
