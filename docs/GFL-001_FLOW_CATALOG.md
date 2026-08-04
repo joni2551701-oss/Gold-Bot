@@ -375,15 +375,32 @@ Indicators
 
 Processing
 
-Strategy rules
+Strategy rules -- `strategy_layer.strategy_manager.strategy_manager
+.StrategyManager.run_all_strategies()` (mavjud, real kod) orqali.
+`LiquidityStrategy`/`FVGStrategy`/`AMDStrategy` (`strategy_library/`)ni
+ishga tushiradi va natijalarni yig'adi.
 
 Output
 
-Strategy Result
+Strategy Result -- `List[SignalCandidate]`.
 
 Consumer
 
-Confluence Engine (FLOW-009)
+Confluence Engine (FLOW-009) -- amalda hozircha
+`signal_layer.signal_engine.signal_engine.SignalEngine`
+(`generate_signals`) orqali `core_layer/pipeline.py`ning `signal`
+stage'iga to'g'ridan-to'g'ri ulangan.
+
+Qisqa Audit
+
+`StrategyManager` allaqachon to'liq amalga oshirilgan, test qilingan
+(`tests/test_signal_layer.py`, `tests/test_generate_signals.py`) va
+allaqachon real `TradingPipeline`ga ulangan. Real input --
+`context_layer.context_engine.context_orchestrator.ContextSnapshot`
+(Context Engine, FLOW-005) -- kanonik diagrammadagi "Indicators"
+emas; bu FLOW-006/FLOW-007'da ham kuzatilgan, hujjatlashtirilgan farq
+(kanonik zanjir ideallashtirilgan, real wiring ba'zan bosqichlarni
+to'g'ridan-to'g'ri ulaydi). Kod yozish kerak emas.
 
 Next Flow
 
