@@ -1,19 +1,23 @@
 # WORK_LOG.md -- trade_monitoring_layer/sltp_monitor
 
-Append-only. Earlier entries are never deleted or rewritten -- only new
-entries are appended below.
+Append-only. Oldingi yozuvlar hech qachon o'chirilmaydi yoki qayta
+yozilmaydi -- faqat yangi yozuvlar quyida qo'shiladi.
 
 ---
 
 Issue ID: N/A
-Date: 2026-08-03
+Sana: 2026-08-03
 Severity: N/A
-Problem: N/A
-Cause: N/A
-Decision: N/A
-Implementation: Module created. Migration completed. Engineering Standard
-  initialized (Director Order No. 012/013).
+Muammo: N/A
+Sabab: N/A
+Qaror: N/A
+Amalga oshirish: Modul yaratildi. Migratsiya yakunlandi. Engineering
+  Standard ishga tushirildi (Director Order No. 012/013).
 Validation: N/A
-Lessons Learned: N/A
+Olingan saboqlar: N/A
+
+---
+
+Tarjima yakunlandi: 2026-08-04, GLS-001 Translation Standard bo'yicha.
 
 ---
