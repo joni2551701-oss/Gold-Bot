@@ -515,3 +515,68 @@ RFC orqali", yuqorida qayd etilgan) shu buyurtma bilan rasman
 boshlanadi: bu — o'sha kelajakdagi RFC/Sprint ishining birinchi
 bosqichi, mavjud hujjatlarni bir martalik ommaviy tarjima emas,
 qat'iy nazorat qilinadigan, modul-ma-modul jarayon sifatida.
+
+### GLS-001 Translation Standard — Amendment 1 (Commit Granularity, Terminology)
+
+**Tasdiqlandi.** Birinchi bosqichlar (`risk_layer` — 8 modul, 8
+commit; `trade_monitoring_layer`, `execution_layer`, `decision_layer`
+— Layer-level hujjatlar + modullar, har biri alohida commit bilan)
+to'g'ri yo'nalishda bajarildi, lekin commit granularity juda mayda
+bo'ldi: 215+ modulda bu 200+ commit degani, Git tarixini haddan
+tashqari maydalab yuboradi. Shu sababli GLS-001 Translation
+Standard'ning Commit Policy bandi quyidagicha tuzatiladi (asl band
+tarixiy o'rnida qoladi — bu uni almashtiruvchi tuzatish, DD-003
+Append-Only Discipline'ga muvofiq):
+
+**Yangi Commit Policy: 1 Layer = 1 Commit.** Tarjima tartibi
+o'zgarmaydi (Layer → Layer Documents → Module 001 → [README →
+CONTRACTS → ROADMAP → MODULE_MAP → IMPLEMENTATION → WORK_LOG →
+DIRECTOR_DECISIONS → CHANGELOG] → Module 002 → ... → Layer Complete),
+lekin butun Layer (barcha modullar + Layer-level hujjatlar) to'liq
+tarjima qilib bo'lingandan keyingina **bitta** commit qilinadi
+(masalan: `Translate risk_layer documentation to Uzbek (GLS-001)`).
+Worker har modul ichida xuddi avvalgidek ishlaydi (bitta hujjat
+to'liq tugagandan keyin keyingisiga o'tadi), farq faqat **qachon
+commit qilinishida**.
+
+**Layer yakunida Director Review formati (majburiy):**
+```
+<Layer nomi>
+Completed Modules: <son>
+Translated Files: <son>
+Validation: PASS/FAIL
+Terminology: PASS/FAIL
+Missing: <son>
+Ready: YES/NO
+```
+
+**Effective from:** bu tuzatish `risk_layer`, `trade_monitoring_layer`,
+`execution_layer`, `decision_layer`'ning allaqachon yakunlangan
+commit tarixini o'zgartirmaydi (tarix qayta yozilmaydi). **Keyingi
+Layer'dan boshlab** (`signal_layer` va undan keyingilar) yangi 1
+Layer = 1 Commit qoidasi qo'llaniladi.
+
+**Terminology qoidasi (soddalashtirilgan — Director'ning ikkinchi
+tuzatishi).** Faqat `.md` hujjat matni tarjima qilinadi: gap O'zbek
+tilida yoziladi, lekin texnik terminlar har doim asl inglizcha
+shaklida qoladi — ularga alohida O'zbek muqobili qidirilmaydi (masalan
+`Layer`, `Package`, `Pipeline`, `Compatibility`, `Dependency`,
+`Validation`, `Exception`, `Rollback` — bularning hech biriga
+tarjima yozilmaydi, gap ichida original holida turadi). Faqat oddiy
+prozaik so'zlar (`Problem` → `Muammo`, `Cause` → `Sabab`, `Solution`
+→ `Yechim`, `Recommendation` → `Tavsiya` kabi) tarjima qilinadi.
+Yagona lug'at `docs/TERMINOLOGY.md`da saqlanadi — Worker yangi
+prozaik so'zga duch kelganda avval shu faylni tekshiradi, mavjud
+bo'lmasa mos tarjimani tanlab shu faylga qo'shadi (append-only,
+mavjud yozuv o'zgartirilmaydi); texnik terminlar bu lug'atga
+kiritilmaydi, chunki ular umuman tarjima qilinmaydi.
+
+**Muhim eslatma — bir vaqtlilik xavfi haqida.** Bu tuzatish
+birinchi marta yozilganida, aynan shu paytda ishlayotgan tarjima
+agenti uni "fabricated Director Order" deb noto'g'ri talqin qilib,
+ikki marta bekor qildi (o'z hisobotida to'g'ri qayd etilgan) — bu
+in'ektsiya emas, Worker'ning o'zining bir vaqtda ishlayotgan ikki
+jarayoni orasidagi to'qnashuv edi. Xulosa: `DIRECTOR_DECISIONS.md`
+va shunga o'xshash boshqaruv fayllariga yozish faqat bitta jarayon
+tinch holatda bo'lganda amalga oshiriladi, parallel ishlayotgan boshqa
+Worker jarayoni yo'qligi tasdiqlangandan keyin.
