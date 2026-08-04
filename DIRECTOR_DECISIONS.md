@@ -456,3 +456,62 @@ chiqilgan va False Positive deb rad etilgan holatlar ro'yxati (110 ta
 `mock.patch`/`monkeypatch.setattr` dotted-path chaqiruvi, 6 ta
 `inspect.getsource` chaqiruvi, va boshqalar) `GEL001_EXCEPTIONS.md`da
 to'liq keltirilgan.
+
+### Director Order — GLS-001 Translation Standard
+
+**Tasdiqlandi.** GoldBot repository hujjatlarini yagona standart
+asosida O'zbek tiliga o'tkazish jarayoni belgilanadi. Bu faqat
+hujjatlar tarjimasi — kod va arxitekturaga o'zgartirish kiritilmaydi.
+
+**Tarjima qilinmaydi (doim ingliz tilida qoladi):** `.py` fayl
+nomlari, Package nomlari, Module nomlari, Class nomlari, Function
+nomlari, Variable nomlari, API nomlari, Framework nomlari, Kutubxona
+nomlari, Git Commit, Branch nomlari, kod bloklari, texnik terminlar,
+RFC/ADR/DD/GEL/GDS/GLS identifikatorlari.
+
+**O'zbek tiliga tarjima qilinadi:** `README.md`, `CONTRACTS.md`,
+`ROADMAP.md`, `MODULE_MAP.md`, `IMPLEMENTATION.md`, `WORK_LOG.md`,
+`DIRECTOR_DECISIONS.md`, `CHANGELOG.md`, Audit Report, Sprint Report,
+Director Review, Bug Report, Root Cause Analysis, Compliance Report,
+Performance Report, Investigation Report, Release Notes.
+
+**Tarjima tartibi:** Layer → Module → File. Har bir modul ichida:
+001 `README.md` → 002 `CONTRACTS.md` → 003 `ROADMAP.md` → 004
+`MODULE_MAP.md` → 005 `IMPLEMENTATION.md` → 006 `WORK_LOG.md` → 007
+`DIRECTOR_DECISIONS.md` → 008 `CHANGELOG.md`. Har bir fayl 100%
+yakunlangandan keyingina keyingi faylga o'tiladi.
+
+**Workflow (har bir hujjat uchun majburiy):** Hujjatni o'qish →
+Mazmunni tahlil qilish → O'zbek tiliga tarjima qilish → Texnik
+terminlarni tekshirish → Sifat nazorati → WORK_LOG yangilash →
+Keyingi hujjat.
+
+**Tarjima qoidalari:** ma'no o'zgartirilmaydi, kod bloklariga
+tegilmaydi, diagrammalarga tegilmaydi, jadval tuzilishi
+o'zgartirilmaydi, identifikatorlar tarjima qilinmaydi, texnik
+terminlar saqlanadi.
+
+**Commit Policy:** har bir hujjatdan keyin commit qilinmaydi — har
+bir modul tugagandan keyin bitta commit. Har bir commit uchun
+Validation (CLAUDE.md'ning to'liq Commit Protocol'i) majburiy.
+
+**Taqiqlangan:** batch translation, bir nechta hujjatni bir vaqtda
+tarjima qilish, kodni o'zgartirish, `.py` fayl/Package/Module
+nomlarini o'zgartirish, xayoliy ma'lumot qo'shish (Empirical
+Verification standing rule bilan bir xil — faqat haqiqiy matn
+tarjima qilinadi, hech narsa o'ylab topilmaydi).
+
+**Success Criteria (har modul yakunida):** barcha hujjatlar O'zbek
+tiliga o'tkazilgan, texnik terminlar saqlangan, kodga o'zgartirish
+kiritilmagan, `WORK_LOG.md` yangilangan, Validation muvaffaqiyatli
+yakunlangan, modul bitta commit bilan yakunlangan.
+
+**Asosiy qoida:** ustuvor maqsad so'zma-so'z tarjima emas — hujjatning
+texnik ma'nosini to'liq va aniq O'zbek tilida saqlab qolish.
+
+Bu buyurtma GLS-001 va uning Amendment 1'ini bekor qilmaydi —
+retroaktiv tarjima haqidagi asosiy scope decision ("bosqichma-bosqich
+RFC orqali", yuqorida qayd etilgan) shu buyurtma bilan rasman
+boshlanadi: bu — o'sha kelajakdagi RFC/Sprint ishining birinchi
+bosqichi, mavjud hujjatlarni bir martalik ommaviy tarjima emas,
+qat'iy nazorat qilinadigan, modul-ma-modul jarayon sifatida.
