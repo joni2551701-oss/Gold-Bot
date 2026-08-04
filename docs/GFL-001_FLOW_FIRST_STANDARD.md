@@ -181,6 +181,46 @@ qarab birinchi 🟦/🟨/🟥 statusli (ya'ni hali 🟩 Completed bo'lmagan) Flo
 -- navbatdagi ishlanadigan Flow'dir. Worker bu tartibni o'zi tanlamaydi
 -- jadval o'zi ko'rsatadi.
 
+## GFL-004 — Development v1 Lightweight Flow Loop Rule
+
+(Owner Order — FLOW-004 Director Review'idan keyin kiritildi. "Qabul
+qilindi" bilan boshlangan, o'zgartirilmaydigan, kengaytirilmaydigan va
+qisqartirilmaydigan Owner Order.)
+
+FLOW-001 dan FLOW-025 gacha (GFL-001 Canonical Flow raqamlash) har bir
+Flow endi faqat uch qadamli, engil tsiklda ishlanadi:
+
+Qisqa Audit → Kod yozish → Commit
+
+Qat'iy qoidalar (Owner Order matnidan, so'zma-so'z):
+
+- Har bir Flow faqat shu uch qadamda bajariladi -- avvalgi, og'irroq
+  jarayon (to'liq Audit Report / Input-Output-Producer-Consumer
+  hujjatlashtirish / Reuse Analysis / Production Wiring tekshiruvi /
+  Unit+Integration+E2E Test to'plami / WORK_LOG / 13-15 bo'limli
+  Director Review) endi HAR BIR Flow uchun majburiy emas -- "Qisqa
+  Audit" va "Kod yozish" shu ishning zaruriy qismini o'z ichiga oladi,
+  lekin alohida hujjat/hisobot sifatida talab qilinmaydi.
+- Keyingi Flow faqat oldingi Flow commit qilingandan keyin boshlanadi
+  (GFL-003 Sequential Flow Rule -- eng kichik raqamli bajarilmagan
+  Flow ID -- o'zgarishsiz kuchda qoladi).
+- Oraliq Director Review o'tkazilmaydi -- har bir Flow'dan keyin
+  alohida 13-15 bo'limli hisobot yozilmaydi.
+- Umumiy Full Project Audit, Full System Test, Bug Analysis,
+  Architecture Review va Final Director Review -- faqat FLOW-025 (End
+  User) commit qilingandan KEYIN, bir marta o'tkaziladi.
+- Worker ushbu ketma-ketlikni o'zgartirish, qo'shimcha bosqich qo'shish
+  yoki bosqichlarni almashtirish huquqiga ega emas.
+
+Bu qoida CLAUDE.md'ning majburiy Commit Protocol'ini (git add -A →
+pyflakes → compileall → pytest → main.py smoke → git status clean →
+diff review → commit → push → CI SUCCESS tasdiqlash) BEKOR QILMAYDI --
+"Verification qilmasdan keyingi bosqichga o'tish" (Forbidden ro'yxati,
+yuqorida) hamon taqiqlanadi; Commit Protocol shu verification'ning
+o'zi. GFL-004 faqat FLOW'ning ICHKI tarkibini (audit chuqurligi,
+hujjatlashtirish hajmi, review chastotasi) yengillashtiradi --
+git/CI validatsiya darvozasini emas.
+
 ## GoldBot Subsystem Sub-Status Lifecycle
 
 (Director qarori — GFL-002 tasdig'idan keyin kiritildi.)
@@ -249,6 +289,7 @@ Bu hujjat quyidagi standartlar bilan birga ishlaydi:
 - GEL-001 — Canonical Module = Package
 - GFL-002 — V3 Architecture Flow Catalog Refactor
 - GFL-003 — Sequential Flow Rule (shu hujjat ichida)
+- GFL-004 — Development v1 Lightweight Flow Loop Rule (shu hujjat ichida)
 - GLS-001 — Docs va reports O'zbek tilida
 - DD-005 — Compatibility Exception registry
 - GDS — Development Workflow
