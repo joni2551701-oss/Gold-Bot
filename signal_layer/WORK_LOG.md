@@ -17,3 +17,29 @@ Validation: N/A
 Lessons Learned: N/A
 
 ---
+
+Issue ID: GFL-001-FLOW-009
+Date: 2026-08-04
+Severity: N/A
+Problem: FLOW-009 (Confluence Engine) audit bo'yicha tekshirildi.
+  `signal_layer/confluence_engine/` Foundation Freeze v1.0/MIR-001
+  skeleton bo'lib (bo'sh), GFL-001 doirasidan tashqari.
+Cause: Yo'q -- haqiqiy confluence scoring allaqachon
+  `signal_layer.signal_scoring.signal_quality.compute_signal_quality()`da
+  mavjud: `SignalCandidate`ning HTF Bias/Structure/Liquidity/Order
+  Blocks/FVG bilan mosligini (klassik "confluence" -- bir nechta
+  tasdiqlovchi omil) harf darajasiga (A+/A/B/C) birlashtiradi.
+  `core_layer/pipeline.py`ning `signal_quality` stage'iga (`signal`
+  stage'idan keyin) allaqachon ulangan va `tests/unit/test_signal_quality.py`da
+  test qilingan.
+Decision: Kod yozish kerak emas. Docs (`GFL-001_FLOW_CATALOG.md`,
+  `GFL-001_FLOW_PROGRESS.md`) Completed deb belgilandi. Foundation
+  Freeze skeleton'ga tegilmadi (GFL-001 doirasidan tashqari).
+Implementation: Faqat docs yangilandi.
+Validation: N/A (kod o'zgarishi yo'q).
+Lessons Learned: FLOW-005/006/007/008'da bo'lgani kabi, kanonik Flow
+  nomi ("Confluence Engine") bilan real modul nomi bir xil bo'lmasligi
+  mumkin -- semantik ekvivalentni topish uchun har doim real pipeline
+  stage'lariga qarash kerak, shunchaki nomga emas.
+
+---

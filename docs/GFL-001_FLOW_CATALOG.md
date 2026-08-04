@@ -422,15 +422,30 @@ Strategy Result
 
 Processing
 
-Confluence scoring
+Confluence scoring -- `signal_layer.signal_scoring.signal_quality
+.compute_signal_quality()` (mavjud, real kod) orqali. `SignalCandidate`
+ning HTF Bias/Structure/Liquidity/Order Blocks/FVG bilan mosligini
+(bir nechta tasdiqlovchi omillarning birlashtirilishi -- klassik
+"confluence") harf darajasiga (A+/A/B/C) baholaydi.
 
 Output
 
-Confluence
+Confluence -- `QualityGrade` (harf daraja).
 
 Consumer
 
-Decision Engine (FLOW-010)
+Decision Engine (FLOW-010) -- amalda hozircha
+`core_layer/pipeline.py`ning `signal_quality` stage'i (`signal`
+stage'idan keyin) orqali, so'ng `explainability` stage'iga uzatiladi.
+
+Qisqa Audit
+
+`signal_layer.confluence_engine/` -- Foundation Freeze v1.0/MIR-001
+skeleton (GFL-001 doirasidan tashqari, bo'sh). Haqiqiy confluence
+scoring allaqachon `signal_layer.signal_scoring.signal_quality
+.compute_signal_quality()`da amalga oshirilgan, test qilingan
+(`tests/unit/test_signal_quality.py`) va `core_layer/pipeline.py`ga
+ulangan. Kod yozish kerak emas.
 
 Next Flow
 
