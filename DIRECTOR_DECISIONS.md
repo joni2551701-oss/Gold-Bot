@@ -173,3 +173,61 @@ Full order text recorded in `CLAUDE.md`'s "Deployment Authority —
 Director Order No. 021" section; `docs/DEPLOYMENT.md` and
 `docs/deployment/PRODUCTION_DEPLOYMENT.md` cross-reference it rather
 than duplicating it.
+
+### Director Decision — DD-004 (superseded by DD-005 below)
+
+Recorded here for the first time, per DD-003's Append-Only Discipline
+(a ratified decision must never remain only in chat history): DD-004
+proposed a "flat `.py` facade" pattern for select GEL-001 modules —
+keeping a canonical module as a top-level `.py` file re-exporting from
+elsewhere, to preserve compatibility with code that resolves it by a
+literal file path. **Status: superseded.** Empirical verification (see
+DD-005) showed CPython's import system does not support this pattern
+the way DD-004 assumed — see DD-005 for the corrected mechanism.
+
+### Director Decision — DD-005 (GEL-001 Compatibility Exception)
+
+**Approved.** The Worker's empirical finding is ratified: in CPython,
+if both `system_monitor.py` and `system_monitor/` exist as siblings,
+`import system_monitor` always resolves to the **package**, never the
+flat file — there is no way to make a flat `.py` act as a stable
+facade next to a same-named package. DD-004's flat-facade diagram is
+therefore **revoked**; DD-005 replaces it.
+
+**Canonical Decision.** GEL-001's goal remains *One Canonical Module =
+One Package*, with one exception class:
+
+**Compatibility Exception.** A module is exempted from automatic
+packaging — and classified `Compatibility Exception`, not
+`Violation` — if it is physically path-bound to any of: an
+architecture/isolation test, an AST parser, a monkeypatch target, or
+an external Public API. Converting such a module to a package would
+break the very thing depending on its literal file path.
+
+**Metrics (superseding any prior GEL-001 count):**
+
+| Category | Count |
+|---|---|
+| Canonical Packages | 274 |
+| Compatibility Exceptions | 11 |
+| Violations | 0 |
+
+`Exception ≠ Violation` — an exception is a deliberate, documented,
+Worker-classified state; a violation is unaddressed non-compliance.
+
+**Worker Authority.** The Worker may self-classify any module as
+`Compatible → Package` or `AST Coupled → Compatibility Exception`
+without Director Review — report only, per Director Order No. 016.
+
+**Future path.** In v2, once the coupled AST tests are themselves
+refactored to stop depending on the literal file path, the exception
+is removed and the module is packaged normally.
+
+**New standing rule — Empirical Verification for Foundation Rules.**
+For any Foundation Rule, the Worker decides from empirical
+verification, not theoretical assumption. If the real platform
+(Python, the OS, Git, etc.) constrains what a rule can require, the
+Worker documents the constraint and raises a Director Review to adapt
+the rule — as happened here (GEL-001's flat-facade assumption in DD-004
+did not hold empirically, so GEL-001 itself was adapted via DD-005
+rather than forcing an unworkable rule on real code).
