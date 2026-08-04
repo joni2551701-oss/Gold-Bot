@@ -345,3 +345,36 @@ immediate Director attention) may open a review without the full
 options analysis if delay itself would be the greater risk — the
 Worker states this explicitly when it happens, then backfills the
 options analysis once the immediate risk is addressed.
+
+### Director Order — DRQ-001 (Director Review Quality Rule)
+
+**Approved, Foundation-level.** Every Director Review the Worker opens
+must contain, in full, all of: Muammo tavsifi (problem description),
+Root Cause Analysis, Ta'sir doirasi (which Layers/modules are
+affected), Risk darajasi (Low/Medium/High/Critical), at least 2-3
+yechim varianti (solution options), Worker tavsiyasi (the Worker's own
+recommendation), the impact on Development if no decision is made, and
+one precise question the Director's decision must answer.
+
+**Forbidden — a Review is rejected-on-arrival if it is only:** "Nima
+qilamiz?" ("What do we do?"), "Qanday bo'lsin?" ("How should it be?"),
+or "Qaysi variantni tanlaymiz?" ("Which option do we pick?") without
+the full analysis above attached. A Director Review exists to
+**confirm an already-analyzed decision**, not to ask a bare question.
+
+DRQ-001 is the enforcement form of the Options-Before-Review rule
+recorded just above — that rule states *what* the Worker must do
+before opening a review; DRQ-001 states the exact *shape* a compliant
+review must have, and what disqualifies one.
+
+### GEL001_EXCEPTIONS.md — Exception Lifecycle Rule
+
+**Approved, Foundation-level.** Every entry in `GEL001_EXCEPTIONS.md`
+must carry a `Status` field set to exactly one of: `Active`, `Under
+Review`, `Resolved`, `Deprecated`. No exception is permitted to exist
+without a lifecycle state, and no exception is permitted to live
+forever unexamined — every Active exception is a candidate for future
+re-evaluation (e.g. once the AST/monkeypatch/Public API coupling that
+justified it is itself refactored away, per DD-005's own "Future path"
+clause) or for closure. This rule binds `GEL001_EXCEPTIONS.md` itself,
+whenever that registry is created/updated.
