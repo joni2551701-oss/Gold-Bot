@@ -1,0 +1,63 @@
+"""data_layer/market_memory/persistence/persistent_store -- canonical module package (GoldBot Engineering Law GEL-001, Strict).
+
+Implementation in `persistent_store.py`; this `__init__` re-exports the public surface
+so every established import path stays stable. Generated 2026-08-04. No behaviour
+changed; the module code was moved intact from the former flat `persistent_store.py`.
+"""
+from data_layer.market_memory.persistence.persistent_store.persistent_store import (
+    annotations,
+    os,
+    threading,
+    ABC,
+    abstractmethod,
+    dataclass,
+    datetime,
+    Optional,
+    Dict,
+    List,
+    setup_logger,
+    MarketMemory,
+    CandleSource,
+    CandleClock,
+    MemoryCodec,
+    SnapshotMetadata,
+    SnapshotStore,
+    SNAPSHOT_SLOTS,
+    check_series,
+    PersistenceMetrics,
+    logger,
+    StorageBackend,
+    InMemoryStorageBackend,
+    FileStorageBackend,
+    RestoreResult,
+    PersistentMemoryStore,
+)
+
+__all__ = [
+    "annotations",
+    "os",
+    "threading",
+    "ABC",
+    "abstractmethod",
+    "dataclass",
+    "datetime",
+    "Optional",
+    "Dict",
+    "List",
+    "setup_logger",
+    "MarketMemory",
+    "CandleSource",
+    "CandleClock",
+    "MemoryCodec",
+    "SnapshotMetadata",
+    "SnapshotStore",
+    "SNAPSHOT_SLOTS",
+    "check_series",
+    "PersistenceMetrics",
+    "logger",
+    "StorageBackend",
+    "InMemoryStorageBackend",
+    "FileStorageBackend",
+    "RestoreResult",
+    "PersistentMemoryStore",
+]
