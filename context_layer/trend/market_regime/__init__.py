@@ -1,0 +1,61 @@
+"""context_layer/trend/market_regime -- canonical module package (GoldBot Engineering Law GEL-001, Strict).
+
+Implementation in `market_regime.py`; this `__init__` re-exports the public surface
+so every established import path stays stable. Generated 2026-08-04. No behaviour
+changed; the module code was moved intact from the former flat `market_regime.py`.
+"""
+from context_layer.trend.market_regime.market_regime import (
+    dataclass,
+    Enum,
+    Optional,
+    Sequence,
+    TYPE_CHECKING,
+    Candle,
+    StructurePoint,
+    most_recent_bias,
+    WyckoffEvent,
+    WyckoffPhase,
+    classify_session,
+    compute_session_volatility,
+    HTFBias,
+    MarketRegime,
+    RegimeDirection,
+    MarketRegimeResult,
+    WYCKOFF_REGIME_CONFIDENCE,
+    TRENDING_CONFIRMED_CONFIDENCE,
+    TRENDING_UNCONFIRMED_CONFIDENCE,
+    VOLATILITY_CONFIDENCE,
+    RANGE_CONFIDENCE,
+    UNKNOWN_CONFIDENCE,
+    HIGH_VOLATILITY_RATIO_THRESHOLD,
+    LOW_VOLATILITY_RATIO_THRESHOLD,
+    compute_market_regime,
+)
+
+__all__ = [
+    "dataclass",
+    "Enum",
+    "Optional",
+    "Sequence",
+    "TYPE_CHECKING",
+    "Candle",
+    "StructurePoint",
+    "most_recent_bias",
+    "WyckoffEvent",
+    "WyckoffPhase",
+    "classify_session",
+    "compute_session_volatility",
+    "HTFBias",
+    "MarketRegime",
+    "RegimeDirection",
+    "MarketRegimeResult",
+    "WYCKOFF_REGIME_CONFIDENCE",
+    "TRENDING_CONFIRMED_CONFIDENCE",
+    "TRENDING_UNCONFIRMED_CONFIDENCE",
+    "VOLATILITY_CONFIDENCE",
+    "RANGE_CONFIDENCE",
+    "UNKNOWN_CONFIDENCE",
+    "HIGH_VOLATILITY_RATIO_THRESHOLD",
+    "LOW_VOLATILITY_RATIO_THRESHOLD",
+    "compute_market_regime",
+]
