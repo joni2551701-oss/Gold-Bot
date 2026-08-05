@@ -751,7 +751,8 @@ Market State (aniq kontrakt hali belgilanmagan)
 
 Processing
 
-`chart_layer/` (mavjud kod, GFL Flow sifatida hali audit qilinmagan)
+`chart_layer/` (audit qilindi -- to'liq Foundation Freeze v1.0/MIR-001
+skeleton, real implementatsiya yo'q)
 
 Output
 
@@ -760,6 +761,24 @@ Aniqlanmagan
 Consumer
 
 Application Services (FLOW-019)
+
+Qisqa Audit
+
+`chart_layer/`ning barcha quyi-paketlari (`chart_core`, `chart_api`,
+`chart_renderer`, `chart_data`, `indicators`, va h.k.) faqat 13-qatorli
+generik Foundation Freeze docstring'dan iborat -- birorta ham real
+`.py` fayl yo'q (`find chart_layer -name "*.py" ! -name "__init__.py"`
+= 0 natija). `tests/ai/chart_intelligence/*` -- boshqa, allaqachon
+mavjud modul (`ai_layer.chart_intelligence`, Phase 66.1)ga tegishli,
+FLOW-016'ning "Chart Service" (chizma/render subsystem)ga aloqasi
+yo'q. MIR-001 qoidasi bo'yicha Foundation Freeze skeleton'larga
+to'g'ridan-to'g'ri business logic yozish taqiqlangan. FLOW-016'ning
+o'z Input/Output kontrakti ham hali "Aniqlanmagan" deb belgilangan.
+Qaror: FLOW-016 haqiqatan ham Design bosqichigacha yetib bormagan --
+Sub-Status **Blueprint**da qoladi, Development uchun tayyor emas.
+Bu FLOW-005..FLOW-015'dagi "allaqachon amalga oshirilgan" xulosalardan
+farqli, ammo xuddi shunday halol audit natijasi: yangi kod yozish
+Foundation Freeze qoidasini buzadi, shuning uchun yozilmadi.
 
 Next Flow
 
