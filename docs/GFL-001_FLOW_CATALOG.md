@@ -596,15 +596,32 @@ Signal
 
 Processing
 
-Order placement (hozircha inert -- haqiqiy MT5 order yo'q)
+Order placement (hozircha inert -- haqiqiy MT5 order yo'q) --
+`execution_layer.execution_engine.execution_engine.ExecutionEngine`
+(mavjud, real kod) orqali. CLAUDE.md Trading Safety'da himoyalangan
+("execution/ is intentionally inert...; wiring it up is itself a
+change requiring explicit approval"), ushbu Flow doirasida
+o'zgartirilmadi.
 
 Output
 
-Execution Result
+Execution Result -- `ExecutionResult`.
 
 Consumer
 
-Trade Monitoring (FLOW-014)
+Trade Monitoring (FLOW-014) -- amalda hozircha telegram delivery
+orqali (`core_layer/pipeline.py`ning `pipeline_guard.before_execution()`
+izohida qayd etilganidek, ExecutionEngine hali pipeline'ga
+ulanmagan).
+
+Qisqa Audit
+
+`ExecutionEngine`/`ExecutionResult` allaqachon to'liq amalga
+oshirilgan, FLOW-013'ning o'z "hozircha inert" ta'rifiga aynan mos
+keladi, CLAUDE.md Trading Safety qoidasi bilan himoyalangan va
+`tests/execution/*`da test qilingan. Kod yozish/o'zgartirish (ayniqsa
+haqiqiy MT5 ulanishi) alohida ruxsat talab qiladi va ushbu Flow
+doirasida amalga oshirilmadi.
 
 Next Flow
 
