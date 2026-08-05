@@ -1065,7 +1065,7 @@ Service Data
 
 Processing
 
-UI render
+UI render (hali qurilmagan)
 
 Output
 
@@ -1074,6 +1074,17 @@ UI View
 Consumer
 
 End User
+
+Qisqa Audit
+
+`platform_layer/mobile_api/`da faqat 13-qatorli generik Foundation
+Freeze v1.0/MIR-001 docstring bor (`__init__.py`dan boshqa hech qanday
+`.py` fayl yo'q). Android-specific kod (Kotlin/Gradle) repo bo'yicha
+qidiruv bilan topilmadi (`find . -iname "*.kt" -o -iname
+"build.gradle"` = 0 natija). FLOW-021 (Mini App)ga o'xshab, bu ham
+haqiqatan ham qurilmagan subsystem. Qaror: MIR-001 qoidasi bo'yicha
+mavjud bo'lmagan narsani "bajarilgan" deb belgilash noto'g'ri --
+kod yozilmadi, Flow Blueprint'da qoladi.
 
 Next Flow
 

@@ -99,3 +99,23 @@ Lessons Learned: FLOW-016 (Chart Service)ga o'xshab, FLOW-021 ham
   faqat Telegram production-ready.
 
 ---
+
+Issue ID: GFL-001-FLOW-022
+Date: 2026-08-05
+Severity: N/A
+Problem: FLOW-022 (Android) audit bo'yicha tekshirildi.
+Cause: Yo'q -- `platform_layer/mobile_api/`da faqat 13-qatorli
+  generik Foundation Freeze v1.0/MIR-001 docstring bor, `__init__.py`
+  dan boshqa hech qanday `.py` fayl yo'q. Android-specific kod
+  (Kotlin/Gradle) repo bo'yicha qidiruv bilan topilmadi.
+Decision: MIR-001 qoidasi bo'yicha mavjud bo'lmagan narsani
+  "bajarilgan" deb belgilash noto'g'ri. Kod yozilmadi. Flow
+  Blueprint'da qoladi (Completed emas).
+Implementation: Faqat docs yangilandi.
+Validation: N/A.
+Lessons Learned: FLOW-021 (Mini App)ga o'xshab, FLOW-022 ham
+  qurilmagan subsystem -- Platform Layer'ning terminal Flow'lari
+  orasida faqat Telegram production-ready ekanligini yana bir bor
+  tasdiqlaydi.
+
+---
