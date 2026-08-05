@@ -643,15 +643,32 @@ Execution Result
 
 Processing
 
-Lifecycle tracking
+Lifecycle tracking -- `trade_monitoring_layer.paper_trading
+.paper_trade_monitor.PaperTradeMonitor`/`close_paper_trade()` (mavjud,
+real kod) orqali: OPEN trade'larni fresh candle'larga qarshi
+tekshirib, TP/SL/EXPIRED holatiga o'tkazadi.
 
 Output
 
-Trade State
+Trade State -- `trade_monitoring_layer.paper_trading.trade_state
+.TradeState` (CREATED/OPEN/CLOSED/CANCELLED).
 
 Consumer
 
-GoldBot Core API (FLOW-015)
+GoldBot Core API (FLOW-015) -- amalda hozircha `ai_layer.knowledge_ai
+.learning_loop.trade_event_bridge`/`outcome_analyzer` (Learning Loop),
+`backtesting_layer` (statistics/reports) va `database_layer` orqali.
+
+Qisqa Audit
+
+`PaperTradeMonitor`/`TradeState` allaqachon to'liq amalga oshirilgan
+(Phase 59 Preparation + Phase 59.4), FLOW-014'ning Processing/Output
+ta'rifiga aynan mos keladi, keng test qilingan
+(`tests/lifecycle/test_paper_trade.py`,
+`tests/lifecycle/test_paper_trade_monitor.py`,
+`tests/lifecycle/test_signal_lifecycle_state.py`) va Learning
+Loop/Backtesting/Database orqali real ravishda iste'mol qilinadi. Kod
+yozish kerak emas.
 
 Next Flow
 
