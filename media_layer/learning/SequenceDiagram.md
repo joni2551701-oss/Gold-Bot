@@ -1,163 +1,549 @@
 # Learning Layer Sequence Diagram
 
-Status: CANONICAL
+## Overview
 
-Blueprint Only. Reserved for future Education/Learning Platform. Not part of the current Media Layer runtime.
+Learning Layer foydalanuvchini boshlang'ich bilim darajasidan Professional Trader darajasigacha bosqichma-bosqich rivojlantirish uchun mo'ljallangan.
 
----
-
-# Purpose
-
-Ushbu hujjat Learning Runtime Sequence'ni tavsiflaydi.
-
-Bu implementatsiya emas.
-
-Bu Learning modulining Canonical Runtime Blueprint hisoblanadi.
+Ushbu hujjat Learning Layer ichidagi asosiy Sequence Diagramlarni tavsiflaydi.
 
 ---
 
-# Initialization
+# Main Learning Sequence
 
-Application Services Boot
-
-↓
-
-Load Learning Configuration
-
-↓
-
-Register Learning with Platform Layer
-
-↓
-
-Learning Ready
+```
+User
+ │
+ ▼
+Learning API
+ │
+ ▼
+Learning Path
+ │
+ ▼
+Curriculum
+ │
+ ▼
+Academy
+ │
+ ▼
+Lesson
+ │
+ ▼
+Assessment
+ │
+ ├────────────── PASS ──────────────┐
+ │                                  │
+ │                                  ▼
+ │                           Progress Update
+ │                                  │
+ │                                  ▼
+ │                            Next Lesson
+ │
+ └────────────── FAIL ──────────────┐
+                                    │
+                                    ▼
+                              AI Coach
+                                    │
+                                    ▼
+                               Recommendation
+                                    │
+                                    ▼
+                              Retry Lesson
+```
 
 ---
 
-# Runtime Sequence
+# AI Coach Sequence
 
-AI Layer
+```
+Lesson Finished
+        │
+        ▼
+Assessment
+        │
+        ▼
+AI Coach
+        │
+        ├── Analyze Mistakes
+        ├── Explain Errors
+        ├── Give Feedback
+        ├── Recommend Lesson
+        └── Create Practice
+        │
+        ▼
+User
+```
 
-↓
+---
 
-Learning Layer
+# Simulator Sequence
 
-↓
+```
+User
+ │
+ ▼
+Simulator
+ │
+ ▼
+Virtual Trading
+ │
+ ▼
+Trade Result
+ │
+ ▼
+Assessment
+ │
+ ▼
+AI Coach
+ │
+ ▼
+Progress
+```
 
-Process Academy / Simulator / AI_Coach / Challenge / Tournament
+---
 
-↓
+# Replay Sequence
 
+```
+User
+ │
+ ▼
+Replay
+ │
+ ▼
+Historical Chart
+ │
+ ▼
+Market Lab
+ │
+ ▼
+AI Coach
+ │
+ ▼
+Assessment
+```
+
+---
+
+# Market Lab Sequence
+
+```
+Historical Chart
+ │
+ ▼
+Market Lab
+ │
+ ▼
+Exercise
+ │
+ ▼
+User Analysis
+ │
+ ▼
+AI Analysis
+ │
+ ▼
+Comparison
+ │
+ ▼
+Assessment
+```
+
+---
+
+# Assessment Sequence
+
+```
+Lesson
+ │
+ ▼
+Quiz
+ │
+ ▼
+Practical Task
+ │
+ ▼
+Exam
+ │
+ ▼
+Score
+ │
+ ▼
+Progress
+```
+
+---
+
+# Certification Sequence
+
+```
+Assessment
+ │
+ ▼
+Pass
+ │
+ ▼
+Certification
+ │
+ ▼
+Certificate
+ │
+ ▼
+User
+```
+
+---
+
+# Progress Sequence
+
+```
+Lesson Complete
+ │
+ ▼
+XP Update
+ │
+ ▼
+Statistics Update
+ │
+ ▼
+Level Update
+ │
+ ▼
+Roadmap Update
+```
+
+---
+
+# Career Mode Sequence
+
+```
+Progress
+ │
+ ▼
+Career Mode
+ │
+ ▼
+Student
+ │
+ ▼
+Junior Trader
+ │
+ ▼
+Intermediate Trader
+ │
+ ▼
+Professional Trader
+ │
+ ▼
+GoldBot Expert
+```
+
+---
+
+# Challenge Sequence
+
+```
+Challenge
+ │
+ ▼
+User
+ │
+ ▼
+Submission
+ │
+ ▼
+Assessment
+ │
+ ▼
+Score
+ │
+ ▼
+Leaderboard
+```
+
+---
+
+# PvP Sequence
+
+```
+Player A
+      │
+      ▼
+   Challenge
+      ▲
+      │
+Player B
+      │
+      ▼
+Assessment
+      │
+      ▼
+Winner
+      │
+      ▼
+Leaderboard
+```
+
+---
+
+# Tournament Sequence
+
+```
+Users
+ │
+ ▼
+Tournament
+ │
+ ▼
+Assessment
+ │
+ ▼
+Ranking
+ │
+ ▼
+Leaderboard
+```
+
+---
+
+# AI vs Player Sequence
+
+```
+Chart
+ │
+ ▼
+User Analysis
+ │
+ ▼
+AI Analysis
+ │
+ ▼
+Comparison
+ │
+ ▼
+Explanation
+ │
+ ▼
+Learning Result
+```
+
+AI bu yerda raqib emas.
+
+AI:
+
+- Benchmark
+- Mentor
+- Evaluator
+
+vazifalarini bajaradi.
+
+---
+
+# Roadmap Sequence
+
+```
+Progress
+ │
+ ▼
+Roadmap
+ │
+ ▼
+Current Position
+ │
+ ▼
+Next Goal
+ │
+ ▼
+Remaining Lessons
+```
+
+---
+
+# Learning Analytics Sequence
+
+```
+Progress
+ │
+ ▼
+Analytics
+ │
+ ▼
+Weak Topics
+ │
+ ▼
+Strong Topics
+ │
+ ▼
+Study Statistics
+ │
+ ▼
+AI Recommendation
+```
+
+---
+
+# Journal Sequence
+
+```
+Lesson Complete
+ │
+ ▼
+Journal
+ │
+ ▼
+User Notes
+ │
+ ▼
+AI Feedback
+ │
+ ▼
+Reflection
+```
+
+---
+
+# Library Sequence
+
+```
+Lesson
+ │
+ ▼
+Library
+ │
+ ├── PDF
+ ├── Cheat Sheet
+ ├── Strategy Guide
+ ├── Glossary
+ └── Checklist
+ │
+ ▼
+User
+```
+
+---
+
+# Complete Learning Lifecycle
+
+```
+User
+ │
+ ▼
+Learning Path
+ │
+ ▼
+Curriculum
+ │
+ ▼
+Academy
+ │
+ ▼
+Lesson
+ │
+ ▼
+Practice
+ │
+ ▼
+Simulator
+ │
+ ▼
+Replay
+ │
+ ▼
+Market Lab
+ │
+ ▼
+Assessment
+ │
+ ▼
+AI Coach
+ │
+ ▼
+Progress
+ │
+ ▼
+Achievements
+ │
+ ▼
+Certification
+ │
+ ▼
+Career Mode
+ │
+ ▼
+Roadmap
+ │
+ ▼
+Professional Trader
+```
+
+---
+
+# Community Learning Lifecycle
+
+```
+Challenge
+ │
+ ▼
+PvP
+ │
+ ▼
+Tournament
+ │
+ ▼
+Leaderboard
+ │
+ ▼
+Achievements
+```
+
+---
+
+# Layer Interaction
+
+```
 Platform Layer
-
----
-
-# Error Sequence
-
-Learning Error Detected
-
-↓
-
-Log Error
-
-↓
-
-Emit Error Event
-
-↓
-
-Fallback / Safe State
-
----
-
-# Recovery Sequence
-
-Safe State
-
-↓
-
-Reload Learning Configuration
-
-↓
-
-Re-Register with Platform Layer
-
-↓
-
-Learning Ready
-
----
-
-# Shutdown Sequence
-
-Shutdown Signal
-
-↓
-
-Flush Learning Progress State
-
-↓
-
-Unregister from Platform Layer
-
-↓
-
-Dispose
-
----
-
-# Runtime Rules
-
-1. AI Layer natijasi (agar AI Coach ishlatilsa) mavjud bo'lishi shart.
-
-2. Learning faqat o'z mas'uliyat doirasida ishlaydi.
-
-3. Output Platform Layer'ga uzatiladi.
-
-4. Xatolik yuz berganda Error Sequence ishga tushadi, keyin Recovery Sequence orqali tiklanadi.
-
-5. Circular Dependency qat'iyan taqiqlanadi.
-
----
-
-# State Machine
-
-Idle
-
-↓
-
-Initializing
-
-↓
-
-Ready
-
-↓
-
-Receiving
-
-↓
-
-Processing
-
-↓
-
-Completed
-
-├──→ Error ──→ Recovering ──→ Ready
-
-└──→ Shutting Down ──→ Disposed
-
----
-
-# Summary
-
-AI Layer
-
-↓
-
+        │
+        ▼
+Learning API
+        │
+        ▼
 Learning Layer
+        │
+        ▼
+AI Layer
+        │
+        ▼
+Chart Service
+        │
+        ▼
+Business Layer
+```
 
-↓
+Learning Layer hech qachon boshqa Layer ichki logikasiga bevosita murojaat qilmaydi.
 
-Platform Layer
+Barcha integratsiyalar API yoki rasmiy Service Contract orqali amalga oshiriladi.
+
+---
+
+# Sequence Status
+
+Status:
+Blueprint
+
+Version:
+v1.0
+
+Architecture:
+GoldBot V3
+
+Lifecycle:
+GDL-001
+
+Flow Standard:
+GFL-001
+
+Module Standard:
+GEL-001
+
+Language Standard:
+GLS-001
