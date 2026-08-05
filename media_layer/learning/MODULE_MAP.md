@@ -14,32 +14,39 @@ Ushbu hujjat Learning ichki arxitekturasini tavsiflaydi (Blueprint bosqichi — 
 
 # Internal Architecture (Planned)
 
-Learning_Layer/
-
-├── Academy
-
-├── Interactive_Lessons
-
-├── Simulator
-
-├── AI_Coach
-
-├── Challenge
-
-├── Tournament
-
-├── PvP
-
-├── AI_vs_AI
-
-├── Certification
-
-├── Career_Mode
-
-├── Progress
-
-└── Learning_Analytics
-
+learning/
+│
+├── academy/
+│
+├── learning_path/
+│
+├── ai_coach/
+│
+├── simulator/
+│
+├── replay/
+│
+├── assessment/
+│
+├── certification/
+│
+├── progress/
+│
+├── achievements/
+│
+├── analytics/
+│
+├── career_mode/
+│
+├── challenge/
+│
+├── tournament/
+│
+├── pvp/
+│
+├── ai_vs_ai/
+│
+└── learning_api/
 ---
 
 # Module Position
