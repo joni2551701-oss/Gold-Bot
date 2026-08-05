@@ -45,6 +45,7 @@ COMMANDS = {
 }
 
 OWNER_COMMANDS = {
+    "ask": "Ask Personal AI a question (memory-first)",
     "admin": "Open admin panel",
     "addadmin": "Add a new admin",
     "removeadmin": "Remove an admin",

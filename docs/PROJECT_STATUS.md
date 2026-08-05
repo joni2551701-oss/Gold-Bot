@@ -27,7 +27,7 @@ Til: GLS-001 (proza O'zbek, texnik terminlar English)
 |---|---|
 | Current Phase | PHASE-02 — Flow-by-Flow Development |
 | Current Sprint | PHASE-02 Sprint 1 (standart o'rnatildi: `docs/PHASE_02_FLOW_BY_FLOW_DEVELOPMENT.md`) |
-| Current Flow | FLOW-016 ✅ Completed. **Production re-audit (2026-08-05):** FLOW-017/018/019 docs-only "Completed"dan → 🟨 Partial (jonli Consumer yo'q); FLOW-020 ✅ real Completed; FLOW-021-025 🟦 Blueprint. Keyingisi (GFL-003): **FLOW-017** (eng kichik non-Completed). Reja: `docs/FLOW_017_025_PRODUCTION_REAUDIT.md` (Sprint P1→P5). |
+| Current Flow | FLOW-017 ✅ Completed (2026-08-05, PHASE-02 Production Wiring + Memory System). Personal AI Core jonli `/ask` Telegram Consumer + Memory-First oqim bilan Production'ga ulandi (`docs/FLOW_017_PERSONAL_AI_PRODUCTION.md`). Keyingisi (GFL-003 Sequential): **FLOW-018** (Backtesting Engine — jonli `/backtest` Consumer'ni ulash, Sprint P2). Qolgan: FLOW-019 🟨 Partial (Sprint P3), FLOW-021-025 🟦 Blueprint. Reja: `docs/FLOW_017_025_PRODUCTION_REAUDIT.md`. |
 | Production Readiness | GoldBot Core pipeline production-ready (V1.0 Freeze); non-Telegram Platform clients (Mini App/Android/iOS/Desktop/Web) Blueprint |
 | Test Status | ✅ 5432 passed (0 fail) |
 | Latest Director Decision | PHASE-02 Flow-by-Flow Development Initialization (2026-08-05) |

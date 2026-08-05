@@ -1391,3 +1391,38 @@ async def contact_handler(telegram_id, phone_number: str) -> str:
     if result.trial_active:
         return t("contact.trial_active", language, expires=result.trial_expires_at)
     return t("contact.trial_ended", language)
+
+
+async def ask_handler(telegram_id=None, args=None) -> str:
+    """/ask <savol> -> Personal AI Core, Memory-First (FLOW-017 Production
+    Wiring). OWNER only (command_router gates OWNER_COMMANDS to OWNER).
+    Never raises.
+
+    Memory-first (Director order): Memory is checked first; the External
+    AI API is called ONLY on a memory miss; the answer is then stored for
+    reuse. Composes ai_layer.personal_ai.interaction_manager.memory_first_query
+    (a composition root over the existing ConversationEngine + MemoryRuntime
+    + Owner-Mode gate) -- no new AI/memory logic here."""
+    question = (args or "").strip()
+    if not question:
+        return "Savolingizni yozing: /ask <savol>"
+    try:
+        from ai_layer.personal_ai.interaction_manager.memory_first_query import answer_question
+        from ai_layer.ai_service.access.permissions import AIRole
+        result = answer_question(
+            question,
+            role=AIRole.OWNER,
+            telegram_id=str(telegram_id) if telegram_id is not None else None,
+        )
+    except Exception as e:
+        logger.warning(f"ask_handler: personal AI failed: {e}")
+        return "Personal AI hozircha javob bera olmadi."
+    if result.source == "denied":
+        return (
+            "🔒 Personal AI hozircha o'chirilgan. Uni Owner Mode'da "
+            "`enable_personal_ai` bayrog'i orqali yoqing."
+        )
+    if not result.accepted:
+        return f"🤖 AI hozircha javob bera olmadi ({result.reason})."
+    tag = "🧠 Xotiradan" if result.from_memory else "🤖 AI"
+    return f"{tag}:\n\n{result.answer}"
