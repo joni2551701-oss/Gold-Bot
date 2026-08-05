@@ -43,3 +43,30 @@ Lessons Learned: FLOW-001 Module 5'da qurilgan "Application Services"
   Processing/Output/Consumer kontraktini to'liq qondiradi.
 
 ---
+
+Issue ID: GFL-001-FLOW-020
+Date: 2026-08-05
+Severity: N/A
+Problem: FLOW-020 (Telegram) audit bo'yicha tekshirildi.
+Cause: Yo'q -- `platform_layer/telegram/` (46 real fayl --
+  `handlers.py`, `user_service.py`, `signal_service.py`,
+  `admin_service.py`, `subscription_service.py`,
+  `notification_service.py`, `signal_access_service.py`,
+  `feedback_service.py`, `registration_service.py`,
+  `command_router.py`, `callback_router.py`, `polling.py`, `bot.py`,
+  `owner/*`) FLOW-020'ning o'z "Handler -> Service -> Repository"
+  ta'rifiga aynan mos. `handlers.py`ning import ro'yxati tekshirildi --
+  faqat `platform_layer.telegram.*_service` importlari bor, database
+  importi yo'q, bu CLAUDE.md'ning "No direct database access from
+  Telegram handlers" qoidasini kod darajasida tasdiqlaydi. Keng test
+  qilingan (40 fayl, `tests/*telegram*`).
+Decision: Kod yozish kerak emas. Docs (`GFL-001_FLOW_CATALOG.md`,
+  `GFL-001_FLOW_PROGRESS.md`) Completed deb belgilandi.
+Implementation: Faqat docs yangilandi.
+Validation: N/A (kod o'zgarishi yo'q).
+Lessons Learned: FLOW-020 barcha auditlangan Flowlar orasida eng
+  ravshan "allaqachon amalga oshirilgan" holat -- Telegram qatlami
+  o'nlab oldingi Phase (3, 6, Telegram Runtime va h.k.)da qurilgan va
+  CLAUDE.md'ning o'z arxitektura qoidasi bilan mustahkamlangan.
+
+---

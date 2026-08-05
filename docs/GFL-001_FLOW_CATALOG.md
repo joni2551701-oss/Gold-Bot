@@ -971,7 +971,10 @@ Service Data
 
 Processing
 
-Handler -> Service -> Repository
+`platform_layer/telegram/` (audit qilindi -- Handler -> Service ->
+Repository zanjiri real amalga oshirilgan: `handlers.py` faqat
+`*_service.py` fayllarni import qiladi, hech qachon
+`database`/`database_layer`ni to'g'ridan-to'g'ri chaqirmaydi)
 
 Output
 
@@ -980,6 +983,21 @@ User Message
 Consumer
 
 End User
+
+Qisqa Audit
+
+`platform_layer/telegram/`da 46 real fayl (`handlers.py`,
+`user_service.py`, `signal_service.py`, `admin_service.py`,
+`subscription_service.py`, `notification_service.py`,
+`signal_access_service.py`, `feedback_service.py`,
+`registration_service.py`, `command_router.py`,
+`callback_router.py`, `polling.py`, `bot.py`, `owner/*` va h.k.).
+`handlers.py`ning import ro'yxati CLAUDE.md'ning "No direct database
+access from Telegram handlers" qoidasini kod darajasida tasdiqlaydi --
+faqat `platform_layer.telegram.*_service` importlari bor, database
+importi yo'q. 40 test fayli (`tests/*telegram*`). FLOW-020'ning o'z
+Processing ta'rifi ("Handler -> Service -> Repository") bilan aynan
+mos. Kod yozish kerak emas.
 
 Next Flow
 
