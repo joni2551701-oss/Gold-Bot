@@ -119,3 +119,21 @@ Lessons Learned: FLOW-021 (Mini App)ga o'xshab, FLOW-022 ham
   tasdiqlaydi.
 
 ---
+
+Issue ID: GFL-001-FLOW-023
+Date: 2026-08-05
+Severity: N/A
+Problem: FLOW-023 (iOS) audit bo'yicha tekshirildi.
+Cause: Yo'q -- `platform_layer/mobile_api/` (Android bilan bir xil
+  paket) faqat 13-qatorli generik Foundation Freeze v1.0/MIR-001
+  docstring. iOS-specific kod (Swift/Xcode) repo bo'yicha qidiruv
+  bilan topilmadi.
+Decision: MIR-001 qoidasi bo'yicha mavjud bo'lmagan narsani
+  "bajarilgan" deb belgilash noto'g'ri. Kod yozilmadi. Flow
+  Blueprint'da qoladi (Completed emas).
+Implementation: Faqat docs yangilandi.
+Validation: N/A.
+Lessons Learned: FLOW-021/FLOW-022ga o'xshab, FLOW-023 ham qurilmagan
+  subsystem.
+
+---

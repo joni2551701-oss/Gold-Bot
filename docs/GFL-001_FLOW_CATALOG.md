@@ -1106,7 +1106,7 @@ Service Data
 
 Processing
 
-UI render
+UI render (hali qurilmagan)
 
 Output
 
@@ -1115,6 +1115,17 @@ UI View
 Consumer
 
 End User
+
+Qisqa Audit
+
+`platform_layer/mobile_api/`da faqat 13-qatorli generik Foundation
+Freeze v1.0/MIR-001 docstring bor (Android bilan bir xil paket --
+mobil platformalarning umumiy skeleton'i). iOS-specific kod
+(Swift/Xcode) repo bo'yicha qidiruv bilan topilmadi (`find . -iname
+"*.swift" -o -iname "*.xcodeproj"` = 0 natija). FLOW-021/FLOW-022'ga
+o'xshab, bu ham haqiqatan ham qurilmagan subsystem. Qaror: MIR-001
+qoidasi bo'yicha mavjud bo'lmagan narsani "bajarilgan" deb belgilash
+noto'g'ri -- kod yozilmadi, Flow Blueprint'da qoladi.
 
 Next Flow
 

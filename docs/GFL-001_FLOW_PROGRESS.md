@@ -81,7 +81,7 @@ Director Review talab qilinadi.
 | FLOW-020 | Telegram | Platform Layer | 🟩 | 100% | Worker | Yakunlandi -- 2026-08-05 (GFL-004 Lightweight Loop). Qisqa Audit: `platform_layer/telegram/` (46 real fayl, Handler -> Service -> Repository zanjiri kod darajasida tasdiqlandi), 40 test fayli. Kod o'zgarishi kerak emas. |
 | FLOW-021 | Mini App | Platform Layer | 🟦 | 0% | Worker | Audit qilindi -- 2026-08-05. Real UI render implementatsiyasi topilmadi (`PlatformAdapterBase` abstract, concrete Mini App sinfi yo'q). Sub-Status: Blueprint (Development uchun tayyor emas). |
 | FLOW-022 | Android | Platform Layer | 🟦 | 0% | Worker | Audit qilindi -- 2026-08-05. `platform_layer/mobile_api/` faqat 13-qatorli Foundation Freeze skeleton, real UI kod yo'q. Sub-Status: Blueprint (Development uchun tayyor emas). |
-| FLOW-023 | iOS | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-019. Kutmoqda. |
+| FLOW-023 | iOS | Platform Layer | 🟦 | 0% | Worker | Audit qilindi -- 2026-08-05. `platform_layer/mobile_api/` faqat 13-qatorli Foundation Freeze skeleton, real UI kod yo'q. Sub-Status: Blueprint (Development uchun tayyor emas). |
 | FLOW-024 | Desktop | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-020. Kutmoqda. |
 | FLOW-025 | Web | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-021. Kutmoqda. |
 
