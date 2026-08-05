@@ -27,7 +27,7 @@ Til: GLS-001 (proza O'zbek, texnik terminlar English)
 |---|---|
 | Current Phase | PHASE-02 — Flow-by-Flow Development |
 | Current Sprint | PHASE-02 Sprint 1 (standart o'rnatildi: `docs/PHASE_02_FLOW_BY_FLOW_DEVELOPMENT.md`) |
-| Current Flow | FLOW-001 (System Bootstrap / Configuration) ✅ Completed → keyingisi: FLOW-016 (eng kichik raqamli qolgan) |
+| Current Flow | FLOW-016 (Chart Service Production Foundation) ✅ Completed — Architecture Correction bilan (Director Decision). Keyingisi: FLOW-021 (eng kichik raqamli qolgan) |
 | Production Readiness | GoldBot Core pipeline production-ready (V1.0 Freeze); non-Telegram Platform clients (Mini App/Android/iOS/Desktop/Web) Blueprint |
 | Test Status | ✅ 5432 passed (0 fail) |
 | Latest Director Decision | PHASE-02 Flow-by-Flow Development Initialization (2026-08-05) |

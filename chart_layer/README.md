@@ -1,5 +1,5 @@
 # Chart Layer
-Status: BLUEPRINT
+Status: FOUNDATION (Core Infrastructure implemented — FLOW-016); feature modules BLUEPRINT
 ---
 # Purpose
 Chart Layer GoldBot ekotizimidagi Canonical Chart/Visualization Layer hisoblanadi.
@@ -211,7 +211,31 @@ Chart/
 Har bir modul hozircha Blueprint bosqichida — faqat 4 ta standart hujjat mavjud. Ichki submodullar (masalan TrendLine/, CanvasRenderer/, ReplayEngine/) Foundation Freeze'dan keyin, implementatsiya bosqichida real kod bilan to'ldiriladi.
 ---
 # Blueprint Status Note
-Bu Layer hozircha **Blueprint** bosqichida. 20 ta modulning har biri o'zining README.md/Contracts.md/ModuleMap.md/SequenceDiagram.md hujjatlariga ega, ammo ichki submodul papkalari (TrendLine/, CanvasRenderer/, ReplayEngine/ va h.k.) hali yaratilmagan. Bular implementatsiya bosqichida, real kod bilan birga qo'shiladi.
+Bu Layer'ning **Core Infrastructure**'i FLOW-016 (Chart Service Production Foundation) doirasida real, importable, testdan o'tgan kod bilan implementatsiya qilindi. Qolgan feature modullari hozircha **Blueprint** bosqichida.
+
+Har bir modul o'zining README.md/Contracts.md/ModuleMap.md/SequenceDiagram.md hujjatlariga ega. Feature modullarining ichki submodul papkalari (TrendLine/, CanvasRenderer/, ReplayEngine/ va h.k.) hali yaratilmagan — ular implementatsiya bosqichida, real kod bilan birga qo'shiladi.
+---
+# FLOW-016 — Chart Service Production Foundation (Implemented)
+Sana: 2026-08-05. Authority: Director Decision (Architecture Correction).
+
+FLOW-016 Core Infrastructure'ni 5 ta canonical subpaketga (yangi
+ortiqcha paketsiz) joylashtirdi. To'liq audit va eski↔yangi struktura
+taqqoslash: `docs/FLOW_016_CHART_ARCHITECTURE_CORRECTION.md`.
+
+| Canonical subpaket | FLOW-016 implementatsiya |
+|---|---|
+| `chart_data` | `models.py` (ChartType/OutputFormat/ChartStatus/Candle/ChartModel/ChartObject), `request.py` (ChartRequest), `response.py` (ChartResponse), `cache.py` (ChartCache) |
+| `chart_renderer` | `renderer.py` (ChartRenderer — faqat render, placeholder ChartObject) |
+| `chart_core` | `pipeline.py` (ChartPipeline + MarketDataSource port + EmptyMarketDataSource), `engine.py` (ChartEngine) |
+| `chart_api` | `api.py` (ChartAPI — yagona Platform kirish nuqtasi), `service.py` (ChartService), `events.py` (Event API) |
+
+Layer chain: Market Memory (port) → Chart Pipeline → Chart Engine →
+Chart Renderer → Chart Service → Chart API → Platform.
+
+Scope: faqat Core Infrastructure. Real rendering (Canvas/WebGL), Drawing
+Tools, Indicators va Replay keyingi Flow'larda shu Foundation ustiga
+quriladi. Renderer hozircha contract-complete placeholder `ChartObject`
+qaytaradi. Testlar: `tests/chart_layer/` (31 test).
 ---
 # Summary
 Chart Layer GoldBot ekotizimidagi Canonical Visualization Layer bo'lib, GoldBot Core'ning Market Context, Indicator Context, Signal, Decision va Trade natijalarini professional, TradingView darajasidagi grafik interfeys orqali foydalanuvchiga yetkazadi. Chart hech qachon tahlil, qaror yoki risk hisoblamaydi — faqat vizual taqdimot bilan shug'ullanadi.

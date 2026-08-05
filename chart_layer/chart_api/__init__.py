@@ -2,12 +2,36 @@
 
 Foundation Freeze v1.0 — canonical architecture skeleton.
 
-Phase A creates this package as an importable mirror of the canonical
-Layer documents at the repository root. Code is migrated module by
-module in Phases B-E under Migration Isolation Rule (MIR-001); until a
-module is migrated, its behaviour still comes from the pre-freeze
-top-level packages, which keep working during migration per Import
-Compatibility Rule (ICR-001).
-
 Canonical documentation: 16_Chart_Layer/Chart_API/README.md
+
+FLOW-016 Chart Service Foundation migrates the single Platform entry
+point into this package — Chart_API is the Public / Event / Plugin API
+boundary gateway:
+  * api      — ChartAPI (create_chart / get_chart / update_chart /
+               clear_cache), the single Platform entry point
+  * service  — ChartService (coordinates Engine + Cache + Events,
+               assembles ChartResponse)
+  * events   — Event API: ChartEvent, ChartEventRecorder and the
+               chart_requested/created/updated/failed factories
 """
+from .api import ChartAPI
+from .events import (
+    ChartEvent,
+    ChartEventRecorder,
+    chart_created,
+    chart_failed,
+    chart_requested,
+    chart_updated,
+)
+from .service import ChartService
+
+__all__ = [
+    "ChartAPI",
+    "ChartService",
+    "ChartEvent",
+    "ChartEventRecorder",
+    "chart_requested",
+    "chart_created",
+    "chart_updated",
+    "chart_failed",
+]
