@@ -155,3 +155,25 @@ Lessons Learned: FLOW-021/022/023ga o'xshab, FLOW-024 ham qurilmagan
   subsystem.
 
 ---
+
+Issue ID: GFL-001-FLOW-025
+Date: 2026-08-05
+Severity: N/A
+Problem: FLOW-025 (Web) audit bo'yicha tekshirildi. Bu GFL-001
+  jadvalidagi so'nggi Flow (FLOW-025).
+Cause: Yo'q -- `platform_layer/web_api/`da faqat 13-qatorli generik
+  Foundation Freeze v1.0/MIR-001 docstring bor, `__init__.py`dan
+  boshqa hech qanday `.py` fayl yo'q. Web-specific frontend kod
+  (React/Vue/HTML/JS) repo bo'yicha qidiruv bilan topilmadi.
+Decision: MIR-001 qoidasi bo'yicha mavjud bo'lmagan narsani
+  "bajarilgan" deb belgilash noto'g'ri. Kod yozilmadi. Flow
+  Blueprint'da qoladi (Completed emas).
+Implementation: Faqat docs yangilandi.
+Validation: N/A.
+Lessons Learned: Platform Layer'ning barcha terminal Flow'lari
+  (FLOW-020..025) orasida faqat Telegram (FLOW-020) production-ready
+  -- Mini App/Android/iOS/Desktop/Web barchasi bir xil Foundation
+  Freeze skeleton holatida (real UI kod yo'q). Bu FLOW-025 bilan
+  GFL-001'ning 25 ta Flow'ining barchasi audit qilindi.
+
+---
