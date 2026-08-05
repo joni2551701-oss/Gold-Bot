@@ -1019,7 +1019,7 @@ Service Data
 
 Processing
 
-UI render
+UI render (hali qurilmagan)
 
 Output
 
@@ -1028,6 +1028,22 @@ UI View
 Consumer
 
 End User
+
+Qisqa Audit
+
+Repo bo'yicha qidiruv (`mini.?app`, `webapp`, frontend/HTML/JS
+papkalar) hech qanday real Mini App UI implementatsiyasini
+topmadi. `platform_layer/platform_service/platform_adapter.py`da
+`PlatformAdapterBase` mavjud (abstract), lekin uni concrete
+implementatsiya qiluvchi hech qanday sinf yo'q -- na Mini App, na
+boshqa platforma uchun. `platform_layer/platform_service/platform_model.py`da
+`PlatformName.TELEGRAM_MINI_APP` faqat metadata sifatida ro'yxatga
+olingan, ammo haqiqiy UI render kodi yo'q. Qaror: FLOW-021 haqiqatan
+ham Development uchun tayyor emas -- MIR-001/Foundation Freeze
+falsafasiga muvofiq mavjud bo'lmagan narsani "bajarilgan" deb
+belgilash noto'g'ri bo'lardi. Kod yozilmadi, Flow Blueprint'da qoladi
+(Completed emas), bu FLOW-016 (Chart Service)dagi bilan bir xil
+xolis audit natijasi.
 
 Next Flow
 

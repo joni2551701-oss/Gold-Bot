@@ -79,7 +79,7 @@ Director Review talab qilinadi.
 | FLOW-018 | Backtesting Engine | GoldBot > Backtesting Engine | 🟩 | 100% | Worker | Yakunlandi -- 2026-08-05 (GFL-004 Lightweight Loop). Qisqa Audit: `backtesting_layer/` (28 real fayl -- `BacktestEngine`, `ReplayEngine`, `IDataFeed`, `BacktestResult` + statistika) Phase 60.1/60.2'da qurilgan, keng test qilingan (17 fayl). Kod o'zgarishi kerak emas. |
 | FLOW-019 | Application Services | Application Services | 🟩 | 100% | Worker | Yakunlandi -- 2026-08-05 (GFL-004 Lightweight Loop). Qisqa Audit: `platform_layer/platform_service/` (10 real fayl -- `PlatformRegistry`, `MenuRegistry`, `NavigationCore`, `PlatformAdapterBase`) + `platform_layer/telegram/*_service.py` (FLOW-001 Module 5, SSOT'dan o'qiydi), 9 test fayli (`tests/platforms/*`). Kod o'zgarishi kerak emas. |
 | FLOW-020 | Telegram | Platform Layer | 🟩 | 100% | Worker | Yakunlandi -- 2026-08-05 (GFL-004 Lightweight Loop). Qisqa Audit: `platform_layer/telegram/` (46 real fayl, Handler -> Service -> Repository zanjiri kod darajasida tasdiqlandi), 40 test fayli. Kod o'zgarishi kerak emas. |
-| FLOW-021 | Mini App | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-017. Kutmoqda. |
+| FLOW-021 | Mini App | Platform Layer | 🟦 | 0% | Worker | Audit qilindi -- 2026-08-05. Real UI render implementatsiyasi topilmadi (`PlatformAdapterBase` abstract, concrete Mini App sinfi yo'q). Sub-Status: Blueprint (Development uchun tayyor emas). |
 | FLOW-022 | Android | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-018. Kutmoqda. |
 | FLOW-023 | iOS | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-019. Kutmoqda. |
 | FLOW-024 | Desktop | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-020. Kutmoqda. |

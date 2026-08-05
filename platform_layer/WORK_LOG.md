@@ -70,3 +70,32 @@ Lessons Learned: FLOW-020 barcha auditlangan Flowlar orasida eng
   CLAUDE.md'ning o'z arxitektura qoidasi bilan mustahkamlangan.
 
 ---
+
+Issue ID: GFL-001-FLOW-021
+Date: 2026-08-05
+Severity: N/A
+Problem: FLOW-021 (Mini App) audit bo'yicha tekshirildi. Processing
+  "UI render", Output "UI View", Consumer "End User".
+Cause: Yo'q -- repo bo'yicha keng qidiruv (`mini.?app`, `webapp`,
+  frontend/HTML/JS papkalar) hech qanday real UI render
+  implementatsiyasini topmadi.
+  `platform_layer/platform_service/platform_adapter.py`da
+  `PlatformAdapterBase` mavjud, lekin u abstract -- uni concrete
+  implementatsiya qiluvchi hech qanday sinf yo'q (na Mini App, na
+  boshqa platforma uchun). `PlatformName.TELEGRAM_MINI_APP` faqat
+  registry metadata sifatida mavjud, haqiqiy UI kodi yo'q.
+Decision: MIR-001/Foundation Freeze falsafasiga muvofiq mavjud
+  bo'lmagan narsani "bajarilgan" deb belgilash noto'g'ri. Kod
+  yozilmadi (yozish uchun ham hech narsa yo'q -- bu placeholder emas,
+  butunlay qurilmagan subsystem). Flow Blueprint'da qoladi (Completed
+  emas).
+Implementation: Faqat docs yangilandi (audit natijasi
+  hujjatlashtirildi).
+Validation: N/A.
+Lessons Learned: FLOW-016 (Chart Service)ga o'xshab, FLOW-021 ham
+  xolis "hali tayyor emas" audit natijasiga ega -- ikkinchi bunday hol
+  shu segmentda. Platform Layer'ning terminal Flow'lari (Telegram
+  allaqachon bor, Mini App/Android/iOS/Desktop/Web hali yo'q) orasida
+  faqat Telegram production-ready.
+
+---
