@@ -916,15 +916,38 @@ API Response (va boshqa subsystemlar output'i)
 
 Processing
 
-Service composition
+`platform_layer/platform_service/` (audit qilindi -- real service
+composition/registry: `PlatformRegistry`, `MenuRegistry`,
+`NavigationCore`, `PlatformAdapterBase`, `ModuleCapabilityRegistry`,
+`cross_platform_checker`) + `platform_layer/telegram/*_service.py`
+(FLOW-001 Module 5'da SSOT'dan o'qiydigan real service qatlami:
+`signal_service`, `current_price_service`, `notification_service`,
+`user_service`, `admin_service`, `subscription_service`,
+`feedback_service`, `signal_access_service`)
 
 Output
 
-Service Data
+Service Data (`PlatformDefinition`, `MenuDefinition`,
+`NavigationResult`, servicelar natijasi)
 
 Consumer
 
 Telegram (FLOW-020), Mini App (FLOW-021), Android (FLOW-022), iOS (FLOW-023), Desktop (FLOW-024), Web (FLOW-025)
+
+Qisqa Audit
+
+`platform_layer.platform_service.PlatformRegistry`ning o'z
+`PlatformName` enumi FLOW-019'ning Consumer ro'yxati bilan deyarli
+aynan mos: `TELEGRAM_BOT`, `TELEGRAM_MINI_APP`, `ANDROID`, `IOS`,
+`DESKTOP` (Web hali alohida enum a'zosi emas). `platform_service/`
+to'liq real -- 10 fayl (`platform_registry`, `menu_registry`,
+`navigation_core`, `navigation_events`, `navigation_model`,
+`platform_adapter`, `platform_model`, `capability_model`,
+`capability_registry`, `cross_platform_checker`), 9 test fayli
+(`tests/platforms/*`). `platform_layer/telegram/*_service.py`
+FLOW-001 Module 5 (Director Order GFL-003)da SSOT'dan o'qish uchun
+qurilgan, allaqachon canonical "Application Services" qatlami sifatida
+Director tomonidan tasdiqlangan. Kod yozish kerak emas.
 
 Next Flow
 
