@@ -872,15 +872,27 @@ Aniqlanmagan
 
 Processing
 
-`backtesting_layer/` (mavjud kod, GFL Flow sifatida hali audit qilinmagan)
+`backtesting_layer/` (audit qilindi -- 28 real `.py` fayl:
+`backtest_engine`, `replay_engine`, `data_feed`, `statistics`,
+`backtest_report`, `replay_controller`)
 
 Output
 
-Aniqlanmagan
+Backtest natijalar (`BacktestResult`, statistika hisobotlari)
 
 Consumer
 
 Application Services (FLOW-019)
+
+Qisqa Audit
+
+`backtesting_layer/` Phase 60.1 (Replay Engine) va Phase 60.2
+(Backtesting Engine) davomida qurilgan real implementatsiya --
+`BacktestEngine`, `ReplayEngine`/`ReplayController`, `IDataFeed`
+oilasi, `BacktestResult` + keng statistika to'plami
+(performance_metrics, equity_curve, benchmark va h.k.). FLOW-018'ning
+o'z nomiga aynan mos. Keng test qilingan (17 fayl,
+`tests/backtesting/*`, `tests/replay/*`). Kod yozish kerak emas.
 
 Next Flow
 
