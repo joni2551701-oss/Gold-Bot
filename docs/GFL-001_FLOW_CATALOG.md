@@ -690,15 +690,33 @@ Trade State
 
 Processing
 
-API response assembly
+API response assembly -- `core_layer.gateway.CoreGateway.dispatch()`
+(mavjud, real kod) orqali: registry + router + auth + authorization +
+rate limiting + health/metrics/version'ni bitta fasadga birlashtiradi.
 
 Output
 
-API Response
+API Response -- `core_layer.gateway.gateway_request.GatewayResponse`.
 
 Consumer
 
-Application Services (FLOW-019)
+Application Services (FLOW-019) -- `CoreGateway`ning o'z ta'rifi
+bo'yicha: "every external client (Telegram, Web, Mobile, AI, Chart,
+Media) reaches Core services through the Gateway" -- hozircha hech
+qaysi platforma orqali live route ulanmagan (foundation, faqat o'z
+testlarida ishlatiladi).
+
+Qisqa Audit
+
+`core_layer.service_registry`/`core_layer.core_service` (kanonik nom)
+Foundation Freeze v1.0/MIR-001 skeleton bo'lib (bo'sh), GFL-001
+doirasidan tashqari. Haqiqiy "GoldBot Core API" allaqachon
+`core_layer.gateway.CoreGateway`da mavjud -- v1.1 Phase 1'da qurilgan,
+trading-agnostic (Strategy/Decision/Signal/Risk mantig'i yo'q,
+`core_layer/pipeline.py`ga ulanmagan), `GatewayRequest`/
+`GatewayResponse` orqali FLOW-015'ning Processing/Output ta'rifiga
+aynan mos keladi va keng test qilingan (`tests/core/gateway/*`, 11
+fayl). Kod yozish kerak emas.
 
 Next Flow
 
