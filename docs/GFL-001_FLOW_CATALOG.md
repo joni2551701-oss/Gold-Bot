@@ -814,15 +814,30 @@ boshqaruvchi emas)
 
 Processing
 
-`ai_layer/` (mavjud kod, GFL Flow sifatida hali audit qilinmagan)
+`ai_layer/` (audit qilindi -- 207 real `.py` fayl, o'n bitta
+quyi-paket, jumladan `ai_layer.personal_ai` -- FLOW-017'ning o'z
+nomiga aynan mos)
 
 Output
 
-Aniqlanmagan
+Advisory AI natijalar (tahlil/tavsiya/tushuntirish -- hech qachon
+boshqaruvchi emas)
 
 Consumer
 
 Application Services (FLOW-019)
+
+Qisqa Audit
+
+`ai_layer/` Phase 61.0..66.8 davomida qurilgan, keng tarqalgan real
+implementatsiya: `personal_ai/` (persona_manager, conversation_engine,
+user_profile, senior/coaching_runtime), `ai_engine/`, `ai_service/`,
+`ai_coordinator/`, `confidence_ai/`, `explanation_ai/`,
+`fundamental_ai/`, `knowledge_ai/`, `vision_ai/`, `voice_ai/`. Advisory
+Article 1/3 chegarasi kod darajasida ta'minlangan (`ai_layer.access`
+orqali) -- AI hech qachon decision/risk/execution'ni to'g'ridan-to'g'ri
+chaqirmaydi, faqat maslahat beradi. Keng test qilingan
+(`tests/ai/*`, 145 fayl). Kod yozish kerak emas.
 
 Next Flow
 
