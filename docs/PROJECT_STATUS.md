@@ -26,12 +26,12 @@ Til: GLS-001 (proza O'zbek, texnik terminlar English)
 | Maydon | Qiymat |
 |---|---|
 | Current Phase | PHASE-02 — Flow-by-Flow Development |
-| Current Sprint | PHASE-02 Sprint 1 (endi boshlanmoqda) |
+| Current Sprint | PHASE-02 Sprint 1 (standart o'rnatildi: `docs/PHASE_02_FLOW_BY_FLOW_DEVELOPMENT.md`) |
 | Current Flow | — (birinchi Flow hali tanlanmagan; GFL-003 Sequential Flow Rule amal qiladi) |
 | Production Readiness | GoldBot Core pipeline production-ready (V1.0 Freeze); non-Telegram Platform clients (Mini App/Android/iOS/Desktop/Web) Blueprint |
 | Test Status | ✅ 5432 passed (0 fail) |
-| Latest Director Decision | PHASE-01 SHARTLI APPROVED → Foundation Frozen (2026-08-05) |
-| Latest Stable Commit | `cbdda44` (goldbot-v1) — GitHub Actions: SUCCESS |
+| Latest Director Decision | PHASE-02 Flow-by-Flow Development Initialization (2026-08-05) |
+| Latest Stable Commit | goldbot-v1 — oxirgi push, GitHub Actions: SUCCESS |
 | Branch | `goldbot-v1` (canonical, DD-002) |
 
 ---
