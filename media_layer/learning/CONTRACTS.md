@@ -1,199 +1,605 @@
 # Learning Layer Contracts
 
-Status: CANONICAL
+## Overview
 
-Blueprint Only. Reserved for future Education/Learning Platform. Not part of the current Media Layer runtime.
+Learning Layer GoldBot AI Ecosystem tarkibidagi Professional AI Trading Academy hisoblanadi.
 
----
+Ushbu hujjat Learning Layer va uning modullari uchun rasmiy kontraktlarni (Contracts) belgilaydi.
 
-# Purpose
-
-Ushbu hujjat Learning modulining rasmiy Architecture Contract hujjati hisoblanadi.
+Har bir modul ushbu kontraktlarga qat'iy amal qilishi shart.
 
 ---
 
-# Module Responsibility
+# Contract Principles
 
-Learning Layer quyidagilar uchun javobgar.
+Learning Layer quyidagi tamoyillarga amal qiladi:
 
-✓ Education
-
-✓ Practice
-
-✓ Simulation
-
-✓ AI Coaching
-
-✓ Certification
-
-✓ Progress Tracking
-
-✓ Learning Analytics
-
-✓ Tournament
-
-✓ Challenge
-
-✓ Career Development
-
-Learning Layer bajarmaydi.
-
-✗ Historical Data
-
-✗ Live Stream
-
-✗ Market Memory
-
-✗ Market Analysis
-
-✗ Strategy Calculation
-
-✗ Decision Engine
-
-✗ Risk Calculation
-
-✗ Signal Generation
-
-✗ Trade Execution
-
-✗ Payment
-
-✗ Subscription
+- Single Responsibility
+- Layer Separation
+- Reuse First (GEL-001)
+- API First
+- Contract First
+- AI Assisted
+- Platform Independent
 
 ---
 
-# Module Boundary
+# Learning Layer Contract
 
-GoldBot Core
+## Input
 
-↓
+Learning Layer quyidagi ma'lumotlarni qabul qiladi.
 
-Application Services
+- User Request
+- User Progress
+- Learning Path
+- Curriculum
+- Assessment Result
+- Replay Result
+- Simulator Result
+- AI Feedback
 
-↓
+---
 
-AI Layer
+## Processing
 
-↓
+Learning Layer quyidagi vazifalarni bajaradi.
 
-Platform Layer
+- Learning Management
+- Lesson Management
+- Progress Tracking
+- Assessment
+- AI Coaching
+- Certification
+- Learning Analytics
 
-↓
+---
 
-User Experience Layer
+## Output
 
-↓
+Learning Layer quyidagilarni ishlab chiqaradi.
 
-LEARNING LAYER
+- Lessons
+- Quiz
+- Practice Tasks
+- Progress
+- Certificates
+- Statistics
+- Leaderboard
+- Learning Report
 
-↓
+---
+
+## Consumer
+
+Learning Layer natijalaridan foydalanadi.
+
+- Telegram
+- Mobile
+- Desktop
+- Web
+
+---
+
+# Public API
+
+Learning Layer tashqi tizimlarga faqat Learning API orqali xizmat ko'rsatadi.
+
+Public API:
+
+- Get Courses
+- Get Lesson
+- Start Lesson
+- Complete Lesson
+- Get Progress
+- Start Quiz
+- Submit Quiz
+- Start Simulator
+- Start Replay
+- Get Certificate
+- Get Leaderboard
+
+Learning Layer ichki modullarini tashqariga ochmaydi.
+
+---
+
+# Internal Contracts
+
+## academy
+
+### Input
+
+- Curriculum
+- Learning Path
+
+### Output
+
+- Lessons
+- Courses
+- Modules
+
+### Consumer
+
+- Assessment
+- AI Coach
+- Progress
+
+---
+
+## curriculum
+
+### Input
+
+Director tomonidan tasdiqlangan o'quv dasturi.
+
+### Output
+
+Course Structure
+
+### Consumer
+
+- Academy
+- Learning Path
+
+---
+
+## learning_path
+
+### Input
+
+- User Level
+- Progress
+
+### Output
+
+Next Lesson
+
+### Consumer
+
+- Academy
+- Roadmap
+
+---
+
+## ai_coach
+
+### Input
+
+- Lesson
+- Assessment
+- Replay
+- Simulator
+- Journal
+
+### Output
+
+- AI Feedback
+- Recommendation
+- Hint
+- Explanation
+
+### Consumer
+
+- User
+
+---
+
+## simulator
+
+### Input
+
+- Lesson
+- Practice Task
+
+### Output
+
+- Trade Result
+- Practice Result
+
+### Consumer
+
+- Assessment
+- AI Coach
+
+---
+
+## replay
+
+### Input
+
+Historical Market Data
+
+### Output
+
+Replay Session
+
+### Consumer
+
+- Simulator
+- Market Lab
+
+---
+
+## market_lab
+
+### Input
+
+Replay Data
+
+### Output
+
+Chart Exercise
+
+### Consumer
+
+- Assessment
+- AI Coach
+
+---
+
+## assessment
+
+### Input
+
+- Quiz
+- Practical Task
+
+### Output
+
+- Score
+- Pass
+- Fail
+
+### Consumer
+
+- Progress
+- Certification
+
+---
+
+## certification
+
+### Input
+
+Assessment Result
+
+### Output
+
+Certificate
+
+### Consumer
 
 User
 
 ---
 
-# Input Contract
+## progress
 
-• AI Layer natijalari (AI Coach uchun kontekst)
+### Input
 
-• User Interaction (Academy/Simulator/Challenge/Tournament so'rovlari)
+Learning Activities
 
-• Progress Data (avvalgi sessiyalardan)
+### Output
 
----
+- XP
+- Level
+- Statistics
 
-# Output Contract
+### Consumer
 
-• Lesson Content
-
-• Simulation Result
-
-• Certification Status
-
-• Progress Update
-
-• Learning Analytics Report
+- Roadmap
+- Analytics
 
 ---
 
-# Allowed Dependencies
+## roadmap
 
-✓ AI Layer (AI Coach uchun, faqat maslahat sifatida)
+### Input
 
-✓ Platform Layer (foydalanuvchiga yetkazish uchun)
+Progress
 
----
+### Output
 
-# Forbidden Dependencies
+Learning Roadmap
 
-✗ Signal Layer
+### Consumer
 
-✗ Decision Layer
-
-✗ Risk Layer
-
-✗ Execution Layer
-
-✗ Database Layer (real Trade ma'lumotlariga to'g'ridan-to'g'ri)
+User
 
 ---
 
-# Public API (Blueprint — imzolar implementatsiya bosqichida aniqlanadi)
+## achievements
 
-getLearningState()
+### Input
 
-subscribeLearningEvent(callback)
+Progress
 
-configureLearning(options)
+### Output
 
-disposeLearning()
+Badges
+
+### Consumer
+
+Leaderboard
 
 ---
 
-# Architecture Rules
+## leaderboard
+
+### Input
+
+Challenge Result
+
+### Output
+
+Ranking
+
+### Consumer
+
+Tournament
+
+---
+
+## analytics
+
+### Input
+
+Progress Data
+
+### Output
+
+Learning Analytics
+
+### Consumer
+
+AI Coach
+
+---
+
+## journal
+
+### Input
+
+User Notes
+
+### Output
+
+Learning History
+
+### Consumer
+
+AI Coach
+
+---
+
+## library
+
+### Input
+
+Learning Content
+
+### Output
+
+Study Materials
+
+### Consumer
+
+Academy
+
+---
+
+## career_mode
+
+### Input
+
+Progress
+
+### Output
+
+Career Level
+
+### Consumer
+
+Roadmap
+
+---
+
+## challenge
+
+### Input
+
+Learning Task
+
+### Output
+
+Challenge Result
+
+### Consumer
+
+Leaderboard
+
+---
+
+## tournament
+
+### Input
+
+Challenge Result
+
+### Output
+
+Tournament Ranking
+
+### Consumer
+
+Leaderboard
+
+---
+
+## pvp
+
+### Input
+
+Player A
+
+Player B
+
+### Output
+
+Match Result
+
+### Consumer
+
+Leaderboard
+
+---
+
+## ai_vs_player
+
+### Input
+
+- User Analysis
+- AI Analysis
+
+### Output
+
+Comparison Report
+
+### Consumer
+
+User
+
+---
+
+## learning_api
+
+### Input
+
+Platform Request
+
+### Output
+
+Learning Response
+
+### Consumer
+
+- Telegram
+- Mobile
+- Desktop
+- Web
+
+---
+
+# External Dependencies
+
+Learning Layer quyidagi Layer'larni reuse qiladi.
+
+Business Layer
+
+- User
+- Subscription
+- Identity
+
+Platform Layer
+
+- Language
+- Authentication
+- Notification
+- Theme
+
+Chart Service
+
+- Replay
+- Charts
+
+GoldBot Core
+
+- Market Context
+
+AI Layer
+
+- AI Services
+
+Learning Layer ushbu Layer'larning ichki logikasiga bevosita murojaat qilmaydi.
+
+---
+
+# Forbidden
 
 Learning Layer:
 
-✓ Education va Practice bajaradi.
+❌ Trading qilmaydi.
 
-✓ Module Boundary'ni saqlaydi.
+❌ Signal yaratmaydi.
 
-Learning Layer:
+❌ Decision qabul qilmaydi.
 
-✗ Savdo qarorini yaratmaydi.
+❌ Risk hisoblamaydi.
 
-✗ Real hisobga ta'sir qilmaydi (Simulator faqat virtual).
+❌ Execution qilmaydi.
 
-✗ Market Analysis yoki Signal Generation bajarmaydi.
+❌ Market Memory'ni o'zgartirmaydi.
 
----
+❌ Chart Service logikasini o'zgartirmaydi.
 
-# Runtime Rules
+❌ Platform Settings yaratmaydi.
 
-1. Learning Layer faqat o'z Module Boundary ichida ishlaydi.
+❌ User Profile yaratmaydi.
 
-2. AI Coach faqat yo'l ko'rsatadi — savdo qarorini yaratmaydi.
+❌ Notification yaratmaydi.
 
-3. Simulator natijalari real hisobga hech qachon ta'sir qilmaydi.
-
-4. Certification faqat belgilangan mezonlar asosida beriladi.
-
-5. Circular Dependency qat'iyan taqiqlanadi.
+❌ Language boshqarmaydi.
 
 ---
 
-# Acceptance Criteria
+# Reuse Rules
 
-✓ Input qabul qilinadi.
+Reuse qilinadi:
 
-✓ Education/Practice/Simulation bajariladi.
+- Identity
+- Authentication
+- Authorization
+- User Profile
+- Language
+- Notification
+- Theme
+- Chart Service
+- AI Layer
 
-✓ Output yaratiladi.
-
-✓ Architecture Boundary buzilmaydi.
+Takrorlash taqiqlanadi.
 
 ---
 
-# Summary
+# Contract Stability
 
-Learning Contract GoldBot ekotizimidagi Learning Layer jarayonlarini belgilovchi rasmiy Canonical Architecture Contract hisoblanadi. Bu hujjat Blueprint bosqichida — real implementatsiya kelajakdagi Education/Learning Platform ishga tushirilganda boshlanadi.
+Contract Status:
+
+Stable
+
+Breaking Changes:
+
+Forbidden
+
+Har qanday Contract o'zgarishi:
+
+- RFC
+- ADR
+- Director Decision
+
+orqali amalga oshiriladi.
+
+---
+
+Version: v1.0
+
+Status: Blueprint
+
+Architecture: GoldBot V3
+
+Lifecycle: GDL-001
+
+Flow Standard: GFL-001
+
+Module Standard: GEL-001
+
+Language Standard: GLS-001
