@@ -1147,7 +1147,7 @@ Service Data
 
 Processing
 
-UI render
+UI render (hali qurilmagan)
 
 Output
 
@@ -1156,6 +1156,16 @@ UI View
 Consumer
 
 End User
+
+Qisqa Audit
+
+`platform_layer/desktop_api/`da faqat 13-qatorli generik Foundation
+Freeze v1.0/MIR-001 docstring bor, `__init__.py`dan boshqa hech qanday
+`.py` fayl yo'q. Desktop-specific kod (Electron/PyQt/Tkinter) repo
+bo'yicha qidiruv bilan topilmadi. FLOW-021/022/023'ga o'xshab, bu ham
+haqiqatan ham qurilmagan subsystem. Qaror: MIR-001 qoidasi bo'yicha
+mavjud bo'lmagan narsani "bajarilgan" deb belgilash noto'g'ri -- kod
+yozilmadi, Flow Blueprint'da qoladi.
 
 Next Flow
 

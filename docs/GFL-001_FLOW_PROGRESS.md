@@ -82,7 +82,7 @@ Director Review talab qilinadi.
 | FLOW-021 | Mini App | Platform Layer | 🟦 | 0% | Worker | Audit qilindi -- 2026-08-05. Real UI render implementatsiyasi topilmadi (`PlatformAdapterBase` abstract, concrete Mini App sinfi yo'q). Sub-Status: Blueprint (Development uchun tayyor emas). |
 | FLOW-022 | Android | Platform Layer | 🟦 | 0% | Worker | Audit qilindi -- 2026-08-05. `platform_layer/mobile_api/` faqat 13-qatorli Foundation Freeze skeleton, real UI kod yo'q. Sub-Status: Blueprint (Development uchun tayyor emas). |
 | FLOW-023 | iOS | Platform Layer | 🟦 | 0% | Worker | Audit qilindi -- 2026-08-05. `platform_layer/mobile_api/` faqat 13-qatorli Foundation Freeze skeleton, real UI kod yo'q. Sub-Status: Blueprint (Development uchun tayyor emas). |
-| FLOW-024 | Desktop | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-020. Kutmoqda. |
+| FLOW-024 | Desktop | Platform Layer | 🟦 | 0% | Worker | Audit qilindi -- 2026-08-05. `platform_layer/desktop_api/` faqat 13-qatorli Foundation Freeze skeleton, real UI kod yo'q. Sub-Status: Blueprint (Development uchun tayyor emas). |
 | FLOW-025 | Web | Platform Layer | 🟦 | 0% | Worker | Eski FLOW-021. Kutmoqda. |
 
 ---

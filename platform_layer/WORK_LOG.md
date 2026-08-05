@@ -137,3 +137,21 @@ Lessons Learned: FLOW-021/FLOW-022ga o'xshab, FLOW-023 ham qurilmagan
   subsystem.
 
 ---
+
+Issue ID: GFL-001-FLOW-024
+Date: 2026-08-05
+Severity: N/A
+Problem: FLOW-024 (Desktop) audit bo'yicha tekshirildi.
+Cause: Yo'q -- `platform_layer/desktop_api/`da faqat 13-qatorli
+  generik Foundation Freeze v1.0/MIR-001 docstring bor, `__init__.py`
+  dan boshqa hech qanday `.py` fayl yo'q. Desktop-specific kod
+  (Electron/PyQt/Tkinter) repo bo'yicha qidiruv bilan topilmadi.
+Decision: MIR-001 qoidasi bo'yicha mavjud bo'lmagan narsani
+  "bajarilgan" deb belgilash noto'g'ri. Kod yozilmadi. Flow
+  Blueprint'da qoladi (Completed emas).
+Implementation: Faqat docs yangilandi.
+Validation: N/A.
+Lessons Learned: FLOW-021/022/023ga o'xshab, FLOW-024 ham qurilmagan
+  subsystem.
+
+---
