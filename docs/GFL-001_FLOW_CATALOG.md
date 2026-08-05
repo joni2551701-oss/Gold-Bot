@@ -511,15 +511,28 @@ Decision
 
 Processing
 
-Geometry/stop-loss validation, sizing
+Geometry/stop-loss validation, sizing -- `risk_layer.risk_engine
+.risk_manager.RiskManager.evaluate()` (mavjud, real kod) orqali.
+CLAUDE.md Trading Safety'da himoyalangan modul (geometry/stop-loss
+validation and sizing formulas), ushbu Flow doirasida
+o'zgartirilmadi.
 
 Output
 
-Safe Decision
+Safe Decision -- `RiskResult`.
 
 Consumer
 
-Signal Engine (FLOW-012)
+Signal Engine (FLOW-012) -- amalda hozircha `core_layer/pipeline.py`ning
+`risk` stage'i orqali.
+
+Qisqa Audit
+
+`RiskManager` allaqachon to'liq amalga oshirilgan, CLAUDE.md Trading
+Safety qoidasi bilan himoyalangan, keng test qilingan
+(`tests/unit/test_risk_manager.py`, `tests/risk/*`) va allaqachon real
+`TradingPipeline`ga ulangan. Kod yozish/o'zgartirish kerak emas va
+ruxsat etilmagan.
 
 Next Flow
 
