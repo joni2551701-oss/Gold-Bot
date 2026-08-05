@@ -43,3 +43,25 @@ Lessons Learned: FLOW-005/006/007/008'da bo'lgani kabi, kanonik Flow
   stage'lariga qarash kerak, shunchaki nomga emas.
 
 ---
+
+Issue ID: GFL-001-FLOW-012
+Date: 2026-08-05
+Severity: N/A
+Problem: FLOW-012 (Signal Engine) audit bo'yicha tekshirildi. Producer
+  Risk Engine (FLOW-011), Input Safe Decision, Output Signal.
+Cause: Yo'q -- `signal_layer.signal_builder.adapter
+  .from_signal_candidate()` (Pre-Phase 59 AC-03) allaqachon
+  risk-baholangan candidate/quality/decision'dan portable
+  `SignalSchema` (`signal_layer/signal_builder/schema.py`) yig'adi,
+  `core_layer/pipeline.py`ning `signal_history` stage'iga ulangan va
+  `tests/integration/test_signal_context_link.py`da test qilingan.
+Decision: Kod yozish kerak emas. Docs (`GFL-001_FLOW_CATALOG.md`,
+  `GFL-001_FLOW_PROGRESS.md`) Completed deb belgilandi.
+Implementation: Faqat docs yangilandi.
+Validation: N/A (kod o'zgarishi yo'q).
+Lessons Learned: FLOW-012'ning "Signal" output'i FLOW-008'dagi
+  signal_engine'ning xom `SignalCandidate`'idan farqli -- bu Risk
+  Engine'dan keyingi, portable/persistable `SignalSchema` bosqichi.
+  Ikkalasi ham real, lekin turli pipeline nuqtalarida.
+
+---

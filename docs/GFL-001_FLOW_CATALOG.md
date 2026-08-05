@@ -554,15 +554,27 @@ Safe Decision
 
 Processing
 
-Signal assembly/validation
+Signal assembly/validation -- `signal_layer.signal_builder.adapter
+.from_signal_candidate()` (mavjud, real kod) orqali, `SignalSchema`
+(`signal_layer/signal_builder/schema.py`) shakliga o'tkazadi.
 
 Output
 
-Signal
+Signal -- `SignalSchema`.
 
 Consumer
 
-Execution Engine (FLOW-013)
+Execution Engine (FLOW-013) -- amalda hozircha
+`core_layer/pipeline.py`ning `signal_history` stage'i orqali.
+
+Qisqa Audit
+
+`from_signal_candidate()`/`SignalSchema` allaqachon to'liq amalga
+oshirilgan (Pre-Phase 59 AC-03), risk-baholangan candidate/quality/
+decision'dan portable Signal yig'adi, `core_layer/pipeline.py`ning
+`signal_history` stage'iga ulangan va `tests/integration
+/test_signal_context_link.py`da test qilingan. Kod
+yozish/o'zgartirish kerak emas.
 
 Next Flow
 
