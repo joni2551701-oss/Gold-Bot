@@ -30,22 +30,24 @@ holati (2026-08-05) bo'yicha xolis fakt:
 | 4 | `GFL-001_FLOW_CATALOG.md` | Mavjud | ✅ |
 | 5 | `GFL-001_FLOW_DEPENDENCY.md` | Mavjud | ✅ |
 | 6 | `GFL-001_FLOW_PROGRESS.md` | Mavjud | ✅ |
-| 7 | `GLS-001_TRANSLATION_STANDARD.md` | Nomi bo'yicha yo'q; faqat komponent `docs/TERMINOLOGY.md` mavjud | ⬜ Qisman |
-| 8 | GEL-001 (Canonical Module = Package) | Anchor fayl yo'q; qoida faqat standart ichida inline | ⬜ Anchor yo'q |
+| 7 | `GLS-001_TRANSLATION_STANDARD.md` | Mavjud (Foundation Completion Task, Canonical v1.0; komponent `docs/TERMINOLOGY.md`) | ✅ |
+| 8 | GEL-001 (Canonical Module = Package) | Mavjud (`docs/GEL-001_CANONICAL_MODULE_STANDARD.md`, Foundation Completion Task, Canonical v1.0) | ✅ |
 | 9 | DD-005 (Compatibility Exception) | Fayl yo'q; registrda ataylab band emas | 🔧 To'g'rilandi |
 | 10 | V3 Architecture | `docs/architecture/` (to'liq to'plam) | ✅ |
 
-Xulosa: **7/10 canonical nom bilan mavjud**, **2/10 haqiqiy bo'shliq**
-(GLS-001 master, GEL-001 anchor), **1/10 dangling havola to'g'rilandi**
-(DD-005). Owner Task ularni "yakunlangan deb tasdiqlash"ni so'ragan
-bo'lsa-da, mavjud bo'lmagan fayllarni "yakunlangan" deb belgilash
-noto'g'ri bo'lardi — shu sababli quyida har biri xolis holatda qayd
-etildi (FLOW-021..025 auditidagi bir xil xolis naqsh).
+Xulosa (yakuniy holat): **10/10 deliverable canonical nom bilan
+mavjud**, **1/10 dangling havola to'g'rilandi** (DD-005). Dastlabki
+audit 6/10 topgan edi; keyin GDL-001 (deliverable #1) Director
+tomonidan bevosita yaratildi (commit 68c7d4a, Canonical v1.0), va
+GLS-001 (#7) hamda GEL-001 (#8) Director qarori bo'yicha Foundation
+Completion Task sifatida qo'shildi. Barcha bosqichda xolislik saqlandi:
+mavjud bo'lmagan fayl hech qachon "yakunlangan" deb belgilanmadi
+(FLOW-021..025 auditidagi bir xil xolis naqsh).
 
-Izoh (audit davomida yangilandi): GDL-001 (deliverable #1) Worker audit
-qilayotgan paytda Director tomonidan bevosita yaratildi (commit
-68c7d4a, Status: Canonical v1.0). Shu sababli #1 bo'shliqdan ✅ ga
-o'tdi va 2-bo'lim (Development Freeze) PENDING'dan READY'ga ko'tarildi.
+Director qarori (yakuniy): **PHASE-01 — APPROVED, Foundation Freeze.**
+GLS-001 va GEL-001 Foundation Completion Task sifatida bajarildi;
+ular arxitektura/kod/dependency'ni o'zgartirmaydi va PHASE-01 qayta
+ochilmaydi.
 
 ---
 
@@ -126,16 +128,17 @@ Rule), GFL-004 (Lightweight Loop) barchasi qayd etilgan.
 - `docs/standards/COMMIT_STANDARD.md` — commit formati. ✅
 - `docs/standards/REVIEW_STANDARD.md` — review qoidalari. ✅
 - `docs/standards/TEST_STANDARD.md` — test standarti. ✅
-- **GEL-001 (Canonical Module = Package)** — bu qoida
-  `GFL-001_FLOW_FIRST_STANDARD.md` (bir necha joyda) va
-  `GFL-001_FLOW_CATALOG.md` (355-qator, "GEL-001 Strict")da
-  havola qilinadi, ammo **o'z anchor faylига ega emas**. ⬜
+- **GEL-001 (Canonical Module = Package)** —
+  `docs/GEL-001_CANONICAL_MODULE_STANDARD.md` (Foundation Completion
+  Task, Canonical v1.0) endi mavjud. Qoida ilgari
+  `GFL-001_FLOW_FIRST_STANDARD.md` va `GFL-001_FLOW_CATALOG.md`
+  (355-qator, "GEL-001 Strict")da inline havola qilingan edi; endi
+  yagona canonical anchori bor. ✅
 - `CLAUDE.md` Module Reuse Principle + pyflakes/compileall/pytest
   zanjiri — amaliy coding gate. ✅
 
-**Coding Freeze holati: PENDING** — GEL-001 anchori yo'qligi sababli.
-Standartlar to'plami o'zi to'liq; faqat GEL-001 "Canonical Module =
-Package" qonuni inline'dan canonical anchor'ga chiqarilishi kerak.
+**Coding Freeze holati: READY** — GEL-001 anchori yaratildi (Foundation
+Completion Task). Standartlar to'plami to'liq.
 
 ---
 
@@ -143,15 +146,15 @@ Package" qonuni inline'dan canonical anchor'ga chiqarilishi kerak.
 
 - `docs/standards/DOCUMENTATION_STANDARD.md` — hujjat standarti. ✅
 - `docs/policies/DOCUMENTATION_POLICY.md` — hujjat siyosati. ✅
-- **GLS-001 Translation Standard** — `docs/TERMINOLOGY.md` uni "GLS-001
-  Translation Standard doirasida" komponenti deb ataydi (3-qator), ammo
-  **`GLS-001_TRANSLATION_STANDARD.md` master hujjati mavjud emas**. ⬜
+- **GLS-001 Translation Standard** — `docs/GLS-001_TRANSLATION_STANDARD.md`
+  (Foundation Completion Task, Canonical v1.0) endi mavjud; uning
+  komponenti `docs/TERMINOLOGY.md` (append-only lug'at) unga bog'landi.
+  Engineering Language Policy bilan munosabat ham hujjatlashtirildi
+  (kod tili = English, hujjat prozasi = O'zbek). ✅
 - `docs/README.md` — hujjat indeksi. ✅
 
-**Documentation Freeze holati: PENDING** — GLS-001 master hujjati
-yo'q. Hozir faqat uning komponenti (TERMINOLOGY.md) mavjud. Tavsiya:
-GLS-001 master'ni TERMINOLOGY.md + "docs/reports O'zbek tilida"
-qoidasini bitta joyga bog'lovchi yupqa anchor sifatida yaratish.
+**Documentation Freeze holati: READY** — GLS-001 master anchori
+yaratildi (Director qarori bo'yicha Foundation Completion Task).
 
 ---
 
@@ -204,10 +207,11 @@ policies/ da yozilgan va amal qiladi.
   `__init__.py`-only paketlar (`platform_layer/{mobile_api,desktop_api,
   web_api}`, `core_layer/service_registry`) himoyalangan, ularga yangi
   business logic yozilmadi. ✅
-- Bo'shliq: GEL-001 anchor fayli (4-bo'lim bilan bir xil element). ⬜
+- GEL-001 anchor fayli (4-bo'lim bilan bir xil element) endi mavjud:
+  `docs/GEL-001_CANONICAL_MODULE_STANDARD.md`. ✅
 
-**Canonical Freeze holati: PENDING** — struktura o'zi canonical va
-barqaror; faqat GEL-001 anchor hujjatlashtirilishi qoladi.
+**Canonical Freeze holati: READY** — struktura canonical va barqaror;
+GEL-001 anchor hujjatlashtirildi (Foundation Completion Task).
 
 ---
 
@@ -237,19 +241,17 @@ commit'i uchun validation quyida qayta yuritiladi).
 | 1. Architecture | Architecture Freeze | READY |
 | 2. Development Lifecycle | Development Freeze | READY (GDL-001 Director-authored) |
 | 3. Flow Methodology | Flow Freeze | READY |
-| 4. Coding Standard | Coding Freeze | PENDING (GEL-001 anchor) |
-| 5. Documentation Standard | Documentation Freeze | PENDING (GLS-001 master) |
+| 4. Coding Standard | Coding Freeze | READY (GEL-001 anchor yaratildi) |
+| 5. Documentation Standard | Documentation Freeze | READY (GLS-001 master yaratildi) |
 | 6. Governance | Governance Freeze | READY (DD-005 to'g'rilandi) |
 | 7. Development Rules | Development Rules Freeze | READY |
-| 8. Canonical Structure | Canonical Freeze | PENDING (GEL-001 anchor) |
+| 8. Canonical Structure | Canonical Freeze | READY (GEL-001 anchor yaratildi) |
 | 9. Validation | Foundation Validation | PASS |
 
-**Umumiy: 6 bo'lim READY/PASS, 2 element bo'shliq** (GLS-001 master,
-GEL-001 anchor — 4 va 8-bo'lim bir xil GEL-001'ga tayanadi). GDL-001
-(2-bo'lim) audit davomida Director tomonidan yopildi. Barcha 10 bo'lim
-100% "Freeze" holatiga yetishi uchun 2 yupqa anchor hujjati qoldi.
-PHASE-01 xolisona **~97% Foundation Ready** deb belgilanadi (soxta 100%
-e'lon qilinmaydi).
+**Umumiy: barcha 9 bo'lim READY/PASS.** Dastlabki audit 6 bo'lim
+READY topgan edi; keyin GDL-001 (Director), so'ng GLS-001 va GEL-001
+(Foundation Completion Task) yopildi. PHASE-01 endi **100% Documentation
+Freeze** bilan Director tomonidan **APPROVED** (Foundation Freeze).
 
 ---
 
@@ -275,17 +277,17 @@ canonical anchor fayllari (mazmun mavjud, anchor yo'q).
 Konstitutsiya + DD registri to'liq. DD-005 ziddiyati (standart vs.
 registr) to'g'rilandi, No Silent Decisions bo'yicha qayd etildi.
 
-### Director Approval — PENDING
-Director quyidagilardan birini tanlashi mumkin:
+### Director Approval — APPROVED (Foundation Freeze)
+Director qarori: **PHASE-01 SHARTLI APPROVED → Foundation Freeze.**
+Director (A) variantini tanladi: qolgan 2 anchor Foundation Completion
+Task sifatida yaratildi:
+- `docs/GLS-001_TRANSLATION_STANDARD.md` (Canonical v1.0)
+- `docs/GEL-001_CANONICAL_MODULE_STANDARD.md` (Canonical v1.0)
 
-- **(A)** Qolgan 2 yupqa anchor hujjatini yaratishni buyurish (GLS-001
-  master → TERMINOLOGY.md ustidan, GEL-001 → "Canonical Module =
-  Package" qoidasi). (GDL-001 audit davomida Director tomonidan
-  allaqachon yaratildi.) Shundan keyin barcha 10 bo'lim 100% Freeze
-  bo'ladi. **Foundation FROZEN** e'lon qilinadi.
-- **(B)** Mavjud tarqoq hujjatlarni (DEVELOPMENT_POLICY, standards/,
-  TERMINOLOGY.md) shu bo'limlar uchun SSOT deb tasdiqlash — anchor
-  yaratmasdan. Shundan keyin 10 bo'lim tasdiqlangan hisoblanadi.
+(GDL-001 audit davomida Director tomonidan yaratilgan edi — commit
+68c7d4a.) Bu ikkala hujjat arxitektura/kod/dependency'ni
+o'zgartirmaydi. **PHASE-01 qayta ochilmaydi.** Barcha 10 deliverable
+canonical nom bilan mavjud; 9 bo'lim READY/PASS.
 
 ### 4-Phase nomlanishi (Owner tavsiyasi, tasdiq uchun)
 - **PHASE-01 Foundation Architecture** (shu hujjat) — arxitektura,

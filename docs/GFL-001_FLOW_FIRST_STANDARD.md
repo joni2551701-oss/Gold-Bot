@@ -287,10 +287,12 @@ qayd etilgan.
 Bu hujjat quyidagi standartlar bilan birga ishlaydi:
 
 - GEL-001 — Canonical Module = Package
+  (`docs/GEL-001_CANONICAL_MODULE_STANDARD.md`)
 - GFL-002 — V3 Architecture Flow Catalog Refactor
 - GFL-003 — Sequential Flow Rule (shu hujjat ichida)
 - GFL-004 — Development v1 Lightweight Flow Loop Rule (shu hujjat ichida)
 - GLS-001 — Docs va reports O'zbek tilida
+  (`docs/GLS-001_TRANSLATION_STANDARD.md`)
 - Compatibility Exception registry — `docs/ai/COMPATIBILITY_REPORT.md`
   (PHASE-01 Foundation Audit'da to'g'rilandi: bu material DD raqamiga
   ega emas. Director registri (`docs/governance/director/README.md`)
