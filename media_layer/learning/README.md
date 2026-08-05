@@ -1,328 +1,224 @@
 # Learning Layer
 
-Status: CANONICAL
+## Overview
 
-Blueprint Only. Reserved for future Education/Learning Platform. Not part of the current Media Layer runtime.
+Learning Layer — GoldBot AI Ecosystem tarkibidagi professional AI-assisted Trading Academy hisoblanadi.
 
----
+Uning asosiy maqsadi foydalanuvchini boshlang'ich darajadan professional trader darajasigacha bosqichma-bosqich o'qitish, bilimini baholash, amaliyot o'tkazish va rivojlanishini kuzatishdir.
 
-# Purpose
+Learning Layer oddiy video kurslar platformasi emas.
 
-Learning Layer — Senior Trading AI ekotizimining ta'lim va rivojlanish qatlamidir.
+Bu AI yordamida ishlaydigan interaktiv ta'lim tizimi bo'lib, foydalanuvchi:
 
-Uning asosiy vazifasi foydalanuvchilarni professional trader sifatida rivojlantirish, interaktiv o'quv tizimini taqdim etish va nazariy bilimlarni amaliy mashg'ulotlar bilan birlashtirishdir.
+- o'rganadi;
+- mashq qiladi;
+- replay orqali takrorlaydi;
+- AI Coach'dan feedback oladi;
+- bilimini sinovdan o'tkazadi;
+- sertifikat oladi;
+- keyingi bosqichga o'tadi.
 
-Learning Layer hech qachon marketni tahlil qilmaydi va savdo qarorini hisoblamaydi.
-
----
-
-# Objective
-
-Learning Layer quyidagi vazifalarni bajaradi:
-
-• Trading Academy
-
-• Interactive Lessons
-
-• Simulator
-
-• AI Coach
-
-• Challenge System
-
-• Tournament
-
-• PvP
-
-• AI vs AI
-
-• Certification
-
-• Career Mode
-
-• Learning Analytics
-
-• Progress Tracking
+Learning Layer GoldBot Platform'ning ajralmas qismi hisoblanadi.
 
 ---
 
-# Layer Position
+# Mission
 
-GoldBot Core
+Professional AI Trading Academy yaratish.
 
-↓
+Maqsad:
 
-Application Services
+- Trading bilimini tizimli o'rgatish.
+- Amaliy mashg'ulotlarni tashkil qilish.
+- AI yordamida foydalanuvchini rivojlantirish.
+- Har bir foydalanuvchiga individual Learning Path yaratish.
+- Professional sertifikatlash tizimini yaratish.
 
-↓
+---
 
-AI Layer
+# Principles
 
-↓
+Learning Layer quyidagi tamoyillar asosida quriladi.
 
-Platform Layer
+## Learn First
 
-↓
+Nazariya → Amaliyot → Tahlil → Baholash → Rivojlanish.
 
-User Experience Layer
+---
 
-↓
+## AI Assisted
 
-LEARNING LAYER
+AI qaror qabul qilmaydi.
 
-↓
+AI:
 
+- tushuntiradi;
+- baholaydi;
+- tavsiya beradi;
+- mentor vazifasini bajaradi.
+
+---
+
+## Practice Driven
+
+Har bir dars amaliy mashq bilan yakunlanadi.
+
+---
+
+## Progressive Learning
+
+Foydalanuvchi o'z bilim darajasiga mos yo'ldan boshlaydi.
+
+---
+
+## Reuse First (GEL-001)
+
+Learning hech qachon Platform funksiyalarini takrorlamaydi.
+
+Masalan:
+
+- Language
+- Theme
+- User Profile
+- Notification
+- Authentication
+
+Platform tomonidan boshqariladi.
+
+Learning faqat o'quv logikasini boshqaradi.
+
+---
+
+## Layer Separation
+
+Learning boshqa Layer'larning ichki logikasiga bevosita murojaat qilmaydi.
+
+Barcha aloqa Learning API orqali amalga oshiriladi.
+
+---
+
+# Learning Workflow
+
+```
 User
-
----
-
-# Internal Structure
-
-Learning_Layer/
-
-├── README.md
-│
-├── Academy/
-│
-├── Interactive_Lessons/
-│
-├── Simulator/
-│
-├── AI_Coach/
-│
-├── Challenge/
-│
-├── Tournament/
-│
-├── PvP/
-│
-├── AI_vs_AI/
-│
-├── Certification/
-│
-├── Career_Mode/
-│
-├── Progress/
-│
-└── Learning_Analytics/
-
----
-
-# Module Overview
-
-## Academy
-
-Trading bo'yicha to'liq o'quv dasturi.
-
-Boshlang'ichdan Professional darajagacha.
-
----
-
-## Interactive_Lessons
-
-Interaktiv darslar.
-
-Amaliy mashqlar.
-
-Bilimlarni tekshirish.
-
----
-
-## Simulator
-
-Virtual Trading.
-
-Risksiz mashq qilish.
-
-Historical Replay.
-
-Demo Environment.
-
----
-
-## AI_Coach
-
-Shaxsiy AI ustoz.
-
-Xatolarni tushuntirish.
-
-Shaxsiy tavsiyalar.
-
-Rivojlanish rejasi.
-
----
-
-## Challenge
-
-Kunlik va haftalik vazifalar.
-
-Trading missiyalari.
-
-Mukofot tizimi.
-
----
-
-## Tournament
-
-Trading musobaqalari.
-
-Global ranking.
-
-Competition.
-
-Season Events.
-
----
-
-## PvP
-
-Trader vs Trader.
-
-Real vaqt musobaqalari.
-
-Skill Comparison.
-
----
-
-## AI_vs_AI
-
-AI strategiyalarini o'zaro taqqoslash.
-
-Model Benchmark.
-
-Research Environment.
-
----
-
-## Certification
-
-Imtihonlar.
-
-Darajalar.
-
-Sertifikatlar.
-
-Achievements.
-
----
-
-## Career_Mode
-
-Professional rivojlanish yo'li.
-
-Bosqichma-bosqich o'sish.
-
-Career Progress.
-
----
-
-## Progress
-
-Learning Progress.
-
-XP.
-
-Level.
-
-Achievements.
-
-Learning History.
-
----
-
-## Learning_Analytics
-
-O'quv statistikasi.
-
-Performance.
-
-Weak Points.
-
-Recommendations.
-
----
-
-# Responsibilities
-
-Learning Layer:
-
-✓ Education
-
-✓ Practice
-
-✓ Simulation
-
-✓ AI Coaching
-
-✓ Certification
-
-✓ Progress Tracking
-
-✓ Learning Analytics
-
-✓ Tournament
-
-✓ Challenge
-
-✓ Career Development
-
----
-
-# Not Responsible
-
-Learning Layer:
-
-✗ Historical Data
-
-✗ Live Stream
-
-✗ Market Memory
-
-✗ Market Analysis
-
-✗ Strategy Calculation
-
-✗ Decision Engine
-
-✗ Risk Calculation
-
-✗ Signal Generation
-
-✗ Trade Execution
-
-✗ Payment
-
-✗ Subscription
-
----
-
-# Learning Flow
-
-GoldBot Core
-
-↓
-
-Application Services
-
-↓
-
-AI Layer
-
-↓
-
-Learning Layer
-
-↓
-
+    │
+    ▼
+Learning Path
+    │
+    ▼
 Academy
-
-↓
-
+    │
+    ▼
+Lesson
+    │
+    ▼
+Assessment
+    │
+    ▼
 Practice
+    │
+    ▼
+Replay / Simulator
+    │
+    ▼
+AI Coach
+    │
+    ▼
+Progress
+    │
+    ▼
+Certification
+    │
+    ▼
+Next Level
+```
+
+---
+
+# Learning Structure
+
+```
+learning/
+│
+├── academy/
+├── curriculum/
+├── learning_path/
+├── ai_coach/
+├── simulator/
+├── replay/
+├── market_lab/
+├── assessment/
+├── certification/
+├── progress/
+├── roadmap/
+├── achievements/
+├── leaderboard/
+├── analytics/
+├── journal/
+├── library/
+├── career_mode/
+├── challenge/
+├── tournament/
+├── pvp/
+├── ai_vs_player/
+└── learning_api/
+```
+
+---
+
+# Modules
+
+## academy
+
+Asosiy o'quv platformasi.
+
+Ichida:
+
+- Courses
+- Modules
+- Lessons
+- Chapters
+- Practice
+- Quiz
+
+---
+
+## curriculum
+
+Butun o'quv dasturini boshqaradi.
+
+Misol:
+
+```
+Gold Trading
+
+Beginner
+
+Intermediate
+
+Advanced
+
+Professional
+```
+
+---
+
+## learning_path
+
+Har bir foydalanuvchi uchun individual o'quv yo'lini yaratadi.
+
+Misol:
+
+```
+Beginner
 
 ↓
 
-Simulation
+Lesson 1
+
+↓
+
+Lesson 2
 
 ↓
 
@@ -330,85 +226,359 @@ Assessment
 
 ↓
 
-Certification
+Intermediate
+```
+
+---
+
+## ai_coach
+
+Shaxsiy AI mentor.
+
+Vazifalari:
+
+- Savollarga javob beradi.
+- Xatolarni tushuntiradi.
+- Tavsiyalar beradi.
+- Mashqlar yaratadi.
+- Progressni tahlil qiladi.
+
+AI hech qachon foydalanuvchi o'rniga javob bermaydi.
+
+---
+
+## simulator
+
+Virtual Trading muhiti.
+
+Maqsad:
+
+Risksiz amaliyot.
+
+---
+
+## replay
+
+Tarixiy bozorni qayta o'ynaydi.
+
+Foydalanuvchi real sharoitda mashq qiladi.
+
+---
+
+## market_lab
+
+Chart asosidagi laboratoriya.
+
+Misollar:
+
+- BOS topish
+- CHoCH topish
+- FVG topish
+- Order Block topish
+- Liquidity Sweep topish
+
+AI natijani tekshiradi.
+
+---
+
+## assessment
+
+Bilimni baholaydi.
+
+Ichida:
+
+- Quiz
+- Test
+- Practical Task
+- Final Exam
+
+---
+
+## certification
+
+O'qishni yakunlagan foydalanuvchiga sertifikat beradi.
+
+---
+
+## progress
+
+Rivojlanishni kuzatadi.
+
+Masalan:
+
+- XP
+- Level
+- Accuracy
+- Study Time
+- Completed Lessons
+
+---
+
+## roadmap
+
+Keyingi rivojlanish yo'lini ko'rsatadi.
+
+Misol:
+
+```
+Current
+
+Intermediate
 
 ↓
 
-User
+Next
+
+Advanced
+
+↓
+
+Remaining
+
+24 Lessons
+```
 
 ---
 
-# Golden Rules
+## achievements
 
-1. Learning Layer foydalanuvchini o'qitadi, savdo qilmaydi.
+Achievement va Badge tizimi.
 
-2. AI Coach faqat yo'l ko'rsatadi.
+Misollar:
 
-3. Simulator real hisobga ta'sir qilmaydi.
-
-4. Certification faqat belgilangan mezonlar asosida beriladi.
-
-5. Har bir modul mustaqil rivojlantirilishi mumkin.
-
-6. Learning Progress doim saqlanadi.
-
-7. Tournament va PvP alohida modullar hisoblanadi.
-
-8. Learning Layer GoldBot Core logikasiga aralashmaydi.
-
-9. O'quv natijalari Analytics orqali baholanadi.
-
-10. Learning Layer professional traderlarni tayyorlash markazi hisoblanadi.
+- First Lesson
+- 10 Lessons
+- SMC Master
+- Risk Master
 
 ---
 
-# Repository Structure
+## leaderboard
 
-Learning_Layer/
+Challenge va Tournament reytingi.
 
-├── README.md
-│
-├── Academy/
-├── Interactive_Lessons/
-├── Simulator/
-├── AI_Coach/
-├── Challenge/
-├── Tournament/
-├── PvP/
-├── AI_vs_AI/
-├── Certification/
-├── Career_Mode/
-├── Progress/
-└── Learning_Analytics/
+Ko'rinishlar:
 
-Har bir papka o'z README.md fayliga ega bo'lishi kerak.
-
-Har bir .py fayl uchun mos specification (.md) mavjud bo'lishi kerak.
+- Weekly
+- Monthly
+- All Time
 
 ---
 
-# Refactoring Rule
+## analytics
 
-Repository Learning Layer blueprint'iga moslashtiriladi.
+Learning statistikasi.
 
-Kod blueprint'ga mos kelishi shart.
+Masalan:
 
-Blueprint kodga moslashtirilmaydi.
+- Completion Rate
+- Quiz Accuracy
+- Weak Topics
+- Strong Topics
+- Study Time
 
 ---
 
-# Summary
+## journal
 
-Learning Layer — Senior Trading AI ekotizimining ta'lim markazi hisoblanadi.
+Foydalanuvchining shaxsiy o'quv kundaligi.
 
-Uning vazifasi:
+Ichida:
 
-• foydalanuvchilarni trading bo'yicha o'qitish;
+- Bugun nimani o'rgandim
+- Qayerda xato qildim
+- AI Feedback
+- Personal Notes
 
-• simulator va AI Coach orqali amaliy tajriba berish;
+---
 
-• challenge va tournamentlar orqali bilimlarni mustahkamlash;
+## library
 
-• certification va career mode orqali professional rivojlanishni boshqarish.
+Qo'shimcha o'quv materiallari.
 
-Learning Layer hech qachon marketni tahlil qilmaydi va savdo qarorini hisoblamaydi. Uning asosiy maqsadi foydalanuvchini bilimli va tajribali trader sifatida rivojlantirishdir.
+Masalan:
+
+- PDF
+- Cheat Sheet
+- Strategy Guide
+- Glossary
+- Formula
+- Checklist
+
+---
+
+## career_mode
+
+Bosqichma-bosqich rivojlanish tizimi.
+
+Misol:
+
+```
+Student
+
+↓
+
+Junior Trader
+
+↓
+
+Intermediate Trader
+
+↓
+
+Professional Trader
+
+↓
+
+GoldBot Expert
+```
+
+---
+
+## challenge
+
+Individual topshiriqlar.
+
+Har bir foydalanuvchi mustaqil bajaradi.
+
+---
+
+## tournament
+
+Ko'p foydalanuvchili musobaqalar.
+
+---
+
+## pvp
+
+Ikki real foydalanuvchi o'rtasidagi bellashuv.
+
+---
+
+## ai_vs_player
+
+Foydalanuvchi va AI analizini solishtiradi.
+
+```
+Chart
+
+↓
+
+User Analysis
+
+↓
+
+AI Analysis
+
+↓
+
+Comparison
+
+↓
+
+Explanation
+```
+
+AI bu yerda raqib emas.
+
+AI benchmark va mentor vazifasini bajaradi.
+
+---
+
+## learning_api
+
+Learning Layer'ni quyidagi platformalarga ulaydi:
+
+- Telegram
+- Mobile
+- Desktop
+- Web
+
+Learning Layer tashqi Layer'lar bilan faqat Learning API orqali ishlaydi.
+
+---
+
+# Development Roadmap
+
+## Phase 1 — Foundation
+
+- Academy
+- Curriculum
+- Learning Path
+- AI Coach
+- Assessment
+- Progress
+- Learning API
+
+---
+
+## Phase 2 — Professional
+
+- Simulator
+- Replay
+- Market Lab
+- Certification
+- Achievements
+- Journal
+- Analytics
+- Roadmap
+
+---
+
+## Phase 3 — Community
+
+- Challenge
+- Tournament
+- PvP
+- AI vs Player
+- Leaderboard
+- Career Mode
+
+---
+
+# Design Rules
+
+Learning Layer:
+
+- Platform funksiyalarini takrorlamaydi.
+- AI qaror qabul qilmaydi.
+- Trading Engine'ga aralashmaydi.
+- Market Data'ni o'zgartirmaydi.
+- GoldBot Core'dan mustaqil ishlaydi.
+- Faqat Learning API orqali tashqi aloqaga chiqadi.
+
+---
+
+# Future Vision
+
+Learning Layer kelajakda quyidagilarni qo'llab-quvvatlaydi:
+
+- AI Personal Mentor
+- Multi-language Academy
+- Interactive Charts
+- Voice Lessons
+- Video Lessons
+- Adaptive Learning
+- Personalized Curriculum
+- Community Challenges
+- Global Tournament
+- Professional Certification
+- Trading Career Development
+
+---
+
+# Status
+
+Status: Blueprint
+
+Version: v1.0
+
+Architecture: GoldBot V3
+
+Lifecycle: GDL-001
+
+Flow Standard: GFL-001
+
+Module Standard: GEL-001
+
+Language Standard: GLS-001
