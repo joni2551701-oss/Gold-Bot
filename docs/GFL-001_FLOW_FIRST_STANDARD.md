@@ -291,7 +291,12 @@ Bu hujjat quyidagi standartlar bilan birga ishlaydi:
 - GFL-003 — Sequential Flow Rule (shu hujjat ichida)
 - GFL-004 — Development v1 Lightweight Flow Loop Rule (shu hujjat ichida)
 - GLS-001 — Docs va reports O'zbek tilida
-- DD-005 — Compatibility Exception registry
+- Compatibility Exception registry — `docs/ai/COMPATIBILITY_REPORT.md`
+  (PHASE-01 Foundation Audit'da to'g'rilandi: bu material DD raqamiga
+  ega emas. Director registri (`docs/governance/director/README.md`)
+  DD-005..DD-023 raqamlarini ataylab band/ishlatilmagan deb belgilaydi,
+  shuning uchun oldingi "DD-005 — Compatibility Exception registry"
+  havolasi dangling edi va shu haqiqiy joyga yo'naltirildi.)
 - GDS — Development Workflow
 - Engineering Standard — repo hujjat tizimi
 - Architecture Standard — global arxitektura qoidalari
