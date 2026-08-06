@@ -1426,3 +1426,25 @@ async def ask_handler(telegram_id=None, args=None) -> str:
         return f"🤖 AI hozircha javob bera olmadi ({result.reason})."
     tag = "🧠 Xotiradan" if result.from_memory else "🤖 AI"
     return f"{tag}:\n\n{result.answer}"
+
+
+async def backtest_handler(telegram_id=None, args=None) -> str:
+    """/backtest <SYMBOL> <TIMEFRAME> <START> <END> -> Backtesting Service
+    (FLOW-018 Production Wiring). OWNER only (command_router gates
+    OWNER_COMMANDS to OWNER). Never raises.
+
+    Tool-First (Director FLOW-018): invokes the local Backtesting Tool
+    (BacktestEngine) via BacktestService, which reads Historical Data
+    from the Database — no external API on this path. Composes
+    backtesting_layer.backtest_service.backtest_service (a composition
+    root over the existing BacktestEngine + Statistics + Result) — no new
+    backtesting/trading logic here."""
+    try:
+        from backtesting_layer.backtest_service.backtest_service import get_backtest_service
+        outcome = get_backtest_service().run_from_args(args or "")
+    except Exception as e:
+        logger.warning(f"backtest_handler: backtest failed: {e}")
+        return "Backtest hozircha ishga tushmadi."
+    if not outcome.success:
+        return outcome.message
+    return f"📊 Backtest natijasi:\n\n{outcome.message}"

@@ -46,6 +46,7 @@ COMMANDS = {
 
 OWNER_COMMANDS = {
     "ask": "Ask Personal AI a question (memory-first)",
+    "backtest": "Run a backtest (/backtest SYMBOL TF START END)",
     "admin": "Open admin panel",
     "addadmin": "Add a new admin",
     "removeadmin": "Remove an admin",
