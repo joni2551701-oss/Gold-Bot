@@ -1,0 +1,46 @@
+name: Real Market Data Verification
+
+# Director Order -- Real Market Data Production Verification. A
+# separate, isolated workflow, NOT a change to ci.yml (per that
+# order's own caution that adding a live-API probe to the existing CI
+# pipeline is a distinct, separately-approved change). Manual dispatch
+# only -- never runs on push/PR, never touches production trading, and
+# is not part of the CI gate ci.yml provides.
+#
+# Prints only safe status lines (CONFIGURED/MISSING, HTTP outcome,
+# price, timestamp). See scripts/verification/real_market_data_probe.py
+# for the full security contract -- no API key is ever printed, echoed,
+# or placed in a log/artifact.
+
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: real-data-verification-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run real market data probe
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          BITGET_API_KEY: ${{ secrets.BITGET_API_KEY }}
+          BITGET_API_SECRET: ${{ secrets.BITGET_API_SECRET }}
+          BITGET_PASSPHRASE: ${{ secrets.BITGET_PASSPHRASE }}
+        run: python scripts/verification/real_market_data_probe.py
