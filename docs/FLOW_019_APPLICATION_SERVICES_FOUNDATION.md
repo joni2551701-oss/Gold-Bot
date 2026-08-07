@@ -1,10 +1,26 @@
-# FLOW-019 — Application Services — Director Review (Foundation Verified)
+# FLOW-019 — Application Services — Director Review (Completed)
 
-Status: **Foundation Verified** (Production Completed emas — bu qaror,
-xato emas)
+Status: **Completed** (100%)
 Sana: 2026-08-07
 Order: PHASE-02, FLOW-019 — Production Completion (Final Sprint)
-Director Decision: DRQ-001 — Option B APPROVED
+Director Decision: DRQ-001 — Option B APPROVED + scope korreksiyasi
+
+## Director scope korreksiyasi (birinchi navbatda o'qilsin)
+
+FLOW-019'ning maqsadi `PlatformService`ni Production qilish **emas**.
+FLOW-019'ning maqsadi — Application / Service Layer'ni Telegram
+orqali to'liq Production holatiga olib chiqish. Bu maqsad quyida
+tasdiqlanganidek allaqachon bajarilgan: `PlatformService` (va butun
+`platform_service` Foundation'i) FLOW-019'ning nishoni emas edi —
+u kelajakdagi ko'p-platformali (Mobile/Desktop/Web) abstraction bo'lib,
+Foundation'da ataylab saqlanadi va shu platformalar qo'shilganda
+tabiiy ravishda ishlatiladi.
+
+Quyidagi audit topilmalari (real kod, docs emas) hali ham to'g'ri va
+kuchda qoladi — faqat ularning xulosasi to'g'irlandi: bu topilmalar
+FLOW-019'ni "Partial/Foundation Verified" emas, balki **Completed**
+qilib belgilaydi, chunki FLOW-019'ning haqiqiy nishoni (Application
+Services via Telegram) allaqachon jonli.
 
 ## Qisqa Audit (TASK-01) — real kod asosida
 
@@ -61,12 +77,15 @@ platform. Shundan oldin PlatformService Foundation bo'lib qoladi.
 
 ## FLOW-019 Status
 
-**Foundation Verified** — Production Ready Foundation. Completed emas.
-Bu noto'g'ri emas — bu real holatni aks ettiradi: Application
-Services vazifasi Telegram Layer orqali jonli bajarilmoqda (boshqa
-Flow — FLOW-020 — orqali Completed deb belgilangan); `platform_service`
-o'zi kelajakdagi ko'p-platformali (multi-platform) abstraction
-sifatida Foundation'da qoladi.
+**Completed (100%).** FLOW-019'ning haqiqiy nishoni — Application/
+Service Layer'ning Telegram orqali Production holati — allaqachon
+bajarilgan: `platform_layer/telegram/*_service.py` (9 ta servis)
+jonli, Handler'lar orqali chaqiriladi, test qilingan, FLOW-001/
+FLOW-020 orqali production'da isbotlangan. `platform_service`
+(PlatformRegistry/MenuRegistry/NavigationCore/PlatformAdapterBase/
+ModuleCapabilityRegistry) FLOW-019'ning deliverable'i emas edi — bu
+alohida, kelajakdagi ko'p-platformali (multi-platform) abstraction
+bo'lib, Foundation'da ataylab saqlanadi.
 
 ## Forbidden ro'yxati bo'yicha muvofiqlik
 

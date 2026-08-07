@@ -53,3 +53,32 @@ Lessons Learned: A fully-built, fully-tested Foundation package is
   claim Completion.
 
 ---
+
+Issue ID: FLOW-019-CORRECTION
+Date: 2026-08-07
+Severity: N/A (Director scope correction, not a bug)
+Problem: The prior entry above concluded FLOW-019 was "Foundation
+  Verified, not Completed" on the premise that FLOW-019's target was
+  this package (`platform_service`) reaching Production.
+Cause: Scope misread. Director clarified: FLOW-019's actual target
+  was always the Application/Service Layer reaching Production via
+  Telegram -- not this package specifically.
+Decision: Director correction accepted. FLOW-019 is Completed --
+  its real deliverable (`platform_layer/telegram/*_service.py`, 9
+  live, tested services) has been in Production since FLOW-001/
+  FLOW-020. This package's own status is UNCHANGED by the
+  correction: it remains Foundation, not a live Production
+  dependency, reserved for when a genuine multi-platform Consumer
+  (Mobile/Desktop/Web) exists.
+Implementation: No code changed. Documentation corrected: FLOW-019
+  status is now Completed (100%) in `docs/GFL-001_FLOW_PROGRESS.md`
+  and `docs/PROJECT_STATUS.md`; `docs/FLOW_019_APPLICATION_SERVICES_FOUNDATION.md`
+  updated to lead with the corrected scope.
+Validation: N/A (documentation correction).
+Lessons Learned: Before concluding a Flow is blocked/partial because
+  one named component lacks a Production Consumer, confirm the
+  Flow's actual deliverable against the Director's original intent --
+  a Foundation package sharing a Flow's document does not mean it is
+  that Flow's deliverable.
+
+---
