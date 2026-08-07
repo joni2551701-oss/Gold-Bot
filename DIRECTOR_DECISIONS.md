@@ -580,3 +580,29 @@ jarayoni orasidagi to'qnashuv edi. Xulosa: `DIRECTOR_DECISIONS.md`
 va shunga o'xshash boshqaruv fayllariga yozish faqat bitta jarayon
 tinch holatda bo'lganda amalga oshiriladi, parallel ishlayotgan boshqa
 Worker jarayoni yo'qligi tasdiqlangandan keyin.
+
+### Director Review — PHASE-02 Rasmiy Yakun
+
+**Tasdiqlandi.** FLOW-019 (Application Services) yakuniy holati:
+Production Wiring ✅, Telegram Consumer ✅, Application Service Layer
+✅, Architecture PASS, Tests 5490 PASS, GitHub Actions SUCCESS
+(commit `a06926e`, CI Run `31225897192`). PHASE-02 (Flow-by-Flow
+Development) shu bilan **rasman COMPLETED** deb e'lon qilinadi —
+FLOW-016 (Chart Service Foundation), FLOW-017 (Personal AI Core),
+FLOW-018 (Backtesting Engine), FLOW-019 (Application Services)
+barchasi Input → Processing → Output → Real Consumer mezoni bo'yicha
+tekshirilgan va CI bilan tasdiqlangan. To'liq yozuv:
+`docs/PHASE_02_FLOW_BY_FLOW_DEVELOPMENT.md`'ning "PHASE-02 — Rasmiy
+Yakun" bo'limi.
+
+**Muhim fakt (audit orqali aniqlangan):** `goldbot-v1` uchun
+avtomatik GitHub Actions ishlamaydi (`ci.yml`'ning `push` trigger'i
+faqat `main`/`feature/**`/`fix/**`/`hotfix/**`ni qamraydi). PHASE-02
+yakuni qo'lda ishga tushirilgan `workflow_dispatch` orqali haqiqiy CI
+bilan tasdiqlandi — bu holat PHASE-03 davomida ham (branch strategiyasi
+hal qilingunga qadar) davom etadi.
+
+**PHASE-03 — Release Preparation boshlandi.** Reja: Branch Cleanup →
+`release/v1.0.0-rc1` → Final Release Audit → Final Validation → `main`
+Promotion → VPS Deployment → Production Monitoring. Zamin: GBA-001
+(`audits/GBA-001/`), GBA-002 (`audits/GBA-002/`).

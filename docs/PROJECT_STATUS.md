@@ -15,8 +15,8 @@ Til: GLS-001 (proza O'zbek, texnik terminlar English)
 | Phase | Nomi | Status |
 |---|---|---|
 | PHASE-01 | Foundation Architecture | ✅ Approved (Foundation Frozen) |
-| PHASE-02 | Flow-by-Flow Development | 🟡 In Progress |
-| PHASE-03 | Validation & Director Review | ⏳ Pending |
+| PHASE-02 | Flow-by-Flow Development | ✅ Completed (2026-08-07 — FLOW-016/017/018/019 barchasi CI bilan tasdiqlangan; batafsil `docs/PHASE_02_FLOW_BY_FLOW_DEVELOPMENT.md`) |
+| PHASE-03 | Release Preparation | 🟡 In Progress (Branch Cleanup → release/v1.0.0-rc1 → Final Release Audit → Final Validation → main Promotion → VPS Deployment → Production Monitoring) |
 | PHASE-04 | Evolution & Next Sprint | ⏳ Pending |
 
 ---
