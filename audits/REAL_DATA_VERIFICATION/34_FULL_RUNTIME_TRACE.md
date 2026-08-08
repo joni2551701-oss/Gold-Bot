@@ -50,3 +50,55 @@ bosqich log qatori mavjud — pipeline butun zanjirni ishga tushiradi.
 > [ REAL main.py RUNTIME LOG — to be filled from CI run ]
 > ```
 </content>
+
+---
+
+## ⚡ REAL main.py RUNTIME LOG (GitHub Actions, run 31240675527, commit ea3d055)
+
+Real TwelveData XAU/USD (200 candles) bilan to'liq pipeline bir marta
+ishga tushdi. Har bir stage real data bilan bajarildi:
+
+```
+stage=market_data     Fetched 200 candles        (0.466s, real API)
+stage=data_quality    valid=True score=100.00
+stage=htf_bias        NEUTRAL conf=50 quality=0.67 timeframes=['H4','H1']
+                      (Daily parse FAILED -- yangi finding, pastda)
+stage=context         (ran)
+stage=market_phase    MARKUP (TRENDING BULLISH)
+stage=signal          Generated 1 signal candidate(s)   [FVG_STRATEGY, BUY]
+stage=signal_quality  grade=B score=40 criteria=[STRUCTURE_ALIGNED, FVG_ALIGNED]
+stage=features        [('TRENDING','LONDON_NEW_YORK_OVERLAP','B')]
+stage=ai              approved=False confidence=0.00 risk_score=1.00 (heuristic stub)
+stage=decision        Produced 1 trade decision(s)
+stage=risk            Produced 1 risk result(s)          [RiskManager.evaluate() ran]
+stage=signal_history  1 record linked to context snapshot b1b6fcee-...
+stage=telegram_format Produced 0 telegram message(s)     (AI approved=False -> not notification-eligible)
+stage=telegram_delivery Sent 0/0
+stage=database        Persisted 1 signal record(s)
+run cycle: 1 signal(s), 1 decision(s), 0 telegram message(s)
+```
+
+**Bu real runtime isbot:** Core -> Context -> market_phase -> Signal
+(FVG_STRATEGY) -> signal_quality -> features -> AI (advisory, rad etdi)
+-> Decision -> Risk (RiskManager.evaluate ishladi) -> signal_history
+-> telegram_format -> database — barchasi real XAU/USD data bilan
+bajarildi. `telegram_format` 0 xabar ishlab chiqardi, chunki AI
+signalni rad etdi (approved=False) — bu Trading Safety notification-
+eligibility filtri to'g'ri ishlayotganini ko'rsatadi (REJECT/BLOCKED
+signallar Telegram'ga o'tmaydi), xatolik emas.
+
+## ⚠️ YANGI FINDING — Daily timeframe parse bug (real runtime'da topildi)
+
+`TwelveDataClient.fetch_candles()` (`data_layer/providers/twelve_data_client/twelve_data_client.py:112`)
+`v["datetime"]`ni `"%Y-%m-%d %H:%M:%S"` formati bilan parse qiladi,
+ammo Daily interval uchun TwelveData faqat sana (`"2026-08-08"`, vaqtsiz)
+qaytaradi -> `ValueError` -> Daily candles parse bo'lmaydi -> HTF bias
+Daily'ni yo'qotadi (faqat H4/H1 ishlatildi, quality_score 0.67).
+
+Bu REAL-DATA-003'dagi Daily/D1 memory-vocabulary finding'idan ALOHIDA
+— bu haqiqiy parse-format bug. Order section 22'ga ko'ra ("HTF Daily
+uchun yangi fix kiritilmasin") bu task'da TUZATILMAYDI, faqat finding
+sifatida qayd etiladi. Director qaroriga havola (keyingi Sprint):
+Daily uchun date-only formatni ham qo'llab-quvvatlash. Ta'sir: HTF
+bias context-only, hozircha hech qanday trading qarorini bloklamaydi
+(pipeline HTF'siz ham to'liq ishladi va signal ishlab chiqardi).
