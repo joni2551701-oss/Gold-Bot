@@ -1,6 +1,53 @@
 # 08 — Real Price Evidence
 
-## STATUS: BLOCKED
+## STATUS: ✅ PRESENT (REAL) — GitHub Actions'da olindi (REAL-DATA-002)
+
+**Yangilash (2026-08-08, REAL-DATA-002):** quyidagi BLOCKED holati
+GitHub Actions muhitida real API bilan **hal qilindi**. Real dalil
+`ci.yml`'ning `real_data_probe` job'i orqali, real GitHub Secrets va
+ochiq tarmoq egress bilan olingan.
+
+- **Workflow run:** `31229724552`, job `real_data_probe` (`93031001954`),
+  branch `goldbot-v1`, commit `e4d18f6`.
+- **Skript:** `scripts/verification/real_market_data_probe.py`.
+
+```
+Provider:    TwelveData
+Instrument:  XAU/USD
+HTTP Status: 200 (SUCCESS)
+Price:       4342.34099
+Timestamp:   2026-08-08T10:15:00+00:00
+Manba:       real TwelveDataClient (production hot-path class)
+Probe:       SUCCESS (REAL)
+```
+
+```
+Provider:    Bitget (public spot ticker, diagnostic)
+Instrument:  BTC/USDT
+HTTP Status: 200
+Price:       64870.01
+Timestamp:   1786148320401 (ms epoch)
+Manba:       https://api.bitget.com/api/v2/spot/market/tickers (auth yo'q)
+Probe:       SUCCESS (REAL, diagnostic-only)
+```
+
+**Muhim ajratish (Order section 7):** Bitget diagnostic PASS =
+Bitget API real BTC/USDT narx qaytaradi. Bu Bitget'ning GoldBot
+production pipeline'da ishlatilishini **isbotlamaydi** —
+`BitgetProvider` ataylab inert stub (`NotImplementedError`), shuning
+uchun Bitget **production-path = NOT_VERIFIED** (03-hujjatga qarang).
+GoldBot faqat XAUUSD savdo qiladi; Bitget/crypto arxitektura jihatidan
+signal yo'lida ishlatilmaydi.
+
+Narxlar hardcode qilinmadi, mock ishlatilmadi — barchasi real API
+response'idan. API key hech qayerda ko'rsatilmadi (GitHub secret
+masking `***`; skript faqat narx/timestamp/status chiqaradi).
+
+---
+
+## Tarixiy yozuv — oldingi sandbox BLOCKED holati (saqlanadi)
+
+## STATUS: BLOCKED (sandbox, superseded above)
 
 Sabab (aniq, ikki qism):
 

@@ -52,3 +52,10 @@ Bu tekshiruv **doimiy Final Release Audit / RC1 gate checklist
 bandi** sifatida rasmiylashtirilishi tavsiya etiladi — har safar
 provider kodiga tegilganda yoki har yangi release oldidan qayta
 o'tkaziladigan qadam sifatida.
+
+
+---
+
+## ⚡ REAL RUN NATIJASI (REAL-DATA-002, 2026-08-08, run 31229724552)
+
+✅ **PASS (REAL, GitHub Actions).** Oldingi BLOCKED (sandbox: egress 403 + key yo'q) hal qilindi. Probe `ci.yml`'ning workflow_dispatch-gated `real_data_probe` job'i orqali ishga tushirildi (run 31229724552, commit e4d18f6). Real credentials + real network + real provider bilan: TwelveData XAU/USD PASS, Bitget BTC/USDT diagnostic PASS, Validation PASS, Market Memory PASS. Skript `scripts/verification/real_market_data_probe.py`.

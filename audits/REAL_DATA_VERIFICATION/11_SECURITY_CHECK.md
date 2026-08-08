@@ -40,3 +40,10 @@
 ham qo'llanilgan** holat sifatida tasdiqlandi (xom kalit emas). Hech
 qanday joyda API kalitining o'zi log/print/repr/xato xabariga
 sizib chiqishi aniqlanmadi.
+
+
+---
+
+## ⚡ REAL RUN NATIJASI (REAL-DATA-002, 2026-08-08, run 31229724552)
+
+✅ **PASS (real run tasdiqladi).** GitHub Actions log'ida: env blokida `TWELVE_DATA_API_KEY: ***` va `BITGET_API_KEY: ***` (GitHub secret masking ishladi). Probe skripti faqat CONFIGURED/MISSING status, narx, timestamp, HTTP status chiqardi — hech qanday key qiymati, MaskedSecret, yoki requests exception message (`?apikey=...` bo'lishi mumkin) log'ga chiqmadi. Key oqishi topilmadi.

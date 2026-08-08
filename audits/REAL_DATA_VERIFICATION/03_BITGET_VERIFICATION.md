@@ -84,3 +84,12 @@ ma'lumot qaytarmaydi (har doim `NotImplementedError` yoki
 `available=False`). Xavfsiz, halol dizayn: hech qachon signal
 yo'lida ishtirok etmaydi va hech qachon "ishlayapti" deb yolg'on
 signal bermaydi.
+
+
+---
+
+## ⚡ REAL RUN NATIJASI (REAL-DATA-002, 2026-08-08, run 31229724552)
+
+**Ikki alohida natija (Order section 7):**
+- **Diagnostic (public ticker BTC/USDT): ✅ PASS (REAL)** — `https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT`, HTTP 200, Price 64870.01, Timestamp 1786148320401. Bu Bitget API real narx berayotganini isbotlaydi (auth talab qilmaydi; BITGET_API_SECRET/PASSPHRASE MISSING bo'lsa ham public ticker ishlaydi).
+- **Production-path: NOT_VERIFIED** — `BitgetProvider` ataylab inert stub (`NotImplementedError`), `BitgetPriceSource` ham shu stub ustidagi adapter. Repo'da real Bitget HTTP kodi umuman yo'q. GoldBot XAUUSD savdo qiladi — Bitget/crypto signal yo'lida ishlatilmaydi. Yangi Bitget provider yozish bu task'da taqiqlangan.

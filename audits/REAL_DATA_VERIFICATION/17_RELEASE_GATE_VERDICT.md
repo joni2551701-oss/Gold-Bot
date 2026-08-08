@@ -1,5 +1,70 @@
 # 17 — Release Gate Verdict (Master Conclusion)
 
+## ⚡ YANGILANGAN VERDIKT — REAL-DATA-002 (2026-08-08, GitHub Actions)
+
+Oldingi BLOCKED holati (pastda tarixiy yozuv sifatida saqlanadi)
+GitHub Actions muhitida **real API bilan hal qilindi**. Real dalil:
+workflow run `31229724552`, job `real_data_probe`, commit `e4d18f6`,
+branch `goldbot-v1`.
+
+### Section 15 checklist — real natija
+
+| # | Talab | Natija |
+|---|---|---|
+| 1 | TwelveData REAL XAU/USD | ✅ PASS — 4342.34099 @ 2026-08-08T10:15:00Z, HTTP 200 |
+| 2 | Bitget REAL BTC/USDT | ✅ PASS (diagnostic) — 64870.01, HTTP 200 |
+| 3 | Real HTTP response | ✅ PASS — ikkalasi ham HTTP 200 |
+| 4 | Real timestamp | ✅ PASS |
+| 5 | Credentials | ✅ PASS — TWELVE_DATA_API_KEY + BITGET_API_KEY CONFIGURED |
+| 6 | Security | ✅ PASS — key oqishi yo'q (GitHub masking `***`, skript faqat narx/status) |
+| 7 | Production path verified | ⚠️ QISMAN — TwelveData: real production `TwelveDataClient` class ishlatildi ✅; Bitget: **NOT_VERIFIED** (inert stub, dizayn bo'yicha) |
+| 8 | Validation | ✅ PASS — 1 raw → 1 validated (real narx `_validate_and_clean`'dan o'tdi) |
+| 9 | Market Memory | ✅ PASS — validated narx `TimeframeMemory`'ga yozildi va o'qildi |
+| 10 | Core consumption | ⚠️ ARCHITECTURE_FINDING — `pipeline.py` `MarketDataService()`ni `memory_registry`siz quradi; Core Market Memory'dan emas, `MarketDataNormalizer`'dan to'g'ridan-to'g'ri o'qiydi |
+
+### Yakuniy qaror
+
+**REAL PRICE PROOF = ✅ PASS.** REAL-DATA-002'ning asosiy talabi —
+`goldbot-v1` haqiqiy API'dan real market price olayotganini isbotlash
+— **bajarildi**: real XAU/USD (TwelveData) va real BTC/USDT (Bitget)
+narxlari real HTTP 200 bilan olindi, Validation'dan o'tdi va Market
+Memory'ga yozildi. Mock/fixture/hardcoded ishlatilmadi.
+
+**Ikkita architecture finding (real-data failure EMAS, release-blocking
+data muammosi EMAS):**
+- (7) Bitget production-path NOT_VERIFIED — `BitgetProvider` ataylab
+  inert; GoldBot XAUUSD savdo qiladi, crypto emas, shuning uchun Bitget
+  hech qachon signal yo'lida ishlatilmaydi. Bu yangi Bitget provider
+  yozishni talab qiladi (bu task'da taqiqlangan).
+- (10) Core Market Memory'dan o'qimaydi — SSOT arxitekturasi jonli
+  signal yo'lida ulanmagan. Bu yangi wiring/architecture o'zgarishini
+  talab qiladi (bu task'da taqiqlangan).
+
+Bu ikkalasi — oldindan mavjud architecture holatlari (GBA-001/prior
+audit'da hujjatlashtirilgan), real narx olishning muvaffaqiyatsizligi
+emas. Ular **Director qaroriga havola** qilinadi: RC1'ni to'xtatadimi
+yoki RC1'dan keyingi Sprint backlog'iga o'tadimi.
+
+```
+              RELEASE
+                 │
+        ┌────────┴────────┐
+        ▼                 ▼
+ Architecture       Real Market Data
+     PASS                 ✅ PASS (real prices proven)
+        │                 │  + 2 architecture finding (Director qaroriga)
+        └────────┬────────┘
+                 ▼
+          Final Validation
+                 │
+                 ▼
+     Director qaroriga havola (RC1 gate)
+```
+
+---
+
+## Tarixiy yozuv — oldingi BLOCKED verdikt (saqlanadi)
+
 Order: REAL MARKET DATA PRODUCTION VERIFICATION
 Sana: 2026-08-07
 Branch: `goldbot-v1`

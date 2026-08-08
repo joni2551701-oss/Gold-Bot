@@ -81,3 +81,10 @@ Kredensial yuklash, symbol mapping, timeout, retry/backoff va xato
 qayta ishlash yo'llarining barchasi kod darajasida **CONFIRMED**. Real
 tarmoq orqali ishlashi esa bu sessiyada **BLOCKED** — bu muhit
 cheklovi, kod sifati muammosi emas.
+
+
+---
+
+## ⚡ REAL RUN NATIJASI (REAL-DATA-002, 2026-08-08, run 31229724552)
+
+✅ **PASS (REAL).** GitHub Actions'da real `TwelveDataClient` (production hot-path class) real API'ga so'rov yubordi: XAU/USD, HTTP 200, Price 4342.34099, Timestamp 2026-08-08T10:15:00+00:00. Symbol mapping (XAUUSD -> XAU/USD), parser, timestamp handling — barchasi real response bilan tasdiqlandi. Oldingi BLOCKED (kod tuzilishi CONFIRMED, real HTTP BLOCKED) endi to'liq PASS.
