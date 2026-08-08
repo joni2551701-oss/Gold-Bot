@@ -71,3 +71,44 @@ qo'yiladi. Agar CI'da ham M1 mismatch tufayli 0 real update bo'lsa,
 yuqoridagi "Continuous updates = BLOCKED" verdikti rasman tasdiqlanadi
 (aniq sabab: XAUUSD `interval="M1"` vs client M5/M15/H1/H4/Daily).
 Worker o'zi dispatch QILMAYDI.
+
+---
+
+## ⚡ YAKUNIY VERDIKT — real CI evidence bilan (run 31251456946, e31b48d)
+
+| Segment | Natija | Evidence |
+|---|---|---|
+| tick() production driver | ✅ PASS | polling.py:308 |
+| Provider stream XAUUSD (real) | ❌ BLOCKED | real CI: `ValueError: Unsupported timeframe 'M1'` (3/3 tick, 0 update) |
+| Stream → Validation | ⚠️ real kod, lekin ishga tushmadi (tick land bo'lmadi) |
+| Validation → Memory | ⚠️ real kod, ishga tushmadi |
+| Memory → Event Bus | ⚠️ real kod, ishga tushmadi (0 PRICE_UPDATED) |
+| Event Bus → Core | ⚠️ FOUNDATION / NOT WIRED (subscriber yo'q) |
+| Continuous 3-tick | ❌ BLOCKED (real CI: 0/3 update) |
+| Reconnect/Recovery | ✅ IMPLEMENTED (PriceStream state machine) |
+| Architecture | ✅ PASS |
+| Tests | ✅ 5493 |
+| CI | ✅ validate + real_data_probe success |
+
+**REAL-DATA-006 = PARTIAL / BLOCKED (stream portion).** Stream
+infrastructure (tick driver, StreamValidator, single-writer Memory
+fold, Event Bus publish, reconnect state machine) REAL va production-
+wired, LEKIN XAUUSD continuous stream real CI'da BLOCKED — M1 interval
+defect empirik isbotlandi. Event Bus → Core NOT WIRED.
+
+**Muhim:** bu trading pipeline'ga ta'sir qilmaydi — pipeline BATCH
+`MarketDataService` (M15) yo'lidan foydalanadi (REAL-DATA-003/004'da
+isbotlangan, ishlaydi), stream yo'lidan emas. Bu faqat continuous
+Price Stream subsystem'iga tegishli.
+
+**Director-decision items (bu task'da tuzatilmaydi — provider/stream
+wiring o'zgarishi Director Review talab qiladi):**
+1. **M1 defect** — `price_stream_service.py:238` `TwelveDataProvider(asset="XAUUSD")`
+   default `interval="M1"` -> M5/M15 ga o'zgartirish (bir qatorli fix),
+   YOKI `TwelveDataClient`ga M1 qo'shish. Shu tuzatilmaguncha live Price
+   Stream XAUUSD uchun ishlamaydi.
+2. **Event Bus → Core** — hech qanday `PRICE_UPDATED` consumer yo'q;
+   Core schedule-driven, event-driven emas. Agar event-driven Core
+   kerak bo'lsa, bu yangi wiring (RFC/ADR).
+3. **Stale docstring** — `price_stream_service.py:47` "nothing drives
+   tick() in production" — endi noto'g'ri (polling.py:308 driver mavjud).

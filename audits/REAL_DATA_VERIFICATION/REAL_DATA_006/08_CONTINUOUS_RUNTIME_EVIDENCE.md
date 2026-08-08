@@ -61,3 +61,36 @@ Stream: <PASS/BLOCKED>
 Agar CI'da ham `M1` mismatch tufayli 0 real update bo'lsa — stream
 portion rasman **BLOCKED**, sabab: XAUUSD `interval="M1"` production
 wiring vs client M5/M15/H1/H4/Daily.
+
+---
+
+## ⚡ REAL CI EVIDENCE (run 31251456946, job real_data_probe, commit e31b48d)
+
+Real GitHub Actions muhitida (TWELVE_DATA_API_KEY = CONFIGURED, ochiq
+egress) `real_price_stream_probe.py` 3 marta tick() qildi. Natija:
+
+```
+UPDATE #1: price=None  validated=NOT  memory=NOT  event_published=NO
+UPDATE #2: price=None  validated=NOT  memory=NOT  event_published=NO
+UPDATE #3: price=None  validated=NOT  memory=NOT  event_published=NO
+Stream: BLOCKED
+```
+
+**Haqiqiy sabab (log'da aniq ko'rindi) — M1 interval defect, egress emas:**
+```
+PriceStream - WARNING - PriceStream[XAUUSD] provider error isolated:
+  ValueError: Unsupported timeframe 'M1'. GoldBot strictly supports: M5, M15, H1, H4, Daily
+PriceStream - WARNING - PriceStream[BTCUSDT] provider error isolated:
+  NotImplementedError: Bitget integration is not implemented yet
+```
+
+Ya'ni real key va real tarmoq bo'lsa ham, `TwelveDataProvider(asset="XAUUSD")`
+default `interval="M1"` `TwelveDataClient` tomonidan qo'llab-quvvatlanmaydi
+-> har bir XAUUSD `read()` `ValueError` beradi -> `PriceStream` uni izolyatsiya
+qiladi (DD-051) -> cache'ga hech qanday narx tushmaydi -> Validation/Memory/
+Event Bus hech qachon ishga tushmaydi (tick landlanmagani uchun). BTCUSDT esa
+Bitget inert stub. Bu — M1 finding'ning EMPIRIK isboti (taxmin emas, real CI
+runtime). Probe'ning "egress-blocked sandbox" matni faqat lokal holat uchun
+yozilgan; CI'da haqiqiy sabab yuqoridagi M1 ValueError.
+
+API key oqmadi (GitHub masking `***`; probe faqat CONFIGURED/None/status chiqardi).
