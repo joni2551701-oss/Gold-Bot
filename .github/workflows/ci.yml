@@ -133,3 +133,18 @@ jobs:
         env:
           TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
         run: python main.py
+
+      # Real continuous Price Stream probe (Director Order REAL-DATA-006).
+      # A sibling gated step under the SAME workflow_dispatch-only job --
+      # never runs on push/PR, never touches the `validate` job. Builds
+      # the real production PriceStreamService (XAUUSD via TwelveData),
+      # ticks it 3 times ~3s apart, and reports per-update provider price/
+      # timestamp, validation outcome, MarketMemory read-back, and whether
+      # PRICE_UPDATED fired. Report-only (exits 0); same security contract
+      # as real_market_data_probe.py (presence flags / price / timestamp /
+      # exception class only -- never an API key). See
+      # scripts/verification/real_price_stream_probe.py.
+      - name: Real continuous price stream probe (3 updates)
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+        run: python scripts/verification/real_price_stream_probe.py
