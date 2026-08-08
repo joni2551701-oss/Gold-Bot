@@ -91,3 +91,40 @@ jobs:
           TWELVE_DATA_API_KEY: "unused"
           GEMINI_API_KEY: "unused"
         run: python -m pytest tests/ -v --cov=. --cov-report=term-missing
+
+  # Real Market Data Verification probe (Director Order REAL-DATA-002).
+  # A SEPARATE job that runs ONLY on manual workflow_dispatch -- never on
+  # push or pull_request, so normal CI validation is completely
+  # unaffected (the `if:` gate makes this job skip on every automatic
+  # run). It exercises the real production TwelveDataClient (XAU/USD)
+  # with real GitHub Secrets, and a direct diagnostic call to Bitget's
+  # PUBLIC BTC/USDT ticker (no auth). No secret value is ever printed --
+  # see scripts/verification/real_market_data_probe.py for the security
+  # contract. This job is report-only (exits 0 even when a provider is
+  # BLOCKED); the real PASS/BLOCKED verdict is read from its log output,
+  # so a BLOCKED environment issue is never mistaken for a hard failure.
+  real_data_probe:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run real market data probe
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          BITGET_API_KEY: ${{ secrets.BITGET_API_KEY }}
+          BITGET_API_SECRET: ${{ secrets.BITGET_API_SECRET }}
+          BITGET_PASSPHRASE: ${{ secrets.BITGET_PASSPHRASE }}
+        run: python scripts/verification/real_market_data_probe.py

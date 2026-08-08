@@ -96,38 +96,70 @@ def main() -> int:
     else:
         print(f"TwelveData Reason: {report['twelvedata'].get('reason')}")
 
-    # --- Section 6: Real Bitget Request ------------------------------
-    # Confirmed by static audit (2026-08-07, audits/REAL_DATA_VERIFICATION/03_BITGET_VERIFICATION.md):
-    # BitgetProvider contains ZERO real HTTP/SDK code -- every data
-    # method unconditionally raises NotImplementedError by design. No
-    # credential or network state can change this. This probe still
-    # exercises the REAL production class (not skipped, not assumed)
-    # to empirically confirm that finding, per this repo's own
-    # Empirical Verification standing rule (DD-005) -- it does not
-    # invent a workaround or a new Bitget architecture.
+    # --- Section 6: Real Bitget BTC/USDT Request ---------------------
+    # TWO SEPARATE results, per the order's own diagnostic-vs-production
+    # distinction (section 7):
+    #
+    #   (a) production-path: the repo's real BitgetProvider
+    #       (data_layer.providers.bitget_provider) is a DELIBERATE INERT
+    #       STUB -- every data method raises NotImplementedError by
+    #       design (confirmed: audits/REAL_DATA_VERIFICATION/03). So
+    #       GoldBot's own pipeline can NEVER fetch a real Bitget price
+    #       today. production_path = NOT_VERIFIED. This is a design
+    #       fact, not a network/credential failure, and this probe does
+    #       NOT implement a new Bitget provider (forbidden).
+    #
+    #   (b) diagnostic: a direct HTTP GET to Bitget's PUBLIC spot ticker
+    #       (no auth, no secret) purely to prove the Bitget API itself
+    #       returns a real BTC/USDT price. This lives in this
+    #       verification script only -- it is NOT wired into the
+    #       provider layer and changes no architecture.
+    report["bitget"] = {"production_path": "NOT_VERIFIED",
+                        "production_reason": "BitgetProvider is an inert stub (NotImplementedError by design); "
+                                             "GoldBot pipeline never fetches real Bitget data",
+                        "diagnostic": {"status": "NOT_RUN"}}
     try:
-        from data_layer.providers.bitget_provider.bitget_provider import BitgetProvider
+        import requests
 
-        provider = BitgetProvider()
-        status = provider.get_market_status()
-        if not status.available:
-            report["bitget"] = {
-                "status": "BLOCKED",
-                "reason": f"provider reports available=False ({status.reason})",
-            }
+        BITGET_PUBLIC_TICKER = "https://api.bitget.com/api/v2/spot/market/tickers"
+        resp = requests.get(BITGET_PUBLIC_TICKER, params={"symbol": "BTCUSDT"}, timeout=10)
+        http_status = resp.status_code
+        if http_status == 200:
+            body = resp.json()
+            rows = body.get("data") or []
+            if rows:
+                row = rows[0]
+                # Bitget v2 spot ticker: 'lastPr' = last price, 'ts' = ms epoch.
+                price = float(row.get("lastPr"))
+                ts_ms = row.get("ts")
+                report["bitget"]["diagnostic"] = {
+                    "status": "PASS",
+                    "symbol": "BTC/USDT",
+                    "http": http_status,
+                    "price": price,
+                    "timestamp": ts_ms,
+                    "request": "SUCCESS",
+                }
+            else:
+                report["bitget"]["diagnostic"] = {"status": "BLOCKED", "http": http_status,
+                                                  "reason": "empty data array in response"}
         else:
-            # Would only be reached if BitgetProvider is ever
-            # implemented for real in the future -- not the case today.
-            price = provider.get_latest_price("BTCUSDT")
-            report["bitget"] = {"status": "PASS", "symbol": "BTCUSDT", "price": price, "request": "SUCCESS"}
-    except NotImplementedError as e:
-        report["bitget"] = {"status": "BLOCKED", "reason": f"NotImplementedError: {e}"}
-    except Exception as e:  # noqa: BLE001
-        report["bitget"] = {"status": "BLOCKED", "reason": safe_exception_report(e)}
+            report["bitget"]["diagnostic"] = {"status": "BLOCKED", "http": http_status,
+                                              "reason": f"non-200 HTTP status {http_status}"}
+    except Exception as e:  # noqa: BLE001 -- probe must never crash before reporting
+        report["bitget"]["diagnostic"] = {"status": "BLOCKED", "reason": safe_exception_report(e)}
 
     print("---")
-    print(f"Bitget Request: {report['bitget']['status']}")
-    print(f"Bitget Reason: {report['bitget'].get('reason')}")
+    print(f"Bitget production-path: {report['bitget']['production_path']} ({report['bitget']['production_reason']})")
+    diag = report["bitget"]["diagnostic"]
+    print(f"Bitget diagnostic (public ticker BTC/USDT): {diag['status']}")
+    if diag["status"] == "PASS":
+        print(f"Bitget Symbol: {diag['symbol']}")
+        print(f"Bitget HTTP: {diag['http']}")
+        print(f"Bitget Price: {diag['price']}")
+        print(f"Bitget Timestamp: {diag['timestamp']}")
+    else:
+        print(f"Bitget diagnostic Reason: {diag.get('reason')}")
 
     # --- Section 8: Provider -> Validation -> Memory -----------------
     if raw_candles:
