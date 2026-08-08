@@ -1,6 +1,6 @@
 import time
 import requests
-from typing import List
+from typing import List, Optional
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from core_layer.secrets import Secrets
@@ -26,7 +26,13 @@ class TwelveDataClient:
     Strictly handles data fetching; no analysis logic.
     """
     BASE_URL = "https://api.twelvedata.com/time_series"
-    
+    # REAL-DATA-008: TwelveData's real-time quote endpoint. This is a
+    # DIFFERENT endpoint from BASE_URL (/time_series, candles). /price
+    # returns the current spot price ({"price": "<num>"}), not OHLC candle
+    # data -- the whole point of the current-price stream source. Never
+    # reuse BASE_URL for get_price().
+    PRICE_URL = "https://api.twelvedata.com/price"
+
     # Strictly restricted to GoldBot's approved timeframes to conserve API limits
     INTERVAL_MAP = {
         "M5": "5min",
@@ -129,3 +135,65 @@ class TwelveDataClient:
                 time.sleep(2 ** attempt)
 
         return []
+
+    def get_price(self, symbol: str) -> Optional[float]:
+        """
+        REAL-DATA-008: fetch the REAL current spot price for `symbol` from
+        Twelve Data's real-time `/price` endpoint (PRICE_URL) -- NOT a
+        candle close. Returns the current price as a float, or None if the
+        API returns no usable price.
+
+        Formats symbols like 'XAUUSD' into 'XAU/USD' via the existing
+        `_format_symbol()`. Mirrors `fetch_candles()`'s failure handling and
+        logging discipline exactly:
+          - missing key -> ValueError("TWELVE_DATA_API_KEY not configured.")
+          - API error body ({"status":"error",...}) -> ValueError (429 is
+            retried with the same exponential backoff, other codes raise)
+          - network exception -> ConnectionError after max_retries attempts
+
+        The API key is passed ONLY via request params -- never logged,
+        printed, or embedded in any message text.
+        """
+        if self.api_key is None:
+            raise ValueError("TWELVE_DATA_API_KEY not configured.")
+
+        formatted_symbol = self._format_symbol(symbol)
+
+        params = {
+            "symbol": formatted_symbol,
+            "apikey": self.api_key,
+        }
+
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = requests.get(self.PRICE_URL, params=params, timeout=10)
+                response.raise_for_status()
+                data = response.json()
+
+                if isinstance(data, dict) and data.get("status") == "error":
+                    error_code = data.get("code")
+                    error_message = data.get("message")
+
+                    logger.warning(f"API Error (Attempt {attempt + 1}/{max_retries}): {error_code} - {error_message}")
+
+                    if error_code == 429:  # Rate limit hit
+                        time.sleep(2 ** attempt)
+                        continue
+                    else:
+                        raise ValueError(f"Twelve Data API Error: {error_message}")
+
+                price_str = data.get("price") if isinstance(data, dict) else None
+                if price_str is None:
+                    logger.warning(f"No price returned for {formatted_symbol}")
+                    return None
+
+                return float(price_str)
+
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Network request failed (Attempt {attempt + 1}/{max_retries}): {str(e)}")
+                if attempt == max_retries - 1:
+                    raise ConnectionError(f"Failed to fetch price from Twelve Data after {max_retries} attempts.") from e
+                time.sleep(2 ** attempt)
+
+        return None

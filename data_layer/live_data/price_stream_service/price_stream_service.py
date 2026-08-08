@@ -211,8 +211,10 @@ class PriceStreamService:
 
 def build_default_price_stream_service(memory_registry: Any = None
                                         ) -> PriceStreamService:
-    """Production wiring: XAUUSD via TwelveData, BTCUSDT via Bitget
-    (currently an honest stub -- see `bitget_price_source.py`).
+    """Production wiring: XAUUSD via TwelveData's real-time /price endpoint
+    (`TwelveDataPriceSource`, REAL-DATA-008 -- real current spot price, NOT
+    candle close), BTCUSDT via Bitget (currently an honest stub -- see
+    `bitget_price_source.py`).
 
     `memory_registry` (TASK-DATA-004): pass a shared
     `data_layer.market_memory.MarketMemoryRegistry` to also fold ticks into
@@ -231,11 +233,16 @@ def build_default_price_stream_service(memory_registry: Any = None
     exact purpose rather than adding a second one."""
     from data_layer.live_data.bitget_price_source import BitgetPriceSource
     from data_layer.live_data.stream_validator import StreamValidator
-    from data_layer.live_data.twelve_data_provider import TwelveDataProvider
+    from data_layer.live_data.twelve_data_price_source import TwelveDataPriceSource
 
     validator = StreamValidator()
     service = PriceStreamService(memory_registry=memory_registry)
-    service.register_source("XAUUSD", TwelveDataProvider(asset="XAUUSD"),
+    # REAL-DATA-008: XAUUSD's STREAM source is the REAL current-price
+    # source (TwelveData /price real-time endpoint), NOT the old candle
+    # source (TwelveDataProvider -> fetch_candles -> candle.close, only on
+    # candle close). The batch/trading candle path (MarketDataService.
+    # get_candles, M15) is a DIFFERENT code path and is untouched.
+    service.register_source("XAUUSD", TwelveDataPriceSource(asset="XAUUSD"),
                              provider_name="twelvedata",
                              asset_class=AssetClass.METAL,
                              validator=validator)

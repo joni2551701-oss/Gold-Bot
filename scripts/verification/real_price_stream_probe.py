@@ -1,4 +1,5 @@
-"""Real continuous Price Stream Verification probe (Director Order REAL-DATA-006).
+"""Real continuous Price Stream Verification probe (Director Orders
+REAL-DATA-006, REAL-DATA-008).
 
 Runs ONLY inside GitHub Actions via .github/workflows/ci.yml's gated
 `real_data_probe` job (workflow_dispatch, never on push/PR). It exercises
@@ -7,7 +8,7 @@ live Telegram process drives from
 `platform_layer.telegram.polling._price_stream_tick_loop`:
 
     build_default_price_stream_service(memory_registry=MarketMemoryRegistry())
-      -> PriceStreamService.register_source("XAUUSD", TwelveDataProvider(...))
+      -> PriceStreamService.register_source("XAUUSD", TwelveDataPriceSource(...))
       -> tick(now) -> PriceStream._forward_ordered
            -> StreamValidator.validate (drop-on-invalid)
            -> _PriceTickSink.on_event
@@ -18,11 +19,20 @@ live Telegram process drives from
 using ONLY existing components. No new Price Stream / Provider /
 Validation / Event Bus architecture is created here.
 
-The probe calls `tick()` 3 times, ~2-3s apart, and for each capture:
-provider price + timestamp (from PriceStreamService.get_price cache read),
-validation outcome, MarketMemory read-back (via MemoryReader over the
-service's OWN memory_registry), and whether a PRICE_UPDATED event fired
-(a probe-side counter subscribed to that service's event bus).
+The probe calls `tick()` 3 times, ~3s apart, and for each capture:
+provider current price + observation timestamp (from PriceStreamService.
+get_price cache read), the validated price, the MarketMemory read-back
+price (the forming-candle close over the service's OWN memory_registry
+via MemoryReader), and whether a PRICE_UPDATED event fired (a probe-side
+counter subscribed to that service's event bus). It then proves the
+equality chain provider_price == validated_price == memory_price per
+update.
+
+REAL-DATA-008: the XAUUSD stream source is now `TwelveDataPriceSource`
+(TwelveData's real-time /price endpoint -- real current spot price), NOT
+the old candle source. Each tick is a fresh observation with a fresh
+timestamp, so prices genuinely advance tick to tick (no "M1 candle has
+not advanced" caveat).
 
 IMPORTANT -- the PRICE_UPDATED subscriber below is VERIFICATION
 INSTRUMENTATION ONLY. It is NOT a production wiring: production Core
@@ -42,12 +52,13 @@ section 13 -- non-negotiable):
     message text).
 
 No mock, no fixture, no fabricated price. A failed real call is reported
-BLOCKED/FAIL, never silently upgraded to a fake PASS. The "price
-unchanged between ticks" case is NOT a failure (the M1 candle may not
-have advanced yet) -- it is reported honestly via timestamp/sequence.
-Report-only: exits 0 regardless, so a BLOCKED egress-sandbox run is never
+BLOCKED/FAIL with its REAL cause, never silently upgraded to a fake PASS.
+A repeated identical current price between ticks is NOT a failure (an
+unchanged spot value is valid) -- it is reported honestly via timestamp/
+sequence. Report-only: exits 0 regardless, so a BLOCKED run is never
 mistaken for a hard failure. Local runs are expected to be BLOCKED
-(no network); the real 3-update evidence comes from the CI dispatch.
+(no network egress from the sandbox); the real 3-update evidence comes
+from the CI dispatch, where a real failure reports its real cause.
 """
 import json
 import os
@@ -125,7 +136,6 @@ def main() -> int:
         report["stream"]["status"] = "BUILT"
 
         prev_price = None
-        prev_ts = None
         for n in range(1, _TICKS + 1):
             events_before = event_counter["count"]
             tick_error = None
@@ -139,32 +149,50 @@ def main() -> int:
             price = cached.price if cached is not None else None
             ts = cached.timestamp.isoformat() if cached is not None else None
 
-            # Memory read-back via MemoryReader over the service's registry.
-            memory_ok = False
+            # The cache read IS the validated price (a tick reaches the
+            # cache only after passing StreamValidator). Provider price and
+            # validated price are the same observation by construction.
+            validated_price = price
+
+            # Memory read-back price via MemoryReader over the service's own
+            # registry: the forming M1 candle's close is the folded tick.
+            memory_price = None
             try:
-                last = reader.get_last_candle(_SYMBOL, _TIMEFRAME)
-                memory_ok = last is not None
+                forming = reader.get_forming(_SYMBOL, _TIMEFRAME)
+                if forming is not None:
+                    memory_price = forming.close
             except Exception:  # noqa: BLE001 -- read-back is best-effort evidence
-                memory_ok = False
+                memory_price = None
+            memory_ok = memory_price is not None
 
             event_fired = event_counter["count"] > events_before
 
-            # "unchanged price between ticks" is NOT a failure -- report it.
+            # A repeated identical current price is NOT a failure -- report it.
             unchanged = (
                 price is not None
                 and prev_price is not None
                 and price == prev_price
-                and ts == prev_ts
             )
 
             validated = "PASS" if (cached is not None and tick_error is None) else "NOT"
 
+            # Equality chain: provider_price == validated_price == memory_price.
+            equality_ok = (
+                price is not None
+                and validated_price is not None
+                and memory_price is not None
+                and price == validated_price == memory_price
+            )
+
             update = {
                 "n": n,
                 "price": price,
+                "validated_price": validated_price,
+                "memory_price": memory_price,
                 "timestamp": ts,
                 "validated": validated,
                 "memory": "PASS" if memory_ok else "NOT",
+                "equality_chain": "PASS" if equality_ok else "NOT",
                 "event_published": "YES" if event_fired else "NO",
                 "unchanged_from_previous": unchanged,
                 "tick_error": tick_error,
@@ -172,33 +200,58 @@ def main() -> int:
             report["updates"].append(update)
 
             print(
-                f"UPDATE #{n}: price={price}, timestamp={ts}, "
+                f"UPDATE #{n}: provider_price={price}, "
+                f"validated_price={validated_price}, "
+                f"memory_price={memory_price}, timestamp={ts}, "
                 f"validated={validated}, memory={update['memory']}, "
+                f"equality_chain={update['equality_chain']}, "
                 f"event_published={update['event_published']}"
-                + (" (unchanged from previous tick -- not a failure; "
-                   "M1 candle not yet advanced)" if unchanged else "")
+                + (" (unchanged current price from previous tick -- not a "
+                   "failure; an unchanged spot value is valid)" if unchanged else "")
                 + (f" (tick_error={tick_error})" if tick_error else "")
             )
 
             prev_price = price
-            prev_ts = ts
             if n < _TICKS:
                 time.sleep(_SLEEP_SECONDS)
 
         real_updates = sum(1 for u in report["updates"] if u["price"] is not None)
+        equality_updates = sum(1 for u in report["updates"]
+                                if u["equality_chain"] == "PASS")
+        first_tick_error = next((u["tick_error"] for u in report["updates"]
+                                 if u["tick_error"]), None)
+        report["stream"]["real_updates"] = real_updates
+        report["stream"]["equality_updates"] = equality_updates
         if report["secrets"]["TWELVE_DATA_API_KEY"] == "MISSING":
             report["stream"]["status"] = "BLOCKED"
             report["stream"]["reason"] = "TWELVE_DATA_API_KEY not configured"
         elif real_updates == 0:
+            # Honest real cause: locally this is egress (no network); in CI
+            # a real failure surfaces its own tick_error class here rather
+            # than a canned sandbox excuse.
+            report["stream"]["status"] = "BLOCKED"
+            if first_tick_error is not None:
+                report["stream"]["reason"] = (
+                    "no real price landed in cache across 3 ticks; first "
+                    f"tick error class: {first_tick_error}"
+                )
+            else:
+                report["stream"]["reason"] = (
+                    "no real price landed in cache across 3 ticks "
+                    "(no network egress reachable -- expected locally; the "
+                    "real 3-update evidence comes from the CI "
+                    "workflow_dispatch run)"
+                )
+        elif equality_updates < _TICKS:
+            # Prices landed but the provider==validated==memory chain did
+            # not hold for all 3 -- report BLOCKED, never a fake PASS.
             report["stream"]["status"] = "BLOCKED"
             report["stream"]["reason"] = (
-                "no real price landed in cache across 3 ticks "
-                "(expected in egress-blocked sandbox; real evidence comes "
-                "from the CI workflow_dispatch run)"
+                f"only {equality_updates}/{_TICKS} updates proved the "
+                "provider==validated==memory equality chain"
             )
         else:
             report["stream"]["status"] = "PASS"
-            report["stream"]["real_updates"] = real_updates
     except Exception as e:  # noqa: BLE001 -- probe must never crash before reporting
         report["stream"] = {"status": "BLOCKED", "reason": safe_exception_report(e)}
 
