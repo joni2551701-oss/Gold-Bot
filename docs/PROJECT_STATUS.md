@@ -74,6 +74,26 @@ PHASE-02 qoidalari:
 
 ---
 
+## 5b. Production Boundary (REAL-DATA-011 audited, 2026-08-08)
+
+REAL-DATA-011 (production boundary completion audit,
+`audits/REAL_DATA_VERIFICATION/REAL_DATA_011/`) tomonidan tasdiqlangan
+haqiqiy holat — hech narsa jimgina o'zgartirilmadi:
+
+- **data → risk spine = PASS** (real runtime). Current-price stream
+  (008) `TwelveDataPriceSource` orqali; batch candle path
+  `data_normalizer.get_candles()` orqali (`core_layer/pipeline/pipeline.py:325`);
+  MarketMemory SSOT (REAL-DATA-003, regressiya yo'q); `RiskManager.evaluate()`
+  (`pipeline.py:495`).
+- **Risk'dan keyin ATAYLAB NOT WIRED / NOT VERIFIED:** Event Bus→Core
+  (NOT WIRED), Risk→Execution (contract bor, production NOT WIRED),
+  Execution→Monitoring (NOT WIRED), Risk→Service (NOT WIRED),
+  Telegram→User (NOT VERIFIED — xavfsiz destination kerak).
+- **Execution ataylab inert** — real order/trade yo'q, YOQILMAGAN.
+- Wiring qarorlari — Director DRQ'lari (REAL_DATA_011/16_–19_).
+- **VPS Clean gate: 🔴 BLOCKED** (bu audit uni ochmaydi).
+- Daily/HTF parse bug = KNOWN NON-BLOCKING (context-only, non-binding).
+
 ## 5. Yangilash qoidasi
 
 Bu faylni quyidagi holatlarda yangilang: Phase o'zgarganda, yangi
