@@ -51,3 +51,26 @@ Core Timestamp: <...>
 
 Lokal tekshiruv: probe crash qilmasdan ishlaydi, exit 0, non-network
 mantiq sog'lom.
+
+---
+
+## ⚡ REAL DATA PROOF (GitHub Actions, run 31231144312, commit 04c83cb)
+
+Real TwelveData XAU/USD narxi bilan `real_data_probe` job registry-backed
+`MarketDataService` (production path) orqali quyidagi tenglik zanjirini
+isbotladi:
+
+```
+Core Symbol:           XAU/USD
+Core provider_price:   4342.33565
+Core validated_price:  4342.33565
+Core memory_read_price: 4342.33565   <- Core shu qiymatni Market Memory (SSOT)'dan o'qidi
+Core Timestamp:        2026-08-08T10:45:00+00:00
+Core Consumption:      PASS
+```
+
+`provider_price == validated_price == memory_read_price` — uchalasi
+bir xil. Validation PASS (1 raw -> 1 validated), Memory PASS
+(stored_count 1). Core endi normalizer'ning to'g'ridan-to'g'ri
+chiqishidan emas, Market Memory'dan o'qiydi. Mock/hardcoded ishlatilmadi;
+API key log'ga chiqmadi (GitHub masking `***`).
