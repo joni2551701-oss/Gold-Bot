@@ -3,7 +3,8 @@ import uuid
 from typing import List, Optional
 
 from data_layer.live_data.market_data import MarketSnapshot
-from data_layer.live_data.market_data_service import MarketDataService
+from data_layer.live_data.market_data_service import build_default_market_data_service
+from data_layer.market_memory import MarketMemoryRegistry
 from data_layer.data_validation.data_quality import assess_data_quality, DataQualityResult
 from context_layer.context_engine.context_orchestrator import build_context_snapshot
 from context_layer.trend.htf_bias import compute_htf_bias, HTFBiasResult, SUPPORTED_HTF_TIMEFRAMES
@@ -216,7 +217,28 @@ class TradingPipeline:
         # on this instance to avoid real API calls; MarketDataService
         # exposes the identical two methods, so those patches still work
         # unchanged.
-        self.data_normalizer = MarketDataService()
+        # REAL-DATA-003: Market Memory as SSOT for the traded (primary
+        # execution-timeframe) candles. The service is wired to a fresh
+        # per-pipeline MarketMemoryRegistry (Option B), so get_candles()
+        # (line ~303) does write-through-then-read-back: fetch+validate ->
+        # hydrate memory -> return the memory-stored series. This makes
+        # Memory the SSOT Core consumes, self-consistent within the
+        # pipeline and free of cross-test shared state (unlike the
+        # process-wide get_shared_market_data_service(), Option A). The
+        # separate best-effort HTF get_snapshot() (line ~333, Daily/H4/H1)
+        # is intentionally NOT routed through memory: "Daily" is absent
+        # from the memory vocabulary ("D1"), so routing it would silently
+        # drop Daily and degrade HTF bias -- a Trading Safety regression.
+        # That HTF fetch stays on its current auxiliary-context path; the
+        # Daily/D1 vocabulary reconciliation is raised for Director
+        # decision (see audits/REAL_DATA_VERIFICATION/). Attribute name
+        # kept as `data_normalizer` -- existing tests monkeypatch
+        # `pipeline.data_normalizer.get_candles`/`.get_snapshot` directly
+        # on this instance, which bypasses the internal write-read logic,
+        # so those patches keep working unchanged.
+        self.data_normalizer = build_default_market_data_service(
+            memory_registry=MarketMemoryRegistry()
+        )
         self.signal_engine = SignalEngine()
         self.ai_analyzer = AIAnalyzer()
         self.decision_engine = DecisionEngine()

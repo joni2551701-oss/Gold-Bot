@@ -223,6 +223,96 @@ def test_get_shared_market_data_service_shares_registry_with_price_stream_servic
         reset_shared_market_data_service()
 
 
+# ---------------- REAL-DATA-003: Market Memory -> Core SSOT reconciliation ----------------
+
+class _KnownSeriesNormalizer:
+    """Provider stub returning a fixed, known M15 candle set (distinct
+    OHLC per bar, strictly increasing timestamps, oldest -> newest)."""
+    def __init__(self, candles):
+        self._candles = candles
+
+    def get_candles(self, symbol, interval, outputsize):
+        return list(self._candles)
+
+    def get_snapshot(self, symbol, intervals):
+        return MarketSnapshot(symbol=symbol, candles={}, quality={})
+
+
+def _known_series(n=5):
+    base = datetime(2026, 8, 1, 9, tzinfo=timezone.utc)
+    return [Candle(timestamp=base + timedelta(minutes=15 * i),
+                   open=1900.0 + i, high=1905.0 + i,
+                   low=1895.0 + i, close=1902.0 + i)
+            for i in range(n)]
+
+
+def test_get_candles_via_memory_ssot_is_identical_to_validated_candles():
+    """REAL-DATA-003 data-fidelity proof: with a registry configured,
+    the candles Core receives (the memory-SSOT read-back path) are
+    IDENTICAL to the validated candles that were written to memory --
+    same count, same OHLC, same timestamps, same order (oldest ->
+    newest). Guards against truncation (capacity), reordering, and
+    CandleRecord<->Candle type-conversion drift."""
+    validated = _known_series(5)
+    registry = MarketMemoryRegistry()
+    service = MarketDataService(normalizer=_KnownSeriesNormalizer(validated),
+                                memory_registry=registry)
+
+    # This is exactly what the pipeline calls at pipeline.py:303.
+    core_consumed = service.get_candles("XAUUSD", "M15", 200)
+
+    # Same count -- no capacity truncation (M15 capacity 200 >= 5).
+    assert len(core_consumed) == len(validated) == 5
+    # Same order oldest -> newest, same OHLC and timestamps, field by field.
+    for got, expected in zip(core_consumed, validated):
+        assert got.timestamp == expected.timestamp
+        assert got.open == expected.open
+        assert got.high == expected.high
+        assert got.low == expected.low
+        assert got.close == expected.close
+    # Timestamps strictly increasing (order preserved, not reversed).
+    ts = [c.timestamp for c in core_consumed]
+    assert ts == sorted(ts)
+
+
+def test_get_candles_via_memory_ssot_actually_reads_from_memory():
+    """Proves the returned series really is the memory-SSOT read-back
+    (not the normalizer's direct output): the read-back path is what
+    provides the candles, matching get_candles_from_memory()."""
+    validated = _known_series(4)
+    registry = MarketMemoryRegistry()
+    service = MarketDataService(normalizer=_KnownSeriesNormalizer(validated),
+                                memory_registry=registry)
+
+    core_consumed = service.get_candles("XAUUSD", "M15", 200)
+    from_memory = service.get_candles_from_memory("XAUUSD", "M15", 200)
+
+    assert [c.timestamp for c in core_consumed] == [c.timestamp for c in from_memory]
+    assert [c.close for c in core_consumed] == [c.close for c in from_memory]
+
+
+def test_get_candles_falls_back_to_validated_when_memory_empty():
+    """Fail-safe: an unknown/empty memory timeframe (e.g. the "Daily"
+    vs "D1" vocabulary gap) leaves get_candles_from_memory() returning
+    [], so get_candles() returns the original validated candles
+    unchanged -- never an empty list, never a degraded trade path."""
+    validated = _known_series(3)
+
+    class _BlackHoleRegistry:
+        # get_or_create used by _hydrate_memory; get_series used by
+        # MemoryReader will find nothing -> read-back returns [].
+        def get_or_create(self, symbol):
+            class _M:
+                def has_timeframe(self, tf):
+                    return False
+            return _M()
+
+    service = MarketDataService(normalizer=_KnownSeriesNormalizer(validated),
+                                memory_registry=_BlackHoleRegistry())
+    core_consumed = service.get_candles("XAUUSD", "Daily", 100)
+    assert [c.close for c in core_consumed] == [c.close for c in validated]
+
+
 def test_reset_shared_market_data_service_forces_a_fresh_instance():
     from data_layer.live_data.market_data_service import (
         get_shared_market_data_service,

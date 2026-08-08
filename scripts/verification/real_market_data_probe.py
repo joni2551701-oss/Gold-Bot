@@ -205,20 +205,82 @@ def main() -> int:
     print(f"Validation: {report['validation']['status']}")
     print(f"Memory: {report['memory']['status']}")
 
-    # --- Section 9: Core consumption (static finding, confirmed by prior audit) ---
-    # core_layer/pipeline/pipeline.py constructs MarketDataService()
-    # without a memory_registry -- so in TODAY's wiring, Core does NOT
-    # read from Market Memory; it consumes MarketDataNormalizer output
-    # directly. This is a static code fact, re-confirmed, not something
-    # a live probe can change -- reported as an architecture finding,
-    # not fixed here (no new architecture per this order's Forbidden list).
-    report["core_consumption"] = {
-        "status": "ARCHITECTURE_FINDING",
-        "reason": "core_layer/pipeline/pipeline.py builds MarketDataService() with no memory_registry -- "
-                  "Core consumes MarketDataNormalizer output directly, not Market Memory, in the live signal path",
-    }
+    # --- Section 9: Core consumption (REAL-DATA-003 reconciliation) ---
+    # After REAL-DATA-003, the pipeline builds a registry-backed
+    # MarketDataService, so get_candles() does write-through-then-read-back
+    # from Market Memory -- Core now consumes the SSOT-stored candle, not
+    # the normalizer's direct output. This section exercises that exact
+    # production path with a real registry-backed service and confirms the
+    # full equality chain end to end:
+    #   provider price == validated price == memory-stored == memory-read
+    # (the last being what Core actually trades on). No mock, no fixture:
+    # if the live fetch is unavailable (egress-blocked sandbox), this is
+    # reported BLOCKED, never a fake PASS. Report-only (exit 0).
+    if raw_candles:
+        try:
+            from data_layer.live_data.market_data_service.market_data_service import (
+                build_default_market_data_service,
+            )
+            from data_layer.market_memory.market_memory_registry.market_memory_registry import (
+                MarketMemoryRegistry as _Reg,
+            )
+
+            # A registry-backed service exactly as the pipeline now wires
+            # it (Option B: fresh per-instance MarketMemoryRegistry). Its
+            # get_candles() fetches+validates via the real normalizer,
+            # hydrates memory, then reads back OUT of memory -- the value
+            # Core consumes.
+            _svc = build_default_market_data_service(memory_registry=_Reg())
+            core_candles = _svc.get_candles("XAUUSD", "M15", 1)
+
+            # Independent references for the equality chain.
+            provider_price = raw_candles[-1].close
+            from data_layer.live_data.market_data.market_data import MarketDataNormalizer as _N2
+            _validated2 = _N2()._validate_and_clean(raw_candles, "XAUUSD", "M15")
+            validated_price = _validated2[-1].close if _validated2 else None
+            memory_read_price = core_candles[-1].close if core_candles else None
+
+            all_match = (
+                core_candles
+                and validated_price is not None
+                and provider_price == validated_price == memory_read_price
+            )
+            if all_match:
+                report["core_consumption"] = {
+                    "status": "PASS",
+                    "symbol": "XAU/USD",
+                    "provider_price": provider_price,
+                    "validated_price": validated_price,
+                    "memory_read_price": memory_read_price,
+                    "timestamp": core_candles[-1].timestamp.isoformat(),
+                    "note": "Core consumes Market Memory SSOT (registry-backed MarketDataService)",
+                }
+            else:
+                report["core_consumption"] = {
+                    "status": "FAIL",
+                    "reason": "equality chain broke: provider != validated != memory-read",
+                    "provider_price": provider_price,
+                    "validated_price": validated_price,
+                    "memory_read_price": memory_read_price,
+                }
+        except Exception as e:  # noqa: BLE001 -- probe must never crash before reporting
+            report["core_consumption"] = {"status": "BLOCKED", "reason": safe_exception_report(e)}
+    else:
+        report["core_consumption"] = {
+            "status": "BLOCKED",
+            "reason": "no raw candles (TwelveData request did not succeed); "
+                      "live equality chain cannot be exercised (expected in egress-blocked runs)",
+        }
     print("---")
-    print(f"Core Consumption: {report['core_consumption']['status']} -- {report['core_consumption']['reason']}")
+    print(f"Core Consumption: {report['core_consumption']['status']}")
+    if report["core_consumption"]["status"] == "PASS":
+        print(f"Core Symbol: {report['core_consumption']['symbol']}")
+        print(f"Core provider_price: {report['core_consumption']['provider_price']}")
+        print(f"Core validated_price: {report['core_consumption']['validated_price']}")
+        print(f"Core memory_read_price: {report['core_consumption']['memory_read_price']}")
+        print(f"Core Timestamp: {report['core_consumption']['timestamp']}")
+    else:
+        print(f"Core Consumption Reason: {report['core_consumption'].get('reason')}")
 
     print("---")
     print("PROBE_RESULT_JSON_START")

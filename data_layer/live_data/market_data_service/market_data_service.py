@@ -81,6 +81,23 @@ class MarketDataService:
         raises; an empty list is the "no data" case, not an exception."""
         candles = self._normalizer.get_candles(symbol, interval, outputsize)
         self._hydrate_memory(symbol, interval, candles)
+        # REAL-DATA-003: Market Memory as SSOT. When a registry is
+        # configured, read the just-hydrated candles back OUT of memory so
+        # Core consumes the SSOT-stored series rather than the normalizer's
+        # direct output. Fail-safe: get_candles_from_memory() returns [] on
+        # any miss (unregistered timeframe -- e.g. "Daily" vs "D1" --,
+        # empty memory, or read failure), in which case the original
+        # validated `candles` are returned unchanged. A bare/no-registry
+        # MarketDataService is therefore byte-for-byte unchanged.
+        # `candles` guard: when the fetch returned nothing there is
+        # nothing hydrated to read back, so skip the memory read entirely
+        # (an empty-memory read-back would only log a benign fail-safe
+        # UnknownAssetError warning and still return []). Returning the
+        # empty `candles` here is byte-for-byte the old behavior.
+        if self._memory_registry is not None and candles:
+            from_memory = self.get_candles_from_memory(symbol, interval, outputsize)
+            if from_memory:
+                return from_memory
         return candles
 
     def get_snapshot(self, symbol: str, intervals: List[str]) -> MarketSnapshot:
