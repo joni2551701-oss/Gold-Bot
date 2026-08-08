@@ -75,6 +75,17 @@ if _REPO_ROOT not in sys.path:
 
 _TICKS = 3
 _SLEEP_SECONDS = 3.0
+# Per-update bounded retry. TwelveData's free tier rate-limits by the
+# minute; when this probe runs after the other real-data steps in the
+# same CI job (which each spend TwelveData credits), the first /price
+# ticks can be throttled and return no price (isolated by PriceStream, so
+# no exception surfaces -- just an empty cache). This is NOT an
+# architecture failure: retrying with spacing lets the rate-limit window
+# free a credit, exactly as the production reconnect/backoff would. Each
+# of the 3 updates must still be a GENUINE fresh fetch -- we only retry
+# until a real price actually lands, we never fabricate one.
+_MAX_ATTEMPTS_PER_UPDATE = 8
+_ATTEMPT_SLEEP_SECONDS = 9.0
 _SYMBOL = "XAUUSD"
 _TIMEFRAME = "M1"
 
@@ -136,18 +147,34 @@ def main() -> int:
         report["stream"]["status"] = "BUILT"
 
         prev_price = None
+        prev_cached_ts = None
         for n in range(1, _TICKS + 1):
             events_before = event_counter["count"]
             tick_error = None
-            try:
-                service.tick(datetime.now(timezone.utc))
-            except Exception as e:  # noqa: BLE001 -- fail-safe, report don't crash
-                tick_error = safe_exception_report(e)
+            # Bounded retry: tick until a genuine fresh price lands (or the
+            # attempt budget is exhausted). A throttled /price returns no
+            # price and is isolated by PriceStream (no exception), so we
+            # detect success by the cache advancing, not by an error.
+            cached = None
+            for attempt in range(1, _MAX_ATTEMPTS_PER_UPDATE + 1):
+                try:
+                    service.tick(datetime.now(timezone.utc))
+                    tick_error = None
+                except Exception as e:  # noqa: BLE001 -- fail-safe, report don't crash
+                    tick_error = safe_exception_report(e)
+                cached = service.get_price(_SYMBOL)
+                landed = cached is not None and (
+                    prev_cached_ts is None or cached.timestamp != prev_cached_ts
+                )
+                if landed:
+                    break
+                if attempt < _MAX_ATTEMPTS_PER_UPDATE:
+                    time.sleep(_ATTEMPT_SLEEP_SECONDS)
 
             # Provider price + timestamp: cache read via the sanctioned API.
-            cached = service.get_price(_SYMBOL)
             price = cached.price if cached is not None else None
             ts = cached.timestamp.isoformat() if cached is not None else None
+            prev_cached_ts = cached.timestamp if cached is not None else prev_cached_ts
 
             # The cache read IS the validated price (a tick reaches the
             # cache only after passing StreamValidator). Provider price and
