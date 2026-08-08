@@ -34,3 +34,33 @@ candle.close jonli narx sifatida ISHLATILMAYDI.
 
 ## Xulosa
 Kod yozildi va lokal tasdiqlandi. Verdikt = **PENDING CI**.
+
+---
+
+## ⚡ YAKUNIY VERDIKT — PASS (run 31253603648, commit bfec9b7)
+
+| Segment | Natija |
+|---|---|
+| Price Stream architecture | ✅ Current Price Stream (candle polling EMAS) |
+| Current-price contract (`/price`) | ✅ REAL — empirik isbotlandi |
+| Production provider | TwelveDataPriceSource (XAUUSD); Bitget inert (NOT VERIFIED) |
+| Timeframe | N/A — current price (candle interval ishlatilmaydi) ✅ |
+| Real API | ✅ TwelveData `/price`, real key, real tarmoq |
+| Real updates | ✅ 3/3 (4342.1624, 4342.1624, 4342.35095) |
+| Validation | ✅ PASS (3/3) |
+| Market Memory | ✅ PASS (3/3, provider==validated==memory) |
+| Event Bus (publish) | ✅ real kod (sink PRICE_UPDATED) |
+| Event Bus → Core | ⚠️ NOT WIRED (bu task doirasidan tashqari, ataylab) |
+| Reconnect | ✅ IMPLEMENTED (state machine) |
+| Architecture | ✅ PASS (batch candle path tegilmagan) |
+| Tests | ✅ 5503 |
+| CI | ✅ validate + real_data_probe success |
+
+**REAL-DATA-008 = PASS.** GoldBot endi haqiqiy real-time current-price
+stream'ga ega, candle data'dan toza ajratilgan. Batch trading pipeline
+(MarketDataService, M15 candles) o'zgarmagan (REAL-DATA-003/004 isbotlangan).
+
+**Non-blocking carry-over items (bu task doirasidan tashqari):**
+Event Bus → Core NOT WIRED (Director qaroriga havola — event-driven Core
+kerak bo'lsa RFC/ADR); Bitget inert (NOT VERIFIED); Daily parse bug
+(carried); HTF Daily/D1 (carried).
