@@ -128,3 +128,8 @@ jobs:
           BITGET_API_SECRET: ${{ secrets.BITGET_API_SECRET }}
           BITGET_PASSPHRASE: ${{ secrets.BITGET_PASSPHRASE }}
         run: python scripts/verification/real_market_data_probe.py
+
+      - name: Real pipeline runtime trace (main.py, real market data)
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+        run: python main.py
